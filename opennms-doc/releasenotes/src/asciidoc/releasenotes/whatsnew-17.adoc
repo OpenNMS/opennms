@@ -1,6 +1,6 @@
 
 [[releasenotes-17]]
-== OpenNMS 17
+== What's New in OpenNMS 17
 
 === System Requirements
 

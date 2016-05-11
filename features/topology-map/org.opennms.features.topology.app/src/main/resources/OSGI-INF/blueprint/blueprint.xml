@@ -405,16 +405,16 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 	</service>
 
     <!-- Info Items -->
-    <service interface="org.opennms.features.topology.api.info.InfoPanelItem">
-        <bean class="org.opennms.features.topology.app.internal.ui.info.DefaultVertexInfoPanelItem" />
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.ui.info.DefaultVertexInfoPanelItemProvider" />
     </service>
-    <service interface="org.opennms.features.topology.api.info.InfoPanelItem">
-        <bean class="org.opennms.features.topology.app.internal.ui.info.NodeInfoPanelItem" >
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.ui.info.NodeInfoPanelItemProvider" >
             <argument ref="nodeDao"/>
         </bean>
     </service>
-    <service interface="org.opennms.features.topology.api.info.InfoPanelItem">
-        <bean class="org.opennms.features.topology.app.internal.ui.info.DefaultEdgeInfoPanelItem" />
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.ui.info.DefaultEdgeInfoPanelItemProvider" />
     </service>
 
 </blueprint>

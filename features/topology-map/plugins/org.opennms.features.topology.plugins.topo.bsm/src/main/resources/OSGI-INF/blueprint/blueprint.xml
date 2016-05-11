@@ -121,39 +121,39 @@
     </service>
 
     <!-- Info Items -->
-    <service interface="org.opennms.features.topology.api.info.InfoPanelItem">
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceVertexInfoPanelItem" >
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceVertexInfoPanelItemProvider" >
             <argument ref="transactionAwareBeanProxyFactory" />
             <property name="businessServiceManager" ref="businessServiceManager" />
         </bean>
     </service>
-    <service interface="org.opennms.features.topology.api.info.InfoPanelItem">
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceVertexAttributesInfoPanelItem" >
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceVertexAttributesInfoPanelItemProvider" >
             <argument ref="transactionAwareBeanProxyFactory" />
             <property name="businessServiceManager" ref="businessServiceManager" />
         </bean>
     </service>
-    <service interface="org.opennms.features.topology.api.info.InfoPanelItem">
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceVertexStatusInfoPanelItem" >
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceVertexStatusInfoPanelItemProvider" >
             <argument ref="transactionAwareBeanProxyFactory" />
             <property name="businessServiceManager" ref="businessServiceManager" />
             <property name="businessServicesTopologyProvider" ref="bsmTopologyProvider"/>
         </bean>
     </service>
-    <service interface="org.opennms.features.topology.api.info.InfoPanelItem">
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceEdgeInfoPanelItem" />
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceEdgeInfoPanelItemProvider" />
     </service>
-    <service interface="org.opennms.features.topology.api.info.InfoPanelItem">
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceEdgeStatusInfoPanelItem" >
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceEdgeStatusInfoPanelItemProvider" >
             <argument ref="transactionAwareBeanProxyFactory" />
             <property name="businessServiceManager" ref="businessServiceManager" />
         </bean>
     </service>
-    <service interface="org.opennms.features.topology.api.info.InfoPanelItem">
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.SimulationModeReductionKeyInfoPanelItem" />
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.SimulationModeReductionKeyInfoPanelItemProvider" />
     </service>
-    <service interface="org.opennms.features.topology.api.info.InfoPanelItem">
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.SimulationModeEnabledPanelItem" />
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.SimulationModeEnabledPanelItemProvider" />
     </service>
 
     <!-- Hide Leaf Elements Operation -->

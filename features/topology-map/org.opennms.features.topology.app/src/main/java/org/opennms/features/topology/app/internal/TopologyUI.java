@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -63,7 +64,9 @@ import org.opennms.features.topology.api.WidgetManager;
 import org.opennms.features.topology.api.WidgetUpdateListener;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAwareTable;
-import org.opennms.features.topology.api.info.InfoPanelItem;
+import org.opennms.features.topology.api.info.InfoPanelItemProvider;
+import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
+import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -328,85 +331,64 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     /**
      * Helper class to load components to show in the info panel.
      */
-    public class InfoPanelItemProvider implements SelectionListener, MenuItemUpdateListener, GraphContainer.ChangeListener {
+    public class InfoPanelItemManager implements SelectionListener, MenuItemUpdateListener, GraphContainer.ChangeListener {
 
-        // Panel Item to visualize the selection context
-        private final InfoPanelItem selectionContextPanelItem = new InfoPanelItem() {
+        // Panel InfoPanelItem to visualize the selection context
+        private final InfoPanelItemProvider selectionContextPanelItem = container -> {
+            // Only contribute if no selection
+            return (container.getSelectionManager().getSelectedEdgeRefs().isEmpty() &&
+                    container.getSelectionManager().getSelectedVertexRefs().isEmpty())
+                   ? Collections.singleton(new InfoPanelItem() {
+                            @Override
+                            public Component getComponent() {
+                                synchronized (m_currentHudDisplayLock) {
+                                    m_currentHudDisplay = new HudDisplay();
+                                    m_currentHudDisplay.setImmediate(true);
+                                    m_currentHudDisplay.setProvider(m_graphContainer.getBaseTopology().getVertexNamespace().equals("nodes")
+                                                                    ? "Linkd"
+                                                                    : m_graphContainer.getBaseTopology().getVertexNamespace());
+                                    m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));
+                                    m_currentHudDisplay.setEdgeFocusCount(0);
+                                    m_currentHudDisplay.setVertexSelectionCount(m_graphContainer.getSelectionManager().getSelectedVertexRefs().size());
+                                    m_currentHudDisplay.setEdgeSelectionCount(m_graphContainer.getSelectionManager().getSelectedEdgeRefs().size());
+                                    m_currentHudDisplay.setVertexContextCount(m_graphContainer.getGraph().getDisplayVertices().size());
+                                    m_currentHudDisplay.setEdgeContextCount(m_graphContainer.getGraph().getDisplayEdges().size());
+                                    m_currentHudDisplay.setVertexTotalCount(m_graphContainer.getBaseTopology().getVertexTotalCount());
+                                    m_currentHudDisplay.setEdgeTotalCount(m_graphContainer.getBaseTopology().getEdges().size());
+                                    return m_currentHudDisplay;
+                                }
+                            }
 
-            @Override
-            public Component getComponent(GraphContainer container) {
-                synchronized (m_currentHudDisplayLock) {
-                    m_currentHudDisplay = new HudDisplay();
-                    m_currentHudDisplay.setImmediate(true);
-                    m_currentHudDisplay.setProvider(m_graphContainer.getBaseTopology().getVertexNamespace().equals("nodes") ? "Linkd" : m_graphContainer.getBaseTopology().getVertexNamespace());
-                    m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));
-                    m_currentHudDisplay.setEdgeFocusCount(0);
-                    m_currentHudDisplay.setVertexSelectionCount(m_graphContainer.getSelectionManager().getSelectedVertexRefs().size());
-                    m_currentHudDisplay.setEdgeSelectionCount(m_graphContainer.getSelectionManager().getSelectedEdgeRefs().size());
-                    m_currentHudDisplay.setVertexContextCount(m_graphContainer.getGraph().getDisplayVertices().size());
-                    m_currentHudDisplay.setEdgeContextCount(m_graphContainer.getGraph().getDisplayEdges().size());
-                    m_currentHudDisplay.setVertexTotalCount(m_graphContainer.getBaseTopology().getVertexTotalCount());
-                    m_currentHudDisplay.setEdgeTotalCount(m_graphContainer.getBaseTopology().getEdges().size());
-                    return m_currentHudDisplay;
-                }
-            }
+                            @Override
+                            public String getTitle() {
+                                return "Selection Context";
+                            }
 
-            @Override
-            public boolean contributesTo(GraphContainer container) {
-                // only show if no selection
-                return container.getSelectionManager().getSelectedEdgeRefs().isEmpty()
-                        && container.getSelectionManager().getSelectedVertexRefs().isEmpty();
-            }
-
-            @Override
-            public String getTitle(GraphContainer container) {
-                return "Selection Context";
-            }
-
-            @Override
-            public int getOrder() {
-                return 1;
-            }
+                            @Override
+                            public int getOrder() {
+                                return 1;
+                            }
+                        })
+                   : Collections.emptySet();
         };
 
         // Panel Item to visualize the meta info
-        private final InfoPanelItem topologyProviderInfoPanelItem = new InfoPanelItem() {
+        private final InfoPanelItemProvider topologyProviderInfoPanelItem = (container) -> {
+            TopologyProviderInfo metaInfo = Optional.ofNullable(getGraphContainer().getBaseTopology().getTopologyProviderInfo())
+                    .orElseGet(DefaultTopologyProviderInfo::new);
 
-            private TopologyProviderInfo getMetaInfo() {
-                TopologyProviderInfo topologyProviderInfo = getGraphContainer().getBaseTopology().getTopologyProviderInfo();
-
-                if (Objects.isNull(topologyProviderInfo)) {
-                    topologyProviderInfo = new DefaultTopologyProviderInfo();
-                }
-
-                return topologyProviderInfo;
-            }
-
-            @Override
-            public Component getComponent(GraphContainer container) {
-                return new Label(getMetaInfo().getDescription());
-            }
-
-            @Override
-            public boolean contributesTo(GraphContainer container) {
-                // only show if no selection
-                return container.getSelectionManager().getSelectedEdgeRefs().isEmpty()
-                        && container.getSelectionManager().getSelectedVertexRefs().isEmpty();
-            }
-
-            @Override
-            public String getTitle(GraphContainer container) {
-                return getMetaInfo().getName();
-            }
-
-            @Override
-            public int getOrder() {
-                return 0;
-            }
+            // Only contribute if no selection
+            return (container.getSelectionManager().getSelectedEdgeRefs().isEmpty() &&
+                    container.getSelectionManager().getSelectedVertexRefs().isEmpty())
+                    ? Collections.singleton(new DefaultInfoPanelItem()
+                    .withOrder(0)
+                    .withTitle(metaInfo.getName())
+                    .withComponent(new Label(metaInfo.getDescription())))
+                    : Collections.emptySet();
         };
 
-        private Component wrap(InfoPanelItem item) {
-            return wrap(item.getComponent(m_graphContainer), item.getTitle(m_graphContainer));
+        private Component wrap(final InfoPanelItem item) {
+            return wrap(item.getComponent(), item.getTitle());
         }
 
         /**
@@ -434,40 +416,31 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
 
         private List<Component> getInfoPanelComponents() {
-            final List<InfoPanelItem> infoPanelItems = findInfoPanelItems();
-            infoPanelItems.add(selectionContextPanelItem); // manually add this, as it is not exposed via osgi
-            infoPanelItems.add(topologyProviderInfoPanelItem); // same here
-            return infoPanelItems.stream()
-                    .filter(item -> {
-                        try {
-                            return item.contributesTo(m_graphContainer);
-                        } catch (Throwable t) {
-                            // See NMS-8394
-                            LOG.error("An error occurred while determining if info panel item {} should be displayed. "
-                                    + "The component will not be displayed.", item.getClass(), t);
-                            return false;
-                        }
-                    })
-                    .sorted()
-                    .map(item -> {
-                        try {
-                            return wrap(item);
-                        } catch (Throwable t) {
-                            // See NMS-8394
-                            LOG.error("An error occurred while retriveing the component from info panel item {}. "
-                                    + "The component will not be displayed.", item.getClass(), t);
-                            return null;
-                        }
-                    })
-                    .filter(component -> component != null) // Skip any nulls from components with exceptions
-                    .collect(Collectors.toList());
+            final List<InfoPanelItemProvider> infoPanelItemProviders = findInfoPanelItems();
+            infoPanelItemProviders.add(selectionContextPanelItem); // manually add this, as it is not exposed via osgi
+            infoPanelItemProviders.add(topologyProviderInfoPanelItem); // same here
+            return infoPanelItemProviders.stream()
+                                         .flatMap(provider -> {
+                                             try {
+                                                 return provider.getContributions(m_graphContainer).stream();
+                                             } catch (Throwable t) {
+                                                 // See NMS-8394
+                                                 LOG.error("An error occurred while retrieving the component from info panel item provider {}. "
+                                                     + "The component will not be displayed.", provider.getClass(), t);
+                                                return null;
+                                            }
+                                         })
+                                         .filter(component -> component != null)
+                                         .sorted()
+                                         .map(this::wrap)
+                                         .collect(Collectors.toList());
         }
 
-        private List<InfoPanelItem> findInfoPanelItems() {
+        private List<InfoPanelItemProvider> findInfoPanelItems() {
             try {
-                return m_bundlecontext.getServiceReferences(InfoPanelItem.class, null).stream()
-                        .map(eachRef -> m_bundlecontext.getService(eachRef))
-                        .collect(Collectors.toList());
+                return m_bundlecontext.getServiceReferences(InfoPanelItemProvider.class, null).stream()
+                                      .map(eachRef -> m_bundlecontext.getService(eachRef))
+                                      .collect(Collectors.toList());
             } catch (InvalidSyntaxException e) {
                 LOG.error(e.getMessage(), e);
                 return Collections.emptyList();
@@ -630,10 +603,10 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_selectionManager.addSelectionListener(m_verticesUpdateManager);
 
         // Register the Info Panel to listen for certain events
-        final InfoPanelItemProvider infoPanelItemProvider = new InfoPanelItemProvider();
-        m_selectionManager.addSelectionListener(infoPanelItemProvider);
-        m_commandManager.addMenuItemUpdateListener(infoPanelItemProvider);
-        m_graphContainer.addChangeListener(infoPanelItemProvider);
+        final InfoPanelItemManager infoPanelItemManager = new InfoPanelItemManager();
+        m_selectionManager.addSelectionListener(infoPanelItemManager);
+        m_commandManager.addMenuItemUpdateListener(infoPanelItemManager);
+        m_graphContainer.addChangeListener(infoPanelItemManager);
 
         // Register the Toolbar Panel
         m_graphContainer.addChangeListener(m_toolbarPanel);

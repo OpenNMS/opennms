@@ -28,15 +28,14 @@
 
 package org.opennms.features.amqp.eventforwarder;
 
-import org.apache.camel.util.KeyValueHolder;
-
 import java.util.Dictionary;
 import java.util.Map;
 
 import org.apache.camel.BeanInject;
-import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
+import org.apache.camel.util.KeyValueHolder;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
@@ -52,7 +51,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author jwhite
  */
 @Ignore
-public class AMQPEventForwarderBlueprintTest extends CamelBlueprintTestSupport {
+public class AMQPEventForwarderBlueprintTest extends CamelBlueprintTest {
 
     @BeanInject
     protected ForwardingEventListener forwardingEventListener;
