@@ -25,6 +25,7 @@ include::common/preface.adoc[]
 include::releasenotes/whatsnew-19.adoc[]
 
 include::releasenotes/whatsnew-18.adoc[]
+include::releasenotes/changelog-18.adoc[]
 
 include::releasenotes/whatsnew-17.adoc[]
 include::releasenotes/changelog-17.adoc[]

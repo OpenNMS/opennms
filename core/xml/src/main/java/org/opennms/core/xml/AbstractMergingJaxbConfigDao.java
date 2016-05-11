@@ -125,7 +125,15 @@ public abstract class AbstractMergingJaxbConfigDao<K, V> {
             }
             m_object = mergedObject;
             m_lastUpdate = System.currentTimeMillis();
+            onConfigUpdated(m_object);
         }
+    }
+
+    /**
+     * Called when the configuration updated was updated.
+     */
+    public void onConfigUpdated(V object) {
+        // Do nothing by default, allows subclasses to hook in.
     }
 
     private void reconfigureDaos() {

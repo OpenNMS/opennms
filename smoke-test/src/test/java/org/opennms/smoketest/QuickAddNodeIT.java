@@ -95,13 +95,13 @@ public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
     protected WebElement enterTextAutocomplete(final By selector, final CharSequence... text) throws InterruptedException {
         final WebElement element = m_driver.findElement(selector);
         element.click();
-        Thread.sleep(200);
+        Thread.sleep(500);
         element.sendKeys(text);
-        Thread.sleep(10);
+        Thread.sleep(100);
         element.sendKeys(Keys.ENTER);
-        Thread.sleep(10);
+        Thread.sleep(100);
         try {
-            setImplicitWait(2, TimeUnit.SECONDS);
+            setImplicitWait(5, TimeUnit.SECONDS);
             final List<WebElement> matching = m_driver.findElements(By.cssSelector("a[title='"+text+"']"));
             if (!matching.isEmpty()) {
                 findElementByCss("a[title='"+text+"']").click();
