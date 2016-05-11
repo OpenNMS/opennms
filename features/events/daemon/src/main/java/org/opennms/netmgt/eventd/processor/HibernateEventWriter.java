@@ -141,21 +141,20 @@ public class HibernateEventWriter implements EventWriter {
             return;
         }
 
-        LOG.debug("HibernateEventWriter: processing {} nodeid: {} ipaddr: {} serviceid: {} time: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
+        LOG.debug("HibernateEventWriter: processing {}, nodeid: {}, ipaddr: {}, serviceid: {}, time: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
 
         try {
             insertEvent(eventHeader, event);
         } catch (DeadlockLoserDataAccessException e) {
             throw new EventProcessorException("Encountered deadlock when inserting event: " + event.toString(), e);
+        } catch (Throwable e) {
+            throw new EventProcessorException("Unexpected exception while storing event: " + event.toString(), e);
         }
     }
 
     /**
      * Insert values into the EVENTS table
      * 
-     * @exception java.sql.SQLException
-     *                Thrown if there is an error adding the event to the
-     *                database.
      * @exception java.lang.NullPointerException
      *                Thrown if a required resource cannot be found in the
      *                properties file.
