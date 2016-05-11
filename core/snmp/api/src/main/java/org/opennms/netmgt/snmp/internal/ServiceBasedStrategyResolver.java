@@ -53,6 +53,7 @@ public class ServiceBasedStrategyResolver implements StrategyResolver {
 		String key = props.get("implementation");
 		if (key == null) {
 			LOG.error("SnmpStrategy class published as service with out 'implementation' key.  Ignoring.");
+			return;
 		}
 		m_strategies.put(key, strategy);
 	}
