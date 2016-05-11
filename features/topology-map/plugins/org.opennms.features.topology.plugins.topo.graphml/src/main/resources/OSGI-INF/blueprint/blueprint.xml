@@ -6,14 +6,8 @@
     http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
     ">
 
-	<bean id="graphMLMetaInfo" class="org.opennms.features.topology.api.topo.DefaultMetaInfo">
-		<property name="name" value="GraphML Topology Provider"/>
-		<property name="description" value="This Topology Provider visualizes a predefined GraphML graph."/>
-	</bean>
-
 	<bean id="graphMLMetaTopologyFactory" class="org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLMetaTopologyFactory">
 		<property name="bundleContext" ref="blueprintBundleContext" />
-		<property name="metaInfo" ref="graphMLMetaInfo"/>
 	</bean>
 
     <service interface="org.osgi.service.cm.ManagedServiceFactory" ref="graphMLMetaTopologyFactory">

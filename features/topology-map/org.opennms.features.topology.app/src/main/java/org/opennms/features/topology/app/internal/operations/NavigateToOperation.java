@@ -70,6 +70,7 @@ public class NavigateToOperation implements Constants, Operation {
             .collect(Collectors.toList());
 
         // Find the graph provider for the target namespace
+
         final GraphProvider targetGraphProvider = metaTopologyProvider.getGraphProviders().stream()
             .filter(g -> g.getVertexNamespace().equals(targetNamespace))
             .findFirst().orElse(null);
@@ -78,26 +79,12 @@ public class NavigateToOperation implements Constants, Operation {
             return;
         }
 
-        // TODO: Can we consolidate the graph switching code used here and in MetaTopologySelectorOperation
-        // We automatically set status providers if there are any
-        /*
-        final StatusProvider vertexStatusProvider = findVertexStatusProvider(graphProvider);
-        container.setVertexStatusProvider(vertexStatusProvider);
+        operationContext.getGraphContainer().selectTopologyProvider(targetGraphProvider, false);
 
-        final EdgeStatusProvider edgeStatusProvider = findEdgeStatusProvider(graphProvider);
-        container.setEdgeStatusProvider(edgeStatusProvider);
-
-        final String preferredLayout = metaTopologyProvider.getPreferredLayout(graphProvider);
-        final LayoutAlgorithm layoutAlgorithm = findLayoutAlgorithm(preferredLayout);
-        if (layoutAlgorithm != null) {
-            container.setLayoutAlgorithm(layoutAlgorithm);
-        }
-        */
-
-        graphContainer.setBaseTopology(targetGraphProvider);
-        graphContainer.clearCriteria(); // Remove all criteria
+        // TODO: Consolidate that this is configurable and we can define a default SZL and default Focus per layer
         // TODO: Use a default SZL per graph?
-        graphContainer.setSemanticZoomLevel(1); // Reset the SZL to 1 
+        graphContainer.clearCriteria(); // Remove all criteria
+        graphContainer.setSemanticZoomLevel(1); // Reset the SZL to 1
 
         // Add the target vertices to focus
         targetVertices.stream().forEach(v -> graphContainer.addCriteria(new DefaultVertexHopCriteria(v)));

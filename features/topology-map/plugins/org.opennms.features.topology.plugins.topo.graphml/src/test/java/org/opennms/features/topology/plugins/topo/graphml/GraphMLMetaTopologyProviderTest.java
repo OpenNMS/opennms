@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.topo.graphml;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,6 +69,9 @@ public class GraphMLMetaTopologyProviderTest {
         // The first graph should be 'regions'
         GraphProvider regionsGraphProvider = it.next();
         assertEquals("acme:regions", regionsGraphProvider.getVertexNamespace());
+        assertEquals("regions", regionsGraphProvider.getTopologyProviderInfo().getName());
+        assertNull(metaTopoProvider.getPreferredLayout(regionsGraphProvider));
+        assertEquals(GraphMLTopologyProvider.DEFAULT_DESCRIPTION, regionsGraphProvider.getTopologyProviderInfo().getDescription());
         assertEquals(4, regionsGraphProvider.getVertexTotalCount());
         for (String region : Lists.newArrayList("north", "south", "east", "west")) {
             // Every vertex should link to 4 other vertices
@@ -78,6 +82,9 @@ public class GraphMLMetaTopologyProviderTest {
         // The second graph should be 'markets'
         GraphProvider marketsGraphProvider = it.next();
         assertEquals("acme:markets", marketsGraphProvider.getVertexNamespace());
+        assertEquals("Markets", marketsGraphProvider.getTopologyProviderInfo().getName());
+        assertEquals("The Markets Layer", marketsGraphProvider.getTopologyProviderInfo().getDescription());
+        assertEquals("Some Layout", metaTopoProvider.getPreferredLayout(marketsGraphProvider));
         assertEquals(16, marketsGraphProvider.getVertexTotalCount());
     }
 }

@@ -496,5 +496,10 @@ public class OSGiVerticesUpdateManagerTest {
         public void setMetaTopologyProvider(MetaTopologyProvider metaGraphProvider) {
             // pass
         }
+
+        @Override
+        public void selectTopologyProvider(GraphProvider topologyProvider, boolean resetCriteriaAndSzl) {
+
+        }
     }
 }

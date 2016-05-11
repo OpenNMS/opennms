@@ -36,12 +36,15 @@ public class GraphMLReaderTest {
     @Test
     public void verifyRead() throws InvalidGraphException {
         GraphML graphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph.xml"));
-        Assert.assertEquals(1, graphML.getGraphs().size());
+        Assert.assertEquals(2, graphML.getGraphs().size());
 
         GraphMLGraph graph = graphML.getGraphs().get(0);
+        Assert.assertEquals("regions", graph.getId());
+        Assert.assertEquals(4, graph.getNodes().size());
 
-        Assert.assertEquals(20, graph.getEdges().size());
-        Assert.assertEquals(25, graph.getNodes().size());
+        graph = graphML.getGraphs().get(1);
+        Assert.assertEquals("markets", graph.getId());
+        Assert.assertEquals(16, graph.getNodes().size());
 
     }
 }

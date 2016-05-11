@@ -36,9 +36,11 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SimpleSearchProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.graphml.model.GraphML;
-import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLNode;
 
+/**
+ * {@link org.opennms.features.topology.api.topo.SearchProvider} for GraphML definitions.
+ * The provider searches for matching vertices in ALL graphs, not only the current visible one.
+ */
 public class GraphMLSearchProvider extends SimpleSearchProvider {
 
     private final GraphMLTopologyProvider graphMLTopologyProvider;
@@ -55,17 +57,11 @@ public class GraphMLSearchProvider extends SimpleSearchProvider {
     @Override
     public List<? extends VertexRef> queryVertices(SearchQuery searchQuery, GraphContainer container) {
         final List<GraphMLVertex> matchingVertices = new ArrayList<>();
-        final GraphML graphML = graphMLTopologyProvider.getGraphML();
-        if (graphML != null) {
-            // Search all of the nodes on all the graphs
-            graphML.getGraphs().stream()
-                .map(g -> g.getNodes())
-                .flatMap(l -> l.stream())
-                .filter(n -> matches(searchQuery, n))
-                .sorted((n1, n2) -> n1.getId().compareTo(n2.getId()))
-                .map(n -> new GraphMLVertex(graphMLTopologyProvider.getVertexNamespace(), n))
-                .forEach(v -> matchingVertices.add(v));
-        }
+        graphMLTopologyProvider.getVertices().stream()
+            .map(v -> (GraphMLVertex) v)
+            .filter(v -> matches(searchQuery, v))
+            .sorted((v1, v2) -> v1.getId().compareTo(v2.getId()))
+            .forEach(v -> matchingVertices.add(v));
         return matchingVertices;
     }
 
@@ -73,14 +69,14 @@ public class GraphMLSearchProvider extends SimpleSearchProvider {
      * Returns true if either if either the graph node's id, or the values of any
      * of the graph node's properties contain the query string.
      */
-    private static boolean matches(SearchQuery searchQuery, GraphMLNode graphMLNode) {
+    private static boolean matches(SearchQuery searchQuery, GraphMLVertex graphMLVertex) {
         final String qs = searchQuery.getQueryString().toLowerCase();
-        for (Object propValue : graphMLNode.getProperties().values()) {
+        for (Object propValue : graphMLVertex.getProperties().values()) {
             final String value = propValue != null ? propValue.toString() : "";
             if (value.toLowerCase().contains(qs)) {
                 return true;
             }
         }
-        return graphMLNode.getId().toLowerCase().contains(qs);
+        return graphMLVertex.getId().toLowerCase().contains(qs);
     }
 }

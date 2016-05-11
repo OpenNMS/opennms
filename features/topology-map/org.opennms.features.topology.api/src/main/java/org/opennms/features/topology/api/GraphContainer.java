@@ -63,6 +63,13 @@ public interface GraphContainer extends DisplayState {
     // clears all criteria which are currently sets
     void clearCriteria();
 
+    /**
+     * Selects the specified {@link GraphProvider}.
+     *
+     * @param topologyProvider the provider to select.
+     */
+    void selectTopologyProvider(GraphProvider topologyProvider, boolean resetCriteriaAndSzl);
+
     void addChangeListener(ChangeListener listener);
 
     void removeChangeListener(ChangeListener listener);

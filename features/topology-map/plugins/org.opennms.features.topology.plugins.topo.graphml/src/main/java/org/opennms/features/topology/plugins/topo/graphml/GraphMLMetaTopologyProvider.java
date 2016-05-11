@@ -39,9 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.topo.DefaultMetaInfo;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.MetaInfo;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.graphml.model.GraphML;
@@ -60,9 +58,10 @@ import com.google.common.collect.Maps;
 public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyProvider.class);
 
-    private MetaInfo metaInfo = new DefaultMetaInfo();
     private File graphMLFile;
     private final Map<String, GraphProvider> graphsByNamespace = Maps.newLinkedHashMap();
+    private final Map<String, GraphMLTopologyProvider> rawGraphsByNamespace = Maps.newLinkedHashMap();
+    private final Map<String, String> preferredLayoutByNamespace = Maps.newLinkedHashMap();
     private final Map<VertexRef, List<VertexRef>> oppositeVertices = Maps.newLinkedHashMap();
 
     private VertexRef getVertex(org.opennms.features.topology.plugins.topo.graphml.model.GraphMLNode node) {
@@ -89,9 +88,10 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
 
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
                 final GraphMLTopologyProvider topoProvider = new GraphMLTopologyProvider(eachGraph);
-                topoProvider.setMetaInfo(metaInfo);
                 final VertexHopGraphProvider vertexHopGraphProvider = new VertexHopGraphProvider(topoProvider);
                 graphsByNamespace.put(topoProvider.getVertexNamespace(), vertexHopGraphProvider);
+                rawGraphsByNamespace.put(topoProvider.getVertexNamespace(), topoProvider);
+                preferredLayoutByNamespace.put(topoProvider.getVertexNamespace(), eachGraph.getProperty(GraphMLProperties.PREFERRED_LAYOUT));
             }
 
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
@@ -125,7 +125,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
 
     @Override
     public String getPreferredLayout(GraphProvider graphProvider) {
-        return null;
+        return preferredLayoutByNamespace.get(graphProvider.getVertexNamespace());
     }
 
     @Override
@@ -137,11 +137,6 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
         this.graphMLFile = filename != null ? new File(filename) : null;
     }
 
-    public void setMetaInfo(MetaInfo metaInfo) {
-        this.metaInfo = metaInfo;
-    }
-
-    // TODO Validate namespace?
     private void validate(GraphML graphML) throws InvalidGraphException {
         final List<String> nodeIds = new ArrayList<>();
         final List<String> edgeIds = new ArrayList<>();
@@ -170,5 +165,16 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
                 edgeIds.add(eachEdge.getId());
             }
         }
+    }
+
+    /**
+     * Returns the RAW {@link GraphMLTopologyProvider} and NOT the wrapped one.
+     * This is sometimes required to have full access to the Topology Provider, e.g. to get all vertices (usually they would be limited by the SZL)
+     *
+     * @param vertexNamespace the namespace of the {@link GraphProvider}
+     * @return the RAW {@link GraphMLTopologyProvider} and NOT the wrapped one.
+     */
+    public GraphMLTopologyProvider getRawTopologyProvider(String vertexNamespace) {
+        return rawGraphsByNamespace.get(vertexNamespace);
     }
 }

@@ -18,26 +18,43 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
+ * http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * OpenNMS(R) Licensing <license@opennms.org>
+ * http://www.opennms.org/
+ * http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.features.topology.api.topo;
 
-import java.util.Collection;
+public class DefaultTopologyProviderInfo implements TopologyProviderInfo {
+    protected String name = "Undefined";
+    protected String description = "No description available";
 
-public interface MetaTopologyProvider {
+    public DefaultTopologyProviderInfo() {
+    }
 
-    GraphProvider getDefaultGraphProvider();
+    public DefaultTopologyProviderInfo(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 
-    Collection<GraphProvider> getGraphProviders();
+    @Override
+    public String getName() {
+        return name;
+    }
 
-    String getPreferredLayout(GraphProvider graphProvider);
+    @Override
+    public String getDescription() {
+        return description;
+    }
 
-    Collection<VertexRef> getOppositeVertices(VertexRef vertexRef);
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

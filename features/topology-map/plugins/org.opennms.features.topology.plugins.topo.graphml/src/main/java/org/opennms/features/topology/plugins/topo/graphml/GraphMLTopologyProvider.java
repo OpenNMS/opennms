@@ -28,9 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
-import java.io.File;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -40,27 +38,21 @@ import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.graphml.model.GraphML;
 import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLGraph;
 import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLNode;
-import org.opennms.features.topology.plugins.topo.graphml.model.InvalidGraphException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
 
 public class GraphMLTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyProvider.class);
+    protected static final String DEFAULT_DESCRIPTION = "This Topology Provider visualizes a predefined GraphML graph.";
 
-    private GraphML graphML;
-
-    private File graphMLFile;
-
-    public GraphMLTopologyProvider(String namespace) {
-        super(namespace);
+    private static TopologyProviderInfo createTopologyProviderInfo(GraphMLGraph graph) {
+        String name = graph.getProperty(GraphMLProperties.LABEL, graph.getId());
+        String description = graph.getProperty(GraphMLProperties.DESCRIPTION, DEFAULT_DESCRIPTION);
+        return new DefaultTopologyProviderInfo(name, description);
     }
 
     public GraphMLTopologyProvider(GraphMLGraph graph) {
@@ -79,6 +71,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
             GraphMLEdge newEdge = new GraphMLEdge(eachEdge, sourceVertex, targetVertex);
             addEdges(newEdge);
         }
+        setTopologyProviderInfo(createTopologyProviderInfo(graph));
     }
 
     @Override
@@ -112,9 +105,5 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     @Override
     public boolean contributesTo(ContentType type) {
         return false;
-    }
-
-    public GraphML getGraphML() {
-        return graphML;
     }
 }

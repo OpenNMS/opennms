@@ -7,7 +7,7 @@
 
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory"/>
 
-    <bean id="vmwareMetaInfo" class="org.opennms.features.topology.api.topo.DefaultMetaInfo">
+    <bean id="vmwareTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
         <property name="name" value="VMware Topology Provider"/>
         <property name="description" value="The VMware Topology Provider displays the infrastructure information gathered by the VMware Provisioning process."/>
     </bean>
@@ -16,7 +16,7 @@
           class="org.opennms.features.topology.plugins.topo.vmware.internal.VmwareTopologyProvider">
         <property name="nodeDao" ref="nodeDao"/>
         <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
-        <property name="metaInfo" ref="vmwareMetaInfo"/>
+        <property name="topologyProviderInfo" ref="vmwareTopologyProviderInfo"/>
     </bean>
 
     <service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="vmwareTopologyProvider">

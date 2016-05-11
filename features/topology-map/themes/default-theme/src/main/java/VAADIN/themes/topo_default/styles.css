@@ -443,22 +443,31 @@ div.v-table-header-wrap {
 
 /** Toolbar */
 .toolbar {
-    background-color: #ffffff;
+    background-color: #f9f9f9;
     height: 100%;
-    max-width: 150px;
+    max-width: 250px;
     overflow-y: auto;
     z-index: 10000;
     border-left: 1px solid #323336;
 }
 
-.toolbar-component {
+.toolbar .layout.selected {
+    background-color: #4d9c29;
+    color: #fff;
+}
+
+.toolbar .layout:hover {
+    cursor: pointer;
+}
+
+.toolbar .toolbar-component {
     position: absolute;
     width: 50px;
     right: 100%;
     top: 25px;
 }
 
-.toolbar-component-group {
+.toolbar .toolbar-component-group {
     width: 50px;
     background-color: #323336;
     color: #d1d3d6;
@@ -466,7 +475,7 @@ div.v-table-header-wrap {
     margin: 8px;
 }
 
-.toolbar-group-item {
+.toolbar .toolbar-group-item {
     border-style: none;
     background-image: none !important;
     text-align: center;
@@ -476,12 +485,13 @@ div.v-table-header-wrap {
     font-size: 150%;
 }
 
-.toolbar-group-item.selected, .toolbar-group-item.selected:hover {
+.toolbar .toolbar-group-item.selected,
+.toolbar .toolbar-group-item.selected:hover {
     background-color: #4d9c29;
     color: #fff;
 }
 
-.toolbar-group-item:hover {
+.toolbar .toolbar-group-item:hover {
     color: #4d9c29;
     cursor: pointer;
 }

@@ -56,8 +56,7 @@ public class MetaTopologySelector {
         try {
             LOG.debug("Adding meta topology provider: " + metaTopologyProvider);
 
-            MetaTopologySelectorOperation operation = new MetaTopologySelectorOperation(m_bundleContext,
-                    metaTopologyProvider, metaData);
+            MetaTopologySelectorOperation operation = new MetaTopologySelectorOperation(metaTopologyProvider, metaData);
 
             m_operations.put(metaTopologyProvider, operation);
 

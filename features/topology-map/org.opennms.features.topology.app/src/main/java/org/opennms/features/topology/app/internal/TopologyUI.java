@@ -67,23 +67,23 @@ import org.opennms.features.topology.api.info.InfoPanelItem;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.DefaultMetaInfo;
-import org.opennms.features.topology.api.topo.MetaInfo;
+import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
+import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
-import org.opennms.features.topology.app.internal.operations.RedoLayoutOperation;
 import org.opennms.features.topology.app.internal.operations.MetaTopologySelectorOperation;
+import org.opennms.features.topology.app.internal.operations.RedoLayoutOperation;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
-import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
-import org.opennms.features.topology.app.internal.support.IonicIcons;
 import org.opennms.features.topology.app.internal.ui.HudDisplay;
 import org.opennms.features.topology.app.internal.ui.InfoPanel;
 import org.opennms.features.topology.app.internal.ui.NoContentAvailableWindow;
 import org.opennms.features.topology.app.internal.ui.SearchBox;
+import org.opennms.features.topology.app.internal.ui.ToolbarPanel;
+import org.opennms.features.topology.app.internal.ui.ToolbarPanelController;
 import org.opennms.osgi.EventConsumer;
 import org.opennms.osgi.OnmsServiceManager;
 import org.opennms.osgi.VaadinApplicationContext;
@@ -104,9 +104,7 @@ import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.data.Property;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.DefaultErrorHandler;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.RequestHandler;
@@ -116,11 +114,7 @@ import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -130,7 +124,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
@@ -193,7 +186,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
      * Class to handle Request Parameters, such as SZL, Vertices in Focus, Layout Selection, Graph Provider
      * Selection, Status Provider selection, etc...
      */
-    private class TopologyUIRequestHandler implements RequestHandler {
+    public class TopologyUIRequestHandler implements RequestHandler {
 
         private final List<RequestParameterHandler> requestHandlerList;
 
@@ -202,7 +195,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         private static final String PARAMETER_FOCUS_VERTICES = "focus-vertices";
         private static final String PARAMETER_SEMANTIC_ZOOM_LEVEL = "szl";
         private static final String PARAMETER_GRAPH_PROVIDER = "provider";
-        protected static final String PARAMETER_HISTORY_FRAGMENT = "ui-fragment";
+        public static final String PARAMETER_HISTORY_FRAGMENT = "ui-fragment";
 
         private TopologyUIRequestHandler() {
             requestHandlerList = Lists.newArrayList(
@@ -377,16 +370,16 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         };
 
         // Panel Item to visualize the meta info
-        private final InfoPanelItem metaInfoPanelItem = new InfoPanelItem() {
+        private final InfoPanelItem topologyProviderInfoPanelItem = new InfoPanelItem() {
 
-            private MetaInfo getMetaInfo() {
-                MetaInfo metaInfo = getGraphContainer().getBaseTopology().getMetaInfo();
+            private TopologyProviderInfo getMetaInfo() {
+                TopologyProviderInfo topologyProviderInfo = getGraphContainer().getBaseTopology().getTopologyProviderInfo();
 
-                if (Objects.isNull(metaInfo)) {
-                    metaInfo = new DefaultMetaInfo();
+                if (Objects.isNull(topologyProviderInfo)) {
+                    topologyProviderInfo = new DefaultTopologyProviderInfo();
                 }
 
-                return metaInfo;
+                return topologyProviderInfo;
             }
 
             @Override
@@ -443,7 +436,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         private List<Component> getInfoPanelComponents() {
             final List<InfoPanelItem> infoPanelItems = findInfoPanelItems();
             infoPanelItems.add(selectionContextPanelItem); // manually add this, as it is not exposed via osgi
-            infoPanelItems.add(metaInfoPanelItem); // same here
+            infoPanelItems.add(topologyProviderInfoPanelItem); // same here
             return infoPanelItems.stream()
                     .filter(item -> {
                         try {
@@ -519,7 +512,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private final IconRepositoryManager m_iconRepositoryManager;
     private WidgetManager m_widgetManager;
     private Component m_mapLayout;
-    private final Label m_zoomLevelLabel = new Label();
     private final HistoryManager m_historyManager;
     private String m_headerHtml;
     private boolean m_showHeader = true;
@@ -527,15 +519,13 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private OnmsServiceManager m_serviceManager;
     private VaadinApplicationContext m_applicationContext;
     private VerticesUpdateManager m_verticesUpdateManager;
-    private Button m_panBtn;
-    private Button m_selectBtn;
-    private Button m_szlOutBtn;
     int m_settingFragment = 0;
     private SearchBox m_searchBox;
     private TabSheet tabSheet;
     private BundleContext m_bundlecontext;
     private final Object m_currentHudDisplayLock = new Object();
     private HudDisplay m_currentHudDisplay;
+    private ToolbarPanel m_toolbarPanel;
 
     private String getHeader(HttpServletRequest request) throws Exception {
         if(m_headerProvider == null) {
@@ -644,6 +634,10 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_selectionManager.addSelectionListener(infoPanelItemProvider);
         m_commandManager.addMenuItemUpdateListener(infoPanelItemProvider);
         m_graphContainer.addChangeListener(infoPanelItemProvider);
+
+        // Register the Toolbar Panel
+        m_graphContainer.addChangeListener(m_toolbarPanel);
+        m_selectionManager.addSelectionListener(m_toolbarPanel);
     }
 
     private boolean noAdditionalFocusCriteria() {
@@ -736,209 +730,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
     }
 
-    private Component createToolbar() {
-        final Property<Double> scale = m_graphContainer.getScaleProperty();
-        final Button showFocusVerticesBtn = new Button(FontAwesomeIcons.Icon.eye_open.variant());
-        showFocusVerticesBtn.setDescription("Toggle Highlight Focus Nodes");
-        showFocusVerticesBtn.setHtmlContentAllowed(true);
-        showFocusVerticesBtn.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                if(showFocusVerticesBtn.getCaption().equals(FontAwesomeIcons.Icon.eye_close.variant())){
-                    showFocusVerticesBtn.setCaption(FontAwesomeIcons.Icon.eye_open.variant());
-                } else {
-                    showFocusVerticesBtn.setCaption(FontAwesomeIcons.Icon.eye_close.variant());
-                }
-                m_topologyComponent.getState().setHighlightFocus(!m_topologyComponent.getState().isHighlightFocus());
-                m_topologyComponent.updateGraph();
-            }
-        });
-
-        final Button magnifyBtn = new Button();
-        magnifyBtn.setIcon(FontAwesome.PLUS);
-        magnifyBtn.setDescription("Magnify");
-        magnifyBtn.addClickListener((ClickListener) event -> scale.setValue(Math.min(1, scale.getValue() + 0.25)));
-
-        final Button demagnifyBtn = new Button();
-        demagnifyBtn.setIcon(FontAwesome.MINUS);
-        demagnifyBtn.setDescription("Demagnify");
-        demagnifyBtn.addClickListener((ClickListener) event -> scale.setValue(Math.max(0, scale.getValue() - 0.25)));
-
-        m_szlOutBtn = new Button();
-        m_szlOutBtn.setId("szlOutBtn");
-        m_szlOutBtn.setIcon(FontAwesome.ANGLE_DOWN);
-        m_szlOutBtn.setDescription("Decrease Semantic Zoom Level");
-        m_szlOutBtn.setEnabled(m_graphContainer.getSemanticZoomLevel() > 0);
-        m_szlOutBtn.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                int szl = m_graphContainer.getSemanticZoomLevel();
-                if (szl > 0) {
-                    setSemanticZoomLevel(szl - 1);
-                    saveHistory();
-                }
-            }
-        });
-
-        final Button szlInBtn = new Button();
-        szlInBtn.setId("szlInBtn");
-        szlInBtn.setIcon(FontAwesome.ANGLE_UP);
-        szlInBtn.setDescription("Increase Semantic Zoom Level");
-        szlInBtn.addClickListener(new ClickListener() {
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                setSemanticZoomLevel(m_graphContainer.getSemanticZoomLevel() + 1);
-                saveHistory();
-            }
-        });
-
-        m_zoomLevelLabel.setId("szlInputLabel");
-
-        m_panBtn = new Button();
-        m_panBtn.setIcon(FontAwesome.ARROWS);
-        m_panBtn.setDescription("Pan Tool");
-        m_panBtn.addStyleName("selected");
-
-        m_selectBtn = new Button();
-        m_selectBtn.setIcon(IonicIcons.ANDROID_EXPAND);
-        m_selectBtn.setDescription("Selection Tool");
-        m_selectBtn.setStyleName("toolbar-button");
-        m_selectBtn.addClickListener(new ClickListener() {
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                m_selectBtn.addStyleName("selected");
-                m_panBtn.removeStyleName("selected");
-                m_topologyComponent.setActiveTool("select");
-            }
-        });
-
-        m_panBtn.addClickListener(new ClickListener() {
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                m_panBtn.addStyleName("selected");
-                m_selectBtn.removeStyleName("selected");
-                m_topologyComponent.setActiveTool("pan");
-            }
-        });
-
-        Button showAllMapBtn = new Button(FontAwesomeIcons.Icon.globe.variant());
-        showAllMapBtn.setHtmlContentAllowed(true);
-        showAllMapBtn.setDescription("Show Entire Map");
-        showAllMapBtn.addClickListener((ClickListener) event -> m_topologyComponent.showAllMap());
-
-        Button centerSelectionBtn = new Button(FontAwesomeIcons.Icon.location_arrow.variant());
-        centerSelectionBtn.setHtmlContentAllowed(true);
-        centerSelectionBtn.setDescription("Center On Selection");
-        centerSelectionBtn.addClickListener((ClickListener) event -> m_topologyComponent.centerMapOnSelection());
-
-        Button shareButton = new Button("", FontAwesome.SHARE_SQUARE_O);
-        shareButton.setDescription("Share");
-        shareButton.addClickListener((x) -> {
-            // create the share link
-            String fragment = getPage().getLocation().getFragment();
-            String url = getPage().getLocation().toString().replace("#" + getPage().getLocation().getFragment(), "");
-            String shareLink = String.format("%s?%s=%s", url, TopologyUIRequestHandler.PARAMETER_HISTORY_FRAGMENT, fragment);
-
-            // Create the Window
-            Window shareWindow = new Window();
-            shareWindow.setCaption("Share Link");
-            shareWindow.setModal(true);
-            shareWindow.setClosable(true);
-            shareWindow.setResizable(false);
-            shareWindow.setWidth(400, Unit.PIXELS);
-
-            TextArea shareLinkField = new TextArea();
-            shareLinkField.setValue(shareLink);
-            shareLinkField.setReadOnly(true);
-            shareLinkField.setRows(3);
-            shareLinkField.setWidth(100, Unit.PERCENTAGE);
-
-            // Close Button
-            Button close = new Button("Close");
-            close.setClickShortcut(ShortcutAction.KeyCode.ESCAPE, null);
-            close.addClickListener(event -> shareWindow.close());
-
-            // Layout for Buttons
-            HorizontalLayout buttonLayout = new HorizontalLayout();
-            buttonLayout.setMargin(true);
-            buttonLayout.setSpacing(true);
-            buttonLayout.setWidth("100%");
-            buttonLayout.addComponent(close);
-            buttonLayout.setComponentAlignment(close, Alignment.BOTTOM_RIGHT);
-
-            // Content Layout
-            VerticalLayout verticalLayout = new VerticalLayout();
-            verticalLayout.setMargin(true);
-            verticalLayout.setSpacing(true);
-            verticalLayout.addComponent(new Label("Please use the following link to share the current view with others."));
-            verticalLayout.addComponent(shareLinkField);
-            verticalLayout.addComponent(buttonLayout);
-
-            shareWindow.setContent(verticalLayout);
-
-            getUI().addWindow(shareWindow);
-        });
-
-        // Refresh Button
-        Button refreshButton = new Button();
-        refreshButton.setIcon(FontAwesome.REFRESH);
-        refreshButton.setDescription("Refresh Now");
-        refreshButton.addClickListener((event) -> new DynamicUpdateRefresher().refreshUI());
-
-        //Vertical Layout for all tools on right side
-        Button layerButton = new Button();
-
-        // Actual Layout for the Toolbar
-        CssLayout contentLayout = new CssLayout();
-        contentLayout.addStyleName("toolbar-component");
-        contentLayout.addComponent(createGroup(szlInBtn, m_zoomLevelLabel, m_szlOutBtn));
-        contentLayout.addComponent(createGroup(refreshButton, centerSelectionBtn, showAllMapBtn, layerButton, showFocusVerticesBtn));
-        contentLayout.addComponent(createGroup(m_panBtn, m_selectBtn));
-        contentLayout.addComponent(createGroup(magnifyBtn, demagnifyBtn));
-        contentLayout.addComponent(createGroup(shareButton));
-
-        // Dummy Layer
-        VerticalLayout layerLayout = new VerticalLayout();
-        layerLayout.setSpacing(true);
-        layerLayout.setMargin(true);
-        layerLayout.addComponent(new Label("Layer Dummy 1"));
-        layerLayout.addComponent(new Label("Layer Dummy 2"));
-        layerLayout.addComponent(new Label("Layer Dummy 3"));
-
-        // Toolbar
-        CssLayout toolbarLayout = new CssLayout();
-        toolbarLayout.addStyleName("toolbar");
-        toolbarLayout.addComponent(contentLayout);
-
-        // Layer Button behaviour
-        layerButton.setIcon(FontAwesome.BARS);
-        layerButton.addClickListener((event) -> {
-            if (layerButton.getStyleName().contains("collapsed")) {
-                layerButton.removeStyleName("collapsed");
-                toolbarLayout.removeComponent(layerLayout);
-            } else {
-                layerButton.addStyleName("collapsed");
-                toolbarLayout.addComponent(layerLayout);
-            }
-        });
-
-        return toolbarLayout;
-    }
-
-    private CssLayout createGroup(Component... components) {
-        CssLayout group = new CssLayout();
-        group.addStyleName("toolbar-component-group");
-        group.setSizeFull();
-        for (Component eachComponent : components) {
-            eachComponent.setPrimaryStyleName("toolbar-group-item");
-            group.addComponent(eachComponent);
-        }
-        return group;
-    }
-
     private Component createMapLayout() {
         // Topology (Map) Component
         m_topologyComponent = new TopologyComponent(m_graphContainer, m_iconRepositoryManager, this);
@@ -953,7 +744,54 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_infoPanel = new InfoPanel(m_searchBox);
 
         // Toolbar
-        Component toolbar = createToolbar();
+        m_toolbarPanel = new ToolbarPanel(new ToolbarPanelController() {
+            @Override
+            public void refreshUI() {
+                new TopologyUI.DynamicUpdateRefresher().refreshUI();
+            }
+
+            @Override
+            public void saveHistory() {
+                TopologyUI.this.saveHistory();
+            }
+
+            @Override
+            public void setActiveTool(ActiveTool activeTool) {
+                Objects.requireNonNull(activeTool);
+                m_topologyComponent.setActiveTool(activeTool.name());
+            }
+
+            @Override
+            public void showAllMap() {
+                m_topologyComponent.showAllMap();
+            }
+
+            @Override
+            public void centerMapOnSelection() {
+                m_topologyComponent.centerMapOnSelection();
+            }
+
+            @Override
+            public void toggleHighlightFocus() {
+                m_topologyComponent.getState().setHighlightFocus(!m_topologyComponent.getState().isHighlightFocus());
+                m_topologyComponent.updateGraph();
+            }
+
+            @Override
+            public void setSemanticZoomLevel(int semanticZoomLevel) {
+                m_graphContainer.setSemanticZoomLevel(semanticZoomLevel);
+                m_graphContainer.redoLayout();
+            }
+
+            public int getSemanticZoomLevel() {
+                return m_graphContainer.getSemanticZoomLevel();
+            }
+
+            @Override
+            public Property<Double> getScaleProperty() {
+                return m_graphContainer.getScaleProperty();
+            }
+        });
 
         // Map Layout (we need to wrap it in an absolute layout otherwise it shows up twice on the topology map)
         AbsoluteLayout mapLayout = new AbsoluteLayout();
@@ -964,7 +802,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         layout.addStyleName("map-layout");
         layout.addComponent(m_infoPanel);
         layout.addComponent(mapLayout);
-        layout.addComponent(toolbar);
+        layout.addComponent(m_toolbarPanel);
         layout.setExpandRatio(mapLayout, 1);
         layout.setSizeFull();
 
@@ -1227,8 +1065,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         }
 
-        m_zoomLevelLabel.setValue(String.valueOf(graphContainer.getSemanticZoomLevel()));
-        m_szlOutBtn.setEnabled(graphContainer.getSemanticZoomLevel() > 0);
         updateTabVisibility();
         updateMenuItems();
 
@@ -1250,13 +1086,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         }
         return count;
-    }
-
-    private void setSemanticZoomLevel(int semanticZoomLevel) {
-        m_zoomLevelLabel.setValue(String.valueOf(semanticZoomLevel));
-        m_szlOutBtn.setEnabled(semanticZoomLevel > 0);
-        m_graphContainer.setSemanticZoomLevel(semanticZoomLevel);
-        m_graphContainer.redoLayout();
     }
 
     @Override
@@ -1291,13 +1120,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         }
 
-        //After selection always set the pantool back to active tool
-        if(m_panBtn != null && !m_panBtn.getStyleName().contains("selected")) {
-            m_panBtn.addStyleName("selected");
-        }
-        if(m_selectBtn != null && m_selectBtn.getStyleName().contains("selected")) {
-            m_selectBtn.removeStyleName("selected");
-        }
         if(m_topologyComponent != null) m_topologyComponent.setActiveTool("pan");
         saveHistory();
     }
