@@ -30,7 +30,7 @@ package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -55,9 +55,8 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.BeanInfo;
-import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
+import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
-import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.dao.jmx.JmxConfigDaoJaxb;
 import org.opennms.netmgt.jmx.connection.JmxConnectors;
 import org.slf4j.Logger;
@@ -142,6 +141,7 @@ public class JMXCollectorTest {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public <V> V getAttribute(String property) {
             return (V) attributes.get(property);
         }
@@ -154,6 +154,7 @@ public class JMXCollectorTest {
     }
 
     private static class CollectionResult {
+        @SuppressWarnings("unused")
         private final SingleResourceCollectionSet resourceCollectionSet;
         private final JMXCollectionResource jmxCollectionResource;;
 
@@ -172,13 +173,17 @@ public class JMXCollectorTest {
 
     private JMXNodeInfo jmxNodeInfo;
 
-    private JMXDataCollectionConfigFactory jmxConfigFactory;
+    private JMXDataCollectionConfigDao jmxDataCollectionConfigDao;
 
     @Before
     public void setUp() throws Exception {
+        System.setProperty("opennms.home", new File("src/test/resources").getAbsolutePath());
+        jmxDataCollectionConfigDao = new JMXDataCollectionConfigDao();
+
         jmxNodeInfo = new JMXNodeInfo(0);
         jmxCollector = new JMXCollectorImpl();
-        ((JMXCollectorImpl)jmxCollector).setJmxConfigDao(new JmxConfigDaoJaxb());
+        jmxCollector.setJmxConfigDao(new JmxConfigDaoJaxb());
+        jmxCollector.setJmxDataCollectionConfigDao(jmxDataCollectionConfigDao);
         platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
         ObjectName objectName = new ObjectName("org.opennms.netmgt.collectd.jmxhelper:type=JmxTest");
         JmxTestMBean testMBean = new JmxTest();
@@ -186,11 +191,6 @@ public class JMXCollectorTest {
 
         collectionAgent = new DummyCollectionAgent();
         collectionAgent.setAttribute("org.opennms.netmgt.collectd.JMXCollector.nodeInfo", jmxNodeInfo);
-
-        FileInputStream configFileStream = new FileInputStream("src/test/resources/etc/JmxCollectorConfigTest.xml");
-        logger.debug("ConfigFileStream check '{}'", configFileStream.available());
-        jmxConfigFactory = new JMXDataCollectionConfigFactory(configFileStream);
-        JMXDataCollectionConfigFactory.setInstance(jmxConfigFactory);
     }
 
     @After
@@ -285,12 +285,12 @@ public class JMXCollectorTest {
     }
 
     private Map<String, JMXDataSource> generateDataSourceMap(final String collectionName, final Map<String, List<Attrib>> attributeMap) {
-        return JMXCollector.buildDataSourceList(collectionName, attributeMap);
+        return JMXCollector.buildDataSourceList(jmxDataCollectionConfigDao, collectionName, attributeMap);
     }
 
     private CollectionResult collect(String collectionName) {
-        jmxNodeInfo.setMBeans(jmxConfigFactory.getMBeanInfo(collectionName));
-        jmxNodeInfo.setDsMap(generateDataSourceMap(collectionName, jmxConfigFactory.getAttributeMap(collectionName, "", "")));
+        jmxNodeInfo.setMBeans(jmxDataCollectionConfigDao.getMBeanInfo(collectionName));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(collectionName, jmxDataCollectionConfigDao.getAttributeMap(collectionName, "", "")));
         collectionAgent.setAttribute("collectionName", collectionName);
 
         //start collection
@@ -317,10 +317,6 @@ public class JMXCollectorTest {
         @Override
         protected JmxConnectors getConnectionName() {
             return JmxConnectors.platform;
-        }
-
-        protected void setJmxConfigDao(JmxConfigDao jmxConfigDao) {
-            this.m_jmxConfigDao = jmxConfigDao;
         }
     }
 }
