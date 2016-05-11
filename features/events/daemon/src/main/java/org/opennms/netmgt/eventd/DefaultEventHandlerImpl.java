@@ -118,9 +118,12 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                     LOG.debug("  iface = {}", event.getInterface());
                     LOG.debug("  svc   = {}", event.getService());
                     LOG.debug("  time  = {}", event.getTime());
-                    if (getPrettyParms(event).size() > 0) {
+                    // NMS-8413: I'm seeing a ConcurrentModificationException in the logs here,
+                    // copy the parm collection to avoid this
+                    List<Parm> parms = new ArrayList<>(event.getParmCollection());
+                    if (parms.size() > 0) {
                         LOG.debug("  parms {");
-                        for (final Parm parm : event.getParmCollection()) {
+                        for (final Parm parm : parms) {
                             if ((parm.getParmName() != null) && (parm.getValue().getContent() != null)) {
                                 LOG.debug("    ({}, {})", parm.getParmName().trim(), parm.getValue().getContent().trim());
                             }
@@ -144,17 +147,16 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
             }
         }
 
-        private List<String> getPrettyParms(final Event event) {
-            final List<String> parms = new ArrayList<>();
-            for (final Parm p : event.getParmCollection()) {
-                parms.add(p.getParmName() + "=" + p.getValue().getContent());
-            }
-            return parms;
-        }
-
     }
 
-    
+    private static List<String> getPrettyParms(final Event event) {
+        final List<String> parms = new ArrayList<>();
+        for (final Parm p : event.getParmCollection()) {
+            parms.add(p.getParmName() + "=" + p.getValue().getContent());
+        }
+        return parms;
+    }
+
     /**
      * <p>afterPropertiesSet</p>
      *
