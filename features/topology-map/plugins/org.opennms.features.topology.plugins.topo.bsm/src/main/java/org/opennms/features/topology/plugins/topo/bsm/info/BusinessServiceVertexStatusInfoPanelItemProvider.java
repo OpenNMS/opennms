@@ -34,7 +34,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.info.VertexInfoPanelItem;
+import org.opennms.features.topology.api.info.VertexInfoPanelItemProvider;
+import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
+import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
@@ -61,14 +63,14 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
 
-public class BusinessServiceVertexStatusInfoPanelItem extends VertexInfoPanelItem {
+public class BusinessServiceVertexStatusInfoPanelItemProvider extends VertexInfoPanelItemProvider {
 
     private BusinessServiceManager businessServiceManager;
     private BusinessServicesTopologyProvider businessServicesTopologyProvider;
 
     private final TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory;
 
-    public BusinessServiceVertexStatusInfoPanelItem(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
+    public BusinessServiceVertexStatusInfoPanelItemProvider(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
         this.transactionAwareBeanProxyFactory = transactionAwareBeanProxyFactory;
     }
 
@@ -80,22 +82,15 @@ public class BusinessServiceVertexStatusInfoPanelItem extends VertexInfoPanelIte
         this.businessServicesTopologyProvider = businessServicesTopologyProvider;
     }
 
-    @Override
-    protected boolean contributesTo(VertexRef vertexRef, GraphContainer container) {
-        return vertexRef instanceof BusinessServiceVertex;
-    }
-
-    @Override
-    protected Component getComponent(VertexRef ref, GraphContainer container) {
-        final BusinessServiceVertex vertex = (BusinessServiceVertex) ref;
-
+    private Component createComponent(BusinessServiceVertex vertex, GraphContainer container) {
         final FormLayout rootLayout = new FormLayout();
         rootLayout.setSizeFull();
         rootLayout.setSpacing(false);
         rootLayout.setMargin(false);
         rootLayout.addStyleName("severity");
 
-        final BusinessServiceStateMachine stateMachine = SimulationAwareStateMachineFactory.createStateMachine(businessServiceManager, container.getCriteria());
+        final BusinessServiceStateMachine stateMachine = SimulationAwareStateMachineFactory.createStateMachine(businessServiceManager,
+                                                                                                               container.getCriteria());
         final Status overallStatus = BusinessServicesStatusProvider.getStatus(stateMachine, vertex);
         rootLayout.addComponent(createStatusLabel("Overall", overallStatus));
 
@@ -104,9 +99,9 @@ public class BusinessServiceVertexStatusInfoPanelItem extends VertexInfoPanelIte
         final BusinessServiceGraph graph = stateMachine.getGraph();
         final BusinessService businessService = businessServiceManager.getBusinessServiceById(vertex.getServiceId());
         final Set<GraphVertex> impactingVertices = stateMachine.calculateImpacting(businessService)
-                                                                              .stream()
-                                                                              .map(e -> graph.getDest(e))
-                                                                              .collect(Collectors.toSet());
+                                                               .stream()
+                                                               .map(e -> graph.getDest(e))
+                                                               .collect(Collectors.toSet());
 
         for (final Edge edge : businessService.getEdges()) {
             // Get the topology vertex for the child to determine the display label
@@ -142,13 +137,16 @@ public class BusinessServiceVertexStatusInfoPanelItem extends VertexInfoPanelIte
     }
 
     @Override
-    protected String getTitle(VertexRef ref) {
-        return "Business Service Status";
+    protected boolean contributeTo(VertexRef vertexRef, GraphContainer container) {
+        return vertexRef instanceof BusinessServiceVertex;
     }
 
     @Override
-    public int getOrder() {
-        return 100;
+    protected InfoPanelItem createInfoPanelItem(VertexRef ref, GraphContainer graphContainer) {
+        return new DefaultInfoPanelItem()
+                .withTitle("Business Service Status")
+                .withOrder(100)
+                .withComponent(createComponent((BusinessServiceVertex) ref, graphContainer));
     }
 
     public static Label createStatusLabel(final String caption, final Status status) {

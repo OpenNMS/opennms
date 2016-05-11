@@ -32,7 +32,9 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.info.VertexInfoPanelItem;
+import org.opennms.features.topology.api.info.VertexInfoPanelItemProvider;
+import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
+import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.bsm.ReductionKeyVertex;
 import org.opennms.features.topology.plugins.topo.bsm.simulate.SetStatusToCriteria;
@@ -43,16 +45,9 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.NativeSelect;
 
-public class SimulationModeReductionKeyInfoPanelItem extends VertexInfoPanelItem {
+public class SimulationModeReductionKeyInfoPanelItemProvider extends VertexInfoPanelItemProvider {
 
-    @Override
-    public boolean contributesTo(VertexRef ref, GraphContainer container) {
-        return ref instanceof ReductionKeyVertex && SimulationAwareStateMachineFactory.isInSimulationMode(container.getCriteria());
-    }
-
-    @Override
-    public Component getComponent(VertexRef ref, GraphContainer container) {
-        final ReductionKeyVertex vertex = (ReductionKeyVertex)ref;
+    private Component createComponent(ReductionKeyVertex vertex, GraphContainer container) {
         final FormLayout formLayout = new FormLayout();
         formLayout.setSpacing(false);
         formLayout.setMargin(false);
@@ -76,7 +71,7 @@ public class SimulationModeReductionKeyInfoPanelItem extends VertexInfoPanelItem
             // The set of criteria may have changed since we last queried it above
             // do we issue try finding it again, instead of using the same existing object
             SetStatusToCriteria currentSetStatusTo = findCriteria(container, vertex);
-            Status selectedStatus = (Status)dropdown.getValue();
+            Status selectedStatus = (Status) dropdown.getValue();
             if (currentSetStatusTo != null) {
                 currentSetStatusTo.setStatus(selectedStatus);
             } else {
@@ -96,13 +91,15 @@ public class SimulationModeReductionKeyInfoPanelItem extends VertexInfoPanelItem
     }
 
     @Override
-    public String getTitle(VertexRef ref) {
-        return "Simulate";
+    protected boolean contributeTo(VertexRef ref, GraphContainer container) {
+        return ref instanceof ReductionKeyVertex && SimulationAwareStateMachineFactory.isInSimulationMode(container.getCriteria());
     }
 
-    @Override
-    public int getOrder() {
-        return 0;
+    protected InfoPanelItem createInfoPanelItem(VertexRef ref, GraphContainer container) {
+        return new DefaultInfoPanelItem()
+                .withOrder(0)
+                .withTitle("Simulate")
+                .withComponent(createComponent((ReductionKeyVertex) ref, container));
     }
 
     private static SetStatusToCriteria findCriteria(GraphContainer container, ReductionKeyVertex vertex) {

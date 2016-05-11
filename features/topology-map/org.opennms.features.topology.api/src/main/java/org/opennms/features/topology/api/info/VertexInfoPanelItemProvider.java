@@ -28,30 +28,24 @@
 
 package org.opennms.features.topology.api.info;
 
+import java.util.Collection;
+import java.util.Optional;
+
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.vaadin.ui.Component;
+public abstract class VertexInfoPanelItemProvider extends SingleSelectedInfoPanelItemProvider<VertexRef> {
 
-/**
- * A general item to show up in the info panel.
- */
-public interface InfoPanelItem extends java.lang.Comparable<InfoPanelItem> {
+    @Override
+    protected Optional<VertexRef> findSingleSelectedItem(GraphContainer container) {
+        Collection<VertexRef> selectedVertexRefs = container.getSelectionManager().getSelectedVertexRefs();
+        if (selectedVertexRefs.size() == 1) {
+            final VertexRef vertexRef = selectedVertexRefs.iterator().next();
+            Vertex vertex = container.getBaseTopology().getVertex(vertexRef);
+            return Optional.of(vertex);
+        }
 
-    Component getComponent(GraphContainer container);
-
-    boolean contributesTo(GraphContainer container);
-
-    String getTitle(GraphContainer container);
-
-    /**
-     * The order of the item in which it should occur.
-     *
-     * @return
-     */
-    int getOrder();
-
-    // ensure that InfoPanelItems are always sorted by order
-    default int compareTo(InfoPanelItem o) {
-        return Integer.valueOf(getOrder()).compareTo(Integer.valueOf(o.getOrder()));
+        return Optional.empty();
     }
 }

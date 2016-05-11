@@ -28,8 +28,12 @@
 
 package org.opennms.features.topology.plugins.topo.bsm.info;
 
+import java.util.Collection;
+
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.info.InfoPanelItem;
+import org.opennms.features.topology.api.info.InfoPanelItemProvider;
+import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
+import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.plugins.topo.bsm.simulate.SimulationAwareStateMachineFactory;
 
 import com.vaadin.server.FontAwesome;
@@ -37,9 +41,9 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
-public class SimulationModeEnabledPanelItem implements InfoPanelItem {
-    @Override
-    public Component getComponent(GraphContainer container) {
+public class SimulationModeEnabledPanelItemProvider implements InfoPanelItemProvider {
+
+    private Component createComponent() {
         Label label = new Label("Simulation Mode Enabled");
         label.setDescription("Simulation Mode is enabled");
         label.setIcon(FontAwesome.EXCLAMATION_TRIANGLE);
@@ -52,17 +56,11 @@ public class SimulationModeEnabledPanelItem implements InfoPanelItem {
     }
 
     @Override
-    public boolean contributesTo(GraphContainer container) {
-        return SimulationAwareStateMachineFactory.isInSimulationMode(container.getCriteria());
-    }
-
-    @Override
-    public String getTitle(GraphContainer container) {
-        return null;
-    }
-
-    @Override
-    public int getOrder() {
-        return Integer.MIN_VALUE;
+    public Collection<InfoPanelItem> getContributions(GraphContainer container) {
+        return InfoPanelItemProvider.contributeIf(
+                SimulationAwareStateMachineFactory.isInSimulationMode(container.getCriteria()),
+                () -> new DefaultInfoPanelItem()
+                        .withOrder(Integer.MIN_VALUE)
+                        .withComponent(createComponent()));
     }
 }

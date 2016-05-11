@@ -31,7 +31,9 @@ package org.opennms.features.topology.plugins.topo.bsm.info;
 import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
 
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.info.EdgeInfoPanelItem;
+import org.opennms.features.topology.api.info.EdgeInfoPanelItemProvider;
+import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
+import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceEdge;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider;
@@ -46,34 +48,30 @@ import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 
-public class BusinessServiceEdgeInfoPanelItem extends EdgeInfoPanelItem {
+public class BusinessServiceEdgeInfoPanelItemProvider extends EdgeInfoPanelItemProvider {
 
     @Override
-    protected Component getComponent(EdgeRef ref, GraphContainer container) {
-        FormLayout formLayout = new FormLayout();
-        formLayout.setMargin(false);
-        formLayout.setSpacing(false);
-
-        final BusinessServiceEdge businessServiceEdge = ((BusinessServiceEdge) ref);
-        formLayout.addComponent(createLabel("Map Function", describeMapFunction(businessServiceEdge.getMapFunction())));
-        formLayout.addComponent(createLabel("Weight", Float.toString(businessServiceEdge.getWeight())));
-
-        return formLayout;
-    }
-
-    @Override
-    protected boolean contributesTo(EdgeRef edgeRef, GraphContainer containe) {
+    protected boolean contributeTo(EdgeRef edgeRef, GraphContainer container) {
         return BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE.equals(edgeRef.getNamespace());
     }
 
     @Override
-    public int getOrder() {
-        return 0;
+    protected InfoPanelItem createInfoPanelItem(EdgeRef ref, GraphContainer graphContainer) {
+        return new DefaultInfoPanelItem()
+                .withComponent(createComponent((BusinessServiceEdge) ref))
+                .withTitle("Map Function Details")
+                .withOrder(0);
     }
 
-    @Override
-    protected String getTitle(EdgeRef edgeRef) {
-        return "Map Function Details";
+    private Component createComponent(BusinessServiceEdge ref) {
+        FormLayout formLayout = new FormLayout();
+        formLayout.setMargin(false);
+        formLayout.setSpacing(false);
+
+        formLayout.addComponent(createLabel("Map Function", describeMapFunction(ref.getMapFunction())));
+        formLayout.addComponent(createLabel("Weight", Float.toString(ref.getWeight())));
+
+        return formLayout;
     }
 
     private static String describeMapFunction(final MapFunction mapFunction) {

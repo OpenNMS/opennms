@@ -31,48 +31,42 @@ package org.opennms.features.topology.app.internal.ui.info;
 import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
 
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.info.VertexInfoPanelItem;
-import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.info.EdgeInfoPanelItemProvider;
+import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
+import org.opennms.features.topology.api.info.item.InfoPanelItem;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.EdgeRef;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 
-public class DefaultVertexInfoPanelItem extends VertexInfoPanelItem {
-    @Override
-    protected Component getComponent(VertexRef ref, GraphContainer container) {
+public class DefaultEdgeInfoPanelItemProvider extends EdgeInfoPanelItemProvider {
+
+    private Component createComponent(EdgeRef ref) {
         FormLayout formLayout = new FormLayout();
         formLayout.setSpacing(false);
         formLayout.setMargin(false);
 
-        formLayout.addComponent(createLabel("Name", ref.getLabel()));
-        formLayout.addComponent(createLabel("ID", String.format("%s:%s", ref.getNamespace(), ref.getId())));
+        if (ref instanceof AbstractEdge) {
+            AbstractEdge edge = (AbstractEdge) ref;
 
-        if (ref instanceof AbstractVertex) {
-            AbstractVertex vertex = (AbstractVertex) ref;
-
-            formLayout.addComponent(createLabel("Icon Key", vertex.getIconKey()));
-
-            if (vertex.getIpAddress() != null) {
-                formLayout.addComponent(createLabel("IP Address", vertex.getIpAddress()));
-            }
+            formLayout.addComponent(createLabel("Source", edge.getSource().getVertex().getLabel()));
+            formLayout.addComponent(createLabel("Target", edge.getTarget().getVertex().getLabel()));
         }
 
         return formLayout;
     }
 
     @Override
-    protected boolean contributesTo(VertexRef ref, GraphContainer container) {
+    protected boolean contributeTo(EdgeRef ref, GraphContainer container) {
         return true;
     }
 
     @Override
-    protected String getTitle(VertexRef vertexRef) {
-        return "Technical Details";
-    }
-
-    @Override
-    public int getOrder() {
-        return Integer.MAX_VALUE;
+    protected InfoPanelItem createInfoPanelItem(EdgeRef ref, GraphContainer graphContainer) {
+        return new DefaultInfoPanelItem()
+                .withOrder(Integer.MAX_VALUE)
+                .withTitle("Technical Details")
+                .withComponent(createComponent(ref));
     }
 }
