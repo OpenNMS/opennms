@@ -224,6 +224,7 @@ public class MockSnmpStrategyTest {
         final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.5.1.1"));
 
         SnmpWalker walker = walk(ct, 10, 3);
+        walker.start();
         walker.waitFor();
         assertEquals("number of columns returned must match test data", Long.valueOf(9).longValue(), ct.getCount());
     }
@@ -245,6 +246,7 @@ public class MockSnmpStrategyTest {
         final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.5.1.1"));
         final SnmpWalker walker = walk(ct, 10, 3);
         final CompletableFuture<Long> future = toCompletableFuture(ct, walker);
+        walker.start();
         assertEquals("number of columns returned must match test data", Long.valueOf(9), future.get());
     }
 
@@ -296,7 +298,6 @@ public class MockSnmpStrategyTest {
         final SnmpAgentConfig config = getAgentConfig();
         final SnmpWalker walker = SnmpUtils.createWalker(config, "test", c);
         assertNotNull(walker);
-        walker.start();
         return walker;
     }
 
