@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,36 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.syslogd;
+package org.opennms.core.test.camel;
 
-import java.util.Dictionary;
-import java.util.Map;
+import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 
-import org.apache.camel.util.KeyValueHolder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.springframework.test.context.ContextConfiguration;
+public class CamelBlueprintTest extends CamelBlueprintTestSupport {
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
-public class SyslogdHandlerKafkaIT extends CamelBlueprintTest {
+    /**
+     * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
+     * 
+     * @see https://issues.apache.org/jira/browse/ARIES-1051
+     * @see https://access.redhat.com/site/solutions/640943
+     */
+    @Override
+    public void doPreSetup() throws Exception {
+        System.setProperty( "org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString() );
+        System.setProperty( "de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString() );
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		// Register any mock OSGi services here
-	}
+    @Override
+    public boolean isUseAdviceWith() {
+        return true;
+    }
 
-	// The location of our Blueprint XML files to be used for testing
-	@Override
-	protected String getBlueprintDescriptor() {
-		return "file:blueprint-syslog-handler-kafka.xml";
-	}
+    @Override
+    public boolean isUseDebugger() {
+        // Must enable debugger
+        return true;
+    }
 
-	@Test
-	public void testSyslogd() throws Exception {
-		// TODO: Perform integration testing
-	}
+    @Override
+    public String isMockEndpoints() {
+        return "*";
+    }
 }
