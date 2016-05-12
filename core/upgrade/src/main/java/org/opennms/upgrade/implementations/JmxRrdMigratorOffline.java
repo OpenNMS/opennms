@@ -45,7 +45,7 @@ import org.jrobin.core.RrdDb;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
+import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
@@ -78,6 +78,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(JmxRrdMigratorOffline.class);
 
+	private final JMXDataCollectionConfigDao jmxDataCollectionConfigDao = new JMXDataCollectionConfigDao();
 
     /** The JMX resource directories. */
     private List<File> jmxResourceDirectories;
@@ -129,7 +130,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
         printMainSettings();
         if (isInstalledVersionGreaterOrEqual(1, 12, 2)) {
             try {
-                JMXDataCollectionConfigFactory.init();
+                jmxDataCollectionConfigDao.getConfig();
             } catch (Exception e) {
                 throw new OnmsUpgradeException("Can't initialize jmx-datacollection-config.xml because " + e.getMessage());
             }
@@ -375,18 +376,22 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             List<String> jmxFriendlyNames = new ArrayList<String>();
             for (String service : services) {
                 Service svc = getServiceObject(config, service);
-                String friendlyName = getSvcPropertyValue(svc, "friendly-name");
-                if (friendlyName == null) {
-                    friendlyName = getSvcPropertyValue(svc, "port"); // According with JMXCollector, port will be used if there is no friendly-name.
-                }
-                if (friendlyName == null) {
-                    log("Warning: there is no friendly-name or port parameter for service %s. The JRBs/RRDs for this service are not going to be updated.", service);
+                if (svc != null) {
+                    String friendlyName = getSvcPropertyValue(svc, "friendly-name");
+                    if (friendlyName == null) {
+                        friendlyName = getSvcPropertyValue(svc, "port"); // According with JMXCollector, port will be used if there is no friendly-name.
+                    }
+                    if (friendlyName == null) {
+                        log("Warning: there is no friendly-name or port parameter for service %s. The JRBs/RRDs for this service are not going to be updated.", service);
+                    } else {
+                        jmxFriendlyNames.add(friendlyName);
+                    }
                 } else {
-                    jmxFriendlyNames.add(friendlyName);
+                    log("Warning: JMX service %s is defined but not used in any package definition. Skipping migration.\n", service);
                 }
             }
             log("JMX friendly names found: %s\n", jmxFriendlyNames);
-            File rrdDir = new File(JMXDataCollectionConfigFactory.getInstance().getRrdPath());
+            File rrdDir = new File(jmxDataCollectionConfigDao.getRrdPath());
             findJmxDirectories(rrdDir, jmxFriendlyNames, jmxResourceDirectories);
             if (jmxResourceDirectories.isEmpty()) {
                 log("Warning: no JMX directories found on %s\n", rrdDir);

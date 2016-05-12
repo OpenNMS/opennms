@@ -1,4 +1,4 @@
-/*jshint unused: false, undef:false, sub:true */
+/*jshint unused:false, sub:true */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>

@@ -83,8 +83,8 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         url = "/requisitions/test";
 
-        sendRequest(DELETE, url, 200);
-        xml = sendRequest(GET, url, 204);
+        sendRequest(DELETE, url, 202);
+        xml = sendRequest(GET, url, 404);
     }
 
     @Test
@@ -109,7 +109,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String url = "/requisitions/test/nodes";
 
         // create a node
-        sendPost(url, "<node xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" node-label=\"shoe\" parent-node-label=\"david\" foreign-id=\"1111\" />", 303, "/test/nodes/1111");
+        sendPost(url, "<node xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" node-label=\"shoe\" parent-node-label=\"david\" foreign-id=\"1111\" />", 202, "/test/nodes/1111");
 
         // get list of nodes
         String xml = sendRequest(GET, url, 200);
@@ -125,12 +125,12 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.contains(" node-label=\"david\"")); // The white space is required to avoid match parent-node-label
         
         // set attributes
-        sendPut(url, "node-label=homo+sapien", 303, "/nodes/4243");
+        sendPut(url, "node-label=homo+sapien", 202, "/nodes/4243");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("node-label=\"homo sapien\""));
 
         // delete node
-        xml = sendRequest(DELETE, url, 200);
+        xml = sendRequest(DELETE, url, 202);
         xml = sendRequest(GET, url, 404);
     }
 
@@ -141,7 +141,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String url = "/requisitions/test/nodes";
 
         // attempt to add existing node
-        sendPost(url, "<node xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" node-label=\"shoe\" parent-node-label=\"david\" foreign-id=\"4243\" />", 303, "/requisitions/test/nodes/4243");
+        sendPost(url, "<node xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" node-label=\"shoe\" parent-node-label=\"david\" foreign-id=\"4243\" />", 202, "/requisitions/test/nodes/4243");
 
         // get list of nodes
         String xml = sendRequest(GET, url, 200);
@@ -159,8 +159,8 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String xml;
         
         // create an interface
-        sendPost(base, "<interface xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" status=\"1\" snmp-primary=\"S\" ip-addr=\"192.0.2.254\" descr=\"Monkey\"><monitored-service service-name=\"ICMP\"/></interface>", 303, "/nodes/4243/interfaces/192.0.2.254");
-        sendPost(base, "<interface xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" status=\"1\" snmp-primary=\"S\" ip-addr=\"192.0.2.254\" descr=\"Blah\"><monitored-service service-name=\"ICMP\"/></interface>", 303, "/nodes/4243/interfaces/192.0.2.254");
+        sendPost(base, "<interface xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" status=\"1\" snmp-primary=\"S\" ip-addr=\"192.0.2.254\" descr=\"Monkey\"><monitored-service service-name=\"ICMP\"/></interface>", 202, "/nodes/4243/interfaces/192.0.2.254");
+        sendPost(base, "<interface xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" status=\"1\" snmp-primary=\"S\" ip-addr=\"192.0.2.254\" descr=\"Blah\"><monitored-service service-name=\"ICMP\"/></interface>", 202, "/nodes/4243/interfaces/192.0.2.254");
 
         // get list of interfaces
         xml = sendRequest(GET, base, 200);
@@ -177,14 +177,14 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertFalse(xml, xml.contains("192.0.2.201"));
 
         // set attributes
-        sendPut(url, "status=3&descr=Total+Crap&snmp-primary=P", 303, "/nodes/4243/interfaces/192.0.2.204");
+        sendPut(url, "status=3&descr=Total+Crap&snmp-primary=P", 202, "/nodes/4243/interfaces/192.0.2.204");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml, xml.contains("descr=\"Total Crap\""));
         assertTrue(xml, xml.contains("snmp-primary=\"P\""));
         assertTrue(xml, xml.contains("status=\"3\""));
  
         // delete interface
-        xml = sendRequest(DELETE, url, 200);
+        xml = sendRequest(DELETE, url, 202);
         xml = sendRequest(GET, url, 404);
 
         // confirm there is one less interface
@@ -199,7 +199,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String base = "/requisitions/test/nodes/4243/interfaces/192.0.2.204/services";
         
         // create a service
-        sendPost(base, "<monitored-service xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" service-name=\"MONKEY\" />", 303, "/interfaces/192.0.2.204/services/MONKEY");
+        sendPost(base, "<monitored-service xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" service-name=\"MONKEY\" />", 202, "/interfaces/192.0.2.204/services/MONKEY");
 
         // get list of services
         String xml = sendRequest(GET, base, 200);
@@ -212,7 +212,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.contains("service-name=\"ICMP\""));
 
         // delete interface
-        xml = sendRequest(DELETE, url, 200);
+        xml = sendRequest(DELETE, url, 202);
         xml = sendRequest(GET, url, 404);
 
         // confirm there is one less interface
@@ -227,7 +227,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String base = "/requisitions/test/nodes/4243/categories";
 
         // create a category
-        sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"Dead Servers\" />", 303, "/nodes/4243/categories/Dead%20Servers");
+        sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"Dead Servers\" />", 202, "/nodes/4243/categories/Dead%20Servers");
 
         // get list of categories
         String url = base;
@@ -242,7 +242,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.contains("name=\"low\""));
         
         // delete category
-        xml = sendRequest(DELETE, url, 200);
+        xml = sendRequest(DELETE, url, 202);
         xml = sendRequest(GET, url, 404);
         
         // confirm there are less categories
@@ -251,7 +251,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // create a category on a node that is not in the requisition
         base = "/requisitions/test/nodes/4244/categories";
-        sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"New Category\" />", 303, "/nodes/4244/categories/New%20Category");
+        sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"New Category\" />", 202, "/nodes/4244/categories/New%20Category");
         xml = sendRequest(GET, base + "/New%20Category", 404);
     }
     
@@ -262,7 +262,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String base = "/requisitions/test/nodes/4243/assets";
 
         // create an asset
-        sendPost(base, "<asset xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"manufacturer\" value=\"Dead Servers, Inc.\" />", 303, "/nodes/4243/assets/manufacturer");
+        sendPost(base, "<asset xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"manufacturer\" value=\"Dead Servers, Inc.\" />", 202, "/nodes/4243/assets/manufacturer");
 
         // get list of asset parameters
         String url = base;
@@ -276,7 +276,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml, xml.contains("value=\"Windows Pi\""));
         
         // delete asset parameter
-        xml = sendRequest(DELETE, url, 200);
+        xml = sendRequest(DELETE, url, 202);
         xml = sendRequest(GET, url, 404);
         
         // confirm there are less assets
@@ -306,7 +306,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 "</node>" +
             "</model-import>";
 
-    	sendPost("/requisitions", req, 303, "/requisitions/test");
+    	sendPost("/requisitions", req, 202, "/requisitions/test");
     }
 
     @Test
@@ -348,7 +348,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         
         EventAnticipator anticipator = m_eventProxy.getEventAnticipator();
 
-        sendRequest(PUT, "/requisitions/test/import", 303);
+        sendRequest(PUT, "/requisitions/test/import", 202);
 
         assertEquals(1, anticipator.unanticipatedEvents().size());
     }
@@ -359,13 +359,21 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         
         EventAnticipator anticipator = m_eventProxy.getEventAnticipator();
 
-        sendRequest(PUT, "/requisitions/test/import", parseParamData("rescanExisting=false"), 303);
+        sendRequest(PUT, "/requisitions/test/import", parseParamData("rescanExisting=false"), 202);
 
         assertEquals(1, anticipator.unanticipatedEvents().size());
         final Event event = anticipator.unanticipatedEvents().iterator().next();
         final List<Parm> parms = event.getParmCollection();
         assertEquals(2, parms.size());
         assertEquals("false", parms.get(1).getValue().getContent());
+    }
+
+    @Test
+    public void testDeployedStats() throws Exception {
+        createRequisition();
+
+        String xml = sendRequest(GET, "/requisitions/deployed/stats", 200);
+        assertTrue(xml.contains("deployed-stats"));
     }
 
     private void createRequisition() throws Exception {
@@ -390,6 +398,6 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
             "</model-import>";
 
         
-        sendPost("/requisitions", req, 303, "/requisitions/test");
+        sendPost("/requisitions", req, 202, "/requisitions/test");
     }
 }

@@ -49,6 +49,10 @@ import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+
 /**
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
@@ -56,6 +60,8 @@ import org.slf4j.LoggerFactory;
  */
 public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverJavaNetImpl.class);
+    
+    private static final MetricRegistry METRICS = new MetricRegistry();
 
     private static final int SOCKET_TIMEOUT = 500;
 
@@ -170,6 +176,11 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
         // Get a log instance
         Logging.putPrefix(Syslogd.LOG4J_CATEGORY);
 
+        // Create some metrics
+        Meter packetMeter = METRICS.meter(MetricRegistry.name(getClass(), "packets"));
+        Meter connectionMeter = METRICS.meter(MetricRegistry.name(getClass(), "connections"));
+        Histogram packetSizeHistogram = METRICS.histogram(MetricRegistry.name(getClass(), "packetSize"));
+
         if (m_stop) {
             LOG.debug("Stop flag set before thread started, exiting");
             return;
@@ -246,11 +257,18 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
                 }
 
                 m_dgSock.receive(pkt);
+                
+                // Increment the packet counter
+                packetMeter.mark();
+                
+                // Create a metric for the syslog packet size
+                packetSizeHistogram.update(length);
 
                 SyslogConnection connection = new SyslogConnection(pkt, m_config);
 
                 try {
                     for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {
+                        connectionMeter.mark();
                         handler.handleSyslogConnection(connection);
                     }
                 } catch (Throwable e) {

@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.snmp.snmp4j;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.opennms.core.utils.InetAddressUtils.str;
@@ -115,17 +118,9 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapPro
                 )
             );
 
-            long start = System.currentTimeMillis();
             snmp.listen();
             sendTraps();
-            long waitUntil = System.currentTimeMillis() + 30000L;
-            do {
-                Thread.sleep(200);
-                System.err.print(".");
-                if (m_trapCount == 2) break;
-            } while (System.currentTimeMillis() < waitUntil);
-            System.err.println("");
-            LOG.debug("waited for {} milliseconds", System.currentTimeMillis() - start);
+            await().atMost(5, SECONDS).until(() -> m_trapCount, equalTo(2));
         } finally {
             LOG.debug("SNMP4J: Unregister for Traps");
             if (snmp != null) {
@@ -155,19 +150,9 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapPro
         final TestTrapListener trapListener = new TestTrapListener();
         SnmpV3User user = new SnmpV3User("opennmsUser", "MD5", "0p3nNMSv3", "DES", "0p3nNMSv3");
         try {
-            long start = System.currentTimeMillis();
-
             m_strategy.registerForTraps(trapListener, this, getAgentAddress(), 9162, Collections.singletonList(user));
             sendTraps();
-
-            long waitUntil = System.currentTimeMillis() + 30000L;
-            do {
-                Thread.sleep(200);
-                System.err.print(".");
-                if (m_trapCount == 2) break;
-            } while (System.currentTimeMillis() < waitUntil);
-            System.err.println("");
-            LOG.debug("waited for {} milliseconds", System.currentTimeMillis() - start);
+            await().atMost(5, SECONDS).until(() -> m_trapCount, equalTo(2));
         } catch (final IOException e) {
             LOG.debug("Failed to register for traps.", e);
         } catch (final Exception e) {
@@ -207,8 +192,6 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapPro
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), m_strategy.getValueFactory().getObjectId(trapOID));
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), m_strategy.getValueFactory().getObjectId(enterpriseId));
         pdu.send(hostAddress, 9162, "public");
-        
-        //Thread.sleep(10000);
 
         LOG.debug("Sending V3 Trap");
         SnmpV3TrapBuilder pduv3 = m_strategy.getV3TrapBuilder();

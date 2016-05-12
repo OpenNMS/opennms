@@ -6,7 +6,7 @@
 		<relativePath>../topology-map/poms/compiled/</relativePath>
 		<groupId>org.opennms.features.topology.build</groupId>
 		<artifactId>compiled-bundle-settings</artifactId>
-		<version>18.0.0-SNAPSHOT</version>
+		<version>19.0.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.opennms.features</groupId>
 	<artifactId>vaadin-node-maps</artifactId>
@@ -138,7 +138,7 @@
 			<releases><enabled>true</enabled></releases>
 			<id>opennms-repo</id>
 			<name>OpenNMS Repository</name>
-			<url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+			<url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
 		</repository>
 	</repositories>
 

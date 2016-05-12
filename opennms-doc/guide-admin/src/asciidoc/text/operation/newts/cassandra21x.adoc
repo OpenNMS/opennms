@@ -3,7 +3,7 @@
 :imagesdir: ../../../images
 ==== Cassandra Monitoring
 
-This section describes some of the metrics _OpenNMS_ collects for monitoring an _Cassandra_ database infrastructure.
+This section describes some of the metrics _{opennms-product-name}_ collects for monitoring an _Cassandra_ database infrastructure.
 To enable the data collection, the node has to be in the _Surveillance Category_ named _Cassandra21_.
 
 The data collection is bound to the agent IP interface with the service name _JMX-Cassandra_.

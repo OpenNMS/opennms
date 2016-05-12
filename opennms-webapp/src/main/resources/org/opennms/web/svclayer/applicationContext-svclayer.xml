@@ -69,10 +69,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="alarmDao" ref="alarmDao"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
-  <bean name="nodeProvisionService" class="org.opennms.netmgt.provision.persist.DefaultNodeProvisionService">
-    <property name="foreignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
-    <property name="eventProxy" ref="eventProxy"/>
-  </bean>
   <!-- Category Service Status beans -->
   <bean id="categoryStatusService" class="org.opennms.web.svclayer.catstatus.support.DefaultCategoryStatusService">
     <property name="categoryConfigDao" ref="categoryConfigDao"/>
@@ -286,6 +282,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <constructor-arg name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao"/>
     <constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>
   </bean>
-  <bean id="foreignSourceAndRequistionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
+  <bean id="foreignSourceAndRequisitionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
   <bean id="snmpConfigAccessService" class="org.opennms.netmgt.config.SnmpConfigAccessService" />
 </beans>

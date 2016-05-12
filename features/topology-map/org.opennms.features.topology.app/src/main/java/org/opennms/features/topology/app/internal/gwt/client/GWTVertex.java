@@ -152,14 +152,6 @@ public class GWTVertex extends JavaScriptObject {
         return this.tooltipText;
     }-*/;
 
-    public final native String getIconUrl() /*-{
-        return this.iconUrl;
-    }-*/;
-
-    public final native void setIconUrl(String iconUrl) /*-{
-        this.iconUrl = iconUrl;
-    }-*/;
-
     public final native void setSVGIconId(String svgIconId) /*-{
         this.svgIconId = svgIconId;
     }-*/;
@@ -260,20 +252,22 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
 
-    protected static Func<String, GWTVertex> getStatusClass(final boolean isCounterIndicator){
+    protected static Func<String, GWTVertex> getStatusClass(final String additionalClasses){
         return new Func<String, GWTVertex>(){
 
             @Override
             public String call(GWTVertex vertex, int index) {
-                /*if(!isCounterIndicator){
-                    if(vertex.isSelected()){
-                        return "status selected";
-                    }
-                }*/
-                return "status " + vertex.getStatus();
+                String statusClass =  "status " + vertex.getStatus();
+                if (additionalClasses != null) {
+                    statusClass = statusClass + " " + additionalClasses;
+                }
+                return statusClass;
             }
-
         };
+    }
+
+    protected static Func<String, GWTVertex> getStatusClass(){
+        return getStatusClass(null);
     }
 
     protected static Func<String, GWTVertex> getStatusCountText(){
@@ -284,6 +278,27 @@ public class GWTVertex extends JavaScriptObject {
                 return vertex.getStatusCount();
             }
 
+        };
+    }
+
+    // Returns the identifier for the ionic icons, as we use SVG instead of <i> elements to reference font icons.
+    protected static Func<String, GWTVertex> getBadgeStatusText() {
+        return new Func<String, GWTVertex>() {
+
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                if (vertex.getStatus() != null) {
+                    switch (vertex.getStatus().toUpperCase()) {
+                        case "INDETERMINATE": return "\uf143"; // ion-help
+                        case "WARNING": return "\uf100"; // ion-alert-circled
+                        case "MINOR": return "\uf137"; // ion-flash
+                        case "MAJOR": return "\uf31a"; // ion-flame
+                        case "CRITICAL": return "\uf2a4"; // ion-nuclear
+                        case "NORMAL": return ""; // no icon
+                    }
+                }
+                return ""; // no icon
+            }
         };
     }
 
@@ -354,12 +369,26 @@ public class GWTVertex extends JavaScriptObject {
                 double iconHeight = vertex.getIconHeight();
                 double iconWidth = vertex.getIconWidth();
 
-                double xPos = 0;
-                double yPos = 0;
                 int statusCountLength = vertex.getStatusCount().length();
-                xPos = (iconWidth/2) - (13 + (VERTEX_STATUS_CHAR_SIZE * statusCountLength));
-                yPos = (iconHeight/2) + 25;
+                double xPos = (iconWidth/2) - (33 + (VERTEX_STATUS_CHAR_SIZE * statusCountLength));
+                double yPos = (iconHeight/2) + 25;
                 return "translate(" + xPos + ", -" + yPos +  ")";
+            }
+        };
+    }
+
+    static Func<String, GWTVertex> statusBadgePos() {
+        return new Func<String, GWTVertex>() {
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                double iconHeight = vertex.getIconHeight();
+                double iconWidth = vertex.getIconWidth();
+                // We assume a width of 15 for each icon.
+                // However, this is actually not true as it is a font and not an svg element
+                // Therefore the results may vary as the width varies
+                double xPos = (iconWidth/2)  - 15;
+                double yPos = (iconHeight/2) + 6;
+                return "translate(" + xPos + ", -" + yPos + ")";
             }
         };
     }
@@ -495,12 +524,17 @@ public class GWTVertex extends JavaScriptObject {
                         .attr("x", calculateOverlayXPos()).attr("y", calculateOverlayYPos());
 
                 selection.select(".status").attr("width", calculateOverlayWidth()).attr("height", calculateOverlayHeight())
-                        .attr("x", calculateOverlayXPos()).attr("y", calculateOverlayYPos()).attr("class", getStatusClass(false));
+                        .attr("x", calculateOverlayXPos()).attr("y", calculateOverlayYPos()).attr("class", getStatusClass());
 
                 selection.select(".status-counter").text(getStatusCountText());
 
             	 selection.select(".node-status-counter").attr("transform", statusCounterPos()).style("opacity", showStatusCount())
-                 .select("rect").attr("class", getStatusClass(true)).attr("width", calculateStatusCounterWidth());
+                 .select("rect").attr("class", getStatusClass()).attr("width", calculateStatusCounterWidth());
+
+                selection.select(".status-badge-container")
+                        .attr("transform", statusBadgePos())
+                        .attr("class", getStatusClass("status-badge-container"))
+                        .select(".status-badge").text(getBadgeStatusText());
 
                 return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).select("text.vertex-label").text(label()).attr("y", textLabelPlacement());
             }
@@ -524,6 +558,7 @@ public class GWTVertex extends JavaScriptObject {
                 D3 svgIconRollover          = svgIconContainer.append("use");
                 D3 svgIconActive            = svgIconContainer.append("use");
                 D3 statusCounter            = vertex.append("g");
+                D3 statusBadge              = vertex.append("g");
                 D3 textSelection            = vertex.append("text");
 
                 vertex.append("svg:rect").attr("class", "svgIconOverlay").attr("width", 100).attr("height", 100).attr("opacity", 0).call(new D3Behavior() {
@@ -558,13 +593,15 @@ public class GWTVertex extends JavaScriptObject {
                 svgIconRollover.attr("xlink:href", svgIconId("_rollover")).attr("class", "overIcon").attr("opacity", 0);
                 svgIconActive.attr("xlink:href", svgIconId("_active")).attr("class", "activeIcon").attr("opacity", 0);
                 
- 
+                // Status Counter
             	statusCounter.attr("class", "node-status-counter")
                     	.append("svg:rect").attr("height", 20).attr("width", 20).attr("rx", 10).attr("ry", 10);
+                statusCounter.append("text").attr("x", "6px").attr("y","14px").attr("class", "status-counter");
 
-            	statusCounter.append("text").attr("x", "6px").attr("y","14px")
-                    	.attr("class", "status-counter").text("2");
-            
+                // Status Badge
+                statusBadge.attr("class", "status-badge-container");
+                statusBadge.append("text").attr("x", "0px").attr("y", "0px")
+                        .attr("class", "status-badge");
 
                 textSelection.text(label())
                     .attr("class", "vertex-label")

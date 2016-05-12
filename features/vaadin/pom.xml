@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>18.0.0-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -72,8 +72,8 @@
       <artifactId>jsoup</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.vaadin-extender</groupId>
-      <artifactId>service</artifactId>
+      <groupId>org.opennms.features.vaadin-components</groupId>
+      <artifactId>extender-service</artifactId>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty.orbit</groupId>
@@ -126,14 +126,14 @@
       <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
     </repository>
     <repository>
       <snapshots><enabled>true</enabled></snapshots>
       <releases><enabled>false</enabled></releases>
       <id>opennms-snapshots</id>
       <name>OpenNMS Snapshot Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
     </repository>
   </repositories>
 

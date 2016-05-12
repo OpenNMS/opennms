@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.snmp</artifactId>
-    <version>18.0.0-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
@@ -24,8 +24,12 @@
             <!--  don't export anything this is implementation only -->
             <Export-Package></Export-Package>
             <Private-Package>org.opennms.netmgt.snmp.snmp4j.*</Private-Package>
-            <Import-Package>org.apache.commons.lang.*;org.apache.log4j.*;resolution:=optional,*</Import-Package>
-            <Embed-Dependency>snmp4j;inline=true</Embed-Dependency>
+            <Import-Package>
+              org.apache.commons.lang;resolution:=optional,
+              org.apache.log4j;resolution:=optional,
+              *
+            </Import-Package>
+            <Embed-Dependency>snmp4j*</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
           </instructions>
         </configuration>

@@ -38,6 +38,7 @@ import static org.junit.Assert.fail;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +48,9 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.PathOutageDao;
+import org.opennms.netmgt.dao.api.PathOutageManager;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -54,6 +58,8 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.OutageAnticipator;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsPathOutage;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableService;
@@ -98,6 +104,15 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
     
     @Autowired
     QueryManager m_queryManager;
+
+    @Autowired
+    NodeDao m_nodeDao;
+
+    @Autowired
+    PathOutageDao m_pathOutageDao;
+
+    @Autowired
+    PathOutageManager m_pathOutageManager;
 
 	@Override
 	public void setTemporaryDatabase(MockDatabase database) {
@@ -358,4 +373,23 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
         }
     }
 
+    @Test
+    public void testPathOutages() throws Exception {
+        Assert.assertNotNull(m_nodeDao);
+        Assert.assertNotNull(m_pathOutageDao);
+        Assert.assertNotNull(m_pathOutageManager);
+        OnmsNode node = m_nodeDao.get(1);
+        Assert.assertNotNull(node);
+        OnmsPathOutage pathOutage = new OnmsPathOutage(node, InetAddressUtils.addr("169.254.0.1"), "ICMP");
+        m_pathOutageDao.save(pathOutage);
+        m_pathOutageDao.flush();
+        m_pollerConfig.setPathOutageEnabled(true);
+        String[] paths = m_pathOutageManager.getCriticalPath(1);
+        Assert.assertEquals("169.254.0.1", paths[0]);
+
+        Event nodeEvent = m_pollContext.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null, new Date(), String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
+        Assert.assertNotNull(nodeEvent);
+        Assert.assertEquals("169.254.0.1", nodeEvent.getParm(EventConstants.PARM_CRITICAL_PATH_IP).getValue().getContent());
+        Assert.assertEquals(EventConstants.PARM_VALUE_PATHOUTAGE, nodeEvent.getParm(EventConstants.PARM_LOSTSERVICE_REASON).getValue().getContent());
+    }
 }

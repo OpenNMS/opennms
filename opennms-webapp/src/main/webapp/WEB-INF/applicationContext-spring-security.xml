@@ -43,7 +43,7 @@
 
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
-  
+
   <!-- Only use BASIC auth for the RESTful API v2 -->
   <http pattern="/api/v2/**" realm="OpenNMS Realm">
     <!-- OPTIONS pre-flight requests should always be accepted -->
@@ -83,13 +83,12 @@
     <intercept-url pattern="/login.jsp*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/accessDenied.jsp*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/css/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/svg/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/js/global.js" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/lib/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/images/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/admin/node/add.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
-    <intercept-url pattern="/admin/provisioningGroups.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
-    <intercept-url pattern="/admin/editForeignSource.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
-    <intercept-url pattern="/admin/editProvisioningGroup.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
+    <intercept-url pattern="/admin/ng-requisitions/app/**" access="ROLE_PROVISION,ROLE_ADMIN" />
+    <intercept-url pattern="/rest/snmpConfig/**" access="ROLE_PROVISION,ROLE_ADMIN" />
     <intercept-url pattern="/admin/**" access="ROLE_ADMIN" />
     <intercept-url pattern="/**/mib-compiler" access="ROLE_ADMIN" />
     <intercept-url pattern="/**/admin-*" access="ROLE_ADMIN" />
@@ -105,9 +104,12 @@
     <intercept-url pattern="/dashboard/**" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/coreweb/**" access="ROLE_USER,ROLE_DASHBOARD" />
     
+    <!-- ReST URL's for OSGi plugin manger restricted to admin and ReST users-->
+    <intercept-url pattern="/licencemgr/**" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/featuremgr/**" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/pluginmgr/**" access="ROLE_REST,ROLE_ADMIN"/>
+    
     <intercept-url pattern="/**" access="ROLE_USER" />
-    
-    
     
     <!-- NrtCollection -->
     <intercept-url pattern="/amq/*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />

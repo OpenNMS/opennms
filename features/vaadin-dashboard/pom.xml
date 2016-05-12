@@ -6,7 +6,7 @@
         <relativePath>../topology-map/poms/compiled/</relativePath>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>compiled-bundle-settings</artifactId>
-        <version>18.0.0-SNAPSHOT</version>
+        <version>19.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>vaadin-dashboard</artifactId>
@@ -119,7 +119,7 @@
             <releases><enabled>false</enabled></releases>
             <id>opennms-snapshots</id>
             <name>OpenNMS Snapshot Maven Repository</name>
-            <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+            <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
         </repository>
         <repository>
             <id>vaadin-snapshots</id>
@@ -129,7 +129,7 @@
         </repository>
         <repository>
             <id>vaadin-addons</id>
-            <url>http://maven.vaadin.com/vaadin-addons</url>
+            <url>http://maven.opennms.org/content/repositories/vaadin-addons/</url>
         </repository>
     </repositories>
 

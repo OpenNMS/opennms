@@ -55,8 +55,6 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.config.api.JaxbListWrapper;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -99,12 +97,6 @@ public class AvailabilityRestService extends OnmsRestService {
     @Autowired
     private NodeDao m_nodeDao;
 
-    @Autowired
-    private IpInterfaceDao m_ipInterfaceDao;
-
-    @Autowired
-    private MonitoredServiceDao m_monitoredServiceDao;
-
     private static void assertCategoryListExists() throws ServletException {
         if (m_categoryList == null) {
             m_categoryList = new CategoryList();
@@ -117,7 +109,7 @@ public class AvailabilityRestService extends OnmsRestService {
             return new AvailabilityData(m_categoryList.getCategoryData());
         } catch (final MarshalException | ValidationException | IOException e) {
             LOG.warn("Failed to get availability data: {}", e.getMessage(), e);
-            throw getException(Status.BAD_REQUEST, "Failed to get availability data.");
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data: {}", e.getMessage());
         }
     }
 
@@ -126,10 +118,14 @@ public class AvailabilityRestService extends OnmsRestService {
     public Category getCategory(@PathParam("category") final String categoryName) {
         try {
             final String category = URLDecoder.decode(categoryName, "UTF-8");
-            return CategoryModel.getInstance().getCategory(category);
+            final Category cat = CategoryModel.getInstance().getCategory(category);
+            if (cat == null) {
+                throw getException(Status.NOT_FOUND, "Category {} was not found.", categoryName);
+            }
+            return cat;
         } catch (final MarshalException | ValidationException | IOException e) {
             LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
-            throw getException(Status.BAD_REQUEST, "Failed to get availability data for category " + categoryName);
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data for category {} : {}", categoryName, e.getMessage());
         }
     }
 
@@ -139,13 +135,13 @@ public class AvailabilityRestService extends OnmsRestService {
         try {
             final String category = URLDecoder.decode(categoryName, "UTF-8");
             final Category cat = CategoryModel.getInstance().getCategory(category);
-            if (cat != null) {
-                return cat.getNodes();
+            if (cat == null) {
+                throw getException(Status.NOT_FOUND, "Category {} was not found.", categoryName);
             }
-            return null;
+            return cat.getNodes();
         } catch (final MarshalException | ValidationException | IOException e) {
             LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
-            throw getException(Status.BAD_REQUEST, "Failed to get availability data for category " + categoryName);
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data for category {} : {}", categoryName, e.getMessage());
         }
     }
 
@@ -155,13 +151,17 @@ public class AvailabilityRestService extends OnmsRestService {
         try {
             final String category = URLDecoder.decode(categoryName, "UTF-8");
             final Category cat = CategoryModel.getInstance().getCategory(category);
-            if (cat != null) {
-                return getAvailabilityNode(cat.getNode(nodeId).getId().intValue());
+            if (cat == null) {
+                throw getException(Status.NOT_FOUND, "Category {} was not found.", categoryName);
             }
-            return null;
+            final AvailabilityNode node = cat.getNode(nodeId);
+            if (node == null) {
+                throw getException(Status.NOT_FOUND, "Node {} was not found for category {}.", Long.toString(nodeId), categoryName);
+            }
+            return getAvailabilityNode(node.getId().intValue());
         } catch (final Exception e) {
             LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
-            throw getException(Status.BAD_REQUEST, "Failed to get availability data for category " + categoryName);
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data for category {} : {}", categoryName, e.getMessage());
         }
     }
 
@@ -169,10 +169,14 @@ public class AvailabilityRestService extends OnmsRestService {
     @Path("/nodes/{nodeId}")
     public AvailabilityNode getNode(@PathParam("nodeId") final Integer nodeId) {
         try {
-            return getAvailabilityNode(nodeId);
+            final AvailabilityNode avail = getAvailabilityNode(nodeId);
+            if (avail == null) {
+                throw getException(Status.NOT_FOUND, "Node {} was not found.", Integer.toString(nodeId));
+            }
+            return avail;
         } catch (final Exception e) {
             LOG.warn("Failed to get availability data for node {}: {}", nodeId, e.getMessage(), e);
-            throw getException(Status.BAD_REQUEST, "Failed to get availability data for node " + nodeId);
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data for node {} : {}", nodeId.toString(), e.getMessage());
         }
     }
 
@@ -182,7 +186,7 @@ public class AvailabilityRestService extends OnmsRestService {
         initialize(dbNode);
 
         if (dbNode == null) {
-            return null;
+            throw getException(Status.NOT_FOUND, "Node {} was not found.", Integer.toString(id));
         }
         final double nodeAvail = CategoryModel.getNodeAvailability(id);
 
@@ -270,19 +274,4 @@ public class AvailabilityRestService extends OnmsRestService {
         m_nodeDao = dao;
     }
 
-    /**
-     * Used for testing only.
-     * @param dao
-     */
-    void setIpInterfaceDao(final IpInterfaceDao dao) {
-        m_ipInterfaceDao = dao;
-    }
-
-    /**
-     * Used for testing only.
-     * @param dao
-     */
-    void setMonitoredServiceDao(final MonitoredServiceDao dao) {
-        m_monitoredServiceDao = dao;
-    }
 }

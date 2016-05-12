@@ -376,13 +376,13 @@ public class ThresholdingSet {
                 defaultThresholdsDao.afterPropertiesSet();
             } catch (Throwable t) {
                 LOG.error("initThresholdsDao: Could not initialize DefaultThresholdsDao", t);
-                throw new RuntimeException("Could not initialize DefaultThresholdsDao: " + t, t);
+                return;
             }
             try {
                 ThreshdConfigFactory.init();
             } catch (Throwable t) {
                 LOG.error("initThresholdsDao: Could not initialize ThreshdConfigFactory", t);
-                throw new RuntimeException("Could not initialize ThreshdConfigFactory: " + t, t);
+                return;
             }
             m_thresholdsDao = defaultThresholdsDao;
         }

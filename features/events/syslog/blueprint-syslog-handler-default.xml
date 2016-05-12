@@ -15,7 +15,7 @@
 
 	<cm:property-placeholder id="syslogHandlerDefaultProperties" persistent-id="org.opennms.netmgt.syslog.handler.default" update-strategy="none">
 		<cm:default-properties>
-			<cm:property name="brokerUri" value="tcp://127.0.0.1:61616" />
+			<cm:property name="brokerUri" value="vm://localhost?create=false" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -37,7 +37,6 @@
 		<argument ref="syslogdConfig"/>
 	</bean>
 
-
 	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
 		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
 		<property name="brokerURL" value="${brokerUri}" />
@@ -53,7 +52,7 @@
 
 		<route id="receiveSyslogConnection">
 			<from uri="activemq:broadcastSyslog"/>
-			<bean ref="unmarshaller"/>
+			<process ref="unmarshaller"/>
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>
 			<to uri="seda:syslogHandler"/>

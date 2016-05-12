@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.features</artifactId>
-        <version>18.0.0-SNAPSHOT</version>
+        <version>19.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -16,6 +16,7 @@
 
     <modules>
         <module>dashlet-alarms</module>
+        <module>dashlet-bsm</module>
         <module>dashlet-map</module>
         <module>dashlet-summary</module>
         <module>dashlet-image</module>

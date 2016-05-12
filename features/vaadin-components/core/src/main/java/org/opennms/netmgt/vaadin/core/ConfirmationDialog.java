@@ -70,7 +70,9 @@ public class ConfirmationDialog extends Window implements Window.CloseListener, 
         addCloseListener(this);
 
         okButton = UIHelper.createButton("ok", null, null, this);
+        okButton.setId("confirmationDialog.button.ok");
         cancelButton = UIHelper.createButton("cancel", "cancels the current action.", null, this);
+        cancelButton.setId("confirmationDialog.button.cancel");
         label.setDescription(description);
 
         final HorizontalLayout buttonLayout = new HorizontalLayout(okButton, cancelButton);
@@ -78,6 +80,7 @@ public class ConfirmationDialog extends Window implements Window.CloseListener, 
 
         layout.setSpacing(true);
         layout.setMargin(true);
+        layout.setSizeFull();
         layout.addComponent(label);
         layout.addComponent(buttonLayout);
         layout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_RIGHT);

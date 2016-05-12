@@ -32,9 +32,9 @@ import java.util.Dictionary;
 import java.util.List;
 
 import org.apache.camel.BeanInject;
-import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
 
@@ -49,7 +49,7 @@ import com.google.common.collect.Lists;
  * @author jwhite
  */
 @Ignore
-public class AMQPAlarmNorthbounderBlueprintTest extends CamelBlueprintTestSupport {
+public class AMQPAlarmNorthbounderBlueprintTest extends CamelBlueprintTest {
 
     @BeanInject
     protected AlarmNorthbounder alarmNorthbounder;

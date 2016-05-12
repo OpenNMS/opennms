@@ -10,7 +10,7 @@
 
 ==== DNS Handler
 
-The new Provisioning service in OpenNMS is continuously improving and adapting to the needs of the community.
+The new Provisioning service in {opennms-product-name} is continuously improving and adapting to the needs of the community.
 
 One of the most recent enhancements to the system is built upon the very flexible and extensible API of referencing an import requisition's location via a URL. Most commonly, these URLs are files on the file system (i.e. `file:/opt/opennms/etc/imports/<my-provisioning-group.xml>`) as requisitions created by the Provisioning Groups UI.
 However, these same requisitions for adding, updating, and deleting nodes (based on the original model importer) can also come from URLs specifying the HTTP protocol: http://myinventory.server.org/nodes.cgi
@@ -18,7 +18,7 @@ However, these same requisitions for adding, updating, and deleting nodes (based
 Now, using Java's extensible protocol handling specification, a new protocol handler was created so that a URL can be specified for requesting a _Zone Transfer (AXFR) request_ from a DNS server.
 The A records are recorded and used to build an import requisition.
 This is handy for organizations that use DNS (possibly coupled with an IP management tool) as the data base of record for nodes in the network.
-So, rather than ping sweeping the network or entering the nodes manually into OpenNMS Provisioning UI, nodes can be managed via 1 or more DNS servers.
+So, rather than ping sweeping the network or entering the nodes manually into {opennms-product-name} Provisioning UI, nodes can be managed via 1 or more DNS servers.
 
 The format of the URL for this new protocol handler is: dns://<host>[:port]/<zone>[/<foreign-source>/][?expression=<regex>]
 
@@ -42,8 +42,8 @@ If your expression requires URL encoding (for example you need to use a `?` in t
 
 .DNS Setup
 
-Currently, the DNS server requires to be setup to allow a zone transfer from the OpenNMS server.
-It is recommended that a secondary DNS server is running on OpenNMS and that the OpenNMS server be allowed to request a zone transfer.
+Currently, the DNS server requires to be setup to allow a zone transfer from the {opennms-product-name} server.
+It is recommended that a secondary DNS server is running on {opennms-product-name} and that the {opennms-product-name} server be allowed to request a zone transfer.
 A quick way to test if zone transfers are working is:
 
  dig -t AXFR @<dnsServer> <zone>
@@ -53,7 +53,7 @@ A quick way to test if zone transfers are working is:
 The configuration of the Provisoning system has moved from a properties file (`model-importer.properties`) to an XML based configuration container.
 The configuration is now extensible to allow the definition of 0 or more import requisitions each with their own cron based schedule for automatic importing from various sources (intended for integration with external URL such as http and this new dns protocol handler.
 
-A default configuration is provided in the OpenNMS `etc/` directory and is called: `provisiond-configuration.xml`.
+A default configuration is provided in the {opennms-product-name} `etc/` directory and is called: `provisiond-configuration.xml`.
 This default configuration has an example for scheduling an import from a DNS server running on the localhost requesting nodes from the zone, localhost and will be imported once per day at the stroke of midnight.
 Not very practical but is a good example.
 
@@ -85,9 +85,9 @@ Not very practical but is a good example.
 
 .Configuration Reload
 
-Like many of the daemon configuration in the 1.7 branch, the configurations are reloadable without having to restart OpenNMS, using the reloadDaemonConfig uei:
+Like many of the daemon configuration in the 1.7 branch, the configurations are reloadable without having to restart {opennms-product-name}, using the reloadDaemonConfig uei:
 
  /opt/opennms/bin/send-event.pl
  uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Provisiond'
 
-This means that you don't have to restart OpenNMS every time you update the configuration.
+This means that you don't have to restart {opennms-product-name} every time you update the configuration.

@@ -146,48 +146,6 @@ public abstract class MonitorTester {
         }
     }
 
-    public static class SimpleMonitoredService implements MonitoredService {
-        private InetAddress ipAddress;
-        private int nodeId;
-        private String nodeLabel;
-        private String svcName;
-
-        public SimpleMonitoredService(final InetAddress ipAddress, int nodeId, String nodeLabel, String svcName) {
-            this.ipAddress = ipAddress;
-            this.nodeId = nodeId;
-            this.nodeLabel = nodeLabel;
-            this.svcName = svcName;
-        }
-
-        public String getSvcUrl() {
-            return null;
-        }
-
-        public String getSvcName() {
-            return svcName;
-        }
-
-        public String getIpAddr() {
-            return ipAddress.getHostAddress();
-        }
-
-        public int getNodeId() {
-            return nodeId;
-        }
-
-        public String getNodeLabel() {
-            return nodeLabel;
-        }
-
-        public NetworkInterface<InetAddress> getNetInterface() {
-            return new InetNetworkInterface(getAddress());
-        }
-
-        public InetAddress getAddress() {
-            return ipAddress;
-        }
-    }
-
     private static void registerProperties(Properties properties) {
         for (Object o : properties.keySet()) {
             String key = (String) o;

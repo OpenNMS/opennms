@@ -1,0 +1,24 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gu-bsm-sim-mode]]
+=== Simulation Mode
+
+To visualize if the configured behavior works as expected, the _Simulation Mode_ can be used to manually set an _Alarm_ status of an _Edge_ element.
+The _Operational Status_ is calculated with the given _Map and Reduce Functions_.
+This allows users to validate and tune their _Business Service Hierarchies_ until the desired status propagation is achieved.
+
+In order to enter _Simulation Mode_, open the _Business Service View_ in the _Topology User Interface_ and toggle the _Simulation Mode_ option in the _Simulate_ menu at the top of the screen.
+The _Info Panel_ on the left hand side allows to set the _Severity_ of the selected _Edge_ element.
+In figure <<gu-bsm-simulate,BSM Simulation Mode>> the _Menu_ and _Severity_ setting is shown.
+
+[[gu-bsm-simulate]]
+.BSM Simulation Mode
+image:bsm/07_bsm-simulation.png[Simulation Mode,400,293]
+
+NOTE: The _Info Panel_ can be hidden with the _Arrow_ button in the top left corner.
+
+In the _Simulate_ menu there are _Inherite State_ and _Reset State_ as options available.
+With _Inherite State_ the current _Severities_ and _Operational Status_ from monitoring is used for the _Simulation Mode_.
+By selecting _Reset State_ all states will be set to _Normal_ for simulation.

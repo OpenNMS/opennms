@@ -37,11 +37,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpConfigAccessService;
@@ -126,7 +124,7 @@ public class SnmpConfigRestService extends OnmsRestService {
     public SnmpInfo getSnmpInfo(@PathParam("ipAddr") String ipAddr) {
         final InetAddress addr = InetAddressUtils.addr(ipAddr);
         if (addr == null) {
-            throw new WebApplicationException(Response.serverError().build());
+            throw getException(Status.BAD_REQUEST, "Malformed IP Address: {}.", ipAddr);
         }
         final SnmpAgentConfig config = m_accessService.getAgentConfig(addr);
         return new SnmpInfo(config);
@@ -142,7 +140,7 @@ public class SnmpConfigRestService extends OnmsRestService {
     @PUT
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{ipAddr}")
-    public Response setSnmpInfo(@Context final UriInfo uriInfo, @PathParam("ipAddr") final String ipAddress, final SnmpInfo snmpInfo) {
+    public Response setSnmpInfo(@PathParam("ipAddr") final String ipAddress, final SnmpInfo snmpInfo) {
         writeLock();
         try {
             final SnmpEventInfo eventInfo;
@@ -154,9 +152,9 @@ public class SnmpConfigRestService extends OnmsRestService {
             }
 
             m_accessService.define(eventInfo);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.noContent().build();
         } catch (final Throwable e) {
-            return Response.serverError().build();
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't update SNMP configuration for {} : {}", ipAddress, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -173,7 +171,7 @@ public class SnmpConfigRestService extends OnmsRestService {
     @Path("{ipAddr}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateInterface(@Context final UriInfo uriInfo, @PathParam("ipAddr") final String ipAddress, final MultivaluedMapImpl params) {
+    public Response updateInterface(@PathParam("ipAddr") final String ipAddress, final MultivaluedMapImpl params) {
         writeLock();
         try {
             final SnmpInfo info = new SnmpInfo();
@@ -186,9 +184,9 @@ public class SnmpConfigRestService extends OnmsRestService {
                 eventInfo = info.createEventInfo(ipAddress);
             }
             m_accessService.define(eventInfo);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.noContent().build();
         } catch (final Throwable e) {
-            return Response.serverError().build();
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't update SNMP configuration for {} : {}", ipAddress, e.getMessage());
         } finally {
             writeUnlock();
         }

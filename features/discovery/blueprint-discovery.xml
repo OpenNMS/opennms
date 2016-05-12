@@ -55,16 +55,9 @@
 	<bean id="eventWriter" class="org.opennms.netmgt.discovery.actors.EventWriter">
 		<argument ref="eventForwarder" />
 	</bean>
-
-	<bean id="discovery-activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
-		<property name="brokerURL" value="tcp://localhost:61616" />
-		<!-- TODO: HZN-490 Add configurable authentication -->
-		<!--
-		<property name="userName" value="karaf" />
-		<property name="password" value="karaf" />
-		-->
-	</bean>
+	
+	<!-- ActiveMQ component from OpenNMS deamon context -->
+	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=onms.broker)"/>
 
 	<camelContext id="discoveryCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:discoveryProperties" />
@@ -75,24 +68,32 @@
 			<!-- Set the DiscoveryConfiguration as the message body -->
 			<transform><simple>${bean:discoveryFactory.getConfiguration}</simple></transform>
 			<!-- Submit it as a Discovery task -->
-			<to uri="direct:submitDiscoveryTask" />
+			<to uri="seda:submitDiscoveryTask" />
 		</route>
 
 		<route id="submitDiscoveryTask">
-			<from uri="direct:submitDiscoveryTask" />
+			<from uri="seda:submitDiscoveryTask" />
 			<!-- 
 				Make sure that this exchange is using an InOut exchange so that the output
 				of each to: endpoint is passed to the next to: endpoint
 			-->
-			<setExchangePattern pattern="InOut"/>
 			<bean ref="rangeChunker" />
 			<split>
 				<!-- Split the DiscoveryJobs -->
 				<simple>${body}</simple>
-				<!-- Use recipientList so that we can have a dynamic to: URI -->
+				<!-- Calculate an appropriate JMS timeout based on the task -->
+				<setHeader headerName="CamelJmsRequestTimeout">
+					<simple>${body.calculateTaskTimeout}</simple>
+				</setHeader>
+				<!--
+					Use recipientList so that we can have a dynamic 'to:' URI.
+					Make sure that the exchange is using an InOut pattern so 
+					that the output is passed to the next endpoint.
+				-->
+				<setExchangePattern pattern="InOut"/>
 				<recipientList>
-					<!-- TODO: Use a more sophisticated naming convention for this queue -->
- 					<simple>activemq:Location-${body.location}</simple>
+					<!-- TODO: NMS-8217: Use a more sophisticated naming convention for this queue -->
+ 				    <simple>queuingservice:Location-${body.location}</simple>
 				</recipientList>
 				<!-- Send the DiscoveryResults to the eventWriter -->
 				<bean ref="eventWriter" />

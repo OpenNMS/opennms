@@ -9,7 +9,7 @@
 
 = Developers Guide
 :author: Copyright (c) 2015-2016 The OpenNMS Group, Inc.
-:revnumber: OpenNMS {opennms-version}
+:revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
@@ -18,6 +18,13 @@
 
 == Setup a development system
 include::text/dev-guide.adoc[]
+
+== Minion development
+include::text/minion/introduction.adoc[]
+include::text/minion/container.adoc[]
+include::text/minion/packaging.adoc[]
+include::text/minion/guidelines.adoc[]
+include::text/minion/testing.adoc[]
 
 == CORS Support
 include::text/rest/CORS.adoc[]
@@ -42,6 +49,7 @@ include::text/rest/notifications.adoc[]
 include::text/rest/outage_timeline.adoc[]
 include::text/rest/outages.adoc[]
 include::text/rest/requisitions.adoc[]
+include::text/rest/resources.adoc[]
 include::text/rest/rtc.adoc[]
 include::text/rest/scheduled_outages.adoc[]
 include::text/rest/snmp_configuration.adoc[]
@@ -50,6 +58,7 @@ include::text/rest/snmptrapnbi-config.adoc[]
 include::text/rest/emailnbi-config.adoc[]
 include::text/rest/javamail-config.adoc[]
 include::text/rest/syslognbi-config.adoc[]
+include::text/bsm/bsm-development.adoc[]
 
 === ReST API Examples
 include::text/rest/examples.adoc[]

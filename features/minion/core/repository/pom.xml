@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.opennms.features.minion</groupId>
+        <artifactId>core-parent</artifactId>
+        <version>19.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>core-repository</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenNMS :: Features :: Minion :: Core :: Repository</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.opennms.maven.plugins</groupId>
+                <artifactId>features-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>features.xml</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>features-add-to-repo</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>generate-features-maven-repo</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <!-- Default repositories -->
+                                <descriptor>mvn:org.apache.karaf.features/standard/${minionKarafVersion}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/spring/${minionKarafVersion}/xml/features</descriptor>
+                                <!-- Add Minion features -->
+                                <descriptor>mvn:org.opennms.features.minion/core-features/${project.version}/xml</descriptor>
+                            </descriptors>
+                            <!-- To ensure that all JAR files for a feature 
+                                are included in the repository tar.gz file, add the feature to this list. -->
+                            <features>
+                                <!-- Minion Core Features -->
+                                <feature>minion-core</feature>
+                                <feature>minion-shell</feature>
+                            </features>
+                            <repository>target/maven-repo</repository>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/maven-repo</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/assembly/repo.xml</descriptor>
+                    </descriptors>
+                    <tarLongFileMode>posix</tarLongFileMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>core-features</artifactId>
+            <version>${project.version}</version>
+            <type>xml</type>
+        </dependency>
+    </dependencies>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <id>opennms-snapshots</id>
+            <name>OpenNMS Snapshot Maven Repository</name>
+            <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>apache-snapshots</id>
+            <name>Apache Snapshots Repository</name>
+            <url>http://repository.apache.org/content/groups/snapshots-group</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+</project>

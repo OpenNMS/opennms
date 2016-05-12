@@ -42,7 +42,7 @@ public class PingOperation extends AbstractOperation {
     private String pingURL;
 
     @Override
-    public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
+    public void execute(final List<VertexRef> targets, final OperationContext operationContext) {
         if (targets != null) {
             for (final VertexRef target : targets) {
                 final String addrValue = getIpAddrValue(operationContext, target);
@@ -54,11 +54,9 @@ public class PingOperation extends AbstractOperation {
                     final String url = getPingURL();
                     final String fullUrl = url.startsWith("/")? url : getFullUrl(url);
                     operationContext.getMainWindow().addWindow(new PingWindow(node, fullUrl));
-                    return null;
                 }
             }
         }
-        return null;
     }
 
     @Override

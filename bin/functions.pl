@@ -12,6 +12,7 @@ use File::Spec;
 use Getopt::Long qw(:config permute bundling pass_through);
 use IO::Handle;
 use IPC::Open2;
+use Scalar::Util qw(looks_like_number);
 
 use vars qw(
 	$BUILD_PROFILE
@@ -84,15 +85,23 @@ delete $ENV{'M2_HOME'};
 # maven options
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	$MAVEN_OPTS = "-Xmx1536m -XX:ReservedCodeCacheSize=512m";
+	if (defined $TESTS) {
+		$MAVEN_OPTS = "-Xmx2048m -XX:ReservedCodeCacheSize=512m";
+	} else {
+		$MAVEN_OPTS = "-Xmx1536m -XX:ReservedCodeCacheSize=512m";
+	}
+}
 
+if (not $MAVEN_OPTS =~ /UseGCOverheadLimit/) {
 	# The concurrent collector will throw an OutOfMemoryError if too much time is being spent in garbage collection: if
 	# more than 98% of the total time is spent in garbage collection and less than 2% of the heap is recovered, an
 	# OutOfMemoryError will be thrown. This feature is designed to prevent applications from running for an extended
 	# period of time while making little or no progress because the heap is too small. If necessary, this feature can
 	# be disabled by adding the option -XX:-UseGCOverheadLimit to the command line.
 	$MAVEN_OPTS .= " -XX:-UseGCOverheadLimit";
+}
 
+if (not $MAVEN_OPTS =~ /UseParallelGC/) {
 	# If (a) peak application performance is the first priority and (b) there are no pause time requirements or pauses
 	# of one second or longer are acceptable, then select the parallel collector with -XX:+UseParallelGC and
 	# (optionally) enable parallel compaction with -XX:+UseParallelOldGC.
@@ -226,7 +235,7 @@ if (-r File::Spec->catfile($ENV{'HOME'}, '.opennms-buildrc')) {
 	if (open(FILEIN, File::Spec->catfile($ENV{'HOME'}, '/.opennms-buildrc'))) {
 		while (my $line = <FILEIN>) {
 			chomp($line);
-			if ($line !~ /^\s*$/ && $line !~ /^\s*\#/) {
+			if ($line !~ /^\s*$/ and $line !~ /^\s*\#/) {
 				unshift(@ARGS, $line);
 			}
 		}
@@ -304,9 +313,9 @@ sub get_version_from_java {
 	my ($output, $bindir, $shortversion, $version, $build, $java_home);
 
 	$output = `"$javacmd" -version 2>\&1`;
-	($version) = $output =~ / version \"?([\d\.]+?(?:[\-\_]\S+?)?)\"?$/ms;
-	($version, $build) = $version =~ /^([\d\.]+)(?:[\-\_](.*?))?$/;
-	($shortversion) = $version =~ /^(\d+\.\d+)/;
+	($version) = $output =~ / version \"?([\d\.]+?(?:[\+\-\_]\S+?)?)\"?$/ms;
+	($version, $build) = $version =~ /^([\d\.]+)(?:[\+\-\_](.*?))?$/;
+	($shortversion) = $version =~ /^(\d+\.\d+|\d+)/;
 	$build = 0 if (not defined $build);
 
 	$bindir = dirname($javacmd);
@@ -343,6 +352,10 @@ sub find_java_home {
 					next if ($java  =~ /openjdk/i);
 					next if ($build =~ /openjdk/i);
 				}
+				next unless (defined $shortversion and $shortversion);
+
+				$versions->{$shortversion}             = {} unless (exists $versions->{$shortversion});
+				$versions->{$shortversion}->{$version} = {} unless (exists $versions->{$shortversion}->{$version});
 
 				next if (exists $versions->{$shortversion}->{$version}->{$build});
 
@@ -354,7 +367,7 @@ sub find_java_home {
 	my $highest_valid = undef;
 
 	for my $majorversion (sort keys %$versions) {
-		if ($majorversion < $minimum_java) {
+		if (looks_like_number($majorversion) and looks_like_number($minimum_java) and $majorversion < $minimum_java) {
 			next;
 		}
 
@@ -399,6 +412,10 @@ sub clean_git {
 
 sub clean_m2_repository {
 	my %dirs;
+	my $repodir = File::Spec->catfile($ENV{'HOME'}, '.m2', 'repository');
+	if (not -d $repodir) {
+		return;
+	}
 	find(
 		{
 			wanted => sub {
@@ -408,7 +425,7 @@ sub clean_m2_repository {
 				}
 			}
 		},
-		File::Spec->catfile($ENV{'HOME'}, '.m2', 'repository')
+		$repodir
 	);
 	my @remove = sort keys %dirs;
 	info("cleaning up old m2_repo directories: " . @remove);

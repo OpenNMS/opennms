@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,12 +30,15 @@ package org.opennms.web.rest.v1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceCollection;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
@@ -67,9 +70,8 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         assertTrue(xml.contains("name=\"default\""));
         assertTrue(xml.contains("ICMP"));
 
-        // TODO: If we try to delete the default foreign source, it should fail
-        sendRequest(DELETE, url, 200);
-        sendRequest(DELETE, "/foreignSources/deployed/default", 200);
+        sendRequest(DELETE, url, 202);
+        sendRequest(DELETE, "/foreignSources/deployed/default", 202);
     }
     
     @Test
@@ -94,17 +96,17 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         assertEquals(xml, "1", xml);
 
         url = "/foreignSources/test";
-        sendPut(url, "scanInterval=1h", 303, "/foreignSources/test");
+        sendPut(url, "scanInterval=1h", 202, "/foreignSources/test");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1h</scan-interval>"));
         
         url = "/foreignSources/test";
-        sendPut(url, "scanInterval=1h", 303, "/foreignSources/test");
-        sendRequest(DELETE, url, 200);
+        sendPut(url, "scanInterval=1h", 202, "/foreignSources/test");
+        sendRequest(DELETE, url, 202);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1d</scan-interval>"));
         
-        sendRequest(DELETE, url, 200);
+        sendRequest(DELETE, url, 202);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1d</scan-interval>"));
     }
@@ -123,8 +125,8 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         xml = sendRequest(GET, url, 200);
         assertTrue(xml, xml.contains("org.opennms.netmgt.provision.detector.simple.HttpDetector"));
 
-        xml = sendRequest(DELETE, url, 200);
-        xml = sendRequest(GET, url, 204);
+        xml = sendRequest(DELETE, url, 202);
+        xml = sendRequest(GET, url, 404);
     }
 
     @Test
@@ -142,11 +144,25 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         xml = sendRequest(GET, url, 200);
         assertTrue(xml, xml.contains("org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         
-        xml = sendRequest(DELETE, url, 200);
-        xml = sendRequest(GET, url, 204);
+        xml = sendRequest(DELETE, url, 202);
+        xml = sendRequest(GET, url, 404);
     }
 
     private void createForeignSource() throws Exception {
+        // Be sure there are no foreign-sources defined
+        System.err.println("[createForeignSource] : deleting existing foreign source definitions");
+        ForeignSourceCollection collection = JaxbUtils.unmarshal(ForeignSourceCollection.class, sendRequest(GET, "/foreignSources", 200));
+        collection.getForeignSources().forEach(f -> {
+            try {
+                System.err.printf("[createForeignSource] : deleting %s\n", f.getName());
+                sendRequest(DELETE, "/foreignSources/" + f.getName(), 202);
+                sendRequest(DELETE, "/requisitions/" + f.getName(), 202);
+            } catch (Exception e) {
+                fail(e.getMessage());
+            }
+        });
+        // Create sample foreign source
+        System.err.println("[createForeignSource] : creating sample foreign source");
         String fs =
             "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"test\">" +
                 "<scan-interval>1d</scan-interval>" +
@@ -164,7 +180,7 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
                     "<policy name=\"all-ipinterfaces\" class=\"org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy\" />" +
                 "</policies>" +
             "</foreign-source>";
-        MockHttpServletResponse response = sendPost("/foreignSources", fs, 303, "/foreignSources/test");
+        MockHttpServletResponse response = sendPost("/foreignSources", fs, 202, "/foreignSources/test");
         System.err.println("response = " + stringifyResponse(response));
     }
     

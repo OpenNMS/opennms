@@ -32,14 +32,13 @@ import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.activemq.broker.BrokerService;
-import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
+import org.apache.camel.Component;
+import org.apache.camel.component.seda.SedaComponent;
 import org.apache.camel.util.KeyValueHolder;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
@@ -49,52 +48,16 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.Pinger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith( OpenNMSJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
-public class DiscovererBlueprintIT extends CamelBlueprintTestSupport {
+public class DiscovererBlueprintIT extends CamelBlueprintTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryBlueprintIT.class );
     private static final MockEventIpcManager IPC_MANAGER_INSTANCE = new MockEventIpcManager();
 
     private static final String LOCATION = "RDU";
-
-    private static BrokerService m_broker = null;
-
-    /**
-     * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
-     * 
-     * @see https://issues.apache.org/jira/browse/ARIES-1051
-     * @see https://access.redhat.com/site/solutions/640943
-     */
-    @Override
-    public void doPreSetup() throws Exception
-    {
-        System.setProperty( "org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString() );
-        System.setProperty( "de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString() );
-    }
-
-    @Override
-    public boolean isUseAdviceWith()
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isUseDebugger()
-    {
-        // must enable debugger
-        return true;
-    }
-
-    @Override
-    public String isMockEndpoints()
-    {
-        return "*";
-    }
 
     /**
      * Register a mock OSGi {@link SchedulerService} so that we can make sure that the scheduler
@@ -102,8 +65,7 @@ public class DiscovererBlueprintIT extends CamelBlueprintTestSupport {
      */
     @SuppressWarnings( "rawtypes" )
     @Override
-    protected void addServicesOnStartup( Map<String, KeyValueHolder<Object, Dictionary>> services )
-    {
+    protected void addServicesOnStartup( Map<String, KeyValueHolder<Object, Dictionary>> services ) {
         services.put( Pinger.class.getName(), new KeyValueHolder<Object, Dictionary>(new TestPinger(), new Properties()));
 
         services.put( EventForwarder.class.getName(),
@@ -112,11 +74,11 @@ public class DiscovererBlueprintIT extends CamelBlueprintTestSupport {
         services.put( EventIpcManager.class.getName(),
                 new KeyValueHolder<Object, Dictionary>( IPC_MANAGER_INSTANCE, new Properties() ) );
 
-        DistPollerDao distPollerDao = new DistPollerDaoMinion(
-            DistPollerDao.DEFAULT_DIST_POLLER_ID,
-            DistPollerDao.DEFAULT_DIST_POLLER_ID,
-            LOCATION
-        );
+        OnmsDistPoller distPoller = new OnmsDistPoller();
+        distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+        distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+        distPoller.setLocation(LOCATION);
+        DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
 
         services.put( DistPollerDao.class.getName(),
                 new KeyValueHolder<Object, Dictionary>(distPollerDao, new Properties() ) );
@@ -133,30 +95,21 @@ public class DiscovererBlueprintIT extends CamelBlueprintTestSupport {
 
         services.put( DiscoveryConfigurationFactory.class.getName(),
                 new KeyValueHolder<Object, Dictionary>(configFactory, new Properties() ) );
+
+        Properties props = new Properties();
+        props.setProperty("alias", "opennms.broker");
+        services.put( Component.class.getName(),
+                new KeyValueHolder<Object, Dictionary>( new SedaComponent(), props ) );
     }
 
     // The location of our Blueprint XML file to be used for testing
     @Override
-    protected String getBlueprintDescriptor()
-    {
+    protected String getBlueprintDescriptor() {
         return "file:blueprint-discoverer.xml";
-    }
-
-    @BeforeClass
-    public static void startActiveMQ() throws Exception {
-        m_broker = new BrokerService();
-        m_broker.addConnector("tcp://127.0.0.1:61616");
-        m_broker.start();
-    }
-
-    @AfterClass
-    public static void stopActiveMQ() throws Exception {
-        if (m_broker != null) {
-            m_broker.stop();
-        }
     }
 
     @Test
     public void testDiscoverer() throws Exception {
+        // pass
     }
 }

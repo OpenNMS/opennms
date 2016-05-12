@@ -39,11 +39,7 @@ import java.util.regex.Pattern;
  * @version 0.1 - 07/22/2002
  * @since 0.1
  */
-public class DBTools {
-
-    private static int _counter;
-
-    private static DBTools _instance;
+public abstract class DBTools {
 
     /**
      * The JDBC hostname. This token is replaced when the url is constructed.
@@ -74,15 +70,6 @@ public class DBTools {
     public static final String DEFAULT_DATABASE_USER = "sa";
 
     /**
-     * Default port to use to check this service. Defaults to '4100' Make sure
-     * than is less than MAX_PORT_VALUE and greater than MIN_PORT_VALUE
-     * 
-     * @see #MIN_PORT_VALUE
-     * @see #MAX_PORT_VALUE
-     */
-    public static final int DEFAULT_PORT = 4100;
-
-    /**
      * Default database password. Should be empty. You should not put a database
      * password here (or event worst, hardcode it in the code) Instead call the
      * class method that accepts a map
@@ -96,36 +83,6 @@ public class DBTools {
 
     // Pattern for the JDBC_HOST
     private static final Pattern _pattern = Pattern.compile(JDBC_HOST);
-
-    /**
-     * Hide the constructor, this class follows the "Singleton" pattern.
-     */
-    private DBTools() {
-        // do nothing
-    }
-
-    /**
-     * Returns a single instance of this class to the caller. We do not want
-     * multiple copies of this class loaded, just one.
-     *
-     * @return DBTools A class instance
-     */
-    public synchronized static DBTools getInstance() {
-        if (_instance == null) {
-            _instance = new DBTools();
-        }
-        _counter++;
-        return _instance;
-    }
-
-    /**
-     * Return how many instances of this objects are loaded now
-     *
-     * @return int Number of instances on this JVM
-     */
-    public int getNumberOfInstances() {
-        return _counter;
-    }
 
     /**
      * Constructs a JDBC url given a set of fragments. The resulting Url will

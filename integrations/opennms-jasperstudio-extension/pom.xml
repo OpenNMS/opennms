@@ -5,12 +5,15 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-integrations</artifactId>
-        <version>18.0.0-SNAPSHOT</version>
+        <version>19.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>opennms-jasperstudio-extension</artifactId>
     <name>OpenNMS Integration for Jaspersoft Studio</name>
     <packaging>jar</packaging>
     <description>Add this jar to the Jaspersoft Studio build path in order to be able to execute/debug/create reports for OpenNMS</description>
+    <properties>
+        <springVersion>3.0.5.RELEASE</springVersion>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -66,6 +69,77 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>${springVersion}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-asm</artifactId>
+            <version>${springVersion}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${springVersion}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${springVersion}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${springVersion}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${springVersion}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.spring</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -84,20 +158,4 @@
             <artifactId>guava</artifactId>
         </dependency>
     </dependencies>
-    <repositories>
-        <repository>
-            <snapshots><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-            <releases><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
-            <id>opennms-snapshots</id>
-            <name>OpenNMS Maven Snapshot Repository</name>
-            <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
-        </repository>
-        <repository>
-            <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-            <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
-            <id>opennms-repo</id>
-            <name>OpenNMS Maven Repository</name>
-            <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-        </repository>
-    </repositories>
 </project>

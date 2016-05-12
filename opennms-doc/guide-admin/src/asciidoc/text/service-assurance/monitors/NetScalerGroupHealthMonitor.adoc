@@ -7,7 +7,7 @@ The required data is gathered via SNMP from the _NetScaler(R)_.
 The status of the servers is determined by the _NetScaler(R)_.
 The provided service it self is not part of the check.
 The basis of this monitor is the _SnmpMonitorStrategy_.
-A valid SNMP configuration in OpenNMS for the _NetScaler(R)_ is required.
+A valid SNMP configuration in {opennms-product-name} for the _NetScaler(R)_ is required.
 
 NOTE: A _NetScaler(R)_ can manage several groups of servers per application.
 This monitor just covers one group at a time.

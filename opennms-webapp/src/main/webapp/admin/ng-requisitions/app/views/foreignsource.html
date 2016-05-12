@@ -20,10 +20,13 @@
   </div>
   <div class="col-md-6">
     <div class="input-group pull-right">
-      <button id="save-foreign-source" class="btn btn-danger" ng-click="save()" ng-show="fsForm.$dirty &amp;&amp; fsForm.$valid" ng-disabled="timingStatus.isRunning">
+      <button type="button" id="reset-default" class="btn btn-default" ng-click="reset()">
+        <span class="glyphicon glyphicon-retweet"></span> Reset to Default
+      </button>
+      <button type="button" id="save-foreign-source" class="btn btn-danger" ng-click="save()" ng-show="fsForm.$dirty" ng-disabled="fsForm.$invalid" ng-disabled="timingStatus.isRunning">
         <span class="glyphicon glyphicon-save"></span> Save
       </button>
-      <button id="go-back" class="btn btn-default" ng-click="goBack()">
+      <button type="button" id="go-back" class="btn btn-success" ng-click="goBack()">
         <span class="glyphicon glyphicon-remove"></span> Return
       </button>
     </div>
@@ -63,17 +66,21 @@
       <uib-tabset>
 
         <!-- Detectors Tab -->
-        <uib-tab heading="Detectors">
+        <uib-tab heading="Detectors" id="tab-detectors">
           <div class="row">
             <div class="col-md-3">
               <div class="input-group">
-                <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
-                <input class="form-control" type="text" placeholder="Search/Filter Detectors" ng-model="filters.detector" />
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-search"></span>
+                </span>
+                <input class="form-control" type="text" placeholder="Search/Filter Detectors" ng-model="filters.detector"></input>
               </div>
             </div>
             <div class="col-md-9">
               <div class="input-group pull-right">
-                <button id="add-detector" class="btn btn-default" ng-click="addDetector()"><span class="glyphicon glyphicon-plus"/> Add Detector</button>
+                <button type="button" id="add-detector" class="btn btn-default" ng-click="addDetector()">
+                  <span class="glyphicon glyphicon-plus-sign"></span> Add Detector
+                </button>
               </div>
             </div>
           </div>
@@ -85,7 +92,7 @@
                   <th>Name</th>
                   <th>Class</th>
                   <th>Parameters</th>
-                  <th></th>
+                  <th><span class="pull-right">Actions</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -100,11 +107,14 @@
                   </td>
                   <td>
                     <span class="pull-right">
-                      <button class="btn btn-default btn-xs" uib-tooltip="Edit the detector" ng-click="editDetector(detector)">
+                      <button type="button" class="btn btn-default btn-xs" uib-tooltip="Edit the detector" ng-click="editDetector(detector)">
                         <span class="glyphicon glyphicon-pencil"/>
                       </button>
-                      <button class="btn btn-default btn-xs" uib-tooltip="Remove the detector" ng-click="removeDetector(detector)">
-                        <span class="glyphicon glyphicon-remove"/>
+                      <button type="button" class="btn btn-default btn-xs" uib-tooltip="Move the detector" ng-click="moveDetector(detector)">
+                        <span class="glyphicon glyphicon-move"/>
+                      </button>
+                      <button type="button" class="btn btn-default btn-xs" uib-tooltip="Remove the detector" ng-click="removeDetector(detector)">
+                        <span class="glyphicon glyphicon-trash"/>
                       </button>
                     </span>
                   </td>
@@ -116,17 +126,21 @@
         </uib-tab>
 
         <!-- Policies Tab -->
-        <uib-tab heading="Policies">
+        <uib-tab heading="Policies" id="tab-policies">
           <div class="row">
             <div class="col-md-3">
               <div class="input-group">
-                <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-search"></span>
+                </span>
                 <input class="form-control" type="text" placeholder="Search/Filter Policies" ng-model="filters.policy" />
               </div>
             </div>
             <div class="col-md-9">
               <div class="input-group pull-right">
-                <button class="btn btn-default" ng-click="addPolicy()"><span class="glyphicon glyphicon-plus"/> Add Policy</button>
+                <button type="button" id="add-policy" class="btn btn-default" ng-click="addPolicy()">
+                  <span class="glyphicon glyphicon-plus-sign"></span> Add Policy
+                </button>
               </div>
             </div>
           </div>
@@ -138,7 +152,7 @@
                   <th>Name</th>
                   <th>Class</th>
                   <th>Parameters</th>
-                  <th></th>
+                  <th><span class="pull-right">Actions</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -153,13 +167,16 @@
                   </td>
                   <td>
                     <span class="pull-right">
-                      <a class="btn btn-default btn-xs" uib-tooltip="Edit the policy" ng-click="editPolicy(policy)">
-                        <span class="glyphicon glyphicon-pencil"/>
-                      </a>
-                      <a class="btn btn-default btn-xs" uib-tooltip="Remove the policy" ng-click="removePolicy(policy)">
-                        <span class="glyphicon glyphicon-remove"/>
-                      </a>
-                    </span>
+                      <button type="button" class="btn btn-default btn-xs" uib-tooltip="Edit the policy" ng-click="editPolicy(policy)">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                      </button>
+                      <button type="button" class="btn btn-default btn-xs" uib-tooltip="Move the policy" ng-click="movePolicy(policy)">
+                        <span class="glyphicon glyphicon-move"></span>
+                      </button>
+                      <button type="button" class="btn btn-default btn-xs" uib-tooltip="Remove the policy" ng-click="removePolicy(policy)">
+                        <span class="glyphicon glyphicon-trash"></span>
+                      </button>
+                      </span>
                   </td>
                 </tr>
               </tbody>

@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>18.0.0-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -14,12 +14,12 @@
     <dependency>
       <groupId>org.jfree</groupId>
       <artifactId>jfreechart</artifactId>
-      <version>1.0.19</version>
+      <version>${jfreechartVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.jfree</groupId>
       <artifactId>jcommon</artifactId>
-      <version>1.0.23</version>
+      <version>${jcommonVersion}</version>
     </dependency>
   </dependencies>
 </project>

@@ -51,6 +51,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/detectors.xml"
 })
+@JUnitSnmpAgent(host=DiskUsageDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/diskUsageDetectorTestData.properties")
 public class DiskUsageDetectorTest implements InitializingBean {
     static final String TEST_IP_ADDRESS = "192.0.2.205";
 
@@ -72,13 +73,11 @@ public class DiskUsageDetectorTest implements InitializingBean {
     }
 
     @Test(timeout=20000)
-    @JUnitSnmpAgent(host=DiskUsageDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
     public void testDetectorSuccessful() throws UnknownHostException{
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 
     @Test(timeout=20000)
-    @JUnitSnmpAgent(host=DiskUsageDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
     public void testDetectorFail() throws UnknownHostException{
         m_detector.setDisk("No disk by this name");
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));

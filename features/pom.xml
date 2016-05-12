@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>18.0.0-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -52,6 +52,9 @@
 
     <!-- OpenNMS Resource CLI tool -->
     <module>resource-cli</module>
+
+    <!-- OpenNMS rest commons module -->
+    <module>rest-commons</module>
 
     <!-- OpenNMS OSGI Core -->
     <module>opennms-osgi-core</module>
@@ -111,6 +114,9 @@
     <!-- OpenNMS Vaadin Surveillance Views -->
     <module>vaadin-surveillance-views</module>
 
+    <!-- Data Choices -->
+    <module>datachoices</module>
+
     <!-- Other projects -->
     <module>geocoder</module>
     <module>instrumentationLogReader</module>
@@ -118,8 +124,19 @@
     <module>ncs</module>
     <module>springframework-security</module>
     <module>system-report</module>
+    <module>timeseries-evaluate</module>
 
     <!-- Elasticsearch event-forwarder-->
     <module>elasticsearch</module>
+
+    <!-- Business Service Monitor -->
+    <module>bsm</module>
+
+    <!-- Minion -->
+    <module>minion</module>
+    <module>scv</module>
+
+    <!-- OpenNMS Plugin Manager -->
+    <module>vaadin-opennms-pluginmanager</module>
   </modules>
 </project>

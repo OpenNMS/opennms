@@ -65,12 +65,12 @@ import org.springframework.test.context.ContextConfiguration;
 public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SyslogdHandlerKafkaIT.class);
-	
+
 	private static KafkaConfig kafkaConfig;
-	
+
 	private KafkaServer kafkaServer;
-	private  TestingServer zkTestServer;
-	
+
+	private TestingServer zkTestServer;
 
 	/**
 	 * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
@@ -82,28 +82,28 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
 	public void doPreSetup() throws Exception {
 		System.setProperty("org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString());
 		System.setProperty("de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString());
-		
-		zkTestServer = new TestingServer(2181);
-    	Properties properties = new Properties();
-    	properties.put("port", "9092");
-    	properties.put("host.name", "localhost");
-    	properties.put("broker.id", "5001");
-    	properties.put("enable.zookeeper", "false");
-    	properties.put("zookeeper.connect",zkTestServer.getConnectString());
-    	try{
-    	kafkaConfig = new KafkaConfig(properties);
-    	kafkaServer = new KafkaServer(kafkaConfig, null);
-    	kafkaServer.startup();
-    	}
-    	catch(Exception e){
-    		e.printStackTrace();
-    	}
-	}
-	
-    @BeforeClass
-    public static void startKafka() throws Exception {
 
-    }
+		zkTestServer = new TestingServer(2181);
+		Properties properties = new Properties();
+		properties.put("port", "9092");
+		properties.put("host.name", "localhost");
+		properties.put("broker.id", "5001");
+		properties.put("enable.zookeeper", "false");
+		properties.put("zookeeper.connect",zkTestServer.getConnectString());
+		try{
+			kafkaConfig = new KafkaConfig(properties);
+			kafkaServer = new KafkaServer(kafkaConfig, null);
+			kafkaServer.startup();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	@BeforeClass
+	public static void startKafka() throws Exception {
+
+	}
 
 	@Override
 	public boolean isUseAdviceWith() {
@@ -126,15 +126,14 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
 		// Register any mock OSGi services here
 		services.put( SyslogConnectionHandler.class.getName(), new KeyValueHolder<Object, Dictionary>(new SyslogConnectionHandlerCamelImpl("seda:handleMessage"), new Properties()));
-		
+
 		//creating kafka component
 		Properties props = new Properties();
 		props.setProperty("alias", "opennms.broker");
-		
+
 		KafkaComponent kafka = new KafkaComponent();
 		kafka.createComponentConfiguration().setBaseUri("kafka://localhost:9092");
-        services.put( Component.class.getName(),
-                new KeyValueHolder<Object, Dictionary>( kafka, props ) );
+		services.put( Component.class.getName(), new KeyValueHolder<Object, Dictionary>( kafka, props ) );
 	}
 
 	// The location of our Blueprint XML files to be used for testing
@@ -145,74 +144,64 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
 
 	@Test
 	public void testSyslogd() throws Exception {
-		
-        Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("port",61616);	
-        SimpleRegistry registry = new SimpleRegistry();
-        CamelContext syslogd = new DefaultCamelContext(registry);
-        syslogd.addComponent("kafka", new KafkaComponent());
-        syslogd.addRoutes(new RouteBuilder() {
-            @Override
-            public void configure() throws Exception {
 
-                from("seda:handleMessage").convertBodyTo(SyslogConnection.class).process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        SyslogConnection connection = new SyslogConnection();
-                        connection.setSourceAddress(InetAddress.getByName("www.opennms.com"));
-                        exchange.getIn().setBody(connection);
-                        exchange.getIn().setHeader(KafkaConstants.PARTITION_KEY,simple("${body.hostname}"));
-                    }
-                }).log("address:${body.sourceAddress}").log("port: ${body.port}").transform(simple("${body.byteBuffer}")).convertBodyTo(String.class).log(body().toString()).to("kafka:localhost:9092?topic=syslog;serializerClass=kafka.serializer.StringEncoder");
-            
-            }
-        });
-            
-        
-        syslogd.addRoutes(new RouteBuilder(){
+		Map<String, Object> parms = new HashMap<String, Object>();
+		parms.put("port",61616);	
+		SimpleRegistry registry = new SimpleRegistry();
+		CamelContext syslogd = new DefaultCamelContext(registry);
+		syslogd.addComponent("kafka", new KafkaComponent());
+		syslogd.addRoutes(new RouteBuilder() {
+			@Override
+			public void configure() throws Exception {
 
+				from("seda:handleMessage").convertBodyTo(SyslogConnection.class).process(new Processor() {
+					@Override
+					public void process(Exchange exchange) throws Exception {
+						SyslogConnection connection = new SyslogConnection();
+						connection.setSourceAddress(InetAddress.getByName("www.opennms.com"));
+						exchange.getIn().setBody(connection);
+						exchange.getIn().setHeader(KafkaConstants.PARTITION_KEY,simple("${body.hostname}"));
+					}
+				}).log("address:${body.sourceAddress}").log("port: ${body.port}").transform(simple("${body.byteBuffer}")).convertBodyTo(String.class).log(body().toString()).to("kafka:localhost:9092?topic=syslog;serializerClass=kafka.serializer.StringEncoder");
+
+			}
+		});
+
+		syslogd.addRoutes(new RouteBuilder(){
 			@Override
 			public void configure() throws Exception {
 				from("kafka:localhost:9092?topic=syslog&zookeeperHost=localhost&zookeeperPort=2181&groupId=group1")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange)
-                            throws Exception {
-                        String messageKey = "";
-                        if (exchange.getIn() != null) {
-                            Message message = exchange.getIn();
-                            Integer partitionId = (Integer) message
-                                    .getHeader(KafkaConstants.PARTITION);
-                            String topicName = (String) message
-                                    .getHeader(KafkaConstants.TOPIC);
-                            if (message.getHeader(KafkaConstants.KEY) != null)
-                                messageKey = (String) message
-                                        .getHeader(KafkaConstants.KEY);
-                            Object data = message.getBody();
+				.process(new Processor() {
+					@Override
+					public void process(Exchange exchange) throws Exception {
+						String messageKey = "";
+						if (exchange.getIn() != null) {
+							Message message = exchange.getIn();
+							Integer partitionId = (Integer) message.getHeader(KafkaConstants.PARTITION);
+							String topicName = (String) message.getHeader(KafkaConstants.TOPIC);
+							if (message.getHeader(KafkaConstants.KEY) != null) {
+								messageKey = (String) message .getHeader(KafkaConstants.KEY);
+							}
+							Object data = message.getBody();
 
-
-                            System.out.println("topicName :: "
-                                    + topicName + " partitionId :: "
-                                    + partitionId + " messageKey :: "
-                                    + messageKey + " message :: "
-                                    + data + "\n");
-                            
-                        }
-                    }
-                }).to("log:input");
-				
+							System.out.println("topicName :: "
+								+ topicName + " partitionId :: "
+								+ partitionId + " messageKey :: "
+								+ messageKey + " message :: "
+								+ data + "\n");
+						}
+					}
+				}).to("log:input");
 			}
-        	
-        });
-        
-        syslogd.start();
-        ProducerTemplate template = syslogd.createProducerTemplate();
-        SyslogConnection connection = new SyslogConnection();
-        connection.setSourceAddress(InetAddress.getByName("www.opennms.com"));
-        template.sendBody( "seda:handleMessage", connection);
-        
+		});
+
+		syslogd.start();
+		ProducerTemplate template = syslogd.createProducerTemplate();
+		SyslogConnection connection = new SyslogConnection();
+		connection.setSourceAddress(InetAddress.getByName("www.opennms.com"));
+		template.sendBody( "seda:handleMessage", connection);
 	}
-	
+
 	@After
 	public void shutDownKafka(){
 		kafkaServer.shutdown();

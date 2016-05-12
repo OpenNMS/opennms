@@ -10,9 +10,13 @@
 [[ga]]
 = Administrators Guide
 :author: Copyright (c) 2015-2016 The OpenNMS Group, Inc.
-:revnumber: OpenNMS {opennms-version}
+:revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
+
+[[ga-admin-datachoices]]
+== Data Choices
+include::text/datachoices.adoc[]
 
 [[ga-admin-ui]]
 == Administrative Webinterface
@@ -128,7 +132,7 @@ include::text/performance-data-collection/collectors/wsman/detector.adoc[]
 include::text/events/events.adoc[]
 include::text/events/forward-elasticsearch.adoc[]
 
-[ga-provisioning]
+[[ga-provisioning]]
 == Provisioning
 include::text/provisioning/introduction.adoc[]
 include::text/provisioning/concepts.adoc[]
@@ -142,6 +146,23 @@ include::text/provisioning/integration.adoc[]
 include::text/provisioning/single-node.adoc[]
 include::text/provisioning/fine-grained.adoc[]
 include::text/provisioning/api-examples.adoc[]
+
+[[ga-provisioning-detectors]]
+=== Service Detectors
+include::text/provisioning/detectors/SnmpDetector.adoc[]
+
+[[ga-bsm]]
+== Business Service Monitoring
+include::text/bsm/introduction.adoc[]
+include::text/bsm/business-service-definition.adoc[]
+include::text/bsm/edges.adoc[]
+include::text/bsm/map-functions.adoc[]
+include::text/bsm/reduce-functions.adoc[]
+include::text/bsm/bsmd.adoc[]
+
+[[ga-topology]]
+== Topology Map
+include::text/topology/topology.adoc[]
 
 [[ga-database-reports]]
 == Database Reports
@@ -185,3 +206,14 @@ include::text/ticketing/introduction.adoc[]
 
 // JIRA Ticketer
 include::text/ticketing/jira.adoc[]
+
+// TSRM Ticketer
+include::text/ticketing/tsrm.adoc[]
+
+[[ga-opennms-plugin-manager]]
+== Plugin Manager
+include::text/plugin-manager/introduction.adoc[]
+include::text/plugin-manager/setting-karaf-instance-data.adoc[]
+include::text/plugin-manager/installing-available-plugins.adoc[]
+include::text/plugin-manager/installing-licences.adoc[]
+

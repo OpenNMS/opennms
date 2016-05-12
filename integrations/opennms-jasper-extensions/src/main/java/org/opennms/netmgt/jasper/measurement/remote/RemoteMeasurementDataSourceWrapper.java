@@ -28,18 +28,23 @@
 
 package org.opennms.netmgt.jasper.measurement.remote;
 
+import static org.opennms.netmgt.jasper.helper.MeasurementsHelper.marshal;
+import static org.opennms.netmgt.jasper.helper.MeasurementsHelper.unmarshal;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import org.opennms.netmgt.jasper.measurement.EmptyJRDataSource;
+import org.opennms.netmgt.jasper.measurement.MeasurementDataSource;
+import org.opennms.netmgt.jasper.measurement.MeasurementDataSourceWrapper;
+import org.opennms.netmgt.measurements.model.QueryRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.io.ByteStreams;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
-import org.opennms.netmgt.jasper.measurement.EmptyJRDataSource;
-import org.opennms.netmgt.jasper.measurement.MeasurementDataSource;
-import org.opennms.netmgt.jasper.measurement.MeasurementDataSourceWrapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Makes Measurement API requests and wraps the request in an appropriate {@link JRRewindableDataSource}.
@@ -64,6 +69,9 @@ public class RemoteMeasurementDataSourceWrapper implements MeasurementDataSource
     @Override
     public JRRewindableDataSource createDataSource(String query) throws JRException {
         try {
+            QueryRequest queryRequest = unmarshal(query);
+            queryRequest.setRelaxed(true); // enforce relaxed mode
+            query = marshal(queryRequest);
             Result result = connector.execute(useSsl, url, username, password, query);
 
             // All unauthorized requests may be forwarded to another page (e.g. login.jsp) which results in 200 OK, we

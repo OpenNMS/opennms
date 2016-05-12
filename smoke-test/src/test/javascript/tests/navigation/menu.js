@@ -147,7 +147,7 @@ var expected = {
 			},
 			'Quick-Add Node': {
 				name: 'nav-admin-quick-add',
-				href: '/admin/node/add.htm',
+				href: '/admin/ng-requisitions/app/quick-add-node.jsp',
 				linkPageSelector: 'h3.panel-title',
 				linkPageText: 'Node Quick-Add'
 			},

@@ -167,16 +167,6 @@
         <property name="locationMonitorDao" ref="locationMonitorDao"/>
     </bean>
 
-    <bean name="/admin/node/add.htm" class="org.opennms.web.controller.node.NodeProvisioningController">
-        <property name="redirectView">
-            <value>add.htm</value>
-        </property>
-        <property name="successView">
-            <value>admin/node/add</value>
-        </property>
-        <property name="nodeProvisionService" ref="nodeProvisionService"/>
-    </bean>
-
     <bean name="/alarm/ticket/create.htm" class="org.opennms.web.controller.alarm.AlarmTicketController">
         <property name="troubleTicketProxy" ref="troubleTicketProxy"/>
     </bean>
@@ -236,6 +226,16 @@
     <bean name="/alarm/summary-box.htm" class="org.opennms.web.controller.alarm.AlarmBoxController">
         <property name="successView" value="alarm/summary-box"/>
         <property name="alarmRepository" ref="alarmRepository"/>
+    </bean>
+
+    <bean name="/bsm/summary-box.htm" class="org.opennms.web.controller.bsm.BusinessServicesBoxController">
+        <property name="successView" value="bsm/summary-box"/>
+        <property name="businessServiceManager" ref="businessServiceManager"/>
+    </bean>
+
+    <bean name="/application/summary-box.htm" class="org.opennms.web.controller.application.ApplicationBoxController">
+        <property name="successView" value="application/summary-box"/>
+        <property name="applicationDao" ref="applicationDao"/>
     </bean>
 
    	<bean name="/event/*" class="org.opennms.web.controller.event.EventController">
@@ -485,14 +485,6 @@
                 <ref bean="dashboardMenuEntries" />
 
                 <ref bean="mapMenuEntries" />
-
-<!-- called "Quick-Add Node" in the user menu now
-                <bean class="org.opennms.web.navigate.ProvisionUserNavBarEntry">
-                    <property name="name" value="Add Node"/>
-                    <property name="url" value="admin/node/add.htm"/>
-                    <property name="locationMatch" value="addNode"/>
-                </bean>
--->
 
 <!-- called "Configure OpenNMS" in the user menu now
                 <bean class="org.opennms.web.navigate.AdminUserNavBarEntry">
