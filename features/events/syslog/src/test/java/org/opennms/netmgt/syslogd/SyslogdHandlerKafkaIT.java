@@ -197,7 +197,6 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
                                     + messageKey + " message :: "
                                     + data + "\n");
                             
-                            System.out.println("Pradeep ...............................................");
                         }
                     }
                 }).to("log:input");
