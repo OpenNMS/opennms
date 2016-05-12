@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.net.InetAddress;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +40,9 @@ import kafka.server.KafkaServer;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Component;
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.camel.Processor;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.kafka.KafkaComponent;
 import org.apache.camel.component.kafka.KafkaConstants;
@@ -155,15 +158,60 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
                 from("seda:handleMessage").convertBodyTo(SyslogConnection.class).process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setBody("Test Message from Camel Kafka Component Final",String.class);
+                        SyslogConnection connection = new SyslogConnection();
+                        connection.setSourceAddress(InetAddress.getByName("www.opennms.com"));
+                        exchange.getIn().setBody(connection);
                         exchange.getIn().setHeader(KafkaConstants.PARTITION_KEY,simple("${body.hostname}"));
                     }
                 }).log("address:${body.sourceAddress}").log("port: ${body.port}").transform(simple("${body.byteBuffer}")).convertBodyTo(String.class).log(body().toString()).to("kafka:localhost:9092?topic=syslog;serializerClass=kafka.serializer.StringEncoder");
             
             }
         });
+            
+        
+        syslogd.addRoutes(new RouteBuilder(){
+
+			@Override
+			public void configure() throws Exception {
+				from("kafka:localhost:9092?topic=syslog&zookeeperHost=localhost&zookeeperPort=2181&groupId=group1")
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange)
+                            throws Exception {
+                        String messageKey = "";
+                        if (exchange.getIn() != null) {
+                            Message message = exchange.getIn();
+                            Integer partitionId = (Integer) message
+                                    .getHeader(KafkaConstants.PARTITION);
+                            String topicName = (String) message
+                                    .getHeader(KafkaConstants.TOPIC);
+                            if (message.getHeader(KafkaConstants.KEY) != null)
+                                messageKey = (String) message
+                                        .getHeader(KafkaConstants.KEY);
+                            Object data = message.getBody();
+
+
+                            System.out.println("topicName :: "
+                                    + topicName + " partitionId :: "
+                                    + partitionId + " messageKey :: "
+                                    + messageKey + " message :: "
+                                    + data + "\n");
+                            
+                            System.out.println("Pradeep ...............................................");
+                        }
+                    }
+                }).to("log:input");
+				
+			}
+        	
+        });
         
         syslogd.start();
+        ProducerTemplate template = syslogd.createProducerTemplate();
+        SyslogConnection connection = new SyslogConnection();
+        connection.setSourceAddress(InetAddress.getByName("www.opennms.com"));
+        template.sendBody( "seda:handleMessage", connection);
+        
 	}
 	
 	@After
