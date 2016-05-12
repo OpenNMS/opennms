@@ -87,6 +87,12 @@ public abstract class KarafTestCase {
         return karafVersion;
     }
 
+    protected static String getOpenNMSVersion() {
+        final String version = System.getProperty("opennms.version");
+        Objects.requireNonNull(version, "The opennms.version property is not set by Surefire!  This should not happen...");
+        return version;
+    }
+
     @Inject
     protected BundleContext bundleContext;
 
