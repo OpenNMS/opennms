@@ -100,12 +100,12 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         </service-properties>
     </service>
     
-    <bean id="topologySelector" class="org.opennms.features.topology.app.internal.operations.TopologySelector">
+    <bean id="metaTopologySelector" class="org.opennms.features.topology.app.internal.operations.MetaTopologySelector">
     	<property name="bundleContext" ref="blueprintBundleContext" />
     </bean>
-    
-    <reference-list interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory">
-        <reference-listener bind-method="addGraphProvider" unbind-method="removeGraphProvider" ref="topologySelector" />
+
+    <reference-list interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" availability="mandatory">
+        <reference-listener bind-method="addMetaTopologyProvider" unbind-method="removeMetaTopologyProvider" ref="metaTopologySelector" />
     </reference-list>
 
     <!-- default icon repository -->
@@ -351,6 +351,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
             <entry key="operation.label" value="Automatic Refresh?group=additions"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.AutoRefreshToggleOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.contextMenuLocation" value=""/>
+            <entry key="operation.label" value="Navigate To"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.NavigateToOperation"/>
     </service>
 
     <!-- removed for SPC-247

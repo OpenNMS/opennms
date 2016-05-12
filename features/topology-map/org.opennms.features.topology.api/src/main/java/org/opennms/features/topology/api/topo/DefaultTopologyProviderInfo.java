@@ -18,33 +18,43 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
+ * http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * OpenNMS(R) Licensing <license@opennms.org>
+ * http://www.opennms.org/
+ * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml.model;
+package org.opennms.features.topology.api.topo;
 
-import org.junit.Assert;
-import org.junit.Test;
+public class DefaultTopologyProviderInfo implements TopologyProviderInfo {
+    protected String name = "Undefined";
+    protected String description = "No description available";
 
-public class GraphMLReaderTest {
+    public DefaultTopologyProviderInfo() {
+    }
 
-    @Test
-    public void verifyRead() throws InvalidGraphException {
-        GraphML graphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph.xml"));
-        Assert.assertEquals(2, graphML.getGraphs().size());
+    public DefaultTopologyProviderInfo(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 
-        GraphMLGraph graph = graphML.getGraphs().get(0);
-        Assert.assertEquals("regions", graph.getId());
-        Assert.assertEquals(4, graph.getNodes().size());
+    @Override
+    public String getName() {
+        return name;
+    }
 
-        graph = graphML.getGraphs().get(1);
-        Assert.assertEquals("markets", graph.getId());
-        Assert.assertEquals(16, graph.getNodes().size());
+    @Override
+    public String getDescription() {
+        return description;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

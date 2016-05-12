@@ -79,5 +79,5 @@ public interface GraphProvider extends VertexProvider, EdgeProvider, SelectionAw
 
     Criteria getDefaultCriteria();
 
-	MetaInfo getMetaInfo();
+	TopologyProviderInfo getTopologyProviderInfo();
 }

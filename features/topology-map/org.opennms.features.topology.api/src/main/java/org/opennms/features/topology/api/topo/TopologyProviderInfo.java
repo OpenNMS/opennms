@@ -28,33 +28,7 @@
 
 package org.opennms.features.topology.api.topo;
 
-public class DefaultMetaInfo implements MetaInfo {
-    protected String name = "Undefined";
-    protected String description = "No description available";
-
-    public DefaultMetaInfo() {
-    }
-
-    public DefaultMetaInfo(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
+public interface TopologyProviderInfo {
+    String getName();
+    String getDescription();
 }

@@ -58,6 +58,10 @@ public abstract class GraphMLElement {
         return (T) properties.get(key);
     }
 
+    public <T> T getProperty(String key, T defaultValue) {
+        return (T) properties.getOrDefault(key, defaultValue);
+    }
+
     public void setProperty(String key, Object value) {
         properties.put(key, value);
     }

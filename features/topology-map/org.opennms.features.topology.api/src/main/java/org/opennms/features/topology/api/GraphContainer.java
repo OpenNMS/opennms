@@ -34,6 +34,7 @@ import java.util.Set;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
@@ -44,6 +45,10 @@ public interface GraphContainer extends DisplayState {
     interface ChangeListener {
         void graphChanged(GraphContainer graphContainer);
     }
+
+    MetaTopologyProvider getMetaTopologyProvider();
+
+    void setMetaTopologyProvider(MetaTopologyProvider metaGraphProvider);
 
     GraphProvider getBaseTopology();
 
@@ -57,6 +62,13 @@ public interface GraphContainer extends DisplayState {
 
     // clears all criteria which are currently sets
     void clearCriteria();
+
+    /**
+     * Selects the specified {@link GraphProvider}.
+     *
+     * @param topologyProvider the provider to select.
+     */
+    void selectTopologyProvider(GraphProvider topologyProvider, boolean resetCriteriaAndSzl);
 
     void addChangeListener(ChangeListener listener);
 

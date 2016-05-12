@@ -18,17 +18,39 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.app.internal.ui;
 
-public interface MetaInfo {
-    String getName();
-    String getDescription();
+import com.vaadin.data.Property;
+
+public interface ToolbarPanelController {
+
+    enum ActiveTool {
+        pan, select;
+    }
+
+    void refreshUI();
+
+    void saveHistory();
+
+    void setActiveTool(ActiveTool activeTool);
+
+    void centerMapOnSelection();
+
+    void showAllMap();
+
+    void toggleHighlightFocus();
+
+    void setSemanticZoomLevel(int semanticZoomLevel);
+
+    int getSemanticZoomLevel();
+
+    Property<Double> getScaleProperty();
 }
