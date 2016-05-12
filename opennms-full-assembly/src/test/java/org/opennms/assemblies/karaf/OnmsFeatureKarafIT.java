@@ -50,7 +50,6 @@ import org.ops4j.pax.exam.spi.reactors.PerMethod;
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
-@Ignore("Flapping")
 public class OnmsFeatureKarafIT extends KarafTestCase {
 
 	@Before
