@@ -137,7 +137,6 @@ import com.vaadin.ui.Window;
 @Title("OpenNMS Topology Map")
 @PreserveOnRefresh
 @StyleSheet(value = {
-        "theme://font-awesome/css/font-awesome.min.css",
         "theme://ionicons/css/ionicons.min.css"
 })
 public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {

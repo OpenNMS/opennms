@@ -305,7 +305,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         private WebElement getShowEntireMapElement() {
-            return testCase.findElementByXpath("//i[@class='icon-globe']");
+            return testCase.findElementById("showEntireMapBtn");
         }
 
         private void resetMenu() {

@@ -36,7 +36,6 @@ import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.app.internal.TopologyUI;
-import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
 import org.opennms.features.topology.app.internal.support.IonicIcons;
 
 import com.vaadin.data.Property;
@@ -85,17 +84,19 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
         addStyleName(Styles.TOOLBAR);
 
         final Property<Double> scale = controller.getScaleProperty();
-        final Button showFocusVerticesBtn = new Button(FontAwesomeIcons.Icon.eye_open.variant());
+        final Boolean[] eyeClosed = new Boolean[] {false};
+        final Button showFocusVerticesBtn = new Button();
+        showFocusVerticesBtn.setIcon(FontAwesome.EYE);
         showFocusVerticesBtn.setDescription("Toggle Highlight Focus Nodes");
-        showFocusVerticesBtn.setHtmlContentAllowed(true);
         showFocusVerticesBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                if(showFocusVerticesBtn.getCaption().equals(FontAwesomeIcons.Icon.eye_close.variant())){
-                    showFocusVerticesBtn.setCaption(FontAwesomeIcons.Icon.eye_open.variant());
+                if(eyeClosed[0]) {
+                    showFocusVerticesBtn.setIcon(FontAwesome.EYE);
                 } else {
-                    showFocusVerticesBtn.setCaption(FontAwesomeIcons.Icon.eye_close.variant());
+                    showFocusVerticesBtn.setIcon(FontAwesome.EYE_SLASH);
                 }
+                eyeClosed[0] = !eyeClosed[0]; // toggle
                 controller.toggleHighlightFocus();
             }
         });
@@ -170,13 +171,14 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
             }
         });
 
-        Button showAllMapBtn = new Button(FontAwesomeIcons.Icon.globe.variant());
-        showAllMapBtn.setHtmlContentAllowed(true);
+        Button showAllMapBtn = new Button();
+        showAllMapBtn.setId("showEntireMapBtn");
+        showAllMapBtn.setIcon(FontAwesome.GLOBE);
         showAllMapBtn.setDescription("Show Entire Map");
         showAllMapBtn.addClickListener((Button.ClickListener) event -> controller.showAllMap());
 
-        Button centerSelectionBtn = new Button(FontAwesomeIcons.Icon.location_arrow.variant());
-        centerSelectionBtn.setHtmlContentAllowed(true);
+        Button centerSelectionBtn = new Button();
+        centerSelectionBtn.setIcon(FontAwesome.LOCATION_ARROW);
         centerSelectionBtn.setDescription("Center On Selection");
         centerSelectionBtn.addClickListener((Button.ClickListener) event -> controller.centerMapOnSelection());
 
