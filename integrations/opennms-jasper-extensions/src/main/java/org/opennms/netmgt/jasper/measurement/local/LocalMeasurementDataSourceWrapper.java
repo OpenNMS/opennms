@@ -35,6 +35,7 @@ import java.util.Objects;
 import org.opennms.netmgt.jasper.measurement.EmptyJRDataSource;
 import org.opennms.netmgt.jasper.measurement.MeasurementDataSource;
 import org.opennms.netmgt.jasper.measurement.MeasurementDataSourceWrapper;
+import org.opennms.netmgt.measurements.api.DefaultMeasurementsService;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.FilterEngine;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
@@ -62,7 +63,7 @@ public class LocalMeasurementDataSourceWrapper implements MeasurementDataSourceW
         Objects.requireNonNull(fetchStrategy);
         Objects.requireNonNull(expressionEngine);
         Objects.requireNonNull(filterEngine);
-        this.fetchService = new MeasurementsService(fetchStrategy, expressionEngine, filterEngine);
+        this.fetchService = new DefaultMeasurementsService(fetchStrategy, expressionEngine, filterEngine);
     }
 
     @Override

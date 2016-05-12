@@ -1,0 +1,13 @@
+{% set visible = vertex != null && vertex.namespace == "bsm" && vertex.serviceId is defined %}
+{% set title = "BSM Specific Information" %}
+
+<table width="100%" border="0">
+    <tr>
+        <td colspan="3">This information is only visible if BSM is selected</td>
+    </tr>
+    <tr>
+        <td align="right" width="80">BSM Id</td>
+        <td width="14"></td>
+        <td align="left">{{ vertex.serviceId }}</td>
+    </tr>
+</table>

@@ -55,7 +55,7 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.MetaInfo;
+import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
@@ -730,8 +730,7 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
         return m_delegate.contributesTo(type);
     }
 
-    @Override
-    public MetaInfo getMetaInfo() {
-        return m_delegate.getMetaInfo();
+    public TopologyProviderInfo getTopologyProviderInfo() {
+        return m_delegate.getTopologyProviderInfo();
     }
 }

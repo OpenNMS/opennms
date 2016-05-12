@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.graphml;
 
 public interface GraphMLProperties {
     String ID = "id";
+    String DESCRIPTION = "description";
     String NAMESPACE = "namespace";
     String ICON_KEY = "iconKey";
     String IP_ADDRESS = "ipAddr";
@@ -41,4 +42,5 @@ public interface GraphMLProperties {
     String TOOLTIP_TEXT = "tooltipText";
     String X = "x";
     String Y = "y";
+    java.lang.String PREFERRED_LAYOUT = "preferred-layout";
 }
