@@ -39,7 +39,9 @@ import kafka.server.KafkaServer;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.camel.Processor;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.kafka.KafkaComponent;
 import org.apache.camel.component.kafka.KafkaConstants;
@@ -53,6 +55,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
@@ -141,7 +144,7 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTest {
 					@Override
 					public void process(Exchange exchange) throws Exception {
 						SyslogConnection connection = new SyslogConnection();
-						connection.setSourceAddress(InetAddress.getByName("www.opennms.com"));
+						connection.setSourceAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
 						exchange.getIn().setBody(connection);
 						exchange.getIn().setHeader(KafkaConstants.PARTITION_KEY,simple("${body.hostname}"));
 					}
@@ -150,8 +153,40 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTest {
 			}
 		});
 
+		syslogd.addRoutes(new RouteBuilder(){
+			@Override
+			public void configure() throws Exception {
+				from("kafka:localhost:" + kafkaPort + "?topic=syslog&zookeeperHost=localhost&zookeeperPort=" + zookeeperPort + "&groupId=group1")
+				.process(new Processor() {
+					@Override
+					public void process(Exchange exchange) throws Exception {
+						String messageKey = "";
+						if (exchange.getIn() != null) {
+							Message message = exchange.getIn();
+							Integer partitionId = (Integer) message.getHeader(KafkaConstants.PARTITION);
+							String topicName = (String) message.getHeader(KafkaConstants.TOPIC);
+							if (message.getHeader(KafkaConstants.KEY) != null) {
+								messageKey = (String) message.getHeader(KafkaConstants.KEY);
+							}
+							Object data = message.getBody();
+
+							System.out.println("topicName :: "
+									+ topicName + " partitionId :: "
+									+ partitionId + " messageKey :: "
+									+ messageKey + " message :: "
+									+ data + "\n");
+						}
+					}
+				}).to("log:input");
+			}
+		});
+
 		syslogd.start();
 
+		ProducerTemplate template = syslogd.createProducerTemplate();
+		SyslogConnection connection = new SyslogConnection();
+		connection.setSourceAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
+		template.sendBody( "seda:handleMessage", connection);
 	}
 
 	@After
