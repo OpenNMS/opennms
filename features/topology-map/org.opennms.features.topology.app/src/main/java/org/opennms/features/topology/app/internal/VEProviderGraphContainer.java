@@ -310,6 +310,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
                     return ((LayoutOperation) operation).getLayoutAlgorithm();
                 }
             }
+            LOG.warn("No preferredLayout defined. Fallback to {}", DEFAULT_LAYOUT_ALGORITHM.getClass().getSimpleName());
             return DEFAULT_LAYOUT_ALGORITHM; // no preferredLayout defined
         }
 
@@ -367,10 +368,12 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             LOG.debug("Finding Service of type {} and additional filter criteria {} ...", clazz, query);
             try {
                 ServiceReference<?>[] allServiceReferences = bundleContext.getAllServiceReferences(clazz.getName(), query);
-                for (ServiceReference<?> eachServiceReference : allServiceReferences) {
-                    @SuppressWarnings("unchecked")
-                    T statusProvider = (T) bundleContext.getService(eachServiceReference);
-                    serviceList.add(statusProvider);
+                if (allServiceReferences != null) {
+                    for (ServiceReference<?> eachServiceReference : allServiceReferences) {
+                        @SuppressWarnings("unchecked")
+                        T statusProvider = (T) bundleContext.getService(eachServiceReference);
+                        serviceList.add(statusProvider);
+                    }
                 }
             } catch (InvalidSyntaxException e) {
                 LOG.error("Could not query BundleContext for services", e);
