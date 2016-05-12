@@ -133,7 +133,7 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
 
 		KafkaComponent kafka = new KafkaComponent();
 		kafka.createComponentConfiguration().setBaseUri("kafka://localhost:9092");
-		services.put( Component.class.getName(), new KeyValueHolder<Object, Dictionary>( kafka, props ) );
+		services.put( Component.class.getName(), new KeyValueHolder<Object, Dictionary>(kafka, props));
 	}
 
 	// The location of our Blueprint XML files to be used for testing
@@ -144,7 +144,6 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
 
 	@Test
 	public void testSyslogd() throws Exception {
-
 		Map<String, Object> parms = new HashMap<String, Object>();
 		parms.put("port",61616);	
 		SimpleRegistry registry = new SimpleRegistry();
@@ -167,39 +166,7 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
 			}
 		});
 
-		syslogd.addRoutes(new RouteBuilder(){
-			@Override
-			public void configure() throws Exception {
-				from("kafka:localhost:9092?topic=syslog&zookeeperHost=localhost&zookeeperPort=2181&groupId=group1")
-				.process(new Processor() {
-					@Override
-					public void process(Exchange exchange) throws Exception {
-						String messageKey = "";
-						if (exchange.getIn() != null) {
-							Message message = exchange.getIn();
-							Integer partitionId = (Integer) message.getHeader(KafkaConstants.PARTITION);
-							String topicName = (String) message.getHeader(KafkaConstants.TOPIC);
-							if (message.getHeader(KafkaConstants.KEY) != null) {
-								messageKey = (String) message .getHeader(KafkaConstants.KEY);
-							}
-							Object data = message.getBody();
-
-							System.out.println("topicName :: "
-								+ topicName + " partitionId :: "
-								+ partitionId + " messageKey :: "
-								+ messageKey + " message :: "
-								+ data + "\n");
-						}
-					}
-				}).to("log:input");
-			}
-		});
-
 		syslogd.start();
-		ProducerTemplate template = syslogd.createProducerTemplate();
-		SyslogConnection connection = new SyslogConnection();
-		connection.setSourceAddress(InetAddress.getByName("www.opennms.com"));
-		template.sendBody( "seda:handleMessage", connection);
 	}
 
 	@After
