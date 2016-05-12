@@ -61,7 +61,9 @@ public abstract class SnmpWalker implements Closeable {
     private boolean m_error = false;
     private String m_errorMessage = "";
     private Throwable m_errorThrowable = null;
-    
+
+    private SnmpWalkCallback m_callback;
+
     protected SnmpWalker(InetAddress address, String name, int maxVarsPerPdu, int maxRepetitions, CollectionTracker tracker) {
         m_address = address;
         m_signal = new CountDownLatch(1);
@@ -72,6 +74,16 @@ public abstract class SnmpWalker implements Closeable {
         m_tracker.setMaxRepetitions(maxRepetitions);
         
         m_maxVarsPerPdu = maxVarsPerPdu;
+    }
+
+    /**
+     * Sets an (optional) callback that will be triggered when the walk was successfully completed,
+     * or failed due to some error.
+     *
+     * @param callback the callback
+     */
+    public void setCallback(SnmpWalkCallback callback) {
+        m_callback = callback;
     }
 
     protected abstract WalkerPduBuilder createPduBuilder(int maxVarsPerPdu);
@@ -161,6 +173,18 @@ public abstract class SnmpWalker implements Closeable {
             close();
         } catch (IOException e) {
             LOG.error("{}: Unexpected Error occured closing SNMP session for: {}", getName(), m_address, e);
+        }
+        // Trigger the callback after the latch was decreased and the session was closed.
+        if (m_callback != null) {
+            Throwable t = null;
+            if (failed()) {
+                t = getErrorThrowable();
+                if (t == null) {
+                    // Not all of the failures provide an exception, so we generate one if necessary
+                    t = new Exception(getErrorMessage());
+                }
+            }
+            m_callback.complete(this, t);
         }
     }
 

@@ -1,5 +1,5 @@
 /*global QuickNode:true,bootbox:true */
-/*jshint eqnull:true, undef:false */
+/*jshint undef:false */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>

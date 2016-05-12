@@ -37,7 +37,6 @@
 		<argument ref="syslogdConfig"/>
 	</bean>
 
-
 	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
 		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
 		<property name="brokerURL" value="${brokerUri}" />
@@ -53,7 +52,7 @@
 
 		<route id="receiveSyslogConnection">
 			<from uri="activemq:broadcastSyslog"/>
-			<bean ref="unmarshaller"/>
+			<process ref="unmarshaller"/>
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>
 			<to uri="seda:syslogHandler"/>

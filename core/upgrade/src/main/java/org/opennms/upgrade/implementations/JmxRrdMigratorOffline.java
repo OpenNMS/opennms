@@ -45,7 +45,7 @@ import org.jrobin.core.RrdDb;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
+import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
@@ -78,6 +78,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(JmxRrdMigratorOffline.class);
 
+	private final JMXDataCollectionConfigDao jmxDataCollectionConfigDao = new JMXDataCollectionConfigDao();
 
     /** The JMX resource directories. */
     private List<File> jmxResourceDirectories;
@@ -129,7 +130,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
         printMainSettings();
         if (isInstalledVersionGreaterOrEqual(1, 12, 2)) {
             try {
-                JMXDataCollectionConfigFactory.init();
+                jmxDataCollectionConfigDao.getConfig();
             } catch (Exception e) {
                 throw new OnmsUpgradeException("Can't initialize jmx-datacollection-config.xml because " + e.getMessage());
             }
@@ -390,7 +391,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 }
             }
             log("JMX friendly names found: %s\n", jmxFriendlyNames);
-            File rrdDir = new File(JMXDataCollectionConfigFactory.getInstance().getRrdPath());
+            File rrdDir = new File(jmxDataCollectionConfigDao.getRrdPath());
             findJmxDirectories(rrdDir, jmxFriendlyNames, jmxResourceDirectories);
             if (jmxResourceDirectories.isEmpty()) {
                 log("Warning: no JMX directories found on %s\n", rrdDir);

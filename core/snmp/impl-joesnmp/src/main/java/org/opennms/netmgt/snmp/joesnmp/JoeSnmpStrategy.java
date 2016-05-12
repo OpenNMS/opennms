@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.InetAddrUtils;
@@ -155,7 +156,13 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         }
         return values;
     }
-    
+
+    @Override
+    public CompletableFuture<SnmpValue[]> getAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
+        LOG.warn("The JoeSnmpStrategy does not support asynchronous SNMP GET requests.");
+        return CompletableFuture.completedFuture(get(agentConfig, oids));
+    }
+
         @Override
     public SnmpValue getNext(SnmpAgentConfig snmpAgentConfig, SnmpObjId oid) {
         SnmpObjId[] oids = { oid };
@@ -429,5 +436,4 @@ public class JoeSnmpStrategy implements SnmpStrategy {
 	public byte[] getLocalEngineID() {
 		throw new UnsupportedOperationException();
 	}
-
 }

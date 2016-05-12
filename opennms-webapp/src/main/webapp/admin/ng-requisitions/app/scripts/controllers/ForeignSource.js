@@ -305,9 +305,9 @@
         controller: 'MoveController',
         templateUrl: 'views/move.html',
         resolve: {
-          label: function() { return policy.name },
-          position: function() { return pos },
-          maximum: function() { return max }
+          label: function() { return policy.name; },
+          position: function() { return pos; },
+          maximum: function() { return max; }
         }
       }).result.then(function(dst) {
         form.$dirty = true;
@@ -394,9 +394,9 @@
         controller: 'MoveController',
         templateUrl: 'views/move.html',
         resolve: {
-          label: function() { return detector.name },
-          position: function() { return pos },
-          maximum: function() { return max }
+          label: function() { return detector.name; },
+          position: function() { return pos; },
+          maximum: function() { return max; }
         }
       }).result.then(function(dst) {
         form.$dirty = true;
