@@ -53,7 +53,7 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 
 	@Before
 	public void setUp() {
-		final String version = KarafTestCase.getOpenNMSVersion();
+		final String version = getOpenNMSVersion();
 		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("karaf").version(version).type("xml").classifier("features").getURL());
 		// This artifact contains Minion-only Karaf features
 		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("minion").getURL());
