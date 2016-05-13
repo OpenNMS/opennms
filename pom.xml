@@ -1000,7 +1000,6 @@
         <version>2.18</version>
         <configuration>
           <!-- Don't specify argLine here or it will override the argLine property value -->
-          <systemPropertyVariables/>
           <!--
             Configure failsafe to put reports in the surefire unit test directory so that 
             Bamboo and Sonar tally the test results properly.
