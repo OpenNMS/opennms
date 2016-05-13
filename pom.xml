@@ -1000,6 +1000,7 @@
         <version>2.18</version>
         <configuration>
           <!-- Don't specify argLine here or it will override the argLine property value -->
+          <systemPropertyVariables />
           <!--
             Configure failsafe to put reports in the surefire unit test directory so that 
             Bamboo and Sonar tally the test results properly.
@@ -1007,30 +1008,6 @@
             https://jira.atlassian.com/browse/BAM-15446
           -->
           <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
-          <systemPropertyVariables>
-            <java.awt.headless>true</java.awt.headless>
-            <mock.logLevel>${mock.logLevel}</mock.logLevel>
-            <mock.debug>${mock.debug}</mock.debug>
-            <mock.rundbtests>${mock.rundbtests}</mock.rundbtests>
-            <mock.leaveDatabase>${mock.leaveDatabase}</mock.leaveDatabase>
-            <mock.leaveDatabaseOnFailure>${mock.leaveDatabaseOnFailure}</mock.leaveDatabaseOnFailure>
-            <mock.db.driver>${mock.db.driver}</mock.db.driver>
-            <mock.db.url>${mock.db.url}</mock.db.url>
-            <mock.db.adminUser>${mock.db.adminUser}</mock.db.adminUser>
-            <mock.db.adminPassword>${mock.db.adminPassword}</mock.db.adminPassword>
-            <mock.runSnmpTests>${mock.runSnmpTests}</mock.runSnmpTests>
-            <mock.snmpHost>${mock.snmpHost}</mock.snmpHost>
-            <opennms.library.jicmp>${opennms.library.jicmp}</opennms.library.jicmp>
-            <opennms.library.jrrd>${opennms.library.jrrd}</opennms.library.jrrd>
-            <install.rrdtool.bin>${install.rrdtool.bin}</install.rrdtool.bin>
-            <runRemedyTests>${runRemedyTests}</runRemedyTests>
-            <runOtrsTests>${runOtrsTests}</runOtrsTests>
-            <runRtTests>${runRtTests}</runRtTests>
-            <runMailTests>${runMailTests}</runMailTests>
-            <runPingTests>${runPingTests}</runPingTests>
-            <proxy.port>${proxy.port}</proxy.port>
-            <opennms.version>${project.version}</opennms.version>
-          </systemPropertyVariables>
         </configuration>
       </plugin>
       <plugin>
