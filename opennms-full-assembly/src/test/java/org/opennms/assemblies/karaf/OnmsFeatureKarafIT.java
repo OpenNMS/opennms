@@ -54,7 +54,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 
 	@Before
 	public void setUp() {
-		final String version = KarafTestCase.getOpenNMSVersion();
+		final String version = getOpenNMSVersion();
 		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("karaf").version(version).type("xml").classifier("features").getURL());
 		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("features").getURL());
 	}
@@ -342,11 +342,26 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("opennms-events-daemon");
 		System.out.println(executeCommand("features:list -i"));
 	}
+	
 	@Test
-	public void testInstallFeatureOpennmsEventsTraps() {
-		installFeature("opennms-events-traps");
+	public void testInstallFeatureOpennmsTrapd() {
+		installFeature("opennms-trapd");
 		System.out.println(executeCommand("features:list -i"));
 	}
+	
+	@Test
+	@Ignore("OSGi dependency problems: org.opennms.netmgt.trapd")
+	public void testInstallFeatureOpennmsTrapdHandlerDefault() {
+		installFeature("opennms-trapd-handler-default");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	public void testInstallFeatureOpennmsTrapdListener() {
+		installFeature("opennms-trapd-listener");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
 	@Test
 	public void testInstallFeatureOpennmsIcmpApi() {
 		installFeature("opennms-icmp-api");

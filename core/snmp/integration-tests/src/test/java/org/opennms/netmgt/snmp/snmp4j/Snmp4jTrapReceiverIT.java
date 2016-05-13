@@ -36,21 +36,19 @@ import static org.junit.Assert.assertFalse;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV3User;
-import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessor;
@@ -103,7 +101,9 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapPro
         Snmp snmp = null;
 
         try {
-            transportMapping = new DefaultUdpTransportMapping(new UdpAddress(9162));
+            // Set socket option SO_REUSEADDR so that we can bind to the port even if it
+            // has recently been closed by passing 'true' as the second argument here.
+            transportMapping = new DefaultUdpTransportMapping(new UdpAddress(9162), true);
             snmp = new Snmp(transportMapping);
 
             snmp.addCommandResponder(this);
@@ -252,20 +252,11 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapPro
         }
     }
 
-    private final class TestTrapProcessor implements TrapProcessor {
+    private static final class TestTrapProcessor extends BasicTrapProcessor {
         @Override
-        public void setCommunity(String community) {}
-        @Override
-        public void setTimeStamp(long timeStamp) {}
-        @Override
-        public void setVersion(String version) { LOG.debug("Processed Trap with version: {}", version); }
-        @Override
-        public void setAgentAddress(InetAddress agentAddress) {}
-        @Override
-        public void setTrapAddress(InetAddress trapAddress) {}
-        @Override
-        public void processVarBind(SnmpObjId name, SnmpValue value) {}
-        @Override
-        public void setTrapIdentity(TrapIdentity trapIdentity) {}
+        public void setVersion(String version) {
+            super.setVersion(version);
+            LOG.debug("Processed Trap with version: {}", version);
+        }
     }
 }

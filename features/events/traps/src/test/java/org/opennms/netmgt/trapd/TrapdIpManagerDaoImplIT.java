@@ -57,7 +57,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class HibernateTrapdIpMgrIT implements InitializingBean {
+public class TrapdIpManagerDaoImplIT implements InitializingBean {
 
     @Autowired
     TrapdIpMgr m_trapdIpMgr;

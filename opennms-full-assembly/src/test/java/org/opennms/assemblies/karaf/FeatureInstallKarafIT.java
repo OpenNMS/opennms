@@ -47,7 +47,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
      */
     @Test
     public void testInstallAllOpenNMSFeatures() {
-        final String version = KarafTestCase.getOpenNMSVersion();
+        final String version = getOpenNMSVersion();
         addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("karaf").version(version).type("xml").classifier("features").getURL());
         addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("features").getURL());
 
@@ -116,7 +116,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         //installFeature("opennms-elasticsearch-event-forwarder");
         installFeature("opennms-events-api");
         installFeature("opennms-events-daemon");
-        installFeature("opennms-events-traps");
         installFeature("opennms-icmp-api");
         installFeature("opennms-icmp-jna");
         installFeature("opennms-icmp-jni");
@@ -134,7 +133,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("opennms-syslogd");
         //installFeature("opennms-syslogd-handler-default");
         installFeature("opennms-syslogd-handler-kafka");
-        installFeature("opennms-syslogd-handler-minion");
+        //installFeature("opennms-syslogd-handler-minion");
         // Syslog listeners can only be installed one at a time
         //installFeature("opennms-syslogd-listener-camel-netty");
         //installFeature("opennms-syslogd-listener-javanet");

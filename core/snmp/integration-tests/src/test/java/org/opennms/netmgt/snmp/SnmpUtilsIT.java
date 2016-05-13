@@ -68,50 +68,6 @@ public class SnmpUtilsIT extends MockSnmpAgentITCase implements TrapProcessorFac
     
     private TestTrapListener m_trapListener;
 
-    static private final class TestTrapProcessor implements TrapProcessor {
-        @Override
-        public void setCommunity(String community) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void setTimeStamp(long timeStamp) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void setVersion(String version) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void setAgentAddress(InetAddress agentAddress) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void processVarBind(SnmpObjId name, SnmpValue value) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void setTrapAddress(InetAddress trapAddress) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void setTrapIdentity(TrapIdentity trapIdentity) {
-            // TODO Auto-generated method stub
-            
-        }
-    }
-
     private static final class TestTrapListener implements TrapNotificationListener {
         private boolean m_error = false;
         private int m_receivedTrapCount = 0;
@@ -273,7 +229,7 @@ public class SnmpUtilsIT extends MockSnmpAgentITCase implements TrapProcessorFac
 
         @Override
     public TrapProcessor createTrapProcessor() {
-        return new TestTrapProcessor();
+        return new BasicTrapProcessor();
     }
     
     @Test

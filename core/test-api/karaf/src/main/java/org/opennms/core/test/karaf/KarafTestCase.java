@@ -50,6 +50,8 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.security.auth.Subject;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.felix.service.command.CommandProcessor;
 import org.apache.felix.service.command.CommandSession;
@@ -66,6 +68,9 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 
 public abstract class KarafTestCase {
@@ -87,10 +92,36 @@ public abstract class KarafTestCase {
         return karafVersion;
     }
 
-    protected static String getOpenNMSVersion() {
-        final String version = System.getProperty("opennms.version");
-        Objects.requireNonNull(version, "The opennms.version property is not set by Surefire!  This should not happen...");
-        return version;
+    protected File findPom(final File root) {
+        final File absoluteRoot = root.getAbsoluteFile();
+        LOG.error("findPom: {}", absoluteRoot);
+        final File pomFile = new File(absoluteRoot, "pom.xml");
+        if (pomFile.exists()) {
+            return pomFile;
+        } else if (absoluteRoot.getParentFile() != null) {
+            return findPom(absoluteRoot.getParentFile());
+        } else {
+            return null;
+        }
+    }
+
+    protected String getOpenNMSVersion() {
+        final File pomFile = findPom(new File("."));
+        LOG.error("getOpenNMSVersion pom file: {}", pomFile);
+        Objects.requireNonNull(pomFile, "Unable to find pom.xml!  This should not happen...");
+        try {
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder db = dbf.newDocumentBuilder(); 
+            final Document doc = db.parse(pomFile);
+            final Element root = doc.getDocumentElement();
+            final NodeList versions = root.getElementsByTagName("version");
+            final String version = versions.item(0).getFirstChild().getNodeValue();
+            LOG.error("getOpenNMSVersion found version tag: {} ", version);
+            return version;
+        } catch (final Exception e) {
+            LOG.error("Failed to get version from POM.", e);
+            return null;
+        }
     }
 
     @Inject

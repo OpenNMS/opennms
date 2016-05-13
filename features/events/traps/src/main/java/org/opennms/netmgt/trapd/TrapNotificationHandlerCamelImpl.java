@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,20 +28,30 @@
 
 package org.opennms.netmgt.trapd;
 
+import org.apache.camel.InOnly;
+import org.apache.camel.Produce;
+import org.opennms.core.camel.DefaultDispatcher;
+import org.opennms.netmgt.snmp.TrapNotification;
+
 /**
- * A TrapdIpMgr that doesn't talk to the database.  If we want something
- * there for our test, we'll populate it.
- * 
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * This class is an {@link InOnly} endpoint that will send messages to the 
+ * Camel endpoint specified by the <code>endpointUri</code> constructor argument.
  */
-public class MockTrapdIpMgr extends TrapdIpManagerDaoImpl {
+public class TrapNotificationHandlerCamelImpl extends DefaultDispatcher implements TrapNotificationHandler {
 
-    @Override
-    public synchronized void dataSourceSync() {
-        // Don't do anything... don't want to have to mess with the DB here
-    }
+	@Produce(property="endpointUri")
+	TrapNotificationHandler m_proxy;
 
-    public synchronized void clearKnownIpsMap() {
-        m_knownips.clear();
-    }
+	public TrapNotificationHandlerCamelImpl(final String endpointUri) {
+		super(endpointUri);
+	}
+
+	/**
+	 * Send the incoming {@link SyslogConnection} message into the Camel route
+	 * specified by the {@link #m_endpointUri} property.
+	 */
+	@Override
+	public void handleTrapNotification(final TrapNotification message) {
+		m_proxy.handleTrapNotification(message);
+	}
 }

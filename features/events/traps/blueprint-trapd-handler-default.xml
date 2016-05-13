@@ -1,0 +1,76 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+
+	<cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd.handler.default" update-strategy="reload">
+		<cm:default-properties>
+			<cm:property name="brokerUri" value="tcp://127.0.0.1:61616" />
+		</cm:default-properties>
+	</cm:property-placeholder>
+	
+	<bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.TrapdIpManagerDaoImpl"/>
+	
+	<bean id="eventCreator" class="org.opennms.netmgt.trapd.EventCreator">
+		<argument ref="trapdIpMgr"/>
+	</bean>
+
+	<!-- Get a reference to the org.opennms.netmgt.events.api.EventForwarder -->
+	<reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
+
+	<!-- Get a reference to the org.opennms.netmgt.config.api.EventConfDao -->
+	<reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
+
+	<!-- Get a reference to the org.opennms.netmgt.config.TrapdConfig -->
+	<reference id="trapdConfig" interface="org.opennms.netmgt.config.TrapdConfig" availability="mandatory"/>
+
+	<bean id="newSuspectOnTrap" factory-ref="trapdConfig" factory-method="getNewSuspectOnTrap"/>
+
+	<bean id="processorFactory" class="org.opennms.netmgt.trapd.TrapQueueProcessorFactory">
+		<property name="eventConfDao" ref="eventConfDao"/>
+		<property name="eventForwarder" ref="eventForwarder"/>
+		<property name="newSuspect" ref="newSuspectOnTrap"/>
+	</bean>
+
+	<bean id="trapNotificationHandlerDefault" class="org.opennms.netmgt.trapd.TrapNotificationHandlerDefaultImpl">
+		<property name="eventCreator" ref="eventCreator"/>
+		<property name="processorFactory" ref="processorFactory"/>
+	</bean>
+
+	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
+		<property name="brokerURL" value="${brokerUri}" />
+		<!-- TODO: HZN-490 Add configurable authentication -->
+	</bean>
+
+	<camelContext id="trapNotificationHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
+		<propertyPlaceholder id="properties" location="blueprint:trapHandlerDefaultProperties" />
+
+		<route id="receiveTrapConnection">
+			<from uri="activemq:broadcastTrap?disableReplyTo=true" />
+			<!-- TODO: Use marshalling instead of serialization when transmitting object? -->
+			<!-- <bean ref="unmarshaller"/> -->
+			<to uri="seda:trapHandler" />
+		</route>
+
+		<route id="trapHandler">
+			<from uri="seda:trapHandler" />
+			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification" />
+			<!--
+				Pass the message to the default handler which will convert it into 
+				an event and broadcast the event.
+			-->
+			<bean ref="trapNotificationHandlerDefault" />
+		</route>
+	</camelContext>
+
+</blueprint>
