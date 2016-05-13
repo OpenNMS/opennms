@@ -935,6 +935,7 @@
           </systemPropertyVariables>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
+          <rerunFailingTestsCount>5</rerunFailingTestsCount>
           <includes>
             <include>**/*Test.java</include>
           </includes>
@@ -967,6 +968,7 @@
             https://jira.atlassian.com/browse/BAM-15446
           -->
           <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+          <rerunFailingTestsCount>5</rerunFailingTestsCount>
         </configuration>
       </plugin>
       <plugin>
