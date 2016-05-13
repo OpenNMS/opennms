@@ -45,6 +45,9 @@
                                 <feature>opennms-syslogd-listener-nio</feature>
                                 <feature>opennms-syslogd-handler-minion</feature>
                                 <feature>opennms-syslogd-handler-kafka</feature>
+                                <feature>opennms-trapd-listener</feature>
+                                <feature>opennms-trapd-handler-minion</feature>
+                                <!-- <feature>opennms-trapd-handler-kafka</feature> -->
                             </features>
                             <repository>target/maven-repo</repository>
                         </configuration>

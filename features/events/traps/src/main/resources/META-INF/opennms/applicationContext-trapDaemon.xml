@@ -21,23 +21,32 @@
   
   <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd">
     <property name="eventReader" ref="eventReader"/>
-    <property name="backlogQ" ref="trapdBacklogQ"/>
+    <property name="trapReceiver" ref="trapReceiver"/>
+    <property name="trapdIpMgr" ref="trapdIpMgr"/>
   </bean>
   
-  <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.HibernateTrapdIpMgr"/>
+  <bean id="eventCreator" class="org.opennms.netmgt.trapd.EventCreator">
+    <constructor-arg ref="trapdIpMgr" />
+  </bean>
+  
+  <bean id="trapNotificationDefaultImpl" class="org.opennms.netmgt.trapd.TrapNotificationHandlerDefaultImpl" >
+    <property name="eventCreator" ref="eventCreator"/>
+  </bean>
+  
+  <bean id="trapReceiver" class="org.opennms.netmgt.trapd.TrapReceiverImpl">
+    <constructor-arg ref="trapdConfig" />
+    <property name="trapNotificationHandlers" ref="trapNotificationDefaultImpl"/>
+  </bean>
+  
+  <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.TrapdIpManagerDaoImpl"/>
   
   <bean id="eventReader" class="org.opennms.netmgt.trapd.BroadcastEventProcessor">
     <constructor-arg ref="eventIpcManager" />
     <constructor-arg ref="trapdIpMgr" />
   </bean>
   
-  <!-- Single-threaded pool that will queue and convert traps into events -->
-  <bean id="trapdBacklogQ" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
-    <constructor-arg value="1"/>
-  </bean>
-  
   <bean id="processorFactory" class="org.opennms.netmgt.trapd.TrapQueueProcessorFactory">
-    <property name="eventManager" ref="eventIpcManager"/>
+    <property name="eventForwarder" ref="eventIpcManager"/>
   </bean>
   
   <bean id="newSuspectOnTrap" factory-bean="trapdConfig" factory-method="getNewSuspectOnTrap"/>

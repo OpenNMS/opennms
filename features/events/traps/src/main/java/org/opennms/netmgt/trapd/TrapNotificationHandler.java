@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,20 +28,14 @@
 
 package org.opennms.netmgt.trapd;
 
+import org.apache.camel.InOnly;
+import org.opennms.netmgt.snmp.TrapNotification;
+
 /**
- * A TrapdIpMgr that doesn't talk to the database.  If we want something
- * there for our test, we'll populate it.
- * 
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * This interface must be {@link InOnly} in order for trap handling to
+ * be performed asynchronously.
  */
-public class MockTrapdIpMgr extends TrapdIpManagerDaoImpl {
-
-    @Override
-    public synchronized void dataSourceSync() {
-        // Don't do anything... don't want to have to mess with the DB here
-    }
-
-    public synchronized void clearKnownIpsMap() {
-        m_knownips.clear();
-    }
+@InOnly
+public interface TrapNotificationHandler {
+	void handleTrapNotification(TrapNotification message);
 }
