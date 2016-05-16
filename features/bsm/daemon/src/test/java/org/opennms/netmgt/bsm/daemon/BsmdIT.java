@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.daemon;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.opennms.core.profiler.ProfilerAspect.humanReadable;
 
 import java.util.Collection;
@@ -143,6 +144,9 @@ public class BsmdIT {
      * Verifies that the daemon generates events when the operational status
      * of a Business Service is changed.
      *
+     * Also verifies that the generate events include parameters which map
+     * to the business services attributes.
+     *
      * @throws Exception
      */
     @Test
@@ -156,12 +160,10 @@ public class BsmdIT {
 
         // Expect a statusChanged event
         EventBuilder ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, "test");
-        ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, simpleBs.getId());
         m_anticipator.anticipateEvent(ebldr.getEvent());
 
         // Expect a serviceProblem event
         ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, "test");
-        ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, simpleBs.getId());
         m_anticipator.anticipateEvent(ebldr.getEvent());
 
         // Create the alarm
@@ -176,15 +178,14 @@ public class BsmdIT {
         // Verify expectations
         Collection<Event> stillWaitingFor = m_anticipator.waitForAnticipated(5000);
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
+        verifyParametersOnAnticipatedEventsReceived(m_anticipator, simpleBs.getId());
 
         // Expect a statusChanged event
         ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, "test");
-        ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, simpleBs.getId());
         m_anticipator.anticipateEvent(ebldr.getEvent());
 
         // Expect a serviceProblemResolved event
         ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI, "test");
-        ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, simpleBs.getId());
         m_anticipator.anticipateEvent(ebldr.getEvent());
 
         // Clear the alarm
@@ -198,6 +199,16 @@ public class BsmdIT {
         // Verify expectations
         stillWaitingFor = m_anticipator.waitForAnticipated(5000);
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
+        verifyParametersOnAnticipatedEventsReceived(m_anticipator, simpleBs.getId());
+    }
+
+    private static void verifyParametersOnAnticipatedEventsReceived(EventAnticipator anticipator, Long businessServiceId) {
+        for (Event e : anticipator.getAnticipatedEventsRecieved()) {
+            // The service id should always be set
+            assertEquals(e.getParm(EventConstants.PARM_BUSINESS_SERVICE_ID).getValue().getContent(), businessServiceId.toString());
+            // Services parameters should also be included
+            assertEquals(e.getParm("my-attr-key").getValue().getContent(), "my-attr-value");
+        }
     }
 
     /**
@@ -285,6 +296,7 @@ public class BsmdIT {
         BusinessServiceEntity bs = new BusinessServiceEntity();
         bs.setName(name);
         bs.setReductionFunction(new HighestSeverityEntity());
+        bs.setAttribute("my-attr-key", "my-attr-value");
 
         // Grab the first monitored service from node 1
         OnmsMonitoredService ipService = m_databasePopulator.getNode1()

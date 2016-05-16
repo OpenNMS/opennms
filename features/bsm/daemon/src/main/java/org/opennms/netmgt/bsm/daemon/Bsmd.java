@@ -259,6 +259,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
         // Always send an serviceOperationalStatusChanged event
         EventBuilder ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, NAME);
+        addBusinessServicesAttributesAsEventParms(businessService, ebldr);
         ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, businessService.getId());
         ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_NAME, businessService.getName());
         ebldr.addParam(EventConstants.PARM_PREV_SEVERITY_ID, prevSeverity.getId());
@@ -270,15 +271,27 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         // Generate a serviceProblem or a serviceProblemResolved event based on the current status
         if (newSeverity.isGreaterThan(OnmsSeverity.NORMAL)) {
             ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, NAME);
+            addBusinessServicesAttributesAsEventParms(businessService, ebldr);
             ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, businessService.getId());
             ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_NAME, businessService.getName());
             ebldr.setSeverity(newSeverity.toString());
         } else {
             ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI, NAME);
+            addBusinessServicesAttributesAsEventParms(businessService, ebldr);
             ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, businessService.getId());
             ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_NAME, businessService.getName());
         }
         m_eventIpcManager.sendNow(ebldr.getEvent());
+    }
+
+    /**
+     * Adds all of the business services attributes as parameters to the given event builder.
+     */
+    private static void addBusinessServicesAttributesAsEventParms(BusinessService businessService, EventBuilder ebldr) {
+        businessService.getAttributes().entrySet().stream()
+            .forEach(attr -> {
+                ebldr.addParam(attr.getKey(), attr.getValue());
+            });
     }
 
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
