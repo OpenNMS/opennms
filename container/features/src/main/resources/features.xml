@@ -693,7 +693,7 @@
       <feature>camel-http</feature>
       <feature>camel-netty</feature>
       <feature>activemq-camel</feature>
-
+	  <feature>camel-kafka</feature>
       <feature>dropwizard-metrics</feature>
       <feature>lmax-disruptor</feature>
 
