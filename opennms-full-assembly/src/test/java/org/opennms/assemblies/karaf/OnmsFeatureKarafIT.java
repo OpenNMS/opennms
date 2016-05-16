@@ -362,6 +362,12 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("opennms-trapd-listener");
 		System.out.println(executeCommand("features:list -i"));
 	}
+	
+	@Test
+	public void testInstallFeatureOpennmsTrapdHandlerKafka() {
+		installFeature("opennms-trapd-handler-kafka");
+		System.out.println(executeCommand("features:list -i"));
+	}
 
 	@Test
 	public void testInstallFeatureOpennmsIcmpApi() {
