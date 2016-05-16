@@ -1,0 +1,30 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+	
+	<!-- ActiveMQ component provided by minion-core -->
+	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)"/>
+	
+
+	<camelContext id="heartBeatCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+
+		<route id="heartBeatRoute">
+         <from uri="timer://minionTimer?fixedRate=true&amp;daemon=true&amp;period=60000" />
+
+         <setBody>
+         <method ref="org.opennms.minion.core.api.MinionIdentity"
+                  method="getId"/>
+         </setBody>
+         <to uri="queuingservice:heartBeat"/>
+		</route>
+	</camelContext>
+
+</blueprint>
