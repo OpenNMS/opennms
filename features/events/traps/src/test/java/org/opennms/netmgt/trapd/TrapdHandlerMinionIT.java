@@ -32,17 +32,16 @@ import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.Component;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.activemq.ActiveMQBroker;
+import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
@@ -61,39 +60,12 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
-public class TrapdHandlerMinionIT extends CamelBlueprintTestSupport {
+public class TrapdHandlerMinionIT extends CamelBlueprintTest {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TrapdHandlerMinionIT.class);
 
-	private static BrokerService m_broker = null;
-
-	/**
-	 * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
-	 * 
-	 * @see https://issues.apache.org/jira/browse/ARIES-1051
-	 * @see https://access.redhat.com/site/solutions/640943
-	 */
-	@Override
-	public void doPreSetup() throws Exception {
-		System.setProperty("org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString());
-		System.setProperty("de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString());
-	}
-
-	@Override
-	public boolean isUseAdviceWith() {
-		return true;
-	}
-
-	@Override
-	public boolean isUseDebugger() {
-		// must enable debugger
-		return true;
-	}
-
-	@Override
-	public String isMockEndpoints() {
-		return "*";
-	}
+	@ClassRule
+	public static ActiveMQBroker s_broker = new ActiveMQBroker();
 
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -107,34 +79,18 @@ public class TrapdHandlerMinionIT extends CamelBlueprintTestSupport {
 
 		services.put(TrapdConfig.class.getName(), new KeyValueHolder<Object, Dictionary>(config, new Properties()));
 
-		Properties props = new Properties();
-		props.setProperty("alias", "opennms.broker");
-
 		//creating the Active MQ component and service
-		ActiveMQComponent activeMQ = new ActiveMQComponent();
-		activeMQ.setBrokerURL("tcp://127.0.0.1:61716");
-		services.put( Component.class.getName(), new KeyValueHolder<Object, Dictionary>( activeMQ, props ) );
+		ActiveMQComponent queueingservice = new ActiveMQComponent();
+		queueingservice.setBrokerURL("vm://localhost?create=false");
+		Properties props = new Properties();
+		props.put("alias", "opennms.broker");
+		services.put(Component.class.getName(), new KeyValueHolder<Object, Dictionary>(queueingservice, props));
 	}
 
 	// The location of our Blueprint XML files to be used for testing
 	@Override
 	protected String getBlueprintDescriptor() {
 		return "file:blueprint-trapd-handler-minion.xml";
-	}
-
-	@BeforeClass
-	public static void startActiveMQ() throws Exception {
-		m_broker = new BrokerService();
-		// TODO: Open the broker on a port that is checked to be free
-		m_broker.addConnector("tcp://127.0.0.1:61716");
-		m_broker.start();
-	}
-
-	@AfterClass
-	public static void stopActiveMQ() throws Exception {
-		if (m_broker != null) {
-			m_broker.stop();
-		}
 	}
 
 	@Test

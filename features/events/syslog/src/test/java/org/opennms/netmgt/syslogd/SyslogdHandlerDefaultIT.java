@@ -52,8 +52,9 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
 public class SyslogdHandlerDefaultIT extends CamelBlueprintTest {
-    @ClassRule
-    public static ActiveMQBroker s_broker = new ActiveMQBroker();
+
+	@ClassRule
+	public static ActiveMQBroker s_broker = new ActiveMQBroker();
 
 	@SuppressWarnings("rawtypes")
 	@Override
