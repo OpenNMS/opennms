@@ -31,6 +31,7 @@ package org.opennms.netmgt.snmp;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 
 public interface SnmpStrategy {
@@ -43,6 +44,7 @@ public interface SnmpStrategy {
 
     SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid);
     SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
+    CompletableFuture<SnmpValue[]> getAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
 
     SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid);
     SnmpValue[] getNext(SnmpAgentConfig agentConfig, SnmpObjId[] oids);

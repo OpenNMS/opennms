@@ -162,8 +162,9 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTestSupport {
 			try {
 				SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
 				pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
-				pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.4.1.5813.1")));
-				pdu.addVarBind(SnmpObjId.get(".1.3.6.1.4.1.5813.20.1"), SnmpUtils.getValueFactory().getOctetString("Hello world".getBytes("UTF-8")));
+				// warmStart
+				pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.6.3.1.1.5.2")));
+				pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.4.1.5813")));
 				pdu.send(InetAddressUtils.str(InetAddressUtils.ONE_TWENTY_SEVEN), m_port, "public");
 			} catch (Throwable e) {
 				LOG.error(e.getMessage(), e);
@@ -213,7 +214,7 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTestSupport {
 			@Override
 			public void setTrapIdentity(TrapIdentity trapIdentity) {
 				LOG.info("Comparing trap identity");
-				assertEquals(new TrapIdentity(SnmpObjId.get(".1.3.6.1.4.1.5813"), 6, 1).toString(), trapIdentity.toString());
+				assertEquals(new TrapIdentity(SnmpObjId.get(".1.3.6.1.4.1.5813"), 1, 0).toString(), trapIdentity.toString());
 			}
 		});
 		
