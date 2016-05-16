@@ -69,6 +69,11 @@ public class DBTools {
     public static final String DEFAULT_JDBC_DRIVER = "com.sybase.jdbc2.jdbc.SybDriver";
 
     /**
+     * PostgreSQL JDBC driver
+     */
+    public static final String POSTGRESQL_JDBC_DRIVER = "org.postgresql.Driver";
+
+    /**
      * Default user to use when connecting to the database. Defaults to 'sa'
      */
     public static final String DEFAULT_DATABASE_USER = "sa";
