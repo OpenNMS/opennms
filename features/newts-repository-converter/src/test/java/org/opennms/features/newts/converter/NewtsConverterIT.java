@@ -116,6 +116,13 @@ public class NewtsConverterIT implements TemporaryDatabaseAware<TemporaryDatabas
         }
     }
 
+    private static Path RRD_BINARY = Paths.get("/usr/bin/rrdtool");
+    static {
+        if (!Files.exists(RRD_BINARY) || !Files.isExecutable(RRD_BINARY)) {
+             RRD_BINARY = Paths.get("/usr/local/bin/rrdtool");
+        }
+    }
+
     private final static Data[] EXPECTED_DATA = {
             new Data(1414504800, Double.NaN),
             new Data(1414512000, Double.NaN),
@@ -595,6 +602,7 @@ public class NewtsConverterIT implements TemporaryDatabaseAware<TemporaryDatabas
         NewtsConverter.main("-o", OPENNMS_HOME.toString(),
                             "-r", data.toString(),
                             "-t", Boolean.toString(useRrdTool),
+                            "-T", RRD_BINARY.toAbsolutePath().toString(),
                             "-s", Boolean.toString(storeByGroup));
     }
 
