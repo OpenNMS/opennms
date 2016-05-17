@@ -31,8 +31,10 @@ package org.opennms.features.topology.plugins.topo.graphml.model;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -237,9 +239,7 @@ public class GraphMLReader {
     }
 
     private static void validate(GraphML graphML) throws InvalidGraphException {
-        List<String> nodeIds = new ArrayList<>();
-        List<String> edgeIds = new ArrayList<>();
-        List<String> graphIds = new ArrayList<>();
+        Set<String> graphIds = new HashSet<>();
 
         for (GraphMLGraph eachGraph : graphML.getGraphs()) {
             if (graphIds.contains(eachGraph.getId())) {
@@ -247,15 +247,20 @@ public class GraphMLReader {
             }
             graphIds.add(eachGraph.getId());
 
+            Set<String> nodeIds = new HashSet<>();
+            Set<String> edgeIds = new HashSet<>();
+
             for (GraphMLNode eachNode : eachGraph.getNodes()) {
                 if (nodeIds.contains(eachNode.getId())) {
-                    throw new InvalidGraphException("There already exists a node with id " + eachNode.getId());
+                    throw new InvalidGraphException("There already exists a node with id " + eachNode.getId()
+                        + " in graph with id " + eachGraph.getId());
                 }
                 nodeIds.add(eachNode.getId());
             }
             for (GraphMLEdge eachEdge : eachGraph.getEdges()) {
                 if (edgeIds.contains(eachEdge.getId())) {
-                    throw new InvalidGraphException("There already exists an edge with id " + eachEdge.getId());
+                    throw new InvalidGraphException("There already exists an edge with id " + eachEdge.getId()
+                        + " in graph with id " + eachGraph.getId());
                 }
                 edgeIds.add(eachEdge.getId());
             }
