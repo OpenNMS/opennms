@@ -88,34 +88,9 @@ Two styles are available for identifying the node in a resource ID:
 
 [options="header", cols="5,10,10"]
 |===
-| Style        | Description                                                                           | Example
-| `node`       | Identifies a node by its database ID, which is always an integer                      | `node[42]`
-| `nodeSource` | Identifies a node by its foreign-source name and foreign-ID, joined by a single colon | `nodeSource[Servers:115da833-0957-4471-b496-a731928c27dd]`
-|===
-
-The two styles are not interchangeable.
-For example, it is not valid to use `node[Routers:atledg04]` nor to use `nodeSource[175]`.
-
-IMPORTANT: On systems where `storeByForeignSource` is enabled, you must *always* use the `nodeSource` style when referring to requisitioned nodes and `node` when referring to auto-provisioned nodes.
-
-Auto-provisioned nodes are ones that do not belong to any requisition but were added through discovery or another mechanism that creates `newSuspect` events.
-Since these nodes lack a foreign-source name, they intrinsically cannot be represented using `nodeSource` style identifiers.
-The following tables summarize which style is permissible in which situation.
-
-.If `storeByForeignSource` is `false`
-[options="header", cols="h,2*"]
-|===
-| Node Provisioning Style | `node[]` Valid  | `nodeSource[]` Valid
-| Requisitioned           | Yes             | Yes
-| Auto-Provisioned        | Yes             | No
-|===
-
-.If `storeByForeignSource` is `true`
-[options="header", cols="h,2*"]
-|===
-| Node Provisioning Style | `node[]` Valid  | `nodeSource[]` Valid
-| Requisitioned           | No              | Yes
-| Auto-Provisioned        | Yes             | No
+| Style            | Description                                                                           | Example
+| `node[ID]`       | Identifies a node by its database ID, which is always an integer                      | `node[42]`
+| `node[FS:FID]`   | Identifies a node by its foreign-source name and foreign-ID, joined by a single colon | `node[Servers:115da833-0957-4471-b496-a731928c27dd]`
 |===
 
 The node identifier is followed by a period, then a resource-type name and instance name.
@@ -136,4 +111,4 @@ Putting it all together, here are a few well-formed resource IDs:
 
 * `node[1].nodeSnmp[]`
 * `node[42].interfaceSnmp[eth0-04013f75f101]`
-* `nodeSource[Servers:115da833-0957-4471-b496-a731928c27dd].dskIndex[_root_fs]`
+* `node[Servers:115da833-0957-4471-b496-a731928c27dd].dskIndex[_root_fs]`
