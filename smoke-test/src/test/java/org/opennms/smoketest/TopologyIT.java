@@ -101,7 +101,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
         TopologyProvider APPLICATION = () -> "Application";
         TopologyProvider BUSINESSSERVICE = () -> "Business Services";
-        TopologyProvider VMWARE = () -> "VMWare";
+        TopologyProvider VMWARE = () -> "VMware";
         TopologyProvider ENLINKD = () -> "Enhanced Linkd";
 
         String getLabel();
