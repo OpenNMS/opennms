@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml.model;
+package org.opennms.features.graphml.model;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class GraphMLReader {
         return convert(JAXB.unmarshal(input, GraphmlType.class));
     }
 
-    private static GraphML convert(GraphmlType input) throws InvalidGraphException {
+    public static GraphML convert(GraphmlType input) throws InvalidGraphException {
         final Map<String, GraphMLGraph> nodeIdToGraphMapping = new HashMap<>();
         final Map<String, KeyType> keyIdToTypeMapping = getKeyIdToTypeMapping(input.getKey());
         final List<GraphType> graphs = filter(input.getGraphOrData(), GraphType.class);

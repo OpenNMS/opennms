@@ -26,42 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml.model;
+package org.opennms.features.graphml.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-public class GraphML extends GraphMLElement {
-    private List<GraphMLGraph> graphs = new ArrayList<>();
+public class GraphMLNode extends GraphMLElement {
 
     @Override
     public <T> T accept(GraphMLElementVisitor<T> visitor) {
         return visitor.visit(this);
     }
-
-    public void addGraph(GraphMLGraph graph) {
-        this.graphs.add(graph);
-    }
-
-    public List<GraphMLGraph> getGraphs() {
-        return graphs;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), graphs);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        boolean equals = super.equals(obj);
-        if (equals) {
-            if (obj instanceof GraphML) {
-                return Objects.equals(graphs, ((GraphML) obj).graphs);
-            }
-        }
-        return false;
-    }
 }
-

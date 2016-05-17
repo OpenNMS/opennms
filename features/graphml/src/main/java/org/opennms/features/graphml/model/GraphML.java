@@ -26,25 +26,42 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml.model;
+package org.opennms.features.graphml.model;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-public class GraphMLReaderTest {
+public class GraphML extends GraphMLElement {
+    private List<GraphMLGraph> graphs = new ArrayList<>();
 
-    @Test
-    public void verifyRead() throws InvalidGraphException {
-        GraphML graphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph.xml"));
-        Assert.assertEquals(2, graphML.getGraphs().size());
+    @Override
+    public <T> T accept(GraphMLElementVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
-        GraphMLGraph graph = graphML.getGraphs().get(0);
-        Assert.assertEquals("regions", graph.getId());
-        Assert.assertEquals(4, graph.getNodes().size());
+    public void addGraph(GraphMLGraph graph) {
+        this.graphs.add(graph);
+    }
 
-        graph = graphML.getGraphs().get(1);
-        Assert.assertEquals("markets", graph.getId());
-        Assert.assertEquals(16, graph.getNodes().size());
+    public List<GraphMLGraph> getGraphs() {
+        return graphs;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), graphs);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean equals = super.equals(obj);
+        if (equals) {
+            if (obj instanceof GraphML) {
+                return Objects.equals(graphs, ((GraphML) obj).graphs);
+            }
+        }
+        return false;
     }
 }
+

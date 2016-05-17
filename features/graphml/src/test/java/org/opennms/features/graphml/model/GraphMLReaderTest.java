@@ -26,12 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml.model;
+package org.opennms.features.graphml.model;
 
-public class GraphMLNode extends GraphMLElement {
+import org.junit.Assert;
+import org.junit.Test;
 
-    @Override
-    public <T> T accept(GraphMLElementVisitor<T> visitor) {
-        return visitor.visit(this);
+public class GraphMLReaderTest {
+
+    @Test
+    public void verifyRead() throws InvalidGraphException {
+        GraphML graphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph.xml"));
+        Assert.assertEquals(2, graphML.getGraphs().size());
+
+        GraphMLGraph graph = graphML.getGraphs().get(0);
+        Assert.assertEquals("regions", graph.getId());
+        Assert.assertEquals(4, graph.getNodes().size());
+
+        graph = graphML.getGraphs().get(1);
+        Assert.assertEquals("markets", graph.getId());
+        Assert.assertEquals(16, graph.getNodes().size());
+
     }
 }
