@@ -108,6 +108,8 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void canSwitchLayers() {
+        topologyUIPage.selectTopologyProvider(() -> LABEL);
+        topologyUIPage.clearFocus();
         topologyUIPage.selectLayer("Markets");
         assertEquals(1, topologyUIPage.getFocusedVertices().size());
         assertEquals("North 1", topologyUIPage.getFocusedVertices().get(0).getLabel());
@@ -132,7 +134,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
             Assert.assertEquals(201, response.getStatusLine().getStatusCode());
         }
         // We wait to give the GraphMLMetaTopologyFactory the chance to initialize the new Topology
-        Thread.sleep(5000);
+        Thread.sleep(60000);
     }
 
     private static void deleteGraph() throws IOException, InterruptedException {
@@ -142,7 +144,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
             Assert.assertEquals(200, response.getStatusLine().getStatusCode());
         }
         // We wait to give teh GraphMLMetaTopologyFactory the chance to clean up afterwards
-        Thread.sleep(5000);
+        Thread.sleep(60000);
     }
 
     private static HttpClientWrapper createClientWrapper() {
