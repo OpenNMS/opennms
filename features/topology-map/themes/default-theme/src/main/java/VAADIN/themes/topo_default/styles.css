@@ -254,6 +254,16 @@ div.v-table-header-wrap {
     word-wrap: break-word;
 }
 
+.search-token-ctrls .icon-remove:before  {
+    font-family: FontAwesome;
+    content: "\f00d";
+}
+
+.search-token-ctrls .icon-location-arrow:before  {
+    font-family: FontAwesome;
+    content: "\f124";
+}
+
 .gwt-SuggestBox {
   padding: 2px;
 }
