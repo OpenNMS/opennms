@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2;
+package org.opennms.web.rest.v1;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;

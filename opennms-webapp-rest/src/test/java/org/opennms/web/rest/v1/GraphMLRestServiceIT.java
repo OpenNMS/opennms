@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2;
+package org.opennms.web.rest.v1;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -58,10 +58,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @JUnitTemporaryDatabase
 public class GraphMLRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
-    public GraphMLRestServiceIT() {
-        super(CXF_REST_V2_CONTEXT_PATH);
-    }
-
     @Override
     protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
@@ -70,7 +66,7 @@ public class GraphMLRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void verifyCanCreateAndDelete() throws Exception {
-        final String inputGraph = IOUtils.toString(getClass().getResourceAsStream("/v2/test-graph.xml"), "UTF-8");
+        final String inputGraph = IOUtils.toString(getClass().getResourceAsStream("/v1/test-graph.xml"), "UTF-8");
 
         // Create
         sendPost("/graphml/new-graph", inputGraph, 201);

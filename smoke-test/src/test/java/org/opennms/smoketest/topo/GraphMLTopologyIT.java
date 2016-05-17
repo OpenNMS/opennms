@@ -59,7 +59,7 @@ import com.google.common.base.Charsets;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
 
-    private static final String URL = BASE_URL + "opennms/api/v2/graphml/test-graph";
+    private static final String URL = BASE_URL + "opennms/rest/graphml/test-graph";
 
     private static final String LABEL = "GraphML Topology Provider (test-graph)";
 
