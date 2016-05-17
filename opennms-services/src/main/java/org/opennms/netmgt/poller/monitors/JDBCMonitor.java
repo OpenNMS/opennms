@@ -158,12 +158,6 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_AVAILABLE
 	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNAVAILABLE
 	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
-	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_AVAILABLE
-	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNAVAILABLE
-	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
-	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_AVAILABLE
-	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNAVAILABLE
-	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
 	 * @see <a
 	 *      href="http://manuals.sybase.com/onlinebooks/group-jc/jcg0550e/prjdbc/@Generic__BookTextView/9332;pt=1016#X">Error
 	 *      codes for JConnect </a>
@@ -187,8 +181,9 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 		if (parameters == null) {
 			throw new NullPointerException("parameter cannot be null");
 		}
+
+		String driverClass = ParameterMap.getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER);
 		try {
-			String driverClass = ParameterMap.getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER);
 			driver = (Driver)Class.forName(driverClass).newInstance();
 			LOG.debug("Loaded JDBC driver: {}", driverClass);
 		} catch (Throwable exp) {
@@ -221,7 +216,11 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 				// We are connected, upgrade the status to unresponsive
 				status = PollStatus.unresponsive();
 
-				if (con != null) {
+				if (con == null) {
+					LOG.error("Wrong kind of JDBC driver ({}) to connect to the JDBC URL: {}", driverClass, url);
+					status = PollStatus.unavailable("Wrong kind of JDBC driver to connect to the JDBC URL");
+					break;
+				} else {
 					LOG.debug("JDBC Connection Established");
 
 					tracker.startAttempt();
