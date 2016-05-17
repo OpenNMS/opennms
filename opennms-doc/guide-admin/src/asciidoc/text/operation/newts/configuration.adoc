@@ -36,8 +36,9 @@ The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can
 | `org.opennms.newts.config.keyspace`             | `newts`              | Name of the keyspace to use.
 | `org.opennms.newts.config.hostname`             | `localhost`          | IP address or hostnames of the Cassandra nodes. Multiple hosts can be separated by a comma.
 | `org.opennms.newts.config.port`                 | `9042`               | CQL port used to connect to the Cassandra nodes.
-| `org.opennms.newts.config.username`             | `cassandra`          | Username to use when connceting to Cassandra via CQL.
-| `org.opennms.newts.config.password`             | `cassandra`          | Password to use when connceting to Cassandra via CQL.
+| `org.opennms.newts.config.username`             | `cassandra`          | Username to use when connecting to Cassandra via CQL.
+| `org.opennms.newts.config.password`             | `cassandra`          | Password to use when connecting to Cassandra via CQL.
+| `org.opennms.newts.config.ssl`                  | `false`              | Enable/disable SSL when connecting to Cassandra.
 | `org.opennms.newts.config.read_consistency`     | `ONE`                | Consistency level used for _read_ operations.
                                                                            See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html[Configuring data consistency] for a list of available options.
 | `org.opennms.newts.config.write_consistency`    | `ANY`                | Consistency level used for _write_ operations.
