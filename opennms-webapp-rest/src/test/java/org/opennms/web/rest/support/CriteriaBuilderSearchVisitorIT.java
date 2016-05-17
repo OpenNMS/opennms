@@ -50,13 +50,6 @@ import org.opennms.web.rest.v2.ScanReportRestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-/*
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
-        "classpath:META-INF/opennms/applicationContext-soa.xml",
-        "classpath:META-INF/opennms/applicationContext-mockDao.xml"
-})
- */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -66,7 +59,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class CriteriaBuilderSearchVisitorTest {
+public class CriteriaBuilderSearchVisitorIT {
 
 	@Autowired
 	private ScanReportDao m_dao;
