@@ -65,6 +65,14 @@
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-expression</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>spring-jms</artifactId>
         </exclusion>
         <exclusion>
