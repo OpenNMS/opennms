@@ -211,6 +211,12 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 WebElement menuElement = getMenubarElement(label);
                 actions.moveToElement(menuElement);
                 menuElement.click();
+                // we should wait, otherwise the menu has not yet updated
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    throw Throwables.propagate(e);
+                }
             }
             return this;
         }
@@ -222,8 +228,14 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
         public TopologyUIPage selectTopologyProvider(TopologyProvider topologyProvider) {
             Objects.requireNonNull(topologyProvider);
-            clickOnMenuItemsWithLabels("View", topologyProvider.getLabel());
-            return this;
+            try {
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                clickOnMenuItemsWithLabels("View", topologyProvider.getLabel());
+                waitForTransition(); // we have to wait for the UI to re-settle
+                return this;
+            } finally {
+                testCase.setImplicitWait();
+            }
         }
 
         public TopologyUIPage setAutomaticRefresh(boolean enabled) {
