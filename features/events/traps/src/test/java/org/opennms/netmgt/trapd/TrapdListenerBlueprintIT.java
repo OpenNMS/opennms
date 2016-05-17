@@ -36,11 +36,11 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
@@ -55,7 +55,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
-public class TrapdListenerBlueprintIT extends CamelBlueprintTestSupport {
+public class TrapdListenerBlueprintIT extends CamelBlueprintTest {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TrapdListenerBlueprintIT.class);
 
@@ -66,34 +66,6 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTestSupport {
 	private final TrapNotificationLatch m_handler = new TrapNotificationLatch(3);
 
 	private int m_port;
-
-	/**
-	 * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
-	 * 
-	 * @see https://issues.apache.org/jira/browse/ARIES-1051
-	 * @see https://access.redhat.com/site/solutions/640943
-	 */
-	@Override
-	public void doPreSetup() throws Exception {
-		System.setProperty("org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString());
-		System.setProperty("de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString());
-	}
-
-	@Override
-	public boolean isUseAdviceWith() {
-		return true;
-	}
-
-	@Override
-	public boolean isUseDebugger() {
-		// must enable debugger
-		return true;
-	}
-
-	@Override
-	public String isMockEndpoints() {
-		return "*";
-	}
 
 	/**
 	 * This method overrides the blueprint property and sets port to 10514 instead of 162
