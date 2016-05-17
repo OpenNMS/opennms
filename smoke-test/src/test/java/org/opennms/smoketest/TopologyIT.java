@@ -28,6 +28,9 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertEquals;
+
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -80,26 +83,28 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         public String getLabel() {
             return label;
         }
+
+        public static Layout createFromLabel(String label) {
+            for (Layout eachLayout : values()) {
+                if (eachLayout.getLabel().equals(label)) {
+                    return eachLayout;
+                }
+            }
+            return null;
+        }
     }
 
     /**
      * All known topology providers.
      */
-    public static enum TopologyProvider {
-        APPLICATION("Application"),
-        BUSINESSSERVICE("Business Services"),
-        ENLINKD("Enhanced Linkd"),
-        VMWARE("VMware");
+    public interface TopologyProvider {
 
-        private final String label;
+        TopologyProvider APPLICATION = () -> "Application";
+        TopologyProvider BUSINESSSERVICE = () -> "Business Services";
+        TopologyProvider VMWARE = () -> "VMWare";
+        TopologyProvider ENLINKD = () -> "Enhanced Linkd";
 
-        TopologyProvider(String label) {
-            this.label = Objects.requireNonNull(label);
-        }
-
-        public String getLabel() {
-            return label;
-        }
+        String getLabel();
     }
 
     /**
@@ -131,7 +136,12 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         public void removeFromFocus() {
-            getElement().findElement(By.xpath("//a[@class='icon-remove']")).click();
+            try {
+                ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                getElement().findElement(By.xpath("//a[@class='icon-remove']")).click();
+            } finally {
+                ui.testCase.setImplicitWait();
+            }
             ui.waitForTransition();
         }
 
@@ -211,6 +221,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         public TopologyUIPage selectTopologyProvider(TopologyProvider topologyProvider) {
+            Objects.requireNonNull(topologyProvider);
             clickOnMenuItemsWithLabels("View", topologyProvider.getLabel());
             return this;
         }
@@ -231,6 +242,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
         public TopologyUISearchResults search(String query) {
             testCase.enterText(By.xpath("//*[@id='info-panel-component']//input[@type='text']"), query);
+            waitForTransition();
             return new TopologyUISearchResults(this);
         }
 
@@ -280,6 +292,58 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 waitForTransition();
             }
             return this;
+        }
+
+        /**
+         * Convenient method to clear the focus.
+         */
+        public void clearFocus() {
+            for (TopologyIT.FocusedVertex focusedVerted : getFocusedVertices()) {
+                focusedVerted.removeFromFocus();
+            }
+            assertEquals(0, getFocusedVertices().size());
+        }
+
+        public Layout getSelectedLayout() {
+            try {
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                clickOnMenuItemsWithLabels("View"); // we have to click the View menubar, otherwise the menu elements are NOT visible
+                List<WebElement> elements = testCase.m_driver.findElements(By.xpath("//span[@class='v-menubar-menuitem v-menubar-menuitem-checked']"));
+                for (WebElement eachElement : elements) {
+                    Layout layout = Layout.createFromLabel(eachElement.getText());
+                    if (layout != null) {
+                        return layout;
+                    }
+                }
+                throw new RuntimeException("No Layout is selected. This should not be possible");
+            } finally {
+                resetMenu(); // finally reset the menu
+                testCase.setImplicitWait();
+            }
+        }
+
+        public void selectLayer(String layerName) {
+            Objects.requireNonNull(layerName, "The layer name cannot be null");
+            try {
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                if (!isLayoutComponentVisible()) {
+                    testCase.findElementById("layerToggleButton").click();
+                }
+                WebElement layerElement = testCase.findElementById("layerComponent").findElement(By.xpath("//div[text() = '" + layerName + "']"));
+                layerElement.click();
+            } finally {
+                testCase.setImplicitWait();
+            }
+        }
+
+        /**
+         * Returns if the layerToggleButton has been pressed already and the layers are visible.
+         *
+         * @return true if the layerToggleButton has been pressed already and the layers are visible, otherwise false
+         */
+        private boolean isLayoutComponentVisible() {
+            WebElement layerToggleButton = testCase.findElementById("layerToggleButton");
+            return layerToggleButton.getCssValue("class").contains("expanded");
         }
 
         /**
@@ -346,6 +410,8 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     }
 
     public static class TopologyUISearchResults {
+        private static final String XPATH = "//*/td[@role='menuitem']/div[contains(text(),'%s')]";
+
         private final TopologyUIPage ui;
 
         public TopologyUISearchResults(TopologyUIPage ui) {
@@ -353,9 +419,13 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         public TopologyUIPage selectItemThatContains(String substring) {
-            ui.testCase.findElementByXpath("//*/td[@role='menuitem']/div[contains(text(),'" + substring + "')]").click();
+            ui.testCase.findElementByXpath(String.format(XPATH, substring)).click();
             ui.waitForTransition();
             return ui;
+        }
+
+        public long countItemsThatContain(String substring) {
+            return ui.testCase.m_driver.findElements(By.xpath(String.format(XPATH, substring))).size();
         }
     }
 
@@ -374,8 +444,13 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void canSelectKnownTopologyProviders() throws InterruptedException {
-        for (TopologyProvider topologyProvider : TopologyProvider.values()) {
-            topologyUiPage.selectTopologyProvider(topologyProvider);
+        for (Field eachField : TopologyProvider.class.getDeclaredFields()) {
+            try {
+                TopologyProvider topologyProvider = (TopologyProvider) eachField.get(null);
+                topologyUiPage.selectTopologyProvider(topologyProvider);
+            } catch (IllegalAccessException e) {
+                throw Throwables.propagate(e);
+            }
         }
     }
 
