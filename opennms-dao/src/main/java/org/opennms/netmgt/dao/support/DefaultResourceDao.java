@@ -54,7 +54,6 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
-import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -91,7 +90,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * [1] will catch interface-level resources
      * [2] will catch generic index type resources
      */
-    private static final int MAXIMUM_NODE_METRIC_RESOURCE_DEPTH = 2;
+    public static final int MAXIMUM_NODE_METRIC_RESOURCE_DEPTH = 2;
 
     private ResourceStorageDao m_resourceStorageDao;
     private NodeDao m_nodeDao;
@@ -103,7 +102,6 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
 
     private Map<String, OnmsResourceType> m_resourceTypes = Maps.newHashMap();
     private NodeResourceType m_nodeResourceType;
-    private NodeSourceResourceType m_nodeSourceResourceType;
 
     /**
      * <p>Constructor for DefaultResourceDao.</p>
@@ -244,6 +242,9 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
 
         m_nodeResourceType = new NodeResourceType(this, m_nodeDao);
         resourceTypes.put(m_nodeResourceType.getName(), m_nodeResourceType);
+        // Add 'nodeSource' as an alias to for the 'node' resource type to preserve backwards compatibility
+        // See NMS-8404 for details
+        resourceTypes.put("nodeSource", m_nodeResourceType);
 
         if (isDomainResourceTypeUsed()) {
             LOG.debug("One or more packages are configured with storeByIfAlias=true. Enabling the domain resource type.");
@@ -252,9 +253,6 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         } else {
             LOG.debug("No packages are configured with storeByIfAlias=true. Excluding the domain resource type.");
         }
-
-        m_nodeSourceResourceType = new NodeSourceResourceType(this, m_nodeDao);
-        resourceTypes.put(m_nodeSourceResourceType.getName(), m_nodeSourceResourceType);
 
         m_resourceTypes = resourceTypes;
         m_lastUpdatedResourceTypesConfig = m_resourceTypesDao.getLastUpdate();
@@ -276,31 +274,12 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     public List<OnmsResource> findTopLevelResources() {
         // Retrieve all top-level resources by passing null as the parent
         final List<OnmsResource> resources = m_resourceTypes.values().stream()
+                .distinct()
                 .map(type -> type.getResourcesForParent(null))
                 .flatMap(rs -> rs.stream())
+                .filter(resource -> hasAnyChildResources(resource))
                 .collect(Collectors.toList());
-
-        // Handle node resources separately since their effective
-        // type (node vs nodeSource) depends on various factors.
-        // See getResourceForNode() for details.
-        resources.addAll(findNodeResources());
-
         return resources;
-    }
-
-    /**
-     * Returns the set of node resources for all nodes in
-     * the database that:
-     *   1) Are not deleted
-     *   2) Have one or more child resources
-     */
-    protected List<OnmsResource> findNodeResources() {
-        return m_nodeDao.findAll().stream()
-            // Only return non-deleted nodes - see NMS-2977
-            .filter(node -> node.getType() == null || !node.getType().equals("D"))
-            .map(node -> getResourceForNode(node))
-            .filter(resource -> hasAnyChildResources(resource))
-            .collect(Collectors.toList());
     }
 
     /**
@@ -360,31 +339,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     @Override
     public OnmsResource getResourceForNode(OnmsNode node) {
         Assert.notNull(node, "node argument must not be null");
-
-        // Only attempt to create nodeSource types if storeByFs is enabled
-        boolean createUsingNodeSourceType = ResourceTypeUtils.isStoreByForeignSource();
-
-        // Don't create using a nodeSource if either the fs or fid are missing
-        if (createUsingNodeSourceType && (node.getForeignSource() == null || node.getForeignId() == null)) {
-            createUsingNodeSourceType = false;
-        }
-
-        // If the nodeSource directory does not exist, but the node directory does
-        // then create the resource using the node type instead of the nodeSource type
-        if (createUsingNodeSourceType) {
-            final boolean nodeSourcePathExists = m_resourceStorageDao.existsWithin(NodeSourceResourceType.getResourcePathForNode(node), MAXIMUM_NODE_METRIC_RESOURCE_DEPTH);
-            if (!nodeSourcePathExists) {
-                final boolean nodePathExists = m_resourceStorageDao.existsWithin(NodeResourceType.getResourcePathForNode(node), MAXIMUM_NODE_METRIC_RESOURCE_DEPTH);
-                createUsingNodeSourceType = !nodePathExists;
-            }
-        }
-
-        // Create the resource
-        if (createUsingNodeSourceType) {
-            return m_nodeSourceResourceType.createResourceForNode(node);
-        } else {
-            return m_nodeResourceType.createResourceForNode(node);
-        }
+        return m_nodeResourceType.createResourceForNode(node);
     }
 
     /**

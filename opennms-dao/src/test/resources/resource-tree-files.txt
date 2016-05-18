@@ -1,5 +1,4 @@
 snmp/opennms.org/64.146.64.212/http.rrd
-snmp/fs/NODES/1/http.rrd
 response/172.20.1.40/snmp.rrd
 response/172.20.1.40/icmp.rrd
 response/172.20.1.40/ssh.rrd
