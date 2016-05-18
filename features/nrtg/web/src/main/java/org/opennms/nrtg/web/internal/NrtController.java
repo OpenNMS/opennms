@@ -111,7 +111,7 @@ public class NrtController {
         }
     }
 
-    public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession, boolean useJson) {
+    public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession) {
 
         assert (resourceId != null);
         logger.debug("resourceId: '{}'", resourceId);
@@ -132,8 +132,7 @@ public class NrtController {
             getCollectionJobMap(httpSession, true).put(nrtCollectionTaskId, collectionJob);
         }
 
-        final String viewName = useJson ? "nrt/realtime.json" : "nrt/realtime.html";
-        ModelAndView modelAndView = new ModelAndView(viewName);
+        ModelAndView modelAndView = new ModelAndView("nrt/realtime.json");
         modelAndView.addObject("nrtCollectionTaskId", nrtCollectionTaskId);
 
         modelAndView.addObject("graphTitle", prefabGraph.getTitle());
