@@ -3298,6 +3298,11 @@
         <artifactId>jetty-all-server</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-rewrite</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
       <!-- Make sure that this version matches the version from Jetty -->
       <dependency>
         <groupId>org.eclipse.jetty.orbit</groupId>
