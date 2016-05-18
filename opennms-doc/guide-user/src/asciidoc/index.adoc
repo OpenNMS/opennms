@@ -32,3 +32,7 @@ include::text/bsm/root-cause-impact-analysis.adoc[]
 include::text/bsm/simulation-mode.adoc[]
 include::text/bsm/share-bsm-view.adoc[]
 include::text/bsm/change-icons.adoc[]
+
+[[gu-alarms]]
+== Alarms
+include::text/alarms/alarm-notes.adoc[]

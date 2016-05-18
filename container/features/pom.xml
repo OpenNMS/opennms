@@ -196,7 +196,6 @@
             <feature>opennms-discovery-daemon</feature>
             <feature>opennms-events-api</feature>
             <feature>opennms-events-daemon</feature>
-            <feature>opennms-events-traps</feature>
             <feature>opennms-icmp-api</feature>
             <feature>opennms-icmp-jna</feature>
             <feature>opennms-icmp-jni</feature>
@@ -216,6 +215,9 @@
             <feature>opennms-syslogd-handler-default</feature>
             <feature>opennms-syslogd-handler-kafka</feature>
             <feature>opennms-syslogd-handler-minion</feature>
+            <feature>opennms-trapd</feature>
+            <feature>opennms-trapd-handler-default</feature>
+            <feature>opennms-trapd-listener</feature>
             <!-- <feature>opennms-webapp</feature> -->
             <feature>org.json</feature>
             <feature>postgresql</feature>
@@ -344,6 +346,12 @@
     <dependency>
       <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.syslog</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.traps</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

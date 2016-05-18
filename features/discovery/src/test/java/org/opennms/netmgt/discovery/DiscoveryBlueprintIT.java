@@ -39,7 +39,6 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.CamelExecutionException;
 import org.apache.camel.Component;
 import org.apache.camel.Exchange;
-import org.apache.camel.ExchangeTimedOutException;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -69,11 +68,15 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
 public class DiscoveryBlueprintIT extends CamelBlueprintTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryBlueprintIT.class);
 
     private static final MockEventIpcManager IPC_MANAGER_INSTANCE = new MockEventIpcManager();
 
@@ -269,11 +272,19 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
             template.requestBody( "seda:submitDiscoveryTask", config );
         } catch(CamelExecutionException e) {
             // Expected failure exception
-            assertEquals(ExchangeTimedOutException.class, e.getCause().getClass());
-            return;
+            switch(e.getCause().getClass().getName()) {
+                case "org.apache.camel.ExchangeTimedOutException":
+                case "org.springframework.jms.UncategorizedJmsException":
+                case "org.apache.camel.language.bean.RuntimeBeanExpressionException":
+                    LOG.info("An expected exception was thrown", e);
+                    return;
+                default:
+                    LOG.error("The exception cause was not an expected type", e);
+                    fail("The exception cause was not an expected type: " + e.getCause());
+            }
+            fail("A timeout exception should be thrown from the exchange");
         } finally {
             mockDiscoverer.stop();
         }
-        fail("A timeout exception should be thrown from the exchange");
     }
 }

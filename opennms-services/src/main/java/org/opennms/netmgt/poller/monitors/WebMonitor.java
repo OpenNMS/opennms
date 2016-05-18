@@ -166,10 +166,16 @@ public class WebMonitor extends AbstractServiceMonitor {
 
         } catch (IOException e) {
             LOG.info(e.getMessage());
+            pollStatus = PollStatus.unavailable(e.getMessage());
         } catch (URISyntaxException e) {
             LOG.info(e.getMessage());
-        } catch (GeneralSecurityException gse) {
-            LOG.error("Unable to set SSL trust to allow self-signed certificates", gse);
+            pollStatus = PollStatus.unavailable(e.getMessage());
+        } catch (GeneralSecurityException e) {
+            LOG.error("Unable to set SSL trust to allow self-signed certificates", e);
+            pollStatus = PollStatus.unavailable("Unable to set SSL trust to allow self-signed certificates");
+        } catch (Throwable e) {
+            LOG.error("Unexpected exception while running " + getClass().getName(), e);
+            pollStatus = PollStatus.unavailable("Unexpected exception: " + e.getMessage());
         } finally {
             IOUtils.closeQuietly(clientWrapper);
         }

@@ -476,7 +476,10 @@ public class Snmp4JStrategy implements SnmpStrategy {
         } else {
         	udpAddress = new UdpAddress(address, snmpTrapPort);
         }
-        final TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping(udpAddress);
+
+        // Set socket option SO_REUSEADDR so that we can bind to the port even if it
+        // has recently been closed by passing 'true' as the second argument here.
+        final TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping(udpAddress, true);
         info.setTransportMapping(transport);
         Snmp snmp = new Snmp(transport);
         snmp.addCommandResponder(m_trapHandler);
