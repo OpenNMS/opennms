@@ -89,7 +89,7 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
 
     private final int m_numWriterThreads;
 
-    private final Meter m_droppedMetrics;
+    private final Meter m_droppedSamples;
 
     /**
      * The {@link RingBuffer} doesn't appear to expose any methods that indicate the number
@@ -126,7 +126,7 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
                     }
                 });
 
-        m_droppedMetrics = registry.meter(MetricRegistry.name("ring-buffer", "dropped-metrics"));
+        m_droppedSamples = registry.meter(MetricRegistry.name("ring-buffer", "dropped-samples"));
 
         LOG.debug("Using max_batch_size: {} and ring_buffer_size: {}", maxBatchSize, m_ringBufferSize);
         setUpWorkerPool();
@@ -179,7 +179,7 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
                     .collect(Collectors.joining(", "));
             LOG.error("The ring buffer is full. {} samples associated with resource ids {} will be dropped.",
                     samples.size(), uniqueResourceIds);
-            m_droppedMetrics.mark(samples.size());
+            m_droppedSamples.mark(samples.size());
             return;
         }
         // Increase our entry counter
