@@ -31,9 +31,18 @@ package org.opennms.netmgt.collection.commands;
 import java.io.File;
 import java.net.InetAddress;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
@@ -57,6 +66,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * Used to stress the persistence layer with generated collection sets.
@@ -64,7 +74,7 @@ import com.google.common.collect.Lists;
  * @author jwhite
  */
 @Command(scope = "metrics", name = "stress", description="Stress the current persistence strategy with generated collection sets.")
-public class StressCommand extends OsgiCommandSupport implements Runnable {
+public class StressCommand extends OsgiCommandSupport {
 
     private PersisterFactory persisterFactory;
 
@@ -89,6 +99,9 @@ public class StressCommand extends OsgiCommandSupport implements Runnable {
     @Option(name="-r", aliases="--report", description="number of seconds after which the report should be generated, defaults to 30", required=false, multiValued=false)
     int reportIntervalInSeconds = 30;
 
+    @Option(name="-t", aliases="--threads", description="number of threads that will be used to generate and persist collection sets, defaults to 1", required=false, multiValued=false)
+    int numberOfGeneratorThreads = 1;
+
     private final AtomicBoolean abort = new AtomicBoolean(false);
 
     private final MetricRegistry metrics = new MetricRegistry();
@@ -102,7 +115,7 @@ public class StressCommand extends OsgiCommandSupport implements Runnable {
     /**
      * Used to calculate non-constant, but predictable values stored in numeric attributes.
      */
-    int seed = 0;
+    private AtomicInteger seed = new AtomicInteger();
 
     @Override
     protected Void doExecute() {
@@ -114,6 +127,7 @@ public class StressCommand extends OsgiCommandSupport implements Runnable {
         numberOfNumericAttributesPerGroup = Math.max(0, numberOfNumericAttributesPerGroup);
         numberOfStringAttributesPerGroup = Math.max(0, numberOfStringAttributesPerGroup);
         reportIntervalInSeconds = Math.max(1, reportIntervalInSeconds);
+        numberOfGeneratorThreads = Math.max(1, numberOfGeneratorThreads);
 
         // Display the effective settings and rates
         double attributesPerSecond = (1 / (double)intervalInSeconds) * numberOfGroupsPerInterface
@@ -124,6 +138,7 @@ public class StressCommand extends OsgiCommandSupport implements Runnable {
         System.out.printf("\t with %d attribute groups\n", numberOfGroupsPerInterface);
         System.out.printf("\t with %d numeric attributes\n", numberOfNumericAttributesPerGroup);
         System.out.printf("\t with %d string attributes\n", numberOfStringAttributesPerGroup);
+        System.out.printf("Across %d threads\n", numberOfGeneratorThreads);
         System.out.printf("Which will yield an effective\n");
         System.out.printf("\t %.2f numeric attributes per second\n", numberOfNumericAttributesPerGroup * attributesPerSecond);
         System.out.printf("\t %.2f string attributes per second\n", numberOfStringAttributesPerGroup * attributesPerSecond);
@@ -133,46 +148,19 @@ public class StressCommand extends OsgiCommandSupport implements Runnable {
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .build();
 
-        // Start the thread
-        try {
-            reporter.start(reportIntervalInSeconds, TimeUnit.SECONDS);
+        // Setup the executor
+        ThreadFactory threadFactoy = new ThreadFactoryBuilder()
+            .setNameFormat("Metrics Stress Tool Generator #%d")
+            .build();
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfGeneratorThreads, threadFactoy);
 
-            Thread t = new Thread(this);
-            t.setName("Metrics Stress Tool");
-            t.start();
-
-            while(true) {
-                try {
-                    Thread.sleep(reportIntervalInSeconds * 1000);
-                } catch (InterruptedException e) {
-                    Thread.interrupted();
-                    System.out.println("Stopping the collection set generator...");
-                    abort.set(true);
-                    t.interrupt();
-                    try {
-                        t.join();
-                    } catch (InterruptedException ee) {
-                        // pass
-                    }
-                    break;
-                }
-            }
-        } finally {
-            reporter.stop();
-        }
-
-        return null;
-    }
-
-    @Override
-    public void run() {
+        // Setup auxiliary objects needed by the persister
         ServiceParameters params = new ServiceParameters(Collections.emptyMap());
-
         RrdRepository repository = new RrdRepository();
         repository.setStep(Math.max(intervalInSeconds, 1));
         repository.setHeartBeat(repository.getStep() * 2);
-        // Use the default list of RRAs we provide in our stock configuration files
         repository.setRraList(Lists.newArrayList(
+                // Use the default list of RRAs we provide in our stock configuration files
                 "RRA:AVERAGE:0.5:1:2016",
                 "RRA:AVERAGE:0.5:12:1488",
                 "RRA:AVERAGE:0.5:288:366",
@@ -180,45 +168,77 @@ public class StressCommand extends OsgiCommandSupport implements Runnable {
                 "RRA:MIN:0.5:288:366"));
         repository.setRrdBaseDir(Paths.get(System.getProperty("opennms.home"),"share","rrd","snmp").toFile());
 
-        while (!abort.get()) {
-            final Context context = batchTimer.time();
-            try {
-                generateAndPersistCollectionSets(params, repository);
-            } finally {
-                context.stop();
-            }
-            try {
-                Thread.sleep(intervalInSeconds * 1000);
-            } catch (InterruptedException e) {
-                break;
-            }
-        }
-    }
-
-    private void generateAndPersistCollectionSets(ServiceParameters params, RrdRepository repository) {
-        for (int nodeId = 0; nodeId < numberOfNodes; nodeId++) {
-            // Build the node resource
-            CollectionAgent agent = new MockCollectionAgent(nodeId);
-            NodeLevelResource nodeResource = new NodeLevelResource(nodeId);
-
-            // Don't reuse the persister instance across nodes to help simulate collectd's actual behavior
-            Persister persister = persisterFactory.createPersister(params, repository);
-            for (int interfaceId = 0; interfaceId < numberOfInterfacesPerNode; interfaceId++) {
-                // Return immediately if the abort flag is set
-                if (abort.get()) {
-                    return;
+        // Start generating, and keep generating until we're interrupted
+        try {
+            reporter.start(reportIntervalInSeconds, TimeUnit.SECONDS);
+            while (true) {
+                final Context context = batchTimer.time();
+                try {
+                    // Split the tasks up among the threads
+                    List<Future<Void>> futures = new ArrayList<>();
+                    for (int generatorThreadId = 0; generatorThreadId < numberOfGeneratorThreads; generatorThreadId++) {
+                        futures.add(executor.submit(generateAndPersistCollectionSets(params, repository, generatorThreadId)));
+                    }
+                    // Wait for all the tasks to complete before starting others
+                    for (Future<Void> future : futures) {
+                        future.get();
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    break;
+                } finally {
+                    context.stop();
                 }
 
-                // Build the interface resource
-                InterfaceLevelResource interfaceResource = new InterfaceLevelResource(nodeResource, "tap" + interfaceId);
-
-                // Generate the collection set
-                CollectionSet collectionSet = generateCollectionSet(agent, interfaceResource);
-
-                // Persist
-                collectionSet.visit(persister);
+                try {
+                    Thread.sleep(intervalInSeconds * 1000);
+                } catch (InterruptedException e) {
+                    break;
+                }
             }
+        } finally {
+            reporter.stop();
+            abort.set(true);
+            executor.shutdownNow();
         }
+
+        return null;
+    }
+
+    private Callable<Void> generateAndPersistCollectionSets(ServiceParameters params, RrdRepository repository, int generatorThreadId) {
+        return new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                for (int nodeId = 0; nodeId < numberOfNodes; nodeId++) {
+                    if (nodeId % numberOfGeneratorThreads != generatorThreadId) {
+                        // A different generator will handle this node
+                        continue;
+                    }
+
+                    // Build the node resource
+                    CollectionAgent agent = new MockCollectionAgent(nodeId);
+                    NodeLevelResource nodeResource = new NodeLevelResource(nodeId);
+
+                    // Don't reuse the persister instance across nodes to help simulate collectd's actual behavior
+                    Persister persister = persisterFactory.createPersister(params, repository);
+                    for (int interfaceId = 0; interfaceId < numberOfInterfacesPerNode; interfaceId++) {
+                        // Return immediately if the abort flag is set
+                        if (abort.get()) {
+                            return null;
+                        }
+
+                        // Build the interface resource
+                        InterfaceLevelResource interfaceResource = new InterfaceLevelResource(nodeResource, "tap" + interfaceId);
+
+                        // Generate the collection set
+                        CollectionSet collectionSet = generateCollectionSet(agent, interfaceResource);
+
+                        // Persist
+                        collectionSet.visit(persister);
+                    }
+                }
+                return null;
+            }
+        };
     }
 
     private CollectionSet generateCollectionSet(CollectionAgent agent, Resource resource) {
@@ -228,7 +248,7 @@ public class StressCommand extends OsgiCommandSupport implements Runnable {
             // Number attributes
             for (int attributeId = 0; attributeId < numberOfNumericAttributesPerGroup; attributeId++) {
                 // Generate a predictable, non-constant number
-                int value = groupId * attributeId + seed++ % 100;
+                int value = groupId * attributeId + seed.incrementAndGet() % 100;
                 builder.withNumericAttribute(resource, groupName, "metric" + attributeId, value, AttributeType.GAUGE);
                 numericAttributesGenerated.mark();
             }
