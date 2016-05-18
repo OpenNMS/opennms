@@ -95,7 +95,7 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
      * The {@link RingBuffer} doesn't appear to expose any methods that indicate the number
      * of elements that are currently "queued", so we keep track of them with this atomic counter.
      */
-    private final AtomicLong m_numSamplesOnRingBuffer = new AtomicLong();
+    private final AtomicLong m_numEntriesOnRingBuffer = new AtomicLong();
 
     @Inject
     public NewtsWriter(@Named("newts.max_batch_size") Integer maxBatchSize, @Named("newts.ring_buffer_size") Integer ringBufferSize,
@@ -109,13 +109,13 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
         m_maxBatchSize = maxBatchSize;
         m_ringBufferSize = ringBufferSize;
         m_numWriterThreads = numWriterThreads;
-        m_numSamplesOnRingBuffer.set(0L);
+        m_numEntriesOnRingBuffer.set(0L);
 
         registry.register(MetricRegistry.name("ring-buffer", "size"),
                 new Gauge<Long>() {
                     @Override
                     public Long getValue() {
-                        return m_numSamplesOnRingBuffer.get();
+                        return m_numEntriesOnRingBuffer.get();
                     }
                 });
         registry.register(MetricRegistry.name("ring-buffer", "max-size"),
@@ -182,8 +182,8 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
             m_droppedMetrics.mark(samples.size());
             return;
         }
-        // Increase our sample counter
-        m_numSamplesOnRingBuffer.addAndGet(samples.size());
+        // Increase our entry counter
+        m_numEntriesOnRingBuffer.incrementAndGet();
     }
 
     @Override
@@ -192,8 +192,8 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
         Logging.putPrefix("collectd");
 
         List<Sample> samples = event.getSamples();
-        // Decrement our sample counter
-        m_numSamplesOnRingBuffer.addAndGet(-samples.size());
+        // Decrement our entry counter
+        m_numEntriesOnRingBuffer.decrementAndGet();
 
         // Partition the samples into collections smaller then max_batch_size
         for (List<Sample> batch : Lists.partition(samples, m_maxBatchSize)) {
