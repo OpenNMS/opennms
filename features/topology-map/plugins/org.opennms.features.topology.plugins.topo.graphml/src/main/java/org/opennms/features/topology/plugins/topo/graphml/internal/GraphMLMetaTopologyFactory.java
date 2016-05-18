@@ -30,12 +30,11 @@ package org.opennms.features.topology.plugins.topo.graphml.internal;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
-import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
-import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLSearchProvider;
 import org.osgi.framework.BundleContext;
@@ -43,18 +42,22 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 
+	private static final Logger LOG = LoggerFactory.getLogger(GraphMLMetaTopologyFactory.class);
 	private static final String TOPOLOGY_LOCATION = "topologyLocation";
 	private static final String LABEL = "label";
 
 	private BundleContext m_bundleContext;
-	private TopologyProviderInfo topologyProviderInfo = new DefaultTopologyProviderInfo();
 	private Map<String, GraphMLMetaTopologyProvider> m_providers = Maps.newHashMap();
 	private Map<String, ServiceRegistration<MetaTopologyProvider>> m_registrations =  Maps.newHashMap();
+	private Map<String, List<ServiceRegistration<SearchProvider>>> m_searchProviders = Maps.newHashMap();
 
 	public void setBundleContext(BundleContext bundleContext) {
 		m_bundleContext = bundleContext;
@@ -85,9 +88,12 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 			m_providers.put(pid, metaTopologyProvider);
 
 			// Create and register a SearchProvider for each GraphMLTopologyProvider
-			metaTopologyProvider.getGraphProviders().forEach(it ->
-					m_bundleContext.registerService(SearchProvider.class, new GraphMLSearchProvider(metaTopologyProvider.getRawTopologyProvider(it.getVertexNamespace())), new Hashtable<>())
-			);
+			m_searchProviders.putIfAbsent(pid, Lists.newArrayList());
+			metaTopologyProvider.getGraphProviders().forEach(it -> {
+				GraphMLSearchProvider searchProvider = new GraphMLSearchProvider(metaTopologyProvider.getRawTopologyProvider(it.getVertexNamespace()));
+				ServiceRegistration<SearchProvider> searchProviderServiceRegistration = m_bundleContext.registerService(SearchProvider.class, searchProvider, new Hashtable<>());
+				m_searchProviders.get(pid).add(searchProviderServiceRegistration);
+			});
 		} else {
 			m_providers.get(pid).setTopologyLocation(location);
 			ServiceRegistration<MetaTopologyProvider> registration = m_registrations.get(pid);
@@ -105,15 +111,9 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 		ServiceRegistration<MetaTopologyProvider> registration = m_registrations.remove(pid);
 		if (registration != null) {
 			registration.unregister();
+			m_providers.remove(pid);
+			m_searchProviders.get(pid).forEach(eachServiceRegistration -> eachServiceRegistration.unregister());
+			m_searchProviders.remove(pid);
 		}
-		m_providers.remove(pid);
-	}
-
-	public TopologyProviderInfo getTopologyProviderInfo() {
-		return topologyProviderInfo;
-	}
-
-	public void setTopologyProviderInfo(TopologyProviderInfo topologyProviderInfo) {
-		this.topologyProviderInfo = topologyProviderInfo;
 	}
 }
