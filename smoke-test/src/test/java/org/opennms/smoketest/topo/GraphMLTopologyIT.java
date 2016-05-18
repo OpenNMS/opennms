@@ -140,7 +140,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
     private static void deleteGraph() throws IOException, InterruptedException {
         try (HttpClientWrapper client = createClientWrapper()) {
             HttpDelete httpDelete = new HttpDelete(URL);
-            CloseableHttpResponse response = client.getClient().execute(httpDelete);
+            CloseableHttpResponse response = client.execute(httpDelete);
             Assert.assertEquals(200, response.getStatusLine().getStatusCode());
         }
         // We wait to give teh GraphMLMetaTopologyFactory the chance to clean up afterwards

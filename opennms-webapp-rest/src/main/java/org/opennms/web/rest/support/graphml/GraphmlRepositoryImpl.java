@@ -40,6 +40,8 @@ import java.util.Properties;
 import javax.xml.bind.JAXB;
 
 import org.graphdrawing.graphml.GraphmlType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 
@@ -49,6 +51,8 @@ public class GraphmlRepositoryImpl implements GraphmlRepository {
     protected static final String TOPOLOGY_LOCATION = "topologyLocation";
     protected static final String LABEL = "label";
 
+    private static final Logger LOG = LoggerFactory.getLogger(GraphmlRepositoryImpl.class);
+
     public GraphmlRepositoryImpl() {
         Preconditions.checkState(System.getProperty("opennms.home") != null, "No opennms.home defined. Bailing out...");
     }
@@ -57,7 +61,7 @@ public class GraphmlRepositoryImpl implements GraphmlRepository {
     public GraphmlType findByName(String name) throws IOException {
         Objects.requireNonNull(name);
         if (!exists(name)) {
-            throw new NoSuchElementException("No graphml file found with name  " + name);
+            throw new NoSuchElementException("No GraphML file found with name  " + name);
         }
         GraphmlType graphmlType = JAXB.unmarshal(new File(buildGraphmlFilepath(name)), GraphmlType.class);
         return graphmlType;
@@ -65,15 +69,19 @@ public class GraphmlRepositoryImpl implements GraphmlRepository {
 
     @Override
     public void save(String name, String label, GraphmlType graphmlType) throws IOException {
+        LOG.debug("Saving GraphML file {} with label", name, label);
         Objects.requireNonNull(name);
         Objects.requireNonNull(label);
         Objects.requireNonNull(graphmlType);
         if (exists(name)) {
+            LOG.warn("GraphML file with name {} already exists", name);
             throw new IOException(name + " already exists");
         }
 
         File graphFile = new File(buildGraphmlFilepath(name));
         File cfgFile = new File(buildCfgFilepath(name));
+        LOG.debug("GraphML xml location: {}", graphFile);
+        LOG.debug("GraphML cfg location: {}", cfgFile);
 
         // create directories if not yet created
         graphFile.getParentFile().mkdirs();
@@ -91,6 +99,7 @@ public class GraphmlRepositoryImpl implements GraphmlRepository {
 
     @Override
     public void delete(String name) throws IOException {
+        LOG.debug("Delete GraphML file with name {}", name);
         Objects.requireNonNull(name);
         findByName(name);
         Files.delete(Paths.get(buildCfgFilepath(name)));
