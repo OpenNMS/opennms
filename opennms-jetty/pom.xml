@@ -91,6 +91,11 @@
       <version>${jettyVersion}</version>
     </dependency>
     <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-rewrite</artifactId>
+      <version>${jettyVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.jdt.core.compiler</groupId>
       <artifactId>ecj</artifactId>
       <scope>runtime</scope>
