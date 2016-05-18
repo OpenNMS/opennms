@@ -71,10 +71,35 @@
 	</Call>
 	-->
 
+
+    <!-- Note #1 To set X-Frame-Options uncomment here and uncomment #2 below  -->
+    <!-- Settings for X-Frame-Options to avoid clickjacking                    -->
+    <!-- 
+    <New id="RewriteHandler" class="org.eclipse.jetty.rewrite.handler.RewriteHandler">
+       <Set name="rules">
+        	<Array type="org.eclipse.jetty.rewrite.handler.Rule">
+        		<Item>
+                   <New id="header" class="org.eclipse.jetty.rewrite.handler.HeaderPatternRule">
+                      <Set name="pattern">*</Set>
+                      <Set name="name">X-Frame-Options</Set>
+                      <Set name="value">SAMEORIGIN</Set>
+                   </New>
+			    </Item>
+			  </Array>
+       </Set>
+     </New>
+    -->
+
 	<Set name="handler">
 		<New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
 			<Set name="handlers">
 			 <Array type="org.eclipse.jetty.server.Handler">
+			   <!-- Note #2 Uncomment to set X-Frame-Options with #1 above  -->
+               <!-- 
+                 <Item>
+                     <Ref id="RewriteHandler"/>
+                 </Item>
+               -->
 				 <Item>
 					 <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
 				 </Item>

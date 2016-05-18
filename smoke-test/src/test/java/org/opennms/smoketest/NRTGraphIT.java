@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.cassandraunit;
+package org.opennms.smoketest;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.junit.Test;
 
-/**
- * Annotation used to request an instance of Cassandra provisioned
- * with the Newts keyspace.
- *
- * The host and port of the Cassandra instance are read from the
- * given configuration file.
- *
- * @author jwhite
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD,ElementType.TYPE})
-public @interface JUnitNewtsCassandra {
-    String configurationFileName() default "cassandra.yaml";
-    String keyspace() default "newts";
+public class NRTGraphIT extends OpenNMSSeleniumTestCase {
+    @Test
+    public void canLoadGraph() throws Exception {
+        // Request a known graph with an invalid resource id
+        m_driver.get(BASE_URL + "opennms/graph/nrtg.jsp?resourceId=node[999].nodeSnmp[]&report=mib2.tcpopen");
+        // The graph should be rendered
+        findElementByXpath("//div[@class='flot-datatable-tabs']");
+        // It won't have any data, but this is sufficient to very that all of the required
+        // Javascript files have been loaded, and the AJAX call to get the graph was successful
+    }
 }

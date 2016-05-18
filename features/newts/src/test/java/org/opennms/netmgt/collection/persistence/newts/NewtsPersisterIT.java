@@ -29,11 +29,12 @@
 package org.opennms.netmgt.collection.persistence.newts;
 
 import static org.junit.Assert.assertEquals;
+
 import java.nio.file.Paths;
 import java.util.Collections;
 
-import org.cassandraunit.JUnitNewtsCassandra;
-import org.cassandraunit.JUnitNewtsCassandraExecutionListener;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -47,11 +48,11 @@ import org.opennms.newts.api.Results;
 import org.opennms.newts.api.Results.Row;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.Timestamp;
+import org.opennms.newts.cassandra.NewtsInstance;
 import org.opennms.newts.persistence.cassandra.CassandraSampleRepository;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 
 import com.google.common.base.Optional;
 
@@ -62,28 +63,25 @@ import com.google.common.base.Optional;
  * @author jwhite
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    JUnitNewtsCassandraExecutionListener.class
-})
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-newts.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.newts.config.hostname=" + NewtsPersisterIT.CASSANDRA_HOST,
-        "org.opennms.newts.config.port=" + NewtsPersisterIT.CASSANDRA_PORT,
-        "org.opennms.newts.config.keyspace=" + NewtsPersisterIT.NEWTS_KEYSPACE,
         "org.opennms.newts.config.max_batch_delay=0", // No delay
         "org.opennms.timeseries.strategy=newts"
 })
-@JUnitNewtsCassandra(
-        keyspace=NewtsPersisterIT.NEWTS_KEYSPACE
-)
 public class NewtsPersisterIT {
 
-    protected static final String CASSANDRA_HOST = "localhost";
-    protected static final int CASSANDRA_PORT = 9043;
-    protected static final String NEWTS_KEYSPACE = "newts";
+    @ClassRule
+    public static NewtsInstance s_newtsInstance = new NewtsInstance();
+
+    @BeforeClass
+    public static void setUpClass() {
+        System.setProperty("org.opennms.newts.config.hostname", s_newtsInstance.getHost());
+        System.setProperty("org.opennms.newts.config.port", Integer.toString(s_newtsInstance.getPort()));
+        System.setProperty("org.opennms.newts.config.keyspace", s_newtsInstance.getKeyspace());
+    }
 
     @Autowired
     private NewtsPersisterFactory m_persisterFactory;
