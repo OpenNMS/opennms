@@ -269,23 +269,14 @@ public class FindTopLevelResourcesTest {
         List<OnmsResource> children = resources.get(0).getChildResources();
         Collections.sort(children);
         Assert.assertEquals(2, children.size());
-        if (storeByForeignSource) {
-            Assert.assertEquals("nodeSource[Junit%3Anode1].responseTime[10.0.0.1]", children.get(0).getId());
-            Assert.assertEquals("nodeSource[Junit%3Anode1].nodeSnmp[]", children.get(1).getId());
-        } else {
-            Assert.assertEquals("node[1].responseTime[10.0.0.1]", children.get(0).getId());
-            Assert.assertEquals("node[1].nodeSnmp[]", children.get(1).getId());
-        }
+        Assert.assertEquals("node[Junit%3Anode1].responseTime[10.0.0.1]", children.get(0).getId());
+        Assert.assertEquals("node[Junit%3Anode1].nodeSnmp[]", children.get(1).getId());
 
         // Node 2
         children = resources.get(1).getChildResources();
         Collections.sort(children);
         Assert.assertEquals(1, children.size());
-        if (storeByForeignSource) {
-            Assert.assertEquals("nodeSource[Junit%3Anode2].nodeSnmp[]", children.get(0).getId());
-        } else {
-            Assert.assertEquals("node[2].nodeSnmp[]", children.get(0).getId());
-        }
+        Assert.assertEquals("node[Junit%3Anode2].nodeSnmp[]", children.get(0).getId());
 
         m_easyMockUtils.verifyAll();
     }
@@ -378,38 +369,20 @@ public class FindTopLevelResourcesTest {
         Collections.sort(resources);
         Assert.assertEquals(2, resources.size());
 
-        if (storeByForeignSource) {
-            OnmsResource r1 = resources.get(0); // parent resource for the provisioned node 
-            List<OnmsResource> children1 = r1.getChildResources();
-            Collections.sort(children1);
-            Assert.assertEquals("nodeSource[Junit%3Anode2]", r1.getId());
-            Assert.assertEquals("nodeSource[Junit%3Anode2].responseTime[10.0.0.2]", children1.get(0).getId());
-            Assert.assertEquals("nodeSource[Junit%3Anode2].nodeSnmp[]", children1.get(1).getId());
+        OnmsResource r1 = resources.get(0); // parent resource for the discovered node
+        Assert.assertEquals("node[1]", r1.getId());
+        List<OnmsResource> children2 = r1.getChildResources();
+        Collections.sort(children2);
+        Assert.assertEquals(2, children2.size());
+        Assert.assertEquals("node[1].responseTime[10.0.0.1]", children2.get(0).getId());
+        Assert.assertEquals("node[1].nodeSnmp[]", children2.get(1).getId());
 
-            OnmsResource r2 = resources.get(1); // parent resource for the discovered node
-            Assert.assertEquals("node[1]", r2.getId());
-            List<OnmsResource> children2 = r2.getChildResources();
-            Collections.sort(children2);
-            Assert.assertEquals(2, children2.size());
-            Assert.assertEquals("node[1].responseTime[10.0.0.1]", children2.get(0).getId());
-            Assert.assertEquals("node[1].nodeSnmp[]", children2.get(1).getId());
-
-        } else {
-            OnmsResource r1 = resources.get(1); // parent resource for the provisioned node 
-            List<OnmsResource> children1 = r1.getChildResources();
-            Collections.sort(children1);
-            Assert.assertEquals("node[2]", r1.getId());
-            Assert.assertEquals("node[2].responseTime[10.0.0.2]", children1.get(0).getId());
-            Assert.assertEquals("node[2].nodeSnmp[]", children1.get(1).getId());
-
-            OnmsResource r2 = resources.get(0); // parent resource for the discovered node
-            Assert.assertEquals("node[1]", r2.getId());
-            List<OnmsResource> children2 = r2.getChildResources();
-            Collections.sort(children2);
-            Assert.assertEquals(2, children2.size());
-            Assert.assertEquals("node[1].responseTime[10.0.0.1]", children2.get(0).getId());
-            Assert.assertEquals("node[1].nodeSnmp[]", children2.get(1).getId());
-        }
+        OnmsResource r2 = resources.get(1); // parent resource for the provisioned node 
+        List<OnmsResource> children1 = r2.getChildResources();
+        Collections.sort(children1);
+        Assert.assertEquals("node[Junit%3Anode2]", r2.getId());
+        Assert.assertEquals("node[Junit%3Anode2].responseTime[10.0.0.2]", children1.get(0).getId());
+        Assert.assertEquals("node[Junit%3Anode2].nodeSnmp[]", children1.get(1).getId());
 
         m_easyMockUtils.verifyAll();
     }
