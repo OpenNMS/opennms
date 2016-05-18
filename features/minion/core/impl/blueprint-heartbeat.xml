@@ -9,21 +9,35 @@
 		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
-	
-	<!-- ActiveMQ component provided by minion-core -->
-	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)"/>
-	
 
-	<camelContext id="heartBeatCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+	<!-- ActiveMQ component provided by minion-core -->
+	<reference id="queuingservice" interface="org.apache.camel.Component"
+		filter="(alias=opennms.broker)" />
+
+	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
+		<argument value="org.opennms.minion.core.api.MinionIdentityDTO" />
+	</bean>
+
+	<!-- A canonical source for this Minion's identity -->
+    <reference id="minion" interface="org.opennms.minion.core.api.MinionIdentity" />
+
+	<bean id="minionIdentity" class="org.opennms.minion.core.api.MinionIdentityDTO">
+         <argument ref="minion" />
+	</bean>
+
+
+	<camelContext id="heartBeatCamelContext"
+		xmlns="http://camel.apache.org/schema/blueprint">
 
 		<route id="heartBeatRoute">
-         <from uri="timer://minionTimer?fixedRate=true&amp;daemon=true&amp;period=60000" />
-
-         <setBody>
-         <method ref="org.opennms.minion.core.api.MinionIdentity"
-                  method="getId"/>
-         </setBody>
-         <to uri="queuingservice:heartBeat"/>
+			<from
+				uri="timer://minionTimer?fixedRate=true&amp;daemon=true&amp;period=60000" />
+			<setBody>
+				<simple> ${ref:minionIdentity}
+				</simple>
+			</setBody>
+			<bean ref="marshaller" />
+			<to uri="queuingservice:heartBeat" />
 		</route>
 	</camelContext>
 

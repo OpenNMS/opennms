@@ -27,6 +27,8 @@ public class DominionConfigIT {
 
     @Test
     public void testConfig() throws Throwable {
+        
+        // tests loading of component-service.xml
             
     }
 

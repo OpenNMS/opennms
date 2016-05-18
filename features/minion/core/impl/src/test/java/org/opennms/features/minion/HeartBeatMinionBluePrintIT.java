@@ -1,18 +1,29 @@
 /*******************************************************************************
- * This file is part of OpenNMS(R). Copyright (C) 2015-2016 The OpenNMS Group,
- * Inc. OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc. OpenNMS(R)
- * is free software: you can redistribute it and/or modify it under the terms
- * of the GNU Affero General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version. OpenNMS(R) is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
- * License for more details. You should have received a copy of the GNU Affero
- * General Public License along with OpenNMS(R). If not, see:
- * http://www.gnu.org/licenses/ For more information contact: OpenNMS(R)
- * Licensing <license@opennms.org> http://www.opennms.org/
- * http://www.opennms.com/
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.features.minion;
@@ -24,52 +35,24 @@ import java.util.Properties;
 import org.apache.camel.Component;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.component.seda.SedaComponent;
-import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.minion.core.api.MinionIdentityDTO;
 import org.opennms.minion.core.impl.MinionIdentityImpl;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/emptyContext.xml" })
-public class HeartBeatMinionBluePrintIT extends CamelBlueprintTestSupport {
+public class HeartBeatMinionBluePrintIT extends CamelBlueprintTest {
 
-    public static final String MINION_ID = "1";
+    public static final String MINION_ID = "0001";
     public static final String MINION_LOCATION = "localhost";
-
-    /**
-     * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
-     * 
-     * @see https://issues.apache.org/jira/browse/ARIES-1051
-     * @see https://access.redhat.com/site/solutions/640943
-     */
-    @Override
-    public void doPreSetup() throws Exception {
-        System.setProperty("org.apache.aries.blueprint.synchronous",
-                           Boolean.TRUE.toString());
-        System.setProperty("de.kalpatec.pojosr.framework.events.sync",
-                           Boolean.TRUE.toString());
-    }
-
-    @Override
-    public boolean isUseAdviceWith() {
-        return true;
-    }
-
-    @Override
-    public boolean isUseDebugger() {
-        // must enable debugger
-        return true;
-    }
-
-    @Override
-    public String isMockEndpoints() {
-        return "*";
-    }
 
     // The location of our Blueprint XML file to be used for testing
     @Override
@@ -91,11 +74,11 @@ public class HeartBeatMinionBluePrintIT extends CamelBlueprintTestSupport {
         services.put(Component.class.getName(),
                      new KeyValueHolder<Object, Dictionary>(new SedaComponent(),
                                                             props));
-
         services.put(MinionIdentity.class.getName(),
                      new KeyValueHolder(new MinionIdentityImpl(MINION_LOCATION,
                                                                MINION_ID),
                                         null));
+
     }
 
     @Test
@@ -106,8 +89,11 @@ public class HeartBeatMinionBluePrintIT extends CamelBlueprintTestSupport {
         heartBeatqueue.setExpectedMessageCount(1);
 
         assertMockEndpointsSatisfied();
-        String minionId = heartBeatqueue.getReceivedExchanges().get(0).getIn().getBody(String.class);
-        assertEquals(MINION_ID, minionId);
+        String minionOutput = heartBeatqueue.getReceivedExchanges().get(0).getIn().getBody(String.class);
+        MinionIdentityDTO minion = JaxbUtils.unmarshal(MinionIdentityDTO.class,
+                                                       minionOutput);
+        assertEquals(MINION_LOCATION, minion.getLocation());
+        assertEquals(MINION_ID, minion.getId());
     }
 
 }
