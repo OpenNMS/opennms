@@ -1259,7 +1259,7 @@
     <asciidoctorVersion>1.5.3</asciidoctorVersion>
     <asciidoctorjVersion>1.5.4</asciidoctorjVersion>
     <asciidoctorjPdfVersion>1.5.0-alpha.11</asciidoctorjPdfVersion>
-    <activemqVersion>5.10.0</activemqVersion>
+    <activemqVersion>5.13.3</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.7</batikVersion>
     <bsfVersion>2.4.0</bsfVersion>

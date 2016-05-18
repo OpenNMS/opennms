@@ -38,12 +38,14 @@ import java.util.Set;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.Message;
-import javax.jms.TextMessage;
 import javax.jms.ObjectMessage;
+import javax.jms.TextMessage;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -86,6 +88,8 @@ public class JmsNorthBounderTest {
     /** The Constant NODE_LABEL. */
     private static final String NODE_LABEL = "schlazor";
     
+    private static final String AMQ_SERIALIZABLE_PACKAGES_PROPERTY = "org.apache.activemq.SERIALIZABLE_PACKAGES";
+    
     /** The JMS template. */
     private JmsTemplate m_template;
     
@@ -100,6 +104,23 @@ public class JmsNorthBounderTest {
     /** The Node DAO. */
     @Autowired
     private MockNodeDao m_nodeDao;
+    
+    private static String s_oldSerializablePackages;
+    
+    @BeforeClass
+    public static void setSerializablePackages() {
+        s_oldSerializablePackages = System.getProperty(AMQ_SERIALIZABLE_PACKAGES_PROPERTY);
+        System.setProperty(AMQ_SERIALIZABLE_PACKAGES_PROPERTY, "*");
+    }
+    
+    @AfterClass
+    public static void resetSerializablePackages() {
+        if (s_oldSerializablePackages == null) {
+            System.clearProperty(AMQ_SERIALIZABLE_PACKAGES_PROPERTY);
+        } else {
+            System.setProperty(AMQ_SERIALIZABLE_PACKAGES_PROPERTY, s_oldSerializablePackages);
+        }
+    }
     
     /**
      * Start broker.
