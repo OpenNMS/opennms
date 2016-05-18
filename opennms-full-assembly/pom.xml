@@ -13,6 +13,7 @@
   <properties>
     <build.profile>default</build.profile>
     <maven.metadata.legacy>true</maven.metadata.legacy>
+    <skipITs>true</skipITs>
   </properties>
   <profiles>
     <profile>
@@ -192,6 +193,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <skipITs>${skipITs}</skipITs>
+        </configuration>
         <executions>
           <execution>
             <phase>integration-test</phase>
