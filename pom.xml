@@ -1286,7 +1286,7 @@
     <log4j2Version>2.1</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <minionKarafVersion>4.0.4</minionKarafVersion>
-    <newtsVersion>1.3.4</newtsVersion>
+    <newtsVersion>1.3.6</newtsVersion>
     <paxExamVersion>4.8.0</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <powermockVersion>1.6.4</powermockVersion>
@@ -3380,6 +3380,11 @@
       <dependency>
         <groupId>org.eclipse.jetty.aggregate</groupId>
         <artifactId>jetty-all-server</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-rewrite</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <!-- Make sure that this version matches the version from Jetty -->

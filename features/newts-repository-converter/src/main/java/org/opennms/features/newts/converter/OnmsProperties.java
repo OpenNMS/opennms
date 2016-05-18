@@ -54,7 +54,9 @@ public abstract class OnmsProperties {
     private static void registerProperties(Properties properties) {
         for (Object o : properties.keySet()) {
             String key = (String) o;
-            System.setProperty(key, properties.getProperty(key));
+            if (System.getProperty(key) == null) {
+                System.setProperty(key, properties.getProperty(key));
+            }
         }
     }
 
