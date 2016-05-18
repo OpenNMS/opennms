@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.joda.time.Duration;
 import org.opennms.core.logging.Logging;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.SampleRepository;
@@ -60,6 +61,7 @@ import com.lmax.disruptor.FatalExceptionHandler;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.WorkHandler;
 import com.lmax.disruptor.WorkerPool;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 /**
  * Used to write samples to the {@link org.opennms.newts.api.SampleRepository}.
@@ -72,6 +74,11 @@ import com.lmax.disruptor.WorkerPool;
 public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsWriter.class);
+
+    private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.standardSeconds(30))
+            .build();
 
     @Autowired
     private SampleRepository m_sampleRepository;
@@ -173,12 +180,18 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
     private void pushToRingBuffer(List<Sample> samples, EventTranslatorOneArg<SampleBatchEvent, List<Sample>> translator) {
         // Add the samples to the ring buffer
         if (!m_ringBuffer.tryPublishEvent(translator, samples)) {
-            String uniqueResourceIds = samples.stream()
-                    .map(s -> s.getResource().getId())
-                    .distinct()
-                    .collect(Collectors.joining(", "));
-            LOG.error("The ring buffer is full. {} samples associated with resource ids {} will be dropped.",
-                    samples.size(), uniqueResourceIds);
+            RATE_LIMITED_LOGGER.error("The ring buffer is full. {} samples associated with resource ids {} will be dropped.",
+                    samples.size(), new Object() {
+                        @Override
+                        public String toString() {
+                            // We wrap this in a toString() method to avoid build the string
+                            // unless the log message is actually printed
+                            return samples.stream()
+                                    .map(s -> s.getResource().getId())
+                                    .distinct()
+                                    .collect(Collectors.joining(", "));
+                        }
+                    });
             m_droppedSamples.mark(samples.size());
             return;
         }
