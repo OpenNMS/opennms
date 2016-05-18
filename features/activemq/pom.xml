@@ -18,6 +18,7 @@
 
   <modules>
     <module>broker</module>
+    <module>component</module>
   </modules>
 
 </project>
