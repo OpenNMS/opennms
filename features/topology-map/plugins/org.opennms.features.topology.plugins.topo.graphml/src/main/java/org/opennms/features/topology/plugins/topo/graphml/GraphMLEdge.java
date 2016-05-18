@@ -47,6 +47,7 @@ public class GraphMLEdge extends AbstractEdge {
         setProperties(graphMLEdge.getProperties());
     }
 
+    @Override
     public Map<String, Object> getProperties() {
         return properties;
     }

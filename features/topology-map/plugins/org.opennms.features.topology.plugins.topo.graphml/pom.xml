@@ -25,8 +25,6 @@
             <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${project.version}",org.graphdrawing.*</Export-Package>
-            <Embed-Dependency>*;groupId=com.hubspot.jinjava|org.javassist|de.odysseus.juel|org.apache.commons</Embed-Dependency>
-            <Import-Package>!com.sun.jdi.*,*</Import-Package>
             <Embed-Transitive>true</Embed-Transitive>
             <Private-Package>${bundle.namespace}.internal.*</Private-Package>
             <_include>-osgi.bnd</_include>
@@ -110,17 +108,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.measurements</groupId>
-      <artifactId>org.opennms.features.measurements.api</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
 	   <groupId>org.osgi</groupId>
 	   <artifactId>org.osgi.compendium</artifactId>
 	   <scope>provided</scope>
@@ -130,12 +117,6 @@
 	   <artifactId>org.osgi.core</artifactId>
 	   <scope>provided</scope>
 	</dependency>
-    <dependency>
-      <groupId>com.hubspot.jinjava</groupId>
-      <artifactId>jinjava</artifactId>
-      <version>2.1.0</version>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

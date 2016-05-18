@@ -28,6 +28,9 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.util.Collections;
+import java.util.Map;
+
 public interface Ref extends Comparable<Ref> {
 
 	/**
@@ -50,4 +53,10 @@ public interface Ref extends Comparable<Ref> {
 	 */
 	String getLabel();
 
+	/**
+	 * Allow concrete implementations to define additional properties for all elements.
+	 *
+	 * @return a map of properties
+     */
+	Map<String, Object> getProperties();
 }
