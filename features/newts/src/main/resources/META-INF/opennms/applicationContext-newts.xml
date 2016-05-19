@@ -75,7 +75,8 @@
   <util:constant id="search.hierarical-indexing" static-field="org.opennms.netmgt.newts.support.NewtsUtils.ENABLE_HIERARCHICAL_INDEXING" />
 
   <bean id="sampleProcessor.maxThreads" class="java.lang.Integer">
-        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.max_sample_processor_threads:8}" />
+        <!-- This options should always match the number of writer threads. See NMS-8439. -->
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.writer_threads:16}" />
   </bean>
 
   <bean id="search.resourceMetadata.maxCacheEntries" class="java.lang.Long">
