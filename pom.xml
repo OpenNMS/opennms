@@ -2764,7 +2764,7 @@
       <dependency>
         <groupId>c3p0</groupId>
         <artifactId>c3p0</artifactId>
-        <version>0.9.1.2</version>
+        <version>0.9.5.2</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
@@ -3578,7 +3578,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>9.3-1100-jdbc4</version>
+        <version>9.4-1208-jdbc4</version>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
