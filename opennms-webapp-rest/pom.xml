@@ -233,7 +233,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>graphml</artifactId>
+      <artifactId>org.opennms.features.graphml</artifactId>
       <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>

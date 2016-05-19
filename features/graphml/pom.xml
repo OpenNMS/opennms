@@ -11,7 +11,7 @@
   </properties>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
-  <artifactId>graphml</artifactId>
+  <artifactId>org.opennms.features.graphml</artifactId>
   <name>${bundle.symbolicName}</name>
   <packaging>bundle</packaging>
   <build>
