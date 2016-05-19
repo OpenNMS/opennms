@@ -157,7 +157,7 @@ public class DefaultResourceDaoTest {
     @Test
     public void testGetResourceByIdNewTopLevelOnly() throws Exception {
         OnmsNode node = createNode();
-        expect(m_nodeDao.get(node.getId())).andReturn(node).times(1);
+        expect(m_nodeDao.get(node.getId().toString())).andReturn(node).times(1);
 
         File responseDir = m_fileAnticipator.tempDir("snmp");
         File nodeDir = m_fileAnticipator.tempDir(responseDir, node.getId().toString());
@@ -173,7 +173,7 @@ public class DefaultResourceDaoTest {
     @Test
     public void testGetResourceByIdNewTwoLevel() throws Exception {
         OnmsIpInterface ip = createIpInterfaceOnNode();
-        expect(m_nodeDao.get(ip.getNode().getId())).andReturn(ip.getNode()).times(1);
+        expect(m_nodeDao.get(ip.getNode().getId().toString())).andReturn(ip.getNode()).times(1);
         expect(m_ipInterfaceDao.get(ip.getNode(), "192.168.1.1")).andReturn(ip).times(1);
         expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis()-86400000l)).anyTimes();
 
@@ -191,7 +191,7 @@ public class DefaultResourceDaoTest {
     @Test
     public void testGetTopLevelResourceNodeExists() throws Exception {
         OnmsNode node = createNode();
-        expect(m_nodeDao.get(node.getId())).andReturn(node).times(1);
+        expect(m_nodeDao.get(node.getId().toString())).andReturn(node).times(1);
 
         File responseDir = m_fileAnticipator.tempDir("snmp");
         File nodeDir = m_fileAnticipator.tempDir(responseDir, node.getId().toString());
@@ -207,7 +207,7 @@ public class DefaultResourceDaoTest {
     @Test
     public void testGetTopLevelResourceNodeSourceExists() throws Exception {
         OnmsNode node = createNode();
-        expect(m_nodeDao.findByForeignId("source1", "123")).andReturn(node).times(1);
+        expect(m_nodeDao.get("source1:123")).andReturn(node).times(1);
 
         File responseDir = m_fileAnticipator.tempDir("snmp");
         File forSrcDir = m_fileAnticipator.tempDir(responseDir, "fs");
@@ -224,7 +224,7 @@ public class DefaultResourceDaoTest {
 
     @Test
     public void testGetTopLevelResourceNodeDoesNotExist() {
-        expect(m_nodeDao.get(2)).andReturn(null);
+        expect(m_nodeDao.get("2")).andReturn(null);
 
         m_easyMockUtils.replayAll();
         OnmsResource resource = m_resourceDao.getResourceById(String.format("node[%d]", 2));
@@ -237,7 +237,7 @@ public class DefaultResourceDaoTest {
     public void testGetTopLevelResourceNodeExistsNoChildResources() throws Exception {
         OnmsNode node = createNode(2, "Node Two");
 
-        expect(m_nodeDao.get(node.getId())).andReturn(node).times(1);
+        expect(m_nodeDao.get(node.getId().toString())).andReturn(node).times(1);
         
         m_easyMockUtils.replayAll();
         OnmsResource resource = m_resourceDao.getResourceById(String.format("node[%d]", 2));
@@ -311,7 +311,7 @@ public class DefaultResourceDaoTest {
     public void testGetResourceNoNode() throws Exception {
         String resourceId = OnmsResource.createResourceId("node", "1", "nodeSnmp", "");
         
-        expect(m_nodeDao.get(1)).andReturn(null);
+        expect(m_nodeDao.get("1")).andReturn(null);
 
         m_easyMockUtils.replayAll();
         m_resourceDao.getResourceById(resourceId);
@@ -336,7 +336,7 @@ public class DefaultResourceDaoTest {
         expect(m_resourceTypesDao.getLastUpdate()).andReturn(m_lastUpdateTime);
 
         m_easyMockUtils.replayAll();
-        List<OnmsResource> resources = m_resourceDao.findNodeResources();
+        List<OnmsResource> resources = m_resourceDao.findTopLevelResources();
         m_easyMockUtils.verifyAll();
 
         assertNotNull("resource list should not be null", resources);
@@ -371,7 +371,7 @@ public class DefaultResourceDaoTest {
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(Collections.singleton(locMonIpIntf)).anyTimes();
 
         m_easyMockUtils.replayAll();
-        List<OnmsResource> resources = m_resourceDao.findNodeResources();
+        List<OnmsResource> resources = m_resourceDao.findTopLevelResources();
         m_easyMockUtils.verifyAll();
 
         assertNotNull("Resource list should not be null", resources);
@@ -395,7 +395,7 @@ public class DefaultResourceDaoTest {
         expect(m_resourceTypesDao.getLastUpdate()).andReturn(m_lastUpdateTime);
 
         m_easyMockUtils.replayAll();
-        List<OnmsResource> resources = m_resourceDao.findNodeResources();
+        List<OnmsResource> resources = m_resourceDao.findTopLevelResources();
         m_easyMockUtils.verifyAll();
 
         assertNotNull("resource list should not be null", resources);
@@ -420,7 +420,7 @@ public class DefaultResourceDaoTest {
         expect(m_resourceTypesDao.getLastUpdate()).andReturn(m_lastUpdateTime);
 
         m_easyMockUtils.replayAll();
-        List<OnmsResource> resources = m_resourceDao.findNodeResources();
+        List<OnmsResource> resources = m_resourceDao.findTopLevelResources();
         m_easyMockUtils.verifyAll();
 
         assertNotNull("resource list should not be null", resources);
