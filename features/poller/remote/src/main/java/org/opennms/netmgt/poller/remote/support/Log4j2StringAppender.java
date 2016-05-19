@@ -110,7 +110,7 @@ public class Log4j2StringAppender extends AbstractOutputStreamAppender<Log4j2Str
 
 	public static class ByteArrayOutputStreamManager extends OutputStreamManager {
 		protected ByteArrayOutputStreamManager(Layout<?> layout) {
-			super(new ByteArrayOutputStream(), ByteArrayOutputStreamManager.class.getName(), layout);
+			super(new ByteArrayOutputStream(), ByteArrayOutputStreamManager.class.getName(), layout, true);
 		}
 
 		public ByteArrayOutputStream getByteArrayOutputStream() {
