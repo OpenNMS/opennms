@@ -51,7 +51,7 @@
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerDefaultProperties" />
 
 		<route id="receiveSyslogConnection">
-			<from uri="activemq:broadcastSyslog"/>
+			<from uri="activemq:broadcastSyslog?disableReplyTo=true"/>
 			<process ref="unmarshaller"/>
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>

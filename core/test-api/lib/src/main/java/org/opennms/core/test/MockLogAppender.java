@@ -189,6 +189,7 @@ public class MockLogAppender {
         setProperty(MockLogger.LOG_KEY_PREFIX + "httpclient", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.aries.blueprint.container", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.bsf", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.commons.httpclient.HttpMethodBase", "ERROR");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.exolab.castor", "INFO");

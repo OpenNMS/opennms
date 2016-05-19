@@ -108,7 +108,7 @@ public class TrapHandlerITCase implements InitializingBean {
 
     private static final String m_ip = "127.0.0.1";
     
-    private static final long m_nodeId = 1;
+    private static final int m_nodeId = 1;
 
     @BeforeClass
     public static void setUpLogging() {

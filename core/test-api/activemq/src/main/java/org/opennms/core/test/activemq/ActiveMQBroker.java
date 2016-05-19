@@ -51,13 +51,17 @@ public class ActiveMQBroker extends ExternalResource {
         m_temporaryDirectory = Files.createTempDirectory("activemq-data");
         m_broker.setDataDirectory(m_temporaryDirectory.toString());
         m_broker.start();
+        if (!m_broker.waitUntilStarted()) {
+            LOG.warn("ActiveMQ broker was not started or stopped unexpectedly");
+        }
     };
 
     @Override
     public void after() {
         try {
             m_broker.stop();
-        } catch (Exception e) {
+            m_broker.waitUntilStopped();
+        } catch (Throwable e) {
             LOG.warn("An error occurred while stopping the broker.", e);
         }
 
