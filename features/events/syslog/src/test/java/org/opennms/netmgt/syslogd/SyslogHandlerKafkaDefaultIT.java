@@ -37,10 +37,12 @@ import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.Component;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.kafka.KafkaComponent;
 import org.apache.camel.component.kafka.KafkaConstants;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
@@ -52,11 +54,15 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
 public class SyslogHandlerKafkaDefaultIT extends CamelBlueprintTest {
+
+	private static final Logger LOG = LoggerFactory.getLogger(SyslogHandlerKafkaDefaultIT.class);
 
 	private static KafkaConfig kafkaConfig;
 
@@ -121,6 +127,12 @@ public class SyslogHandlerKafkaDefaultIT extends CamelBlueprintTest {
 		config.setMatchingGroupMessage(7);
 		config.setDiscardUei("DISCARD-MATCHING-MESSAGES");
 		services.put(SyslogdConfig.class.getName(), new KeyValueHolder<Object, Dictionary>(config, new Properties()));
+
+		services.put( SyslogConnectionHandler.class.getName(), new KeyValueHolder<Object, Dictionary>(new SyslogConnectionHandlerCamelImpl("seda:handleMessage"), new Properties()));
+
+		KafkaComponent kafka = new KafkaComponent();
+		kafka.createComponentConfiguration().setBaseUri("kafka://localhost:" + kafkaPort);
+		services.put( Component.class.getName(), new KeyValueHolder<Object, Dictionary>(kafka, new Properties()));
 	}
 
 	// The location of our Blueprint XML files to be used for testing
