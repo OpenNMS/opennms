@@ -62,7 +62,7 @@ import java.util.List;
  * @since 1.8.1
  */
 public class GraphResultsController extends AbstractController implements InitializingBean {
-    private static Logger logger = LoggerFactory.getLogger(GraphResultsController.class);
+    private static Logger LOG = LoggerFactory.getLogger(GraphResultsController.class);
     
     private GraphResultsService m_graphResultsService;
     
@@ -227,10 +227,14 @@ public class GraphResultsController extends AbstractController implements Initia
             reports = getSuggestedReports(resourceIds[0], matching);
         }
 
-        GraphResults model = m_graphResultsService.findResults(resourceIds, reports, startLong, endLong, relativeTime);
-        
-        ModelAndView modelAndView = new ModelAndView("/graph/results", "results", model);
-
+        ModelAndView modelAndView = null;
+        try {
+            GraphResults model = m_graphResultsService.findResults(resourceIds, reports, startLong, endLong, relativeTime);
+            modelAndView = new ModelAndView("/graph/results", "results", model);
+        } catch (Exception e) {
+            LOG.warn("Can't get graph results", e);
+            modelAndView = new ModelAndView("/graph/results-error");
+        }
         modelAndView.addObject("loggedIn", request.getRemoteUser() != null);
 
         return modelAndView;
