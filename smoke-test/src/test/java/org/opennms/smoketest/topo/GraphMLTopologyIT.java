@@ -134,7 +134,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
             Assert.assertEquals(201, response.getStatusLine().getStatusCode());
         }
         // We wait to give the GraphMLMetaTopologyFactory the chance to initialize the new Topology
-        Thread.sleep(60000);
+        Thread.sleep(20000);
     }
 
     private static void deleteGraph() throws IOException, InterruptedException {
@@ -144,7 +144,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
             Assert.assertEquals(200, response.getStatusLine().getStatusCode());
         }
         // We wait to give teh GraphMLMetaTopologyFactory the chance to clean up afterwards
-        Thread.sleep(60000);
+        Thread.sleep(20000);
     }
 
     private static HttpClientWrapper createClientWrapper() {
