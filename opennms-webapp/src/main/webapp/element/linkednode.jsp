@@ -52,8 +52,7 @@
 		org.opennms.netmgt.model.OnmsNode,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.*,
-		org.opennms.web.api.Authentication,
-		org.opennms.web.svclayer.api.ResourceService
+		org.opennms.web.api.Authentication
 	"
 %>
 
