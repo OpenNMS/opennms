@@ -33,6 +33,7 @@
 	contentType="text/html"
 	session="true"
     import="
+            org.opennms.web.servlet.MissingParameterException,
             org.opennms.web.api.Util
     "%>
 
@@ -40,7 +41,19 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <%
-        final String baseHref = Util.calculateUrlBase( request );
+final String baseHref = Util.calculateUrlBase(request);
+final String report = request.getParameter("report");
+final String resourceId = request.getParameter("resourceId");
+String[] requiredParameters = new String[] {"report", "resourceId"};
+
+if (report == null) {
+    throw new MissingParameterException("report", requiredParameters);
+} else if (resourceId == null) {
+    throw new MissingParameterException("resourceId", requiredParameters);
+}
+
+pageContext.setAttribute("report", report);
+pageContext.setAttribute("resourceId", resourceId);
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -52,21 +65,28 @@
   <jsp:param name="script" value='<script type="text/javascript" src="js/underscore-min.js"></script>' />
 </jsp:include>
 
-<div ng-app="forecast" ng-controller="forecastCtrl">
-
-<div class="row-fluid">
+<div class="row-fluid" ng-app="forecast" ng-controller="forecastCtrl">
     <div class="col-md-12">
-      <div class="panel panel-default">
+      <div ng-cloak class="alert alert-danger" role="alert" ng-show="error">
+	    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+	    <span class="sr-only">Error:</span>
+	    {{error}}
+	  </div>
+
+      <div class="panel panel-default" ng-hide="error">
       <div class="panel-heading text-center">
-        <h3 class="panel-title">Forecasting <%= request.getParameter("report") %> on <%= request.getParameter("resourceId") %> </h3>
+          <h3 class="panel-title">Forecasting <c:out value="${report}"/> on <c:out value="${resourceId}"/> </h3>
       </div> <!-- panel-heading -->
       <div class="panel-body">
 		<div class="row-fluid">
 			<div class="col-md-7">
-		        <div data-graph-report="<%= request.getParameter("report") %>" data-graph-resource="<%= request.getParameter("resourceId") %>"></div>
+		        <div data-graph-report="<c:out value="${report}"/>" data-graph-resource="<c:out value="${resourceId}"/>"></div>
+		    </div>
+		    <div class="col-md-4" ng-show="series.length < 1">
+		        <p>The graph does not contain any series that can be forecasted.</p>
 		    </div>
 		    <div class="col-md-4" ng-hide="series.length < 1">
-		        <form class="form-horizontal">
+		        <form class="form-horizontal" name="form">
 		            <div class="form-group">
 		                <div class="col-sm-12">
 		                    <label for="select-metric">Select the metric to forecast:</label>
@@ -77,7 +97,7 @@
 		                    </select>
 		                </div>
 		            </div>
-		
+
 		            <div class="form-group" ng-show="metricToForecast">
 		                <div class="col-sm-12">
 		                    <label for="select-template">Select a template:</label>
@@ -89,7 +109,7 @@
 		                    <span class="help-block">Choose from one of the available forecasting templates, or configure your own options.</span>
 		                </div>
 		            </div>
-		
+
 		            <div class="form-group" ng-show="forecastingTemplate.id === 'custom'">
 		                <div role="tabpanel" id="options">
 		                    <!-- Nav tabs -->
@@ -97,65 +117,62 @@
 		                        <li role="presentation" class="active"><a href="#time" role="tab" data-toggle="tab">Time Span</a></li>
 		                        <li role="presentation"><a href="#stat" role="tab" data-toggle="tab">Trend and Forecast</a></li>
 		                    </ul>
-		
-		                    <p> </p>
-		
 		                    <!-- Tab panes -->
 		                    <div class="tab-content">
 		                        <div role="tabpanel" class="tab-pane active" id="time">
-		                            <div class="form-group">
+		                            <div class="form-group" ng-class="{'has-error': form.trainingStart.$invalid}">
 		                                <label class="col-sm-3 control-label">Training Start</label>
 		                                <div class="col-sm-9">
-		                                    <input type="text" class="form-control" id="training-start" ng-model="forecastingOptions.trainingStart">
+		                                    <input type="number" integer min="0" ng-required="true" class="form-control" name="trainingStart" ng-model="forecastingOptions.trainingStart">
 		                                    <span class="help-block">Samples from this number of days ago will be used to train the model, but won't be shown on the graph.</span>
 		                                </div>
 		                            </div>
-		
-		                            <div class="form-group">
+
+		                            <div class="form-group" ng-class="{'has-error': form.graphStart.$invalid}">
 		                                <label class="col-sm-3 control-label">Graph Start</label>
 		                                <div class="col-sm-9">
-		                                    <input type="text" class="form-control" id="graph-start" ng-model="forecastingOptions.graphStart">
+		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="graphStart" ng-model="forecastingOptions.graphStart">
 		                                    <span class="help-block">Samples from this number of days ago will be shown on the graph.</span>
 		                                </div>
 		                            </div>
-		
-		                            <div class="form-group">
+
+		                            <div class="form-group" ng-class="{'has-error': form.forecasts.$invalid}">
 		                                <label class="col-sm-3 control-label">Forecasts</label>
 		                                <div class="col-sm-9">
-		                                    <input type="text" class="form-control" id="forecasts" ng-model="forecastingOptions.forecasts">
+		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="forecasts" ng-model="forecastingOptions.forecasts">
 		                                    <span class="help-block">Number of seasons to forecast.</span>
 		                                </div>
 		                            </div>
 		                        </div>
 		                        <div role="tabpanel" class="tab-pane" id="stat">
-		                            <div class="form-group">
+		                            <div class="form-group" ng-class="{'has-error': form.season.$invalid}">
 		                                <label class="col-sm-3 control-label">Season</label>
 		                                <div class="col-sm-9">
-		                                    <input type="text" class="form-control" id="season" ng-model="forecastingOptions.season">
+		                                    <input type="number" greater-than-zero ng-required="true" class="form-control" name="season" ng-model="forecastingOptions.season">
 		                                    <span class="help-block">Seasonality in days of the sample data. The training set must contain at least two seasons worth of data.</span>
 		                                </div>
 		                            </div>
-		
-		                            <div class="form-group">
+
+		                            <div class="form-group" ng-class="{'has-error': form.trendOrder.$invalid}">
 		                                <label class="col-sm-3 control-label">Trend Order</label>
 		                                <div class="col-sm-9">
-		                                    <input type="text" class="form-control" id="trend-order" ng-model="forecastingOptions.trendOrder">
+		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="trendOrder" ng-model="forecastingOptions.trendOrder">
 		                                    <span class="help-block">Order of the polynomial used to estimate the trend. Set to this 1 for a line or higher for a curve.</span>
 		                                </div>
 		                            </div>
-		
-		                            <div class="form-group">
+
+		                            <div class="form-group" ng-class="{'has-error': form.confidenceLevel.$invalid}">
 		                                <label class="col-sm-3 control-label">Confidence Level</label>
 		                                <div class="col-sm-9">
-		                                    <input type="text" class="form-control" id="confidence-level" ng-model="forecastingOptions.confidenceLevel">
+		                                    <input type="number" greater-than-zero max="1" ng-required="true" class="form-control" name="confidenceLevel" ng-model="forecastingOptions.confidenceLevel">
 		                                    <span class="help-block">Level used to calculate the upper and lower confidence bounds.</span>
 		                                </div>
 		                            </div>
 		
-		                            <div class="form-group">
+		                            <div class="form-group" ng-class="{'has-error': form.outlierThreshold.$invalid}">
 		                                <label class="col-sm-3 control-label">Outlier Threshold</label>
 		                                <div class="col-sm-9">
-		                                    <input type="text" class="form-control" id="outlier-threshold" ng-model="forecastingOptions.outlierThreshold">
+		                                    <input type="number" greater-than-zero max="1" ng-required="true" class="form-control" name="outlierThreshold" ng-model="forecastingOptions.outlierThreshold">
 		                                    <span class="help-block">Percentile used to eliminate outliers. Outliers and missing values are automatically interpolated.</span>
 		                                </div>
 		                            </div>
@@ -178,12 +195,51 @@
     </div> <!-- col-md-12 -->
 </div> <!-- row -->
 
+
 <script>
     function getBaseHref() {
         return "<%= baseHref %>";
     }
 
     var app = angular.module("forecast", []);
+
+    var INTEGER_REGEXP = /^\-?\d+$/;
+    app.directive('integer', function() {
+      return {
+        require: 'ngModel',
+        link: function(scope, elm, attrs, ctrl) {
+          ctrl.$validators.integer = function(modelValue, viewValue) {
+            if (ctrl.$isEmpty(modelValue)) {
+              // consider empty models to be valid
+              return true;
+            }
+
+            if (INTEGER_REGEXP.test(viewValue)) {
+              // it is valid
+              return true;
+            }
+
+            // it is invalid
+            return false;
+          };
+        }
+      };
+    });
+
+    app.directive('greaterThanZero', function() {
+        return {
+          require: 'ngModel',
+          link: function(scope, elm, attrs, ctrl) {
+            ctrl.$validators.integer = function(modelValue, viewValue) {
+              if (ctrl.$isEmpty(modelValue)) {
+                return false;
+              }
+              return viewValue > 0;
+            };
+          }
+        };
+      });
+
     app.controller("forecastCtrl", function($scope) {
         // Use the first div we find with the data-graph-report attribute
         $scope.graphElement = $("div[data-graph-report]").first();
@@ -275,7 +331,10 @@
                 // Pull the list of named series from the model
                 $scope.series = _.filter($scope.graphModel.series, function(series){ return !_.isEmpty(series.name); });
                 $scope.$apply();
-            });
+            }).fail(function() {
+                $scope.error = "Failed to retrieve the graph definition for the report named: " + report;
+                $scope.$apply();
+            })
         }
 
         function renderGraph(graphModel, start, end) {
@@ -321,7 +380,9 @@
         };
 
         $scope.canForecast = function() {
-            return $scope.metricToForecast !== null && $scope.forecastingTemplate !== null;
+            return $scope.metricToForecast !== null && $scope.forecastingTemplate !== null
+                && $scope.form.$valid
+                && ($scope.forecastingOptions.season * 2) < $scope.forecastingOptions.trainingStart;
         };
 
         $scope.forecast = function() {
