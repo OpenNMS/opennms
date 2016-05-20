@@ -56,6 +56,17 @@ pageContext.setAttribute("report", report);
 pageContext.setAttribute("resourceId", resourceId);
 %>
 
+<%
+//  Verify the forecasting dependencies.
+boolean canForecast = true;
+try {
+    org.opennms.netmgt.measurements.filters.impl.HWForecast.checkForecastSupport();
+} catch (Throwable t) {
+    canForecast = false;
+}
+pageContext.setAttribute("canForecast", canForecast);
+%>
+
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Forecasting" />
   <jsp:param name="quiet" value="true" />
@@ -494,8 +505,14 @@ pageContext.setAttribute("resourceId", resourceId);
             renderGraph(graphModel, trainingStartInMillis, graphEndInMillis);
         };
 
-        // Fetch the graph definition and load the original graph
-        getGraphDefinition($scope.graphElement.data('graph-report'), $scope.graphElement.data('graph-resource'));
+        if (${canForecast}) {
+            // Fetch the graph definition and load the original graph
+            getGraphDefinition($scope.graphElement.data('graph-report'), $scope.graphElement.data('graph-resource'));
+        } else {
+            $scope.error = "One or more dependencies required for forecasting were not found or configured incorrectly. "
+                         + "Please ensure that R is correctly installed. "
+                         + "See the installation guide for details.";
+        }
     });
 </script>
 
