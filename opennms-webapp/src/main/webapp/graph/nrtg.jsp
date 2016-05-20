@@ -47,7 +47,7 @@
   <jsp:param name="title" value="NRTG Graphing" />
   <jsp:param name="quiet" value="true" />
   <jsp:param name="nobreadcrumbs" value="true" />
-  <jsp:param name="norequirejs" value="true" />
+  <jsp:param name="usebackshift" value="true" />
 </jsp:include>
 
 <div class="row-fluid">
@@ -86,19 +86,6 @@
       </div> <!-- panel -->
     </div> <!-- col-md-12 -->
 </div> <!-- row -->
-
-<%-- We don't use graph.js here because we want to always use Backshift --%>
-<script type="text/javascript" src="<%= baseHref %>lib/d3/d3.min.js"></script>
-<script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.min.js"></script>
-<script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.time.min.js"></script>
-<script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.canvas.min.js"></script>
-<script type="text/javascript" src="<%= baseHref %>lib/flot-legend/jquery.flot.legend.min.js"></script>
-<script type="text/javascript" src="<%= baseHref %>lib/flot-axislabels/jquery.flot.axislabels.js"></script>
-<script type="text/javascript" src="<%= baseHref %>lib/flot.tooltip/js/jquery.flot.tooltip.min.js"></script>
-<script type="text/javascript" src="<%= baseHref %>lib/flot-saveas/jquery.flot.saveas.js"></script>
-<script type="text/javascript" src="<%= baseHref %>lib/flot-navigate/jquery.flot.navigate.js"></script>
-<script type="text/javascript" src="<%= baseHref %>lib/flot-datatable/jquery.flot.datatable.min.js"></script>
-<script type="text/javascript" src="<%= baseHref %>js/backshift.onms.min.js"></script>
 
 <script type="text/javascript">
     var defaultPollingInterval = 1000,
