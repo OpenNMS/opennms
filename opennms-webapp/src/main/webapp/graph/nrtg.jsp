@@ -33,6 +33,7 @@
 	contentType="text/html"
 	session="true"
     import="
+            org.opennms.web.servlet.MissingParameterException,
             org.opennms.web.api.Util
     "%>
 
@@ -40,7 +41,19 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <%
-        final String baseHref = Util.calculateUrlBase( request );
+final String baseHref = Util.calculateUrlBase(request);
+final String report = request.getParameter("report");
+final String resourceId = request.getParameter("resourceId");
+String[] requiredParameters = new String[] {"report", "resourceId"};
+
+if (report == null) {
+    throw new MissingParameterException("report", requiredParameters);
+} else if (resourceId == null) {
+    throw new MissingParameterException("resourceId", requiredParameters);
+}
+
+pageContext.setAttribute("report", report);
+pageContext.setAttribute("resourceId", resourceId);
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -54,10 +67,10 @@
     <div class="col-md-12 text-center">
       <div class="panel panel-default text-center">
       <div class="panel-heading">
-        <h3 class="panel-title">NRTG Graph for <%= request.getParameter("report") %> on <%= request.getParameter("resourceId") %> </h3>
+        <h3 class="panel-title">NRTG Graph for <c:out value="${report}"/> on <c:out value="${resourceId}"/> </h3>
       </div> <!-- panel-heading -->
       <div class="panel-body">
-        <div class="graph-container" data-graph-report="<%= request.getParameter("report") %>" data-graph-resource="<%= request.getParameter("resourceId") %>"></div>
+        <div class="graph-container" data-graph-report="<c:out value="${report}"/>" data-graph-resource="<c:out value="${resourceId}"/>"></div>
         <hr/>
         <form class="form-inline">
             <div class="form-group">
