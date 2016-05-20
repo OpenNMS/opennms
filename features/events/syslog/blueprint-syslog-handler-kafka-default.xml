@@ -13,43 +13,25 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<cm:property-placeholder id="syslogHandlerKafkaProperties" persistent-id="org.opennms.netmgt.syslog.handler.kafka" placeholder-prefix="$[" placeholder-suffix="]" update-strategy="none">
+	<cm:property-placeholder id="syslogHandlerDefaultKafkaProperties" persistent-id="org.opennms.netmgt.syslog.handler.kafka" placeholder-prefix="$[" placeholder-suffix="]" update-strategy="none">
 		<cm:default-properties>
 			<cm:property name="kafkahost" value="127.0.0.1" />
 			<cm:property name="kafkaport" value="9092" />
 			<cm:property name="kafkatopic" value="syslog" />
 			<cm:property name="zookeeperhost" value="127.0.0.1"/>
 			<cm:property name="zookeeperport" value="2181"/>
+			<cm:property name="groupId" value="123"/>
 		</cm:default-properties>
 	</cm:property-placeholder>
 	
 	<bean id="syslogConnectionHandlerDefault" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerDefaultImpl"/>
-
-	<reference id="syslogdConfig" interface="org.opennms.netmgt.config.SyslogdConfig" />
-	
-	<bean id="syslogdConfigProcessor" class="org.opennms.netmgt.syslogd.SyslogdConfigProcessor">
-		<argument ref="syslogdConfig"/>
-	</bean>
-	
 	
 	<camelContext id="syslogConnectionHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
-		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerDefaultProperties" />
+		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerDefaultKafkaProperties" />
 
 		<route id="receiveSyslogConnectionViaKafka">
-			<from uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}};zookeeperHost={{zookeeperhost}};zookeeperPort={{zookeeperport}}"/>
-			<process ref="unmarshaller"/>
-			<!-- Update the SyslogdConfig on the message to the local config value -->
-			<bean ref="syslogdConfigProcessor"/>
-			<to uri="seda:syslogHandlerKafka"/>
-		</route>
-
-		<route id="syslogHandlerKafka">
-			<from uri="seda:syslogHandlerKafka"/>
-			<!-- 
-				Pass the message to the default handler which will convert it into
-				an event and broadcast the event.
-			-->
+			<from uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}"/>
 			<bean ref="syslogConnectionHandlerDefault"/>
 		</route>
-		
+	</camelContext>
 </blueprint>
