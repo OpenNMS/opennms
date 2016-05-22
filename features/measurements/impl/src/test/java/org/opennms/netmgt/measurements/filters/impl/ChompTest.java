@@ -41,7 +41,7 @@ public class ChompTest extends AnalyticsFilterTest {
     @Test
     public void canCutoffRows() throws Exception {
         FilterDef filterDef = new FilterDef("Chomp",
-                "cutoffDate", "5000",
+                "cutoffDate", "60000",
                 "stripNaNs", "false");
 
         RowSortedTable<Long, String, Double> table = TreeBasedTable.create();
@@ -59,14 +59,17 @@ public class ChompTest extends AnalyticsFilterTest {
             table.put(k, "X", (double)k);
         }
 
+        // Verify the initial size
+        Assert.assertEquals(90, table.rowKeySet().size());
+
         // Apply the filter
         getFilterEngine().filter(filterDef, table);
 
         // Verify
-        Assert.assertEquals(85, table.rowKeySet().size());
+        Assert.assertEquals(30, table.rowKeySet().size());
         for (long i = 0; i < 5; i++) {
-            Assert.assertEquals((double) (i + 5) * 1000, table.get(i, Filter.TIMESTAMP_COLUMN_NAME), 0.0001);
-            Assert.assertTrue(Double.isNaN(table.get(i, "X")));
+            Assert.assertEquals((double) (i + 60) * 1000, table.get(i, Filter.TIMESTAMP_COLUMN_NAME), 0.0001);
+            Assert.assertEquals((double) (i + 60), table.get(i, "X"), 0.0001);
         }
     }
 
