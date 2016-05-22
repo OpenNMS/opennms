@@ -13,5 +13,6 @@
   <modules>
     <module>api</module>
     <module>persistence-rrd</module>
+    <module>shell-commands</module>
   </modules>
 </project>

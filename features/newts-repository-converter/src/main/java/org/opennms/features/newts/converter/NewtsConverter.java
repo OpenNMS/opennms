@@ -546,6 +546,17 @@ public class NewtsConverter implements AutoCloseable {
         }
     }
 
+    protected static Sample toSample(AbstractDS ds, Resource resource, Timestamp timestamp, double value) {
+        final String metric = ds.getName();
+        final MetricType type = ds.isCounter()
+                                ? MetricType.COUNTER
+                                : MetricType.GAUGE;
+        final ValueType<?> valueType = ds.isCounter()
+                                       ? new Counter(UnsignedLong.valueOf(BigDecimal.valueOf(value).toBigInteger()))
+                                       : new Gauge(value);
+        return new Sample(timestamp, resource, metric, type, valueType);
+    }
+
     private void injectSamplesToNewts(final ResourcePath resourcePath,
                                       final String group,
                                       final List<? extends AbstractDS> dataSources,
@@ -571,21 +582,16 @@ public class NewtsConverter implements AutoCloseable {
                 if (Double.isNaN(value)) {
                     continue;
                 }
-
                 final AbstractDS ds = dataSources.get(i);
-
                 final Timestamp timestamp = Timestamp.fromEpochSeconds(s.getKey());
 
-                final String metric = ds.getName();
-
-                final MetricType type = ds.isCounter()
-                                        ? MetricType.COUNTER
-                                        : MetricType.GAUGE;
-                final ValueType<?> valueType = ds.isCounter()
-                                               ? new Counter(UnsignedLong.valueOf(BigDecimal.valueOf(value).toBigInteger()))
-                                               : new Gauge(value);
-
-                batch.add(new Sample(timestamp, resource, metric, type, valueType));
+                try {
+                    batch.add(toSample(ds, resource, timestamp, value));
+                } catch (IllegalArgumentException e) {
+                    // This can happen when the value is outside of the range for the expected
+                    // type i.e. negative for a counter, so we silently skip these
+                    continue;
+                }
 
                 if (batch.size() >= this.batchSize) {
                     this.repository.insert(batch, true);
