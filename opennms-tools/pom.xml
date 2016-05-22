@@ -13,7 +13,6 @@
     <module>access-point-monitor</module>
     <module>opennms-eventd-stresser</module>
     <module>opennms-qosdaemon</module>
-    <module>opennms-rrd-stresser</module>
     <module>opennms-rrd-converter</module>
     <module>groovy-tools</module>
     <module>csv-requisitions</module>
