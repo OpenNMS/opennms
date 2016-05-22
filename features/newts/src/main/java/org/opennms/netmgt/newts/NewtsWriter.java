@@ -41,6 +41,7 @@ import javax.inject.Named;
 import org.opennms.core.logging.Logging;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.SampleRepository;
+import org.opennms.newts.api.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -74,6 +75,9 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
 
     @Autowired
     private SampleRepository m_sampleRepository;
+
+    @Autowired
+    private Indexer m_indexer;
 
     private WorkerPool<SampleBatchEvent> m_workerPool;
 
@@ -159,8 +163,16 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
     }
 
     public void insert(List<Sample> samples) {
+        pushToRingBuffer(samples, TRANSLATOR);
+    }
+
+    public void index(List<Sample> samples) {
+        pushToRingBuffer(samples, INDEX_ONLY_TRANSLATOR);
+    }
+
+    private void pushToRingBuffer(List<Sample> samples, EventTranslatorOneArg<SampleBatchEvent, List<Sample>> translator) {
         // Add the samples to the ring buffer
-        if (!m_ringBuffer.tryPublishEvent(TRANSLATOR, samples)) {
+        if (!m_ringBuffer.tryPublishEvent(translator, samples)) {
             String uniqueResourceIds = samples.stream()
                     .map(s -> s.getResource().getId())
                     .distinct()
@@ -186,8 +198,13 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
         // Partition the samples into collections smaller then max_batch_size
         for (List<Sample> batch : Lists.partition(samples, m_maxBatchSize)) {
             try {
-                LOG.debug("Inserting {} samples", batch.size());
-                m_sampleRepository.insert(batch);
+                if (event.isIndexOnly()) {
+                    LOG.debug("Indexing {} samples", batch.size());
+                    m_indexer.update(batch);
+                } else {
+                    LOG.debug("Inserting {} samples", batch.size());
+                    m_sampleRepository.insert(batch);
+                }
 
                 if (LOG.isDebugEnabled()) {
                     String uniqueResourceIds = batch.stream()
@@ -205,6 +222,15 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
     private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> TRANSLATOR =
             new EventTranslatorOneArg<SampleBatchEvent, List<Sample>>() {
                 public void translateTo(SampleBatchEvent event, long sequence, List<Sample> samples) {
+                    event.setIndexOnly(false);
+                    event.setSamples(samples);
+                }
+            };
+
+    private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> INDEX_ONLY_TRANSLATOR =
+            new EventTranslatorOneArg<SampleBatchEvent, List<Sample>>() {
+                public void translateTo(SampleBatchEvent event, long sequence, List<Sample> samples) {
+                    event.setIndexOnly(true);
                     event.setSamples(samples);
                 }
             };
@@ -212,5 +238,10 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
     @VisibleForTesting
     public void setSampleRepository(SampleRepository sampleRepository) {
         m_sampleRepository = sampleRepository;
+    }
+
+    @VisibleForTesting
+    public void setIndexer(Indexer indexer) {
+        m_indexer = indexer;
     }
 }
