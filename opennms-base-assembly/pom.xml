@@ -389,6 +389,11 @@
       <artifactId>org.opennms.features.events.traps</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.minion</groupId>
+      <artifactId>org.opennms.features.minion.dominion</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.notifications</groupId>
       <artifactId>org.opennms.features.notifications.ticket-strategy</artifactId>
       <version>${project.version}</version>

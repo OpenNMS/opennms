@@ -16,6 +16,7 @@
         <module>container</module>
         <module>core</module>
         <module>repository</module>
+        <module>dominion</module>
     </modules>
 
     <build>
