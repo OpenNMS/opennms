@@ -188,11 +188,19 @@
     <filter-name>Origin Filter</filter-name>
     <url-pattern>/rest/*</url-pattern>
   </filter-mapping>
+  <filter-mapping>
+    <filter-name>Origin Filter</filter-name>
+    <url-pattern>/nrt/*</url-pattern>
+  </filter-mapping>
 
   <!--
   <filter-mapping>
     <filter-name>CORS Filter</filter-name>
     <url-pattern>/rest/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>CORS Filter</filter-name>
+    <url-pattern>/nrt/*</url-pattern>
   </filter-mapping>
   -->
 

@@ -29,19 +29,18 @@
 package org.opennms.nrtg.web.internal;
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Map.Entry;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.google.common.net.HttpHeaders;
 import com.google.common.net.MediaType;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Map.Entry;
 
 public class NrtServlet extends HttpServlet {
 
@@ -57,7 +56,7 @@ public class NrtServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         HttpSession httpSession = req.getSession(true);
-        resp.setContentType("text/html");
+        resp.setContentType(MediaType.JSON_UTF_8.toString());
 
         if (req.getParameter("nrtCollectionTaskId") != null) {
             m_controller.nrtCollectionJobTrigger(req.getParameter("nrtCollectionTaskId"), httpSession);
@@ -66,13 +65,7 @@ public class NrtServlet extends HttpServlet {
                 resp.getOutputStream().println(m_controller.getMeasurementSetsForDestination(req.getParameter("nrtCollectionTaskId")));
             }
         } else if (req.getParameter("resourceId") != null && req.getParameter("report") != null) {
-            // Render JSON instead of HTML
-            boolean useJson = (req.getHeader(HttpHeaders.ACCEPT) != null && req.getHeader(HttpHeaders.ACCEPT).contains("application/json"));
-            if (useJson) {
-                resp.setContentType(MediaType.JSON_UTF_8.toString());
-            }
-
-            ModelAndView modelAndView = m_controller.nrtStart(req.getParameter("resourceId"), req.getParameter("report"), httpSession, useJson);
+            ModelAndView modelAndView = m_controller.nrtStart(req.getParameter("resourceId"), req.getParameter("report"), httpSession);
 
             String template = getTemplateAsString(modelAndView.getViewName() + ".template");
 

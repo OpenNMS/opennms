@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
@@ -80,8 +81,8 @@ public class ResourceDTO {
     @XmlElement(name="graphName")
     private List<String> m_graphNames;
 
-    public ResourceDTO() {
-    }
+    @XmlTransient
+    private OnmsResource m_resource;
 
     public String getId() {
         return m_id;
@@ -167,6 +168,14 @@ public class ResourceDTO {
         this.m_rrdGraphAttributes = rrdGraphAttributes;
     }
 
+    public void setResource(OnmsResource resource) {
+        m_resource = resource;
+    }
+
+    public OnmsResource getResource() {
+        return m_resource;
+    }
+
     public static ResourceDTO fromResource(final OnmsResource resource, final int depth) {
         final ResourceDTO dto = new ResourceDTO();
         dto.setId(resource.getId());
@@ -178,6 +187,7 @@ public class ResourceDTO {
         dto.setStringPropertyAttributes(resource.getStringPropertyAttributes());
         dto.setExternalValueAttributes(resource.getExternalValueAttributes());
         dto.setRrdGraphAttributes(resource.getRrdGraphAttributes());
+        dto.setResource(resource);
 
         if (depth == 0) {
             dto.setChildren(null);

@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.core.utils.LazyList;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -46,6 +47,8 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 /**
  * Nodes are top-level resources stored in paths like:
  *   snmp/${nodeId}/ds.rrd
+ * or when storeByFs is enabled:
+ *   snmp/fs/${fs}/${fid}/ds.rrd
  *
  * Note that the node resource may exist even if it's path
  * is empty since we consider response time resources, which
@@ -53,6 +56,8 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  *
  */
 public final class NodeResourceType extends AbstractTopLevelResourceType {
+
+    public static final String RESOURCE_TYPE_NAME = "node";
 
     /** Constant <code>s_emptyAttributeSet</code> */
     private static final Set<OnmsAttribute> s_emptyAttributeSet = Collections.unmodifiableSet(new HashSet<OnmsAttribute>());
@@ -98,23 +103,19 @@ public final class NodeResourceType extends AbstractTopLevelResourceType {
 
     @Override
     public List<OnmsResource> getTopLevelResources() {
-        // We handle these in the DefaultResourceDao class
-        // instead of here since we may need to create nodeSource[] types
-        return Collections.emptyList();
+        return m_nodeDao.findAll().stream()
+                // Only return non-deleted nodes - see NMS-2977
+                .filter(node -> node.getType() == null || !node.getType().equals("D"))
+                .map(node -> createResourceForNode(node))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public OnmsResource getResourceByName(String nodeIdStr) {
-        int nodeId;
-        try {
-            nodeId = Integer.parseInt(nodeIdStr);
-        } catch (NumberFormatException e) {
-            throw new ObjectRetrievalFailureException(OnmsNode.class, nodeIdStr, "Top-level resource of type node is not numeric: " + nodeIdStr, null);
-        }
-
-        final OnmsNode node = m_nodeDao.get(nodeId);
+    public OnmsResource getResourceByName(String nodeLookupCriteria) {
+        // The nodeDao automatically handles both id type, and fs:fid type lookups
+        final OnmsNode node = m_nodeDao.get(nodeLookupCriteria);
         if (node == null) {
-            throw new ObjectRetrievalFailureException(OnmsNode.class, nodeIdStr, "Top-level resource of type node could not be found: " + nodeIdStr, null);
+            throw new ObjectRetrievalFailureException(OnmsNode.class, nodeLookupCriteria, "Top-level resource of resource type node could not be found: " + nodeLookupCriteria, null);
         }
 
         // We don't check the existence of the resource path, since the
@@ -125,13 +126,21 @@ public final class NodeResourceType extends AbstractTopLevelResourceType {
     }
 
     protected static ResourcePath getResourcePathForNode(OnmsNode node) {
-        return ResourcePath.get(ResourceTypeUtils.SNMP_DIRECTORY, Integer.toString(node.getId()));
+        // Use the storeByFs path when enabled, falling back to the node id path when
+        // the node in question has no foreign source or foreign id
+        if (ResourceTypeUtils.isStoreByForeignSource() && node.getForeignSource() != null && node.getForeignId() != null) {
+            return ResourcePath.get(ResourceTypeUtils.SNMP_DIRECTORY, ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, node.getForeignSource(), node.getForeignId());
+        } else {
+            return ResourcePath.get(ResourceTypeUtils.SNMP_DIRECTORY, Integer.toString(node.getId()));
+        }
     }
 
     protected OnmsResource createResourceForNode(OnmsNode node) {
         final ResourcePath path = getResourcePathForNode(node);
-        final LazyChildResourceLoader loader = new LazyChildResourceLoader(m_resourceDao);          
-        final OnmsResource resource = new OnmsResource(Integer.toString(node.getId()), node.getLabel(),
+        final LazyChildResourceLoader loader = new LazyChildResourceLoader(m_resourceDao);     
+        final String resourceName = node.getForeignSource() != null && node.getForeignId() != null ?
+                String.format("%s:%s", node.getForeignSource(), node.getForeignId()) : Integer.toString(node.getId());
+        final OnmsResource resource = new OnmsResource(resourceName, node.getLabel(),
                 this, s_emptyAttributeSet, new LazyList<OnmsResource>(loader), path);
         resource.setEntity(node);
         loader.setParent(resource);
@@ -139,12 +148,12 @@ public final class NodeResourceType extends AbstractTopLevelResourceType {
     }
 
     /**
-     * Convenience method. supports both node and nodeSource.
+     * Convenience method.
      */
     public static boolean isNode(OnmsResource resource) {
         if (resource == null) {
             return false;
         }
-        return resource.getResourceType() instanceof NodeResourceType || resource.getResourceType() instanceof NodeSourceResourceType;
+        return resource.getResourceType() instanceof NodeResourceType;
     }
 }

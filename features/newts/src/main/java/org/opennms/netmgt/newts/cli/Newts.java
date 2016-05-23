@@ -61,7 +61,12 @@ public class Newts {
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
-            System.out.println("Usage: $OPENNMS_HOME/bin/newts init");
+            System.out.println("Usage: $OPENNMS_HOME/bin/newts <command>");
+            System.out.println();
+            System.out.println("Supported commands are:");
+            System.out.println("\tinit");
+            System.out.println();
+            System.out.println("Run $OPENNMS_HOME/bin/newts <command> -h for command specific options.");
             return;
         }
 

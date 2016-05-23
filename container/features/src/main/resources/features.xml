@@ -452,6 +452,11 @@
       <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-collection-commands" description="OpenNMS :: Collection :: Shell Commands" version="${project.version}">
+      <feature>opennms-collection-api</feature>
+      <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.commands/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-collection-persistence-rrd" description="OpenNMS :: Collection :: Persistence :: RRD" version="${project.version}">
       <feature>opennms-collection-api</feature>
       <feature>opennms-dao-api</feature>

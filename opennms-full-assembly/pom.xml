@@ -13,6 +13,7 @@
   <properties>
     <build.profile>default</build.profile>
     <maven.metadata.legacy>true</maven.metadata.legacy>
+    <skipITs>true</skipITs>
   </properties>
   <profiles>
     <profile>
@@ -192,6 +193,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <skipITs>${skipITs}</skipITs>
+        </configuration>
         <executions>
           <execution>
             <phase>integration-test</phase>
@@ -251,7 +255,7 @@
                 <!-- Pax Exam features -->
                 <descriptor>mvn:org.ops4j.pax.exam/pax-exam-features/${paxExamVersion}/xml</descriptor>
                 <!-- Pax Web features -->
-                <descriptor>mvn:org.ops4j.pax.web/pax-web-features/3.1.2/xml/features</descriptor>
+                <descriptor>mvn:org.ops4j.pax.web/pax-web-features/3.2.4/xml/features</descriptor>
 
                 <!-- Features for the OpenNMS-modified Karaf container -->
                 <descriptor>mvn:org.opennms.container/karaf/${project.version}/xml/features</descriptor>
@@ -319,6 +323,14 @@
             </configuration>
           </execution>
         </executions>
+        <!-- https://issues.apache.org/jira/browse/SM-2416 -->
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-http-lightweight</artifactId>
+            <version>2.6</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin> 
         <artifactId>maven-clean-plugin</artifactId> 
@@ -643,7 +655,7 @@
     <dependency>
       <groupId>org.ops4j.pax.web</groupId>
       <artifactId>pax-web-features</artifactId>
-      <version>3.1.2</version>
+      <version>3.2.4</version>
       <classifier>features</classifier>
       <type>xml</type>
     </dependency>

@@ -77,7 +77,7 @@
                 <!-- Pax Exam features -->
                 <descriptor>mvn:org.ops4j.pax.exam/pax-exam-features/${paxExamVersion}/xml</descriptor>
                 <!-- Pax Web features -->
-                <descriptor>mvn:org.ops4j.pax.web/pax-web-features/3.1.2/xml/features</descriptor>
+                <descriptor>mvn:org.ops4j.pax.web/pax-web-features/3.2.4/xml/features</descriptor>
               </descriptors>
               <features>
                 <!--
@@ -130,10 +130,18 @@
                 <feature>spring-web</feature>
 
               </features>
-              <repository>target/paxexam/test-repo</repository>
+              <repository>${project.build.directory}/paxexam/test-repo</repository>
             </configuration>
           </execution>
         </executions>
+        <!-- https://issues.apache.org/jira/browse/SM-2416 -->
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-http-lightweight</artifactId>
+            <version>2.6</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -262,7 +270,7 @@
     <dependency>
       <groupId>org.ops4j.pax.web</groupId>
       <artifactId>pax-web-features</artifactId>
-      <version>3.1.2</version>
+      <version>3.2.4</version>
       <classifier>features</classifier>
       <type>xml</type>
       <scope>compile</scope>
