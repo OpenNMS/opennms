@@ -34,11 +34,14 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.util.Assert;
 
 /**
@@ -112,8 +115,8 @@ public class Poller implements InitializingBean, ConfigurationChangedListener, P
             // no need to unschedule in this case
             return;
         }
-        for (String jobName : m_scheduler.getJobNames(PollJobDetail.GROUP)) {
-            m_scheduler.deleteJob(jobName, PollJobDetail.GROUP);
+        for (JobKey jobKey : m_scheduler.getJobKeys(GroupMatcher.<JobKey>groupEquals(PollJobDetail.GROUP))) {
+            m_scheduler.deleteJob(jobKey);
         }
     }
 
@@ -137,7 +140,7 @@ public class Poller implements InitializingBean, ConfigurationChangedListener, P
             String jobName = polledService.toString();
 
             // remove any currently scheduled job
-            if (m_scheduler.deleteJob(jobName, PollJobDetail.GROUP)) {
+            if (m_scheduler.deleteJob(new JobKey(jobName, PollJobDetail.GROUP))) {
                 LOG.debug("Job for {} already scheduled.  Rescheduling", polledService);
             } else {
                 LOG.debug("Scheduling job for {}", polledService);
@@ -147,8 +150,9 @@ public class Poller implements InitializingBean, ConfigurationChangedListener, P
 
             m_pollerFrontEnd.setInitialPollTime(polledService.getServiceId(), initialPollTime);
 
-            Trigger pollTrigger = new PolledServiceTrigger(polledService);
-            pollTrigger.setStartTime(initialPollTime);
+            SimpleTriggerFactoryBean triggerFactory = new PolledServiceTrigger(polledService); 
+            triggerFactory.setStartTime(initialPollTime);
+            Trigger pollTrigger = triggerFactory.getObject();
 
             PollJobDetail jobDetail = new PollJobDetail(jobName, PollJob.class);
             jobDetail.setPolledService(polledService);

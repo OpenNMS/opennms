@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.poller.remote;
 
-import org.springframework.scheduling.quartz.SimpleTriggerBean;
+import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 /**
  * <p>PolledServiceTrigger class.</p>
@@ -36,7 +36,7 @@ import org.springframework.scheduling.quartz.SimpleTriggerBean;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class PolledServiceTrigger extends SimpleTriggerBean {
+public class PolledServiceTrigger extends SimpleTriggerFactoryBean {
 	
 	private static final long serialVersionUID = -3224274965842979439L;
 

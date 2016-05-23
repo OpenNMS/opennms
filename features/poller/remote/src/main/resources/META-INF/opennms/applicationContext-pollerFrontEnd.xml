@@ -41,7 +41,7 @@
       <property name="targetMethod" value="checkConfig"/>
     </bean>
     
-    <bean id="configCheckTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+    <bean id="configCheckTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
 	  <property name="repeatInterval" value="30000" />
 	  <property name="jobDetail" ref="checkConfigJobDetail"/>
 	</bean>
