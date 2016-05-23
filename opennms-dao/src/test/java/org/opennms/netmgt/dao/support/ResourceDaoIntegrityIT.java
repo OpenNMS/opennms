@@ -143,7 +143,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-        setStoreByForeignSource(true);
+        setStoreByForeignSource(false);
 
         m_easyMockUtils = new EasyMockUtils();
         m_resourceTypesDao = m_easyMockUtils.createMock(ResourceTypesDao.class);
@@ -256,7 +256,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         String[] resourceTreeFiles = fileAsString.split("\\r?\\n");
 
         // This should match the number of lines in the file
-        assertEquals(31830, resourceTreeFiles.length);
+        assertEquals(31829, resourceTreeFiles.length);
 
         for (String resourceTreeFile : resourceTreeFiles) {
             // Create the file and its parent directories in the temporary folder
@@ -276,7 +276,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         String fileAsString = IOUtils.toString(new ClassPathResource("resource-tree-ips.txt").getInputStream());
         String[] resourceTreeIps = fileAsString.split("\\r?\\n");
 
-        // Make sure every IP address is represented at lease once
+        // Make sure every IP address is represented at least once
         assertTrue(resourceTreeIps.length < NUM_NODES);
 
         for (int i = 1; i <= NUM_NODES; i++) {

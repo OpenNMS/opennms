@@ -190,7 +190,7 @@
     <dependency>
       <groupId>org.apache.aries.blueprint</groupId>
       <artifactId>org.apache.aries.blueprint.core</artifactId>
-      <version>1.4.1</version> <!-- from Karaf -->
+      <version>1.4.3</version> <!-- from Karaf -->
       <scope>provided</scope>
     </dependency>
 

@@ -24,7 +24,7 @@
           <instructions>
             <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${project.version}",org.graphdrawing.*</Export-Package>
+            <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${project.version}"</Export-Package>
             <Embed-Dependency>*;groupId=com.hubspot.jinjava|org.javassist|de.odysseus.juel|org.apache.commons</Embed-Dependency>
             <Import-Package>!com.sun.jdi.*,*</Import-Package>
             <Embed-Transitive>true</Embed-Transitive>
@@ -32,42 +32,6 @@
             <_include>-osgi.bnd</_include>
           </instructions>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jaxb2-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>xjc</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <sources>
-            <source>src/main/xsd/graphml.xsd</source>
-          </sources>
-          <packageName>org.graphdrawing.graphml</packageName>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${project.build.directory}/generated-sources/jaxb</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
@@ -117,6 +81,12 @@
     <dependency>
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.graphml</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

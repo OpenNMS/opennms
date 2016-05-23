@@ -35,7 +35,7 @@ import java.util.concurrent.Callable;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.xml.event.Event;
@@ -58,7 +58,7 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  *  
  */
-class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
+class TrapQueueProcessor implements Callable<Void>, InitializingBean {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(TrapQueueProcessor.class);
 	
@@ -76,7 +76,7 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
     /**
      * The event IPC manager to which we send events created from traps.
      */
-    private EventIpcManager m_eventMgr;
+    private EventForwarder m_eventForwarder;
 
     /**
      * The event configuration DAO that we use to convert from traps to events.
@@ -163,7 +163,7 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
      * </p>
      */
     @Override
-    public Callable<Void> call() {
+    public Void call() {
         try {
             processTrapEvent(((EventCreator)m_trapNotification.getTrapProcessor()).getEvent());
         } catch (IllegalArgumentException e) {
@@ -213,7 +213,7 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
         }
 
         // send the event to eventd
-        m_eventMgr.sendNow(event);
+        m_eventForwarder.sendNow(event);
 
         LOG.debug("Trap successfully converted and sent to eventd with UEI {}", event.getUei());
 
@@ -239,7 +239,7 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
         bldr.setHost(LOCALHOST_ADDRESS);
 
         // send the event to eventd
-        m_eventMgr.sendNow(bldr.getEvent());
+        m_eventForwarder.sendNow(bldr.getEvent());
     }
 
     /**
@@ -269,19 +269,19 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
     /**
      * <p>getEventMgr</p>
      *
-     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
-    public EventIpcManager getEventManager() {
-        return m_eventMgr;
+    public EventForwarder getEventForwarder() {
+        return m_eventForwarder;
     }
 
     /**
      * <p>setEventMgr</p>
      *
-     * @param eventMgr a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
-    public void setEventManager(EventIpcManager eventMgr) {
-        m_eventMgr = eventMgr;
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
     }
 
     /**
@@ -313,7 +313,7 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
     @Override
     public void afterPropertiesSet() throws IllegalStateException {
         Assert.state(m_eventConfDao != null, "property eventConfDao must be set");
-        Assert.state(m_eventMgr != null, "property eventMgr must be set");
+        Assert.state(m_eventForwarder != null, "property eventForwarder must be set");
         Assert.state(m_newSuspect != null, "property newSuspect must be set");
         Assert.state(m_trapNotification != null, "property trapNotification must be set");
     }

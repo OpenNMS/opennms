@@ -32,21 +32,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.opennms.features.graphml.model.GraphML;
+import org.opennms.features.graphml.model.GraphMLEdge;
+import org.opennms.features.graphml.model.GraphMLGraph;
+import org.opennms.features.graphml.model.GraphMLNode;
+import org.opennms.features.graphml.model.GraphMLReader;
+import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.graphml.model.GraphML;
-import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLGraph;
-import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLNode;
-import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLReader;
-import org.opennms.features.topology.plugins.topo.graphml.model.InvalidGraphException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +67,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     private final Map<String, String> preferredLayoutByNamespace = Maps.newLinkedHashMap();
     private final Map<VertexRef, List<VertexRef>> oppositeVertices = Maps.newLinkedHashMap();
 
-    private VertexRef getVertex(org.opennms.features.topology.plugins.topo.graphml.model.GraphMLNode node) {
+    private VertexRef getVertex(GraphMLNode node) {
         return graphsByNamespace.values().stream()
             .map(g -> g.getVertex(g.getVertexNamespace(), node.getId()))
             .filter(v -> v != null)
@@ -95,7 +98,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
             }
 
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
-                for (org.opennms.features.topology.plugins.topo.graphml.model.GraphMLEdge eachEdge : eachGraph.getEdges()) {
+                for (org.opennms.features.graphml.model.GraphMLEdge eachEdge : eachGraph.getEdges()) {
                     final VertexRef sourceVertex = getVertex(eachEdge.getSource());
                     final VertexRef targetVertex = getVertex(eachEdge.getTarget());
                     if (!sourceVertex.getNamespace().equals(targetVertex.getNamespace())) {
@@ -138,12 +141,13 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     }
 
     private void validate(GraphML graphML) throws InvalidGraphException {
-        final List<String> nodeIds = new ArrayList<>();
-        final List<String> edgeIds = new ArrayList<>();
-        final List<String> graphIds = new ArrayList<>();
+        final Set<String> graphIds = new HashSet<>();
+        final Map<String, Set<String>> nodeIdsByNamespace = new HashMap<>();
+        final Map<String, Set<String>> edgeIdsByNamespace = new HashMap<>();
 
         for (GraphMLGraph eachGraph : graphML.getGraphs()) {
-            if (Strings.isNullOrEmpty(eachGraph.getProperty(GraphMLProperties.NAMESPACE))) {
+            final String ns = eachGraph.getProperty(GraphMLProperties.NAMESPACE);
+            if (Strings.isNullOrEmpty(ns)) {
                 throw new InvalidGraphException("No namespace defined on graph with id " + eachGraph.getId());
             }
 
@@ -153,16 +157,31 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
             graphIds.add(eachGraph.getId());
 
             for (GraphMLNode eachNode : eachGraph.getNodes()) {
-                if (nodeIds.contains(eachNode.getId())) {
-                    throw new InvalidGraphException("There already exists a node with id " + eachNode.getId());
+                Set<String> nodeIdsInNs = nodeIdsByNamespace.get(ns);
+                if (nodeIdsInNs == null) {
+                    nodeIdsInNs = new HashSet<>();
+                    nodeIdsByNamespace.put(ns, nodeIdsInNs);
                 }
-                nodeIds.add(eachNode.getId());
+
+                if (nodeIdsInNs.contains(eachNode.getId())) {
+                    throw new InvalidGraphException("There already exists a node with id " + eachNode.getId()
+                        + " in namespace " + ns);
+                }
+                nodeIdsInNs.add(eachNode.getId());
             }
-            for (org.opennms.features.topology.plugins.topo.graphml.model.GraphMLEdge eachEdge : eachGraph.getEdges()) {
-                if (edgeIds.contains(eachEdge.getId())) {
-                    throw new InvalidGraphException("There already exists an edge with id " + eachEdge.getId());
+
+            for (GraphMLEdge eachEdge : eachGraph.getEdges()) {
+                Set<String> edgeIdsInNs = edgeIdsByNamespace.get(ns);
+                if (edgeIdsInNs == null) {
+                    edgeIdsInNs = new HashSet<>();
+                    edgeIdsByNamespace.put(ns, edgeIdsInNs);
                 }
-                edgeIds.add(eachEdge.getId());
+
+                if (edgeIdsInNs.contains(eachEdge.getId())) {
+                    throw new InvalidGraphException("There already exists an edge with id " + eachEdge.getId()
+                        + " in namespace " + ns);
+                }
+                edgeIdsInNs.add(eachEdge.getId());
             }
         }
     }

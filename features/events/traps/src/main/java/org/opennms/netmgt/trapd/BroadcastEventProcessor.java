@@ -48,12 +48,12 @@ import org.springframework.util.Assert;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class BroadcastEventProcessor implements EventListener, InitializingBean, DisposableBean {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
-	
+
+    private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
+
     private final EventIpcManager m_eventMgr;
     private final TrapdIpMgr m_trapdIpMgr;
-    
+
     /**
      * <p>Constructor for BroadcastEventProcessor.</p>
      *
@@ -138,25 +138,24 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
 
         LOG.debug("Received event: {}", eventUei);
 
-        if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
-            || eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
-            String action = eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI) ?
-                "reparent" : "add";
-            if (Long.toString(event.getNodeid()) == null) {
-                LOG.warn("Not {}ing interface to known node list: nodeId is null", action);
-            } else if (event.getInterface() == null) {
-                LOG.warn("Not {}ing interface to known node list: interface is null", action);
-            } else {
-                m_trapdIpMgr.setNodeId(event.getInterface(), event.getNodeid());
-                LOG.debug("Successfully {}ed {} to known node list", action, event.getInterface());
+        if (EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI.equals(eventUei)) {
+            // add to known nodes
+            if (event.getNodeid() != null && event.getInterface() != null) {
+                m_trapdIpMgr.setNodeId(event.getInterface(), event.getNodeid().intValue());
             }
-        } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
+            LOG.debug("Added {} to known node list", event.getInterface());
+        } else if (EventConstants.INTERFACE_DELETED_EVENT_UEI.equals(eventUei)) {
+            // remove from known nodes
             if (event.getInterface() != null) {
                 m_trapdIpMgr.removeNodeId(event.getInterface());
-                LOG.debug("Removed {} from known node list", event.getInterface());
             }
-        } else {
-            LOG.warn("Received an unexpected event with UEI of \"{}\"" , eventUei);
+            LOG.debug("Removed {} from known node list", event.getInterface());
+        } else if (EventConstants.INTERFACE_REPARENTED_EVENT_UEI.equals(eventUei)) {
+            // add to known nodes
+            if (event.getNodeid() != null && event.getInterface() != null) {
+                m_trapdIpMgr.setNodeId(event.getInterface(), event.getNodeid().intValue());
+            }
+            LOG.debug("Reparented {} to known node list", event.getInterface());
         }
     }
 

@@ -37,7 +37,6 @@
 
                 <!-- Exclude etc files that we are providing replacements for -->
                 <exclude>etc/custom.properties</exclude>
-                <exclude>etc/startup.properties</exclude>
                 <exclude>etc/system.properties</exclude>
                 <exclude>etc/users.properties</exclude>
                 <exclude>etc/org.apache.karaf.features.cfg</exclude>
