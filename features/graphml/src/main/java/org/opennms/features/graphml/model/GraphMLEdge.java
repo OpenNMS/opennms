@@ -26,39 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml.model;
+package org.opennms.features.graphml.model;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Objects;
 
-public class GraphMLGraph extends GraphMLElement {
+public class GraphMLEdge extends GraphMLElement {
 
-    private final LinkedHashMap<String, GraphMLEdge> edgesById = new LinkedHashMap<>();
-    private final LinkedHashMap<String, GraphMLNode> nodeById = new LinkedHashMap<>();
+    private GraphMLNode target;
+    private GraphMLNode source;
 
-    public void addEdge(GraphMLEdge edge) {
-        edgesById.put(edge.getId(), edge);
+    public GraphMLNode getTarget() {
+        return target;
     }
 
-    public void addNode(GraphMLNode node) {
-        nodeById.put(node.getId(), node);
+    public GraphMLNode getSource() {
+        return source;
     }
 
-    public Collection<GraphMLEdge> getEdges() {
-        return edgesById.values();
+    public void setTarget(GraphMLNode target) {
+        this.target = Objects.requireNonNull(target);
     }
 
-    public Collection<GraphMLNode> getNodes() {
-        return nodeById.values();
-    }
-
-    public GraphMLNode getNodeById(String id) {
-        return nodeById.get(id);
-    }
-
-    public GraphMLEdge getEdgeById(String id) {
-        return edgesById.get(id);
+    public void setSource(GraphMLNode source) {
+        this.source = Objects.requireNonNull(source);
     }
 
     @Override
@@ -68,16 +58,17 @@ public class GraphMLGraph extends GraphMLElement {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), edgesById, nodeById);
+        return Objects.hash(super.hashCode(), target, source);
     }
 
     @Override
     public boolean equals(Object obj) {
         boolean equals = super.equals(obj);
         if (equals) {
-            if (obj instanceof GraphMLGraph) {
-                GraphMLGraph other = (GraphMLGraph) obj;
-                equals = Objects.equals(edgesById, other.edgesById) && Objects.equals(nodeById, other.nodeById);
+            if (obj instanceof GraphMLEdge) {
+                GraphMLEdge other = (GraphMLEdge) obj;
+                equals = Objects.equals(target, other.target)
+                        && Objects.equals(source, other.source);
                 return equals;
             }
         }

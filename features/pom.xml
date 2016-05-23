@@ -26,6 +26,9 @@
     <!-- Events -->
     <module>events</module>
 
+    <!-- Graphml -->
+    <module>graphml</module>
+
     <!-- Executor factories -->
     <module>executor-factory</module>
 

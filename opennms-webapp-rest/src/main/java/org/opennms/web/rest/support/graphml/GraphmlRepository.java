@@ -26,42 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml.model;
+package org.opennms.web.rest.support.graphml;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.io.IOException;
 
-public class GraphML extends GraphMLElement {
-    private List<GraphMLGraph> graphs = new ArrayList<>();
+import org.graphdrawing.graphml.GraphmlType;
 
-    @Override
-    public <T> T accept(GraphMLElementVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
+public interface GraphmlRepository {
 
-    public void addGraph(GraphMLGraph graph) {
-        this.graphs.add(graph);
-    }
+    GraphmlType findByName(String name) throws IOException;
 
-    public List<GraphMLGraph> getGraphs() {
-        return graphs;
-    }
+    void save(String name, String label, GraphmlType graphmlType) throws IOException;
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), graphs);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        boolean equals = super.equals(obj);
-        if (equals) {
-            if (obj instanceof GraphML) {
-                return Objects.equals(graphs, ((GraphML) obj).graphs);
-            }
-        }
-        return false;
-    }
+    void delete(String name) throws IOException;
 }
-

@@ -31,7 +31,7 @@ package org.opennms.features.topology.plugins.topo.graphml;
 import java.util.HashMap;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLNode;
+import org.opennms.features.graphml.model.GraphMLNode;
 
 public class GraphMLVertex extends AbstractVertex {
     private HashMap<String, Object> properties = new HashMap<>();

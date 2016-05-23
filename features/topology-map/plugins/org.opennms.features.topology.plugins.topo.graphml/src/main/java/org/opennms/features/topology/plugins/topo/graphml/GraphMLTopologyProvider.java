@@ -42,8 +42,8 @@ import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLGraph;
-import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLNode;
+import org.opennms.features.graphml.model.GraphMLGraph;
+import org.opennms.features.graphml.model.GraphMLNode;
 
 public class GraphMLTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
@@ -61,7 +61,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
             GraphMLVertex newVertex = new GraphMLVertex(this.getVertexNamespace(), graphMLNode);
             addVertices(newVertex);
         }
-        for (org.opennms.features.topology.plugins.topo.graphml.model.GraphMLEdge eachEdge : graph.getEdges()) {
+        for (org.opennms.features.graphml.model.GraphMLEdge eachEdge : graph.getEdges()) {
             GraphMLVertex sourceVertex = (GraphMLVertex) getVertex(getVertexNamespace(), eachEdge.getSource().getId());
             GraphMLVertex targetVertex = (GraphMLVertex) getVertex(getVertexNamespace(), eachEdge.getTarget().getId());
             if (sourceVertex == null || targetVertex == null) {

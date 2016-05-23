@@ -62,7 +62,7 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
     private static class Styles {
         private static final String SELECTED = "selected";
         private static final String TOOLBAR = "toolbar";
-        private static final String COLLAPSED = "collapsed";
+        private static final String EXPANDED = "expanded";
         private static final String LAYOUT = "layout";
     }
     
@@ -238,15 +238,17 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
 
         // Layer Layout
         layerLayout = new VerticalLayout();
+        layerLayout.setId("layerComponent");
         layerLayout.setSpacing(true);
         layerLayout.setMargin(true);
 
         // Layer Button
         layerButton = new Button();
+        layerButton.setId("layerToggleButton");
         layerButton.setIcon(FontAwesome.BARS);
         layerButton.setDescription("Layers");
         layerButton.addClickListener((event) -> {
-            boolean isCollapsed = layerButton.getStyleName().contains(Styles.COLLAPSED);
+            boolean isCollapsed = layerButton.getStyleName().contains(Styles.EXPANDED);
             setLayerLayoutVisible(!isCollapsed);
         });
 
@@ -270,11 +272,11 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
 
     private void setLayerLayoutVisible(boolean show) {
         if (show) {
-            layerButton.addStyleName(Styles.COLLAPSED);
+            layerButton.addStyleName(Styles.EXPANDED);
             layerButton.addStyleName(Styles.SELECTED);
             addComponent(layerLayout);
         } else {
-            layerButton.removeStyleName(Styles.COLLAPSED);
+            layerButton.removeStyleName(Styles.EXPANDED);
             layerButton.removeStyleName(Styles.SELECTED);
             removeComponent(layerLayout);
         }

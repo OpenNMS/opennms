@@ -26,13 +26,42 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml.model;
+package org.opennms.features.graphml.model;
 
-/**
- * Exception which is thrown if the {@link GraphMLReader} or {@link GraphMLWriter} cannot process the graph.
- */
-public class InvalidGraphException extends Exception {
-    public InvalidGraphException(String errorMessage) {
-        super(errorMessage);
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+public class GraphML extends GraphMLElement {
+    private List<GraphMLGraph> graphs = new ArrayList<>();
+
+    @Override
+    public <T> T accept(GraphMLElementVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    public void addGraph(GraphMLGraph graph) {
+        this.graphs.add(graph);
+    }
+
+    public List<GraphMLGraph> getGraphs() {
+        return graphs;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), graphs);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean equals = super.equals(obj);
+        if (equals) {
+            if (obj instanceof GraphML) {
+                return Objects.equals(graphs, ((GraphML) obj).graphs);
+            }
+        }
+        return false;
     }
 }
+
