@@ -43,7 +43,6 @@ import org.opennms.smoketest.BSMAdminIT;
 import org.opennms.smoketest.BSMAdminIT.BsmAdminPage;
 import org.opennms.smoketest.BSMAdminIT.BsmAdminPageEditWindow;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.smoketest.TopologyIT.FocusedVertex;
 import org.opennms.smoketest.TopologyIT.TopologyProvider;
 import org.opennms.smoketest.TopologyIT.TopologyUIPage;
 import org.opennms.smoketest.TopologyIT.VisibleVertex;
@@ -76,10 +75,7 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
             topologyUiPage.selectTopologyProvider(TopologyProvider.BUSINESSSERVICE);
 
             // Remove any existing vertices from focus
-            for (FocusedVertex focusedVerted : topologyUiPage.getFocusedVertices()) {
-                focusedVerted.removeFromFocus();
-            }
-            assertEquals(0, topologyUiPage.getFocusedVertices().size());
+            topologyUiPage.clearFocus();
 
             // Search for and select the first business service in our list
             final String businessServiceName = businessServiceNames.get(0);

@@ -90,7 +90,7 @@ abstract public class XmlTest<T> {
         initXmlUnit();
     }
 
-    private static void initXmlUnit() {
+    public static void initXmlUnit() {
         XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreAttributeOrder(true);
         XMLUnit.setIgnoreComments(true);

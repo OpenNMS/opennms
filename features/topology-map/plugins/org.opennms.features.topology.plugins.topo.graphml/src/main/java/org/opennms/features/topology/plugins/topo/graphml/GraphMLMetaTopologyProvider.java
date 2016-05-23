@@ -40,15 +40,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.features.graphml.model.GraphML;
+import org.opennms.features.graphml.model.GraphMLEdge;
+import org.opennms.features.graphml.model.GraphMLGraph;
+import org.opennms.features.graphml.model.GraphMLNode;
+import org.opennms.features.graphml.model.GraphMLReader;
+import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.graphml.model.GraphML;
-import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLGraph;
-import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLNode;
-import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLReader;
-import org.opennms.features.topology.plugins.topo.graphml.model.InvalidGraphException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +67,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     private final Map<String, String> preferredLayoutByNamespace = Maps.newLinkedHashMap();
     private final Map<VertexRef, List<VertexRef>> oppositeVertices = Maps.newLinkedHashMap();
 
-    private VertexRef getVertex(org.opennms.features.topology.plugins.topo.graphml.model.GraphMLNode node) {
+    private VertexRef getVertex(GraphMLNode node) {
         return graphsByNamespace.values().stream()
             .map(g -> g.getVertex(g.getVertexNamespace(), node.getId()))
             .filter(v -> v != null)
@@ -97,7 +98,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
             }
 
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
-                for (org.opennms.features.topology.plugins.topo.graphml.model.GraphMLEdge eachEdge : eachGraph.getEdges()) {
+                for (org.opennms.features.graphml.model.GraphMLEdge eachEdge : eachGraph.getEdges()) {
                     final VertexRef sourceVertex = getVertex(eachEdge.getSource());
                     final VertexRef targetVertex = getVertex(eachEdge.getTarget());
                     if (!sourceVertex.getNamespace().equals(targetVertex.getNamespace())) {
@@ -169,7 +170,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
                 nodeIdsInNs.add(eachNode.getId());
             }
 
-            for (org.opennms.features.topology.plugins.topo.graphml.model.GraphMLEdge eachEdge : eachGraph.getEdges()) {
+            for (GraphMLEdge eachEdge : eachGraph.getEdges()) {
                 Set<String> edgeIdsInNs = edgeIdsByNamespace.get(ns);
                 if (edgeIdsInNs == null) {
                     edgeIdsInNs = new HashSet<>();

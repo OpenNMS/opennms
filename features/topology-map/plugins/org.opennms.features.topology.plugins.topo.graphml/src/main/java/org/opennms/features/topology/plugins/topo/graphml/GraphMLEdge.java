@@ -37,7 +37,7 @@ import com.google.common.collect.Maps;
 public class GraphMLEdge extends AbstractEdge {
     private Map<String, Object> properties = Maps.newHashMap();
 
-    public GraphMLEdge(org.opennms.features.topology.plugins.topo.graphml.model.GraphMLEdge graphMLEdge, GraphMLVertex source, GraphMLVertex target) {
+    public GraphMLEdge(org.opennms.features.graphml.model.GraphMLEdge graphMLEdge, GraphMLVertex source, GraphMLVertex target) {
         super(graphMLEdge.getProperty(GraphMLProperties.NAMESPACE),
               graphMLEdge.getProperty(GraphMLProperties.ID),
               source,

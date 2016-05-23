@@ -43,10 +43,14 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
 
 public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
+
+	private static final Logger LOG = LoggerFactory.getLogger(GraphMLMetaTopologyFactory.class);
 
 	private static final String TOPOLOGY_LOCATION = "topologyLocation";
 	private static final String LABEL = "label";
@@ -67,8 +71,10 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 
 	@Override
 	public void updated(String pid, @SuppressWarnings("rawtypes") Dictionary properties) throws ConfigurationException {
+		LOG.debug("updated(String, Dictionary) invoked");
 		String location = (String)properties.get(TOPOLOGY_LOCATION);
 		if (!m_providers.containsKey(pid)) {
+			LOG.debug("Service with pid '{}' is new. Register {}", pid, GraphMLMetaTopologyProvider.class.getSimpleName());
 			final Dictionary<String,Object> metaData = new Hashtable<>();
 			metaData.put(Constants.SERVICE_PID, pid);
 			if (properties.get(LABEL) != null) {
@@ -89,6 +95,7 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 					m_bundleContext.registerService(SearchProvider.class, new GraphMLSearchProvider(metaTopologyProvider.getRawTopologyProvider(it.getVertexNamespace())), new Hashtable<>())
 			);
 		} else {
+			LOG.debug("Service with pid '{}' updated. Updating properties.", pid);
 			m_providers.get(pid).setTopologyLocation(location);
 			ServiceRegistration<MetaTopologyProvider> registration = m_registrations.get(pid);
 			Dictionary<String,Object> metaData = new Hashtable<>();
@@ -102,8 +109,10 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 
 	@Override
 	public void deleted(String pid) {
+		LOG.debug("deleted(String) invoked");
 		ServiceRegistration<MetaTopologyProvider> registration = m_registrations.remove(pid);
 		if (registration != null) {
+			LOG.debug("Unregister MetaTopologyProvider with pid '{}'", pid);
 			registration.unregister();
 		}
 		m_providers.remove(pid);

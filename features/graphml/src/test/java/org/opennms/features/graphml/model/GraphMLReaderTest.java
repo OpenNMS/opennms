@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml.model;
+package org.opennms.features.graphml.model;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package org.opennms.features.topology.plugins.topo.graphml.model;
+package org.opennms.features.graphml.model;
 
 import java.io.File;
 import java.io.FileInputStream;
