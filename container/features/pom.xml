@@ -182,6 +182,7 @@
             <feature>opennms-activemq-event-receiver</feature>
             -->
             <feature>opennms-collection-api</feature>
+            <feature>opennms-collection-commands</feature>
             <feature>opennms-collection-persistence-rrd</feature>
             <feature>opennms-config-api</feature>
             <feature>opennms-config</feature>
@@ -546,6 +547,13 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>datachoices</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.commands</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
