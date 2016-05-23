@@ -31,6 +31,7 @@
 
 		<route id="receiveSyslogConnectionViaKafka">
 			<from uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}"/>
+				<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
 			<bean ref="syslogConnectionHandlerDefault"/>
 		</route>
 	</camelContext>
