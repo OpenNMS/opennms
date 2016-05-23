@@ -1,0 +1,12 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" availability="mandatory"/>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command  name="metrics/stress">
+            <action class="org.opennms.netmgt.collection.commands.StressCommand">
+                <property name="persisterFactory" ref="persisterFactory"/>
+            </action>
+        </command>
+    </command-bundle>
+</blueprint>
