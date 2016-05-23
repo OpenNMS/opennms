@@ -33,7 +33,6 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
 
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -65,8 +64,7 @@ public class WrappedVertex implements VertexRef {
 	public boolean selected;
 	@XmlIDREF
 	public WrappedVertex parent;
-	public Map<String, Object> properties;
-	
+
 	public static WrappedVertex create(Vertex vertex) {
 		return (vertex.isGroup() ? new WrappedGroup(vertex) : new WrappedLeafVertex(vertex));
 	}
@@ -85,7 +83,6 @@ public class WrappedVertex implements VertexRef {
 		id = vertex.getId();
 		label = vertex.getLabel();
 		namespace = vertex.getNamespace();
-		properties = vertex.getProperties();
 	}
 
 	protected WrappedVertex(Vertex vertex) {
@@ -187,9 +184,4 @@ public class WrappedVertex implements VertexRef {
 
 	@Override
 	public String toString() { return "WrappedVertex:"+namespace+":"+id+ "[label="+label+", styleName="+styleName+"]"; }
-
-	@Override
-	public Map<String, Object> getProperties() {
-		return this.properties;
-	}
 }

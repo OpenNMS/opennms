@@ -36,7 +36,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -192,8 +191,9 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
         }
     }
 
-    private Map<String, Object> createVertexContext(final VertexRef vertex) {
+    public Map<String, Object> createVertexContext(final VertexRef vertex) {
         final Map<String, Object> context = Maps.newHashMap();
+
         if (vertex instanceof AbstractVertex) {
             final AbstractVertex abstractVertex = (AbstractVertex) vertex;
             if (abstractVertex.getNodeID() != null) {
@@ -204,17 +204,14 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
             }
         }
 
-        context.putAll(vertex.getProperties());
         context.put("vertex", vertex);
         return context;
     }
 
-    private Map<String, Object> createEdgeContext(final EdgeRef edge) {
+    public Map<String, Object> createEdgeContext(final EdgeRef edge) {
         final Map<String, Object> context = Maps.newHashMap();
 
-        context.putAll(edge.getProperties());
         context.put("edge", edge);
-
         return context;
     }
 

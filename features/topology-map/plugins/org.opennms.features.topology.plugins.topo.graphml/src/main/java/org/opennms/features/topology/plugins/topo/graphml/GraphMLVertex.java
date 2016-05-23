@@ -57,7 +57,6 @@ public class GraphMLVertex extends AbstractVertex {
         this.properties = properties;
     }
 
-    @Override
     public HashMap<String, Object> getProperties() {
         return properties;
     }

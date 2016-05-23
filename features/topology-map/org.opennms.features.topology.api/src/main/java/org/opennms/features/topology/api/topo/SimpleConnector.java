@@ -29,8 +29,6 @@
 package org.opennms.features.topology.api.topo;
 
 import javax.xml.bind.annotation.XmlID;
-import java.util.Collections;
-import java.util.Map;
 
 public class SimpleConnector implements Connector {
 
@@ -106,7 +104,6 @@ public class SimpleConnector implements Connector {
 	/**
 	 * @param namespace
 	 * @param id
-	 * @param label
 	 * @param vertex
 	 * @param edge
 	 */
@@ -166,10 +163,5 @@ public class SimpleConnector implements Connector {
 				return this.getNamespace().compareTo(o.getNamespace());
 			}
 		}
-	}
-
-	@Override
-	public Map<String, Object> getProperties() {
-		return Collections.emptyMap();
 	}
 }

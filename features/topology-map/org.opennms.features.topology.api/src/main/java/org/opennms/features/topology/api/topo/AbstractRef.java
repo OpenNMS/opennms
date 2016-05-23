@@ -28,9 +28,6 @@
 
 package org.opennms.features.topology.api.topo;
 
-import java.util.Collections;
-import java.util.Map;
-
 // TODO rename class. It is not abstract it is instantiable
 public class AbstractRef implements Ref {
 	
@@ -107,10 +104,5 @@ public class AbstractRef implements Ref {
 				return this.getNamespace().compareTo(o.getNamespace());
 			}
 		}
-	}
-
-	@Override
-	public Map<String, Object> getProperties() {
-		return Collections.emptyMap();
 	}
 }
