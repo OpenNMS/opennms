@@ -42,5 +42,10 @@
       <feature>opennms-trapd</feature>
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-minion</bundle>
     </feature>
+
+	<feature name="minion-heartbeat" description="OpenNMS :: Minion :: HeartBeat" version="${project.version}">
+	  <bundle>blueprint:mvn:org.opennms.features.minion/core-impl/${project.version}/xml/blueprint-heartbeat</bundle>
+	  <feature>minion-core-api</feature>
+	</feature>
     
 </features>

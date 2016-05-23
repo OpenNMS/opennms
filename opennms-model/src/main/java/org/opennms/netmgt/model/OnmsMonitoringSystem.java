@@ -117,6 +117,9 @@ public class OnmsMonitoringSystem implements Serializable {
 
     @XmlAttribute(name="date")
     private Date m_lastUpdated;
+    
+    @XmlAttribute(name = "lastCheckedIn")
+    private Date m_lastCheckedIn;
 
     @XmlElementWrapper(name="properties")
     @XmlElement(name="property")
@@ -254,6 +257,23 @@ public class OnmsMonitoringSystem implements Serializable {
     }
     */
 
+    /**
+     * @return the m_lastCheckedIn
+     */
+    @Column(name = "last_checkedin")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getLastCheckedIn() {
+        return m_lastCheckedIn;
+    }
+
+    /**
+     * @param m_lastCheckedIn
+     *            the m_lastCheckedIn to set
+     */
+    public void setLastCheckedIn(Date lastCheckedIn) {
+        this.m_lastCheckedIn = lastCheckedIn;
+    }
+    
     @ElementCollection
     @JoinTable(name="monitoringSystemsProperties", joinColumns = @JoinColumn(name="monitoringSystemId"))
     @MapKeyColumn(name="property", nullable=false)
