@@ -36,8 +36,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -52,6 +53,8 @@ import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.TriggerKey;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -151,11 +154,11 @@ public class DefaultSchedulerServiceIT implements InitializingBean {
         deliveryOptions.setInstanceId("testScheduleAndRemoveTrigger");
         assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions, CRON_EXPRESSION, context));
         verify(m_reportWrapperService);
-        String[] triggers = m_scheduler.getTriggerNames(TRIGGER_GROUP);
-        assertEquals(1,triggers.length);
-        assertEquals("testScheduleAndRemoveTrigger",triggers[0]);
+        Set<TriggerKey> triggers = m_scheduler.getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(TRIGGER_GROUP));
+        assertEquals(1, triggers.size());
+        assertEquals("testScheduleAndRemoveTrigger",triggers.iterator().next().getName());
         m_schedulerService.removeTrigger("testScheduleAndRemoveTrigger");
-        assertEquals(0,m_scheduler.getTriggerNames(TRIGGER_GROUP).length);
+        assertEquals(0, m_scheduler.getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(TRIGGER_GROUP)).size());
     }
     
     @Test
@@ -172,13 +175,13 @@ public class DefaultSchedulerServiceIT implements InitializingBean {
         deliveryOptions2.setInstanceId("trigger2");
         assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions2, "0 5/10 * * * ?", context));
         verify(m_reportWrapperService);
-        final List<String> triggers = Arrays.asList(m_scheduler.getTriggerNames(TRIGGER_GROUP));
+        final List<String> triggers = m_scheduler.getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(TRIGGER_GROUP)).stream().map(TriggerKey::getName).collect(Collectors.toList());
         assertEquals(2,triggers.size());
         assertTrue(triggers.contains("trigger1"));
         assertTrue(triggers.contains("trigger2"));
         m_schedulerService.removeTrigger("trigger1");
         m_schedulerService.removeTrigger("trigger2");
-        assertEquals(0,m_scheduler.getTriggerNames(TRIGGER_GROUP).length);
+        assertEquals(0, m_scheduler.getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(TRIGGER_GROUP)).size());
     }
     
     @Test
@@ -195,7 +198,7 @@ public class DefaultSchedulerServiceIT implements InitializingBean {
         m_schedulerService.removeTrigger("testScheduleAndRunTrigger");
         verify(m_reportWrapperService);
         m_schedulerService.removeTrigger("testScheduleAndRunTrigger");
-        assertEquals(0,m_scheduler.getTriggerNames(TRIGGER_GROUP).length);  
+        assertEquals(0, m_scheduler.getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(TRIGGER_GROUP)).size());
     }
     
     @Test

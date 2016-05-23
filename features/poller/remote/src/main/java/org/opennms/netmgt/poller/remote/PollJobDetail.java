@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.poller.remote;
 
-import org.quartz.JobDetail;
+import org.quartz.impl.JobDetailImpl;
 
 /**
  * <p>PollJobDetail class.</p>
@@ -36,7 +36,7 @@ import org.quartz.JobDetail;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class PollJobDetail extends JobDetail {
+public class PollJobDetail extends JobDetailImpl {
     
     /** Constant <code>GROUP="pollJobGroup"</code> */
     public static final String GROUP = "pollJobGroup";
@@ -49,7 +49,7 @@ public class PollJobDetail extends JobDetail {
 	 * @param name a {@link java.lang.String} object.
 	 * @param jobClass a {@link java.lang.Class} object.
 	 */
-	public PollJobDetail(String name, Class<?> jobClass) {
+	public PollJobDetail(String name, Class<PollJob> jobClass) {
 		super(name, GROUP, jobClass);
 	}
 	

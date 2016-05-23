@@ -32,6 +32,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
@@ -40,12 +41,14 @@ import org.opennms.reporting.core.svclayer.ReportServiceLocatorException;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.opennms.web.svclayer.SchedulerService;
 import org.opennms.web.svclayer.model.TriggerDescription;
-import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
+import org.quartz.TriggerKey;
+import org.quartz.impl.matchers.GroupMatcher;
+import org.quartz.impl.triggers.CronTriggerImpl;
+import org.quartz.impl.triggers.SimpleTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -84,7 +87,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     @Override
     public void afterPropertiesSet() throws Exception {
 
-        LOG.debug("Adding job {} to scheduler", m_jobDetail.getName());
+        LOG.debug("Adding job {} to scheduler", m_jobDetail.getKey().getName());
         m_scheduler.addJob(m_jobDetail, true);
 
     }
@@ -100,12 +103,12 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         List<TriggerDescription> triggerDescriptions = new ArrayList<TriggerDescription>();
 
         try {
-            String[] triggerNames = m_scheduler.getTriggerNames(m_triggerGroup);
-            for (int j = 0; j < triggerNames.length; j++) {
+            Set<TriggerKey> triggerKeys = m_scheduler.getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(m_triggerGroup));
+            for (TriggerKey triggerKey : triggerKeys) {
                 TriggerDescription description = new TriggerDescription();
-                Trigger trigger = m_scheduler.getTrigger(triggerNames[j], m_triggerGroup);
+                Trigger trigger = m_scheduler.getTrigger(triggerKey);
                 description.setNextFireTime(trigger.getNextFireTime());
-                description.setTriggerName(triggerNames[j]);
+                description.setTriggerName(triggerKey.getName());
                 description.setReportId((String)trigger.getJobDataMap().get("reportId"));
                 description.setDeliveryOptions((DeliveryOptions) trigger.getJobDataMap().get("deliveryOptions"));
                 description.setReportParameters(((ReportParameters) trigger.getJobDataMap().get("criteria")).getReportParms());
@@ -127,8 +130,8 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         Boolean found = false;
 
         try {
-            Trigger trigger = m_scheduler.getTrigger(triggerName,
-                                                     m_triggerGroup);
+            Trigger trigger = m_scheduler.getTrigger(new TriggerKey(triggerName,
+                                                     m_triggerGroup));
             if (trigger != null) {
                 found = true;
             }
@@ -150,7 +153,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     @Override
     public void removeTrigger(String triggerName) {
         try {
-            m_scheduler.unscheduleJob(triggerName, m_triggerGroup);
+            m_scheduler.unscheduleJob(new TriggerKey(triggerName, m_triggerGroup));
         } catch (SchedulerException e) {
             LOG.error("exception when attempting to remove trigger {}", triggerName, e);
         }
@@ -183,7 +186,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
             DeliveryOptions deliveryOptions,
             String cronExpression, RequestContext context) {
 
-        CronTrigger cronTrigger = null;
+        CronTriggerImpl cronTrigger = null;
         
         try {            
             if (m_reportWrapperService.validate(criteria,id) == false ) {
@@ -194,10 +197,10 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 return ERROR;
             } else {
                 try {
-                    cronTrigger = new CronTrigger();
+                    cronTrigger = new CronTriggerImpl();
                     cronTrigger.setGroup(m_triggerGroup);
                     cronTrigger.setName(deliveryOptions.getInstanceId());
-                    cronTrigger.setJobName(m_jobDetail.getName());
+                    cronTrigger.setJobName(m_jobDetail.getKey().getName());
                     cronTrigger.setCronExpression(cronExpression);
                     // cronTrigger = new CronTrigger(triggerName, m_triggerGroup,
                     // cronExpression);
@@ -208,7 +211,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                     return ERROR;
                 }
 
-                cronTrigger.setJobName(m_jobDetail.getName());
+                cronTrigger.setJobName(m_jobDetail.getKey().getName());
                 cronTrigger.getJobDataMap().put("criteria", (ReportParameters) criteria);
                 cronTrigger.getJobDataMap().put("reportId", id);
                 cronTrigger.getJobDataMap().put("mode", ReportMode.SCHEDULED);
@@ -254,8 +257,8 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 context.getMessageContext().addMessage(new MessageBuilder().error().defaultText(PARAMETER_ERROR).build());
                 return ERROR;
             } else {
-                SimpleTrigger trigger = new SimpleTrigger(deliveryOptions.getInstanceId(), m_triggerGroup, new Date(), null, 0, 0L);
-                trigger.setJobName(m_jobDetail.getName());
+                SimpleTriggerImpl trigger = new SimpleTriggerImpl(deliveryOptions.getInstanceId(), m_triggerGroup, new Date(), null, 0, 0L);
+                trigger.setJobName(m_jobDetail.getKey().getName());
                 trigger.getJobDataMap().put("criteria", (ReportParameters) criteria);
                 trigger.getJobDataMap().put("reportId", id);
                 trigger.getJobDataMap().put("mode", ReportMode.IMMEDIATE);
