@@ -157,7 +157,7 @@ public class RrdFileConstants {
 
     public static String escapeForGraphing(final String path) {
     	final Matcher matcher = GRAPHING_ESCAPE_PATTERN.matcher(path);
-    	return matcher.replaceAll("\\\\$1");
+    	return '"' + matcher.replaceAll("\\\\$1") + '"'; // To avoid NMS-6331, put double quotes around the DS path.
     }
 
 }
