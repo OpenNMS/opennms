@@ -81,6 +81,11 @@
       <version>19.0</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.swrve</groupId>
+      <artifactId>rate-limited-logger</artifactId>
+      <version>1.1.0</version>
+    </dependency>
 
     <!-- Testing -->
     <dependency>

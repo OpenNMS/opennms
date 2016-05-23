@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.joda.time.Duration;
 import org.opennms.core.logging.Logging;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.SampleRepository;
@@ -60,6 +61,7 @@ import com.lmax.disruptor.FatalExceptionHandler;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.WorkHandler;
 import com.lmax.disruptor.WorkerPool;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 /**
  * Used to write samples to the {@link org.opennms.newts.api.SampleRepository}.
@@ -72,6 +74,11 @@ import com.lmax.disruptor.WorkerPool;
 public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsWriter.class);
+
+    private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.standardSeconds(30))
+            .build();
 
     @Autowired
     private SampleRepository m_sampleRepository;
@@ -89,13 +96,13 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
 
     private final int m_numWriterThreads;
 
-    private final Meter m_droppedMetrics;
+    private final Meter m_droppedSamples;
 
     /**
      * The {@link RingBuffer} doesn't appear to expose any methods that indicate the number
      * of elements that are currently "queued", so we keep track of them with this atomic counter.
      */
-    private final AtomicLong m_numSamplesOnRingBuffer = new AtomicLong();
+    private final AtomicLong m_numEntriesOnRingBuffer = new AtomicLong();
 
     @Inject
     public NewtsWriter(@Named("newts.max_batch_size") Integer maxBatchSize, @Named("newts.ring_buffer_size") Integer ringBufferSize,
@@ -109,13 +116,13 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
         m_maxBatchSize = maxBatchSize;
         m_ringBufferSize = ringBufferSize;
         m_numWriterThreads = numWriterThreads;
-        m_numSamplesOnRingBuffer.set(0L);
+        m_numEntriesOnRingBuffer.set(0L);
 
         registry.register(MetricRegistry.name("ring-buffer", "size"),
                 new Gauge<Long>() {
                     @Override
                     public Long getValue() {
-                        return m_numSamplesOnRingBuffer.get();
+                        return m_numEntriesOnRingBuffer.get();
                     }
                 });
         registry.register(MetricRegistry.name("ring-buffer", "max-size"),
@@ -126,7 +133,7 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
                     }
                 });
 
-        m_droppedMetrics = registry.meter(MetricRegistry.name("ring-buffer", "dropped-metrics"));
+        m_droppedSamples = registry.meter(MetricRegistry.name("ring-buffer", "dropped-samples"));
 
         LOG.debug("Using max_batch_size: {} and ring_buffer_size: {}", maxBatchSize, m_ringBufferSize);
         setUpWorkerPool();
@@ -173,17 +180,23 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
     private void pushToRingBuffer(List<Sample> samples, EventTranslatorOneArg<SampleBatchEvent, List<Sample>> translator) {
         // Add the samples to the ring buffer
         if (!m_ringBuffer.tryPublishEvent(translator, samples)) {
-            String uniqueResourceIds = samples.stream()
-                    .map(s -> s.getResource().getId())
-                    .distinct()
-                    .collect(Collectors.joining(", "));
-            LOG.error("The ring buffer is full. {} samples associated with resource ids {} will be dropped.",
-                    samples.size(), uniqueResourceIds);
-            m_droppedMetrics.mark(samples.size());
+            RATE_LIMITED_LOGGER.error("The ring buffer is full. {} samples associated with resource ids {} will be dropped.",
+                    samples.size(), new Object() {
+                        @Override
+                        public String toString() {
+                            // We wrap this in a toString() method to avoid build the string
+                            // unless the log message is actually printed
+                            return samples.stream()
+                                    .map(s -> s.getResource().getId())
+                                    .distinct()
+                                    .collect(Collectors.joining(", "));
+                        }
+                    });
+            m_droppedSamples.mark(samples.size());
             return;
         }
-        // Increase our sample counter
-        m_numSamplesOnRingBuffer.addAndGet(samples.size());
+        // Increase our entry counter
+        m_numEntriesOnRingBuffer.incrementAndGet();
     }
 
     @Override
@@ -192,8 +205,8 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
         Logging.putPrefix("collectd");
 
         List<Sample> samples = event.getSamples();
-        // Decrement our sample counter
-        m_numSamplesOnRingBuffer.addAndGet(-samples.size());
+        // Decrement our entry counter
+        m_numEntriesOnRingBuffer.decrementAndGet();
 
         // Partition the samples into collections smaller then max_batch_size
         for (List<Sample> batch : Lists.partition(samples, m_maxBatchSize)) {
