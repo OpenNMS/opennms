@@ -1603,6 +1603,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.core.snmp</groupId>
+        <artifactId>org.opennms.core.snmp.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.soa</artifactId>
         <version>${project.version}</version>

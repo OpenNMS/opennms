@@ -48,4 +48,12 @@
 	  <feature>minion-core-api</feature>
 	</feature>
     
+    <feature name="minion-snmp-proxy" description="OpenNMS :: Minion :: SNMP Proxy" version="${project.version}">
+      <feature>org.json</feature>
+      <bundle>wrap:mvn:javax.mail/mail/1.4.5</bundle>
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
+      <feature>opennms-core-camel</feature>
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.camel/${project.version}</bundle>
+    </feature>
 </features>

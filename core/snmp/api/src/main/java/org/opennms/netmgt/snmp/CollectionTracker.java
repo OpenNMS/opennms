@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.snmp;
 
+import org.opennms.netmgt.snmp.proxy.ProxiableTracker;
 
-public abstract class CollectionTracker implements Collectable {
+public abstract class CollectionTracker implements Collectable, ProxiableTracker {
     
     public static final int NO_ERR = 0;
     public static final int TOO_BIG_ERR = 1;
@@ -110,6 +111,4 @@ public abstract class CollectionTracker implements Collectable {
     public CollectionTracker getCollectionTracker() {
         return this;
     }
-
-
 }
