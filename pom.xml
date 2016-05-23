@@ -1253,7 +1253,7 @@
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsMath3Version>3.5</commonsMath3Version>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
-    <curatorVersion>2.0.0-incubating</curatorVersion>
+    <curatorVersion>3.1.0</curatorVersion>
     <cxfVersion>3.1.5</cxfVersion>
     <dnsjavaVersion>2.1.3</dnsjavaVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>

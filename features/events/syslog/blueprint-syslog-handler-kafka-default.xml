@@ -20,7 +20,7 @@
 			<cm:property name="kafkatopic" value="syslog" />
 			<cm:property name="zookeeperhost" value="127.0.0.1"/>
 			<cm:property name="zookeeperport" value="2181"/>
-			<cm:property name="groupId" value="123"/>
+			<cm:property name="groupId" value="syslogconsumer"/>
 		</cm:default-properties>
 	</cm:property-placeholder>
 	
