@@ -91,8 +91,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         // Search for and select the first business service in our list
         final String regionName = "South";
         TopologyIT.TopologyUISearchResults searchResult = topologyUIPage.search(regionName);
-        // TODO MVR enable when NMS-8432 is fixed
-//        Assert.assertEquals(1, searchResult.countItemsThatContain(regionName));
+        Assert.assertEquals(5, searchResult.countItemsThatContain(regionName));
         searchResult.selectItemThatContains(regionName);
 
         // We should have a single vertex in focus

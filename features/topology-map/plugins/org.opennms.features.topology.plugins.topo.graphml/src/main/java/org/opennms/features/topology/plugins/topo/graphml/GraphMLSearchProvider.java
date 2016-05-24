@@ -49,6 +49,23 @@ public class GraphMLSearchProvider extends SimpleSearchProvider {
         this.graphMLTopologyProvider = Objects.requireNonNull(graphMLTopologyProvider);
     }
 
+    /**
+     * In GraphML graphs the namespace of each graph contained in the GraphML file should be prefixed, e.g.
+     * namespace1:graph1, namespace1:graph2, etc.
+     *
+     * @param namespace The namespace to check
+     * @return true if this {@link org.opennms.features.topology.api.topo.SearchProvider} contributes, false otherwise
+     */
+    @Override
+    public boolean contributesTo(String namespace) {
+        boolean contributes = super.contributesTo(namespace);
+        if (!contributes && namespace.contains(":")) {
+            String prefix = namespace.substring(0, namespace.indexOf(":"));
+            return getSearchProviderNamespace().startsWith(prefix);
+        }
+        return contributes;
+    }
+
     @Override
     public String getSearchProviderNamespace() {
         return graphMLTopologyProvider.getVertexNamespace();
