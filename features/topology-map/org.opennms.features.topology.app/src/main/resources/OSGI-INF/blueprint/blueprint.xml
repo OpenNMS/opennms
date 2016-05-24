@@ -47,6 +47,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
 
+    <reference id="measurementsService" interface="org.opennms.netmgt.measurements.api.MeasurementsService" availability="mandatory"/>
+
     <bean id="categoryHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.CategoryHopCriteriaFactory">
         <argument ref="categoryDao"/>
         <argument ref="nodeDao"/>
@@ -415,6 +417,12 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </service>
     <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
         <bean class="org.opennms.features.topology.app.internal.ui.info.DefaultEdgeInfoPanelItemProvider" />
+    </service>
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.info.GenericInfoPanelItemProvider">
+            <argument ref="nodeDao" />
+            <argument ref="measurementsService"/>
+        </bean>
     </service>
 
 </blueprint>

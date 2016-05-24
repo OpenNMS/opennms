@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml.info;
+package org.opennms.features.topology.app.internal.info;
 
 import java.util.Collections;
 import java.util.List;

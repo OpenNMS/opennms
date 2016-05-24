@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml.info;
+package org.opennms.features.topology.app.internal.info;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -36,7 +36,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -51,7 +50,6 @@ import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLVertex;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -193,9 +191,9 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
         }
     }
 
-    // TODO how to populate the context correctly?
-    private Map<String, Object> createVertexContext(final VertexRef vertex) {
+    public Map<String, Object> createVertexContext(final VertexRef vertex) {
         final Map<String, Object> context = Maps.newHashMap();
+
         if (vertex instanceof AbstractVertex) {
             final AbstractVertex abstractVertex = (AbstractVertex) vertex;
             if (abstractVertex.getNodeID() != null) {
@@ -205,34 +203,15 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
                 }
             }
         }
-        if (vertex instanceof GraphMLVertex) {
-            final GraphMLVertex atlasVertex = (GraphMLVertex) vertex;
-            context.putAll(atlasVertex.getProperties());
-        }
+
         context.put("vertex", vertex);
         return context;
     }
 
-    // TODO how to populate the context correctly?
-    private Map<String, Object> createEdgeContext(final EdgeRef edge) {
+    public Map<String, Object> createEdgeContext(final EdgeRef edge) {
         final Map<String, Object> context = Maps.newHashMap();
 
-        final HashMap<String, Object> edgeProperties = Maps.newHashMap();
-        edgeProperties.put("LOGICAL_SITE_A", "CH33XC065-MW");
-        edgeProperties.put("PROTECTION_SCHEME", "2+0");
-        edgeProperties.put("LOGICAL_SITE_Z", "CH73Xc109-MW");
-        edgeProperties.put("A_ESTIMATED_RSL_DBM", "TODO");
-        edgeProperties.put("TOTAL_LINK_CAPACITY", "214");
-        edgeProperties.put("RADIO_MODEL_A", "HP Quantum ODU Radio");
-        edgeProperties.put("CLEARVISION_LINK_ID", null);
-        edgeProperties.put("MICROWAVE_PATH_NAME", 101869801);
-        edgeProperties.put("PATH_LENGTH_MILES", 6);
-        edgeProperties.put("TRANSMIT_FREQ_A", "10995 1st MW ch  TODO 2nd MW ch");
-        edgeProperties.put("TRANSMIT_FREQ_Z", "11485 1st MW ch  TODO 2nd MW ch");
-        edgeProperties.put("DESIGNED_TX_MOD_TYPE", "32 QAM");
-
-        context.put("edge", edgeProperties);
-
+        context.put("edge", edge);
         return context;
     }
 
