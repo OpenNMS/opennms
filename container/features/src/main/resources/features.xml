@@ -250,8 +250,8 @@
       <bundle>wrap:mvn:org.json/json/20140107$Export-Package=org.json</bundle>
     </feature>
 
-    <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="9.4.1208">
-      <bundle>wrap:mvn:org.postgresql/postgresql/9.4.1208</bundle>
+    <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="${postgresqlVersion}">
+      <bundle>wrap:mvn:org.postgresql/postgresql/${postgresqlVersion}</bundle>
     </feature>
 
     <feature name="spring-security32" description="Spring :: Security" version="${springSecurityVersion}">
