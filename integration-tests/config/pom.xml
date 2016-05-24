@@ -30,7 +30,7 @@
               <excludeTypes>tar.gz</excludeTypes>
               <!-- TODO: Remove this when we add tests for OpenNMS features -->
               <excludeGroupIds>org.opennms</excludeGroupIds>
-              <outputDirectory>target/paxexam/test-repo</outputDirectory>
+              <outputDirectory>${project.build.directory}/paxexam/test-repo</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -66,6 +66,26 @@
           </execution>
         </executions>
       </plugin>
+      <plugin> 
+        <artifactId>maven-clean-plugin</artifactId> 
+        <executions> 
+          <execution> 
+            <id>cleanup-assembly</id> 
+            <phase>post-integration-test</phase> 
+            <goals> 
+              <goal>clean</goal> 
+            </goals> 
+            <configuration> 
+              <excludeDefaultDirectories>true</excludeDefaultDirectories> 
+              <filesets> 
+                <fileset> 
+                  <directory>${project.build.directory}/paxexam</directory> 
+                </fileset> 
+              </filesets> 
+            </configuration> 
+          </execution> 
+        </executions> 
+      </plugin>     
     </plugins>
   </build>
 
