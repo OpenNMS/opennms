@@ -46,6 +46,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Maps;
 import com.google.common.collect.RowSortedTable;
+import com.google.common.collect.TreeBasedTable;
 
 /**
  * Performs Holt-Winters forecasting on a given column of
@@ -148,5 +149,20 @@ public class HWForecast implements Filter {
             }
             table.put(idxTarget, TIMESTAMP_COLUMN_NAME, (double)new Date(lastTimestamp.getTime() + stepInMs * idxForecast).getTime());
         }
+    }
+
+    public static void checkForecastSupport() throws RScriptException {
+        // Verify the HW filter
+        HWForecast forecastFilter = new HWForecast("HW", "X", 1, 1, 0.95);
+
+        // Use constant values for the Y column
+        RowSortedTable<Long, String, Double> table = TreeBasedTable.create();
+        for (long i = 0; i < 100; i++) {
+            table.put(i, Filter.TIMESTAMP_COLUMN_NAME, (double)(i * 1000));
+            table.put(i, "X", 1.0d);
+        }
+
+        // Apply the filter
+        forecastFilter.filter(table);
     }
 }
