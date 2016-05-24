@@ -163,7 +163,7 @@ public class DefaultRrdDaoTest extends TestCase {
                 "-",
                 "--start=" + (start / 1000),
                 "--end=" + (end / 1000),
-                "DEF:ds=" + escapedFile + ":ifInOctets:AVERAGE",
+                "DEF:ds=\"" + escapedFile + "\":ifInOctets:AVERAGE",
                 "PRINT:ds:AVERAGE:\"%le\""
         };
         String commandString = StringUtils.arrayToDelimitedString(command, " ");
