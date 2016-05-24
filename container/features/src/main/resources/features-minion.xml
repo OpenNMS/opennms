@@ -47,5 +47,6 @@
 	  <bundle>blueprint:mvn:org.opennms.features.minion/core-impl/${project.version}/xml/blueprint-heartbeat</bundle>
 	  <feature>minion-core-api</feature>
 	</feature>
+
     
 </features>

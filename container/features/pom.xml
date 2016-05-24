@@ -193,6 +193,7 @@
             <feature>opennms-core-web</feature>
             <feature>opennms-dao-api</feature>
             <feature>opennms-dao</feature>
+            <feature>opennms-detector-simple</feature>
             <feature>opennms-discovery</feature>
             <feature>opennms-discovery-daemon</feature>
             <feature>opennms-events-api</feature>

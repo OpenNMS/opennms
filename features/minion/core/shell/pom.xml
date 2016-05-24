@@ -40,6 +40,18 @@
           <artifactId>activemq-client</artifactId>
           <version>${activemqVersion}</version>
         </dependency>
+	    <dependency>
+		  <groupId>org.opennms</groupId>
+		  <artifactId>opennms-provision-api</artifactId>
+	    </dependency>
+	   <dependency>
+		  <groupId>org.opennms</groupId>
+		  <artifactId>opennms-icmp-api</artifactId>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.opennms</groupId>
+	      <artifactId>opennms-detector-simple</artifactId>
+	    </dependency>
         <dependency>
             <groupId>org.apache.karaf.shell</groupId>
             <artifactId>org.apache.karaf.shell.console</artifactId>

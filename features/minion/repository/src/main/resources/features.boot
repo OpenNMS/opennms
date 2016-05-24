@@ -5,3 +5,4 @@ opennms-syslogd-handler-minion
 opennms-trapd-listener
 opennms-trapd-handler-minion
 minion-heartbeat
+opennms-detector-simple
