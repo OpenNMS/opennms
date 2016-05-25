@@ -31,9 +31,14 @@ package org.opennms.features.topology.plugins.topo.graphml;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
+import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.SimpleSearchProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
@@ -64,6 +69,25 @@ public class GraphMLSearchProvider extends SimpleSearchProvider {
             return getSearchProviderNamespace().startsWith(prefix);
         }
         return contributes;
+    }
+
+    @Override
+    public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
+        final GraphContainer graphContainer = operationContext.getGraphContainer();
+        final DefaultVertexRef vertexRef = new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
+        if (graphContainer.getBaseTopology().getVertex(vertexRef) == null) {
+            // The vertex to add to focus is not in the current layer
+            // Find the GraphProvider it belongs to
+            Optional<GraphProvider> first = graphContainer.getMetaTopologyProvider().getGraphProviders().stream()
+                    .filter(eachProvider -> eachProvider.getVertexNamespace().equals(searchResult.getNamespace()))
+                    .findFirst();
+            // If there is a graph provider (which should) select it
+            if (first.isPresent() && first.get().getVertex(vertexRef) != null) {
+                graphContainer.selectTopologyProvider(first.get(), false);
+                graphContainer.clearCriteria();
+            }
+        }
+        super.onFocusSearchResult(searchResult, operationContext);
     }
 
     @Override

@@ -114,6 +114,18 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         assertEquals("North 1", topologyUIPage.getFocusedVertices().get(0).getLabel());
     }
 
+    @Test
+    public void verifySwitchesLayerOnSearchProperly() {
+        topologyUIPage.selectTopologyProvider(() -> LABEL);
+        TopologyIT.TopologyUISearchResults searchResult = topologyUIPage.search("South");
+        assertEquals(5, searchResult.countItemsThatContain("South"));
+        searchResult.selectItemThatContains("South 3");
+        assertEquals(1, topologyUIPage.getVisibleVertices().size());
+        assertEquals(1, topologyUIPage.getFocusedVertices().size());
+        assertEquals("South 3", topologyUIPage.getFocusedVertices().get(0).getLabel());
+        assertEquals("South 3", topologyUIPage.getVisibleVertices().get(0).getLabel());
+    }
+
     private static boolean existsGraph() throws IOException {
         try (HttpClientWrapper client = createClientWrapper()) {
             HttpGet httpGet = new HttpGet(URL);
