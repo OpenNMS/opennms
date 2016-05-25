@@ -14,8 +14,12 @@ IMPORTANT: It is currently not supported to initialize the _Newts_ keyspace from
 [[gi-setup-cassandra]]
 === Setting up Cassandra
 
+WARNING: _Cassandra_ is only required when using _Newts_.
+         If your _{opennms-product-name}_ system is not using _Newts_, you can skip this section.
+
 It is recommended to install _Cassandra_ on a dedicated server, but is also possible to run a node on the _{opennms-product-name}_ server itself.
-This installation guide describes how to set up a single _Cassandra_ instance for evaluating and testing _Newts_.
-These steps are not suitable for a high performance production _Cassandra Cluster_.
+This installation guide describes how to set up a single _Cassandra_ instance on the same system as _{opennms-product-name}_ for the purpose of evaluating and testing _Newts_.
+These steps are not suitable for a production _Cassandra Cluster_. If you already have a running cluster you can skip this section.
+
 For further information see link:https://wiki.apache.org/cassandra/GettingStarted[Cassandra Getting Started Guide].
-If you already have a running cluster you can skip this section.
+Before setting up a production cluster make sure to consult link:https://docs.datastax.com/en/cassandra/3.0/cassandra/planning/planPlanningAntiPatterns.html[Anti-patterns in Cassandra].
