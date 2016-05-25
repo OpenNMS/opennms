@@ -588,7 +588,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
                 String[] def = splitDef(definition);
                 String[] ds = def[0].split("=");
                 // LOG.debug("ds = {}", Arrays.toString(ds));
-                final String replaced = ds[1].replaceAll("\\\\(.)", "$1");
+                final String replaced = ds[1].replaceAll("\\\\(.)", "$1").replaceAll("\"", ""); // Removing double quotes because of NMS-6331 and changes on RrdFileConstants
                 // LOG.debug("replaced = {}", replaced);
 
                 final File dsFile;
