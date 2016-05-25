@@ -298,8 +298,6 @@
     }
 </script>
 
-<jsp:include page="forecasts/modals.jsp" flush="false" />
-
 <c:if test="${param.zoom == 'true'}">
     <c:url var="zoomReloadUrl" value="${requestScope.relativeRequestPath}">
         <c:param name="zoom" value="true"/>
