@@ -91,7 +91,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         // Search for and select the first business service in our list
         final String regionName = "South";
         TopologyIT.TopologyUISearchResults searchResult = topologyUIPage.search(regionName);
-        Assert.assertEquals(5, searchResult.countItemsThatContain(regionName));
+        assertEquals(5, searchResult.countItemsThatContain(regionName));
         searchResult.selectItemThatContains(regionName);
 
         // We should have a single vertex in focus
