@@ -273,6 +273,29 @@
           </execution>
         </executions>
       </plugin>
+      <plugin> 
+        <artifactId>maven-clean-plugin</artifactId> 
+        <executions> 
+          <execution> 
+            <id>cleanup-assembly</id> 
+            <phase>post-integration-test</phase> 
+            <goals> 
+              <goal>clean</goal> 
+            </goals> 
+            <configuration> 
+              <excludeDefaultDirectories>true</excludeDefaultDirectories> 
+              <filesets> 
+                <fileset> 
+                  <directory>${project.build.directory}/jnlp</directory> 
+                </fileset> 
+                <fileset> 
+                  <directory>${project.build.directory}/${project.build.finalName}</directory> 
+                </fileset> 
+              </filesets> 
+            </configuration> 
+          </execution> 
+        </executions> 
+      </plugin>
     </plugins>
   </build>
 
