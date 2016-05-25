@@ -26,23 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml;
+package org.opennms.features.topology.api.support;
 
-public interface GraphMLProperties {
-    String ID = "id";
-    String DESCRIPTION = "description";
-    String NAMESPACE = "namespace";
-    String ICON_KEY = "iconKey";
-    String IP_ADDRESS = "ipAddr";
-    String LABEL = "label";
-    String LOCKED = "locked";
-    String NODE_ID = "nodeID";
-    String SELECTED = "selected";
-    String STYLE_NAME = "styleName";
-    String TOOLTIP_TEXT = "tooltipText";
-    String X = "x";
-    String Y = "y";
-    String PREFERRED_LAYOUT = "preferred-layout";
-    String FOCUS_STRATEGY = "focus-strategy";
-    String FOCUS_IDS = "focus-ids";
+import java.util.List;
+
+import org.opennms.features.topology.api.topo.GraphProvider;
+
+/**
+ * Interface to define the determination of the vertices in focus.
+ *
+ * @author mvrueden
+ */
+public interface FocusStrategyImplementation {
+    /**
+     * Determines the default focus for the given {@link GraphProvider}.
+     * The optional vertexIdsWithoutNamespace parameter may be used to narrow down the selection to specific ids.
+     *
+     * @param topologyProvider
+     * @param vertexIdsWithoutNamespace
+     * @return A list of vertices in focus. The list may be empty, but should not be null.
+     */
+    List<VertexHopGraphProvider.VertexHopCriteria> determine(GraphProvider topologyProvider, String... vertexIdsWithoutNamespace);
 }

@@ -52,6 +52,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class ApplicationTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
@@ -98,11 +99,11 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
     }
 
     @Override
-    public Criteria getDefaultCriteria() {
+    public List<Criteria> getDefaultCriteria() {
         // Only show the first application by default
         List<OnmsApplication> applications = applicationDao.findAll();
         if (!applications.isEmpty()) {
-            return new VertexHopGraphProvider.DefaultVertexHopCriteria(new ApplicationVertex(applications.get(0)));
+            return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(new ApplicationVertex(applications.get(0))));
         }
         return null;
     }

@@ -90,7 +90,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
-    public Criteria getDefaultCriteria() {
+    public List<Criteria> getDefaultCriteria() {
         return null; // no default focus
     }
 

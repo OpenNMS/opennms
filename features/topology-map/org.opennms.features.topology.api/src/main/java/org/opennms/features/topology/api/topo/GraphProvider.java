@@ -29,6 +29,7 @@
 package org.opennms.features.topology.api.topo;
 
 import java.net.MalformedURLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -77,7 +78,7 @@ public interface GraphProvider extends VertexProvider, EdgeProvider, SelectionAw
 
 	Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId);
 
-    Criteria getDefaultCriteria();
+    List<Criteria> getDefaultCriteria();
 
 	TopologyProviderInfo getTopologyProviderInfo();
 }
