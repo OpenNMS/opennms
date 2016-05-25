@@ -209,13 +209,18 @@
                         <c:param name="reports" value="${graph.name}"/>
                         <c:param name="resourceId" value="${resultSet.resource.id}"/>
                     </c:url>
+                    <c:url var="forecastGraphUrl" value="graph/forecast.jsp">
+                        <c:param name="report" value="${graph.name}"/>
+                        <c:param name="resourceId" value="${resultSet.resource.id}"/>
+                    </c:url>
 
                     <div>
-	                    <div class="graph-aux-controls" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
+	                    <div class="graph-aux-controls" style="padding-bottom: 5px" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
 		                    <opennms-addKscReport id="${resultSet.resource.id}.${graph.name}" reportName="${graph.name}" resourceId="${resultSet.resource.id}" graphTitle="${graph.title}" timespan="${results.relativeTime}"></opennms-addKscReport>
 		                    <c:if test="${fn:length(resultSet.graphs) > 1}">
 		                        <a href="${specificGraphUrl}" style="padding-right: 3px" title="Open ${graph.title}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-binoculars" aria-hidden="true"></i></span></button></a>
 		                    </c:if>
+                                    <a href="${forecastGraphUrl}" style="padding-right: 3px" title="Forecast ${graph.title}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-line-chart" aria-hidden="true"></i></span></button></a>
 		                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
 		                        <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
 		                            <a href="javascript:nrtgPopUp('${resultSet.resource.id}','${graph.name}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a><br/>
