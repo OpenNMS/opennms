@@ -33,6 +33,7 @@ import java.util.List;
 import org.opennms.features.topology.api.IconManager;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
@@ -70,7 +71,11 @@ public class IconResetOperation implements Operation {
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         // only enabled, if all elements are a Vertex
-        return targets.stream().filter(v -> v instanceof Vertex).count() == targets.size();
+        return targets.stream()
+                      .allMatch(v -> ((v instanceof Vertex) &&
+                                      operationContext.getGraphContainer()
+                                                      .getIconManager()
+                                                      .findRepositoryByIconKey(((Vertex) v).getIconKey()) != null));
     }
 
     @Override

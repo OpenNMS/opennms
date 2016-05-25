@@ -31,6 +31,7 @@ package org.opennms.features.topology.app.internal.operations.icons;
 import java.util.List;
 
 import org.opennms.features.topology.api.IconManager;
+import org.opennms.features.topology.api.IconRepository;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.AbstractVertex;
@@ -76,7 +77,17 @@ public class IconSelectionOperation implements Operation {
 
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        return targets.size() == 1 && targets.get(0) instanceof AbstractVertex;
+        if (targets.size() != 1 || !(targets.get(0) instanceof AbstractVertex)) {
+            return false;
+        }
+
+        if (operationContext.getGraphContainer()
+                            .getIconManager()
+                            .findRepositoryByIconKey(((AbstractVertex) targets.get(0)).getIconKey()) == null) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
