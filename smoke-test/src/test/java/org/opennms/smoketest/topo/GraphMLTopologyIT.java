@@ -31,6 +31,7 @@ package org.opennms.smoketest.topo;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -40,7 +41,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -50,6 +50,7 @@ import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.TopologyIT;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Lists;
 
 /**
  * Tests the 'GraphML' Topology Provider
@@ -84,34 +85,37 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void canShowVertices() throws IOException {
+    public void canUseTopology() throws IOException {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
-        topologyUIPage.clearFocus();
+        topologyUIPage.defaultFocus();
 
-        // Search for and select the first business service in our list
-        final String regionName = "South";
-        TopologyIT.TopologyUISearchResults searchResult = topologyUIPage.search(regionName);
-        Assert.assertEquals(1, searchResult.countItemsThatContain(regionName));
-        searchResult.selectItemThatContains(regionName);
-
-        // We should have a single vertex in focus
-        assertEquals(1, topologyUIPage.getFocusedVertices().size());
-
-        // We should have one vertex visible
-        List<TopologyIT.VisibleVertex> visibleVertices = topologyUIPage.getVisibleVertices();
-        assertEquals(1, visibleVertices.size());
+        List<TopologyIT.FocusedVertex> focusedVertices = topologyUIPage.getFocusedVertices();
+        assertEquals(4, focusedVertices.size());
+        assertEquals(4, topologyUIPage.getVisibleVertices().size());
+        focusedVertices.sort(Comparator.comparing(TopologyIT.FocusedVertex::getNamespace).thenComparing(TopologyIT.FocusedVertex::getLabel));
+        assertEquals(
+                Lists.newArrayList(
+                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "East"),
+                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "North"),
+                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "South"),
+                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "West")
+                ), focusedVertices);
 
         // Verify that the layout is the D3 Layout as this layer does not provide a preferredLayout
         assertEquals(TopologyIT.Layout.D3, topologyUIPage.getSelectedLayout());
-    }
 
-    @Test
-    public void canSwitchLayers() {
-        topologyUIPage.selectTopologyProvider(() -> LABEL);
-        topologyUIPage.clearFocus();
+        // Switch Layer
         topologyUIPage.selectLayer("Markets");
         assertEquals(1, topologyUIPage.getFocusedVertices().size());
-        assertEquals("North 1", topologyUIPage.getFocusedVertices().get(0).getLabel());
+        assertEquals("North 4", topologyUIPage.getFocusedVertices().get(0).getLabel());
+
+        // Search for and select the first business service in our list
+        final String regionName = "South 1";
+        TopologyIT.TopologyUISearchResults searchResult = topologyUIPage.search(regionName);
+        assertEquals(1, searchResult.countItemsThatContain(regionName));
+        searchResult.selectItemThatContains(regionName);
+        assertEquals(2, topologyUIPage.getFocusedVertices().size());
+        assertEquals(2, topologyUIPage.getVisibleVertices().size());
     }
 
     private static boolean existsGraph() throws IOException {
@@ -130,7 +134,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
             httpPost.setHeader("Content-Type", "application/xml");
             httpPost.setEntity(new StringEntity(IOUtils.toString(GraphMLTopologyIT.class.getResourceAsStream("/topology/graphml/test-topology.xml"), Charsets.UTF_8)));
             CloseableHttpResponse response = client.execute(httpPost);
-            Assert.assertEquals(201, response.getStatusLine().getStatusCode());
+            assertEquals(201, response.getStatusLine().getStatusCode());
         }
         // We wait to give the GraphMLMetaTopologyFactory the chance to initialize the new Topology
         Thread.sleep(20000);
@@ -140,7 +144,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         try (HttpClientWrapper client = createClientWrapper()) {
             HttpDelete httpDelete = new HttpDelete(URL);
             CloseableHttpResponse response = client.execute(httpDelete);
-            Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+            assertEquals(200, response.getStatusLine().getStatusCode());
         }
         // We wait to give teh GraphMLMetaTopologyFactory the chance to clean up afterwards
         Thread.sleep(20000);

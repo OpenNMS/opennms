@@ -136,14 +136,14 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     }
 
     @Override
-    public Criteria getDefaultCriteria() {
+    public List<Criteria> getDefaultCriteria() {
         // Grab the business service with the smallest id
         List<BusinessService> businessServices = businessServiceManager.findMatching(new CriteriaBuilder(BusinessService.class).orderBy("id", true).limit(1).toCriteria());
         // If one was found, use it for the default focus
         if (!businessServices.isEmpty()) {
             BusinessService businessService = businessServices.iterator().next();
             BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(businessService, 0);
-            return new VertexHopGraphProvider.DefaultVertexHopCriteria(businessServiceVertex);
+            return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(businessServiceVertex));
         }
         return null;
     }

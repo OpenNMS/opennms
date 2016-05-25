@@ -33,8 +33,11 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
+import org.opennms.features.graphml.model.GraphMLGraph;
+import org.opennms.features.graphml.model.GraphMLNode;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
+import org.opennms.features.topology.api.support.FocusStrategy;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -42,18 +45,24 @@ import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.graphml.model.GraphMLGraph;
-import org.opennms.features.graphml.model.GraphMLNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 public class GraphMLTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
     protected static final String DEFAULT_DESCRIPTION = "This Topology Provider visualizes a predefined GraphML graph.";
+    private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyProvider.class);
 
     private static TopologyProviderInfo createTopologyProviderInfo(GraphMLGraph graph) {
         String name = graph.getProperty(GraphMLProperties.LABEL, graph.getId());
         String description = graph.getProperty(GraphMLProperties.DESCRIPTION, DEFAULT_DESCRIPTION);
         return new DefaultTopologyProviderInfo(name, description);
     }
+
+    private final FocusStrategy focusStrategy;
+    private final List<String> focusIds;
 
     public GraphMLTopologyProvider(GraphMLGraph graph) {
         super(graph.getProperty(GraphMLProperties.NAMESPACE));
@@ -72,6 +81,28 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
             addEdges(newEdge);
         }
         setTopologyProviderInfo(createTopologyProviderInfo(graph));
+        focusStrategy = getFocusStrategy(graph);
+        focusIds = getFocusIds(graph);
+        if (focusStrategy != FocusStrategy.SPECIFIC && !focusIds.isEmpty()) {
+            LOG.warn("Focus ids is defined, but strategy is {}. Did you mean to specify {}={}. Ignoring focusIds.", GraphMLProperties.FOCUS_STRATEGY, FocusStrategy.SPECIFIC.name());
+        }
+    }
+
+    private static FocusStrategy getFocusStrategy(GraphMLGraph graph) {
+        String strategy = graph.getProperty(GraphMLProperties.FOCUS_STRATEGY);
+        if (strategy != null) {
+            return FocusStrategy.getStrategy(strategy, FocusStrategy.FIRST);
+        }
+        return FocusStrategy.FIRST;
+    }
+
+    private static List<String>  getFocusIds(GraphMLGraph graph) {
+        String property = graph.getProperty(GraphMLProperties.FOCUS_IDS);
+        if (property != null) {
+            String[] split = property.split(",");
+            return Lists.newArrayList(split);
+        }
+        return Lists.newArrayList();
     }
 
     @Override
@@ -90,11 +121,9 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     }
 
     @Override
-    public Criteria getDefaultCriteria() {
-        if (!getVertices().isEmpty()) {
-            return new VertexHopGraphProvider.DefaultVertexHopCriteria(getVertices().iterator().next());
-        }
-        return null;
+    public List<Criteria> getDefaultCriteria() {
+        List<VertexHopGraphProvider.VertexHopCriteria> focusCriteria = focusStrategy.getFocusCriteria(this, focusIds.toArray(new String[focusIds.size()]));
+        return Lists.newArrayList(focusCriteria);
     }
 
     @Override
