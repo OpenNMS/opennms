@@ -102,7 +102,7 @@
       <feature>postgresql</feature>
 
       <!-- Add all possible JDBC drivers to the c3p0 import list so that it can classload them -->
-      <bundle>wrap:mvn:com.mchange/c3p0/${c3p0Version}$Bundle-SymbolicName=c3p0&amp;Bundle-Version=${c3p0Version}&amp;Import-Package=javax.management,javax.naming,javax.naming.spi,javax.sql,javax.xml.parsers,org.apache.log4j,org.postgresql,org.w3c.dom</bundle>
+      <bundle>wrap:mvn:com.mchange/c3p0/${c3p0Version}$Bundle-SymbolicName=c3p0&amp;Bundle-Version=${c3p0Version}&amp;Import-Package=javax.management,javax.naming,javax.sql,javax.xml.parsers,org.postgresql,org.w3c.dom</bundle>
     </feature>
 
     <feature name="castor" description="Castor" version="1.1.2.1">
