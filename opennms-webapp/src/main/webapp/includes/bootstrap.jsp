@@ -96,7 +96,7 @@
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
 
-  <c:if test="${param.norequirejs != 'true' }">
+  <c:if test="${param.norequirejs != 'true' && param.usebackshift != 'true' }">
     <script type="text/javascript" src="<%= baseHref %>lib/requirejs/require.min.js"></script>
   </c:if>
 
@@ -128,6 +128,21 @@
       </script>
       <script type="text/javascript" src="<%= baseHref %>js/graph.js"></script>
     </c:if>
+
+<c:if test="${param.usebackshift == 'true'}">
+  <%-- This allows pages to explicitely use Backshift instead of relying on graph.js (which may not use Backshift) --%>
+  <script type="text/javascript" src="<%= baseHref %>lib/d3/d3.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.time.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.canvas.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-legend/jquery.flot.legend.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-axislabels/jquery.flot.axislabels.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot.tooltip/js/jquery.flot.tooltip.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-saveas/jquery.flot.saveas.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-navigate/jquery.flot.navigate.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-datatable/jquery.flot.datatable.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>js/backshift.onms.min.js"></script>
+</c:if>
 
 <c:forEach var="script" items="${paramValues.script}">
     <c:out value="${script}" escapeXml="false" />

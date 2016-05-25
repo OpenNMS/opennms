@@ -254,7 +254,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 // we must overwrite the existing saved history for this user, otherwise updateURL does not work
                 String fragment = m_historyManager.createHistory(m_applicationContext.getUsername(), m_graphContainer);
                 LOG.info("Redirect user {} to topology fragment url with fragment {}", m_applicationContext.getUsername(), fragment);
-                getPage().setLocation(String.format("%s#%s", ((VaadinServletRequest) request).getRequestURL(), fragment));
+                getPage().setLocation(String.format("%s#%s", ((VaadinServletRequest) request).getRequestURI(), fragment));
             }
         }
 
