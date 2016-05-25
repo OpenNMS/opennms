@@ -251,6 +251,7 @@
     </feature>
 
     <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="${postgresqlVersion}">
+      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
       <bundle>wrap:mvn:org.postgresql/postgresql/${postgresqlVersion}</bundle>
     </feature>
 
