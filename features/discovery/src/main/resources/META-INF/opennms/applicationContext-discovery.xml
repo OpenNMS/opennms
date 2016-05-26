@@ -124,7 +124,7 @@
 
     <!-- Default localhost location queue -->
     <route id="localhostLocationDiscoveryRoute">
-      <from uri="activemq:Location-localhost" />
+      <from uri="activemq:Location-localhost?concurrentConsumers=8" />
       <log loggingLevel="INFO" message="applicationContext-discovery.xml: Executing DiscoveryJob" />
       <log loggingLevel="INFO" message="applicationContext-discovery.xml: ${body}" />
       <bean ref="discoverer" />
