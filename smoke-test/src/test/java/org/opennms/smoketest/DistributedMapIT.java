@@ -41,7 +41,7 @@ import org.openqa.selenium.By;
 public class DistributedMapIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        m_driver.get(BASE_URL + "opennms/RemotePollerMap/index.jsp");
+        m_driver.get(getBaseUrl() + "opennms/RemotePollerMap/index.jsp");
     }
 
     @Test

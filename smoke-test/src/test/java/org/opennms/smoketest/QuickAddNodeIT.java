@@ -69,17 +69,31 @@ public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
         deleteTestRequisition();
     }
 
+    private boolean textFieldsReady() {
+        try {
+            return REQUISITION_NAME.equals(waitForElement(By.id("foreignSource")).getAttribute("value")) &&
+                    NODE_IPADDR.equals(waitForElement(By.id("ipAddress")).getAttribute("value")) &&
+                    NODE_LABEL.equals(waitForElement(By.id("nodeLabel")).getAttribute("value"));
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
     @Test
     public void testQuickAddNode() throws Exception {
         adminPage();
         clickMenuItem("name=nav-admin-top", "Quick-Add Node", "admin/ng-requisitions/app/quick-add-node.jsp");
 
-        // Basic fields
-        findElementByCss("input#foreignSource");
-        Thread.sleep(1000);
-        enterTextAutocomplete(By.id("foreignSource"), REQUISITION_NAME);
-        enterText(By.id("ipAddress"), NODE_IPADDR);
-        enterText(By.id("nodeLabel"), NODE_LABEL);
+        Thread.sleep(5000);
+
+        long end = System.currentTimeMillis() + LOAD_TIMEOUT;
+        do {
+            // Basic fields
+            findElementByCss("input#foreignSource");
+            enterTextAutocomplete(By.id("foreignSource"), REQUISITION_NAME);
+            enterText(By.id("ipAddress"), NODE_IPADDR);
+            enterText(By.id("nodeLabel"), NODE_LABEL);
+        } while (!textFieldsReady() && System.currentTimeMillis() < end);
 
         // Add a category to the node
         findElementById("add-category").click();
@@ -94,6 +108,7 @@ public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
 
     protected WebElement enterTextAutocomplete(final By selector, final CharSequence... text) throws InterruptedException {
         final WebElement element = m_driver.findElement(selector);
+        element.clear();
         element.click();
         Thread.sleep(500);
         element.sendKeys(text);

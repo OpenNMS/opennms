@@ -45,11 +45,11 @@ public class OSGIPluginManagerIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void canListProducts() throws ClientProtocolException, IOException, InterruptedException {
-        assertEquals(Integer.valueOf(200), doRequest(new HttpGet(OpenNMSSeleniumTestCase.BASE_URL + "/opennms/licencemgr/rest/v1-0/product-pub/list")));
+        assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() + "/opennms/licencemgr/rest/v1-0/product-pub/list")));
     }
 
     @Test
     public void canListFeatures() throws ClientProtocolException, IOException, InterruptedException {
-        assertEquals(Integer.valueOf(200), doRequest(new HttpGet(OpenNMSSeleniumTestCase.BASE_URL + "/opennms/featuremgr/rest/v1-0/features-list")));
+        assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() + "/opennms/featuremgr/rest/v1-0/features-list")));
     }
 }
