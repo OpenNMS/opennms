@@ -105,7 +105,7 @@
       <bundle>wrap:mvn:com.mchange/c3p0/${c3p0Version}$Bundle-SymbolicName=c3p0&amp;Bundle-Version=${c3p0Version}&amp;Import-Package=javax.management,javax.naming,javax.sql,javax.xml.parsers,org.postgresql,org.w3c.dom</bundle>
     </feature>
 
-    <feature name="HikariCP" description="HikariCP" version="${hikaricpVersion}">
+    <feature name="hikari-cp" description="HikariCP" version="${hikaricpVersion}">
       <feature>postgresql</feature>
 
       <!-- Add all possible JDBC drivers to the HikariCP import list so that it can classload them -->
@@ -316,7 +316,7 @@
     <feature name="opennms-core-db" description="OpenNMS :: Core :: Database" version="${project.version}">
       <feature>atomikos</feature>
       <feature>c3p0</feature>
-      <feature>HikariCP</feature>
+      <feature>hikari-cp</feature>
       <feature>castor</feature>
       <feature>commons-io</feature>
       <feature>postgresql</feature>
