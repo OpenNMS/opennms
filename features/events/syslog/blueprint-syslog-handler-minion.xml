@@ -28,13 +28,21 @@
 	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)"/>
 
 	<camelContext id="syslogConnectionHandlerMinion" xmlns="http://camel.apache.org/schema/blueprint">
-		<route id="handleMessage">
-			<from uri="seda:handleMessage" />
-			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
+		<route id="syslogHandleMessage">
+			<from uri="seda:handleMessage?concurrentConsumers=4" />
 			<!-- Marshal the message to XML -->
 			<bean ref="marshaller"/>
+			<to uri="seda:sendMessage"/>
+		</route>
+		<route id="syslogSendMessage">
+			<!-- Concurrent consumers gives a performance boost here because we have pooled connections to the JMS broker -->
+			<from uri="seda:sendMessage?concurrentConsumers=4"/>
 			<!-- Broadcast the message over ActiveMQ -->
-			<to uri="queuingservice:broadcastSyslog?disableReplyTo=true"/>
+			<!--
+				Turn off persistent messages to avoid the latency penalty: 
+				http://activemq.apache.org/async-sends.html
+			-->
+			<to uri="queuingservice:broadcastSyslog?deliveryPersistent=false"/>
 		</route>
 	</camelContext>
 

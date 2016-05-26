@@ -52,15 +52,22 @@
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerDefaultProperties" />
 
 		<route id="receiveSyslogConnection">
-			<from uri="activemq:broadcastSyslog"/>
+			<from uri="activemq:broadcastSyslog?concurrentConsumers=8"/>
+			<!-- No performance improvement with asyncConsumer -->
+			<!-- <from uri="activemq:broadcastSyslog?asyncConsumer=true&amp;concurrentConsumers=8"/> -->
+			<to uri="seda:unmarshalMessage"/>
+		</route>
+
+		<route id="unmarshalSyslogConnection">
+			<from uri="seda:unmarshalMessage?concurrentConsumers=8"/>
 			<process ref="unmarshaller"/>
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>
 			<to uri="seda:syslogHandler"/>
 		</route>
 
-		<route id="syslogHandler">
-			<from uri="seda:syslogHandler"/>
+		<route id="handleSyslogConnection">
+			<from uri="seda:syslogHandler?concurrentConsumers=8"/>
 			<!-- 
 				Pass the message to the default handler which will convert it into
 				an event and broadcast the event.
