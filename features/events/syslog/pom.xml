@@ -142,7 +142,6 @@
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-kafka</artifactId>
       <version>${camelVersion}</version>
-      <scope>test</scope>
       <exclusions>
         <exclusion>
           <groupId>javax.xml.bind</groupId>

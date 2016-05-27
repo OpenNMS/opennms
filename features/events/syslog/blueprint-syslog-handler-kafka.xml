@@ -35,7 +35,7 @@
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<!-- TODO: Partition by remote address -->
 				<!-- <simple>${body.remoteAddress}</simple> -->
-				<simple>${body.hostname}</simple>
+				<simple>${body.sourceAddress}</simple>
 			</setHeader>
  			<log message="address:       ${body.sourceAddress}"/>
 			<log message="port:          ${body.port}"/>
