@@ -33,6 +33,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -77,17 +78,18 @@ public class HikariCPConnectionFactory extends BaseConnectionFactory {
      */
     // TODO Enable and configure MetricRegistry
     @Override
-    protected void initializePool(final JdbcDataSource dataSource) throws SQLException {	    
-        final HikariConfig config = new HikariConfig();
+    protected void initializePool(final JdbcDataSource dataSource) throws SQLException {
+        final Properties properties = new Properties();
+        for (final Param parameter : dataSource.getParamCollection()) {
+            properties.setProperty(parameter.getName(), parameter.getValue());
+        }
+        final HikariConfig config = new HikariConfig(properties);
         config.setPoolName(dataSource.getName());
         config.setJdbcUrl(dataSource.getUrl());
         config.setUsername(dataSource.getUserName());
         config.setPassword(dataSource.getPassword());
         config.setDriverClassName(dataSource.getClassName());
         config.setRegisterMbeans(true); // For JMX Monitoring
-        for (final Param parameter : dataSource.getParamCollection()) {
-            config.addDataSourceProperty(parameter.getName(), parameter.getValue());
-        }
         config.validate();
         m_pool = new HikariDataSource(config);
     }
