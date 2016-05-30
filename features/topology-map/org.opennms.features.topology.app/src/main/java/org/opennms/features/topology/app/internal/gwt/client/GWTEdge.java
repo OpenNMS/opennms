@@ -42,8 +42,12 @@ public final class GWTEdge extends JavaScriptObject {
     protected GWTEdge() {};
     
     public static final native GWTEdge create(String id, GWTVertex source, GWTVertex target) /*-{
-    	return {"id":id, "source":source, "target":target, "cssClass": "path", "linkNum":1, "tooltipText": "", status:""};
+    	return {"id":id, "source":source, "target":target, "cssClass": "path", "linkNum":1, "tooltipText": "", "status":""};
 	}-*/;
+
+    public static final native void consoleLog(Object obj)/*-{
+        $wnd.console.log(obj);
+    }-*/;
 
     public final native GWTVertex getSource() /*-{
         return this.source;
@@ -89,10 +93,6 @@ public final class GWTEdge extends JavaScriptObject {
         return this.tooltipText;
     }-*/;
 
-    public static final native void consoleLog(Object obj)/*-{
-        $wnd.console.log(obj);
-    }-*/;
-
     public final native void setStatus(String status) /*-{
         this.status = status;
     }-*/;
@@ -101,12 +101,32 @@ public final class GWTEdge extends JavaScriptObject {
         return this.status;
     }-*/;
 
+    public final native void setAdditionalStyling(JavaScriptObject additionalStyling) /*-{
+        this.additionalStyling = additionalStyling;
+    }-*/;
+
+    /**
+     * Applies the style defined in additionalStyling to the created SVG path element.
+     * This is a hack as with pure GWT the "this" context did not match the correct DOM element.
+     */
+    public static final native JavaScriptObject createNativeFunctionToApplyStylings() /*-{
+        return function(datum, index) {
+            // only apply if defined
+            if (datum.additionalStyling != undefined) {
+                var currentSelection = $wnd.d3.select(this);
+                currentSelection.style(datum.additionalStyling);
+            }
+        }
+    }-*/;
+
     public static D3Behavior draw() {
         return new D3Behavior() {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.attr("class", GWTEdge.getCssStyleClass()).attr("d", GWTEdge.createPath());
+                return selection.attr("class", GWTEdge.getCssStyleClass())
+                        .attr("d", GWTEdge.createPath())
+                        .each(createNativeFunctionToApplyStylings());
             }
         };
     }
@@ -135,8 +155,6 @@ public final class GWTEdge extends JavaScriptObject {
 
             @Override
             public String call(GWTEdge datum, int index) {
-                int i = index;
-                String status = datum.getStatus();
                 return datum.getCssClass();
             }
         };

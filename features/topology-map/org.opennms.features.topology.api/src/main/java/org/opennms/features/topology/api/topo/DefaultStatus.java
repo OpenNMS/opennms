@@ -31,6 +31,8 @@ package org.opennms.features.topology.api.topo;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
+
 public class DefaultStatus implements Status {
 
     private final String m_label;
@@ -52,6 +54,11 @@ public class DefaultStatus implements Status {
         statusMap.put("status", m_label.toLowerCase());
         statusMap.put("statusCount", "" + m_alarmCount);
         return statusMap;
+    }
+
+    @Override
+    public Map<String, String> getStyleProperties() {
+        return Maps.newHashMap();
     }
 
     @Override
