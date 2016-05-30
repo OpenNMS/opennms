@@ -204,7 +204,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
     }
 
     @Override
-    public Criteria getDefaultCriteria() {
+    public List<Criteria> getDefaultCriteria() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

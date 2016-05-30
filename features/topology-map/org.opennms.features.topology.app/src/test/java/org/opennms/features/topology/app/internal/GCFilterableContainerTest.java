@@ -64,7 +64,7 @@ public class GCFilterableContainerTest {
 
             @Override public void save() { }
             @Override public void refresh() { }
-            @Override public Criteria getDefaultCriteria() { return null; }
+            @Override public List<Criteria> getDefaultCriteria() { return null; }
 
             @Override public void load(String filename) throws MalformedURLException, JAXBException {
                 resetContainer();

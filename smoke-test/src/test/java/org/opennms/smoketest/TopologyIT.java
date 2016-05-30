@@ -43,6 +43,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
@@ -148,6 +149,37 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         private WebElement getElement() {
             return ui.testCase.findElementByXpath("//*/table[@class='search-token-field']"
                     + "//div[@class='search-token-label' and contains(text(),'" + label + "')]");
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (obj instanceof FocusedVertex) {
+                FocusedVertex other = (FocusedVertex) obj;
+                boolean equals = Objects.equals(getNamespace(), other.getNamespace())
+                        && Objects.equals(getLabel(), other.getLabel())
+                        && Objects.equals(ui, other.ui);
+                return equals;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(ui, namespace, label);
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("namespace", getNamespace())
+                    .add("label", getLabel())
+                    .toString();
         }
     }
 
@@ -264,8 +296,8 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 // Reduce the timeout so we don't wait around for too long if there are no vertices in focus
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 for (WebElement el : testCase.m_driver.findElements(By.xpath("//*/table[@class='search-token-field']"))) {
-                    final String namespace = el.findElement(By.xpath("//div[@class='search-token-namespace']")).getText();
-                    final String label = el.findElement(By.xpath("//div[@class='search-token-label']")).getText();
+                    final String namespace = el.findElement(By.xpath(".//div[@class='search-token-namespace']")).getText();
+                    final String label = el.findElement(By.xpath(".//div[@class='search-token-label']")).getText();
                     verticesInFocus.add(new FocusedVertex(this, namespace, label));
                 }
             } finally {
@@ -343,6 +375,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 }
                 WebElement layerElement = testCase.findElementById("layerComponent").findElement(By.xpath("//div[text() = '" + layerName + "']"));
                 layerElement.click();
+                waitForTransition();
             } finally {
                 testCase.setImplicitWait();
             }
@@ -418,6 +451,18 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 throw new RuntimeException("Element has no CSS classes!"
                         + " Unable to determine if the item is checked or unchecked.");
             }
+        }
+
+        public void defaultFocus() {
+            clearFocus();
+            try {
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.findElementById("defaultFocusBtn").click();
+                waitForTransition();
+            } finally {
+                testCase.setImplicitWait();
+            }
+
         }
     }
 

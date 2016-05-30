@@ -170,7 +170,7 @@ public class IconRepositoryManager implements IconManager {
             }
         }
         // Key not found, yet. If reducible, reduce key and try again
-        if (iconKey.lastIndexOf('.') > 0) {
+        if (iconKey != null && iconKey.lastIndexOf('.') > 0) {
             return findRepositoryByIconKey(iconKey.substring(0, iconKey.lastIndexOf('.')));
         }
         // No Repository with the iconKey exists

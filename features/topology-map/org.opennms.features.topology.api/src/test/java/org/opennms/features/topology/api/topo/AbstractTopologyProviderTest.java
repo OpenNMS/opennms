@@ -65,7 +65,7 @@ public class AbstractTopologyProviderTest {
             }
 
             @Override
-            public Criteria getDefaultCriteria() {
+            public List<Criteria> getDefaultCriteria() {
                 return null;  // no default
             }
 

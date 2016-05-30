@@ -297,7 +297,10 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             if (resetCriteriaAndSzl) {
                 graphContainer.clearCriteria(); // remove all criteria
                 graphContainer.setSemanticZoomLevel(1); // reset to 1
-                graphContainer.addCriteria(graphContainer.getBaseTopology().getDefaultCriteria());
+                List<Criteria> defaultCriteriaList = graphContainer.getBaseTopology().getDefaultCriteria();
+                if (defaultCriteriaList != null) {
+                    defaultCriteriaList.forEach(eachCriteria -> graphContainer.addCriteria(eachCriteria));
+                }
             }
             graphContainer.redoLayout();
         }
