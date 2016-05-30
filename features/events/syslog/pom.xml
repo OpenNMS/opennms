@@ -93,7 +93,7 @@
                 <artifact>
                   <file>blueprint-syslog-handler-kafka-default.xml</file>
                   <type>xml</type>
-                  <classifier>blueprint-syslog-handler-kafka-default.xml</classifier>
+                  <classifier>blueprint-syslog-handler-kafka-default</classifier>
                 </artifact>
               </artifacts>
             </configuration>
