@@ -101,6 +101,16 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
                         new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "West")
                 ), focusedVertices);
 
+        // Search for and select the first business service in our list
+        final String regionName = "South";
+        TopologyIT.TopologyUISearchResults searchResult = topologyUIPage.search(regionName);
+        assertEquals(5, searchResult.countItemsThatContain(regionName));
+        searchResult.selectItemThatContains(regionName);
+
+        // Focus should not have changed
+        assertEquals(4, focusedVertices.size());
+        assertEquals(4, topologyUIPage.getVisibleVertices().size());
+
         // Verify that the layout is the D3 Layout as this layer does not provide a preferredLayout
         assertEquals(TopologyIT.Layout.D3, topologyUIPage.getSelectedLayout());
 
@@ -108,14 +118,18 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         topologyUIPage.selectLayer("Markets");
         assertEquals(1, topologyUIPage.getFocusedVertices().size());
         assertEquals("North 4", topologyUIPage.getFocusedVertices().get(0).getLabel());
+    }
 
-        // Search for and select the first business service in our list
-        final String regionName = "South 1";
-        TopologyIT.TopologyUISearchResults searchResult = topologyUIPage.search(regionName);
-        assertEquals(1, searchResult.countItemsThatContain(regionName));
-        searchResult.selectItemThatContains(regionName);
-        assertEquals(2, topologyUIPage.getFocusedVertices().size());
-        assertEquals(2, topologyUIPage.getVisibleVertices().size());
+    @Test
+    public void verifySwitchesLayerOnSearchProperly() {
+        topologyUIPage.selectTopologyProvider(() -> LABEL);
+        TopologyIT.TopologyUISearchResults searchResult = topologyUIPage.search("South");
+        assertEquals(5, searchResult.countItemsThatContain("South"));
+        searchResult.selectItemThatContains("South 3");
+        assertEquals(1, topologyUIPage.getVisibleVertices().size());
+        assertEquals(1, topologyUIPage.getFocusedVertices().size());
+        assertEquals("South 3", topologyUIPage.getFocusedVertices().get(0).getLabel());
+        assertEquals("South 3", topologyUIPage.getVisibleVertices().get(0).getLabel());
     }
 
     private static boolean existsGraph() throws IOException {

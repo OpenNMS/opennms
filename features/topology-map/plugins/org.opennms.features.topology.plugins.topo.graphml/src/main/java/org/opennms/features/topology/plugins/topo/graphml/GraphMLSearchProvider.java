@@ -31,9 +31,14 @@ package org.opennms.features.topology.plugins.topo.graphml;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
+import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.SimpleSearchProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
@@ -47,6 +52,42 @@ public class GraphMLSearchProvider extends SimpleSearchProvider {
 
     public GraphMLSearchProvider(GraphMLTopologyProvider graphMLTopologyProvider) {
         this.graphMLTopologyProvider = Objects.requireNonNull(graphMLTopologyProvider);
+    }
+
+    /**
+     * In GraphML graphs the namespace of each graph contained in the GraphML file should be prefixed, e.g.
+     * namespace1:graph1, namespace1:graph2, etc.
+     *
+     * @param namespace The namespace to check
+     * @return true if this {@link org.opennms.features.topology.api.topo.SearchProvider} contributes, false otherwise
+     */
+    @Override
+    public boolean contributesTo(String namespace) {
+        boolean contributes = super.contributesTo(namespace);
+        if (!contributes && namespace.contains(":")) {
+            String prefix = namespace.substring(0, namespace.indexOf(":"));
+            return getSearchProviderNamespace().startsWith(prefix);
+        }
+        return contributes;
+    }
+
+    @Override
+    public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
+        final GraphContainer graphContainer = operationContext.getGraphContainer();
+        final DefaultVertexRef vertexRef = new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
+        if (graphContainer.getBaseTopology().getVertex(vertexRef) == null) {
+            // The vertex to add to focus is not in the current layer
+            // Find the GraphProvider it belongs to
+            Optional<GraphProvider> first = graphContainer.getMetaTopologyProvider().getGraphProviders().stream()
+                    .filter(eachProvider -> eachProvider.getVertexNamespace().equals(searchResult.getNamespace()))
+                    .findFirst();
+            // If there is a graph provider (which should) select it
+            if (first.isPresent() && first.get().getVertex(vertexRef) != null) {
+                graphContainer.selectTopologyProvider(first.get(), false);
+                graphContainer.clearCriteria();
+            }
+        }
+        super.onFocusSearchResult(searchResult, operationContext);
     }
 
     @Override
