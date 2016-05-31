@@ -146,6 +146,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("postgresql");
         installFeature("spring-security32");
         installFeature("spring-webflow");
+        installFeature("opennms-trapd-handler-kafka");
 
         System.out.println(executeCommand("features:list -i"));
     }

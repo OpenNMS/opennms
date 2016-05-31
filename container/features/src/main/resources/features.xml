@@ -762,7 +762,7 @@
       <feature>camel-http</feature>
       <feature>camel-netty</feature>
       <feature>activemq-camel</feature>
-
+	  <feature>camel-kafka</feature>
       <feature>opennms-core</feature>
       <feature>opennms-core-camel</feature>
       <feature>opennms-core-daemon</feature>
