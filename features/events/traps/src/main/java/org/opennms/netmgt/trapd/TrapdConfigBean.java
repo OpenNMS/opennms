@@ -91,7 +91,7 @@ public class TrapdConfigBean implements TrapdConfig {
 	public void onUpdate(TrapdConfiguration config) {
 		this.m_snmpTrapAddress = config.getSnmpTrapAddress();
 		this.m_snmpTrapPort =config.getSnmpTrapPort();
-		this.m_snmpV3Users=addToSnmpV3User(config.getSnmpv3UserCollection());
+		this.m_snmpV3Users.addAll(addToSnmpV3User(config.getSnmpv3UserCollection()));
 	}
 
 	private List<SnmpV3User> addToSnmpV3User(List<Snmpv3User> snmpv3UserCollection) {
