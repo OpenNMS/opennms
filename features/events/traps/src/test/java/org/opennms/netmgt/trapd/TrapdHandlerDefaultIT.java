@@ -32,16 +32,16 @@ import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.camel.component.ActiveMQComponent;
+import org.apache.camel.Component;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.activemq.ActiveMQBroker;
+import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.api.EventConfDao;
@@ -67,49 +67,23 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
-public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
+public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 
 	private boolean mockInitialized = false;
 
 	private static final Logger LOG = LoggerFactory.getLogger(TrapdHandlerDefaultIT.class);
 
-	private static BrokerService m_broker = null;
+	@ClassRule
+	public static ActiveMQBroker s_broker = new ActiveMQBroker();
 
 	private EventIpcManager m_eventIpcManager = new MockEventIpcManager();
 
-	/**
-	 * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
-	 * 
-	 * @see https://issues.apache.org/jira/browse/ARIES-1051
-	 * @see https://access.redhat.com/site/solutions/640943
-	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void doPreSetup() throws Exception {
-		System.setProperty("org.apache.aries.blueprint.synchronous",
-				Boolean.TRUE.toString());
-		System.setProperty("de.kalpatec.pojosr.framework.events.sync",
-				Boolean.TRUE.toString());
-
-		if (!mockInitialized) {
-			MockitoAnnotations.initMocks(this);
-			mockInitialized = true;
-		}
-	}
-
-	@Override
-	public boolean isUseAdviceWith() {
-		return true;
-	}
-
-	@Override
-	public boolean isUseDebugger() {
-		// must enable debugger
-		return true;
-	}
-
-	@Override
-	public String isMockEndpoints() {
-		return "*";
+	protected String useOverridePropertiesWithConfigAdmin(Dictionary props) {
+		props.put("brokerUri", "vm:localhost?create=false");
+		// Return the PID
+		return "org.opennms.netmgt.trapd.handler.default";
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -145,32 +119,23 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 		);
 
 		services.put(EventConfDao.class.getName(), new KeyValueHolder<Object, Dictionary>(new EmptyEventConfDao(), new Properties()));
+        Properties props = new Properties();
+        props.setProperty("alias", "onms.broker");
+        services.put(Component.class.getName(),
+                     new KeyValueHolder<Object, Dictionary>(ActiveMQComponent.activeMQComponent("vm://localhost?create=false"),
+                                                            props));
 	}
 
 	// The location of our Blueprint XML files to be used for testing
 	@Override
 	protected String getBlueprintDescriptor() {
-		return "file:blueprint-trapd-handler-default.xml,file:src/test/resources/blueprint-empty-camel-context.xml";
-	}
-
-	@BeforeClass
-	public static void startActiveMQ() throws Exception {
-		m_broker = new BrokerService();
-		m_broker.addConnector("tcp://127.0.0.1:61616");
-		m_broker.start();
-	}
-
-	@AfterClass
-	public static void stopActiveMQ() throws Exception {
-		if (m_broker != null) {
-			m_broker.stop();
-		}
+		return "file:blueprint-trapd-handler-default.xml";
 	}
 
 	@Test
 	public void testTrapd() throws Exception {
 		// Expect one TrapNotification message to be broadcast on the messaging channel
-		MockEndpoint broadcastTrapd = getMockEndpoint("mock:activemq:broadcastTrap", false);
+		MockEndpoint broadcastTrapd = getMockEndpoint("mock:queuingservice:broadcastTrap", false);
 		broadcastTrapd.setExpectedMessageCount(1);
 
 		MockEndpoint trapHandler = getMockEndpoint("mock:seda:trapHandler", false);
@@ -200,7 +165,7 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 				snmp4JV2cTrapPdu, new BasicTrapProcessor());
 
 		// Send the TrapNotification
-		template.sendBody("activemq:broadcastTrap?disableReplyTo=true", snmp4JV2cTrap);
+		template.sendBody("queuingservice:broadcastTrap?disableReplyTo=true", snmp4JV2cTrap);
 
 		assertMockEndpointsSatisfied();
 

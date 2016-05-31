@@ -72,6 +72,16 @@ public class StringUtilsTest {
                 }, actual);
     }
 
+    // Check NMS-6331 for more details.
+    @Test
+    public void testRrdPathWithSpaces() {
+        String arg = "/usr/bin/rrdtool graph - --start 1463938619 --end 1464025019 --title=\"fwdd Uptime\" DEF:time=\"snmp/fs/The OpenNMS Office/Main Router/juniper-fwdd-process.rrd\":junFwddUptime:AVERAGE";
+        String[] actual = StringUtils.createCommandArray(arg);
+        assertArrayEquals(new String[]{
+                "/usr/bin/rrdtool", "graph", "-", "--start", "1463938619", "--end", "1464025019", "--title=fwdd Uptime", "DEF:time=snmp/fs/The OpenNMS Office/Main Router/juniper-fwdd-process.rrd:junFwddUptime:AVERAGE"
+                }, actual);
+    }
+
     @Test
     public void testWindowsPaths() {
     	if (File.separatorChar != '\\') return;
@@ -87,7 +97,7 @@ public class StringUtilsTest {
     		assertFalse(falseString, StringUtils.isLocalWindowsPath(falseString));
     	}
     }
-    
+
     private void testCreateCmdArray(String[] expected, String arg) {
         String[] actual = StringUtils.createCommandArray(arg);
         assertArrayEquals(expected, actual);

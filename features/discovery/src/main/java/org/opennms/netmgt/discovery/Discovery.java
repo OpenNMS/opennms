@@ -56,6 +56,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.Assert;
 
 /**
@@ -89,6 +90,7 @@ public class Discovery extends AbstractServiceDaemon {
     private UnmanagedInterfaceFilter m_interfaceFilter= null;
 
     @Autowired
+    @Qualifier ("discoveryCamelContext")
     private CamelContext m_camelContext;
 
     /**

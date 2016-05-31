@@ -120,6 +120,7 @@ include::text/service-assurance/monitors/XmpMonitor.adoc[]
 [[ga-performance-mgmt]]
 == Performance Management
 include::text/performance-data-collection/introduction.adoc[]
+include::text/performance-data-collection/stress-testing.adoc[]
 
 [[ga-performance-mgmt-collectors]]
 === Collectors
@@ -193,8 +194,8 @@ include::text/operation/newts-repository-converter.adoc[]
 === Newts
 include::text/operation/newts/introduction.adoc[]
 include::text/operation/newts/configuration.adoc[]
-include::text/operation/newts/cassandra21x.adoc[]
-include::text/operation/newts/newts.adoc[]
+include::text/operation/newts/cassandra-jmx.adoc[]
+include::text/operation/newts/cassandra-newts-jmx.adoc[]
 
 [[ga-opennms-system-properties]]
 == System Properties
@@ -216,4 +217,3 @@ include::text/plugin-manager/introduction.adoc[]
 include::text/plugin-manager/setting-karaf-instance-data.adoc[]
 include::text/plugin-manager/installing-available-plugins.adoc[]
 include::text/plugin-manager/installing-licences.adoc[]
-

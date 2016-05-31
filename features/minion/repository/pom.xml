@@ -48,6 +48,7 @@
                                 <feature>opennms-trapd-listener</feature>
                                 <feature>opennms-trapd-handler-minion</feature>
                                 <!-- <feature>opennms-trapd-handler-kafka</feature> -->
+                                <feature>minion-heartbeat</feature>
                             </features>
                             <repository>target/maven-repo</repository>
                         </configuration>

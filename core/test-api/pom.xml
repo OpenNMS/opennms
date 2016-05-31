@@ -11,6 +11,8 @@
   <name>OpenNMS Core Test APIs</name>
   <packaging>pom</packaging>
   <modules>
+    <module>activemq</module>
+    <module>camel</module>
     <module>db</module>
     <module>dns</module>
     <module>http</module>

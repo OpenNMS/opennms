@@ -408,7 +408,7 @@ public class GenericIndexResourceTypeTest {
     }
 
     private OnmsResource getNodeResource(String fs, String fid) {
-        NodeSourceResourceType nodeSourceResourceType = new NodeSourceResourceType(m_resourceDao, m_nodeDao);
+        NodeResourceType nodeSourceResourceType = new NodeResourceType(m_resourceDao, m_nodeDao);
         OnmsNode node = new OnmsNode();
         node.setId(0);
         node.setLabel("Node");

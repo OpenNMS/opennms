@@ -3,7 +3,7 @@
   <!-- productId is expected to contain the name of the product in the form <name>/<version> -->
   <!-- The productId is used as the feature name for installing into Karaf the top level feature -->
   <!-- definition of the licensed product such that the feature can be installed using -->
-  <!-- features:install name/version (version is optional) (Karaf 2.4.0) -->
+  <!-- features:install name/version (version is optional) (Karaf 2.4.3) -->
   <!-- Karaf features can reference dependent features with a range of versions -->
   <!-- e.g. feature version="[2.5.6,4)" -->
   <!-- so this allows us to have a single licence which can cover a range of releases of the -->
@@ -13,7 +13,7 @@
   <!-- featureRepository is expected to contain the url of the features repository -->
   <!-- which describes the Karaf feature using the concatenated form -->
   <!-- mvn:<groupId>/<artifactId>/<version>/xml/features -->
-  <!-- such that the repository can be installed using features:addurl (Karaf 2.4.0) -->
+  <!-- such that the repository can be installed using features:addurl (Karaf 2.4.3) -->
   <!-- e.g. features:addurl mvn:org.apache.camel/camel-example-osgi/2.10.0/xml/features -->
   <featureRepository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</featureRepository>
   
