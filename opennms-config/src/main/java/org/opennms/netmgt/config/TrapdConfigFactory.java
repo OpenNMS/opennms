@@ -208,4 +208,11 @@ public final class TrapdConfigFactory implements TrapdConfig {
         return snmpUsers;
     }
 
+	@Override
+	public void onUpdate(TrapdConfiguration config) {
+		m_config.setSnmpTrapAddress(config.getSnmpTrapAddress());
+		m_config.setSnmpTrapPort(config.getSnmpTrapPort());
+		m_config.setSnmpv3User(config.getSnmpv3User());
+	}
+
 }

@@ -14,7 +14,7 @@
     <cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd" update-strategy="none">
         <cm:default-properties>
             <cm:property name="trapd.listen.interface" value="127.0.0.1" />
-            <cm:property name="trapd.listen.port" value="5150" />
+            <cm:property name="trapd.listen.port" value="162" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -30,7 +30,7 @@
 		<route id="unmarshal">
 			<from uri="http://localhost:8980/opennms/rest/config/trapd" />
 			<bean ref="unmarshaller" />
-			<to uri="bean:trapdConfig?method=onSnmpV3UsersUpdate" />
+			<to uri="bean:trapdConfig?method=onUpdate" />
 		</route>
 	</camelContext>
      
