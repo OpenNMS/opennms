@@ -55,36 +55,43 @@ public class TrapdRoutingTest extends CamelTestSupport {
 
 				from("direct:http://localhost:8980/opennms/rest/config/trapd")
 						.beanRef("unmarshaller")
-						.to("bean:trapd?method=onSnmpV3UsersUpdate");
+						.to("bean:trapd?method=onUpdate");
 
 			}
 		};
 	}
 
 	@Test
-	public void testTrapRouting() throws Exception {
-		for (RouteDefinition route : new ArrayList<RouteDefinition>(
-				context.getRouteDefinitions())) {
-			route.adviceWith(context, new AdviceWithRouteBuilder() {
-				@Override
-				public void configure() throws Exception {
-					mockEndpoints();
-				}
-			});
+	public void testTrapRouting() {
+		try
+		{
+			for (RouteDefinition route : new ArrayList<RouteDefinition>(
+					context.getRouteDefinitions())) {
+				route.adviceWith(context, new AdviceWithRouteBuilder() {
+					@Override
+					public void configure() throws Exception {
+						mockEndpoints();
+					}
+				});
+			}
+			context.start();
+
+			MockEndpoint endpoint = getMockEndpoint( "mock:bean:trapd", false );
+			endpoint.setExpectedMessageCount( 1 );
+
+
+			TrapdConfigBean config = new TrapdConfigBean();
+			config.setSnmpTrapPort(10514);
+			config.setSnmpTrapAddress("127.0.0.1");
+			config.setNewSuspectOnTrap(false);
+
+			template.requestBody( "http://localhost:8980/opennms/rest/config/trapd", config );
+
+			assertMockEndpointsSatisfied();
 		}
-		context.start();
-		
-		MockEndpoint endpoint = getMockEndpoint( "mock:bean:trapd", false );
-        endpoint.setExpectedMessageCount( 1 );
-
-
-        TrapdConfigBean config = new TrapdConfigBean();
-		config.setSnmpTrapPort(10514);
-		config.setSnmpTrapAddress("127.0.0.1");
-		config.setNewSuspectOnTrap(false);
-
-//        template.requestBody( "direct:http://localhost:8980/opennms/rest/config/trapd", config );
-
-//        assertMockEndpointsSatisfied();
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
