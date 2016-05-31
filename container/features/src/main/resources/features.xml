@@ -797,6 +797,7 @@
       <feature>camel-blueprint</feature>
       <feature>camel-http</feature>
       <feature>opennms-activemq-component</feature>
+	  	  
       <!--
       These classes are in the system classpath inside OpenNMS
       <feature>opennms-trapd</feature>
@@ -808,10 +809,15 @@
     <feature name="opennms-trapd-handler-kafka" description="OpenNMS :: Trapd :: Handler :: Kafka" version="${project.version}">
       <feature>camel-blueprint</feature>
       <feature>opennms-trapd</feature>
-
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-kafka</bundle>
     </feature>
 
+    <feature name="opennms-trapd-handler-kafka-default" description="OpenNMS :: Trapd :: Handler :: Kafka :: default" version="${project.version}">
+      <feature>camel-blueprint</feature>
+      <feature>opennms-trapd</feature>
+      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-kafka-default</bundle>
+    </feature>
+    
     <feature name="opennms-trapd-listener" description="OpenNMS :: Trapd :: Listener" version="${project.version}">
       <feature>camel-blueprint</feature>
       <feature>opennms-trapd</feature>
