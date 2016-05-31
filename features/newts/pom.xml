@@ -72,6 +72,20 @@
       <artifactId>fst</artifactId>
       <version>2.38</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <!-- The embedded Cassandra server used for integration testing requires a newer
+           version of Guava. Since we can't have different versions of the artifacts in
+           the compile and test scope, we use a newer version here, and mark it as provided -->
+      <version>19.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.swrve</groupId>
+      <artifactId>rate-limited-logger</artifactId>
+      <version>1.1.0</version>
+    </dependency>
 
     <!-- Testing -->
     <dependency>

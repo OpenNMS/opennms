@@ -89,6 +89,7 @@ public class WebAppListener implements ServletContextListener {
             m_bridge.start(m_framework);
 
         } catch (final Throwable e) {
+            m_servletContext.log("Unexpected exception while starting Karaf", e);
             main = null;
             e.printStackTrace();
         }

@@ -182,6 +182,7 @@
             <feature>opennms-activemq-event-receiver</feature>
             -->
             <feature>opennms-collection-api</feature>
+            <feature>opennms-collection-commands</feature>
             <feature>opennms-collection-persistence-rrd</feature>
             <feature>opennms-config-api</feature>
             <feature>opennms-config</feature>
@@ -196,7 +197,6 @@
             <feature>opennms-discovery-daemon</feature>
             <feature>opennms-events-api</feature>
             <feature>opennms-events-daemon</feature>
-            <feature>opennms-events-traps</feature>
             <feature>opennms-icmp-api</feature>
             <feature>opennms-icmp-jna</feature>
             <feature>opennms-icmp-jni</feature>
@@ -216,6 +216,9 @@
             <feature>opennms-syslogd-handler-default</feature>
             <feature>opennms-syslogd-handler-kafka</feature>
             <feature>opennms-syslogd-handler-minion</feature>
+            <feature>opennms-trapd</feature>
+            <feature>opennms-trapd-handler-default</feature>
+            <feature>opennms-trapd-listener</feature>
             <!-- <feature>opennms-webapp</feature> -->
             <feature>org.json</feature>
             <feature>postgresql</feature>
@@ -336,6 +339,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.activemq</groupId>
+      <artifactId>org.opennms.features.activemq.component</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.discovery</artifactId>
       <version>${project.version}</version>
@@ -344,6 +353,12 @@
     <dependency>
       <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.syslog</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.traps</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -538,6 +553,13 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>datachoices</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.commands</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

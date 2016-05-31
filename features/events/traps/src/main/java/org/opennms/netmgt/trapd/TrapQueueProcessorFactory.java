@@ -32,7 +32,7 @@ import javax.annotation.Resource;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,20 +67,20 @@ public class TrapQueueProcessorFactory implements InitializingBean {
     /**
      * The event IPC manager to which we send events created from traps.
      */
-    private EventIpcManager m_eventManager;
+    private EventForwarder m_eventForwarder;
 
     /**
      * @return the eventMgr
      */
-    public EventIpcManager getEventManager() {
-        return m_eventManager;
+    public EventForwarder getEventForwarder() {
+        return m_eventForwarder;
     }
 
     /**
-     * @param eventManager the eventMgr to set
+     * @param eventForwarder the eventMgr to set
      */
-    public void setEventManager(EventIpcManager eventManager) {
-        m_eventManager = eventManager;
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
     }
 
     /**
@@ -88,6 +88,14 @@ public class TrapQueueProcessorFactory implements InitializingBean {
      */
     @Autowired
     private EventConfDao m_eventConfDao;
+
+    public EventConfDao getEventConfDao() {
+        return m_eventConfDao;
+    }
+
+    public void setEventConfDao(EventConfDao eventConfDao) {
+        this.m_eventConfDao = eventConfDao;
+    }
 
     /**
      * The constructor
@@ -98,7 +106,7 @@ public class TrapQueueProcessorFactory implements InitializingBean {
     public TrapQueueProcessor getInstance(TrapNotification info) {
         TrapQueueProcessor retval = new TrapQueueProcessor();
         retval.setEventConfDao(m_eventConfDao);
-        retval.setEventManager(m_eventManager);
+        retval.setEventForwarder(m_eventForwarder);
         retval.setNewSuspect(m_newSuspectOnTrap);
         retval.setTrapNotification(info);
         retval.afterPropertiesSet();
@@ -108,6 +116,6 @@ public class TrapQueueProcessorFactory implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
-        Assert.state(m_eventManager != null, "eventManager must be set");
+        Assert.state(m_eventForwarder != null, "eventForwarder must be set");
     }
 }

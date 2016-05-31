@@ -52,8 +52,9 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
 public class SyslogdHandlerDefaultIT extends CamelBlueprintTest {
-    @ClassRule
-    public static ActiveMQBroker s_broker = new ActiveMQBroker();
+
+	@ClassRule
+	public static ActiveMQBroker s_broker = new ActiveMQBroker();
 
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -69,11 +70,10 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTest {
 		config.setDiscardUei("DISCARD-MATCHING-MESSAGES");
 
 		services.put(SyslogdConfig.class.getName(), new KeyValueHolder<Object, Dictionary>(config, new Properties()));
-	        Properties props = new Properties();
-	        props.setProperty("alias", "onms.broker");
-	        services.put(Component.class.getName(),
-	                     new KeyValueHolder<Object, Dictionary>(ActiveMQComponent.activeMQComponent("vm://localhost?create=false"),
-	                                                            props));
+		Properties props = new Properties();
+		props.setProperty("alias", "onms.broker");
+		services.put(Component.class.getName(), new KeyValueHolder<Object, Dictionary>(
+				ActiveMQComponent.activeMQComponent("vm://localhost?create=false"), props));
 	}
 
 	// The location of our Blueprint XML files to be used for testing
@@ -85,7 +85,7 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTest {
 	@Test(timeout=60000)
 	public void testSyslogd() throws Exception {
 		// Expect one SyslogConnection message to be broadcast on the messaging channel
-		MockEndpoint broadcastSyslog = getMockEndpoint("mock:activemq:broadcastSyslog", false);
+		MockEndpoint broadcastSyslog = getMockEndpoint("mock:queuingservice:broadcastSyslog", false);
 		broadcastSyslog.setExpectedMessageCount(1);
 
 		MockEndpoint syslogHandler = getMockEndpoint("mock:seda:syslogHandler", false);
@@ -107,7 +107,7 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTest {
 
 		// Send a SyslogConnection
 		template.sendBody(
-			"activemq:broadcastSyslog",
+			"queuingservice:broadcastSyslog",
 			JaxbUtils.marshal(new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap(messageBytes), config))
 		);
 

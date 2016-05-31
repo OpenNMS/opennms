@@ -25,6 +25,28 @@
                     </instructions>
                 </configuration>
             </plugin>
+	<plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>build-helper-maven-plugin</artifactId>
+		<executions>
+			<execution>
+				<id>attach-artifacts</id>
+				<phase>package</phase>
+				<goals>
+					<goal>attach-artifact</goal>
+				</goals>
+				<configuration>
+					<artifacts>
+						<artifact>
+							<file>blueprint-heartbeat.xml</file>
+							<type>xml</type>
+							<classifier>blueprint-heartbeat</classifier>
+						</artifact>
+					</artifacts>
+				</configuration>
+			</execution>
+		</executions>
+	</plugin>
         </plugins>
     </build>
 
@@ -43,6 +65,10 @@
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>camel-dependencies</artifactId>
             <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.camel</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
@@ -116,10 +142,25 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>camel-test-dependencies</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
+        
         <dependency>
             <groupId>org.opennms.core.test-api</groupId>
             <artifactId>org.opennms.core.test-api.services</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.opennms.core.test-api</groupId>
+            <artifactId>org.opennms.core.test-api.camel</artifactId>
+            <scope>test</scope>
+      </dependency>
+
     </dependencies>
 </project>

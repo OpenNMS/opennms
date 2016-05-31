@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.0.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi
+           http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+           http://camel.apache.org/schema/spring 
+           http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+	<context:annotation-config />
+
+	<bean id="minionListener" class="org.opennms.features.minion.dominion.MinionListener">
+		<property name="minionDao" ref="minionDao" />
+	</bean>
+
+	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
+		<constructor-arg value="org.opennms.minion.core.api.MinionIdentityDTO" />
+	</bean>
+
+	<camelContext id="minionListenerCamelContext" xmlns="http://camel.apache.org/schema/spring">
+		<route id="minionListenerRoute">
+			<from uri="queuingservice:heartBeat" />
+			<process ref="unmarshaller" />
+			<bean ref="minionListener" />
+		</route>
+	</camelContext>
+
+</beans>
