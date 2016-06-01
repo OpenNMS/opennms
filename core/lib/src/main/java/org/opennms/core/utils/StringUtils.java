@@ -124,11 +124,6 @@ public abstract class StringUtils {
 
         private void onChar(char c) {
             if (c == '"') {
-                if(m_isInQuotes) {
-                    // Reset the segment if we reach another quote
-                    // while we're in quotes
-                    resetSegment();
-                }
                 m_isInQuotes = !m_isInQuotes; // Toggle
             } else if (isWhitespace(c)) {
                 if (!m_isInQuotes) {
