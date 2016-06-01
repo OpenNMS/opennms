@@ -35,6 +35,13 @@
       <feature>opennms-syslogd</feature>
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-kafka</bundle>
     </feature>
+    
+    <feature name="opennms-syslogd-listener-camel-netty" description="OpenNMS :: Syslogd :: Listener :: camel-netty" version="${project.version}">
+      <feature>camel-blueprint</feature>
+      <feature>opennms-syslogd</feature>
+
+      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-listener-camel-netty</bundle>
+    </feature>
 
     <feature name="opennms-syslogd-handler-minion" description="OpenNMS :: Syslogd :: Handler :: Minion" version="${project.version}">
       <feature>camel-blueprint</feature>

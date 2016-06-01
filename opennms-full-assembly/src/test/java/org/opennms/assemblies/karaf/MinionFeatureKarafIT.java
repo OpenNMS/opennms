@@ -90,4 +90,16 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 		installFeature("opennms-trapd-handler-minion");
 		System.out.println(executeCommand("features:list -i"));
 	}
+	
+	@Test
+	public void testInstallFeatureOpennmsSyslogHandlerKafka() {
+		installFeature("opennms-syslogd-handler-kafka");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	public void testInstallFeatureOpennmsSyslogListenerCamelNetty() {
+		installFeature("opennms-syslogd-listener-camel-netty");
+		System.out.println(executeCommand("features:list -i"));
+	}
 }
