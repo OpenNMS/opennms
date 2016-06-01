@@ -227,7 +227,7 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
                     LOG.debug("Successfully inserted samples for resources with ids {}", uniqueResourceIds);
                 }
             } catch (Throwable t) {
-                LOG.error("An error occurred while inserting the samples. They will be lost.", t);
+                RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
             }
         }
     }
