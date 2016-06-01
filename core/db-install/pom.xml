@@ -37,6 +37,10 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.db</artifactId>
     </dependency>
