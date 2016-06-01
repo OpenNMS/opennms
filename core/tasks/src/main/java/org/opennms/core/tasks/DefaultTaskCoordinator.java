@@ -63,14 +63,19 @@ public class DefaultTaskCoordinator implements InitializingBean {
      *
      * @author brozow
      */
-    private class RunnableActor extends Thread {
+    private static class RunnableActor extends Thread {
+
         private final BlockingQueue<Future<Runnable>> m_queue;
+
+        // This is used to adjust timing during testing
+        private Long m_loopDelay;
+
         public RunnableActor(String name, BlockingQueue<Future<Runnable>> queue) {
             super(name);
             m_queue = queue;
             start();
         }
-        
+
         @Override
         public void run() {
             while(true) {
@@ -92,27 +97,28 @@ public class DefaultTaskCoordinator implements InitializingBean {
                 }
             }
         }
+
+        public void setLoopDelay(long millis) {
+            m_loopDelay = millis;
+        }
     }
     
 
-    private final BlockingQueue<Future<Runnable>> m_queue;
+    private final BlockingQueue<Future<Runnable>> m_queue = new LinkedBlockingQueue<Future<Runnable>>();
     private final ConcurrentHashMap<String, CompletionService<Runnable>> m_taskCompletionServices = new ConcurrentHashMap<String, CompletionService<Runnable>>();
     
     private String m_defaultExecutor ;
     private CompletionService<Runnable> m_defaultCompletionService;
+    private final RunnableActor m_runnableActor;
     
-    // This is used to adjust timing during testing
-    private Long m_loopDelay;
-
     /**
      * <p>Constructor for DefaultTaskCoordinator.</p>
      *
      * @param name a {@link java.lang.String} object.
      */
     public DefaultTaskCoordinator(String name) {
-        m_queue = new LinkedBlockingQueue<Future<Runnable>>();
         // Create a new actor and add it to the queue
-        new RunnableActor(name+"-TaskScheduler", m_queue);
+        m_runnableActor = new RunnableActor(name+"-TaskScheduler", m_queue);
         addExecutor(SyncTask.ADMIN_EXECUTOR, Executors.newSingleThreadExecutor(
             new LogPreservingThreadFactory(SyncTask.ADMIN_EXECUTOR, 1)
         ));
@@ -281,7 +287,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param millis a long.
      */
     public void setLoopDelay(long millis) {
-        m_loopDelay = millis;
+        m_runnableActor.setLoopDelay(millis);
     }
     
     /**
@@ -337,7 +343,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
 
     
 
-    private Runnable scheduler(final Task task) {
+    private static Runnable scheduler(final Task task) {
         return new Runnable() {
             @Override
             public void run() {
@@ -365,7 +371,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
     }
     
     
-    private void notifyDependents(Task completed) {
+    private static void notifyDependents(Task completed) {
         // log().debug(String.format("Task %s completed!", completed));
         completed.onComplete();
 
@@ -389,7 +395,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * The returns a runnable that is run on the taskCoordinator thread.. This is 
      * done to keep the Task data structures thread safe.
      */
-    private Runnable dependencyAdder(final Task prereq, final Task dependent) {
+    private static Runnable dependencyAdder(final Task prereq, final Task dependent) {
         Assert.notNull(prereq, "prereq must not be null");
         Assert.notNull(dependent, "dependent must not be null");
         return new Runnable() {

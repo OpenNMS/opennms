@@ -32,8 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 /*
  * ContainerTask
  * @author brozow
@@ -53,9 +51,16 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
      *
      * @author brozow
      */
-    private final class TaskTrigger extends Task {
+    private static final class TaskTrigger extends Task {
+
+        /**
+         * TODO: Get rid of this backreference, it is only used in {@link #toString()}
+         */
+        private final ContainerTask<?> m_parent;
+
         public TaskTrigger(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
             super(coordinator, parent);
+            m_parent = parent;
         }
 
 
@@ -66,7 +71,7 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
 
 
         @Override
-        public String toString() { return "Trigger For "+ContainerTask.this; }
+        public String toString() { return "Trigger For " + m_parent.toString(); }
     }
 
     protected final Task m_triggerTask;
@@ -110,8 +115,6 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
         super.addPrerequisite(task);
         m_triggerTask.addPrerequisite(task);
     }
-    
-    AtomicInteger m_child = new AtomicInteger(0);
 
     /** {@inheritDoc} */
     @Override
@@ -225,32 +228,6 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
         add(task);
         return task;
     }
-    
-    /**
-     * <p>add</p>
-     *
-     * @param async a {@link org.opennms.core.tasks.Async} object.
-     * @param cb a {@link org.opennms.core.tasks.Callback} object.
-     * @param <S> a S object.
-     * @return a {@link org.opennms.core.tasks.AsyncTask} object.
-     */
-    public <S> AsyncTask<S> add(Async<S> async, Callback<S> cb) {
-        AsyncTask<S> task = createTask(async, cb);
-        add(task);
-        return task;
-    }
-    
-    /**
-     * <p>addSequence</p>
-     *
-     * @param tasks a {@link java.lang.Runnable} object.
-     * @return a {@link org.opennms.core.tasks.SequenceTask} object.
-     */
-    @Deprecated
-    public SequenceTask addSequence(Runnable... tasks) {
-        return getCoordinator().createSequence(this, tasks);
-    }
-    
 
     private SyncTask createTask(Runnable runnable) {
         return getCoordinator().createTask(this, runnable);
@@ -258,11 +235,6 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
 
     private SyncTask createTask(Runnable runnable, String schedulingHint) {
         return getCoordinator().createTask(this, runnable, schedulingHint);
-    }
-    
-    
-    private <S> AsyncTask<S> createTask(Async<S> async, Callback<S> cb) {
-        return getCoordinator().createTask(this, async, cb);
     }
 
     /**
