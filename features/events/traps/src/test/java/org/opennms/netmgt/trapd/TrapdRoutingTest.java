@@ -1,8 +1,13 @@
 package org.opennms.netmgt.trapd;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -13,7 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.camel.JaxbUtilsUnmarshalProcessor;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -53,13 +57,17 @@ public class TrapdRoutingTest extends CamelTestSupport {
 				onException(IOException.class).handled(true)
 						.logStackTrace(true).stop();
 
-				from("direct:http://localhost:8980/opennms/rest/config/trapd")
-						.beanRef("unmarshaller")
-						.to("bean:trapd?method=onUpdate");
+				from("http://localhost:8980/opennms/rest/config/trapd")
+						.process(
+								new JaxbUtilsUnmarshalProcessor(
+										TrapdConfigBean.class))
+						.to("bean:trapd?method=onUpdate").to("mock:result")
+						.bean(TrapReceiverImpl.class, "setTrapdConfig");
 
 			}
 		};
 	}
+	
 
 	@Test
 	public void testTrapRouting() {
@@ -76,16 +84,17 @@ public class TrapdRoutingTest extends CamelTestSupport {
 			}
 			context.start();
 
-			MockEndpoint endpoint = getMockEndpoint( "mock:bean:trapd", false );
+			MockEndpoint endpoint = getMockEndpoint( "mock:result", false );
 			endpoint.setExpectedMessageCount( 1 );
-
 
 			TrapdConfigBean config = new TrapdConfigBean();
 			config.setSnmpTrapPort(10514);
 			config.setSnmpTrapAddress("127.0.0.1");
 			config.setNewSuspectOnTrap(false);
 
-			template.requestBody( "http://localhost:8980/opennms/rest/config/trapd", config );
+			template.requestBody( endpoint, config);
+			
+			assertNotNull(context.hasEndpoint("mock:result"));
 
 			assertMockEndpointsSatisfied();
 		}
@@ -94,4 +103,7 @@ public class TrapdRoutingTest extends CamelTestSupport {
 			e.printStackTrace();
 		}
 	}
+
 }
+
+
