@@ -134,7 +134,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("opennms-snmp");
         installFeature("opennms-syslogd");
         //installFeature("opennms-syslogd-handler-default");
-        installFeature("opennms-syslogd-handler-kafka");
+        installFeature("opennms-syslogd-handler-kafka-default");
         //installFeature("opennms-syslogd-handler-minion");
         // Syslog listeners can only be installed one at a time
         //installFeature("opennms-syslogd-listener-camel-netty");
