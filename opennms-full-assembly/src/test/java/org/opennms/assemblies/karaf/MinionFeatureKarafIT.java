@@ -92,7 +92,7 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 	}
 	
 	@Test
-	public void testInstallFeatureOpennmsTrapdHandlerMinion() {
+	public void testInstallFeatureOpennmsTrapdHandlerKafka() {
 		installFeature("opennms-trapd-handler-kafka");
 		System.out.println(executeCommand("features:list -i"));
 	}
