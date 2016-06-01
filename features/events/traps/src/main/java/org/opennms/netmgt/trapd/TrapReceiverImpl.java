@@ -74,6 +74,14 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
 	public void setTrapdConfig(TrapdConfig m_trapdConfig) {
 		this.m_trapdConfig = m_trapdConfig;
 	}
+	
+	/**
+	 * Default constructor
+	 */
+	 public TrapReceiverImpl()
+	 {
+		 
+	 }
 
 	/**
      * construct a new receiver

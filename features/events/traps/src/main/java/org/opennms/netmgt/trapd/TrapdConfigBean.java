@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.trapd;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,8 +45,12 @@ import org.opennms.netmgt.snmp.SnmpV3User;
  * 
  * @author dp044946
  */
-public class TrapdConfigBean implements TrapdConfig {
+public class TrapdConfigBean implements TrapdConfig,Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4406324301602556539L;
 	private String m_snmpTrapAddress;
 	private int m_snmpTrapPort;
 	private boolean m_newSuspectOnTrap;
