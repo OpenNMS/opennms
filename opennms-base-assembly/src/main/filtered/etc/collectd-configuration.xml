@@ -3,37 +3,29 @@
 <collectd-configuration
         threads="50">
 
-    <package name="cassandra21x">
-        <filter><![CDATA[(IPADDR != '0.0.0.0') & (categoryName == 'Cassandra21x')]]></filter>
+    <package name="cassandra-via-jmx">
+        <filter>IPADDR != '0.0.0.0'</filter>
         <service name="JMX-Cassandra" interval="300000" user-defined="false" status="on">
             <parameter key="port" value="7199"/>
             <parameter key="retry" value="2"/>
             <parameter key="timeout" value="3000"/>
             <parameter key="protocol" value="rmi"/>
             <parameter key="urlPath" value="/jmxrmi"/>
-            <parameter key="rrd-base-name" value="cassandra21x"/>
-            <parameter key="ds-name" value="cassandra21x"/>
-            <parameter key="friendly-name" value="cassandra21x"/>
-            <parameter key="collection" value="cassandra21x"/>
+            <parameter key="collection" value="cassandra30x"/>
+            <parameter key="friendly-name" value="cassandra"/>
             <parameter key="thresholding-enabled" value="true"/>
             <parameter key="factory" value="PASSWORD-CLEAR"/>
             <parameter key="username" value="cassandra-username"/>
             <parameter key="password" value="cassandra-password"/>
         </service>
-    </package>
-
-    <package name="cassandra21x-newts">
-        <filter><![CDATA[(IPADDR != '0.0.0.0') & (catincCassandra21x& catincNewts)]]></filter>
         <service name="JMX-Cassandra-Newts" interval="300000" user-defined="false" status="on">
             <parameter key="port" value="7199"/>
             <parameter key="retry" value="2"/>
             <parameter key="timeout" value="3000"/>
             <parameter key="protocol" value="rmi"/>
             <parameter key="urlPath" value="/jmxrmi"/>
-            <parameter key="rrd-base-name" value="cassandra21x-newts"/>
-            <parameter key="ds-name" value="cassandra21x-newts"/>
-            <parameter key="friendly-name" value="cassandra21x-newts"/>
-            <parameter key="collection" value="cassandra21x-newts"/>
+            <parameter key="collection" value="cassandra30x-newts"/>
+            <parameter key="friendly-name" value="cassandra-newts"/>
             <parameter key="thresholding-enabled" value="true"/>
             <parameter key="factory" value="PASSWORD-CLEAR"/>
             <parameter key="username" value="cassandra-username"/>
