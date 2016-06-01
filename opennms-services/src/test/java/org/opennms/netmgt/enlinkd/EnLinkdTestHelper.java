@@ -245,6 +245,7 @@ public abstract class EnLinkdTestHelper {
         }
     }
 
+    @SafeVarargs
     public static <T> boolean checkLinks(Iterable<T> iterable, Predicate<T>... matchers) {
         for (Predicate<T> matcher : matchers) {
             if (!Iterables.any(iterable, matcher)) {
@@ -1698,7 +1699,7 @@ public abstract class EnLinkdTestHelper {
 
         public OneBridgeCompleteTopology() {
             nodeA.setId(nodeAId);
-            nodeA.setLocation(new OnmsMonitoringLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_NAME, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_NAME));
+            nodeA.setLocation(new OnmsMonitoringLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
             element.setNode(nodeA);
             element.setBaseBridgeAddress("aaaaaaaaaaaa");
             elemlist.add(element);
