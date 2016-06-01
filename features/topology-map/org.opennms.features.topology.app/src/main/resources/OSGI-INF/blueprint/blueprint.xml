@@ -113,7 +113,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     <!-- default icon repository -->
     <service>
       <interfaces>
-        <value>org.opennms.features.topology.api.IconRepository</value>
+        <value>org.opennms.features.topology.api.ConfigurableIconRepository</value>
         <value>org.osgi.service.cm.ManagedService</value>
       </interfaces>
       <service-properties>
@@ -124,10 +124,13 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <!-- Icon Repository Manager -->
     <bean id="iconRepoManager" class="org.opennms.features.topology.app.internal.support.IconRepositoryManager"/>
+    <reference-list interface="org.opennms.features.topology.api.ConfigurableIconRepository" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager" />
+    </reference-list>
     <reference-list interface="org.opennms.features.topology.api.IconRepository" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager" />
     </reference-list>
-    
+
     <bean id="providerManager" class="org.opennms.features.topology.app.internal.ProviderManager" />
     
     <reference-list interface="org.opennms.features.topology.api.topo.EdgeProvider" availability="optional">
