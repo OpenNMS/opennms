@@ -44,11 +44,15 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
 public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
+
+    private static Logger LOG = LoggerFactory.getLogger(SyslogdHandlerMinionIT.class);
 
     @ClassRule
     public static ActiveMQBroker s_broker = new ActiveMQBroker();
