@@ -151,11 +151,11 @@
       <bundle>wrap:mvn:org.apache.xmlgraphics/batik-xml/1.7</bundle>
     </feature>
 
-    <feature name="c3p0" description="c3p0" version="0.9.1.2">
+    <feature name="c3p0" description="c3p0" version="${c3p0Version}">
       <feature>postgresql</feature>
 
       <!-- Add all possible JDBC drivers to the c3p0 import list so that it can classload them -->
-      <bundle>wrap:mvn:c3p0/c3p0/0.9.1.2$Bundle-SymbolicName=c3p0&amp;Bundle-Version=0.9.1.2&amp;Import-Package=javax.management,javax.naming,javax.naming.spi,javax.sql,javax.xml.parsers,org.apache.log4j,org.postgresql,org.w3c.dom</bundle>
+      <bundle>wrap:mvn:com.mchange/c3p0/${c3p0Version}$Bundle-SymbolicName=c3p0&amp;Bundle-Version=${c3p0Version}&amp;Import-Package=javax.management,javax.naming,javax.sql,javax.xml.parsers,org.postgresql,org.w3c.dom</bundle>
     </feature>
 
     <feature name="castor" description="Castor" version="1.1.2.1">
@@ -317,8 +317,9 @@
       <bundle>wrap:mvn:org.json/json/20140107$Export-Package=org.json</bundle>
     </feature>
 
-    <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="9.3-1100-jdbc4">
-      <bundle>wrap:mvn:org.postgresql/postgresql/9.3-1100-jdbc4</bundle>
+    <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="${postgresqlVersion}">
+      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
+      <bundle>wrap:mvn:org.postgresql/postgresql/${postgresqlVersion}</bundle>
     </feature>
 
     <feature name="spring-security32" description="Spring :: Security" version="${springSecurityVersion}">
