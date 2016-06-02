@@ -42,7 +42,9 @@
 		<route id="receiveSyslogConnectionViaKafka">
 			<from uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}"/>
 			<process ref="unmarshaller"/>
-			<!-- Update the SyslogdConfig on the message to the local config value -->
+		    <!-- Update the SyslogdConfig on the message to the local config value -->
+			<bean ref="syslogdConfigProcessor"/>
+			
 			<to uri="seda:syslogkafkaHandler"/>
 		</route>
 
