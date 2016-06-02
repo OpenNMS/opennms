@@ -1,13 +1,8 @@
 package org.opennms.netmgt.trapd;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -30,7 +25,6 @@ public class TrapdRoutingTest extends CamelTestSupport {
         JndiRegistry registry = super.createRegistry();
 
         registry.bind( "trapd", new TrapdConfigBean() );
-        registry.bind("unmarshaller", new JaxbUtilsUnmarshalProcessor("org.opennms.netmgt.trapd.TrapdConfigBean"));
 
         return registry;
     }
@@ -57,7 +51,7 @@ public class TrapdRoutingTest extends CamelTestSupport {
 				onException(IOException.class).handled(true)
 						.logStackTrace(true).stop();
 
-				from("http://localhost:8980/opennms/rest/config/trapd")
+				from("netty-http:http://localhost:8980/opennms/rest/config/trapd")
 						.process(
 								new JaxbUtilsUnmarshalProcessor(
 										TrapdConfigBean.class))
@@ -70,9 +64,7 @@ public class TrapdRoutingTest extends CamelTestSupport {
 	
 
 	@Test
-	public void testTrapRouting() {
-		try
-		{
+	public void testTrapRouting() throws Exception {
 			for (RouteDefinition route : new ArrayList<RouteDefinition>(
 					context.getRouteDefinitions())) {
 				route.adviceWith(context, new AdviceWithRouteBuilder() {
@@ -95,13 +87,8 @@ public class TrapdRoutingTest extends CamelTestSupport {
 			template.requestBody( endpoint, config);
 			
 			assertNotNull(context.hasEndpoint("mock:result"));
-
+			
 			assertMockEndpointsSatisfied();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
 	}
 
 }
