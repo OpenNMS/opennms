@@ -102,9 +102,4 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("features:list -i"));
 	}
 	
-	@Test
-	public void testInstallFeatureOpennmsSyslogListenerCamelNetty() {
-		installFeature("opennms-syslogd-listener-camel-netty");
-		System.out.println(executeCommand("features:list -i"));
-	}
 }

@@ -72,7 +72,7 @@ public class SyslogHandlerKafkaDefaultIT extends CamelBlueprintTest {
 		System.setProperty("org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString());
 		System.setProperty("de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString());
 
-		zkTestServer = new TestingServer(2181);
+		zkTestServer = new TestingServer(2182);
 		Properties properties = new Properties();
 		properties.put("port", "9092");
 		properties.put("host.name", "localhost");

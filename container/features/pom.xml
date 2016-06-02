@@ -215,6 +215,7 @@
             <feature>opennms-syslogd-listener-nio</feature>
             <feature>opennms-syslogd-handler-default</feature>
             <feature>opennms-syslogd-handler-kafka</feature>
+            <feature>opennms-syslogd-handler-kafka-default</feature>
             <feature>opennms-syslogd-handler-minion</feature>
             <feature>opennms-trapd</feature>
             <feature>opennms-trapd-handler-default</feature>
