@@ -105,6 +105,13 @@
       <bundle>wrap:mvn:com.mchange/c3p0/${c3p0Version}$Bundle-SymbolicName=c3p0&amp;Bundle-Version=${c3p0Version}&amp;Import-Package=javax.management,javax.naming,javax.sql,javax.xml.parsers,org.postgresql,org.w3c.dom</bundle>
     </feature>
 
+    <feature name="hikari-cp" description="HikariCP" version="${hikaricpVersion}">
+      <feature>postgresql</feature>
+
+      <!-- Add all possible JDBC drivers to the HikariCP import list so that it can classload them -->
+      <bundle>wrap:mvn:com.zaxxer/HikariCP/${hikaricpVersion}$Bundle-SymbolicName=HikariCP&amp;Bundle-Version=${hikaricpVersion}&amp;Import-Package=javax.management,javax.naming,javax.sql,javax.xml.parsers,org.postgresql,org.w3c.dom</bundle>
+    </feature>
+
     <feature name="castor" description="Castor" version="1.1.2.1">
       <!-- This castor.properties file overrides the default settings for Castor so that it works with JDK5+ -->
       <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.castor-properties/${project.version}</bundle>
@@ -309,6 +316,7 @@
     <feature name="opennms-core-db" description="OpenNMS :: Core :: Database" version="${project.version}">
       <feature>atomikos</feature>
       <feature>c3p0</feature>
+      <feature>hikari-cp</feature>
       <feature>castor</feature>
       <feature>commons-io</feature>
       <feature>postgresql</feature>
