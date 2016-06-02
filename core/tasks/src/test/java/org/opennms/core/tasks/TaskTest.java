@@ -551,7 +551,7 @@ public class TaskTest {
                     public void run() {
                         try {
                             //System.err.println("Running");
-                            cb.complete(value);
+                            cb.accept(value);
                         } catch (Throwable t) {
                             cb.handleException(t);
                         }
@@ -567,7 +567,7 @@ public class TaskTest {
         return new Callback<Integer>() {
 
             @Override
-            public void complete(Integer t) {
+            public void accept(Integer t) {
                 keeper.set(t);
             }
 

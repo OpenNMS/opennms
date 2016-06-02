@@ -60,13 +60,13 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
      *  
      */
     
-    final BatchTask m_containingPhase;
-    final LifeCycleRepository m_repository;
-    final DefaultTaskCoordinator m_coordinator;
-    final String m_name;
-    final Phase[] m_phases;
-    final Object[] m_providers;
-    final Map<String, Object> m_attributes = new HashMap<String, Object>();
+    private final BatchTask m_containingPhase;
+    private final LifeCycleRepository m_repository;
+    private final DefaultTaskCoordinator m_coordinator;
+    private final String m_name;
+    private final Phase[] m_phases;
+    private final Object[] m_providers;
+    private final Map<String, Object> m_attributes = new HashMap<String, Object>();
     
     /**
      * <p>Constructor for DefaultLifeCycleInstance.</p>

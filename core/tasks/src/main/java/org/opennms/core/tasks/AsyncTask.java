@@ -88,10 +88,10 @@ public class AsyncTask<T> extends Task {
     private Callback<T> callback() {
         return new Callback<T>() {
             @Override
-            public void complete(T t) {
+            public void accept(T t) {
 		try {
 		    if (m_callback != null) {
-			m_callback.complete(t);
+			m_callback.accept(t);
 		    }
 		} finally {
 		    markTaskAsCompleted();

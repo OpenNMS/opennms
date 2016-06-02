@@ -59,11 +59,17 @@ class AsyncDetectorRunner implements Async<Boolean> {
     @Override
     public void submit(Callback<Boolean> cb) {
         try {
-            LOG.info("Attemping to detect service {} on address {}", m_detector.getServiceName(), getHostAddress());
+            LOG.info("Attemping to detect service {} asynchronously on address {}", m_detector.getServiceName(), getHostAddress());
+            // Launch the async detector
             DetectFuture future = m_detector.isServiceDetected(m_ifaceScan.getAddress());
-            future.addListener(listener(cb));
+            // After completion, run the callback
+            future.addListener(new RunCallbackListener(cb));
+            // And dispose of the detector
+            future.addListener(new DisposeDetectorListener(m_detector));
         } catch (Throwable e) {
             cb.handleException(e);
+            // TODO: Is this necessary? Probably but not certain.
+            m_detector.dispose();
         }
     }
 
@@ -77,21 +83,35 @@ class AsyncDetectorRunner implements Async<Boolean> {
         return String.format("Run detector %s on address %s", m_detector.getServiceName(), getHostAddress());
     }
 
-    private DetectFutureListener<DetectFuture> listener(final Callback<Boolean> cb) {
-        return new DetectFutureListener<DetectFuture>() {
-            @Override
-            public void operationComplete(DetectFuture future) {
-                try {
-                    if (future.getException() != null) {
-                        cb.handleException(future.getException());
-                    } else {
-                        cb.complete(future.isServiceDetected());
-                    }
-                } finally{
-                   m_detector.dispose();
-                }
+    private static class RunCallbackListener implements DetectFutureListener<DetectFuture> {
+
+        private final Callback<Boolean> m_callback;
+
+        public RunCallbackListener(final Callback<Boolean> cb) {
+            m_callback = cb;
+        }
+
+        @Override
+        public void operationComplete(final DetectFuture future) {
+            if (future.getException() != null) {
+                m_callback.handleException(future.getException());
+            } else {
+                m_callback.accept(future.isServiceDetected());
             }
         };
     }
-    
+
+    private static class DisposeDetectorListener implements DetectFutureListener<DetectFuture> {
+
+        private final AsyncServiceDetector m_detector;
+
+        public DisposeDetectorListener(final AsyncServiceDetector detector) {
+            m_detector = detector;
+        }
+
+        @Override
+        public void operationComplete(final DetectFuture future) {
+           m_detector.dispose();
+        };
+    }
 }

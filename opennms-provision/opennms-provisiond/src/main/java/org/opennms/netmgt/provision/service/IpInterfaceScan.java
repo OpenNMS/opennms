@@ -136,7 +136,9 @@ public class IpInterfaceScan implements RunInBatch {
 
     /**
      * <p>servicePersister</p>
-     *
+     * 
+     * TODO: Make this static
+     * 
      * @param currentPhase a {@link org.opennms.core.tasks.BatchTask} object.
      * @param serviceName a {@link java.lang.String} object.
      * @return a {@link org.opennms.core.tasks.Callback} object.
@@ -144,7 +146,7 @@ public class IpInterfaceScan implements RunInBatch {
     public Callback<Boolean> servicePersister(final BatchTask currentPhase, final ServiceDetector detector) {
         return new Callback<Boolean>() {
             @Override
-            public void complete(final Boolean serviceDetected) {
+            public void accept(final Boolean serviceDetected) {
                 final String hostAddress = str(getAddress());
 				LOG.info("Attempted to detect service {} on address {}: {}", detector.getServiceName(), hostAddress, serviceDetected);
                 if (serviceDetected) {
@@ -183,13 +185,16 @@ public class IpInterfaceScan implements RunInBatch {
         };
     }
 
+    /**
+     * TODO: Make this static
+     */
     Runnable runDetector(final SyncServiceDetector detector, final Callback<Boolean> cb) {
         return new Runnable() {
             @Override
             public void run() {
                 try {
                     LOG.info("Attemping to detect service {} on address {}", detector.getServiceName(), str(getAddress()));
-                    cb.complete(detector.isServiceDetected(getAddress()));
+                    cb.accept(detector.isServiceDetected(getAddress()));
                 } catch (final Throwable t) {
                     cb.handleException(t);
                 } finally {
@@ -205,11 +210,11 @@ public class IpInterfaceScan implements RunInBatch {
         };
     }
 
-    Async<Boolean> runDetector(final AsyncServiceDetector detector) {
+    private Async<Boolean> runDetector(final AsyncServiceDetector detector) {
         return new AsyncDetectorRunner(this, detector);
     }
 
-    Task createDetectorTask(final BatchTask currentPhase, final ServiceDetector detector) {
+    private Task createDetectorTask(final BatchTask currentPhase, final ServiceDetector detector) {
         if (detector instanceof SyncServiceDetector) {
             return createSyncDetectorTask(currentPhase, (SyncServiceDetector) detector);
         } else {
@@ -217,6 +222,14 @@ public class IpInterfaceScan implements RunInBatch {
         }
     }
 
+    /**
+     * TODO: Is this method necessary? Can we use 
+     * {@link #runDetector(AsyncServiceDetector)} instead?
+     * 
+     * @param currentPhase
+     * @param asyncDetector
+     * @return
+     */
     private Task createAsyncDetectorTask(final BatchTask currentPhase, final AsyncServiceDetector asyncDetector) {
         return currentPhase.getCoordinator().createTask(currentPhase, runDetector(asyncDetector), servicePersister(currentPhase, asyncDetector));
     }
@@ -228,7 +241,8 @@ public class IpInterfaceScan implements RunInBatch {
     /** {@inheritDoc} */
     @Override
     public void run(final BatchTask currentPhase) {
-    	final Collection<ServiceDetector> detectors = getProvisionService().getDetectorsForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
+        // This call returns a set of 
+        final Collection<ServiceDetector> detectors = getProvisionService().getDetectorsForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
 
         LOG.info("Detecting services for node {}/{} on address {}: found {} detectors", getNodeId(), getForeignSource(), str(getAddress()), detectors.size());
 

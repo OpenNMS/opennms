@@ -51,9 +51,9 @@ import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
  */
 public class Phase extends BatchTask {
     private static final Logger LOG = LoggerFactory.getLogger(Phase.class);
-    private LifeCycleInstance m_lifecycle;
-    private String m_name;
-    private Object[] m_providers;
+    private final LifeCycleInstance m_lifecycle;
+    private final String m_name;
+    private final Object[] m_providers;
         
     /**
      * <p>Constructor for Phase.</p>
@@ -158,9 +158,9 @@ public class Phase extends BatchTask {
     }
     
     public static class PhaseMethod extends BatchTask {
-        private Phase m_phase;
-        private Object m_target;
-        private Method m_method;
+        private final Phase m_phase;
+        private final Object m_target;
+        private final Method m_method;
         
         public PhaseMethod(Phase phase, Object target, Method method, String schedulingHint) {
             super(phase.getCoordinator(), phase);

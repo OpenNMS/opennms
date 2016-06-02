@@ -69,14 +69,14 @@ import org.springframework.util.Assert;
 public class NodeScan implements Scan {
     private static final Logger LOG = LoggerFactory.getLogger(NodeScan.class);
 
-    private Integer m_nodeId;
-    private String m_foreignSource;
-    private String m_foreignId;
-    private Date m_scanStamp;
-    private ProvisionService m_provisionService;
-    private EventForwarder m_eventForwarder;
-    private SnmpAgentConfigFactory m_agentConfigFactory;
-    private DefaultTaskCoordinator m_taskCoordinator;
+    private final Integer m_nodeId;
+    private final String m_foreignSource;
+    private final String m_foreignId;
+    private final Date m_scanStamp;
+    private final ProvisionService m_provisionService;
+    private final EventForwarder m_eventForwarder;
+    private final SnmpAgentConfigFactory m_agentConfigFactory;
+    private final DefaultTaskCoordinator m_taskCoordinator;
 
     //NOTE TO SELF: This is referenced from the AgentScan inner class
     private boolean m_aborted = false;
@@ -330,12 +330,14 @@ public class NodeScan implements Scan {
     /**
      * AgentScan
      *
+     * TODO: Make this static
+     * 
      * @author brozow
      */
     public class AgentScan extends BaseAgentScan implements NeedsContainer, ScanProgress {
 
-        private InetAddress m_agentAddress;
-        private String m_agentType;
+        private final InetAddress m_agentAddress;
+        private final String m_agentType;
 
         public AgentScan(final Integer nodeId, final OnmsNode node, final InetAddress agentAddress, final String agentType) {
             super(nodeId, node);
@@ -661,6 +663,9 @@ public class NodeScan implements Scan {
         }
     }
 
+    /**
+     * TODO: Make this static
+     */
     public class NoAgentScan extends BaseAgentScan implements NeedsContainer {
 
 
@@ -749,6 +754,9 @@ public class NodeScan implements Scan {
 
     }
 
+    /**
+     * TODO: Make this static
+     */
     public class BaseAgentScan {
 
         private OnmsNode m_node;

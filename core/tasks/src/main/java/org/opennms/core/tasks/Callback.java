@@ -28,26 +28,24 @@
 
 package org.opennms.core.tasks;
 
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 /**
  * Callback
  *
  * @author brozow
  * @version $Id: $
  */
-public interface Callback<T> {
-    
+public interface Callback<T> extends Consumer<T>, Function<Throwable,T> {
+
     /**
-     * <p>complete</p>
-     *
-     * @param t a T object.
-     * @param <T> a T object.
-     */
-    public void complete(T t);
-    /**
-     * <p>handleException</p>
+     * Use the {@link #handleException(Throwable)} as an alias for the
+     * functional {@link #apply(Object)} method.
      *
      * @param t a {@link java.lang.Throwable} object.
      */
-    public void handleException(Throwable t);
-
+    default void handleException(Throwable t) {
+        apply(t);
+    }
 }
