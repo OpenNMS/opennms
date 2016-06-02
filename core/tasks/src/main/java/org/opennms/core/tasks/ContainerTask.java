@@ -51,14 +51,14 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
      *
      * @author brozow
      */
-    private static final class TaskTrigger extends Task {
+    private static final class TriggerTask extends Task {
 
         /**
          * TODO: Get rid of this backreference, it is only used in {@link #toString()}
          */
         private final ContainerTask<?> m_parent;
 
-        public TaskTrigger(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
+        public TriggerTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
             super(coordinator, parent);
             m_parent = parent;
         }
@@ -66,7 +66,7 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
 
         @Override
         protected void completeSubmit() {
-            getCoordinator().markTaskAsCompleted(TaskTrigger.this);
+            getCoordinator().markTaskAsCompleted(this);
         }
 
 
@@ -87,7 +87,7 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
     public ContainerTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
         super(coordinator, parent);
         m_builder = createBuilder();
-        m_triggerTask = new TaskTrigger(coordinator, this);
+        m_triggerTask = new TriggerTask(coordinator, this);
 
     }
 

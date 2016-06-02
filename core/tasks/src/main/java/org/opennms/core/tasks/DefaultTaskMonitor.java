@@ -32,10 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * DefaultTaskMonitor
+ * This {@link TaskMonitor} is used to log {@link Task} lifecycle events.
  *
  * @author brozow
- * @version $Id: $
  */
 public class DefaultTaskMonitor implements TaskMonitor {
 	

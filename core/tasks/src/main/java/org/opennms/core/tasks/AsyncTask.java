@@ -79,7 +79,7 @@ public class AsyncTask<T> extends Task {
     protected void doSubmit() {
         Callback<T> callback = callback();
         try {
-            m_async.submit(callback);
+            m_async.supplyAsyncThenAccept(callback);
         } catch (Throwable t) {
             callback.handleException(t);
         }
@@ -89,23 +89,24 @@ public class AsyncTask<T> extends Task {
         return new Callback<T>() {
             @Override
             public void accept(T t) {
-		try {
-		    if (m_callback != null) {
-			m_callback.accept(t);
-		    }
-		} finally {
-		    markTaskAsCompleted();
-		}
+                try {
+                    if (m_callback != null) {
+                        m_callback.accept(t);
+                    }
+                } finally {
+                    markTaskAsCompleted();
+                }
             }
             @Override
-            public void handleException(Throwable t) {
-		try {
-		    if (m_callback != null) {
-			m_callback.handleException(t);
-		    }
-		} finally {
-		    markTaskAsCompleted();
-		}
+            public T apply(Throwable t) {
+                try {
+                    if (m_callback != null) {
+                        m_callback.handleException(t);
+                    }
+                } finally {
+                    markTaskAsCompleted();
+                }
+                return null;
             }
         };
     }

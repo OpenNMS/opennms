@@ -32,7 +32,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Callback
+ * This interface is used as a completion handler and exception
+ * handler for {@link Async} operations.
  *
  * @author brozow
  * @version $Id: $

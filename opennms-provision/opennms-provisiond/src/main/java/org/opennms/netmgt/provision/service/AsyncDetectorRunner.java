@@ -28,8 +28,7 @@
 
 package org.opennms.netmgt.provision.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.net.InetAddress;
 
 import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.Callback;
@@ -37,11 +36,13 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectFutureListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class AsyncDetectorRunner implements Async<Boolean> {
     private static final Logger LOG = LoggerFactory.getLogger(AsyncDetectorRunner.class);
     
-    private final IpInterfaceScan m_ifaceScan;
+    private final InetAddress m_address;
     private final AsyncServiceDetector m_detector;
     
     /**
@@ -50,18 +51,18 @@ class AsyncDetectorRunner implements Async<Boolean> {
      * @param ifaceScan a {@link org.opennms.netmgt.provision.service.IpInterfaceScan} object.
      * @param detector a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
      */
-    public AsyncDetectorRunner(IpInterfaceScan ifaceScan, AsyncServiceDetector detector) {
-        m_ifaceScan = ifaceScan;
+    public AsyncDetectorRunner(AsyncServiceDetector detector, InetAddress address) {
         m_detector = detector;
+        m_address = address;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void submit(Callback<Boolean> cb) {
+    public void supplyAsyncThenAccept(Callback<Boolean> cb) {
         try {
             LOG.info("Attemping to detect service {} asynchronously on address {}", m_detector.getServiceName(), getHostAddress());
             // Launch the async detector
-            DetectFuture future = m_detector.isServiceDetected(m_ifaceScan.getAddress());
+            DetectFuture future = m_detector.isServiceDetected(m_address);
             // After completion, run the callback
             future.addListener(new RunCallbackListener(cb));
             // And dispose of the detector
@@ -74,7 +75,7 @@ class AsyncDetectorRunner implements Async<Boolean> {
     }
 
 	private String getHostAddress() {
-		return InetAddressUtils.str(m_ifaceScan.getAddress());
+		return InetAddressUtils.str(m_address);
 	}
     
     /** {@inheritDoc} */

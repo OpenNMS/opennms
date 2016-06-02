@@ -191,7 +191,7 @@ public class TaskTest {
         Async<Integer> thrower = new Async<Integer>() {
 
             @Override
-            public void submit(Callback<Integer> cb) {
+            public void supplyAsyncThenAccept(Callback<Integer> cb) {
                 throw new RuntimeException("Intentionally failed for test purposes");
             }
             
@@ -545,7 +545,7 @@ public class TaskTest {
         final Timer timer = new Timer(true);
         return new Async<T>() {
             @Override
-            public void submit(final Callback<T> cb) {
+            public void supplyAsyncThenAccept(final Callback<T> cb) {
                 TimerTask timerTask = new TimerTask() {
                     @Override
                     public void run() {
@@ -572,8 +572,8 @@ public class TaskTest {
             }
 
             @Override
-            public void handleException(Throwable t) {
-
+            public Integer apply(Throwable t) {
+                return null;
             }
             
         };
