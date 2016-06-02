@@ -1245,6 +1245,7 @@
     <guavaVersion>17.0</guavaVersion>
     <gwtVersion>2.6.1</gwtVersion>
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
+    <hikaricpVersion>2.4.6</hikaricpVersion>
     <httpcoreVersion>4.3.3</httpcoreVersion>
     <httpclientVersion>4.3.6</httpclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
@@ -3649,6 +3650,11 @@
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
         <version>${groovyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP</artifactId>
+        <version>${hikaricpVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
