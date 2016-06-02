@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author brozow
  * @version $Id: $
  */
-public class SyncTask extends Task {
+public class SyncTask extends AbstractTask {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SyncTask.class);
     

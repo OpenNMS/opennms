@@ -56,8 +56,8 @@ public class DefaultTaskMonitor implements TaskMonitor {
 
     /** {@inheritDoc} */
     @Override
-    public void prerequisiteAdded(final Task monitored, final Task prerequsite) {
-        LOG.trace("prerequisiteAdded({}, {})", monitored, prerequsite);
+    public void prerequisiteAdded(final Task monitored, final Task prerequisite) {
+        LOG.trace("prerequisiteAdded({}, {})", monitored, prerequisite);
     }
 
     /** {@inheritDoc} */

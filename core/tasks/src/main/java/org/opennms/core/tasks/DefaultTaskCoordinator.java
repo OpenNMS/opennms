@@ -294,21 +294,21 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
     /**
      * <p>schedule</p>
      *
-     * @param task a {@link org.opennms.core.tasks.Task} object.
+     * @param task a {@link org.opennms.core.tasks.AbstractTask} object.
      */
     @Override
-    public void schedule(final Task task) {
+    public void schedule(final AbstractTask task) {
         onProcessorThread(scheduler(task));
     }
     
     /**
      * <p>addDependency</p>
      *
-     * @param prereq a {@link org.opennms.core.tasks.Task} object.
-     * @param dependent a {@link org.opennms.core.tasks.Task} object.
+     * @param prereq a {@link org.opennms.core.tasks.AbstractTask} object.
+     * @param dependent a {@link org.opennms.core.tasks.AbstractTask} object.
      */
     @Override
-    public void addDependency(Task prereq, Task dependent) {
+    public void addDependency(AbstractTask prereq, AbstractTask dependent) {
         // this is only needed when add dependencies while running
         dependent.incrPendingPrereqCount();
         onProcessorThread(dependencyAdder(prereq, dependent));
@@ -345,7 +345,7 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
     }
 
 
-    private static Runnable scheduler(final Task task) {
+    private static Runnable scheduler(final AbstractTask task) {
         return new Runnable() {
             @Override
             public void run() {
@@ -359,7 +359,7 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
         };
     }
     
-    Runnable taskCompleter(final Task task) {
+    Runnable taskCompleter(final AbstractTask task) {
         return new Runnable() {
             @Override
             public void run() {
@@ -373,12 +373,12 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
     }
     
     
-    private static void notifyDependents(Task completed) {
+    private static void notifyDependents(AbstractTask completed) {
         // log().debug(String.format("Task %s completed!", completed));
         completed.onComplete();
 
-        final Set<Task> dependents = completed.getDependents();
-        for(Task dependent : dependents) {
+        final Set<AbstractTask> dependents = completed.getDependents();
+        for(AbstractTask dependent : dependents) {
             dependent.doCompletePrerequisite(completed);
             if (dependent.isReady()) {
                 // log().debug(String.format("Task %s %s ready.", dependent, dependent.isReady() ? "is" : "is not"));
@@ -397,7 +397,7 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
      * The returns a runnable that is run on the taskCoordinator thread.. This is 
      * done to keep the Task data structures thread safe.
      */
-    private static Runnable dependencyAdder(final Task prereq, final Task dependent) {
+    private static Runnable dependencyAdder(final AbstractTask prereq, final AbstractTask dependent) {
         Assert.notNull(prereq, "prereq must not be null");
         Assert.notNull(dependent, "dependent must not be null");
         return new Runnable() {
@@ -430,12 +430,12 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
     }
     
     @Override
-    public void markTaskAsCompleted(Task task) {
+    public void markTaskAsCompleted(AbstractTask task) {
         onProcessorThread(taskCompleter(task));
     }
 
     @Override
-    public void submitToExecutor(String executorPreference, Runnable workToBeDone, Task owningTask) {
+    public void submitToExecutor(String executorPreference, Runnable workToBeDone, AbstractTask owningTask) {
         submitToExecutor(executorPreference, workToBeDone, taskCompleter(owningTask));
     }
     

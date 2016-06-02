@@ -37,7 +37,7 @@ import java.util.Arrays;
 
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.ContainerTask;
-import org.opennms.core.tasks.Task;
+import org.opennms.core.tasks.AbstractTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
@@ -198,8 +198,8 @@ public class Phase extends BatchTask {
             if (retValAttr != null) {
                 lifeCycle.setAttribute(retValAttr.value(), retVal);
             }
-            else if (retVal instanceof Task) {
-                add((Task)retVal);
+            else if (retVal instanceof AbstractTask) {
+                add((AbstractTask)retVal);
             } else if (retVal != null) {
                 lifeCycle.setAttribute(retVal.getClass().getName(), retVal);
             }

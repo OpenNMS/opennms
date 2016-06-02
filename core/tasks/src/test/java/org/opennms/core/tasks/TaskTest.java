@@ -84,7 +84,7 @@ public class TaskTest {
             }
         };
         
-        Task task = createTask(r);
+        AbstractTask task = createTask(r);
         
         task.schedule();
         
@@ -101,9 +101,9 @@ public class TaskTest {
         
         final List<String> sequence = new Vector<String>();
         
-        Task task1 = createTask(appender(sequence, "task1"));
-        Task task2 = createTask(appender(sequence, "task2"));
-        Task task3 = createTask(appender(sequence, "task3"));
+        AbstractTask task1 = createTask(appender(sequence, "task1"));
+        AbstractTask task2 = createTask(appender(sequence, "task2"));
+        AbstractTask task3 = createTask(appender(sequence, "task3"));
 
         task2.addPrerequisite(task1);
         task3.addPrerequisite(task2);
@@ -120,7 +120,7 @@ public class TaskTest {
         
     }
 
-    private Task createTask(final Runnable runnable) {
+    private AbstractTask createTask(final Runnable runnable) {
         return m_coordinator.createTask(null, runnable);
     }
     
@@ -130,9 +130,9 @@ public class TaskTest {
         
         final List<String> sequence = new Vector<String>();
         
-        Task task1 = createTask(appender(sequence, "task1"));
-        Task task2 = createTask(appender(sequence, "task2"));
-        Task task3 = createTask(appender(sequence, "task3"));
+        AbstractTask task1 = createTask(appender(sequence, "task1"));
+        AbstractTask task2 = createTask(appender(sequence, "task2"));
+        AbstractTask task3 = createTask(appender(sequence, "task3"));
 
         task1.schedule();
         
@@ -168,8 +168,8 @@ public class TaskTest {
             }
         };
         
-        Task throwerTask = m_coordinator.createTask(null, thrower);
-        Task incrTask = m_coordinator.createTask(null, incr(count));
+        AbstractTask throwerTask = m_coordinator.createTask(null, thrower);
+        AbstractTask incrTask = m_coordinator.createTask(null, incr(count));
         
         incrTask.addPrerequisite(throwerTask);
         
@@ -198,8 +198,8 @@ public class TaskTest {
         };
            
         
-        Task throwerTask = m_coordinator.createTask(null, thrower, setter(count));
-        Task incrTask = m_coordinator.createTask(null, incr(count));
+        AbstractTask throwerTask = m_coordinator.createTask(null, thrower, setter(count));
+        AbstractTask incrTask = m_coordinator.createTask(null, incr(count));
         
         incrTask.addPrerequisite(throwerTask);
         
@@ -217,7 +217,7 @@ public class TaskTest {
     public void testAsync() throws Exception {
         final AtomicInteger count = new AtomicInteger(0);
         
-        Task async = m_coordinator.createTask(null, timer(500, 17), setter(count));
+        AbstractTask async = m_coordinator.createTask(null, timer(500, 17), setter(count));
         
         async.schedule();
         
@@ -270,8 +270,8 @@ public class TaskTest {
         
         List<String> sequence = new Vector<String>();
         
-        Task task1 = createTask(appender(sequence, "task1"));
-        Task task2 = createTask(appender(sequence, "task2"));
+        AbstractTask task1 = createTask(appender(sequence, "task1"));
+        AbstractTask task2 = createTask(appender(sequence, "task2"));
 
         SequenceTask seq = createSequence();
 
@@ -310,9 +310,9 @@ public class TaskTest {
 
 
         // create the tasks and a simple prerequisite and schedule
-        Task a = createTask(waiter("A", aBlocker));
-        Task b = createTask(waiter("B", bBlocker));
-        Task c = createTask(waiter("C", cBlocker));
+        AbstractTask a = createTask(waiter("A", aBlocker));
+        AbstractTask b = createTask(waiter("B", bBlocker));
+        AbstractTask c = createTask(waiter("C", cBlocker));
 
         c.addPrerequisite(a);
         

@@ -138,21 +138,21 @@ public interface TaskCoordinator {
     /**
      * <p>schedule</p>
      *
-     * @param task a {@link org.opennms.core.tasks.Task} object.
+     * @param task a {@link org.opennms.core.tasks.AbstractTask} object.
      */
-    void schedule(Task task);
+    void schedule(AbstractTask task);
     
     /**
      * <p>addDependency</p>
      *
-     * @param prereq a {@link org.opennms.core.tasks.Task} object.
-     * @param dependent a {@link org.opennms.core.tasks.Task} object.
+     * @param prereq a {@link org.opennms.core.tasks.AbstractTask} object.
+     * @param dependent a {@link org.opennms.core.tasks.AbstractTask} object.
      */
-    void addDependency(Task prereq, Task dependent);
+    void addDependency(AbstractTask prereq, AbstractTask dependent);
 
-    void markTaskAsCompleted(Task task);
+    void markTaskAsCompleted(AbstractTask task);
 
-    void submitToExecutor(String executorPreference, Runnable workToBeDone, Task owningTask);
+    void submitToExecutor(String executorPreference, Runnable workToBeDone, AbstractTask owningTask);
 
     void submitToExecutor(String executorPreference, Runnable workToBeDone, Runnable completionProcessor);
 

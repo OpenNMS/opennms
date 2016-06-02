@@ -44,14 +44,14 @@ import java.util.List;
  * @author ranger
  * @version $Id: $
  */
-public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
+public abstract class ContainerTask<T extends ContainerTask<?>> extends AbstractTask {
 
     /**
      * TaskTrigger
      *
      * @author brozow
      */
-    private static final class TriggerTask extends Task {
+    private static final class TriggerTask extends AbstractTask {
 
         /**
          * TODO: Get rid of this backreference, it is only used in {@link #toString()}
@@ -74,7 +74,7 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
         public String toString() { return "Trigger For " + m_parent.toString(); }
     }
 
-    protected final Task m_triggerTask;
+    protected final AbstractTask m_triggerTask;
     private final List<Task> m_children = Collections.synchronizedList(new ArrayList<Task>());
     private final TaskBuilder<T> m_builder;
     
@@ -111,7 +111,7 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
     
     /** {@inheritDoc} */
     @Override
-    public void addPrerequisite(Task task) {
+    public void addPrerequisite(AbstractTask task) {
         super.addPrerequisite(task);
         m_triggerTask.addPrerequisite(task);
     }
@@ -136,7 +136,7 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
      *
      * @param task a {@link org.opennms.core.tasks.Task} object.
      */
-    public void add(Task task) {
+    public void add(AbstractTask task) {
 
         super.addPrerequisite(task);
         addChildDependencies(task);
@@ -178,7 +178,7 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
      *
      * @return a {@link org.opennms.core.tasks.Task} object.
      */
-    protected Task getTriggerTask() {
+    protected AbstractTask getTriggerTask() {
         return m_triggerTask;
     }
 
@@ -240,9 +240,9 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
     /**
      * <p>addChildDependencies</p>
      *
-     * @param child a {@link org.opennms.core.tasks.Task} object.
+     * @param child a {@link org.opennms.core.tasks.AbstractTask} object.
      */
-    protected void addChildDependencies(Task child) {
+    protected void addChildDependencies(AbstractTask child) {
         child.addPrerequisite(m_triggerTask);
     }
 }

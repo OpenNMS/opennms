@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class SequenceTask extends ContainerTask<SequenceTask> {
     
-    private AtomicReference<Task> m_lastChild = new AtomicReference<Task>(null);
+    private AtomicReference<AbstractTask> m_lastChild = new AtomicReference<AbstractTask>(null);
 
     /**
      * <p>Constructor for SequenceTask.</p>
@@ -53,9 +53,9 @@ public class SequenceTask extends ContainerTask<SequenceTask> {
     
     /** {@inheritDoc} */
     @Override
-    protected void addChildDependencies(Task child) {
+    protected void addChildDependencies(AbstractTask child) {
         super.addChildDependencies(child);
-        Task last = m_lastChild.getAndSet(child);
+        AbstractTask last = m_lastChild.getAndSet(child);
         child.addPrerequisite(last);
     }
     

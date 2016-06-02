@@ -41,6 +41,7 @@ import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.tasks.AbstractTask;
 import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.Callback;
@@ -218,7 +219,7 @@ public class IpInterfaceScan implements RunInBatch {
         return new AsyncDetectorRunner(detector, address);
     }
 
-    protected static Task createDetectorTask(final BatchTask currentPhase, final ProvisionService service, final ServiceDetector detector, final int nodeId, final InetAddress address) {
+    protected static AbstractTask createDetectorTask(final BatchTask currentPhase, final ProvisionService service, final ServiceDetector detector, final int nodeId, final InetAddress address) {
         if (detector instanceof SyncServiceDetector) {
             return createSyncDetectorTask(currentPhase, service, (SyncServiceDetector) detector, nodeId, address);
         } else {
@@ -226,11 +227,11 @@ public class IpInterfaceScan implements RunInBatch {
         }
     }
 
-    protected static Task createAsyncDetectorTask(final BatchTask currentPhase, final ProvisionService service, final AsyncServiceDetector asyncDetector, final int nodeId, final InetAddress address) {
+    protected static AbstractTask createAsyncDetectorTask(final BatchTask currentPhase, final ProvisionService service, final AsyncServiceDetector asyncDetector, final int nodeId, final InetAddress address) {
         return currentPhase.getCoordinator().createTask(currentPhase, runDetector(asyncDetector, address), servicePersister(currentPhase, service, asyncDetector, nodeId, address));
     }
 
-    protected static Task createSyncDetectorTask(final BatchTask currentPhase, final ProvisionService service, final SyncServiceDetector syncDetector, final int nodeId, final InetAddress address) {
+    protected static AbstractTask createSyncDetectorTask(final BatchTask currentPhase, final ProvisionService service, final SyncServiceDetector syncDetector, final int nodeId, final InetAddress address) {
         return currentPhase.getCoordinator().createTask(currentPhase, runDetector(syncDetector, address, servicePersister(currentPhase, service, syncDetector, nodeId, address)));
     }
 

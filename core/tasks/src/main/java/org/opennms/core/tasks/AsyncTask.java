@@ -36,7 +36,7 @@ import org.springframework.util.Assert;
  * @author ranger
  * @version $Id: $
  */
-public class AsyncTask<T> extends Task {
+public class AsyncTask<T> extends AbstractTask {
     
     private final Async<T> m_async;
     private final Callback<T> m_callback;
