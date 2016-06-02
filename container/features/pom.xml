@@ -149,6 +149,7 @@
             <feature>atomikos</feature>
             <feature>batik</feature>
             <feature>c3p0</feature>
+            <feature>hikari-cp</feature>
             <feature>castor</feature>
             <feature>commons-beanutils</feature>
             <feature>commons-cli</feature>
