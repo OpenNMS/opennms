@@ -219,6 +219,9 @@
             <feature>opennms-trapd</feature>
             <feature>opennms-trapd-handler-default</feature>
             <feature>opennms-trapd-listener</feature>
+            <feature>opennms-trapd-handler-kafka</feature>
+            <feature>opennms-trapd-handler-kafka-default</feature>
+            
             <!-- <feature>opennms-webapp</feature> -->
             <feature>org.json</feature>
             <feature>postgresql</feature>
