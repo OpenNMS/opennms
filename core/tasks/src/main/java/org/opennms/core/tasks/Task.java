@@ -53,11 +53,11 @@ public abstract class Task {
     private static enum State {
         NEW,
         SCHEDULED,
-        SUBMITTED, 
+        SUBMITTED,
         COMPLETED
     }
     
-    private final DefaultTaskCoordinator m_coordinator;
+    private final TaskCoordinator m_coordinator;
     private final AtomicReference<State> m_state = new AtomicReference<State>(State.NEW);
     
     private final AtomicBoolean m_scheduleCalled = new AtomicBoolean(false);
@@ -72,10 +72,10 @@ public abstract class Task {
     /**
      * <p>Constructor for Task.</p>
      *
-     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param coordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
      */
-    public Task(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
+    public Task(TaskCoordinator coordinator, ContainerTask<?> parent) {
         m_coordinator = coordinator;
         m_monitor = parent != null 
             ? parent.getMonitor().getChildTaskMonitor(parent, this) 
@@ -86,9 +86,9 @@ public abstract class Task {
     /**
      * <p>getCoordinator</p>
      *
-     * @return a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @return a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    public DefaultTaskCoordinator getCoordinator() {
+    public final TaskCoordinator getCoordinator() {
         return m_coordinator;
     }
     
@@ -97,7 +97,7 @@ public abstract class Task {
      *
      * @return a {@link org.opennms.core.tasks.TaskMonitor} object.
      */
-    public TaskMonitor getMonitor() {
+    public final TaskMonitor getMonitor() {
         return m_monitor;
     }
     
@@ -115,14 +115,6 @@ public abstract class Task {
         }
     }
     
-    /**
-     * These are final and package protected because they should ONLY be accessed by the TAskCoordinator
-     * This is for thread safety and efficiency.  use 'addDependency' to update these
-     */
-    final Set<Task> getPrerequisites() {
-        return m_prerequisites;
-    }
-    
     final void doAddPrerequisite(final Task prereq) {
         if (!prereq.isFinished()) {
             m_prerequisites.add(prereq);
@@ -130,7 +122,7 @@ public abstract class Task {
         }
     }
 
-    private void notifyPrerequisteAdded(final Task prereq) {
+    private final void notifyPrerequisteAdded(final Task prereq) {
         try {
             m_monitor.prerequisiteAdded(this, prereq);
         } catch (final Throwable t) {
@@ -138,7 +130,7 @@ public abstract class Task {
         }
     }
     
-    private void notifyPrerequisteCompleted(final Task prereq) {
+    private final void notifyPrerequisteCompleted(final Task prereq) {
         try {
             m_monitor.prerequisiteCompleted(this, prereq);
         } catch (final Throwable t) {
@@ -146,7 +138,7 @@ public abstract class Task {
         }
     }
     
-    private void notifyScheduled() {
+    private final void notifyScheduled() {
         try {
             m_monitor.scheduled(this);
         } catch (final Throwable t) {
@@ -154,7 +146,7 @@ public abstract class Task {
         }
     }
 
-    private void notifySubmitted() {
+    private final void notifySubmitted() {
         try {
             m_monitor.submitted(this);
         } catch (final Throwable t) {
@@ -162,7 +154,7 @@ public abstract class Task {
         }
     }
     
-    private void notifyCompleted() {
+    private final void notifyCompleted() {
         try {
             m_monitor.completed(this);
         } catch (final Throwable t) {
@@ -193,7 +185,7 @@ public abstract class Task {
         }
     }
     
-    void submitIfReady() {
+    final void submitIfReady() {
         if (isReady()) {
             doSubmit();
             submitted();
@@ -210,7 +202,7 @@ public abstract class Task {
     protected void doSubmit() {
     }
 
-    final void submitted() {
+    private final void submitted() {
         setState(State.SCHEDULED, State.SUBMITTED);
         notifySubmitted();
     }
@@ -222,7 +214,7 @@ public abstract class Task {
     }
 
     
-    final void completed() {
+    private final void completed() {
         m_state.compareAndSet(State.SUBMITTED, State.COMPLETED);
         notifyCompleted();
     }
@@ -255,7 +247,7 @@ public abstract class Task {
     /**
      * Called from execute after the 'body' of the task has completed
      */
-    void onComplete() {
+    final void onComplete() {
         completed();
         m_latch.countDown();
     }
@@ -264,7 +256,7 @@ public abstract class Task {
     /**
      * This is called to add the task to the queue of tasks that can be considered to be runnable
      */
-    public void schedule() {
+    public final void schedule() {
         m_scheduleCalled.set(true);
         preSchedule();
         getCoordinator().schedule(this);
@@ -288,7 +280,7 @@ public abstract class Task {
      *
      * @return a boolean.
      */
-    public boolean isFinished() {
+    final boolean isFinished() {
         return m_state.get() == State.COMPLETED;
     }
     
@@ -297,24 +289,26 @@ public abstract class Task {
      *
      * @return a boolean.
      */
-    public boolean isScheduled() {
+    protected boolean isScheduled() {
         return m_state.get() != State.NEW || m_scheduleCalled.get();
     }
     
     /**
-     * Add's prereq as a Prerequisite of this task. In other words... this taks cannot run
-     * until prereq was been complted.
+     * Adds prereq as a Prerequisite of this task. In other words, this task cannot run
+     * until prereq has been completed.
      *
      * @param prereq a {@link org.opennms.core.tasks.Task} object.
      */
-    public void addPrerequisite(final Task prereq) {
+    protected void addPrerequisite(final Task prereq) {
         getCoordinator().addDependency(prereq, this);
     }
     
     /**
-     * Adds dependent as a dependent of this task.  So dependent will not be able to run
+     * Adds dependent as a dependent of this task. The dependent will not be able to run
      * until this task has been completed.
      *
+     * TODO: Unused?
+     * 
      * @param dependent a {@link org.opennms.core.tasks.Task} object.
      */
     public void addDependent(final Task dependent) {
@@ -349,16 +343,6 @@ public abstract class Task {
         getCoordinator().markTaskAsCompleted(this);
     }
 
-    /**
-     * <p>submitRunnable</p>
-     *
-     * @param runnable a {@link java.lang.Runnable} object.
-     * @param preferredExecutor a {@link java.lang.String} object.
-     */
-    protected void submitRunnable(Runnable runnable, String preferredExecutor) {
-        getCoordinator().submitToExecutor(preferredExecutor, runnable, this);
-    }
-    
     /**
      * <p>toString</p>
      *

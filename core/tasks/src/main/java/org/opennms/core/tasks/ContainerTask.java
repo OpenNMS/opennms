@@ -58,7 +58,7 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
          */
         private final ContainerTask<?> m_parent;
 
-        public TriggerTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
+        public TriggerTask(TaskCoordinator coordinator, ContainerTask<?> parent) {
             super(coordinator, parent);
             m_parent = parent;
         }
@@ -81,10 +81,10 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
     /**
      * <p>Constructor for ContainerTask.</p>
      *
-     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param coordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
      */
-    public ContainerTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
+    public ContainerTask(TaskCoordinator coordinator, ContainerTask<?> parent) {
         super(coordinator, parent);
         m_builder = createBuilder();
         m_triggerTask = new TriggerTask(coordinator, this);

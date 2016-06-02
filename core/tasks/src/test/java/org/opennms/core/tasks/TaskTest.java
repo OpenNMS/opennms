@@ -62,7 +62,7 @@ public class TaskTest {
 	private static final Logger LOG = LoggerFactory.getLogger(TaskTest.class);
     
     ExecutorService m_executor;
-    DefaultTaskCoordinator m_coordinator;
+    TaskCoordinator m_coordinator;
     
     @Before
     public void setUp() {

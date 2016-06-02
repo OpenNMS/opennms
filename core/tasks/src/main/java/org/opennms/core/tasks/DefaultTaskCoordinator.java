@@ -53,7 +53,7 @@ import org.springframework.util.Assert;
  * @author brozow
  * @version $Id: $
  */
-public class DefaultTaskCoordinator implements InitializingBean {
+public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultTaskCoordinator.class);
 
@@ -65,14 +65,14 @@ public class DefaultTaskCoordinator implements InitializingBean {
      */
     private static class RunnableActor extends Thread {
 
-        private final BlockingQueue<Future<Runnable>> m_queue;
+        private final BlockingQueue<Future<Runnable>> m_actorQueue;
 
         // This is used to adjust timing during testing
         private Long m_loopDelay;
 
         public RunnableActor(String name, BlockingQueue<Future<Runnable>> queue) {
             super(name);
-            m_queue = queue;
+            m_actorQueue = queue;
             start();
         }
 
@@ -80,7 +80,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
         public void run() {
             while(true) {
                 try {
-                    Runnable r = m_queue.take().get();
+                    Runnable r = m_actorQueue.take().get();
                     if (r != null) {
                         r.run();
                     }
@@ -104,6 +104,9 @@ public class DefaultTaskCoordinator implements InitializingBean {
     }
     
 
+    /**
+     * TODO: Why do we need to manage the queue for the executor?
+     */
     private final BlockingQueue<Future<Runnable>> m_queue = new LinkedBlockingQueue<Future<Runnable>>();
     private final ConcurrentHashMap<String, CompletionService<Runnable>> m_taskCompletionServices = new ConcurrentHashMap<String, CompletionService<Runnable>>();
     
@@ -166,6 +169,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param r a {@link java.lang.Runnable} object.
      * @return a {@link org.opennms.core.tasks.SyncTask} object.
      */
+    @Override
     public SyncTask createTask(ContainerTask<?> parent, Runnable r) {
         return new SyncTask(this, parent, r);
     }
@@ -178,6 +182,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param schedulingHint a {@link java.lang.String} object.
      * @return a {@link org.opennms.core.tasks.SyncTask} object.
      */
+    @Override
     public SyncTask createTask(ContainerTask<?> parent, Runnable r, String schedulingHint) {
         return new SyncTask(this, parent, r, schedulingHint);
     }
@@ -191,6 +196,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param <T> a T object.
      * @return a {@link org.opennms.core.tasks.AsyncTask} object.
      */
+    @Override
     public <T> AsyncTask<T> createTask(ContainerTask<?> parent, Async<T> async, Callback<T> cb) {
         return new AsyncTask<T>(this, parent, async, cb);
     }
@@ -202,6 +208,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
      * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
      */
+    @Override
     public TaskBuilder<BatchTask> createBatch(ContainerTask<?> parent) {
         return new TaskBuilder<BatchTask>(new BatchTask(this, parent));
     }
@@ -211,6 +218,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      *
      * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
      */
+    @Override
     public TaskBuilder<BatchTask> createBatch() {
         return createBatch((ContainerTask<?>)null);
     }
@@ -222,6 +230,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param tasks a {@link java.lang.Runnable} object.
      * @return a {@link org.opennms.core.tasks.BatchTask} object.
      */
+    @Override
     public BatchTask createBatch(ContainerTask<?> parent, Runnable... tasks) {
         return createBatch(parent).add(tasks).get(parent);
     }
@@ -233,6 +242,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param tasks a {@link java.lang.Runnable} object.
      * @return a {@link org.opennms.core.tasks.BatchTask} object.
      */
+    @Override
     public BatchTask createBatch(Runnable... tasks) {
         return createBatch().add(tasks).get();
     }
@@ -244,6 +254,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
      * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
      */
+    @Override
     public TaskBuilder<SequenceTask> createSequence(ContainerTask<?> parent) {
         return new TaskBuilder<SequenceTask>(new SequenceTask(this, parent));
     }
@@ -253,6 +264,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      *
      * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
      */
+    @Override
     public TaskBuilder<SequenceTask> createSequence() {
         return createSequence((ContainerTask<?>)null);
     }
@@ -264,28 +276,17 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param tasks a {@link java.lang.Runnable} object.
      * @return a {@link org.opennms.core.tasks.SequenceTask} object.
      */
+    @Override
     public SequenceTask createSequence(ContainerTask<?> parent, Runnable... tasks) {
         return createSequence(parent).add(tasks).get(parent);
     }
 
-    
-    /**
-     * <p>createSquence</p>
-     *
-     * @param tasks a {@link java.lang.Runnable} object.
-     * @return a {@link org.opennms.core.tasks.SequenceTask} object.
-     */
-    public SequenceTask createSquence(Runnable... tasks) {
-        return createSequence().add(tasks).get();
-    }
-
-    
-    
     /**
      * <p>setLoopDelay</p>
      *
      * @param millis a long.
      */
+    @Override
     public void setLoopDelay(long millis) {
         m_runnableActor.setLoopDelay(millis);
     }
@@ -295,6 +296,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      *
      * @param task a {@link org.opennms.core.tasks.Task} object.
      */
+    @Override
     public void schedule(final Task task) {
         onProcessorThread(scheduler(task));
     }
@@ -305,12 +307,13 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param prereq a {@link org.opennms.core.tasks.Task} object.
      * @param dependent a {@link org.opennms.core.tasks.Task} object.
      */
+    @Override
     public void addDependency(Task prereq, Task dependent) {
         // this is only needed when add dependencies while running
         dependent.incrPendingPrereqCount();
         onProcessorThread(dependencyAdder(prereq, dependent));
     }
-    
+
     private void onProcessorThread(final Runnable r) {
         Future<Runnable> now = new Future<Runnable>() {
             @Override
@@ -341,7 +344,6 @@ public class DefaultTaskCoordinator implements InitializingBean {
         m_queue.add(now);
     }
 
-    
 
     private static Runnable scheduler(final Task task) {
         return new Runnable() {
@@ -427,15 +429,18 @@ public class DefaultTaskCoordinator implements InitializingBean {
         return selected;
     }
     
-    void markTaskAsCompleted(Task task) {
+    @Override
+    public void markTaskAsCompleted(Task task) {
         onProcessorThread(taskCompleter(task));
     }
 
-    void submitToExecutor(String executorPreference, Runnable workToBeDone, Task owningTask) {
+    @Override
+    public void submitToExecutor(String executorPreference, Runnable workToBeDone, Task owningTask) {
         submitToExecutor(executorPreference, workToBeDone, taskCompleter(owningTask));
     }
     
-    void submitToExecutor(String executorPreference, final Runnable workToBeDone, Runnable completionProcessor) {
+    @Override
+    public void submitToExecutor(String executorPreference, final Runnable workToBeDone, Runnable completionProcessor) {
         getCompletionService(executorPreference).submit(workToBeDone, completionProcessor);
     }
     
@@ -445,6 +450,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param executorName a {@link java.lang.String} object.
      * @param executor a {@link java.util.concurrent.Executor} object.
      */
+    @Override
     public void addExecutor(String executorName, Executor executor) {
         m_taskCompletionServices.put(executorName, new ExecutorCompletionService<Runnable>(executor, m_queue));
     }
@@ -454,6 +460,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      *
      * @param executors a {@link java.util.Map} object.
      */
+    @Override
     public void setExecutors(Map<String,Executor> executors) {
         m_taskCompletionServices.clear();
         for (Map.Entry<String, Executor> e : executors.entrySet()) {

@@ -43,10 +43,10 @@ public class SequenceTask extends ContainerTask<SequenceTask> {
     /**
      * <p>Constructor for SequenceTask.</p>
      *
-     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param coordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
      */
-    public SequenceTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
+    public SequenceTask(TaskCoordinator coordinator, ContainerTask<?> parent) {
         super(coordinator, parent);
         m_lastChild.set(getTriggerTask());
     }

@@ -54,11 +54,11 @@ public class SyncTask extends Task {
     /**
      * <p>Constructor for SyncTask.</p>
      *
-     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param coordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
      * @param action a {@link java.lang.Runnable} object.
      */
-    public SyncTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent, Runnable action) {
+    public SyncTask(TaskCoordinator coordinator, ContainerTask<?> parent, Runnable action) {
         this(coordinator, parent, action, DEFAULT_EXECUTOR);
     }
 
@@ -66,12 +66,12 @@ public class SyncTask extends Task {
     /**
      * <p>Constructor for SyncTask.</p>
      *
-     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param coordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
      * @param action a {@link java.lang.Runnable} object.
      * @param preferredExecutor a {@link java.lang.String} object.
      */
-    public SyncTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent, Runnable action, String preferredExecutor) {
+    public SyncTask(TaskCoordinator coordinator, ContainerTask<?> parent, Runnable action, String preferredExecutor) {
         super(coordinator, parent);
         m_action = action;
         m_preferredExecutor = preferredExecutor;
@@ -81,6 +81,16 @@ public class SyncTask extends Task {
     @Override
     protected void doSubmit() {
         submitRunnable(getRunnable(), getPreferredExecutor());
+    }
+
+    /**
+     * <p>submitRunnable</p>
+     *
+     * @param runnable a {@link java.lang.Runnable} object.
+     * @param preferredExecutor a {@link java.lang.String} object.
+     */
+    private void submitRunnable(Runnable runnable, String preferredExecutor) {
+        getCoordinator().submitToExecutor(preferredExecutor, runnable, this);
     }
 
     /**

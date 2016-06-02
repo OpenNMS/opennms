@@ -43,10 +43,10 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.ContainerTask;
-import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -76,7 +76,7 @@ public class NodeScan implements Scan {
     private final ProvisionService m_provisionService;
     private final EventForwarder m_eventForwarder;
     private final SnmpAgentConfigFactory m_agentConfigFactory;
-    private final DefaultTaskCoordinator m_taskCoordinator;
+    private final TaskCoordinator m_taskCoordinator;
 
     //NOTE TO SELF: This is referenced from the AgentScan inner class
     private boolean m_aborted = false;
@@ -93,9 +93,9 @@ public class NodeScan implements Scan {
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
-     * @param taskCoordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param taskCoordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final DefaultTaskCoordinator taskCoordinator) {
+    public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
@@ -189,9 +189,9 @@ public class NodeScan implements Scan {
     /**
      * <p>getTaskCoordinator</p>
      *
-     * @return a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @return a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    public DefaultTaskCoordinator getTaskCoordinator() {
+    public TaskCoordinator getTaskCoordinator() {
         return m_taskCoordinator;
     }
 
