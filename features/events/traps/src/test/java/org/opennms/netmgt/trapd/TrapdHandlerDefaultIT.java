@@ -172,7 +172,7 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 		// Check that the input for the seda:trapHandler endpoint matches
 		// the TrapQProcessor that we simulated via ActiveMQ
 		TrapNotification result = trapHandler.getReceivedExchanges().get(0).getIn().getBody(TrapNotification.class);
-		LOG.info("Result: " + result);
+		LOG.info("Result:  " + result);
 
 		// Assert that the trap's content is correct
 		BasicTrapProcessor processor = (BasicTrapProcessor)result.getTrapProcessor();
