@@ -305,7 +305,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
         onProcessorThread(dependencyAdder(prereq, dependent));
     }
     
-    private void onProcessorThread(final Runnable r) {
+    void onProcessorThread(final Runnable r) {
         Future<Runnable> now = new Future<Runnable>() {
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
