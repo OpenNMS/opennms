@@ -57,9 +57,6 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultTaskCoordinator.class);
 
-    /** Constant <code>ADMIN_EXECUTOR="admin"</code> */
-    protected static final String ADMIN_EXECUTOR = "admin";
-
     /**
      * <p>A {@link RunnableActor} class is a thread that simply removes {@link Runnable}s from a queue
      * and executes them. This thread handles all of the task dependency work to reduce the 
@@ -99,12 +96,12 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
                         sleep(m_loopDelay);
                     }
                 } catch (InterruptedException e) {
-                	LOG.warn("runnable actor interrupted", e);
+                    LOG.warn("runnable actor interrupted", e);
                     Thread.currentThread().interrupt();
                 } catch (ExecutionException e) {
-                	LOG.warn("runnable actor execution failed", e);
+                    LOG.warn("runnable actor execution failed", e);
                 } catch (Throwable e) {
-                	LOG.error("an unknown error occurred in the runnable actor", e);
+                    LOG.error("an unknown error occurred in the runnable actor", e);
                 }
             }
         }
@@ -120,38 +117,27 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
      */
     private final BlockingQueue<Future<Runnable>> m_queue = new LinkedBlockingQueue<Future<Runnable>>();
     private final ConcurrentHashMap<String, CompletionService<Runnable>> m_taskCompletionServices = new ConcurrentHashMap<String, CompletionService<Runnable>>();
-    
-    private String m_defaultExecutor ;
-    private CompletionService<Runnable> m_defaultCompletionService;
+
+    private String m_defaultCompletionServiceName = TaskCoordinator.DEFAULT_EXECUTOR;
+
     private final RunnableActor m_runnableActor;
-    
-    /**
-     * <p>Constructor for DefaultTaskCoordinator.</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     */
-    public DefaultTaskCoordinator(String name) {
-        // Create a new actor and add it to the queue
-        m_runnableActor = new RunnableActor(name+"-TaskScheduler", m_queue);
-        addExecutor(
-            ADMIN_EXECUTOR,
-            Executors.newSingleThreadExecutor(
-                new LogPreservingThreadFactory(ADMIN_EXECUTOR, 1)
-            )
-        );
-    }
-    
+
     /**
      * <p>Constructor for DefaultTaskCoordinator.</p>
      *
      * @param name a {@link java.lang.String} object.
      * @param defaultExecutor a {@link java.util.concurrent.Executor} object.
      */
-    public DefaultTaskCoordinator(String name, Executor defaultExecutor) {
-        this(name);
-        m_defaultExecutor = TaskCoordinator.DEFAULT_EXECUTOR;
-        addExecutor(TaskCoordinator.DEFAULT_EXECUTOR, defaultExecutor);
-        afterPropertiesSet();
+    public DefaultTaskCoordinator(String name) {
+        // Create a new actor and add it to the queue
+        m_runnableActor = new RunnableActor(name+"-TaskScheduler", m_queue);
+        // By default, add one single-threaded executor to the coordinator
+        addOrUpdateExecutor(
+            m_defaultCompletionServiceName,
+            Executors.newSingleThreadExecutor(
+                new LogPreservingThreadFactory(m_defaultCompletionServiceName, 1)
+            )
+        );
     }
 
     /**
@@ -160,7 +146,7 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
      * @param executorName a {@link java.lang.String} object.
      */
     public final void setDefaultExecutor(String executorName) {
-        m_defaultExecutor = executorName;
+        m_defaultCompletionServiceName = executorName;
     }
     
     /**
@@ -168,12 +154,8 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
      */
     @Override
     public void afterPropertiesSet() {
-        Assert.notNull(m_defaultExecutor, "defaultExecutor must be set");
-        
-        m_defaultCompletionService = getCompletionService(m_defaultExecutor);
-        
-        Assert.notNull(m_defaultCompletionService, "defaultExecutor must be set to the name of an added executor");
-        
+        Assert.notNull(m_defaultCompletionServiceName, "defaultExecutor must be set");
+        Assert.notNull(getCompletionService(m_defaultCompletionServiceName), "defaultExecutor must be set to the name of an added executor");
     }
     
     /**
@@ -437,9 +419,17 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
     
     private final CompletionService<Runnable> getCompletionService(String name) {
         CompletionService<Runnable> completionService = m_taskCompletionServices.get(name);
-        CompletionService<Runnable> selected = completionService == null ? m_defaultCompletionService : completionService;
-        // log().debug(String.format("USING COMPLETION SERVICE %s : %s!", name, selected));
-        return selected;
+        if (completionService == null) {
+            CompletionService<Runnable> defaultCompletionService = m_taskCompletionServices.get(m_defaultCompletionServiceName);
+            if (defaultCompletionService == null) {
+                throw new IllegalStateException("No default completion service in " + getClass().getName());
+            } else {
+                return defaultCompletionService;
+            }
+        } else {
+            //LOG.debug("Using completion service {}: {}", name, completionService);
+            return completionService;
+        }
     }
     
     @Override
@@ -464,8 +454,11 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
      * @param executor a {@link java.util.concurrent.Executor} object.
      */
     @Override
-    public final void addExecutor(String executorName, Executor executor) {
-        m_taskCompletionServices.put(executorName, new ExecutorCompletionService<Runnable>(executor, m_queue));
+    public final void addOrUpdateExecutor(String executorName, Executor executor) {
+        CompletionService<Runnable> service = m_taskCompletionServices.put(executorName, new ExecutorCompletionService<Runnable>(executor, m_queue));
+        if (service != null) {
+            LOG.info("Replacing completion service {} with {}", executorName, executor);
+        }
     }
 
     /**
@@ -477,7 +470,7 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
     public final void setExecutors(Map<String,Executor> executors) {
         m_taskCompletionServices.clear();
         for (Map.Entry<String, Executor> e : executors.entrySet()) {
-            addExecutor(e.getKey(), e.getValue());
+            addOrUpdateExecutor(e.getKey(), e.getValue());
         }
     }
 

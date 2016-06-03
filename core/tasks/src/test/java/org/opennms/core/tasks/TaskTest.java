@@ -69,7 +69,8 @@ public class TaskTest {
         m_executor = Executors.newFixedThreadPool(50,
             new LogPreservingThreadFactory(getClass().getSimpleName(), 50)
         );
-        m_coordinator = new DefaultTaskCoordinator("TaskTest", m_executor);
+        m_coordinator = new DefaultTaskCoordinator("TaskTest");
+        m_coordinator.addOrUpdateExecutor(TaskCoordinator.DEFAULT_EXECUTOR, m_executor);
     }
     
     @Test

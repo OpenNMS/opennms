@@ -160,12 +160,12 @@ public interface TaskCoordinator {
     void submitToExecutor(String executorPreference, Runnable workToBeDone, Runnable completionProcessor);
 
     /**
-     * <p>addExecutor</p>
+     * <p>addOrUpdateExecutor</p>
      *
      * @param executorName a {@link java.lang.String} object.
      * @param executor a {@link java.util.concurrent.Executor} object.
      */
-    void addExecutor(String executorName, Executor executor);
+    void addOrUpdateExecutor(String executorName, Executor executor);
 
     /**
      * <p>setExecutors</p>

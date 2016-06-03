@@ -209,7 +209,8 @@ public class LifeCycleInstanceTest {
     public void setUp() {
         MockLogAppender.setupLogging();
 
-        TaskCoordinator coordinator = new DefaultTaskCoordinator("LifeCycleInstanceTest", Executors.newFixedThreadPool(10));
+        TaskCoordinator coordinator = new DefaultTaskCoordinator("LifeCycleInstanceTest");
+        coordinator.addOrUpdateExecutor(TaskCoordinator.DEFAULT_EXECUTOR, Executors.newFixedThreadPool(10));
         
         DefaultLifeCycleRepository repository = new DefaultLifeCycleRepository(coordinator);
         
