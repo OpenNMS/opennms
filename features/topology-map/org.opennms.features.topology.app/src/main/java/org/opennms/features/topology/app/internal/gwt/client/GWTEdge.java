@@ -114,6 +114,8 @@ public final class GWTEdge extends JavaScriptObject {
             // only apply if defined
             if (datum.additionalStyling != undefined) {
                 var currentSelection = $wnd.d3.select(this);
+
+                console.log('additional stylings', this, currentSelection, datum, datum.additionalStyling);
                 currentSelection.style(datum.additionalStyling);
             }
         }

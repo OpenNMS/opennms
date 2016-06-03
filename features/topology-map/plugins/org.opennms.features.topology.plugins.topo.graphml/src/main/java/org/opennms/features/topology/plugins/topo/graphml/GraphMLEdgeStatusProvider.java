@@ -28,13 +28,25 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.charset.Charset;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.google.common.collect.ImmutableMap;
+import org.apache.commons.io.FilenameUtils;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -42,60 +54,188 @@ import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.Status;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+
+import javax.script.Compilable;
+import javax.script.CompiledScript;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
+import javax.script.SimpleScriptContext;
+
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.support.TransactionOperations;
 
 
 public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
 
+    private final static Logger LOG = LoggerFactory.getLogger(GraphMLEdgeStatusProvider.class);
+
+    private final static Path DIR = Paths.get(System.getProperty("opennms.home"), "etc", "graphml-edge-status");
+
     private static class GraphMLEdgeStatus implements Status {
 
-        private Map<String, String> styleProperties = Maps.newHashMap();
+        private final OnmsSeverity severity;
+        private final Map<String, String> styleProperties;
+
+        private GraphMLEdgeStatus(final OnmsSeverity severity,
+                                  final Map<String, String> styleProperties) {
+            this.severity = severity;
+            this.styleProperties = styleProperties;
+        }
+
+        public OnmsSeverity getSeverity() {
+            return this.severity;
+        }
 
         @Override
         public String computeStatus() {
-            return null;
+            return this.severity.getLabel().toLowerCase();
         }
 
         @Override
         public Map<String, String> getStatusProperties() {
-            return Maps.newHashMap();
+            return ImmutableMap.of("status", this.computeStatus());
         }
 
         @Override
         public Map<String, String> getStyleProperties() {
-            return styleProperties;
-        }
-
-        public GraphMLEdgeStatus withStyle(String key, String value) {
-            styleProperties.put(key, value);
-            return this;
+            return this.styleProperties;
         }
     }
 
-    private GraphMLTopologyProvider provider;
+    private final GraphMLTopologyProvider provider;
+    private final ScriptEngineManager scriptEngineManager;
+    private final TransactionOperations transactionOperations;
 
-    public GraphMLEdgeStatusProvider(GraphMLTopologyProvider provider) {
+    public GraphMLEdgeStatusProvider(final GraphMLTopologyProvider provider,
+                                     final ScriptEngineManager scriptEngineManager,
+                                     final TransactionOperations transactionOperations) {
         this.provider = Objects.requireNonNull(provider);
+        this.scriptEngineManager = Objects.requireNonNull(scriptEngineManager);
+        this.transactionOperations = Objects.requireNonNull(transactionOperations);
+    }
+
+
+    private class StatusScript {
+
+        private final ScriptEngine engine;
+        private final String source;
+
+        private Optional<CompiledScript> compiledScript = null;
+
+        private StatusScript(final ScriptEngine engine,
+                             final String source) {
+            this.engine = Objects.requireNonNull(engine);
+            this.source = Objects.requireNonNull(source);
+        }
+
+        public GraphMLEdgeStatus eval(final ScriptContext context) throws ScriptException {
+            if (this.compiledScript == null) {
+                if (this.engine instanceof Compilable) {
+                    this.compiledScript = Optional.of(((Compilable) engine).compile(source));
+                } else {
+                    this.compiledScript = Optional.empty();
+                }
+            }
+
+            if (this.compiledScript.isPresent()) {
+                return (GraphMLEdgeStatus) this.compiledScript.get().eval(context);
+
+            } else {
+                return (GraphMLEdgeStatus) this.engine.eval(this.source, context);
+            }
+        }
+    }
+
+    private GraphMLEdgeStatus computeEdgeStatus(final List<StatusScript> scripts, final GraphMLEdge edge) {
+        return scripts.stream()
+                      .flatMap(script -> {
+                          final StringWriter writer = new StringWriter();
+
+                          final ScriptContext context = new SimpleScriptContext();
+                          context.setWriter(writer);
+                          context.setBindings(new SimpleBindings(ImmutableMap.of("edge", edge)),
+                                              ScriptContext.GLOBAL_SCOPE);
+
+                          try {
+                              LOG.debug("Executing script: {}", script);
+                              final GraphMLEdgeStatus status = script.eval(context);
+
+                              if (status != null) {
+                                  return Stream.of(status);
+                              } else {
+                                  return Stream.empty();
+                              }
+
+                          } catch (final ScriptException e) {
+                              LOG.error("Failed to execute script: {}", e);
+                              return Stream.empty();
+
+                          } finally {
+                            LOG.info(writer.toString());
+                          }
+                      })
+                      .reduce((s1, s2) -> new GraphMLEdgeStatus(s1.getSeverity().isGreaterThan(s2.getSeverity())
+                                                                    ? s1.getSeverity()
+                                                                    : s2.getSeverity(),
+                                                                ImmutableMap.<String, String>builder()
+                                                                        .putAll(s1.getStyleProperties())
+                                                                        .putAll(s2.getStyleProperties())
+                                                                        .build()))
+                      .orElse(null);
     }
 
     @Override
     public Map<EdgeRef, Status> getStatusForEdges(EdgeProvider edgeProvider, Collection<EdgeRef> edges, Criteria[] criteria) {
-        final List<GraphMLEdge> collectedList = edges.stream()
-                .filter(eachEdge -> eachEdge instanceof GraphMLEdge)
-                .map(eachEdge -> (GraphMLEdge) eachEdge)
-                .collect(Collectors.toList());
-        final ArrayList<String> colors = Lists.newArrayList("blue", "yellow", "green", "purple", "red");
-        final Map<EdgeRef, Status> resultMap = Maps.newHashMap();
-        int colorIndex = 0;
-        for (GraphMLEdge eachEdge : collectedList) {
-            if (colorIndex == colors.size() - 1) {
-                colorIndex = 0;
+        final List<StatusScript> scripts = Lists.newArrayList();
+        try (final DirectoryStream<Path> stream = Files.newDirectoryStream(DIR)) {
+            for (final Path path : stream) {
+                final String extension = FilenameUtils.getExtension(path.toString());
+                final ScriptEngine scriptEngine = this.scriptEngineManager.getEngineByExtension(extension);
+                if (scriptEngine == null) {
+                    LOG.warn("No script engine found for extension '{}'", extension);
+                    continue;
+                }
+
+                LOG.debug("Found script: path={}, extension={}, engine={}", path, extension, scriptEngine);
+
+                final String source = Files.lines(path, Charset.defaultCharset())
+                                           .collect(Collectors.joining("\n"));
+
+                scripts.add(new StatusScript(scriptEngine, source));
             }
-            Status status = new GraphMLEdgeStatus().withStyle("stroke", colors.get(colorIndex));
-            resultMap.put(eachEdge, status);
-            colorIndex++;
+        } catch (final IOException e) {
+            LOG.error("Failed to walk template directory: {}", DIR);
+            return Collections.emptyMap();
         }
-        return resultMap;
+
+        return this.transactionOperations.execute(transactionStatus -> {
+            return edges.stream()
+                        .filter(eachEdge -> eachEdge instanceof GraphMLEdge)
+                        .map(edge -> (GraphMLEdge) edge)
+                        .map(edge -> new HashMap.SimpleEntry<>(edge, computeEdgeStatus(scripts, edge)))
+                        .filter(e -> e.getValue() != null)
+                        .collect(Collectors.toMap(Map.Entry::getKey,
+                                                  Map.Entry::getValue));
+
+
+//            final ArrayList<String> colors = Lists.newArrayList("blue", "yellow", "green", "purple", "red");
+//            final Map<EdgeRef, Status> resultMap = Maps.newHashMap();
+//            int colorIndex = 0;
+//            for (GraphMLEdge eachEdge : collectedList) {
+//                if (colorIndex == colors.size() - 1) {
+//                    colorIndex = 0;
+//                }
+//                Status status = new GraphMLEdgeStatus(severity, styleProperties).withStyle("stroke", colors.get(colorIndex));
+//                resultMap.put(eachEdge, status);
+//                colorIndex++;
+//            }
+//            return resultMap;
+        });
     }
 
     @Override
