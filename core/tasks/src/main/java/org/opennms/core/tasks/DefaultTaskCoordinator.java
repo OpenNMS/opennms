@@ -58,6 +58,12 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
     private static final Logger LOG = LoggerFactory.getLogger(DefaultTaskCoordinator.class);
 
     /**
+     * This interface is used as a marker for {@link Runnable} tasks that
+     * are intended to be enqueued on the {@link RunnableActor} thread.
+     */
+    private interface SerialRunnable extends Runnable {}
+
+    /**
      * <p>A {@link RunnableActor} class is a thread that simply removes {@link Runnable}s from a queue
      * and executes them. This thread handles all of the task dependency work to reduce the 
      * need for synchronization. The single thread:</p>
@@ -73,12 +79,12 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
      */
     private static class RunnableActor extends Thread {
 
-        private final BlockingQueue<Future<Runnable>> m_actorQueue;
+        private final BlockingQueue<Future<SerialRunnable>> m_actorQueue;
 
         // This is used to adjust timing during testing
         private Long m_loopDelay;
 
-        public RunnableActor(String name, BlockingQueue<Future<Runnable>> queue) {
+        public RunnableActor(String name, BlockingQueue<Future<SerialRunnable>> queue) {
             super(name);
             m_actorQueue = queue;
             start();
@@ -115,8 +121,8 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
     /**
      * TODO: Why do we need to manage the queue for the executor?
      */
-    private final BlockingQueue<Future<Runnable>> m_queue = new LinkedBlockingQueue<Future<Runnable>>();
-    private final ConcurrentHashMap<String, CompletionService<Runnable>> m_taskCompletionServices = new ConcurrentHashMap<String, CompletionService<Runnable>>();
+    private final BlockingQueue<Future<SerialRunnable>> m_queue = new LinkedBlockingQueue<Future<SerialRunnable>>();
+    private final ConcurrentHashMap<String, CompletionService<SerialRunnable>> m_taskCompletionServices = new ConcurrentHashMap<String, CompletionService<SerialRunnable>>();
 
     private String m_defaultCompletionServiceName = TaskCoordinator.DEFAULT_EXECUTOR;
 
@@ -309,18 +315,18 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
         onProcessorThread(dependencyAdder(prereq, dependent));
     }
 
-    private void onProcessorThread(final Runnable r) {
-        Future<Runnable> now = new Future<Runnable>() {
+    private void onProcessorThread(final SerialRunnable r) {
+        Future<SerialRunnable> now = new Future<SerialRunnable>() {
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
                 return false;
             }
             @Override
-            public Runnable get() {
+            public SerialRunnable get() {
                 return r;
             }
             @Override
-            public Runnable get(long timeout, TimeUnit unit) {
+            public SerialRunnable get(long timeout, TimeUnit unit) {
                 return get();
             }
             @Override
@@ -340,8 +346,8 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
     }
 
 
-    private static Runnable scheduler(final AbstractTask task) {
-        return new Runnable() {
+    private static SerialRunnable scheduler(final AbstractTask task) {
+        return new SerialRunnable() {
             @Override
             public void run() {
                 task.scheduled();
@@ -354,8 +360,8 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
         };
     }
     
-    Runnable taskCompleter(final AbstractTask task) {
-        return new Runnable() {
+    private static SerialRunnable taskCompleter(final AbstractTask task) {
+        return new SerialRunnable() {
             @Override
             public void run() {
                 notifyDependents(task);
@@ -368,13 +374,13 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
     }
     
     
-    private static void notifyDependents(AbstractTask completed) {
+    private static void notifyDependents(AbstractTask task) {
         // log().debug(String.format("Task %s completed!", completed));
-        completed.onComplete();
+        task.onComplete();
 
-        final Set<AbstractTask> dependents = completed.getDependents();
+        final Set<AbstractTask> dependents = task.getDependents();
         for(AbstractTask dependent : dependents) {
-            dependent.doCompletePrerequisite(completed);
+            dependent.doCompletePrerequisite(task);
             if (dependent.isReady()) {
                 // log().debug(String.format("Task %s %s ready.", dependent, dependent.isReady() ? "is" : "is not"));
             }
@@ -383,19 +389,17 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
         }
 
         // log().debug(String.format("CLEAN: removing dependents of %s", completed));
-        completed.clearDependents();
-        
-        
+        task.clearDependents();
     }
 
     /**
      * The returns a runnable that is run on the taskCoordinator thread.. This is 
      * done to keep the Task data structures thread safe.
      */
-    private static Runnable dependencyAdder(final AbstractTask prereq, final AbstractTask dependent) {
+    private static SerialRunnable dependencyAdder(final AbstractTask prereq, final AbstractTask dependent) {
         Assert.notNull(prereq, "prereq must not be null");
         Assert.notNull(dependent, "dependent must not be null");
-        return new Runnable() {
+        return new SerialRunnable() {
             @Override
             public void run() {
                 prereq.doAddDependent(dependent);
@@ -417,10 +421,10 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
     }
     
     
-    private final CompletionService<Runnable> getCompletionService(String name) {
-        CompletionService<Runnable> completionService = m_taskCompletionServices.get(name);
+    private final CompletionService<SerialRunnable> getCompletionService(String name) {
+        CompletionService<SerialRunnable> completionService = m_taskCompletionServices.get(name);
         if (completionService == null) {
-            CompletionService<Runnable> defaultCompletionService = m_taskCompletionServices.get(m_defaultCompletionServiceName);
+            CompletionService<SerialRunnable> defaultCompletionService = m_taskCompletionServices.get(m_defaultCompletionServiceName);
             if (defaultCompletionService == null) {
                 throw new IllegalStateException("No default completion service in " + getClass().getName());
             } else {
@@ -439,14 +443,9 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
 
     @Override
     public void submitToExecutor(String executorPreference, Runnable workToBeDone, AbstractTask owningTask) {
-        submitToExecutor(executorPreference, workToBeDone, taskCompleter(owningTask));
+        getCompletionService(executorPreference).submit(workToBeDone, taskCompleter(owningTask));
     }
-    
-    @Override
-    public void submitToExecutor(String executorPreference, final Runnable workToBeDone, Runnable completionProcessor) {
-        getCompletionService(executorPreference).submit(workToBeDone, completionProcessor);
-    }
-    
+
     /**
      * <p>addExecutor</p>
      *
@@ -455,7 +454,7 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
      */
     @Override
     public final void addOrUpdateExecutor(String executorName, Executor executor) {
-        CompletionService<Runnable> service = m_taskCompletionServices.put(executorName, new ExecutorCompletionService<Runnable>(executor, m_queue));
+        CompletionService<SerialRunnable> service = m_taskCompletionServices.put(executorName, new ExecutorCompletionService<SerialRunnable>(executor, m_queue));
         if (service != null) {
             LOG.info("Replacing completion service {} with {}", executorName, executor);
         }

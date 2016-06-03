@@ -28,8 +28,8 @@
 
 package org.opennms.core.tasks;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -65,8 +65,8 @@ public abstract class AbstractTask implements Task {
     private final CountDownLatch m_latch = new CountDownLatch(1);
     
     private final AtomicInteger m_pendingPrereqs = new AtomicInteger(0);
-    private final Set<AbstractTask> m_dependents = new HashSet<AbstractTask>();
-    private final Set<AbstractTask> m_prerequisites = new HashSet<AbstractTask>();
+    private final Set<AbstractTask> m_dependents = new CopyOnWriteArraySet<AbstractTask>();
+    private final Set<AbstractTask> m_prerequisites = new CopyOnWriteArraySet<AbstractTask>();
     
     private final TaskMonitor m_monitor;
     
@@ -174,7 +174,7 @@ public abstract class AbstractTask implements Task {
         m_dependents.clear();
     }
 
- 
+
     final void scheduled() {
         setState(State.NEW, State.SCHEDULED);
         notifyScheduled();

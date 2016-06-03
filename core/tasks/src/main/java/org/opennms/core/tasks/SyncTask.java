@@ -75,17 +75,7 @@ public class SyncTask extends AbstractTask {
     /** {@inheritDoc} */
     @Override
     protected void doSubmit() {
-        submitRunnable(getRunnable(), getPreferredExecutor());
-    }
-
-    /**
-     * <p>submitRunnable</p>
-     *
-     * @param runnable a {@link java.lang.Runnable} object.
-     * @param preferredExecutor a {@link java.lang.String} object.
-     */
-    private void submitRunnable(Runnable runnable, String preferredExecutor) {
-        getCoordinator().submitToExecutor(preferredExecutor, runnable, this);
+        getCoordinator().submitToExecutor(getPreferredExecutor(), getRunnable(), this);
     }
 
     /**
@@ -93,12 +83,12 @@ public class SyncTask extends AbstractTask {
      * or a Runnable can be passed to the task in the constructor.  The Task is not complete until this method
      * finishes
      */
-    public void run() {
+    private final void run() {
         if (m_action != null) {
             m_action.run();
         }
     }
-    
+
     /**
      * This method is used by the TaskCoordinator to create runnable that will run this task
      */

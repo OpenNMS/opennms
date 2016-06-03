@@ -157,8 +157,6 @@ public interface TaskCoordinator {
 
     void submitToExecutor(String executorPreference, Runnable workToBeDone, AbstractTask owningTask);
 
-    void submitToExecutor(String executorPreference, Runnable workToBeDone, Runnable completionProcessor);
-
     /**
      * <p>addOrUpdateExecutor</p>
      *
