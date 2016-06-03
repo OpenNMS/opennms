@@ -32,6 +32,8 @@ import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.activemq.camel.component.ActiveMQComponent;
+import org.apache.camel.Component;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.ClassRule;
@@ -117,6 +119,11 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 		);
 
 		services.put(EventConfDao.class.getName(), new KeyValueHolder<Object, Dictionary>(new EmptyEventConfDao(), new Properties()));
+        Properties props = new Properties();
+        props.setProperty("alias", "onms.broker");
+        services.put(Component.class.getName(),
+                     new KeyValueHolder<Object, Dictionary>(ActiveMQComponent.activeMQComponent("vm://localhost?create=false"),
+                                                            props));
 	}
 
 	// The location of our Blueprint XML files to be used for testing
@@ -128,7 +135,7 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 	@Test
 	public void testTrapd() throws Exception {
 		// Expect one TrapNotification message to be broadcast on the messaging channel
-		MockEndpoint broadcastTrapd = getMockEndpoint("mock:activemq:broadcastTrap", false);
+		MockEndpoint broadcastTrapd = getMockEndpoint("mock:queuingservice:broadcastTrap", false);
 		broadcastTrapd.setExpectedMessageCount(1);
 
 		MockEndpoint trapHandler = getMockEndpoint("mock:seda:trapHandler", false);
@@ -158,7 +165,7 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 				snmp4JV2cTrapPdu, new BasicTrapProcessor());
 
 		// Send the TrapNotification
-		template.sendBody("activemq:broadcastTrap?disableReplyTo=true", snmp4JV2cTrap);
+		template.sendBody("queuingservice:broadcastTrap?disableReplyTo=true", snmp4JV2cTrap);
 
 		assertMockEndpointsSatisfied();
 

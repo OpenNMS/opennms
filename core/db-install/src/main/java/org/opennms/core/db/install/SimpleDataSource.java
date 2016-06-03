@@ -29,20 +29,25 @@
 package org.opennms.core.db.install;
 
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.Properties;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.opennmsDataSources.Param;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleDataSource implements DataSource {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleDataSource.class);
+
     private String m_driver;
     private String m_url;
     private Properties m_properties = new Properties();
@@ -64,7 +69,22 @@ public class SimpleDataSource implements DataSource {
         m_properties.put("user", user);
         m_properties.put("password", password);
         
-        Class.forName(m_driver);
+        Class<?> driverClass = Class.forName(m_driver);
+        
+        // If the PostgreSQL driver is in use and has deregistered itself
+        // (due to tests using the OSGi lifecycle) then reregister it
+        if (org.postgresql.Driver.class.getName().equals(m_driver)) {
+            try {
+                boolean isRegistered = (boolean)driverClass.getMethod("isRegistered").invoke(null, null);
+                if (!isRegistered) {
+                    LOG.info(org.postgresql.Driver.class.getName() + " is not registered, reregistering...");
+                    driverClass.getMethod("register").invoke(null, null);
+                    LOG.info(org.postgresql.Driver.class.getName() + " is registered");
+                }
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                LOG.warn("Exception while trying to check the registration on the " + org.postgresql.Driver.class.getName() + " driver", e);
+            }
+        }
     }
     
     /**
@@ -141,7 +161,7 @@ public class SimpleDataSource implements DataSource {
     }
 
     /** {@inheritDoc} */
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 

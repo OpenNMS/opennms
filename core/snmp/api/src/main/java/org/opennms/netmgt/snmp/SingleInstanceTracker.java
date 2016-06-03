@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.snmp;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.opennms.netmgt.snmp.proxy.WalkRequest;
+import org.opennms.netmgt.snmp.proxy.WalkResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,4 +125,21 @@ public class SingleInstanceTracker extends CollectionTracker {
         setFinished(true);
     }
 
+    @Override
+    public List<WalkRequest> getWalkRequests() {
+        final WalkRequest walkRequest = new WalkRequest(m_oid);
+        walkRequest.setSingleInstance(true);
+        walkRequest.setMaxRepetitions(1);
+        return Collections.singletonList(walkRequest);
+    }
+
+    @Override
+    public void handleWalkResponses(List<WalkResponse> responses) {
+        // Store the result
+        responses.stream()
+            .flatMap(res -> res.getResults().stream())
+            .filter(res -> m_oid.equals(SnmpObjId.get(res.getBase(), res.getInstance())))
+            .forEach(res -> storeResult(res));
+        setFinished(true);
+    }
 }

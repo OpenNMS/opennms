@@ -44,11 +44,15 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
 public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
+
+    private static Logger LOG = LoggerFactory.getLogger(SyslogdHandlerMinionIT.class);
 
     @ClassRule
     public static ActiveMQBroker s_broker = new ActiveMQBroker();
@@ -74,7 +78,6 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
 	public void testSyslogd() throws Exception {
 		// Expect one SyslogConnection message to be broadcast on the messaging channel
 		MockEndpoint broadcastSyslog = getMockEndpoint("mock:queuingservice:broadcastSyslog", false);
-		broadcastSyslog.setExpectedMessageCount(1);
 
 		// Create a mock SyslogdConfig
 		SyslogConfigBean config = new SyslogConfigBean();
@@ -86,9 +89,48 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
 		config.setMatchingGroupMessage(8);
 		config.setDiscardUei("DISCARD-MATCHING-MESSAGES");
 
+		int numberOfMessages = 20;
+		SyslogConnection[] conns = new SyslogConnection[numberOfMessages];
+		for (int i = 0; i < numberOfMessages; i++) {
+			conns[i] = new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap("<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes("US-ASCII")), config);
+		}
+
+		broadcastSyslog.setExpectedMessageCount(numberOfMessages);
+
+		// Warm up (open JMS connections, etc)
+		long startTime = System.currentTimeMillis();
+		for (int i = 0; i < numberOfMessages; i++) {
+			template.asyncSendBody("seda:handleMessage", conns[i]);
+		}
+		long endTime = System.currentTimeMillis();
+		LOG.info("Warm-up messages took {}ms", endTime - startTime);
+		assertMockEndpointsSatisfied();
+		resetMocks();
+
+
+		numberOfMessages = 5000;
+		conns = new SyslogConnection[numberOfMessages];
+		for (int i = 0; i < numberOfMessages; i++) {
+			conns[i] = new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap("<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes("US-ASCII")), config);
+		}
+
+		broadcastSyslog.setExpectedMessageCount(numberOfMessages);
+
 		// Send a SyslogConnection to seda:handleMessage
-		template.requestBody("seda:handleMessage", new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap("<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes("US-ASCII")), config));
+		startTime = System.currentTimeMillis();
+		for (int i = 0; i < numberOfMessages; i++) {
+			template.asyncSendBody("seda:handleMessage", conns[i]);
+		}
+		endTime = System.currentTimeMillis();
+		LOG.info("Test messages took {}ms", endTime - startTime);
 
 		assertMockEndpointsSatisfied();
+
+		endTime = System.currentTimeMillis();
+		LOG.info(
+			"Message transmission took {}ms ({} events per second)", 
+			endTime - startTime, 
+			Math.round((double)numberOfMessages / ((double)(endTime - startTime) / 1000.0))
+		);
 	}
 }

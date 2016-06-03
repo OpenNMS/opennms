@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.snmp;
 
-import java.util.Arrays;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
