@@ -46,17 +46,13 @@
 		<property name="processorFactory" ref="processorFactory"/>
 	</bean>
 
-	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
-		<property name="brokerURL" value="${brokerUri}" />
-		<!-- TODO: HZN-490 Add configurable authentication -->
-	</bean>
+	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=onms.broker)"/>
 
 	<camelContext id="trapNotificationHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:trapHandlerDefaultProperties" />
 
 		<route id="receiveTrapConnection">
-			<from uri="activemq:broadcastTrap?disableReplyTo=true" />
+			<from uri="queuingservice:broadcastTrap?disableReplyTo=true" />
 			<!-- TODO: Use marshalling instead of serialization when transmitting object? -->
 			<!-- <bean ref="unmarshaller"/> -->
 			<to uri="seda:trapHandler" />

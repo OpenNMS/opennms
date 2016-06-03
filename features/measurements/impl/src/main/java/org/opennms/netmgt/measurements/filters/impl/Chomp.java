@@ -102,7 +102,7 @@ public class Chomp implements Filter {
         }
 
         // Remove all of the leading rows
-        for (int i = 0; i < firstRowToKeep; i++) {
+        for (long i = 0; i < firstRowToKeep; i++) {
             for (String columnName : columnNames) {
                 qrAsTable.remove(i, columnName);
             }
