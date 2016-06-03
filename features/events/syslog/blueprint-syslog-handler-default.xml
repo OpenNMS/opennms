@@ -37,29 +37,28 @@
 		<argument ref="syslogdConfig"/>
 	</bean>
 
-	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
-		<property name="brokerURL" value="${brokerUri}" />
-		<!-- TODO: HZN-490 Add configurable authentication -->
-		<!--
-		<property name="userName" value="karaf" />
-		<property name="password" value="karaf" />
-		-->
-	</bean>
+	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=onms.broker)"/>
 
 	<camelContext id="syslogConnectionHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerDefaultProperties" />
 
 		<route id="receiveSyslogConnection">
-			<from uri="activemq:broadcastSyslog?disableReplyTo=true"/>
+			<from uri="queuingservice:broadcastSyslog?concurrentConsumers=8"/>
+			<!-- No performance improvement with asyncConsumer -->
+			<!-- <from uri="activemq:broadcastSyslog?asyncConsumer=true&amp;concurrentConsumers=8"/> -->
+			<to uri="seda:unmarshalMessage"/>
+		</route>
+
+		<route id="unmarshalSyslogConnection">
+			<from uri="seda:unmarshalMessage?concurrentConsumers=8"/>
 			<process ref="unmarshaller"/>
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>
 			<to uri="seda:syslogHandler"/>
 		</route>
 
-		<route id="syslogHandler">
-			<from uri="seda:syslogHandler"/>
+		<route id="handleSyslogConnection">
+			<from uri="seda:syslogHandler?concurrentConsumers=8"/>
 			<!-- 
 				Pass the message to the default handler which will convert it into
 				an event and broadcast the event.

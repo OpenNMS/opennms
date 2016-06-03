@@ -236,6 +236,15 @@
             <mbean name="org.opennms.newts.repository.samples-selected" objectname="org.opennms.newts:name=repository.samples-selected">
                 <attrib name="Count" alias="NewtsSmplsSelctd" type="counter"/>
             </mbean>
+            <mbean name="org.opennms.newts.search.update" objectname="org.opennms.newts:name=search.update">
+                <attrib name="99thPercentile" alias="NewtsSearchUpd99" type="gauge"/>
+            </mbean>
+            <mbean name="org.opennms.newts.search.delete" objectname="org.opennms.newts:name=search.delete">
+                <attrib name="99thPercentile" alias="NewtsSearchDel99" type="gauge"/>
+            </mbean>
+            <mbean name="org.opennms.newts.search.inserts" objectname="org.opennms.newts:name=search.inserts">
+                <attrib name="Count" alias="NewtsSearchInserts" type="counter"/>
+            </mbean>
         </mbeans>
     </jmx-collection>
 </jmx-datacollection-config>

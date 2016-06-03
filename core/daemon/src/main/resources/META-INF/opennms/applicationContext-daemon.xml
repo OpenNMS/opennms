@@ -49,15 +49,9 @@
     <property name="concurrentConsumers" value="10" />
   </bean>
 
+  <!-- activemq component to be used by spring applicationContext/camelContext  -->
   <bean id="queuingservice" class="org.apache.activemq.camel.component.ActiveMQComponent">
     <property name="configuration" ref="jmsConfig" />
   </bean>
 
-  <onmsgi:service id="activemqService" ref="queuingservice"
-    interface="org.apache.camel.Component">
-      <onmsgi:service-properties>
-        <entry key="alias" value="onms.broker" />
-      </onmsgi:service-properties>
-  </onmsgi:service>
-    
 </beans>

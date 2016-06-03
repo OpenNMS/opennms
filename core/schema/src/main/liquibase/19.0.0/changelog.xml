@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+  
+    <!-- Add column "last_checked" in monitoringsystems table -->
+  <changeSet author="cgorantla" id="19.0.0-add-column-lastChecked-in-MonitoringSystems-table">
+    <addColumn tableName="monitoringsystems">
+        <column name="last_checkedin" type="DATETIME"/>
+    </addColumn>
+  </changeSet>
+  
+</databaseChangeLog>

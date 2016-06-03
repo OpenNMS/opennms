@@ -18,5 +18,8 @@
     <module>impl-mock</module>
     <module>integration-tests</module>
     <module>commands</module>
+
+    <module>proxy-common</module>
+    <module>proxy-camel-impl</module>
   </modules>
 </project>

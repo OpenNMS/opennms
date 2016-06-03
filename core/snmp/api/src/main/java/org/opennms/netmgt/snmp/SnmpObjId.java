@@ -47,7 +47,7 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
     /**
      * These constructors are private.  The get method should be called to create a new oid
      */ 
-    protected SnmpObjId(int[] ids, boolean clone) {
+    public SnmpObjId(int[] ids, boolean clone) {
         m_ids = (clone ? cloneIds(ids) : ids);
     }
     

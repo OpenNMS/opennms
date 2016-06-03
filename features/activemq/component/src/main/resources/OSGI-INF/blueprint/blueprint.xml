@@ -1,0 +1,53 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xmlns:cb="http://camel.apache.org/schema/blueprint"
+	xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0 
+        http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+        http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+
+        http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+
+	<cm:property-placeholder id="activemqProperties"
+		persistent-id="org.opennms.features.activemq.component"
+		placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="none">
+		<cm:default-properties>
+			<cm:property name="broker-url" value="tcp://localhost:61616" />
+			<cm:property name="broker-max-connections" value="8" />
+			<cm:property name="broker-concurrent-consumers" value="10" />
+		</cm:default-properties>
+	</cm:property-placeholder>
+
+
+	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="[[broker-url]]" />
+	</bean>
+
+	<!-- Setup JMS connection pooling -->
+	<bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
+		init-method="start" destroy-method="stop">
+		<property name="maxConnections" value="[[broker-max-connections]]" />
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+	</bean>
+	<bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+		<property name="connectionFactory" ref="pooledConnectionFactory" />
+		<property name="concurrentConsumers" value="[[broker-concurrent-consumers]]" />
+	</bean>
+
+
+	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+		<property name="configuration" ref="jmsConfig" />
+	</bean>
+
+	<service id="queuingservice" ref="activemq" interface="org.apache.camel.Component">
+		<service-properties>
+			<entry key="alias" value="onms.broker" />
+		</service-properties>
+	</service>
+
+</blueprint>

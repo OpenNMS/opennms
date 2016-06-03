@@ -46,6 +46,7 @@ import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
+import org.opennms.netmgt.newts.NewtsWriter;
 import org.opennms.netmgt.newts.support.SearchableResourceMetadataCache;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.MetricType;
@@ -102,6 +103,9 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     @Autowired
     private CassandraIndexer m_indexer;
+
+    @Autowired
+    private NewtsWriter m_newtsWriter;
 
     @Autowired
     private SearchableResourceMetadataCache m_searchableCache;
@@ -216,9 +220,9 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
         Resource resource = new Resource(toResourceId(path), Optional.of(attributes));
         Sample sample = new Sample(EPOCH, m_context, resource, "strings", MetricType.GAUGE, ZERO);
 
-        // Leverage the existing interface provided by the indexer to persist the attributes.
+        // Index, but do not insert the sample(s)
         // The key/value pair specified in the attributes map will be merged with the others.
-        m_indexer.update(Lists.newArrayList(sample));
+        m_newtsWriter.index(Lists.newArrayList(sample));
     }
 
     @Override
