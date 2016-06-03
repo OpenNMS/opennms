@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,25 +29,28 @@
 package org.opennms.features.topology.api;
 
 /**
- * Each {@link IconRepository} stores a mapping from icon keys to icon ids.
- * The icon key is Graph Provider specific and is defined by it (e.g. "sfree:group")
- * The icon id should match with an id element in all existing SVGs (not only this {@link IconRepository}.
+ * An {@link IconRepository} which can be updated.
  */
-public interface IconRepository {
+public interface ConfigurableIconRepository extends IconRepository {
 
     /**
-     * Verifies if a mapping for the provided icon Key is defined.
-     * @param iconKey the icon key
-     * @return true if a mapping is defined, false otherwise.
-     */
-    boolean contains(String iconKey);
-
-    /**
-     * Maps the provided <code>iconKey</code> to an SVG id element.
-     * If no mapping is defined, <code>null</code> is returned.
+     * Adds a custom icon mapping. The <code>iconKey</code> must be unique in this {@link IconRepository}.
      *
-     * @param iconKey The icon key to look up
-     * @return The icon id, or null if no mapping is defined.
+     * @param iconKey The icon key
+     * @param iconId The icon id for the icon key
      */
-    String getSVGIconId(String iconKey);
+    void addIconMapping(String iconKey, String iconId);
+
+    /**
+     * Removes the given <code>iconKey</code> from this {@link IconRepository}.
+     *
+     * @param iconKey The icon key to remove
+     */
+    void removeIconMapping(String iconKey);
+
+    /**
+     * Persists this {@link IconRepository}.
+     * Should be invoked if changes to this {@link IconRepository} should be persisted permanently (e.g. on disk)
+     */
+    void save();
 }

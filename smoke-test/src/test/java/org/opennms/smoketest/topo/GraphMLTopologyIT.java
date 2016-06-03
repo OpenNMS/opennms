@@ -95,17 +95,17 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         focusedVertices.sort(Comparator.comparing(TopologyIT.FocusedVertex::getNamespace).thenComparing(TopologyIT.FocusedVertex::getLabel));
         assertEquals(
                 Lists.newArrayList(
-                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "East"),
-                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "North"),
-                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "South"),
-                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "West")
+                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "East Region"),
+                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "North Region"),
+                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "South Region"),
+                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "West Region")
                 ), focusedVertices);
 
-        // Search for and select the first business service in our list
+        // Search for and select a region
         final String regionName = "South";
         TopologyIT.TopologyUISearchResults searchResult = topologyUIPage.search(regionName);
         assertEquals(5, searchResult.countItemsThatContain(regionName));
-        searchResult.selectItemThatContains(regionName);
+        searchResult.selectItemThatContains("South Region");
 
         // Focus should not have changed
         assertEquals(4, focusedVertices.size());
