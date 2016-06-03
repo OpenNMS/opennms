@@ -32,6 +32,7 @@ import java.util.Map;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 public class GraphMLEdge extends AbstractEdge {
@@ -47,11 +48,22 @@ public class GraphMLEdge extends AbstractEdge {
         setProperties(graphMLEdge.getProperties());
     }
 
+    protected GraphMLEdge(GraphMLEdge other) {
+        super(other);
+        properties = ImmutableMap.copyOf(properties);
+    }
+
     public Map<String, Object> getProperties() {
         return properties;
     }
 
     public void setProperties(Map<String, Object> properties) {
         this.properties = properties;
+    }
+
+    @Override
+    public AbstractEdge clone() {
+        // Ensures that the properties are also copied when cloned
+        return new GraphMLEdge(this);
     }
 }
