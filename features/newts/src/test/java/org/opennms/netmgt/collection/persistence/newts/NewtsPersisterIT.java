@@ -68,7 +68,6 @@ import com.google.common.base.Optional;
         "classpath:/META-INF/opennms/applicationContext-newts.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.newts.config.max_batch_delay=0", // No delay
         "org.opennms.timeseries.strategy=newts"
 })
 public class NewtsPersisterIT {

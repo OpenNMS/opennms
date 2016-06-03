@@ -68,7 +68,7 @@ public class RedisResourceMetadataCacheIT {
     public void canGetEntriesWithPrefix() {
         Context ctx = Context.DEFAULT_CONTEXT;
 
-        RedisResourceMetadataCache cache = new RedisResourceMetadataCache(REDIS_HOSTNAME, REDIS_PORT, m_registry, new EscapableResourceIdSplitter());
+        RedisResourceMetadataCache cache = new RedisResourceMetadataCache(REDIS_HOSTNAME, REDIS_PORT, 8, m_registry, new EscapableResourceIdSplitter());
 
         assertTrue(cache.getResourceIdsWithPrefix(ctx, "a").isEmpty());
 
