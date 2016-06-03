@@ -43,6 +43,14 @@ import org.slf4j.LoggerFactory;
 /**
  * AbstractTask
  *
+ * - Currently a collection of 'dependency' tasks defines the set of tasks that are 
+ *   dependents of another.
+ * - When a task completes, the set of dependency tasks are the ones that need to 
+ *   be considered to be run.
+ * - When a task is considered, it removes the just-completed prerequisite task from 
+ *   its 'prerequisites' list i.e. the set of tasks that must complete before it can run.
+ * - If the set of prerequisites for the task becomes empty, then the task can be run.
+ * 
  * @author Seth
  * @author brozow
  */
@@ -332,13 +340,6 @@ public abstract class AbstractTask implements Task {
     @Override
     public final void waitFor(final long timeout, final TimeUnit unit) throws InterruptedException {
         m_latch.await(timeout, unit);
-    }
-    
-    /**
-     * <p>markTaskAsCompleted</p>
-     */
-    protected final void markTaskAsCompleted() {
-        getCoordinator().markTaskAsCompleted(this);
     }
 
     /**

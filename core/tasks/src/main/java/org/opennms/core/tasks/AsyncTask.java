@@ -84,7 +84,14 @@ public class AsyncTask<T> extends AbstractTask {
             callback.handleException(t);
         }
     }
-    
+
+    /**
+     * <p>markTaskAsCompleted</p>
+     */
+    private final void markTaskAsCompleted() {
+        getCoordinator().markTaskAsCompleted(this);
+    }
+
     private Callback<T> callback() {
         return new Callback<T>() {
             @Override

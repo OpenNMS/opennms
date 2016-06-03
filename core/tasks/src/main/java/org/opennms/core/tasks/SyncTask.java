@@ -42,14 +42,9 @@ public class SyncTask extends AbstractTask {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SyncTask.class);
     
-    /** Constant <code>DEFAULT_EXECUTOR="default"</code> */
-    public static final String DEFAULT_EXECUTOR = "default";
-    /** Constant <code>ADMIN_EXECUTOR="admin"</code> */
-    public static final String ADMIN_EXECUTOR = "admin";
-    
     private final Runnable m_action;
 
-    private String m_preferredExecutor = DEFAULT_EXECUTOR;
+    private String m_preferredExecutor = TaskCoordinator.DEFAULT_EXECUTOR;
     
     /**
      * <p>Constructor for SyncTask.</p>
@@ -59,7 +54,7 @@ public class SyncTask extends AbstractTask {
      * @param action a {@link java.lang.Runnable} object.
      */
     public SyncTask(TaskCoordinator coordinator, ContainerTask<?> parent, Runnable action) {
-        this(coordinator, parent, action, DEFAULT_EXECUTOR);
+        this(coordinator, parent, action, TaskCoordinator.DEFAULT_EXECUTOR);
     }
 
 

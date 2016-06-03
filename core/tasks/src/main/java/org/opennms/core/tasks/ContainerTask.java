@@ -94,7 +94,7 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Abstract
 
 
     @SuppressWarnings("unchecked")
-    private TaskBuilder<T> createBuilder() {
+    private final TaskBuilder<T> createBuilder() {
         return new TaskBuilder<T>((T)this);
     }
     
@@ -105,7 +105,7 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Abstract
      *
      * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
      */
-    public TaskBuilder<T> getBuilder() {
+    public final TaskBuilder<T> getBuilder() {
         return m_builder;
     }
     

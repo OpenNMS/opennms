@@ -38,7 +38,10 @@ import java.util.concurrent.Executor;
  * @version $Id: $
  */
 public interface TaskCoordinator {
-	
+
+    /** Constant <code>DEFAULT_EXECUTOR="default"</code> */
+    public static final String DEFAULT_EXECUTOR = "default";
+
     /**
      * <p>createTask</p>
      *
