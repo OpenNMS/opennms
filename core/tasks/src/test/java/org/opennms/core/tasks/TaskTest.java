@@ -61,8 +61,8 @@ public class TaskTest {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(TaskTest.class);
     
-    ExecutorService m_executor;
-    TaskCoordinator m_coordinator;
+    private ExecutorService m_executor;
+    private TaskCoordinator m_coordinator;
     
     @Before
     public void setUp() {
@@ -343,7 +343,7 @@ public class TaskTest {
         bBlocker.countDown();
         aBlocker.countDown();
         
-        // we wait just to a litlte to make sure the two completes get added
+        // we wait just a little to make sure the two completes get added
         Thread.sleep(100);
 
         // not we add the prerequisite
@@ -470,7 +470,7 @@ public class TaskTest {
         
     }
     
-    private <T> Runnable appender(final List<T> list, final T value) {
+    private static <T> Runnable appender(final List<T> list, final T value) {
         return new Runnable() {
             @Override
             public void run() {
@@ -483,7 +483,7 @@ public class TaskTest {
         };
     }
     
-    private Runnable incr(final AtomicInteger counter) {
+    private static Runnable incr(final AtomicInteger counter) {
         return new Runnable() {
             @Override
             public void run() {
@@ -498,7 +498,7 @@ public class TaskTest {
         
     }
     
-    private Runnable addr(final AtomicLong accum, final long n) {
+    private static Runnable addr(final AtomicLong accum, final long n) {
         return new Runnable() {
           @Override
           public void run() {
@@ -525,7 +525,7 @@ public class TaskTest {
     }
     
     
-    private Runnable waiter(final String name, final CountDownLatch latch) {
+    private static Runnable waiter(final String name, final CountDownLatch latch) {
         return new Runnable() {
             @Override
             public void run() {
@@ -542,7 +542,7 @@ public class TaskTest {
         };
     }
     
-    private <T> Async<T> timer(final long millis, final T value) {
+    private static <T> Async<T> timer(final long millis, final T value) {
         final Timer timer = new Timer(true);
         return new Async<T>() {
             @Override
@@ -564,7 +564,7 @@ public class TaskTest {
         };
     }
     
-    private Callback<Integer> setter(final AtomicInteger keeper) {
+    private static Callback<Integer> setter(final AtomicInteger keeper) {
         return new Callback<Integer>() {
 
             @Override
@@ -580,7 +580,7 @@ public class TaskTest {
         };
     }
     
-    private void sleep(long millis) {
+    private static void sleep(long millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
