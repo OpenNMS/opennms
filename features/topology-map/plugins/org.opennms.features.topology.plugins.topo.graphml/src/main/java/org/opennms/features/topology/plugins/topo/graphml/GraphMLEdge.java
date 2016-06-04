@@ -50,7 +50,7 @@ public class GraphMLEdge extends AbstractEdge {
 
     protected GraphMLEdge(GraphMLEdge other) {
         super(other);
-        properties = ImmutableMap.copyOf(properties);
+        properties = ImmutableMap.copyOf(other.properties);
     }
 
     public Map<String, Object> getProperties() {
