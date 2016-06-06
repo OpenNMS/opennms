@@ -35,7 +35,7 @@
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<!-- TODO: Partition by remote address -->
 				<!-- <simple>${body.remoteAddress}</simple> -->
-				<simple>${body.agent}</simple>
+				<simple>trap</simple>
 			</setHeader>
 
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
