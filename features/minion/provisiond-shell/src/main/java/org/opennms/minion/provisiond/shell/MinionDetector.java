@@ -26,7 +26,7 @@
  *      http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.minion.core.shell;
+package org.opennms.minion.provisiond.shell;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -67,15 +67,15 @@ public class MinionDetector implements Action {
         for (SyncServiceDetector detector : detectors) {
 
             if ((detector.getServiceName().equals(detectorType))) {
-                System.out.println("Trying to detect" + detectorType
-                        + "service at " + address);
+                System.out.println("Trying to detect   " + detectorType
+                        + "   service at    " + address);
                 try {
                     isServiceDetected = detector.isServiceDetected(ipAddress);
                 } catch (Exception e) {
                     System.out.println(" Exception caused for detectorType "
                             + detectorType);
                 }
-                System.out.println(detectorType + "service detected at "
+                System.out.println(detectorType + "   service detected at "
                         + ipAddress + "   is   " + isServiceDetected);
 
             }

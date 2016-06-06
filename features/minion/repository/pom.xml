@@ -50,6 +50,7 @@
                                 <!-- <feature>opennms-trapd-handler-kafka</feature> -->
                                 <feature>minion-heartbeat</feature>
                                 <feature>opennms-detector-simple</feature>
+                                <feature>minion-provisiond-shell</feature>
                             </features>
                             <repository>target/maven-repo</repository>
                         </configuration>
@@ -105,6 +106,11 @@
             <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>provisiond-shell</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

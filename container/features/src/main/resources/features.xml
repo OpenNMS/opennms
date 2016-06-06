@@ -229,7 +229,7 @@
     </feature>
 
     <feature name="dnsjava" description="dnsjava" version="${dnsjavaVersion}">
-      <bundle dependency="true">wrap:mvn:dnsjava/dnsjava/${dnsjavaVersion}</bundle>
+      <bundle dependency="true">wrap:mvn:org.dnsjava/dnsjava/${dnsjavaVersion}</bundle>
     </feature>
 
     <feature name="dropwizard-metrics" description="Dropwizard :: Metrics" version="3.1.2">

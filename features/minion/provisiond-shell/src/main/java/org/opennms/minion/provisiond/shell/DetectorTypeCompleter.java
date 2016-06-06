@@ -26,7 +26,7 @@
  *      http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.minion.core.shell;
+package org.opennms.minion.provisiond.shell;
 
 import java.util.List;
 
