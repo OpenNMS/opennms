@@ -55,7 +55,7 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
      * This interface is used as a marker for {@link Runnable} tasks that
      * are intended to be enqueued on the {@link RunnableActor} thread.
      */
-    private interface SerialRunnable extends Runnable {}
+    interface SerialRunnable extends Runnable {}
 
     /**
      * <p>This {@link Executor} handles all of the task dependency work to reduce the 
@@ -268,7 +268,7 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
         onProcessorThread(dependencyAdder(prereq, dependent));
     }
 
-    private void onProcessorThread(final SerialRunnable r) {
+    void onProcessorThread(final SerialRunnable r) {
         // If there's a delay set for testing, run the task
         // and then sleep for the delay
         CompletableFuture<Void> future = null;

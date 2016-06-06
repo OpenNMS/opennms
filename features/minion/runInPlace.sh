@@ -28,5 +28,5 @@ popd
 
 # Start the container as root (currently required for ICMP)
 pushd "$MINION_HOME"
-sudo ./bin/karaf
+sudo ./bin/karaf debug
 popd
