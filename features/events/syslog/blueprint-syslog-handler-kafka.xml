@@ -34,7 +34,7 @@
 
 	<camelContext id="syslogConnectionHandler" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerKafkaProperties" />
-		<route id="handle">
+		<route id="handleSyslogKafka">
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
 		    <setHeader headerName="kafka.PARTITION_KEY">
