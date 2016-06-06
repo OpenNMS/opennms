@@ -28,7 +28,14 @@
       <feature>minion-core-api</feature>
       <bundle>blueprint:mvn:org.opennms.features/org.opennms.features.discovery/${project.version}/xml/blueprint-discovery-distPollerDaoMinion</bundle>
     </feature>
-
+    
+    <feature name="opennms-syslogd-handler-kafka" description="OpenNMS :: Syslogd :: Handler :: Kafka" version="${project.version}">
+      <feature>camel-blueprint</feature>
+      <feature>minion-core-api</feature>
+      <feature>opennms-syslogd</feature>
+      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-kafka</bundle>
+    </feature>
+    
     <feature name="opennms-syslogd-handler-minion" description="OpenNMS :: Syslogd :: Handler :: Minion" version="${project.version}">
       <feature>camel-blueprint</feature>
       <feature>minion-core-api</feature>
@@ -56,4 +63,11 @@
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.camel/${project.version}</bundle>
     </feature>
+    
+    <feature name="opennms-trapd-handler-kafka" description="OpenNMS :: Trapd :: Handler :: Kafka" version="${project.version}">
+      <feature>camel-blueprint</feature>
+      <feature>opennms-trapd</feature>
+      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-kafka</bundle>
+    </feature>
+    
 </features>

@@ -90,6 +90,11 @@
                   <type>xml</type>
                   <classifier>blueprint-syslog-listener-nio</classifier>
                 </artifact>
+                <artifact>
+                  <file>blueprint-syslog-handler-kafka-default.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-syslog-handler-kafka-default</classifier>
+                </artifact>
               </artifacts>
             </configuration>
           </execution>
@@ -137,7 +142,6 @@
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-kafka</artifactId>
       <version>${camelVersion}</version>
-      <scope>test</scope>
       <exclusions>
         <exclusion>
           <groupId>javax.xml.bind</groupId>
@@ -224,5 +228,26 @@
       <artifactId>org.opennms.core.test-api.camel</artifactId>
       <scope>test</scope>
     </dependency>
+    
+    <!-- HZN-742 -->
+    <dependency>
+	 <groupId>org.apache.curator</groupId>
+	 <artifactId>curator-test</artifactId>
+	 <version>${curatorVersion}</version>
+	 <scope>test</scope>
+	 <exclusions>
+	 	<exclusion>
+	 		<artifactId>log4j</artifactId>
+	 		<groupId>log4j</groupId>
+	 	</exclusion>
+	 	<exclusion>
+	 		<artifactId>slf4j-log4j12</artifactId>
+	 		<groupId>org.slf4j</groupId>
+	 	</exclusion>
+	 </exclusions>
+    </dependency>
+
+	<!-- end of  HZN-742-->
+    
   </dependencies>
 </project>

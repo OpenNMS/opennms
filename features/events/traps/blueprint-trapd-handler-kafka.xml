@@ -1,0 +1,45 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+
+	<cm:property-placeholder id="trapdHandlerKafkaProperties" persistent-id="org.opennms.netmgt.trapd.handler.kafka" placeholder-prefix="$[" placeholder-suffix="]" update-strategy="none">
+		<cm:default-properties>
+			<cm:property name="kafkahost" value="127.0.0.1" />
+			<cm:property name="kafkaport" value="9092" />
+			<cm:property name="kafkatopic" value="trapd" />
+		</cm:default-properties>
+	</cm:property-placeholder>
+
+	<bean id="trapNotificationHandlerCamel" class="org.opennms.netmgt.trapd.TrapNotificationHandlerCamelImpl">
+		<argument value="seda:handleMessage"/>
+	</bean>
+
+	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapNotificationHandlerCamel"/>
+
+	<camelContext id="trapNotificationHandler" xmlns="http://camel.apache.org/schema/blueprint">
+		<propertyPlaceholder id="properties" location="blueprint:trapdHandlerKafkaProperties" />
+		<route id="handleTrap">
+			<from uri="seda:handleMessage" />
+			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
+			<setHeader headerName="kafka.PARTITION_KEY">
+				<!-- TODO: Partition by remote address -->
+				<!-- <simple>${body.remoteAddress}</simple> -->
+				<simple>trap</simple>
+			</setHeader>
+
+			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
+			<to uri="kafka:taspmoosskafka111.cernerasp.com:9092,taspmoosskafka112.cernerasp.com:9092,taspmoosskafka113.cernerasp.com:9092?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
+		</route>
+	</camelContext>
+</blueprint>

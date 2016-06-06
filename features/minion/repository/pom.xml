@@ -47,7 +47,7 @@
                                 <feature>opennms-syslogd-handler-kafka</feature>
                                 <feature>opennms-trapd-listener</feature>
                                 <feature>opennms-trapd-handler-minion</feature>
-                                <!-- <feature>opennms-trapd-handler-kafka</feature> -->
+                                <feature>opennms-trapd-handler-kafka</feature>
                                 <feature>minion-heartbeat</feature>
                                 <feature>minion-snmp-proxy</feature>
                             </features>
