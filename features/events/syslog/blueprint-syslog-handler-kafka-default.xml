@@ -18,7 +18,8 @@
 			<cm:property name="kafkahost" value="127.0.0.1" />
 			<cm:property name="kafkaport" value="9092" />
 			<cm:property name="kafkatopic" value="syslog" />
-			<cm:property name="zookeeperhost" value="127.0.0.1"/>
+			<!--  <cm:property name="zookeeperhost" value="127.0.0.1"/>-->
+			<cm:property name="zookeeperhost" value="taspmoosskafka111.cernerasp.com,taspmoosskafka112.cernerasp.com,taspmoosskafka113.cernerasp.com"/>
 			<cm:property name="zookeeperport" value="2181"/>
 			<cm:property name="groupId" value="syslogconsumer"/>
 		</cm:default-properties>
@@ -40,7 +41,7 @@
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerDefaultKafkaProperties" />
 
 		<route id="receiveSyslogConnectionViaKafka">
-			<from uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}"/>
+			<from uri="kafka:taspmoosskafka111.cernerasp.com:9092,taspmoosskafka112.cernerasp.com:9092,taspmoosskafka113.cernerasp.com:9092?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}"/>
 			<process ref="unmarshaller"/>
 		    <!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>

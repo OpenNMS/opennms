@@ -34,7 +34,7 @@
 
 	<camelContext id="syslogConnectionHandler" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerKafkaProperties" />
-		<route id="handle">
+		<route id="handleSyslogKafka">
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
 		    <setHeader headerName="kafka.PARTITION_KEY">
@@ -45,7 +45,7 @@
 			
 			<bean ref="marshaller"/>
 	
-			<to uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
+			<to uri="kafka:taspmoosskafka111.cernerasp.com:9092,taspmoosskafka112.cernerasp.com:9092,taspmoosskafka113.cernerasp.com:9092?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>
 	</camelContext>
 
