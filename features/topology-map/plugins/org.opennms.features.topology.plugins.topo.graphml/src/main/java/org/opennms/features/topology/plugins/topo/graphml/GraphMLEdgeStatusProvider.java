@@ -47,6 +47,8 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.FilenameUtils;
+import org.opennms.features.topology.api.info.MeasurementsWrapper;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -64,6 +66,9 @@ import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 import javax.script.SimpleScriptContext;
 
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.measurements.api.MeasurementsService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,12 +81,12 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
 
     private final static Path DIR = Paths.get(System.getProperty("opennms.home"), "etc", "graphml-edge-status");
 
-    private static class GraphMLEdgeStatus implements Status {
+    public static class GraphMLEdgeStatus implements Status {
 
         private final OnmsSeverity severity;
         private final Map<String, String> styleProperties;
 
-        private GraphMLEdgeStatus(final OnmsSeverity severity,
+        public GraphMLEdgeStatus(final OnmsSeverity severity,
                                   final Map<String, String> styleProperties) {
             this.severity = severity;
             this.styleProperties = styleProperties;
@@ -110,13 +115,19 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
     private final GraphMLTopologyProvider provider;
     private final ScriptEngineManager scriptEngineManager;
     private final TransactionOperations transactionOperations;
+    private final NodeDao nodeDao;
+    private final MeasurementsWrapper measurementsWrapper;
 
     public GraphMLEdgeStatusProvider(final GraphMLTopologyProvider provider,
                                      final ScriptEngineManager scriptEngineManager,
-                                     final TransactionOperations transactionOperations) {
+                                     final TransactionOperations transactionOperations,
+                                     final NodeDao nodeDao,
+                                     final MeasurementsService measurementsService) {
         this.provider = Objects.requireNonNull(provider);
         this.scriptEngineManager = Objects.requireNonNull(scriptEngineManager);
         this.transactionOperations = Objects.requireNonNull(transactionOperations);
+        this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.measurementsWrapper = new MeasurementsWrapper(Objects.requireNonNull(measurementsService));
     }
 
 
@@ -158,7 +169,34 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
 
                           final ScriptContext context = new SimpleScriptContext();
                           context.setWriter(writer);
-                          context.setBindings(new SimpleBindings(ImmutableMap.of("edge", edge)),
+
+                          SimpleBindings bindings = new SimpleBindings();
+
+                          bindings.put("edge", edge);
+
+                          OnmsNode sourceNode = null;
+                          OnmsNode targetNode = null;
+
+                          if (edge.getSource() != null && edge.getSource().getVertex() instanceof AbstractVertex) {
+                              AbstractVertex abstractVertex = (AbstractVertex) edge.getSource().getVertex();
+                              if (abstractVertex.getNodeID() != null) {
+                                  sourceNode = nodeDao.get(abstractVertex.getNodeID());
+                              }
+                          }
+
+                          if (edge.getTarget() != null && edge.getTarget().getVertex() instanceof AbstractVertex) {
+                              AbstractVertex abstractVertex = (AbstractVertex) edge.getTarget().getVertex();
+                              if (abstractVertex.getNodeID() != null) {
+                                  targetNode = nodeDao.get(abstractVertex.getNodeID());
+                              }
+                          }
+
+                          bindings.put("sourceNode", sourceNode);
+                          bindings.put("targetNode", targetNode);
+                          bindings.put("measurements", measurementsWrapper);
+                          bindings.put("nodeDao", nodeDao);
+
+                          context.setBindings(bindings,
                                               ScriptContext.GLOBAL_SCOPE);
 
                           try {

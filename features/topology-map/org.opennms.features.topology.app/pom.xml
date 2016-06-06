@@ -132,18 +132,11 @@
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-web-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.features.measurements</groupId>
-            <artifactId>org.opennms.features.measurements.api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
         <dependency>
             <groupId>com.hubspot.jinjava</groupId>
             <artifactId>jinjava</artifactId>

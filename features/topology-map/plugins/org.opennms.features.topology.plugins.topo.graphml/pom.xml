@@ -74,6 +74,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.measurements</groupId>
+      <artifactId>org.opennms.features.measurements.api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
 	   <groupId>org.osgi</groupId>
 	   <artifactId>org.osgi.compendium</artifactId>
 	   <scope>provided</scope>

@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.info.InfoPanelItemProvider;
+import org.opennms.features.topology.api.info.MeasurementsWrapper;
 import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.EdgeRef;

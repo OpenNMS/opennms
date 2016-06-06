@@ -26,15 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.info;
+package org.opennms.features.topology.api.info;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.opennms.netmgt.measurements.api.MeasurementsService;
+import org.opennms.netmgt.measurements.model.Expression;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,12 +46,12 @@ import com.google.common.base.Throwables;
 import com.google.gwt.thirdparty.guava.common.primitives.Doubles;
 
 public class MeasurementsWrapper {
-    private final static Logger LOG = LoggerFactory.getLogger(GenericInfoPanelItemProvider.class);
+    private final static Logger LOG = LoggerFactory.getLogger(MeasurementsWrapper.class);
 
     private final MeasurementsService measurementsService;
 
     public MeasurementsWrapper(MeasurementsService measurementsService) {
-        this.measurementsService=measurementsService;
+        this.measurementsService = measurementsService;
     }
 
     public double getLastValue(final String resource, final String attribute) {
@@ -81,6 +85,64 @@ public class MeasurementsWrapper {
         }
 
         return Collections.emptyList();
+    }
+
+    public List<Double> computeUtilization(final OnmsNode node, final String ifName) {
+        long end = System.currentTimeMillis();
+        long start = end - (15 * 60 * 1000);
+
+        for(OnmsSnmpInterface snmpInterface : node.getSnmpInterfaces()) {
+            if (ifName.equals(snmpInterface.getIfName())) {
+                String resourceId = "node[" + node.getId() + "].interfaceSnmp[" + snmpInterface.computeLabelForRRD() + "]";
+
+                return computeUtilization(resourceId, start, end, 300000, "AVERAGE");
+            }
+        }
+        return Arrays.asList(Double.NaN, Double.NaN);
+    }
+
+    public List<Double> computeUtilization(final String resource, final long start, final long end, final long step, final String aggregation) {
+        QueryRequest request = new QueryRequest();
+        request.setRelaxed(true);
+        request.setStart(start);
+        request.setEnd(end);
+        request.setStep(step);
+
+        Source sourceIn = new Source();
+        sourceIn.setAggregation(aggregation);
+        sourceIn.setTransient(true);
+        sourceIn.setAttribute("ifHCInOctets");
+        sourceIn.setResourceId(resource);
+        sourceIn.setLabel("ifHCInOctets");
+
+        Source sourceOut = new Source();
+        sourceOut.setAggregation(aggregation);
+        sourceOut.setTransient(true);
+        sourceOut.setAttribute("ifHCOutOctets");
+        sourceOut.setResourceId(resource);
+        sourceOut.setLabel("ifHCOutOctets");
+
+        request.setExpressions(Arrays.asList(new Expression("ifHCInPercent", "(8 * ifHCInOctects / 1000000) / ifHCInOctets.ifHighSpeed * 100", false), new Expression("ifHCOutPercent", "(8 * ifHCOutOctects / 1000000) / ifHCOutOctets.ifHighSpeed * 100", false)));
+
+        request.setSources(Arrays.asList(sourceIn, sourceOut));
+
+        try {
+            QueryResponse.WrappedPrimitive[] columns = measurementsService.query(request).getColumns();
+
+            double[] values1 = columns[0].getList();
+            double[] values2 = columns[1].getList();
+
+            for(int i = values1.length-1; i >= 0; i--) {
+                if (!Double.isNaN(values1[i]) && !Double.isNaN(values2[i])) {
+                    return Arrays.asList(values1[i], values2[i]);
+                }
+            }
+
+            return Arrays.asList(Double.NaN, Double.NaN);
+        } catch (Exception ex) {
+            // TODO error handling
+            throw Throwables.propagate(ex);
+        }
     }
 
     private QueryResponse queryInt(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation) {
