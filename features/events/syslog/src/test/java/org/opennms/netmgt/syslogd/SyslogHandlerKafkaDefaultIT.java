@@ -110,7 +110,7 @@ public class SyslogHandlerKafkaDefaultIT extends CamelBlueprintTest {
 		kafkaPort = getAvailablePort(9092, 9192);
 
 		props.put("zookeeperport", String.valueOf(zookeeperPort));
-		props.put("kafkaport", String.valueOf(kafkaPort));
+		props.put("kafkahostport", String.valueOf("localhost:" + kafkaPort));
 		return "org.opennms.netmgt.syslog.handler.kafka.default";
 	}
 
