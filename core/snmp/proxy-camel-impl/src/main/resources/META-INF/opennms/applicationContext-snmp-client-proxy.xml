@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+">
+
+  <context:annotation-config />
+
+  <bean id="localSnmpRequestExecutor" class="org.opennms.netmgt.snmp.proxy.common.SnmpRequestExecutorLocalImpl"/>
+
+  <bean id="remoteSnmpRequestExecutor" class="org.opennms.netmgt.snmp.proxy.camel.SnmpRequestExecutorCamelImpl"/>
+
+  <bean id="identity" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="distPollerDao"/>
+    <property name="targetMethod" value="whoami"/>
+  </bean>
+
+  <bean id="locationAwareSnmpClient" class="org.opennms.netmgt.snmp.proxy.common.DelegatingLocationAwareSnmpClientImpl"/>
+
+  <onmsgi:service interface="org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient" ref="locationAwareSnmpClient"/>
+
+  <bean id="marshalProcessor" class="org.opennms.netmgt.snmp.proxy.common.SnmpRequestDTO.Marshal"/>
+
+  <bean id="unmarshalProcessor" class="org.opennms.netmgt.snmp.proxy.common.SnmpMultiResponseDTO.Unmarshal"/>
+
+  <camelContext id="snmpProxy" xmlns="http://camel.apache.org/schema/spring">
+    <route id="snmpRequestExecutor">
+      <from uri="direct:executeSnmpRequest" />
+      <!-- Pull the location into the header before we marshal the request -->
+      <setHeader headerName="remoteLocationName">
+          <simple>${body.location}</simple>
+      </setHeader>
+      <!-- Pull the TTL into the header before we marshal the request -->
+      <setHeader headerName="CamelJmsRequestTimeout">
+          <simple>${body.timeToLive}</simple>
+      </setHeader>
+	  <!-- Marshal the request to XML -->
+	  <bean ref="marshalProcessor"/>
+      <setExchangePattern pattern="InOut"/>
+      <recipientList>
+        <simple>queuingservice:snmp-proxy@${header.remoteLocationName}</simple>
+      </recipientList>
+      <!-- Unmarshal the response from XML -->
+      <bean ref="unmarshalProcessor"/>
+    </route>
+  </camelContext>
+</beans>

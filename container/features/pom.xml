@@ -558,6 +558,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.snmp</groupId>
+      <artifactId>org.opennms.core.snmp.proxy.camel</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.commands</artifactId>
       <version>${project.version}</version>

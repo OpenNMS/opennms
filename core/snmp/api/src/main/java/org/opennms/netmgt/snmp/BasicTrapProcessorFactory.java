@@ -28,14 +28,6 @@
 
 package org.opennms.netmgt.snmp;
 
-import java.net.InetAddress;
-
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.TrapIdentity;
-import org.opennms.netmgt.snmp.TrapProcessor;
-import org.opennms.netmgt.snmp.TrapProcessorFactory;
-
 /**
  * A factory for creating TrapProcessor objects.
  * 
