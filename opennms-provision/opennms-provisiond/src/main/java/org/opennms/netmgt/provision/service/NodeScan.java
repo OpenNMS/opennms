@@ -276,6 +276,8 @@ public class NodeScan implements Scan {
 
                     final Task t = createTask();
                     t.schedule();
+                    // NMS-5593 shows 10 provisioning threads all waiting on these
+                    // latches which is probably exhausting the thread pool
                     t.waitFor();
 
                     LOG.info("Finished scanning node {}/{}/{}", getNodeId(), getForeignSource(), getForeignId());
