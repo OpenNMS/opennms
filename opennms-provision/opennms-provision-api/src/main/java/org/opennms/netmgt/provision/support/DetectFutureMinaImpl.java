@@ -55,16 +55,6 @@ public class DetectFutureMinaImpl extends DefaultIoFuture implements DetectFutur
     }
 
     /**
-     * <p>getServiceDetector</p>
-     *
-     * @return a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
-     */
-    @Override
-    public AsyncServiceDetector getServiceDetector() {
-        return m_detector;
-    }
-
-    /**
      * <p>isServiceDetected</p>
      *
      * @return a boolean.

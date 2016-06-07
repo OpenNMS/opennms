@@ -37,6 +37,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.junit.Test;
+import org.opennms.core.tasks.DefaultTaskCoordinator.SerialRunnable;
 
 /**
  * @author Seth
@@ -83,7 +84,7 @@ public class TaskCoordinatorTest {
 
         for (int i = 0; i < numberOfTasks; i++) {
             final int count = i;
-            coordinator.onProcessorThread(new Runnable() {
+            coordinator.onProcessorThread(new SerialRunnable() {
                 @Override
                 public void run() {
                     // Introduct some jitter into the threads
