@@ -850,7 +850,7 @@
     </feature>
     
     
-    <feature name="opennms-detector-simple" description="OpenNMS :: Minion :: Detector" version="${project.version}">
+    <feature name="opennms-detector-simple" description="OpenNMS :: Provision :: Simple Detector" version="${project.version}">
       <bundle>blueprint:mvn:org.opennms/opennms-detector-simple/${project.version}/xml/blueprint-detector</bundle>
       <bundle>mvn:org.opennms/opennms-detector-simple/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>

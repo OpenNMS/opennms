@@ -29,7 +29,9 @@
 package org.opennms.minion.provisiond.shell;
 
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
@@ -40,6 +42,9 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.provision.SyncServiceDetector;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.PropertyAccessorFactory;
 
 @Command(scope = "minion", name = "detect", description = "Detects services at given ipAddress")
 @Service
@@ -51,6 +56,9 @@ public class MinionDetector implements Action {
 
     @Argument(index = 1, name = "address", description = "The address to be detected", required = true, multiValued = false)
     String address = null;
+
+    @Argument(index = 2, name = "attributes", description = "Attributes to be set in key=value  form", multiValued = true)
+    List<String> attributes;
 
     @Reference
     List<SyncServiceDetector> detectors;
@@ -64,12 +72,15 @@ public class MinionDetector implements Action {
 
         InetAddress ipAddress = InetAddress.getByName(address);
         boolean isServiceDetected = false;
+        Map<String, String> properties = parse(attributes);
+
         for (SyncServiceDetector detector : detectors) {
 
             if ((detector.getServiceName().equals(detectorType))) {
                 System.out.println("Trying to detect   " + detectorType
                         + "   service at    " + address);
                 try {
+                    setAttributes(properties, detector);
                     isServiceDetected = detector.isServiceDetected(ipAddress);
                 } catch (Exception e) {
                     System.out.println(" Exception caused for detectorType "
@@ -83,6 +94,38 @@ public class MinionDetector implements Action {
 
         return null;
 
+    }
+
+    private void setAttributes(Map<String, String> properties,
+            SyncServiceDetector detector) {
+
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(detector);
+
+        try {
+            wrapper.setPropertyValues(properties);
+        } catch (BeansException e) {
+            System.out.println("Could not set properties on detector "
+                    + e.getMessage());
+        }
+    }
+
+    private Map<String, String> parse(List<String> attributeList) {
+        Map<String, String> properties = new HashMap<>();
+        if (attributeList != null) {
+            for (String keyValue : attributeList) {
+                int splitAt = keyValue.indexOf("=");
+                if (splitAt <= 0) {
+                    throw new IllegalArgumentException("Invalid property "
+                            + keyValue);
+                } else {
+                    String key = keyValue.substring(0, splitAt);
+                    String value = keyValue.substring(splitAt + 1,
+                                                      keyValue.length());
+                    properties.put(key, value);
+                }
+            }
+        }
+        return properties;
     }
 
     public void setAddress(String address) {
