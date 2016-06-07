@@ -37,11 +37,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
 public class SyslogdReceiverCamelNettyIT extends CamelBlueprintTest {
+
+	private static final String LOCATION = "RDU";
 
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -50,6 +54,17 @@ public class SyslogdReceiverCamelNettyIT extends CamelBlueprintTest {
 		services.put(SyslogConnectionHandler.class.getName(), new KeyValueHolder<Object, Dictionary>(new SyslogConnectionHandler() {
 			@Override
 			public void handleSyslogConnection(SyslogConnection message) {
+			}
+		}, new Properties()));
+
+		services.put( MinionIdentity.class.getName(), new KeyValueHolder<Object, Dictionary>( new MinionIdentity() {
+			@Override
+			public String getId() {
+				return DistPollerDao.DEFAULT_DIST_POLLER_ID;
+			}
+			@Override
+			public String getLocation() {
+				return LOCATION;
 			}
 		}, new Properties()));
 	}

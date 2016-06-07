@@ -16,7 +16,7 @@
 	<reference id="minionIdentity" interface="org.opennms.minion.core.api.MinionIdentity"/>
 
 	<!-- Create a DistPollerDao that can be used to access information about the Minion system -->
-	<bean id="distPollerDaoMinion" class="org.opennms.netmgt.discovery.DistPollerDaoMinion">
+	<bean id="distPollerDaoMinion" class="org.opennms.netmgt.dao.DistPollerDaoMinion">
 		<argument ref="minionIdentity"/>
 	</bean>
 

@@ -47,6 +47,7 @@ import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -108,7 +109,7 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTest {
 		// Send a SyslogConnection
 		template.sendBody(
 			"queuingservice:broadcastSyslog",
-			JaxbUtils.marshal(new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap(messageBytes), config))
+			JaxbUtils.marshal(new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap(messageBytes), config, DistPollerDao.DEFAULT_DIST_POLLER_ID))
 		);
 
 		assertMockEndpointsSatisfied();

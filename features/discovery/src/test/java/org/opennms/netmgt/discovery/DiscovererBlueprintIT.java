@@ -39,16 +39,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.minion.core.api.MinionIdentity;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.IncludeRange;
+import org.opennms.netmgt.dao.DistPollerDaoMinion;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.Pinger;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith( OpenNMSJUnit4ClassRunner.class )
@@ -74,14 +75,18 @@ public class DiscovererBlueprintIT extends CamelBlueprintTest {
         services.put( EventIpcManager.class.getName(),
                 new KeyValueHolder<Object, Dictionary>( IPC_MANAGER_INSTANCE, new Properties() ) );
 
-        OnmsDistPoller distPoller = new OnmsDistPoller();
-        distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
-        distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
-        distPoller.setLocation(LOCATION);
-        DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
-
-        services.put( DistPollerDao.class.getName(),
-                new KeyValueHolder<Object, Dictionary>(distPollerDao, new Properties() ) );
+        services.put( MinionIdentity.class.getName(),
+                new KeyValueHolder<Object, Dictionary>( new MinionIdentity() {
+                    @Override
+                    public String getId() {
+                        return DistPollerDao.DEFAULT_DIST_POLLER_ID;
+                    }
+                    @Override
+                    public String getLocation() {
+                        return LOCATION;
+                    }
+                }, new Properties())
+        );
 
         DiscoveryConfiguration config = new DiscoveryConfiguration();
         IncludeRange range = new IncludeRange();
