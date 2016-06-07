@@ -390,6 +390,11 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
     @Override
+    public int getDefaultSzl() {
+        return m_baseGraphProvider.getDefaultSzl();
+    }
+
+    @Override
     public List<Criteria> getDefaultCriteria() {
         return m_baseGraphProvider.getDefaultCriteria();
     }
@@ -700,6 +705,11 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
 			return null;
 		}
+
+	    @Override
+	    public int getDefaultSzl() {
+	        return 0;
+	    }
 
         @Override
         public List<Criteria> getDefaultCriteria() {

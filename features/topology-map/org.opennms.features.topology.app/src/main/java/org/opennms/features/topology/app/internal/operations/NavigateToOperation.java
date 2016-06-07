@@ -84,7 +84,8 @@ public class NavigateToOperation implements Constants, Operation {
         // TODO: Consolidate that this is configurable and we can define a default SZL and default Focus per layer
         // TODO: Use a default SZL per graph?
         graphContainer.clearCriteria(); // Remove all criteria
-        graphContainer.setSemanticZoomLevel(1); // Reset the SZL to 1
+        // Use the default SZL
+        graphContainer.setSemanticZoomLevel(targetGraphProvider.getDefaultSzl());
 
         // Add the target vertices to focus
         targetVertices.stream().forEach(v -> graphContainer.addCriteria(new DefaultVertexHopCriteria(v)));

@@ -64,7 +64,6 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
 
     private static final String LABEL = "GraphML Topology Provider (test-graph)";
 
-
     private TopologyIT.TopologyUIPage topologyUIPage;
 
     @Before
@@ -92,6 +91,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         List<TopologyIT.FocusedVertex> focusedVertices = topologyUIPage.getFocusedVertices();
         assertEquals(4, focusedVertices.size());
         assertEquals(4, topologyUIPage.getVisibleVertices().size());
+        assertEquals(1, topologyUIPage.getSzl());
         focusedVertices.sort(Comparator.comparing(TopologyIT.FocusedVertex::getNamespace).thenComparing(TopologyIT.FocusedVertex::getLabel));
         assertEquals(
                 Lists.newArrayList(
@@ -116,6 +116,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
 
         // Switch Layer
         topologyUIPage.selectLayer("Markets");
+        assertEquals(0, topologyUIPage.getSzl());
         assertEquals(1, topologyUIPage.getFocusedVertices().size());
         assertEquals("North 4", topologyUIPage.getFocusedVertices().get(0).getLabel());
     }

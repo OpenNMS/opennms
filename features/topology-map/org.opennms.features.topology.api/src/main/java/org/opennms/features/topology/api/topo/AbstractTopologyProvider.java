@@ -45,6 +45,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
 public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
+    public static final int DEFAULT_SEMANTIC_ZOOM_LEVEL = 1;
     protected static final String SIMPLE_VERTEX_ID_PREFIX = "v";
 	protected static final String SIMPLE_GROUP_ID_PREFIX = "g";
 	protected static final String SIMPLE_EDGE_ID_PREFIX = "e";
@@ -361,6 +362,11 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         vertexIdGenerator.reset();
         groupIdGenerator.reset();
         edgeIdGenerator.reset();
+    }
+
+    @Override
+    public int getDefaultSzl() {
+        return DEFAULT_SEMANTIC_ZOOM_LEVEL;
     }
 
     @Override

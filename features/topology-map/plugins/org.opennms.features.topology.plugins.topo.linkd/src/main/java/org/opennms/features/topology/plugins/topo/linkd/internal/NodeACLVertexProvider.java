@@ -145,6 +145,11 @@ public class NodeACLVertexProvider implements GraphProvider {
     }
 
     @Override
+    public int getDefaultSzl() {
+        return m_delegate.getDefaultSzl();
+    }
+
+    @Override
     public List<Criteria> getDefaultCriteria() {
         return m_delegate.getDefaultCriteria();
     }
