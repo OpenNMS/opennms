@@ -364,6 +364,12 @@
             <documentation>sub group</documentation>
           </annotation>
         </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:property">
+          <annotation>
+            <documentation>a MIB Property object</documentation>
+          </annotation>
+        </element>
       </sequence>
 
       <attribute name="name" type="string" use="required">
@@ -548,6 +554,51 @@
           <documentation>Minimum Value. For completeness, adding the ability
             to use a minimum value.
           </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="property">
+    <annotation>
+      <documentation>a MIB Property object</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="instance" type="string" use="required">
+        <annotation>
+          <documentation>instance identifier (name of a resource type).</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="source-type" type="string" use="required">
+        <annotation>
+          <documentation>resource type of the source MibObj.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="source-alias" type="string" use="required">
+        <annotation>
+          <documentation>alias of the source MibObj.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="name" type="string" use="optional">
+        <annotation>
+          <documentation>name of the property.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="index-pattern" type="string" use="optional">
+        <annotation>
+          <documentation>the index pattern to match (for RegEx based matching).</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="class-name" type="string" use="optional">
+        <annotation>
+          <documentation>the name of the custom implementation of the
+          org.opennms.netmgt.collectd.SnmpPropertyExtender class to use
+          to update the property.</documentation>
         </annotation>
       </attribute>
     </complexType>

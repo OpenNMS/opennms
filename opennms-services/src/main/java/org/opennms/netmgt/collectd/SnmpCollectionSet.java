@@ -388,6 +388,10 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
             // Was the collection successful?
             verifySuccessfulWalk(walker);
 
+            // Execute POST Updates (add custom parameters)
+            SnmpPropertyExtenderProcessor processor = new SnmpPropertyExtenderProcessor();
+            processor.process(this, m_snmpCollection.getName(), m_agent.getSysObjectId(), m_agent.getHostAddress());
+
             m_status = ServiceCollector.COLLECTION_SUCCEEDED;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

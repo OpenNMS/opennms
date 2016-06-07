@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.Groups;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.opennms.netmgt.config.datacollection.MibObj;
+import org.opennms.netmgt.config.datacollection.MibObjProperty;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
@@ -207,81 +208,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         final List<SystemDef> systemList = new ArrayList<SystemDef>();
 
         for (final SystemDef system : systems.getSystemDefs()) {
-            // Match on sysoid?
-            boolean bMatchSysoid = false;
-
-            // Retrieve sysoid for this SystemDef and/ set the isMask boolean.
-            boolean isMask = false;
-            String currSysoid = null;
-            SystemDefChoice sysChoice = system.getSystemDefChoice();
-
-            if (sysChoice.getSysoid() != null) {
-                currSysoid = sysChoice.getSysoid();
-            } else if (sysChoice.getSysoidMask() != null) {
-                currSysoid = sysChoice.getSysoidMask();
-                isMask = true;
-            }
-
-            if (currSysoid != null) {
-                if (isMask) {
-                    // SystemDef's sysoid is a mask, 'aSysoid' need only
-                    // start with the sysoid mask in order to match
-                    if (aSysoid.startsWith(currSysoid)) {
-                        LOG.debug("getMibObjectList: includes sysoid {} for system <name>: {}", aSysoid, system.getName());
-                        bMatchSysoid = true;
-                    }
-                } else {
-                    // System's sysoid is not a mask, 'aSysoid' must
-                    // match the sysoid exactly.
-                    if (aSysoid.equals(currSysoid)) {
-                        LOG.debug("getMibObjectList: includes sysoid {} for system <name>: {}", aSysoid, system.getName());
-                        bMatchSysoid = true;
-                    }
-                }
-            }
-
-            // Match on ipAddress?
-            boolean bMatchIPAddress = true; // default is INCLUDE
-            if (bMatchSysoid == true) {
-                if (anAddress != null) {
-                    List<String> addrList = null;
-                    List<String> maskList = null;
-                    if (system.getIpList() != null) {
-                        addrList = system.getIpList().getIpAddresses();
-                        maskList = system.getIpList().getIpAddressMasks();
-                    }
-
-                    // If either Address list or Mask list exist then 'anAddress'
-                    // must be included by one of them
-                    if (addrList != null && addrList.size() > 0 || maskList != null && maskList.size() > 0) {
-                        bMatchIPAddress = false;
-                    }
-
-                    // First see if address is in list of specific addresses
-                    if (addrList != null && addrList.size() > 0) {
-                        if (addrList.contains(anAddress)) {
-                            LOG.debug("getMibObjectList: addrList exists and does include IP address {} for system <name>: {}", anAddress, system.getName());
-                            bMatchIPAddress = true;
-                        }
-                    }
-
-                    // If still no match, see if address matches any of the masks
-                    if (bMatchIPAddress == false) {
-
-                        if (maskList != null && maskList.size() > 0) {
-                            for (final String currMask : maskList) {
-                                if (anAddress.indexOf(currMask) == 0) {
-                                    LOG.debug("getMibObjectList: anAddress '{}' matches mask '{}'", anAddress, currMask);
-                                    bMatchIPAddress = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (bMatchSysoid && bMatchIPAddress) {
+            if (systemDefMatches(system, aSysoid, anAddress)) {
                 LOG.debug("getMibObjectList: MATCH!! adding system '{}'", system.getName());
                 systemList.add(system);
             }
@@ -298,6 +225,42 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         }
 
         return mibObjectList;
+    }
+
+    @Override
+    public List<MibObjProperty> getMibObjProperties(final String cName, final String aSysoid, final String anAddress) {
+        LOG.debug("getMibObjProperties: collection: {} sysoid: {} address: {}", cName, aSysoid, anAddress);
+
+        if (aSysoid == null) {
+            LOG.debug("getMibObjProperties: aSysoid parameter is NULL...");
+            return new ArrayList<MibObjProperty>();
+        }
+
+        final SnmpCollection collection = getSnmpCollection(getContainer(), cName);
+        if (collection == null) {
+            return Collections.emptyList();
+        }
+
+        final Systems systems = collection.getSystems();
+        if (systems == null) {
+            return Collections.emptyList();
+        }
+
+        final List<SystemDef> systemList = new ArrayList<SystemDef>();
+        for (final SystemDef system : systems.getSystemDefs()) {
+            if (systemDefMatches(system, aSysoid, anAddress)) {
+                systemList.add(system);
+            }
+        }
+
+        final List<MibObjProperty> mibProperties = new ArrayList<MibObjProperty>();
+        for (final SystemDef system : systemList) {
+            for (final String grpName : system.getCollect().getIncludeGroups()) {
+                processGroupForProperties(cName, grpName, mibProperties);
+            }
+        }
+
+        return mibProperties;
     }
 
     @Override
@@ -486,6 +449,20 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         }
     }
 
+    private void processGroupForProperties(final String cName, final String groupName, final List<MibObjProperty> mibObjProperties) {
+        final Map<String, Group> groupMap = getCollectionGroupMap(getContainer()).get(cName);
+        final Group group = groupMap.get(groupName);
+        if (group == null) {
+            LOG.warn("processGroupForProperties: unable to retrieve group information for group name '{}': check DataCollection.xml file.", groupName);
+            return;
+        }
+        for (final String includeGroup : group.getIncludeGroups()) {
+            processGroupForProperties(cName, includeGroup, mibObjProperties);
+        }
+        group.getProperties().forEach(p -> p.setGroupName(groupName)); // Set the group at run time.
+        mibObjProperties.addAll(group.getProperties());
+    }
+
     /**
      * Takes a list of castor generated MibObj objects iterates over them
      * creating corresponding MibObject objects and adding them to the supplied
@@ -592,6 +569,84 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
                 }
             }
         }
+    }
+
+    private boolean systemDefMatches(SystemDef system, String aSysoid, String anAddress) {
+        // Match on sysoid?
+        boolean bMatchSysoid = false;
+
+        // Retrieve sysoid for this SystemDef and/ set the isMask boolean.
+        boolean isMask = false;
+        String currSysoid = null;
+        SystemDefChoice sysChoice = system.getSystemDefChoice();
+
+        if (sysChoice.getSysoid() != null) {
+            currSysoid = sysChoice.getSysoid();
+        } else if (sysChoice.getSysoidMask() != null) {
+            currSysoid = sysChoice.getSysoidMask();
+            isMask = true;
+        }
+
+        if (currSysoid != null) {
+            if (isMask) {
+                // SystemDef's sysoid is a mask, 'aSysoid' need only
+                // start with the sysoid mask in order to match
+                if (aSysoid.startsWith(currSysoid)) {
+                    LOG.debug("getMibObjectList: includes sysoid {} for system <name>: {}", aSysoid, system.getName());
+                    bMatchSysoid = true;
+                }
+            } else {
+                // System's sysoid is not a mask, 'aSysoid' must
+                // match the sysoid exactly.
+                if (aSysoid.equals(currSysoid)) {
+                    LOG.debug("getMibObjectList: includes sysoid {} for system <name>: {}", aSysoid, system.getName());
+                    bMatchSysoid = true;
+                }
+            }
+        }
+
+        // Match on ipAddress?
+        boolean bMatchIPAddress = true; // default is INCLUDE
+        if (bMatchSysoid == true) {
+            if (anAddress != null) {
+                List<String> addrList = null;
+                List<String> maskList = null;
+                if (system.getIpList() != null) {
+                    addrList = system.getIpList().getIpAddresses();
+                    maskList = system.getIpList().getIpAddressMasks();
+                }
+
+                // If either Address list or Mask list exist then 'anAddress'
+                // must be included by one of them
+                if (addrList != null && addrList.size() > 0 || maskList != null && maskList.size() > 0) {
+                    bMatchIPAddress = false;
+                }
+
+                // First see if address is in list of specific addresses
+                if (addrList != null && addrList.size() > 0) {
+                    if (addrList.contains(anAddress)) {
+                        LOG.debug("getMibObjectList: addrList exists and does include IP address {} for system <name>: {}", anAddress, system.getName());
+                        bMatchIPAddress = true;
+                    }
+                }
+
+                // If still no match, see if address matches any of the masks
+                if (bMatchIPAddress == false) {
+
+                    if (maskList != null && maskList.size() > 0) {
+                        for (final String currMask : maskList) {
+                            if (anAddress.indexOf(currMask) == 0) {
+                                LOG.debug("getMibObjectList: anAddress '{}' matches mask '{}'", anAddress, currMask);
+                                bMatchIPAddress = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return bMatchSysoid && bMatchIPAddress;
     }
 
     @Override
