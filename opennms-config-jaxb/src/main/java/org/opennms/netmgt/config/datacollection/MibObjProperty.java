@@ -189,6 +189,69 @@ public class MibObjProperty {
         this.groupName = groupName;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((instance == null) ? 0 : instance.hashCode());
+        result = prime * result + ((alias == null) ? 0 : alias.hashCode());
+        result = prime * result + ((className == null) ? 0 : className.hashCode());
+        result = prime * result + ((parameters == null) ? 0 : parameters.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof MibObjProperty)) {
+            return false;
+        }
+        final MibObjProperty other = (MibObjProperty) obj;
+        if (instance == null) {
+            if (other.instance != null) {
+                return false;
+            }
+        } else if (!instance.equals(other.instance)) {
+            return false;
+        }
+        if (alias == null) {
+            if (other.alias != null) {
+                return false;
+            }
+        } else if (!alias.equals(other.alias)) {
+            return false;
+        }
+        if (className == null) {
+            if (other.className != null) {
+                return false;
+            }
+        } else if (!className.equals(other.className)) {
+            return false;
+        }
+        if (parameters == null) {
+            if (other.parameters != null) {
+                return false;
+            }
+        } else if (!parameters.equals(other.parameters)) {
+            return false;
+        }
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
         return "MibObjProperty [instance=" + instance + ", alias=" + alias
