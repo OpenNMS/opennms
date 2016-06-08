@@ -50,6 +50,8 @@ import org.opennms.newts.cassandra.search.ResourceIdSplitter;
  */
 public abstract class NewtsUtils {
 
+    public static final boolean DISABLE_INDEXING = Boolean.getBoolean("org.opennms.newts.disable.indexing");
+
     public static final int MAX_BATCH_SIZE = Integer.getInteger("org.opennms.newts.config.max_batch_size", 16);
 
     public static final int TTL = Integer.getInteger("org.opennms.newts.config.ttl", 31536000);

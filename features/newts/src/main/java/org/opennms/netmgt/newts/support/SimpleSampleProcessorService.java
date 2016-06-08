@@ -29,6 +29,7 @@
 package org.opennms.netmgt.newts.support;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +49,13 @@ public class SimpleSampleProcessorService implements SampleProcessorService {
     private final Set<SampleProcessor> m_processors;
 
     public SimpleSampleProcessorService(Set<SampleProcessor> processors) {
-        m_processors = Objects.requireNonNull(processors);
+        if (NewtsUtils.DISABLE_INDEXING) {
+            // Currently the only processor is the indexing processor so
+            // we always use an empty set of processors when indexing is disabled
+            m_processors = Collections.emptySet();
+        } else {
+            m_processors = Objects.requireNonNull(processors);
+        }
     }
 
     @Override
