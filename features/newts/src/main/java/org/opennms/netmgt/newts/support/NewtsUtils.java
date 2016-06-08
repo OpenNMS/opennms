@@ -33,6 +33,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.newts.api.Context;
+import org.opennms.newts.api.MetricType;
+import org.opennms.newts.api.Resource;
+import org.opennms.newts.api.Sample;
+import org.opennms.newts.api.Timestamp;
+import org.opennms.newts.api.ValueType;
 import org.opennms.newts.api.search.BooleanQuery;
 import org.opennms.newts.api.search.Operator;
 import org.opennms.newts.api.search.Query;
@@ -80,6 +86,10 @@ public abstract class NewtsUtils {
             .build();
 
     private static final ResourceIdSplitter s_splitter = new EscapableResourceIdSplitter();
+
+    // Constants used when building mock samples in createSampleForIndexingStrings()
+    private static final Timestamp EPOCH = Timestamp.fromEpochMillis(0);
+    private static final ValueType<?> ZERO = ValueType.compose(0, MetricType.GAUGE);
 
     /**
      * Extends the attribute map with indices used by the {@link org.opennms.netmgt.dao.support.NewtsResourceStorageDao}.
@@ -144,4 +154,12 @@ public abstract class NewtsUtils {
         return ResourcePath.get(els.subList(0, els.size() - 1));
     }
 
+    /**
+     * Creates a sample used to index string attributes.
+     *
+     * These should only be index and not be persisted.
+     */
+    public static Sample createSampleForIndexingStrings(Context context, Resource resource) {
+        return new Sample(EPOCH, context, resource, "strings", MetricType.GAUGE, ZERO);
+    }
 }
