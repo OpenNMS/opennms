@@ -1,4 +1,4 @@
-About OpenNMS Meridian 2016.1.0
+About OpenNMS Meridian 2016.1.1
 ===============================
 
 OpenNMS Meridian is a custom build of OpenNMS Horizon designed for stability and long-term support.
