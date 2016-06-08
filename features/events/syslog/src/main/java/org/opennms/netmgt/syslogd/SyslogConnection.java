@@ -162,6 +162,7 @@ public class SyslogConnection implements Callable<Callable<?>> {
 
             // TODO: Change to a static call?
             ConvertToEvent re = new ConvertToEvent(
+                m_systemId,
                 m_sourceAddress,
                 m_port,
                 // Decode the packet content as ASCII
