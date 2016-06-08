@@ -1,6 +1,7 @@
 package org.opennms.smoketest;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,10 +10,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -21,12 +29,15 @@ import com.google.common.collect.Collections2;
  * Verifies that the Vaadin JMX Configuration Generator Application is deployed correctly.
  */
 public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
-
+    private static final Logger LOG = LoggerFactory.getLogger(JmxConfigurationGeneratorIT.class);
     private static final String MBEANS_VIEW_TREE_WAIT_NAME = "com.mchange.v2.c3p0";
 
     @Before
-    public void before() {
-        m_driver.get(BASE_URL + "opennms/admin/jmxConfigGenerator.jsp");
+    public void before() throws InterruptedException {
+        m_driver.get(getBaseUrl() + "opennms/admin/jmxConfigGenerator.jsp");
+
+        // give the Vaadin webapp time to settle down
+        Thread.sleep(2000);
         switchToVaadinFrame();
     }
 
@@ -56,11 +67,9 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testNavigation() throws InterruptedException {
-        updateConnection();
-        findElementById("next").click();
+    public void testNavigation() throws Exception {
+        configureJMXConnection(true);
 
-        wait.until(pageContainsText(MBEANS_VIEW_TREE_WAIT_NAME));
         // on the 2nd page we have to deselect the PooledDataSource MBean,
         // because the name is too long and results in a validation error
         selectNodeByName("PooledDataSource", false);
@@ -81,13 +90,8 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
      * Verifies that selected CompMembers do show up in the generated jmx-datacollection-config.xml snippet.
      */
     @Test
-    public void verifyCompMemberSelection() throws InterruptedException {
-        updateConnection();
-        findElementByXpath("//span[@id='skipDefaultVM']/input").click(); // deselect
-
-        // go to next page
-        findElementById("next").click();
-        wait.until(pageContainsText(MBEANS_VIEW_TREE_WAIT_NAME));
+    public void verifyCompMemberSelection() throws Exception {
+        configureJMXConnection(false);
 
         selectNodeByName("PS MarkSweep", true);
 
@@ -106,39 +110,96 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
         Assert.assertEquals(7, find("<comp-member", jmxDatacollectionConfigContent));
     }
 
+    protected void configureJMXConnection(final boolean skipDefaultVM) throws Exception {
+        final long end = System.currentTimeMillis() + LOAD_TIMEOUT;
+
+        final WebDriverWait shortWait = new WebDriverWait(m_driver, 10);
+
+        final String skipDefaultVMxpath = "//span[@id='skipDefaultVM']/input";
+        final boolean selected = waitForElement(By.xpath(skipDefaultVMxpath)).isSelected();
+        LOG.debug("skipDefaultVM selected: {}", selected);
+        if (selected != skipDefaultVM) {
+            waitForElement(By.xpath(skipDefaultVMxpath)).click();
+        }
+
+        // configure authentication
+        final WebElement authenticateElement = waitForElement(By.id("authenticate"));
+        if (!authenticateElement.isSelected()) {
+            authenticateElement.findElement(By.tagName("input")).click();
+        };
+
+        /*
+         * Sometimes, Vaadin just loses input, or focus.  Or both!  I suspect it's
+         * because of the way Vaadin handles events and DOM-redraws itself, but...
+         * ¯\_(ツ)_/¯
+         *
+         * To make sure it really really *really* works, there are multiple layers
+         * of belt-and-suspenders-and-glue-and-staples:
+         *
+         * 1. Click first to ensure the field is focused
+         * 2. Clear the current contents of the field
+         * 3. Send the text to the field
+         * 4. Click it *again* because sometimes this wakes up the event handler
+         * 5. Do it all in a loop that checks for validation errors, because
+         *    *sometimes* even with all that, it will fail to fill in a field...
+         *    In that case, hit escape to clear the error message and start all
+         *    over and try again.
+         */
+        boolean found = false;
+        do {
+            setVaadinValue("port", "18980");
+            setVaadinValue("authenticateUser", "admin");
+            setVaadinValue("authenticatePassword", "admin");
+
+            // go to next page
+            waitForElement(By.id("next")).click();
+
+            try {
+                setImplicitWait(1, TimeUnit.SECONDS);
+                found = shortWait.until(new ExpectedCondition<Boolean>() {
+                    @Override public Boolean apply(final WebDriver driver) {
+                        try {
+                            final WebElement elem = driver.findElement(By.cssSelector("div.v-Notification-error h1"));
+                            LOG.debug("Notification error element: {}", elem);
+                            if (elem != null) {
+                                elem.sendKeys(Keys.ESCAPE);
+                                return false;
+                            }
+                        } catch (final NoSuchElementException | StaleElementReferenceException e) {
+                            LOG.warn("Exception while checking for errors message.", e);
+                        }
+
+                        try {
+                            final Boolean contains = pageContainsText(MBEANS_VIEW_TREE_WAIT_NAME).apply(driver);
+                            LOG.debug("Page contains '{}'? {}", MBEANS_VIEW_TREE_WAIT_NAME, contains);
+                            return contains;
+                        } catch (final Exception e) {
+                            LOG.warn("Exception while checking for next page.", e);
+                        }
+
+                        return false;
+                    }
+                });
+            } catch (final Exception e) {
+                LOG.debug("Failed to configure authentication and port.", e);
+            } finally {
+                setImplicitWait();
+            }
+        } while (System.currentTimeMillis() < end && !found);
+    }
+
+    protected void setVaadinValue(final String id, final String value) {
+        final By by = By.id(id);
+        focusElement(by);
+        clearElement(by);
+        waitForElement(by).sendKeys(value);
+        focusElement(by);
+    }
+
     // switches to the embedded vaadin iframe
     private void switchToVaadinFrame() {
         // switchTo() by xpath is much faster than by ID
-        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
-    }
-
-    private void updateConnection() {
-        updateElementValue("port", "18980");
-
-        // configure authentication
-        if (!findElementById("authenticate").isSelected()) {
-            findElementById("authenticate").findElement(By.tagName("input")).click();
-        };
-        updateElementValue("authenticateUser", "admin");
-        updateElementValue("authenticatePassword", "admin");
-    }
-
-    private void updateElementValue(final String elementName, final String elementText) {
-        findElementById(elementName).clear();
-        waitForValue(elementName, ""); // wait until is really empty
-        findElementById(elementName).sendKeys(elementText); // Set OpenNMS JMX port
-        waitForValue(elementName, elementText); // wait until set
-    }
-
-    // we have to wait, until the field is really ready, otherwise
-    // the port might not have been set correctly
-    private void waitForValue(final String elementId, final String value) {
-        wait.until(new Predicate<WebDriver>() {
-            @Override
-            public boolean apply(final WebDriver input) {
-                return value.equals(findElementById(elementId).getAttribute("value"));
-            }
-        });
+        m_driver.switchTo().frame(0);
     }
 
     // go back to the content "frame"

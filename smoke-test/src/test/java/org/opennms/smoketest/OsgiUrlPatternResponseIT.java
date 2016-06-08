@@ -1,14 +1,8 @@
 package org.opennms.smoketest;
 
-import static org.opennms.smoketest.OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD;
-import static org.opennms.smoketest.OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME;
-import static org.opennms.smoketest.OpenNMSSeleniumTestCase.OPENNMS_WEB_HOST;
-import static org.opennms.smoketest.OpenNMSSeleniumTestCase.OPENNMS_WEB_PORT;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Base64;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * Tests if sites with /osgi/* context can be registered.
  * See #NMS-7785 for details.
  */
-public class OsgiUrlPatternResponseIT {
+public class OsgiUrlPatternResponseIT extends OpenNMSSeleniumTestCase {
 
     private static final Logger LOG = LoggerFactory.getLogger(OsgiUrlPatternResponseIT.class);
 
@@ -36,7 +30,7 @@ public class OsgiUrlPatternResponseIT {
         };
 
         for (final String eachPath : paths) {
-            final String urlString = String.format("http://%s:%s/opennms/osgi/%s", OPENNMS_WEB_HOST, OPENNMS_WEB_PORT, eachPath);
+            final String urlString = String.format("http://%s:%s/opennms/osgi/%s", getServerAddress(), getServerHttpPort(), eachPath);
             LOG.info("Verifying url '{}' ...", urlString);
 
             final URL url = new URL(urlString);
@@ -62,12 +56,6 @@ public class OsgiUrlPatternResponseIT {
             Assert.assertEquals(errorMessage, 200, connection.getResponseCode());
             LOG.info("OK");
         }
-    }
-
-    private String createBasicAuthHeader() {
-        final String pass = String.format("%s:%s", BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
-        final String basicAuthHeader = "Basic " + new String(Base64.getEncoder().encode(pass.getBytes()));
-        return basicAuthHeader;
     }
 
 }
