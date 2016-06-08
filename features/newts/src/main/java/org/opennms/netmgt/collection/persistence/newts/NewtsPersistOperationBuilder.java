@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.collection.persistence.newts;
 
+import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,6 +45,7 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.newts.NewtsWriter;
 import org.opennms.netmgt.newts.support.NewtsUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.newts.api.Context;
 import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Sample;
@@ -51,9 +54,9 @@ import org.opennms.newts.api.ValueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.base.Optional;
 
 /**
  * Used to collect attribute values and meta-data for a given resource
@@ -66,16 +69,19 @@ public class NewtsPersistOperationBuilder implements PersistOperationBuilder {
 
     private final NewtsWriter m_newtsWriter;
     private final RrdRepository m_repository;
+    private final Context m_context;
     private final String m_name;
     private final ResourceIdentifier m_resource;
 
     private final Map<CollectionAttributeType, Number> m_declarations = Maps.newLinkedHashMap();
     private final Map<String, String> m_metaData = Maps.newLinkedHashMap();
+    private final Map<ResourcePath, Map<String, String>> m_stringAttributesByPath = Maps.newLinkedHashMap();
 
     private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
 
-    public NewtsPersistOperationBuilder(NewtsWriter newtsWriter, RrdRepository repository, ResourceIdentifier resource, String name) {
+    public NewtsPersistOperationBuilder(NewtsWriter newtsWriter, Context context, RrdRepository repository, ResourceIdentifier resource, String name) {
         m_newtsWriter = newtsWriter;
+        m_context = context;
         m_repository = repository;
         m_resource = resource;
         m_name = name;
@@ -89,6 +95,15 @@ public class NewtsPersistOperationBuilder implements PersistOperationBuilder {
     @Override
     public void setAttributeValue(CollectionAttributeType attributeType, Number value) {
         m_declarations.put(attributeType, value);
+    }
+
+    public void persistStringAttribute(ResourcePath path, String key, String value) {
+        Map<String, String> stringAttributesForPath = m_stringAttributesByPath.get(path);
+        if (stringAttributesForPath == null) {
+            stringAttributesForPath = Maps.newLinkedHashMap();
+            m_stringAttributesByPath.put(path, stringAttributesForPath);
+        }
+        stringAttributesForPath.put(key, value);
     }
 
     @Override
@@ -106,10 +121,11 @@ public class NewtsPersistOperationBuilder implements PersistOperationBuilder {
 
     @Override
     public void commit() throws PersistException {
-        m_newtsWriter.insert(getSamples());
+        m_newtsWriter.insert(getSamplesToInsert());
+        m_newtsWriter.index(getSamplesToIndex());
     }
 
-    public List<Sample> getSamples() {
+    public List<Sample> getSamplesToInsert() {
         final List<Sample> samples = Lists.newLinkedList();
         ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(m_repository, m_resource.getPath().resolve(m_name));
 
@@ -136,6 +152,7 @@ public class NewtsPersistOperationBuilder implements PersistOperationBuilder {
             samples.add(
                 new Sample(
                     timestamp,
+                    m_context,
                     resource,
                     attrType.getName(),
                     type,
@@ -143,7 +160,18 @@ public class NewtsPersistOperationBuilder implements PersistOperationBuilder {
                 )
             );
         }
+        return samples;
+    }
 
+    public List<Sample> getSamplesToIndex() {
+        final List<Sample> samples = Lists.newLinkedList();
+
+        // Convert string attributes to samples
+        for (Entry<ResourcePath, Map<String, String>> entry : m_stringAttributesByPath.entrySet()) {
+            Resource resource = new Resource(toResourceId(entry.getKey()),
+                    Optional.of(entry.getValue()));
+            samples.add(NewtsUtils.createSampleForIndexingStrings(m_context, resource));
+        }
         return samples;
     }
 
@@ -177,4 +205,3 @@ public class NewtsPersistOperationBuilder implements PersistOperationBuilder {
         m_timeKeeper = timeKeeper;
     }
 }
-
