@@ -19,10 +19,9 @@ thickYellow = [ 'stroke' : 'yellow', 'stroke-width' : '6' ];
 thinBlue    = [ 'stroke' : 'blue' ];
 thickDashed = [ 'stroke-dasharray' : '5,5', 'stroke-width' : '6' ];
 
-// TODO: this has to be defined by an vertex attribute
-String interfaceName = "Gi0/7";
+String interfaceName = edge.getProperties().get("interface");
 
-if (sourceNode != null) {
+if (interfaceName != null && sourceNode != null) {
     List<Double> inOut = measurements.computeUtilization(sourceNode, interfaceName);
     double inPercent = inOut.get(0);
     double outPercent = inOut.get(1);
