@@ -47,7 +47,7 @@ public class UserIT extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() throws Exception {
-        m_driver.get(BASE_URL + "opennms/account/selfService/index.jsp");
+        m_driver.get(getBaseUrl() + "opennms/account/selfService/index.jsp");
     }
 
     @Test
