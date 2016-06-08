@@ -46,7 +46,7 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
 
     @Override
     protected void provisioningPage() {
-        m_driver.get(BASE_URL + "opennms/admin/provisioningGroups.htm");
+        m_driver.get(getBaseUrl() + "opennms/admin/provisioningGroups.htm");
     }
 
     @Before
@@ -96,6 +96,7 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testRequisitionUI() throws Exception {
         final WebElement form = findElementByXpath("//form[@name='takeAction']");
+        form.findElement(By.cssSelector("input[type=text][name=groupName]")).click();
         form.findElement(By.cssSelector("input[type=text][name=groupName]")).sendKeys(REQUISITION_NAME);
         form.submit();
 
@@ -134,7 +135,7 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
         // wait for the node scanning to complete
         Thread.sleep(5000);
 
-        m_driver.get(BASE_URL + "opennms/element/node.jsp?node="+ REQUISITION_NAME + ":" + NODE_LABEL);
+        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node="+ REQUISITION_NAME + ":" + NODE_LABEL);
         findElementByXpath("//h3[text()='Availability']");
 
         wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));
