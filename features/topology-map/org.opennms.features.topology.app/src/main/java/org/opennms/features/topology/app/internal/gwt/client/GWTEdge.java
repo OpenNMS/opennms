@@ -37,8 +37,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 public final class GWTEdge extends JavaScriptObject {
     
     public static final String SVG_EDGE_ELEMENT = "path";
-    public static final int EDGE_WIDTH = 3;
-    
+
     protected GWTEdge() {};
     
     public static final native GWTEdge create(String id, GWTVertex source, GWTVertex target) /*-{
@@ -116,7 +115,11 @@ public final class GWTEdge extends JavaScriptObject {
                 var currentSelection = $wnd.d3.select(this);
 
                 console.log('additional stylings', this, currentSelection, datum, datum.additionalStyling);
-                currentSelection.style(datum.additionalStyling);
+                currentSelection.style("stroke-width", "3px")
+                                .style("stroke", null)
+                                .style("stroke-dasharray", null)
+                                .style("stroke-linecap", null)
+                                .style(datum.additionalStyling);
             }
         }
     }-*/;
@@ -170,7 +173,6 @@ public final class GWTEdge extends JavaScriptObject {
                 return selection.append(SVG_EDGE_ELEMENT)
                         .attr("class", "path")
                         .attr("opacity", 0)
-                        .style("stroke-width", EDGE_WIDTH + "px")
                         .style("fill", "none")
                         .style("cursor", "pointer")
                         .call(draw());

@@ -1,6 +1,6 @@
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLEdgeStatusProvider;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLEdgeStatus;
 
 Map<String, String> style = new HashMap<String, String>();
 OnmsSeverity severity = OnmsSeverity.NORMAL;
@@ -32,4 +32,4 @@ if (interfaceName != null && sourceNode != null) {
     }
 }
 
-return new GraphMLEdgeStatusProvider.GraphMLEdgeStatus(severity, style);
+return new GraphMLEdgeStatus(severity, style);

@@ -69,7 +69,6 @@ import javax.script.SimpleScriptContext;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
@@ -80,37 +79,6 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
     private final static Logger LOG = LoggerFactory.getLogger(GraphMLEdgeStatusProvider.class);
 
     private final static Path DIR = Paths.get(System.getProperty("opennms.home"), "etc", "graphml-edge-status");
-
-    public static class GraphMLEdgeStatus implements Status {
-
-        private final OnmsSeverity severity;
-        private final Map<String, String> styleProperties;
-
-        public GraphMLEdgeStatus(final OnmsSeverity severity,
-                                  final Map<String, String> styleProperties) {
-            this.severity = severity;
-            this.styleProperties = styleProperties;
-        }
-
-        public OnmsSeverity getSeverity() {
-            return this.severity;
-        }
-
-        @Override
-        public String computeStatus() {
-            return this.severity.getLabel().toLowerCase();
-        }
-
-        @Override
-        public Map<String, String> getStatusProperties() {
-            return ImmutableMap.of("status", this.computeStatus());
-        }
-
-        @Override
-        public Map<String, String> getStyleProperties() {
-            return this.styleProperties;
-        }
-    }
 
     private final GraphMLTopologyProvider provider;
     private final ScriptEngineManager scriptEngineManager;
@@ -259,20 +227,6 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
                         .filter(e -> e.getValue() != null)
                         .collect(Collectors.toMap(Map.Entry::getKey,
                                                   Map.Entry::getValue));
-
-
-//            final ArrayList<String> colors = Lists.newArrayList("blue", "yellow", "green", "purple", "red");
-//            final Map<EdgeRef, Status> resultMap = Maps.newHashMap();
-//            int colorIndex = 0;
-//            for (GraphMLEdge eachEdge : collectedList) {
-//                if (colorIndex == colors.size() - 1) {
-//                    colorIndex = 0;
-//                }
-//                Status status = new GraphMLEdgeStatus(severity, styleProperties).withStyle("stroke", colors.get(colorIndex));
-//                resultMap.put(eachEdge, status);
-//                colorIndex++;
-//            }
-//            return resultMap;
         });
     }
 
