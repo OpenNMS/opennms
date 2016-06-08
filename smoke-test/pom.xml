@@ -199,10 +199,21 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.web</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-provision-persistence</artifactId>
+        <version>${project.version}</version>
+        <!-- Exclude all transitive dependencies -->
+        <exclusions>
+            <exclusion>
+                <groupId>*</groupId>
+                <artifactId>*</artifactId>
+            </exclusion>
+        </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>

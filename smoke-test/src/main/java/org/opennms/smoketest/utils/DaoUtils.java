@@ -25,31 +25,31 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.smoketest;
+package org.opennms.smoketest.utils;
 
-import static org.junit.Assert.assertEquals;
+import java.util.concurrent.Callable;
 
-import java.io.IOException;
-
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.junit.Test;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.dao.api.OnmsDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Simple checks to verify the REST endpoints provided
- * by the OSGi Plugin Manager are reachable.
+ * DAO utility thingies.
  *
  * @author jwhite
  */
-public class OSGIPluginManagerIT extends OpenNMSSeleniumTestCase {
+public class DaoUtils {
 
-    @Test
-    public void canListProducts() throws ClientProtocolException, IOException, InterruptedException {
-        assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() + "/opennms/licencemgr/rest/v1-0/product-pub/list")));
-    }
+    private static final Logger LOG = LoggerFactory.getLogger(DaoUtils.class);
 
-    @Test
-    public void canListFeatures() throws ClientProtocolException, IOException, InterruptedException {
-        assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() + "/opennms/featuremgr/rest/v1-0/features-list")));
+    public static Callable<Integer> countMatchingCallable(OnmsDao<?,?> dao, Criteria criteria) {
+        return new Callable<Integer>() {
+              public Integer call() throws Exception {
+                  Integer count = dao.countMatching(criteria);
+                  LOG.info("Count: {}", count);
+                  return count;
+              }
+        };
     }
 }
