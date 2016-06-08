@@ -56,8 +56,6 @@ import com.google.common.collect.Lists;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
-    private static final String BSM_ADMIN_URL = BASE_URL + "opennms/admin/bsm/adminpage.jsp";
-
     /**
      * Class to control the inputs of the "Business Service Edit"-Window
      */
@@ -222,7 +220,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     private class BsmAdminPage {
 
         public BsmAdminPage open() {
-            m_driver.get(BSM_ADMIN_URL);
+            m_driver.get(getBsmBaseUrl());
             switchToVaadinFrame();
             return this;
         }
@@ -337,11 +335,20 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
     }
 
-    private final RequisitionUtils requisitionUtils = new RequisitionUtils(this);
-
     private BsmAdminPage bsmAdminPage;
 
+    private String getBsmBaseUrl() {
+        return getBaseUrl() + "opennms/admin/bsm/adminpage.jsp";
+    }
+
     private void createTestSetup() throws Exception {
+        String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
+                "<scan-interval>1d</scan-interval>\n" +
+                "<detectors/>\n" +
+                "<policies/>\n" +
+                "</foreign-source>";
+        createForeignSource(REQUISITION_NAME, foreignSourceXML);
+
         String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
                 "   <node foreign-id=\"NodeA\" node-label=\"NodeA\">" +
                 "       <interface ip-addr=\"::1\" status=\"1\" snmp-primary=\"N\">" +
@@ -354,18 +361,11 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
                 "       </interface>" +
                 "   </node>" +
                 "</model-import>";
-
-        String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
-                "<scan-interval>1d</scan-interval>\n" +
-                "<detectors/>\n" +
-                "<policies/>\n" +
-                "</foreign-source>";
-        requisitionUtils.setupTestRequisition(requisitionXML, foreignSourceXML);
-        wait.until(requisitionUtils.new WaitForNodesInDatabase(1));
+        createRequisition(REQUISITION_NAME, requisitionXML, 1);
     }
 
     private void removeTestSetup() throws Exception {
-        requisitionUtils.deleteTestRequisition();
+        deleteTestRequisition();
     }
 
     @Before

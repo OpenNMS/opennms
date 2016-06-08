@@ -25,31 +25,37 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.smoketest;
+package org.opennms.smoketest.utils;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.junit.Test;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.concurrent.Callable;
 
 /**
- * Simple checks to verify the REST endpoints provided
- * by the OSGi Plugin Manager are reachable.
+ * Utilities for testing network connectivity.
  *
  * @author jwhite
  */
-public class OSGIPluginManagerIT extends OpenNMSSeleniumTestCase {
+public class NetUtils {
 
-    @Test
-    public void canListProducts() throws ClientProtocolException, IOException, InterruptedException {
-        assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() + "/opennms/licencemgr/rest/v1-0/product-pub/list")));
+    public static boolean isTcpPortOpen(int port) {
+        return isTcpPortOpen(new InetSocketAddress("127.0.0.1", port));
     }
 
-    @Test
-    public void canListFeatures() throws ClientProtocolException, IOException, InterruptedException {
-        assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() + "/opennms/featuremgr/rest/v1-0/features-list")));
+    public static boolean isTcpPortOpen(InetSocketAddress addr) {
+        try (Socket socket = new Socket()) {
+            socket.connect(addr, 100);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    public static Callable<Boolean> isTcpPortOpenCallable(final int port) {
+        return new Callable<Boolean>() {
+            public Boolean call() throws Exception {
+                return isTcpPortOpen(port);
+            }
+        };
     }
 }
