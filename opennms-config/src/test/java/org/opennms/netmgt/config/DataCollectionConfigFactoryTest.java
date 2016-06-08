@@ -235,7 +235,11 @@ public class DataCollectionConfigFactoryTest {
                 "<groups>" +
                 "<group name=\"bsnAPIfLoadParametersTable\" ifType=\"all\">" +
                 "<mibObj oid=\".1.3.6.1.4.1.14179.2.2.13.1.4\" instance=\"bsnAPIfLoadParametersEntry\" alias=\"bsnAPIfLoadNumOfClients\" type=\"integer\" />" +
-                "<property instance=\"bsnAPIfLoadParametersEntry\" source-type=\"bsnAPEntry\" source-alias=\"bsnAPName\" index-pattern=\"^(.+)\\.\\d+$\" />" +
+                "<property instance=\"bsnAPIfLoadParametersEntry\" alias=\"bsnAPName\">" +
+                "<parameter key=\"source-type\" value=\"bsnAPEntry\" />" +
+                "<parameter key=\"source-alias\" value=\"bsnAPName\" />" +
+                "<parameter key=\"index-pattern\" value=\"^(.+)\\.\\d+$\"/>" +
+                "</property>" +
                 "</group>" +
                 "</groups>" +
                 "<systems>" +
@@ -251,7 +255,8 @@ public class DataCollectionConfigFactoryTest {
         initDataCollectionFactory(xml);
         List<MibObjProperty> properties = DataCollectionConfigFactory.getInstance().getMibObjProperties("default", ".1.3.6.1.4.1.9999.1.1", null);
         assertEquals(1,  properties.size());
-        assertEquals("bsnAPName", properties.get(0).getName());
+        assertEquals("bsnAPName", properties.get(0).getAlias());
+        assertEquals("bsnAPEntry", properties.get(0).getParameterValue("source-type"));
     }
 
     private static void initDataCollectionFactory(String xmlConfig) {

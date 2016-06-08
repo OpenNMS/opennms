@@ -29,7 +29,6 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,62 +37,50 @@ import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
-import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.config.datacollection.MibObjProperty;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The Class RegExPropertyExtender.
+ * The Class IndexSplitPropertyExtender.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class RegExSnmpPropertyExtender implements SnmpPropertyExtender {
+public class IndexSplitPropertyExtender implements SnmpPropertyExtender {
 
     /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(RegExSnmpPropertyExtender.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IndexSplitPropertyExtender.class);
+
+    /** The Constant INDEX_PATTERN. */
+    private static final String INDEX_PATTERN = "index-pattern";
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.SnmpPropertyExtender#getTargetAttribute(java.util.List, org.opennms.netmgt.collectd.SnmpCollectionResource, org.opennms.netmgt.config.datacollection.MibObjProperty)
      */
     @Override
     public SnmpAttribute getTargetAttribute(List<CollectionAttribute> sourceAttributes, SnmpCollectionResource targetResource, MibObjProperty property) {
-        if (StringUtils.isBlank(property.getIndexPattern())) {
-            LOG.warn("Cannot execute the RegEx property extender because the index-pattern of the property {} is null or empty.", property.getName());
+        final String indexPattern = property.getParameterValue(INDEX_PATTERN);
+        if (StringUtils.isBlank(indexPattern)) {
+            LOG.warn("Cannot execute the Index Split property extender because: missing parameter {}", INDEX_PATTERN);
             return null;
         }
-        Pattern p = Pattern.compile(property.getIndexPattern());
+
+        Pattern p = Pattern.compile(indexPattern);
         Matcher m = p.matcher(targetResource.getInstance());
-        Optional<CollectionAttribute> target = null;
         if (m.find()) {
             final String index = m.group(1);
-            target = sourceAttributes.stream().filter(a -> matches(property, index, a)).findFirst();
-        }
-        if (target != null && target.isPresent()) {
             AttributeGroupType groupType = targetResource.getGroupType(property.getGroupName());
             if (groupType != null) {
                 MibPropertyAttributeType type = new MibPropertyAttributeType(targetResource.getResourceType(), property, groupType);
-                SnmpValue value = SnmpUtils.getValueFactory().getOctetString(target.get().getStringValue().getBytes());
+                SnmpValue value = SnmpUtils.getValueFactory().getOctetString(index.getBytes());
                 return new SnmpAttribute(targetResource, type, value);
             }
-
         }
-        return null;
-    }
 
-    /**
-     * Matches.
-     *
-     * @param p the MIB object property to check
-     * @param index the resource index to check
-     * @param a the collection attribute to check
-     * @return true, if successful
-     */
-    private boolean matches(MibObjProperty p, final String index, CollectionAttribute a) {
-        final CollectionResource r = a.getResource();
-        return a.getName().equals(p.getSourceAlias()) && r.getResourceTypeName().equals(p.getSourceResourceType()) && r.getInstance().equals(index);
+        return null;
     }
 
 }

@@ -209,8 +209,10 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
 
         Map<String, String> slot0 = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "bsnAPIfLoadParametersEntry", "132.178.97.20.31.224.0"));
         assertEquals("AP84b2.6111.29ac", slot0.get("bsnAPName"));
+        assertEquals("0", slot0.get("slotNumber"));
         Map<String, String> slot1 = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "bsnAPIfLoadParametersEntry", "132.178.97.20.31.224.1"));
         assertEquals("AP84b2.6111.29ac", slot1.get("bsnAPName"));
+        assertEquals("1", slot1.get("slotNumber"));
     }
 
     /* (non-Javadoc)

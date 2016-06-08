@@ -113,7 +113,7 @@ public class SnmpPropertyExtenderProcessor {
         try {
             String className = property.getClassName();
             if (className == null) {
-                className = org.opennms.netmgt.collectd.RegExSnmpPropertyExtender.class.getName();
+                className = org.opennms.netmgt.collectd.RegExPropertyExtender.class.getName();
             }
             Class<?> clazz = Class.forName(className);
             SnmpPropertyExtender extender = (SnmpPropertyExtender) clazz.newInstance();

@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.config.datacollection;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -50,25 +53,17 @@ public class MibObjProperty {
     @XmlAttribute(name="instance", required=true)
     private String instance;
 
-    /** The source resource type. */
-    @XmlAttribute(name="source-type", required=true)
-    private String sourceResourceType;
-
-    /** The source alias. */
-    @XmlAttribute(name="source-alias", required=true)
-    private String sourceAlias;
-
-    /** The name. */
-    @XmlAttribute(name="name", required=false)
-    private String name; // Optional
-
-    /** The index pattern. */
-    @XmlAttribute(name="index-pattern", required=false)
-    private String indexPattern; // Optional
+    /** The alias. */
+    @XmlAttribute(name="alias", required=false)
+    private String alias;
 
     /** The class name. */
     @XmlAttribute(name="class-name", required=false)
-    private String className; // Optional
+    private String className;
+
+    /** The parameters. */
+    @XmlElement(name="parameter", required=false)
+    private List<Parameter> parameters;
 
     /** The group name. */
     @XmlTransient
@@ -89,42 +84,12 @@ public class MibObjProperty {
     }
 
     /**
-     * Gets the source resource type.
+     * Gets the alias.
      *
-     * @return the source resource type
+     * @return the alias
      */
-    public String getSourceResourceType() {
-        return sourceResourceType;
-    }
-
-    /**
-     * Gets the source alias.
-     *
-     * @return the source alias
-     */
-    public String getSourceAlias() {
-        return sourceAlias;
-    }
-
-    /**
-     * Gets the name.
-     *
-     * @return the name
-     */
-    public String getName() {
-        if (name == null) {
-            name = sourceAlias;
-        }
-        return name;
-    }
-
-    /**
-     * Gets the index pattern.
-     *
-     * @return the index pattern
-     */
-    public String getIndexPattern() {
-        return indexPattern;
+    public String getAlias() {
+        return alias;
     }
 
     /**
@@ -134,6 +99,40 @@ public class MibObjProperty {
      */
     public String getClassName() {
         return className;
+    }
+
+    /**
+     * Gets the parameters.
+     *
+     * @return the parameters
+     */
+    public List<Parameter> getParameters() {
+        return parameters;
+    }
+
+    /**
+     * Gets the value of an existing parameter.
+     *
+     * @param key the key
+     * @return the parameter
+     */
+    public String getParameterValue(String key) {
+        for (Parameter p : parameters) {
+            if (p.getKey().equals(key)) {
+                return p.getValue();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Adds a new parameter.
+     *
+     * @param key the key
+     * @param value the value
+     */
+    public void addParameter(String key, String value) {
+        parameters.add(new Parameter(key, value));
     }
 
     /**
@@ -155,39 +154,12 @@ public class MibObjProperty {
     }
 
     /**
-     * Sets the source resource type.
+     * Sets the alias.
      *
-     * @param sourceResourceType the new source resource type
+     * @param alias the new alias
      */
-    public void setSourceResourceType(String sourceResourceType) {
-        this.sourceResourceType = sourceResourceType;
-    }
-
-    /**
-     * Sets the source alias.
-     *
-     * @param sourceAlias the new source alias
-     */
-    public void setSourceAlias(String sourceAlias) {
-        this.sourceAlias = sourceAlias;
-    }
-
-    /**
-     * Sets the name.
-     *
-     * @param name the new name
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Sets the index pattern.
-     *
-     * @param indexPattern the new index pattern
-     */
-    public void setIndexPattern(String indexPattern) {
-        this.indexPattern = indexPattern;
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     /**
@@ -200,6 +172,15 @@ public class MibObjProperty {
     }
 
     /**
+     * Sets the parameters.
+     *
+     * @param parameters the new parameters
+     */
+    public void setParameters(List<Parameter> parameters) {
+        this.parameters = parameters;
+    }
+
+    /**
      * Sets the group name.
      *
      * @param groupName the new group name
@@ -208,16 +189,11 @@ public class MibObjProperty {
         this.groupName = groupName;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
-        return "MibObjProperty [group=" + groupName + ", instance=" + instance
-                + ", sourceResourceType=" + sourceResourceType
-                + ", sourceAlias=" + sourceAlias + ", name=" + name
-                + ", indexPattern=" + indexPattern + ", className="
-                + className + "]";
+        return "MibObjProperty [instance=" + instance + ", alias=" + alias
+                + ", className=" + className + ", parameters=" + parameters
+                + ", groupName=" + groupName + "]";
     }
 
 }

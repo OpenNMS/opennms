@@ -85,7 +85,7 @@ public class MibPropertyAttributeType extends SnmpAttributeType {
      */
     @Override
     public String getAlias() {
-        return property.getName();
+        return property.getAlias();
     }
 
     /* (non-Javadoc)
@@ -93,7 +93,7 @@ public class MibPropertyAttributeType extends SnmpAttributeType {
      */
     @Override
     public String getOid() {
-        return property.getSourceResourceType() + ':' + property.getSourceAlias();
+        return "property:" + property.getAlias();
     }
 
     /* (non-Javadoc)
@@ -101,7 +101,7 @@ public class MibPropertyAttributeType extends SnmpAttributeType {
      */
     @Override
     public String getName() {
-        return property.getName();
+        return property.getAlias();
     }
 
 }
