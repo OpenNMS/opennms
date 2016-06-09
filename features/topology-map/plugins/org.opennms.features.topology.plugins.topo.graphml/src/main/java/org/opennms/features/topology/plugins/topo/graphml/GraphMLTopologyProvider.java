@@ -61,6 +61,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         return new DefaultTopologyProviderInfo(name, description);
     }
 
+    private final int defaultSzl;
     private final FocusStrategy focusStrategy;
     private final List<String> focusIds;
 
@@ -81,6 +82,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
             addEdges(newEdge);
         }
         setTopologyProviderInfo(createTopologyProviderInfo(graph));
+        defaultSzl = getDefaultSzl(graph);
         focusStrategy = getFocusStrategy(graph);
         focusIds = getFocusIds(graph);
         if (focusStrategy != FocusStrategy.SPECIFIC && !focusIds.isEmpty()) {
@@ -105,6 +107,14 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         return Lists.newArrayList();
     }
 
+    private static int getDefaultSzl(GraphMLGraph graph) {
+        Integer szl = graph.getProperty(GraphMLProperties.SEMANTIC_ZOOM_LEVEL);
+        if (szl != null) {
+            return szl;
+        }
+        return AbstractTopologyProvider.DEFAULT_SEMANTIC_ZOOM_LEVEL;
+    }
+
     @Override
     public void refresh() {
         // TODO: How to handle refresh()?
@@ -118,6 +128,11 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     @Override
     public void save() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getDefaultSzl() {
+        return defaultSzl;
     }
 
     @Override

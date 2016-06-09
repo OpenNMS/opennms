@@ -7,6 +7,7 @@
     <key id="description" for="graph" attr.name="description" attr.type="string"></key>
     <key id="namespace" for="graph" attr.name="namespace" attr.type="string"></key>
     <key id="preferred-layout" for="graph" attr.name="preferred-layout" attr.type="string"></key>
+    <key id="semantic-zoom-level" for="graph" attr.name="semantic-zoom-level" attr.type="int"/>
     <graph id="regions" edgedefault="undirected">
         <data key="namespace">acme:regions</data>
         <node id="north">
@@ -27,6 +28,7 @@
         <data key="description">The Markets Layer</data>
         <data key="namespace">acme:markets</data>
         <data key="preferred-layout">Some Layout</data>
+        <data key="semantic-zoom-level">0</data>
         <node id="north.1">
             <data key="label">North 1</data>
         </node>
