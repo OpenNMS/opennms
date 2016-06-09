@@ -25,19 +25,37 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.smoketest.utils;
 
-package org.opennms.smoketest;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.concurrent.Callable;
 
-import org.junit.Test;
+/**
+ * Utilities for testing network connectivity.
+ *
+ * @author jwhite
+ */
+public class NetUtils {
 
-public class ForecastIT extends OpenNMSSeleniumTestCase {
-    @Test
-    public void canLoadGraph() throws Exception {
-        // Request a known graph with an invalid resource id
-        m_driver.get(getBaseUrl() + "opennms/graph/forecast.jsp?resourceId=node[999].nodeSnmp[]&report=mib2.tcpopen");
-        // The graph should be rendered
-        findElementByXpath("//div[@class='flot-datatable-tabs']");
-        // It won't have any data, but this is sufficient to very that all of the required
-        // Javascript files have been loaded, and the AJAX call to get the graph was successful
+    public static boolean isTcpPortOpen(int port) {
+        return isTcpPortOpen(new InetSocketAddress("127.0.0.1", port));
+    }
+
+    public static boolean isTcpPortOpen(InetSocketAddress addr) {
+        try (Socket socket = new Socket()) {
+            socket.connect(addr, 100);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    public static Callable<Boolean> isTcpPortOpenCallable(final int port) {
+        return new Callable<Boolean>() {
+            public Boolean call() throws Exception {
+                return isTcpPortOpen(port);
+            }
+        };
     }
 }

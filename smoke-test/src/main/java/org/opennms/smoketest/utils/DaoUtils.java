@@ -25,19 +25,31 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.smoketest.utils;
 
-package org.opennms.smoketest;
+import java.util.concurrent.Callable;
 
-import org.junit.Test;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.dao.api.OnmsDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ForecastIT extends OpenNMSSeleniumTestCase {
-    @Test
-    public void canLoadGraph() throws Exception {
-        // Request a known graph with an invalid resource id
-        m_driver.get(getBaseUrl() + "opennms/graph/forecast.jsp?resourceId=node[999].nodeSnmp[]&report=mib2.tcpopen");
-        // The graph should be rendered
-        findElementByXpath("//div[@class='flot-datatable-tabs']");
-        // It won't have any data, but this is sufficient to very that all of the required
-        // Javascript files have been loaded, and the AJAX call to get the graph was successful
+/**
+ * DAO utility thingies.
+ *
+ * @author jwhite
+ */
+public class DaoUtils {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DaoUtils.class);
+
+    public static Callable<Integer> countMatchingCallable(OnmsDao<?,?> dao, Criteria criteria) {
+        return new Callable<Integer>() {
+              public Integer call() throws Exception {
+                  Integer count = dao.countMatching(criteria);
+                  LOG.info("Count: {}", count);
+                  return count;
+              }
+        };
     }
 }
