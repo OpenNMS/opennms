@@ -41,6 +41,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.provision.DetectorFactory;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
@@ -60,21 +61,25 @@ public class MinionDetector implements Action {
     @Argument(index = 2, name = "attributes", description = "Attributes to be set in key=value  form", multiValued = true)
     List<String> attributes;
 
+    @SuppressWarnings("rawtypes")
     @Reference
-    List<SyncServiceDetector> detectors;
+    List<DetectorFactory> detectorFactoryList;
 
     @Reference
     Pinger pinger;
 
     @Override
     public Object execute() throws Exception {
-        PingerFactory.setInstance(pinger);
 
+        PingerFactory.setInstance(pinger);
         InetAddress ipAddress = InetAddress.getByName(address);
         boolean isServiceDetected = false;
         Map<String, String> properties = parse(attributes);
 
-        for (SyncServiceDetector detector : detectors) {
+        for (@SuppressWarnings("rawtypes")
+        DetectorFactory detectorFactory : detectorFactoryList) {
+
+            SyncServiceDetector detector = detectorFactory.createDetector();
 
             if ((detector.getServiceName().equals(detectorType))) {
                 System.out.println("Trying to detect   " + detectorType
