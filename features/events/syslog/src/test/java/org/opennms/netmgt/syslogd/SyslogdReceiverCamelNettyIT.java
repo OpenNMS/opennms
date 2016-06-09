@@ -72,7 +72,7 @@ public class SyslogdReceiverCamelNettyIT extends CamelBlueprintTest {
 	// The location of our Blueprint XML files to be used for testing
 	@Override
 	protected String getBlueprintDescriptor() {
-		return "file:blueprint-syslog-listener-camel-netty.xml,file:src/test/resources/blueprint-empty-camel-context.xml";
+		return "file:blueprint-syslog-listener-camel-netty.xml,blueprint-empty-camel-context.xml";
 	}
 
 	@Test
