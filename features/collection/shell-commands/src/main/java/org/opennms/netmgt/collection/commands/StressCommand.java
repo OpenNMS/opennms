@@ -78,6 +78,9 @@ public class StressCommand extends OsgiCommandSupport {
 
     private PersisterFactory persisterFactory;
 
+    @Option(name="-b", aliases="--burst", description="generate the collection sets in bursts instead of continously inserting them, defaults to false", required=false, multiValued=false)
+    boolean burst = false;
+
     @Option(name="-i", aliases="--interval", description="interval in seconds at which collection sets will be generated, defaults to 300", required=false, multiValued=false)
     int intervalInSeconds = 300;
 
@@ -180,16 +183,30 @@ public class StressCommand extends OsgiCommandSupport {
                 "RRA:MIN:0.5:288:366"));
         repository.setRrdBaseDir(Paths.get(System.getProperty("opennms.home"),"share","rrd","snmp").toFile());
 
+        // Calculate how we fast we should insert the collection sets
+        int sleepTimeInMillisBetweenNodes = 0;
+        int sleepTimeInSecondsBetweenIterations = 0;
+        System.out.printf("Sleeping for\n");
+        if (burst) {
+            sleepTimeInSecondsBetweenIterations = intervalInSeconds;
+            System.out.printf("\t %d seconds between batches\n", sleepTimeInSecondsBetweenIterations);
+        } else {
+            // We want to "stream" the collection sets
+            sleepTimeInMillisBetweenNodes = Math.round((((float)intervalInSeconds * 1000) / numberOfNodes) * numberOfGeneratorThreads);
+            System.out.printf("\t %d milliseconds between nodes\n", sleepTimeInMillisBetweenNodes);
+        }
+
         // Start generating, and keep generating until we're interrupted
         try {
             reporter.start(reportIntervalInSeconds, TimeUnit.SECONDS);
+
             while (true) {
                 final Context context = batchTimer.time();
                 try {
                     // Split the tasks up among the threads
                     List<Future<Void>> futures = new ArrayList<>();
                     for (int generatorThreadId = 0; generatorThreadId < numberOfGeneratorThreads; generatorThreadId++) {
-                        futures.add(executor.submit(generateAndPersistCollectionSets(params, repository, generatorThreadId)));
+                        futures.add(executor.submit(generateAndPersistCollectionSets(params, repository, generatorThreadId, sleepTimeInMillisBetweenNodes)));
                     }
                     // Wait for all the tasks to complete before starting others
                     for (Future<Void> future : futures) {
@@ -202,7 +219,7 @@ public class StressCommand extends OsgiCommandSupport {
                 }
 
                 try {
-                    Thread.sleep(intervalInSeconds * 1000);
+                    Thread.sleep(sleepTimeInSecondsBetweenIterations * 1000);
                 } catch (InterruptedException e) {
                     break;
                 }
@@ -216,7 +233,7 @@ public class StressCommand extends OsgiCommandSupport {
         return null;
     }
 
-    private Callable<Void> generateAndPersistCollectionSets(ServiceParameters params, RrdRepository repository, int generatorThreadId) {
+    private Callable<Void> generateAndPersistCollectionSets(ServiceParameters params, RrdRepository repository, int generatorThreadId, int sleepTimeInMillisBetweenNodes) {
         return new Callable<Void>() {
             @Override
             public Void call() throws Exception {
@@ -247,6 +264,7 @@ public class StressCommand extends OsgiCommandSupport {
                         // Persist
                         collectionSet.visit(persister);
                     }
+                    Thread.sleep(sleepTimeInMillisBetweenNodes);
                 }
                 return null;
             }
