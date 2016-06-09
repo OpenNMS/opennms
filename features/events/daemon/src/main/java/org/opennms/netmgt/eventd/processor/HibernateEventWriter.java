@@ -35,6 +35,8 @@ import java.util.List;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
@@ -48,6 +50,7 @@ import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
@@ -94,6 +97,12 @@ public class HibernateEventWriter implements EventWriter {
     
     @Autowired
     private DistPollerDao distPollerDao;
+    
+    @Autowired
+    private MinionDao minionDao;
+    
+    @Autowired
+    private LocationMonitorDao locationMonitorDao;
     
     @Autowired
     private EventDao eventDao;
@@ -202,7 +211,20 @@ public class HibernateEventWriter implements EventWriter {
         }
         // Otherwise, use the event's distPoller
         if (ovent.getDistPoller() == null && event.getDistPoller() != null && !"".equals(event.getDistPoller().trim())) {
-            ovent.setDistPoller(distPollerDao.get(event.getDistPoller()));
+            // Look the ID up with the DistPollerDao
+            OnmsMonitoringSystem system = distPollerDao.get(event.getDistPoller());
+            if (system == null) {
+                // Look the ID up with the MinionDao
+                system = minionDao.get(event.getDistPoller());
+                if (system == null) {
+                    // Look the ID up with the LocationMonitorDao
+                    ovent.setDistPoller(locationMonitorDao.get(event.getDistPoller()));
+                } else {
+                    ovent.setDistPoller(system);
+                }
+            } else {
+                ovent.setDistPoller(system);
+            }
         } 
         // And if both are unavailable, use the local system as the event's source system
         if (ovent.getDistPoller() == null) {

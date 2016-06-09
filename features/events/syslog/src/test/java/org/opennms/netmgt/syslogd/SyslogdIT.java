@@ -53,6 +53,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -90,6 +91,9 @@ public class SyslogdIT implements InitializingBean {
 
     @Autowired
     private MockEventIpcManager m_eventIpcManager;
+
+    @Autowired
+    private DistPollerDao m_distPollerDao;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -129,6 +133,7 @@ public class SyslogdIT implements InitializingBean {
 
         m_syslogd = new Syslogd();
         SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(m_config);
+        receiver.setDistPollerDao(m_distPollerDao);
         receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
         m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
@@ -165,7 +170,7 @@ public class SyslogdIT implements InitializingBean {
         
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr(m_localhost));
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId()));
 
         ea.verifyAnticipated(5000,0,0,0,0);
         final Event receivedEvent = ea.getAnticipatedEventsRecieved().get(0);
