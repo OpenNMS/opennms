@@ -4,4 +4,10 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
   
+    <!-- Add fields for BSM reduce function: exponentatial propagate  -->
+  <changeSet author="fooker" id="19.0.0-bsm-exponentatial-propagate">
+    <addColumn tableName="bsm_reduce">
+      <column name="base" type="float"/>
+    </addColumn>
+  </changeSet>
 </databaseChangeLog>

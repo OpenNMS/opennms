@@ -2350,6 +2350,7 @@ CREATE TABLE bsm_reduce (
     type character varying(32) NOT NULL,
     threshold float,
     threshold_severity integer,
+    base float,
     CONSTRAINT bsm_reduce_pkey PRIMARY KEY (id)
 );
 
