@@ -154,8 +154,9 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         Collection<OnmsNode> testNodes = m_nodeDao.findByLabel(TEST_NODE_LABEL);
         if (testNodes == null || testNodes.size() < 1) {
             NetworkBuilder builder = new NetworkBuilder();
-            builder.addNode(TEST_NODE_LABEL).setId(1).setSysObjectId(".1.3.6.1.4.1.9.1.2170");
+            builder.addNode(TEST_NODE_LABEL).setId(1).setSysObjectId(".1.3.6.1.4.1.9.1.9999"); // Fake Cisco SysOID
             builder.addSnmpInterface(1).setIfName("Fa0/0").setPhysAddr("44:33:22:11:00").setIfType(6).setCollectionEnabled(true).addIpInterface(m_testHostName).setIsSnmpPrimary("P");
+            builder.addSnmpInterface(18).setIfName("Se1/0.102").setIfAlias("Conexion Valencia").setIfType(32).setCollectionEnabled(true).addIpInterface("10.0.0.1").setIsSnmpPrimary("N");
             testNode = builder.getCurrentNode();
             assertNotNull(testNode);
             m_nodeDao.save(testNode);
@@ -165,7 +166,7 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         }
 
         Set<OnmsIpInterface> ifaces = testNode.getIpInterfaces();
-        assertEquals(1, ifaces.size());
+        assertEquals(2, ifaces.size());
         iface = ifaces.iterator().next();
 
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
@@ -213,6 +214,30 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         Map<String, String> slot1 = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "bsnAPIfLoadParametersEntry", "132.178.97.20.31.224.1"));
         assertEquals("AP84b2.6111.29ac", slot1.get("bsnAPName"));
         assertEquals("1", slot1.get("slotNumber"));
+    }
+
+    /**
+     * Test collection for Cisco QoS with MibObj Properties.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    @JUnitCollector(datacollectionType = "snmp", datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config-cisco-qos.xml")
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/cisco-qos.properties")
+    public void testCollectCiscoQoS() throws Exception {
+        System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
+
+        m_collectionSpecification.initialize(m_collectionAgent);
+
+        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
+        assertEquals("collection status", ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
+
+        m_collectionSpecification.release(m_collectionAgent);
+        Map<String, String> map = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "cbQosCMStatsEntry", "290.508801"));
+        assertEquals("OUTBOUND-LLQ", map.get("cbQosClassMapPolicy"));
+        assertEquals("GESTION-ROUTING", map.get("cbQosClassMapName"));
+        assertEquals("Conexion Valencia", map.get("ifAlias"));
     }
 
     /* (non-Javadoc)

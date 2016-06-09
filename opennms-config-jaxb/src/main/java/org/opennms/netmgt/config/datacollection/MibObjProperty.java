@@ -117,12 +117,23 @@ public class MibObjProperty {
      * @return the parameter
      */
     public String getParameterValue(String key) {
+        return getParameterValue(key, null);
+    }
+
+    /**
+     * Gets the value of an existing parameter.
+     *
+     * @param key the key
+     * @param defaultValue the default value
+     * @return the parameter
+     */
+    public String getParameterValue(String key, String defaultValue) {
         for (Parameter p : parameters) {
             if (p.getKey().equals(key)) {
                 return p.getValue();
             }
         }
-        return null;
+        return defaultValue;
     }
 
     /**

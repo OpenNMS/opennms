@@ -38,7 +38,7 @@
 
 		<systems>
 			<systemDef name="Cisco WLC 5520">
-				<sysoid>.1.3.6.1.4.1.9.1.2170</sysoid>
+				<sysoidMask>.1.3.6.1.4.1.9.1.</sysoidMask>
 				<collect>
 					<includeGroup>bsnAPTable</includeGroup>
 					<includeGroup>bsnAPIfLoadParametersTable</includeGroup>

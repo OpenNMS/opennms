@@ -86,7 +86,7 @@ public class SnmpPropertyExtenderProcessor {
         if (mibObjProperties.isEmpty()) {
             LOG.debug("process: there are no custom MibObj properties defined for sysObjectID {} in collection {}", collectionName, sysObjectId);
         } else {
-            LOG.debug("process: analyzing properties: {}", mibObjProperties);
+            LOG.debug("process: analyzing properties for sysObjectID {} in collection {}: {}", sysObjectId, collectionName, mibObjProperties);
             // Retrieve all the string attributes
             List<CollectionAttribute> stringAttributes = collectionSet.getResources().stream()
                     .flatMap(r -> ((SnmpCollectionResource) r).getStringAttributes().stream())
