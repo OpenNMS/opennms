@@ -13,6 +13,17 @@ linux_file_server
 opennms_server
 cloud
 
+# atlas icons (since 19.0.0)
+microwave_backhaul_1
+microwave_backhaul_2
+region_1
+region_2
+market_1
+market_2
+site_1
+site_2
+site_3
+
 # BSM Icons
 IP_service
 business_service
