@@ -26,17 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.factory;
+package org.opennms.netmgt.provision.detector.factory.sync;
 
-import org.opennms.netmgt.provision.DetectorFactory;
+import org.opennms.netmgt.provision.SyncDetectorFactory;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
 
-public class SnmpDetectorFactory implements DetectorFactory<SnmpDetector> {
+public class SnmpDetectorFactory
+        implements SyncDetectorFactory<SnmpDetector> {
 
     @Override
     public SnmpDetector createDetector() {
-        SnmpDetector detector = new SnmpDetector();
-        return detector;
+        return new SnmpDetector();
     }
 
 }

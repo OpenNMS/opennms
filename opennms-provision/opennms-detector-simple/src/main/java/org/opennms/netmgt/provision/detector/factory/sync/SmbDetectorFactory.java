@@ -26,8 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision;
+package org.opennms.netmgt.provision.detector.factory.sync;
 
-public interface DetectorFactory<T extends SyncServiceDetector> {
-    T createDetector();
+import org.opennms.netmgt.provision.SyncDetectorFactory;
+import org.opennms.netmgt.provision.detector.smb.SmbDetector;
+
+public class SmbDetectorFactory implements SyncDetectorFactory<SmbDetector> {
+
+    @Override
+    public SmbDetector createDetector() {
+        return new SmbDetector();
+    }
+
 }

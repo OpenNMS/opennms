@@ -26,17 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.factory;
+package org.opennms.netmgt.provision.detector.factory.sync;
 
-import org.opennms.netmgt.provision.DetectorFactory;
+import org.opennms.netmgt.provision.SyncDetectorFactory;
 import org.opennms.netmgt.provision.detector.loop.LoopDetector;
 
-public class LoopDetectorFactory implements DetectorFactory<LoopDetector> {
+public class LoopDetectorFactory
+        implements SyncDetectorFactory<LoopDetector> {
 
     @Override
     public LoopDetector createDetector() {
-        LoopDetector detector = new LoopDetector();
-        return detector;
+        return new LoopDetector();
     }
 
 }

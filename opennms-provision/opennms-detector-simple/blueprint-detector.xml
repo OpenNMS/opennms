@@ -10,88 +10,47 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<bean id="icmp" class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector">
+	<bean id="icmpFactory"
+		class="org.opennms.netmgt.provision.detector.factory.sync.IcmpDetectorFactory">
 	</bean>
-	<service id="icmpDetector" ref="icmp"
-		interface="org.opennms.netmgt.provision.SyncServiceDetector">
+	<service id="icmpDetectorFactory" ref="icmpFactory"
+		interface="org.opennms.netmgt.provision.SyncDetectorFactory">
 		<service-properties>
 			<entry key="implementation"
 				value="org.opennms.netmgt.provision.detector.icmp.IcmpDetector" />
 		</service-properties>
 	</service>
 
-	<bean id="loop" class="org.opennms.netmgt.provision.detector.loop.LoopDetector">
+	<bean id="loopFactory"
+		class="org.opennms.netmgt.provision.detector.factory.sync.LoopDetectorFactory">
 	</bean>
-	<service id="loopDetector" ref="loop"
-		interface="org.opennms.netmgt.provision.SyncServiceDetector">
+	<service id="loopDetectorFactory" ref="loopFactory"
+		interface="org.opennms.netmgt.provision.SyncDetectorFactory">
 		<service-properties>
 			<entry key="implementation"
 				value="org.opennms.netmgt.provision.detector.loop.LoopDetector" />
 		</service-properties>
 	</service>
 
-	<bean id="smb" class="org.opennms.netmgt.provision.detector.smb.SmbDetector">
+	<bean id="smbFactory"
+		class="org.opennms.netmgt.provision.detector.factory.sync.SmbDetectorFactory">
 	</bean>
-	<service id="smbDetector" ref="smb"
-		interface="org.opennms.netmgt.provision.SyncServiceDetector">
+	<service id="smbDetectorFactory" ref="smbFactory"
+		interface="org.opennms.netmgt.provision.SyncDetectorFactory">
 		<service-properties>
 			<entry key="implementation"
 				value="org.opennms.netmgt.provision.detector.smb.SmbDetector" />
 		</service-properties>
 	</service>
 
-
-	<bean id="snmp" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector">
+	<bean id="snmpFactory"
+		class="org.opennms.netmgt.provision.detector.factory.sync.SnmpDetectorFactory">
 	</bean>
-	<service id="snmpDetector" ref="snmp"
-		interface="org.opennms.netmgt.provision.SyncServiceDetector">
+	<service id="snmpDetectorFactory" ref="snmpFactory"
+		interface="org.opennms.netmgt.provision.SyncDetectorFactory">
 		<service-properties>
 			<entry key="implementation"
 				value="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" />
-		</service-properties>
-	</service>
-
-	<bean id="icmpFactory"
-		class="org.opennms.netmgt.provision.detector.factory.IcmpDetectorFactory">
-	</bean>
-	<service id="icmpDetectorFactory" ref="icmpFactory"
-		interface="org.opennms.netmgt.provision.DetectorFactory">
-		<service-properties>
-			<entry key="implementation"
-				value="org.opennms.netmgt.provision.detector.factory.IcmpDetectorFactory" />
-		</service-properties>
-	</service>
-
-	<bean id="loopFactory"
-		class="org.opennms.netmgt.provision.detector.factory.LoopDetectorFactory">
-	</bean>
-	<service id="loopDetectorFactory" ref="loopFactory"
-		interface="org.opennms.netmgt.provision.DetectorFactory">
-		<service-properties>
-			<entry key="implementation"
-				value="org.opennms.netmgt.provision.detector.factory.LoopDetectorFactory" />
-		</service-properties>
-	</service>
-
-	<bean id="smbFactory"
-		class="org.opennms.netmgt.provision.detector.factory.SmbDetectorFactory">
-	</bean>
-	<service id="smbDetectorFactory" ref="smbFactory"
-		interface="org.opennms.netmgt.provision.DetectorFactory">
-		<service-properties>
-			<entry key="implementation"
-				value="org.opennms.netmgt.provision.detector.factory.SmbDetectorFactory" />
-		</service-properties>
-	</service>
-
-	<bean id="snmpFactory"
-		class="org.opennms.netmgt.provision.detector.factory.SnmpDetectorFactory">
-	</bean>
-	<service id="snmpDetectorFactory" ref="snmpFactory"
-		interface="org.opennms.netmgt.provision.DetectorFactory">
-		<service-properties>
-			<entry key="implementation"
-				value="org.opennms.netmgt.provision.detector.factory.SnmpDetectorFactory" />
 		</service-properties>
 	</service>
 
