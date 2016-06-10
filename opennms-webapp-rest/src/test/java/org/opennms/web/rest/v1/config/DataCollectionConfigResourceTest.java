@@ -45,6 +45,7 @@ import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
+import org.opennms.netmgt.config.datacollection.MibObjProperty;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.internal.collection.DataCollectionConfigImpl;
@@ -71,6 +72,11 @@ public class DataCollectionConfigResourceTest {
 
         @Override
         public List<MibObject> getMibObjectList(String cName, String aSysoid, String anAddress, int ifType) {
+            throw new UnsupportedOperationException("Not yet implemented!");
+        }
+
+        @Override
+        public List<MibObjProperty> getMibObjProperties(final String cName, final String aSysoid, final String anAddress) {
             throw new UnsupportedOperationException("Not yet implemented!");
         }
 
