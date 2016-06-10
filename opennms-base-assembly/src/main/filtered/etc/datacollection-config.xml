@@ -61,6 +61,7 @@
         <include-collection dataCollectionGroup="Net-SNMP"/>
         <include-collection dataCollectionGroup="Nortel"/>
         <include-collection dataCollectionGroup="Novell"/>
+        <include-collection dataCollectionGroup="PaloAlto"/>
         <include-collection dataCollectionGroup="pfSense"/>
         <include-collection dataCollectionGroup="Powerware"/>
         <include-collection dataCollectionGroup="PostgreSQL-JDBC"/>
