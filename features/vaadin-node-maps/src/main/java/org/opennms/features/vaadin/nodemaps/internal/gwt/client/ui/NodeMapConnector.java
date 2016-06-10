@@ -63,6 +63,7 @@ public class NodeMapConnector extends AbstractComponentConnector implements HasH
     private Map<String, Icon> m_icons;
 
     private NodeIdSelectionRpc m_rpc = RpcProxy.create(NodeIdSelectionRpc.class, this);
+    private int m_maxClusterRadius;
 
     public NodeMapConnector() {
         initializeIcons();
@@ -78,6 +79,10 @@ public class NodeMapConnector extends AbstractComponentConnector implements HasH
 
         // Handle all common Vaadin features first
         super.onStateChanged(stateChangeEvent);
+
+        if (stateChangeEvent.hasPropertyChanged("maxClusterRadius")) {
+            getWidget().setMaxClusterRadius(getState().maxClusterRadius);
+        }
 
         if (stateChangeEvent.hasPropertyChanged("searchString")) {
             final String searchString = getState().searchString;
