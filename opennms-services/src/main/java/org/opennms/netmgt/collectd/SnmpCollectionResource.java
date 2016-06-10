@@ -30,13 +30,17 @@ package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -143,6 +147,14 @@ public abstract class SnmpCollectionResource implements CollectionResource {
         return group;
     }
 
+    protected AttributeGroupType getGroupType(final String groupName) {
+        for (AttributeGroupType type : m_groups.keySet()) {
+            if (type.getName().equals(groupName)) {
+                return type;
+            }
+        }
+        return null;
+    }
     /** {@inheritDoc} */
     @Override
     public void visit(final CollectionSetVisitor visitor) {
@@ -162,6 +174,13 @@ public abstract class SnmpCollectionResource implements CollectionResource {
      */
     protected Collection<AttributeGroup> getGroups() {
         return m_groups.values();
+    }
+
+    public List<CollectionAttribute> getStringAttributes() {
+        return m_groups.values().stream()
+        .flatMap(g -> g.getAttributes().stream())
+        .filter(a -> a.getAttributeType() instanceof NumericCollectionAttributeType == false || a.getAttributeType().getType().equalsIgnoreCase("string"))
+        .collect(Collectors.toList());
     }
 
     @Override
