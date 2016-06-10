@@ -364,6 +364,12 @@
             <documentation>sub group</documentation>
           </annotation>
         </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:property">
+          <annotation>
+            <documentation>a MIB Property object</documentation>
+          </annotation>
+        </element>
       </sequence>
 
       <attribute name="name" type="string" use="required">
@@ -548,6 +554,42 @@
           <documentation>Minimum Value. For completeness, adding the ability
             to use a minimum value.
           </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="property">
+    <annotation>
+      <documentation>a MIB Property object</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter">
+          <annotation>
+            <documentation>List of Parameters</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    
+      <attribute name="instance" type="string" use="required">
+        <annotation>
+          <documentation>instance identifier (name of a resource type, like on a MibObj).</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="alias" type="string" use="required">
+        <annotation>
+          <documentation>alias of the property (like on a MibObj).</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="class-name" type="string" use="optional">
+        <annotation>
+          <documentation>the name of the custom implementation of the
+          org.opennms.netmgt.collectd.SnmpPropertyExtender class to use
+          to update the property.</documentation>
         </annotation>
       </attribute>
     </complexType>

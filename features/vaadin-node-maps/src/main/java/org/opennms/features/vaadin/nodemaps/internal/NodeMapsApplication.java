@@ -256,6 +256,10 @@ public class NodeMapsApplication extends UI {
         Assert.notNull(m_alarmTable);
         Assert.notNull(m_nodeTable);
 
+        final String searchString = vaadinRequest.getParameter("search");
+        final Integer maxClusterRadius = Integer.getInteger("gwt.maxClusterRadius", 350);
+        LOG.info("Starting search string: {}, max cluster radius: {}", searchString, maxClusterRadius);
+
         m_alarmTable.setVaadinApplicationContext(context);
         final EventProxy eventProxy = new EventProxy() {
             @Override public <T> void fireEvent(final T eventObject) {
@@ -282,14 +286,15 @@ public class NodeMapsApplication extends UI {
         m_alarmTable.setEventProxy(eventProxy);
         m_nodeTable.setEventProxy(eventProxy);
 
-        createMapPanel(vaadinRequest.getParameter("search"));
+        createMapPanel(searchString, maxClusterRadius);
         createRootLayout();
         addRefresher();
     }
 
-    private void createMapPanel(final String searchString) {
+    private void createMapPanel(final String searchString, final int maxClusterRadius) {
         m_mapWidgetComponent.setSearchString(searchString);
         m_mapWidgetComponent.setSizeFull();
+        m_mapWidgetComponent.setMaxClusterRadius(maxClusterRadius);
     }
 
     private void createRootLayout() {

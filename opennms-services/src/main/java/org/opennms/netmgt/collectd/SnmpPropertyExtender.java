@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,23 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
+package org.opennms.netmgt.collectd;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
-import com.vaadin.shared.AbstractComponentState;
+import org.opennms.netmgt.collectd.SnmpCollectionResource;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.config.datacollection.MibObjProperty;
 
 /**
- * @author Marcus Hellberg (marcus@vaadin.com)
+ * The Interface SnmpPropertyExtender.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class NodeMapState extends AbstractComponentState {
-    private static final long serialVersionUID = 7166424509065088284L;
-    public String searchString;
-    public List<MapNode> nodes = new LinkedList<MapNode>();
-    public List<Integer> nodeIds = new ArrayList<Integer>();
-    public int minimumSeverity;
-    public boolean groupByState = true;
-    public int maxClusterRadius = 350;
+public interface SnmpPropertyExtender {
+
+    /**
+     * Gets the target attribute.
+     *
+     * @param sourceAttributes the source attributes
+     * @param targetResource the target resource
+     * @param property the MibObj property with the settings of the string attribute to add from the collection set.
+     * @return the target attribute
+     */
+    SnmpAttribute getTargetAttribute(List<CollectionAttribute> sourceAttributes, SnmpCollectionResource targetResource, MibObjProperty property);
 }
