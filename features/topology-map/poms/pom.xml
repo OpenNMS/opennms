@@ -30,45 +30,6 @@
           <version>2.3.7</version>
           <extensions>true</extensions>
         </plugin>
-         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-         <plugin>
-            <groupId>org.eclipse.m2e</groupId>
-            <artifactId>lifecycle-mapping</artifactId>
-            <version>1.0.0</version>
-            <configuration>
-               <lifecycleMappingMetadata>
-                  <pluginExecutions>
-                     <pluginExecution>
-                        <pluginExecutionFilter>
-                           <groupId>org.opennms.maven.plugins</groupId>
-                           <artifactId>features-maven-plugin</artifactId>
-                           <versionRange>[1.0-SNAPSHOT,)</versionRange>
-                           <goals>
-                              <goal>generate-features-xml</goal>
-                           </goals>
-                        </pluginExecutionFilter>
-                        <action>
-                           <ignore></ignore>
-                        </action>
-                     </pluginExecution>
-                     <pluginExecution>
-                        <pluginExecutionFilter>
-                           <groupId>com.vaadin</groupId>
-                           <artifactId>vaadin-maven-plugin</artifactId>
-                           <versionRange>[1.0.2,)</versionRange>
-                           <goals>
-                              <goal>resources</goal>
-                              <goal>update-widgetset</goal>
-                           </goals>
-                        </pluginExecutionFilter>
-                        <action>
-                           <ignore></ignore>
-                        </action>
-                     </pluginExecution>
-                  </pluginExecutions>
-               </lifecycleMappingMetadata>
-            </configuration>
-         </plugin>
       </plugins>
     </pluginManagement>
   </build>
