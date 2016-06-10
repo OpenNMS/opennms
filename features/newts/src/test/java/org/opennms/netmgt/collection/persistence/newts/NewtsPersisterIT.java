@@ -29,7 +29,10 @@
 package org.opennms.netmgt.collection.persistence.newts;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.Collections;
 
@@ -38,9 +41,13 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.support.builder.AttributeType;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
@@ -96,12 +103,17 @@ public class NewtsPersisterIT {
         repo.setRrdBaseDir(Paths.get("a","path","that","ends","with","snmp").toFile());
         Persister persister = m_persisterFactory.createPersister(params, repo);
 
+        int nodeId = 1;
+        CollectionAgent agent = mock(CollectionAgent.class);
+        when(agent.getStorageDir()).thenReturn(new File(Integer.toString(nodeId)));
+        NodeLevelResource nodeLevelResource = new NodeLevelResource(nodeId);
+
         // Build a collection set with a single sample
         Timestamp now = Timestamp.now();
-        CollectionSet collectionSet = new CollectionSetBuilder()
-            .withSample(Paths.get("1"), "metrics", "metric", "GAUGE", 900)
-            .withTimestamp(now.asDate())
-            .build();
+        CollectionSet collectionSet = new CollectionSetBuilder(agent)
+                .withNumericAttribute(nodeLevelResource, "metrics", "metric", 900, AttributeType.GAUGE)
+                .withTimestamp(now.asDate())
+                .build();
 
         // Persist
         collectionSet.visit(persister);
