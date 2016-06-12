@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,10 +28,15 @@
 
 package org.opennms.core.test.dns;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opennms.core.test.OpenNMSAbstractTestExecutionListener;
 import org.opennms.core.test.dns.annotations.DNSEntry;
 import org.opennms.core.test.dns.annotations.DNSZone;
 import org.opennms.core.test.dns.annotations.JUnitDNSServer;
+import org.opennms.core.test.dns.annotations.SRVEntry;
+import org.opennms.core.test.dns.annotations.TXTEntry;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +49,8 @@ import org.xbill.DNS.NSRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SOARecord;
+import org.xbill.DNS.SRVRecord;
+import org.xbill.DNS.TXTRecord;
 import org.xbill.DNS.Zone;
 
 /**
@@ -90,7 +97,7 @@ public class JUnitDNSServerExecutionListener extends OpenNMSAbstractTestExecutio
             LOG.debug("zone = {}", zone);
 
             for (final DNSEntry entry : dnsZone.entries()) {
-                LOG.debug("adding entry: {}", entry);
+                LOG.debug("adding A/AAAA entry: {}", entry);
                 String hostname = entry.hostname();
                 final Name recordName = Name.fromString(hostname, zoneName);
                 LOG.debug("name = {}", recordName);
@@ -99,6 +106,23 @@ public class JUnitDNSServerExecutionListener extends OpenNMSAbstractTestExecutio
                 } else {
                     zone.addRecord(new ARecord(recordName, DClass.IN, DEFAULT_TTL, InetAddressUtils.addr(entry.address())));
                 }
+            }
+            
+            for (final SRVEntry entry : dnsZone.srvs()) {
+            	LOG.debug("adding SRV: {}", entry);
+            	final Name srvName = Name.fromString(entry.name(), zoneName);
+            	final Name srvTargetName = Name.fromString(entry.target());
+            	zone.addRecord(new SRVRecord(srvName, DClass.IN, DEFAULT_TTL, entry.priority(), entry.weight(), entry.port(), srvTargetName));
+            }
+            
+            for (final TXTEntry entry : dnsZone.txts()) {
+            	LOG.debug("adding TXT: {}", entry);;
+            	final Name txtName = Name.fromString(entry.name(), zoneName);
+            	List<String> txtStrings = new ArrayList<String>();
+            	for (String txtElement : entry.strings()) {
+            		txtStrings.add(txtElement);
+            	}
+            	zone.addRecord(new TXTRecord(txtName, DClass.IN, DEFAULT_TTL, txtStrings));
             }
 
             m_server.addZone(zone);
