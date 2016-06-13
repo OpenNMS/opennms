@@ -179,6 +179,10 @@ include::text/ticketing/introduction.adoc[]
 // JIRA Ticketer
 include::text/ticketing/jira.adoc[]
 
+[[ga-rmi]]
+== Enabling RMI
+include::text/rmi.adoc[]
+
 [[ga-opennms-plugin-manager]]
 == Plugin Manager
 include::text/plugin-manager/introduction.adoc[]
