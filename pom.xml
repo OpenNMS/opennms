@@ -126,6 +126,7 @@
     <module>opennms-config-tester</module>
     <module>opennms-dao-api</module>
     <module>opennms-dao</module>
+    <module>opennms-dao-minion</module>
     <module>opennms-dao-mock</module>
     <module>opennms-icmp</module>
     <module>opennms-javamail</module>

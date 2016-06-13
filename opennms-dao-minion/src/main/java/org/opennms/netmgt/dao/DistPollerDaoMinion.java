@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.discovery;
+package org.opennms.netmgt.dao;
 
 import java.util.Collections;
 import java.util.Date;

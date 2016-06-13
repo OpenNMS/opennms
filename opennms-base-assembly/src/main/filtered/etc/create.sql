@@ -298,7 +298,6 @@ CREATE TABLE monitoringsystems (
     type TEXT NOT NULL,
     status TEXT,
     last_updated TIMESTAMP WITH TIME ZONE,
-    last_checkedin TIMESTAMP WITH TIME ZONE,
 
     CONSTRAINT monitoringsystems_pkey PRIMARY KEY (id)
 );

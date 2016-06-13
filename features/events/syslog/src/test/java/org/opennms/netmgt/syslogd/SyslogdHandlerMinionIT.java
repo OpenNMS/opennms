@@ -44,6 +44,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
@@ -92,7 +93,7 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
 		int numberOfMessages = 20;
 		SyslogConnection[] conns = new SyslogConnection[numberOfMessages];
 		for (int i = 0; i < numberOfMessages; i++) {
-			conns[i] = new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap("<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes("US-ASCII")), config);
+			conns[i] = new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap("<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes("US-ASCII")), config, DistPollerDao.DEFAULT_DIST_POLLER_ID);
 		}
 
 		broadcastSyslog.setExpectedMessageCount(numberOfMessages);
@@ -111,7 +112,7 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
 		numberOfMessages = 5000;
 		conns = new SyslogConnection[numberOfMessages];
 		for (int i = 0; i < numberOfMessages; i++) {
-			conns[i] = new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap("<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes("US-ASCII")), config);
+			conns[i] = new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap("<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes("US-ASCII")), config, DistPollerDao.DEFAULT_DIST_POLLER_ID);
 		}
 
 		broadcastSyslog.setExpectedMessageCount(numberOfMessages);

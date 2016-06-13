@@ -314,8 +314,8 @@
 
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
+                <feature>opennms-dao-minion</feature>
                 <feature>opennms-discoverer</feature>
-                <feature>opennms-discovery-distPollerDaoMinion</feature>
                 <feature>opennms-trapd-handler-minion</feature>
 
               </features>
