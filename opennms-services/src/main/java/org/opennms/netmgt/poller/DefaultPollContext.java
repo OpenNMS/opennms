@@ -33,8 +33,8 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
@@ -86,7 +86,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     private volatile String m_name;
     private volatile String m_localHostName;
     private volatile boolean m_listenerAdded = false;
-    private final List<PendingPollEvent> m_pendingPollEvents = new LinkedList<PendingPollEvent>();
+    private final Queue<PendingPollEvent> m_pendingPollEvents = new ConcurrentLinkedQueue<PendingPollEvent>();
 
     /**
      * <p>getEventManager</p>
@@ -229,9 +229,8 @@ public class DefaultPollContext implements PollContext, EventListener {
             m_listenerAdded = true;
         }
         PendingPollEvent pollEvent = new PendingPollEvent(event);
-        synchronized (m_pendingPollEvents) {
-            m_pendingPollEvents.add(pollEvent);
-        }
+        m_pendingPollEvents.add(pollEvent);
+
         //log().info("Sending "+event.getUei()+" for element "+event.getNodeid()+":"+event.getInterface()+":"+event.getService(), new Exception("StackTrace"));
         getEventManager().sendNow(event);
         return pollEvent;
@@ -384,31 +383,43 @@ public class DefaultPollContext implements PollContext, EventListener {
     /** {@inheritDoc} */
     @Override
     public void onEvent(final Event e) {
-        LOG.debug("onEvent: Waiting to process event: {} uei: {}, dbid: {}", e, e.getUei(), e.getDbid());
-        synchronized (m_pendingPollEvents) {
+        if (LOG.isDebugEnabled()) {
+            // CAUTION: m_pendingPollEvents.size() is not a constant-time operation
             LOG.debug("onEvent: Received event: {} uei: {}, dbid: {}, pendingEventCount: {}", e, e.getUei(), e.getDbid(), m_pendingPollEvents.size());
-            for (final Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext();) {
-                final PendingPollEvent pollEvent = it.next();
-                LOG.trace("onEvent: comparing events to poll event: {}", pollEvent);
-                if (e.equals(pollEvent.getEvent())) {
-                    LOG.trace("onEvent: completing pollevent: {}", pollEvent);
-                    pollEvent.complete(e);
-                }
-            }
+        }
 
-            for (Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
-                PendingPollEvent pollEvent = it.next();
-                LOG.trace("onEvent: determining if pollEvent is pending: {}", pollEvent);
-                if (pollEvent.isPending()) continue;
-
-                LOG.trace("onEvent: processing pending pollEvent...: {}", pollEvent);
-                pollEvent.processPending();
+        for (final Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext();) {
+            final PendingPollEvent pollEvent = it.next();
+            LOG.trace("onEvent: comparing event to pollEvent: {}", pollEvent);
+            if (e.equals(pollEvent.getEvent())) {
+                LOG.trace("onEvent: found matching pollEvent, completing pollEvent: {}", pollEvent);
                 it.remove();
-                LOG.trace("onEvent: processing of pollEvent completed.: {}", pollEvent);
+                // Thread-safe and idempotent
+                pollEvent.complete(e);
+                // Thread-safe and idempotent
+                processPending(pollEvent);
+                continue;
             }
+
+            LOG.trace("onEvent: determining if pollEvent is pending: {}", pollEvent);
+            if (!pollEvent.isPending()) {
+                LOG.trace("onEvent: pollEvent is no longer pending, processing pollEvent: {}", pollEvent);
+                it.remove();
+                // Thread-safe and idempotent
+                processPending(pollEvent);
+                continue;
+            }
+
+            // If the event was not completed and it is still pending, then don't do anything to it
         }
         LOG.debug("onEvent: Finished processing event: {} uei: {}, dbid: {}", e, e.getUei(), e.getDbid());
-        
+    }
+
+    private static void processPending(final PendingPollEvent pollEvent) {
+        LOG.trace("onEvent: processing pending pollEvent...: {}", pollEvent);
+        // Thread-safe and idempotent
+        pollEvent.processPending();
+        LOG.trace("onEvent: processing of pollEvent completed: {}", pollEvent);
     }
 
     boolean testCriticalPath(String[] criticalPath) {
