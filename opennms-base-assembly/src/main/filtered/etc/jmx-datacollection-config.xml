@@ -273,6 +273,24 @@
                     <comp-member name="endTime" type="gauge" alias="PSSEndTime"/>
                 </comp-attrib>
             </mbean>
+            <mbean name="JVM GarbageCollector:G1 Old Generation" objectname="java.lang:type=GarbageCollector,name=G1 Old Generation">
+                <attrib name="CollectionCount" alias="G1OldCollCnt" type="counter"/>
+                <attrib name="CollectionTime" alias="G1OldCollTime" type="counter"/>
+                <comp-attrib name="LastGcInfo" type="Composite" alias="G1OldLastGcInfo">
+                    <comp-member name="GcThreadCount" type="gauge" alias="G1OldGcThreadCnt"/>
+                    <comp-member name="duration" type="gauge" alias="G1OldDuration"/>
+                    <comp-member name="endTime" type="gauge" alias="G1OldEndTime"/>
+                </comp-attrib>
+            </mbean>
+            <mbean name="JVM GarbageCollector:G1 Young Generation" objectname="java.lang:type=GarbageCollector,name=G1 Young Generation">
+                <attrib name="CollectionCount" alias="G1YngCollCnt" type="counter"/>
+                <attrib name="CollectionTime" alias="G1YngCollTime" type="counter"/>
+                <comp-attrib name="LastGcInfo" type="Composite" alias="G1YngLastGcInfo">
+                    <comp-member name="GcThreadCount" type="gauge" alias="G1YngGcThreadCnt"/>
+                    <comp-member name="duration" type="gauge" alias="G1YngDuration"/>
+                    <comp-member name="endTime" type="gauge" alias="G1YngEndTime"/>
+                </comp-attrib>
+            </mbean>
 
             <!-- Newts specifics beans - available when using the Newts time series strategy -->
             <mbean name="org.opennms.newts.ring-buffer.size" objectname="org.opennms.newts:name=ring-buffer.size">
