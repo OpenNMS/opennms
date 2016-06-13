@@ -288,15 +288,30 @@
                 <attrib name="Value" alias="NewtsMaxCacheSize" type="gauge"/>
             </mbean>
             <mbean name="org.opennms.newts.repository.insert-timer" objectname="org.opennms.newts:name=repository.insert-timer">
+                <attrib name="50thPercentile" alias="NewtsInsert50" type="gauge"/>
+                <attrib name="75thPercentile" alias="NewtsInsert75" type="gauge"/>
+                <attrib name="95thPercentile" alias="NewtsInsert95" type="gauge"/>
+                <attrib name="98thPercentile" alias="NewtsInsert98" type="gauge"/>
                 <attrib name="99thPercentile" alias="NewtsInsert99" type="gauge"/>
+                <attrib name="999thPercentile" alias="NewtsInsert999" type="gauge"/>
                 <attrib name="Count" alias="NewtsInsertCnt" type="counter"/>
             </mbean>
             <mbean name="org.opennms.newts.repository.measurement-select-timer" objectname="org.opennms.newts:name=repository.measurement-select-timer">
+                <attrib name="50thPercentile" alias="NewtsMeasSelct50" type="gauge"/>
+                <attrib name="75thPercentile" alias="NewtsMeasSelct75" type="gauge"/>
+                <attrib name="95thPercentile" alias="NewtsMeasSelct95" type="gauge"/>
+                <attrib name="98thPercentile" alias="NewtsMeasSelct98" type="gauge"/>
                 <attrib name="99thPercentile" alias="NewtsMeasSelct99" type="gauge"/>
+                <attrib name="999thPercentile" alias="NewtsMeasSelct999" type="gauge"/>
                 <attrib name="Count" alias="NewtsMeasSelctCnt" type="counter"/>
             </mbean>
             <mbean name="org.opennms.newts.repository.sample-select-timer" objectname="org.opennms.newts:name=repository.sample-select-timer">
+                <attrib name="50thPercentile" alias="NewtsSmplSelct50" type="gauge"/>
+                <attrib name="75thPercentile" alias="NewtsSmplSelct75" type="gauge"/>
+                <attrib name="95thPercentile" alias="NewtsSmplSelct95" type="gauge"/>
+                <attrib name="98thPercentile" alias="NewtsSmplSelct98" type="gauge"/>
                 <attrib name="99thPercentile" alias="NewtsSmplSelct99" type="gauge"/>
+                <attrib name="999thPercentile" alias="NewtsSmplSelct999" type="gauge"/>
                 <attrib name="Count" alias="NewtsSmplSelctCnt" type="counter"/>
             </mbean>
             <mbean name="org.opennms.newts.repository.samples-inserted" objectname="org.opennms.newts:name=repository.samples-inserted">
@@ -306,13 +321,34 @@
                 <attrib name="Count" alias="NewtsSmplsSelctd" type="counter"/>
             </mbean>
             <mbean name="org.opennms.newts.search.update" objectname="org.opennms.newts:name=search.update">
+                <attrib name="50thPercentile" alias="NewtsSearchUpd50" type="gauge"/>
+                <attrib name="75thPercentile" alias="NewtsSearchUpd75" type="gauge"/>
+                <attrib name="95thPercentile" alias="NewtsSearchUpd95" type="gauge"/>
+                <attrib name="98thPercentile" alias="NewtsSearchUpd98" type="gauge"/>
                 <attrib name="99thPercentile" alias="NewtsSearchUpd99" type="gauge"/>
+                <attrib name="999thPercentile" alias="NewtsSearchUpd999" type="gauge"/>
+                <attrib name="Count" alias="NewtsSearchUpdCnt" type="counter"/>
             </mbean>
             <mbean name="org.opennms.newts.search.delete" objectname="org.opennms.newts:name=search.delete">
+                <attrib name="50thPercentile" alias="NewtsSearchDel50" type="gauge"/>
+                <attrib name="75thPercentile" alias="NewtsSearchDel75" type="gauge"/>
+                <attrib name="95thPercentile" alias="NewtsSearchDel95" type="gauge"/>
+                <attrib name="98thPercentile" alias="NewtsSearchDel98" type="gauge"/>
                 <attrib name="99thPercentile" alias="NewtsSearchDel99" type="gauge"/>
+                <attrib name="999thPercentile" alias="NewtsSearchDel999" type="gauge"/>
+                <attrib name="Count" alias="NewtsSearchDelCnt" type="counter"/>
             </mbean>
             <mbean name="org.opennms.newts.search.inserts" objectname="org.opennms.newts:name=search.inserts">
                 <attrib name="Count" alias="NewtsSearchInserts" type="counter"/>
+            </mbean>
+            <mbean name="cluster1-metrics.requests" objectname="cluster1-metrics:name=requests">
+                <attrib name="50thPercentile" alias="CasCluster1Req50" type="gauge"/>
+                <attrib name="75thPercentile" alias="CasCluster1Req75" type="gauge"/>
+                <attrib name="95thPercentile" alias="CasCluster1Req95" type="gauge"/>
+                <attrib name="98thPercentile" alias="CasCluster1Req98" type="gauge"/>
+                <attrib name="99thPercentile" alias="CasCluster1Req99" type="gauge"/>
+                <attrib name="999thPercentile" alias="CasCluster1Req999" type="gauge"/>
+                <attrib name="Count" alias="CasCluster1ReqCnt" type="counter"/>
             </mbean>
         </mbeans>
     </jmx-collection>
