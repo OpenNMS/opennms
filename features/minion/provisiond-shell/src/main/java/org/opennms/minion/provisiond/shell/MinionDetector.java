@@ -41,6 +41,11 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.provision.AsyncDetectorFactory;
+import org.opennms.netmgt.provision.AsyncServiceDetector;
+import org.opennms.netmgt.provision.DetectFuture;
+import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.SyncDetectorFactory;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
@@ -60,21 +65,29 @@ public class MinionDetector implements Action {
     @Argument(index = 2, name = "attributes", description = "Attributes to be set in key=value  form", multiValued = true)
     List<String> attributes;
 
+    @SuppressWarnings("rawtypes")
     @Reference
-    List<SyncServiceDetector> detectors;
+    List<SyncDetectorFactory> detectorFactoryList;
+
+    @SuppressWarnings("rawtypes")
+    @Reference
+    List<AsyncDetectorFactory> asyncdetectorFactoryList;
 
     @Reference
     Pinger pinger;
 
     @Override
     public Object execute() throws Exception {
-        PingerFactory.setInstance(pinger);
 
+        PingerFactory.setInstance(pinger);
         InetAddress ipAddress = InetAddress.getByName(address);
         boolean isServiceDetected = false;
         Map<String, String> properties = parse(attributes);
 
-        for (SyncServiceDetector detector : detectors) {
+        for (@SuppressWarnings("rawtypes")
+        SyncDetectorFactory detectorFactory : detectorFactoryList) {
+
+            SyncServiceDetector detector = detectorFactory.createDetector();
 
             if ((detector.getServiceName().equals(detectorType))) {
                 System.out.println("Trying to detect   " + detectorType
@@ -92,12 +105,36 @@ public class MinionDetector implements Action {
             }
         }
 
+        for (@SuppressWarnings("rawtypes")
+        AsyncDetectorFactory detectorFactory : asyncdetectorFactoryList) {
+
+            AsyncServiceDetector detector = detectorFactory.createDetector();
+
+            if ((detector.getServiceName().equals(detectorType))) {
+                System.out.println("Trying to detect   " + detectorType
+                        + "   service at    " + address);
+                try {
+                    detector.init();
+                    setAttributes(properties, detector);
+                    DetectFuture future = detector.isServiceDetected(ipAddress);
+                    future.awaitFor();
+                    isServiceDetected = future.isServiceDetected();
+                } catch (Exception e) {
+                    System.out.println(" Exception caused for detectorType "
+                            + detectorType);
+                }
+                System.out.println(detectorType + "   service detected at "
+                        + ipAddress + "   is   " + isServiceDetected);
+
+            }
+        }
+
         return null;
 
     }
 
     private void setAttributes(Map<String, String> properties,
-            SyncServiceDetector detector) {
+            ServiceDetector detector) {
 
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(detector);
 

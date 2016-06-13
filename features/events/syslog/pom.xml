@@ -178,6 +178,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-minion</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
     </dependency>
     <dependency>
@@ -196,6 +202,12 @@
     <dependency>
       <groupId>org.opennms.features.executor-factory</groupId>
       <artifactId>org.opennms.features.executor-factory.cassandra</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.minion</groupId>
+      <artifactId>core-api</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

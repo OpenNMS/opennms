@@ -36,13 +36,21 @@ import org.apache.karaf.shell.api.console.CommandLine;
 import org.apache.karaf.shell.api.console.Completer;
 import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.support.completers.StringsCompleter;
+import org.opennms.netmgt.provision.AsyncDetectorFactory;
+import org.opennms.netmgt.provision.AsyncServiceDetector;
+import org.opennms.netmgt.provision.SyncDetectorFactory;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 
 @Service
 public class DetectorTypeCompleter implements Completer {
 
+    @SuppressWarnings("rawtypes")
     @Reference
-    List<SyncServiceDetector> detectors;
+    List<SyncDetectorFactory> detectorFactoryList;
+
+    @SuppressWarnings("rawtypes")
+    @Reference
+    List<AsyncDetectorFactory> asyncdetectorFactoryList;
 
     @Override
     public int complete(Session session, CommandLine commandLine,
@@ -50,7 +58,15 @@ public class DetectorTypeCompleter implements Completer {
 
         StringsCompleter delegate = new StringsCompleter();
 
-        for (SyncServiceDetector detector : detectors) {
+        for (@SuppressWarnings("rawtypes")
+        SyncDetectorFactory detectorFactory : detectorFactoryList) {
+            SyncServiceDetector detector = detectorFactory.createDetector();
+            delegate.getStrings().add(detector.getServiceName());
+        }
+
+        for (@SuppressWarnings("rawtypes")
+        AsyncDetectorFactory asyncdetectorFactory : asyncdetectorFactoryList) {
+            AsyncServiceDetector detector = asyncdetectorFactory.createDetector();
             delegate.getStrings().add(detector.getServiceName());
         }
 

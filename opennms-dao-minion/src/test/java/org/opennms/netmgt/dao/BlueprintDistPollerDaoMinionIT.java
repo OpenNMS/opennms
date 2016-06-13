@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.discovery;
+package org.opennms.netmgt.dao;
 
 import java.util.Dictionary;
 import java.util.Map;
@@ -45,29 +45,28 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith( OpenNMSJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
-public class DiscoveryBlueprintDistPollerDaoIT extends CamelBlueprintTest {
+public class BlueprintDistPollerDaoMinionIT extends CamelBlueprintTest {
     private static final String LOCATION = "TEST_LOCATION";
 
-    @SuppressWarnings( "rawtypes" )
+    @SuppressWarnings("rawtypes")
     @Override
     protected void addServicesOnStartup( Map<String, KeyValueHolder<Object, Dictionary>> services ) {
-        services.put( MinionIdentity.class.getName(),
-                new KeyValueHolder<Object, Dictionary>( new MinionIdentity() {
-                    @Override
-                    public String getId() {
-                        return DistPollerDao.DEFAULT_DIST_POLLER_ID;
-                    }
-                    @Override
-                    public String getLocation() {
-                        return LOCATION;
-                    }
-                }, new Properties() ) );
+        services.put( MinionIdentity.class.getName(), new KeyValueHolder<Object, Dictionary>(new MinionIdentity() {
+            @Override
+            public String getId() {
+                return DistPollerDao.DEFAULT_DIST_POLLER_ID;
+            }
+            @Override
+            public String getLocation() {
+                return LOCATION;
+            }
+        }, new Properties()));
     }
 
     // The location of our Blueprint XML file to be used for testing
     @Override
     protected String getBlueprintDescriptor() {
-        return "file:blueprint-discovery-distPollerDaoMinion.xml,file:src/test/resources/blueprint-empty-camel-context.xml";
+        return "file:src/main/resources/OSGI-INF/blueprint/blueprint-distPollerDaoMinion.xml,blueprint-empty-camel-context.xml";
     }
 
     @Test

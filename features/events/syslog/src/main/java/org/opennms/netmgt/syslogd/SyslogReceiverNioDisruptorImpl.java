@@ -43,6 +43,7 @@ import org.opennms.core.concurrent.ExecutorFactoryJavaImpl;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,6 +138,8 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
 
     private final SyslogdConfig m_config;
 
+    private DistPollerDao m_distPollerDao = null;
+
     /**
      * This thread pool is used to process {@link DatagramChannel#receive(ByteBuffer)} 
      * calls on the syslog port. By using multiple threads, we can optimize the receipt of
@@ -215,6 +218,15 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
     public String getName() {
         String listenAddress = (m_config.getListenAddress() != null && m_config.getListenAddress().length() > 0) ? m_config.getListenAddress() : "0.0.0.0";
         return getClass().getSimpleName() + " [" + listenAddress + ":" + m_config.getSyslogPort() + "]";
+    }
+
+    // Getter and setter for DistPollerDao
+    public DistPollerDao getDistPollerDao() {
+        return m_distPollerDao;
+    }
+
+    public void setDistPollerDao(DistPollerDao distPollerDao) {
+        m_distPollerDao = distPollerDao;
     }
 
     public ExecutorFactory getExecutorFactory() {
@@ -358,7 +370,7 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
                             .thenAcceptAsync(c -> c.call(), m_syslogProcessorExecutor);
                             */
 
-                            SyslogConnection conn = new SyslogConnection(source.getAddress(), source.getPort(), message.buffer, m_config);
+                            SyslogConnection conn = new SyslogConnection(source.getAddress(), source.getPort(), message.buffer, m_config, m_distPollerDao.whoami().getId());
 
                             // Convert the syslog packet into an OpenNMS event
                             CompletableFuture<SyslogProcessor> proc = CompletableFuture.supplyAsync(conn::call, m_syslogConnectionExecutor);

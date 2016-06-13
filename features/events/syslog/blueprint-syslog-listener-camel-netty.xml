@@ -25,20 +25,20 @@
 		<property name="listenAddress" value="${syslog.listen.interface}" />
 	</bean>
 
-	<reference id="syslogConnectionHandlers"
-		interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" />
+	<reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
 
-	<service interface="org.opennms.netmgt.syslogd.SyslogReceiver"
-		ref="syslogReceiverCamelNetty" />
+	<reference id="syslogConnectionHandlers" interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" />
 
-	<bean id="syslogReceiverCamelNetty" class="org.opennms.netmgt.syslogd.SyslogReceiverCamelNettyImpl"
-		destroy-method="stop">
+	<bean id="syslogReceiverCamelNetty" class="org.opennms.netmgt.syslogd.SyslogReceiverCamelNettyImpl" destroy-method="stop">
 		<argument ref="syslogConfig" />
+		<property name="distPollerDao" ref="distPollerDao"/>
 		<property name="syslogConnectionHandlers" ref="syslogConnectionHandlers" />
 	</bean>
 
 	<bean class="java.lang.Thread" init-method="start">
 		<argument ref="syslogReceiverCamelNetty" />
 	</bean>
+
+	<service interface="org.opennms.netmgt.syslogd.SyslogReceiver" ref="syslogReceiverCamelNetty" />
 
 </blueprint>
