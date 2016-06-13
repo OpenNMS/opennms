@@ -55,7 +55,7 @@
 		
 		<route id="receiveTrapConnection">
 			<from uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}"/>
-				<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
+<!-- 				<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/> -->
 			<to uri="seda:trapHandler"/>
 		</route>
 
