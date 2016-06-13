@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <global>
+    <security>
+      <doNotOverride>logmsg</doNotOverride>
+      <doNotOverride>operaction</doNotOverride>
+      <doNotOverride>autoaction</doNotOverride>
+      <doNotOverride>tticket</doNotOverride>
+      <doNotOverride>script</doNotOverride>
+    </security>
+  </global>
+
+  <event-file>events/opennms.events.xml</event-file>
+  <event-file>events/Translator.default.events.xml</event-file>
+  
+  <event-file>events/Rancid.events.xml</event-file>
+  
+  <event-file>events/Cisco.syslog.events.xml</event-file>
+
+  <event-file>events/topology-status.events.xml</event-file>
+  <event-file>events/ncs-component.events.xml</event-file>
+  <event-file>events/asset-management.events.xml</event-file>
+  <event-file>events/Standard.events.xml</event-file>
+  <event-file>events/default.events.xml</event-file>
+</events>

@@ -13,20 +13,18 @@
       <bundle>mvn:org.opennms.features.minion/core-api/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-discoverer" description="OpenNMS :: Discovery :: Discoverer" version="${project.version}">
-      <feature>opennms-discovery</feature>
-      <feature>opennms-discovery-distPollerDaoMinion</feature>
-      <feature>opennms-icmp-jna</feature>
+    <feature name="opennms-dao-minion" description="OpenNMS :: DAO :: Minion" version="${project.version}">
       <feature>minion-core-api</feature>
-      <bundle>blueprint:mvn:org.opennms.features/org.opennms.features.discovery/${project.version}/xml/blueprint-discoverer</bundle>
+      <feature>opennms-dao-api</feature>
+      <bundle>mvn:org.opennms/opennms-dao-minion/${project.version}</bundle>
     </feature>
 
-    <!-- TODO: Refactor this into a common Minion-only DAO package -->
-    <feature name="opennms-discovery-distPollerDaoMinion" description="OpenNMS :: Discovery :: DistPollerDaoMinion" version="${project.version}">
-      <feature>opennms-dao-api</feature>
-      <feature>opennms-discovery</feature>
+    <feature name="opennms-discoverer" description="OpenNMS :: Discovery :: Discoverer" version="${project.version}">
       <feature>minion-core-api</feature>
-      <bundle>blueprint:mvn:org.opennms.features/org.opennms.features.discovery/${project.version}/xml/blueprint-discovery-distPollerDaoMinion</bundle>
+      <feature>opennms-dao-minion</feature>
+      <feature>opennms-discovery</feature>
+      <feature>opennms-icmp-jna</feature>
+      <bundle>blueprint:mvn:org.opennms.features/org.opennms.features.discovery/${project.version}/xml/blueprint-discoverer</bundle>
     </feature>
     
     <feature name="opennms-syslogd-handler-kafka" description="OpenNMS :: Syslogd :: Handler :: Kafka" version="${project.version}">
@@ -39,6 +37,7 @@
     <feature name="opennms-syslogd-handler-minion" description="OpenNMS :: Syslogd :: Handler :: Minion" version="${project.version}">
       <feature>camel-blueprint</feature>
       <feature>minion-core-api</feature>
+      <feature>opennms-dao-minion</feature>
       <feature>opennms-syslogd</feature>
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-minion</bundle>
     </feature>
@@ -46,20 +45,26 @@
     <feature name="opennms-trapd-handler-minion" description="OpenNMS :: Trapd :: Handler :: Minion" version="${project.version}">
       <feature>camel-blueprint</feature>
       <feature>minion-core-api</feature>
+      <feature>opennms-dao-minion</feature>
       <feature>opennms-trapd</feature>
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-minion</bundle>
     </feature>
 
-	<feature name="minion-heartbeat" description="OpenNMS :: Minion :: HeartBeat" version="${project.version}">
-	  <bundle>blueprint:mvn:org.opennms.features.minion/core-impl/${project.version}/xml/blueprint-heartbeat</bundle>
-	  <feature>minion-core-api</feature>
-	</feature>
+    <feature name="minion-heartbeat" description="OpenNMS :: Minion :: HeartBeat" version="${project.version}">
+      <feature>camel-blueprint</feature>
+      <feature>minion-core-api</feature>
+      <feature>opennms-core-camel</feature>
+      <bundle>blueprint:mvn:org.opennms.features.minion/core-impl/${project.version}/xml/blueprint-heartbeat</bundle>
+    </feature>
     
     <feature name="minion-snmp-proxy" description="OpenNMS :: Minion :: SNMP Proxy" version="${project.version}">
+      <feature>javax.mail</feature>
       <feature>org.json</feature>
-      <bundle>wrap:mvn:javax.mail/mail/1.4.5</bundle>
-      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
+      <feature>minion-core-api</feature>
       <feature>opennms-core-camel</feature>
+      <feature>opennms-config-api</feature>
+      <feature>opennms-model</feature>
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.camel/${project.version}</bundle>
     </feature>

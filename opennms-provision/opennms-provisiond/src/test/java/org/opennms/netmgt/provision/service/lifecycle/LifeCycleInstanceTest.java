@@ -37,6 +37,7 @@ import java.util.concurrent.Executors;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
@@ -208,7 +209,8 @@ public class LifeCycleInstanceTest {
     public void setUp() {
         MockLogAppender.setupLogging();
 
-        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator("LifeCycleInstanceTest", Executors.newFixedThreadPool(10));
+        TaskCoordinator coordinator = new DefaultTaskCoordinator("LifeCycleInstanceTest");
+        coordinator.addOrUpdateExecutor(TaskCoordinator.DEFAULT_EXECUTOR, Executors.newFixedThreadPool(10));
         
         DefaultLifeCycleRepository repository = new DefaultLifeCycleRepository(coordinator);
         

@@ -38,6 +38,7 @@ import org.opennms.newts.api.search.Operator;
 import org.opennms.newts.api.search.Query;
 import org.opennms.newts.api.search.Term;
 import org.opennms.newts.api.search.TermQuery;
+import org.opennms.newts.cassandra.search.CassandraIndexingOptions;
 import org.opennms.newts.cassandra.search.EscapableResourceIdSplitter;
 import org.opennms.newts.cassandra.search.ResourceIdSplitter;
 
@@ -49,7 +50,7 @@ import org.opennms.newts.cassandra.search.ResourceIdSplitter;
  */
 public abstract class NewtsUtils {
 
-    public static final boolean ENABLE_HIERARCHICAL_INDEXING = false;
+    public static final int MAX_BATCH_SIZE = Integer.getInteger("org.opennms.newts.config.max_batch_size", 16);
 
     public static final int TTL = Integer.getInteger("org.opennms.newts.config.ttl", 31536000);
 
@@ -68,6 +69,13 @@ public abstract class NewtsUtils {
     public static final String DEFAULT_PORT = "9043";
 
     public static final String DEFAULT_TTL = "" + 86400 * 365;
+
+    public static final CassandraIndexingOptions INDEXING_OPTIONS = new CassandraIndexingOptions.Builder()
+            .withHierarchicalIndexing(false)
+            .withIndexResourceTerms(false)
+            .withIndexUsingDefaultTerm(false)
+            .withMaxBatchSize(MAX_BATCH_SIZE)
+            .build();
 
     private static final ResourceIdSplitter s_splitter = new EscapableResourceIdSplitter();
 

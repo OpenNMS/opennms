@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,37 +25,31 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.smoketest.utils;
 
-package org.opennms.core.tasks;
+import java.util.concurrent.Callable;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.dao.api.OnmsDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * TaskWaiter
+ * DAO utility thingies.
  *
- * @author brozow
- * @version $Id: $
+ * @author jwhite
  */
-public interface TaskWaiter {
+public class DaoUtils {
 
-    /**
-     * <p>waitFor</p>
-     *
-     * @throws java.lang.InterruptedException if any.
-     * @throws java.util.concurrent.ExecutionException if any.
-     */
-    public void waitFor() throws InterruptedException, ExecutionException;
+    private static final Logger LOG = LoggerFactory.getLogger(DaoUtils.class);
 
-    /**
-     * <p>waitFor</p>
-     *
-     * @param timeout a long.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @throws java.lang.InterruptedException if any.
-     * @throws java.util.concurrent.ExecutionException if any.
-     * @throws java.util.concurrent.TimeoutException if any.
-     */
-    public void waitFor(long timeout, TimeUnit unit)  throws InterruptedException, ExecutionException, TimeoutException;
+    public static Callable<Integer> countMatchingCallable(OnmsDao<?,?> dao, Criteria criteria) {
+        return new Callable<Integer>() {
+              public Integer call() throws Exception {
+                  Integer count = dao.countMatching(criteria);
+                  LOG.info("Count: {}", count);
+                  return count;
+              }
+        };
+    }
 }

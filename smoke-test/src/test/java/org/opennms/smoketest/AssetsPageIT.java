@@ -39,7 +39,7 @@ import org.junit.runners.MethodSorters;
 public class AssetsPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        m_driver.get(BASE_URL + "opennms/asset/index.jsp");
+        m_driver.get(getBaseUrl() + "opennms/asset/index.jsp");
     }
 
     @Test

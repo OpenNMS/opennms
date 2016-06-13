@@ -43,10 +43,10 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.ContainerTask;
-import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -69,14 +69,14 @@ import org.springframework.util.Assert;
 public class NodeScan implements Scan {
     private static final Logger LOG = LoggerFactory.getLogger(NodeScan.class);
 
-    private Integer m_nodeId;
-    private String m_foreignSource;
-    private String m_foreignId;
-    private Date m_scanStamp;
-    private ProvisionService m_provisionService;
-    private EventForwarder m_eventForwarder;
-    private SnmpAgentConfigFactory m_agentConfigFactory;
-    private DefaultTaskCoordinator m_taskCoordinator;
+    private final Integer m_nodeId;
+    private final String m_foreignSource;
+    private final String m_foreignId;
+    private final Date m_scanStamp;
+    private final ProvisionService m_provisionService;
+    private final EventForwarder m_eventForwarder;
+    private final SnmpAgentConfigFactory m_agentConfigFactory;
+    private final TaskCoordinator m_taskCoordinator;
 
     //NOTE TO SELF: This is referenced from the AgentScan inner class
     private boolean m_aborted = false;
@@ -93,9 +93,9 @@ public class NodeScan implements Scan {
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
-     * @param taskCoordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param taskCoordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final DefaultTaskCoordinator taskCoordinator) {
+    public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
@@ -189,9 +189,9 @@ public class NodeScan implements Scan {
     /**
      * <p>getTaskCoordinator</p>
      *
-     * @return a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @return a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    public DefaultTaskCoordinator getTaskCoordinator() {
+    public TaskCoordinator getTaskCoordinator() {
         return m_taskCoordinator;
     }
 
@@ -276,6 +276,8 @@ public class NodeScan implements Scan {
 
                     final Task t = createTask();
                     t.schedule();
+                    // NMS-5593 shows 10 provisioning threads all waiting on these
+                    // latches which is probably exhausting the thread pool
                     t.waitFor();
 
                     LOG.info("Finished scanning node {}/{}/{}", getNodeId(), getForeignSource(), getForeignId());
@@ -330,12 +332,14 @@ public class NodeScan implements Scan {
     /**
      * AgentScan
      *
+     * TODO: Make this static
+     * 
      * @author brozow
      */
     public class AgentScan extends BaseAgentScan implements NeedsContainer, ScanProgress {
 
-        private InetAddress m_agentAddress;
-        private String m_agentType;
+        private final InetAddress m_agentAddress;
+        private final String m_agentType;
 
         public AgentScan(final Integer nodeId, final OnmsNode node, final InetAddress agentAddress, final String agentType) {
             super(nodeId, node);
@@ -661,6 +665,9 @@ public class NodeScan implements Scan {
         }
     }
 
+    /**
+     * TODO: Make this static
+     */
     public class NoAgentScan extends BaseAgentScan implements NeedsContainer {
 
 
@@ -749,6 +756,9 @@ public class NodeScan implements Scan {
 
     }
 
+    /**
+     * TODO: Make this static
+     */
     public class BaseAgentScan {
 
         private OnmsNode m_node;

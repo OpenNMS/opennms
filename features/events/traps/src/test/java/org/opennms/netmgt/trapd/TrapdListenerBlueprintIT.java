@@ -98,7 +98,7 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTest {
 	// The location of our Blueprint XML files to be used for testing
 	@Override
 	protected String getBlueprintDescriptor() {
-		return "file:blueprint-trapd-listener.xml,file:src/test/resources/blueprint-empty-camel-context.xml";
+		return "file:blueprint-trapd-listener.xml,blueprint-empty-camel-context.xml";
 	}
 
 	private static class TrapNotificationLatch implements TrapNotificationHandler {

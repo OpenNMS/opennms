@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.provision.service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
@@ -41,31 +41,32 @@ final class EventAccumulator implements EventForwarder {
     private static final Logger LOG = LoggerFactory.getLogger(EventAccumulator.class);
 
     private final EventForwarder m_eventForwarder;
-    private final List<Event> m_events = new ArrayList<>();
+    private final Queue<Event> m_events = new ConcurrentLinkedQueue<>();
 
     public EventAccumulator(final EventForwarder forwarder) {
         m_eventForwarder = forwarder;
     }
 
     @Override
-    public synchronized void sendNow(final Event event) {
-        m_events.add(event);
+    public void sendNow(final Event event) {
+        if (event != null) {
+            m_events.add(event);
+        }
     }
 
     @Override
-    public synchronized void sendNow(final Log log) {
+    public void sendNow(final Log log) {
         if (log != null && log.getEvents() != null && log.getEvents().getEventCount() > 0) {
-            for (final Event e : log.getEvents().getEventCollection()) {
-                m_events.add(e);
-            }
+            m_events.addAll(log.getEvents().getEventCollection());
         }
     }
-    
-    public synchronized void flush() {
-        LOG.debug("flush(): sending {} events: {}", m_events.size(), m_events);
-        for (final Event e : m_events) {
-            m_eventForwarder.sendNow(e);
+
+    public void flush() {
+        int i = 0;
+        while(!m_events.isEmpty()) {
+            m_eventForwarder.sendNow(m_events.remove());
+            i++;
         }
-        m_events.clear();
+        LOG.debug("flush(): sent {} events: {}", i, m_events);
     }
 }

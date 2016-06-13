@@ -68,14 +68,14 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 	}
 
 	@Test
-	public void testInstallFeatureOpennmsDiscoverer() {
-		installFeature("opennms-discoverer");
+	public void testInstallFeatureOpennmsDaoMinion() {
+		installFeature("opennms-dao-minion");
 		System.out.println(executeCommand("features:list -i"));
 	}
 
 	@Test
-	public void testInstallFeatureOpennmsDiscoveryDistPollerDaoMinion() {
-		installFeature("opennms-discovery-distPollerDaoMinion");
+	public void testInstallFeatureOpennmsDiscoverer() {
+		installFeature("opennms-discoverer");
 		System.out.println(executeCommand("features:list -i"));
 	}
 
@@ -102,4 +102,15 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("features:list -i"));
 	}
 	
+	@Test
+	public void testInstallFeatureMinionHeartbeat() {
+		installFeature("minion-heartbeat");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionSnmpProxy() {
+		installFeature("minion-snmp-proxy");
+		System.out.println(executeCommand("features:list -i"));
+	}
 }

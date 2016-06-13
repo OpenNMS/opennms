@@ -118,8 +118,7 @@ public class IpInterfaceScanTest {
      * @param expectedResult the expected result
      */
     private void runTest(String ipAddress, String ipMatch, boolean expectedResult) {
-        IpInterfaceScan scan = new IpInterfaceScan(1, InetAddressUtils.addr(ipAddress), "JUnit", null);
-        Assert.assertTrue(expectedResult == scan.shouldDetect(new MockServiceDetector("TEST_SVC", ipMatch)));
+        Assert.assertEquals(expectedResult, IpInterfaceScan.shouldDetect(new MockServiceDetector("TEST_SVC", ipMatch), InetAddressUtils.addr(ipAddress)));
     }
 
 }
