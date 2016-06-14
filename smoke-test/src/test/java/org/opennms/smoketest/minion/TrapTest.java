@@ -111,6 +111,8 @@ public class TrapTest {
             pipe.println("config:update");
             // Install the syslog and trap handler features
             pipe.println("features:install opennms-syslogd-handler-default opennms-trapd-handler-default");
+            pipe.println("features:list -i");
+            pipe.println("list");
             pipe.println("logout");
             try {
                 await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
