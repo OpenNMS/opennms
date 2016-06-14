@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.trapd;
 
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.opennms.core.xml.JaxbUtils;
@@ -35,29 +38,37 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.snmp.TrapNotification;
 
+import com.sun.mail.iap.ByteArray;
+
 /**
  * This Camel {@link Processor} uses {@link JaxbUtils} to marshal classes
  * into XML String representations.
  * 
  * @author Deepak
  */
-public class KafkaSerializeTrapsProcessor implements Processor {
-	public static final Logger LOG = LoggerFactory.getLogger(KafkaSerializeTrapsProcessor.class);
+public class KafkaDeserializeTrapsProcessor implements Processor {
+	public static final Logger LOG = LoggerFactory.getLogger(KafkaDeserializeTrapsProcessor.class);
 
 	private final Class<?> m_class;
 
 	@SuppressWarnings("rawtypes") // Because Aries Blueprint cannot handle generics
-	public KafkaSerializeTrapsProcessor(Class clazz) {
+	public KafkaDeserializeTrapsProcessor(Class clazz) {
 		m_class = clazz;
 	}
 
-	public KafkaSerializeTrapsProcessor(String className) throws ClassNotFoundException {
+	public KafkaDeserializeTrapsProcessor(String className) throws ClassNotFoundException {
 		m_class = Class.forName(className);
 	}
 
 	@Override
 	public void process(final Exchange exchange) throws Exception {
-		final Object object = exchange.getIn().getBody(m_class);
-		exchange.getIn().setBody(object, TrapNotification.class);
+		byte[] bytes = exchange.getIn().getBody(byte[].class);
+		System.out.println("######################################################");
+		System.out.println(bytes);
+		System.out.println("######################################################");
+		ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes));
+		TrapNotification notification = (TrapNotification)in.readObject();
+		
+		exchange.getIn().setBody(notification, TrapNotification.class);
 	}
 }

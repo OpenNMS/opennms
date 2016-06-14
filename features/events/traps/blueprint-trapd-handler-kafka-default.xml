@@ -50,7 +50,7 @@
 		<property name="processorFactory" ref="processorFactory"/>
 	</bean>
 
-    <bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
+    <bean id="unmarshaller" class="org.opennms.netmgt.trapd.KafkaDeserializeTrapsProcessor">
 		<argument value="org.opennms.netmgt.snmp.TrapNotification" />
 	</bean>
 	
