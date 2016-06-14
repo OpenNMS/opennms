@@ -32,6 +32,12 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
@@ -52,6 +58,8 @@ import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistr
 @Service
 public class MinionDetector implements Action {
 
+    private Executor executor = Executors.newSingleThreadExecutor();
+
     @Argument(index = 0, name = "service", description = "Service to detect", required = true, multiValued = false, valueToShowInHelp = "icmp")
     @Completion(ServiceNameCompleter.class)
     String serviceName = null;
@@ -68,7 +76,6 @@ public class MinionDetector implements Action {
     @Override
     public Object execute() throws Exception {
         InetAddress ipAddress = InetAddress.getByName(address);
-        boolean isServiceDetected = false;
         Map<String, String> properties = parse(attributes);
 
         ServiceDetector detector = serviceDetectorRegistry.getDetectorByServiceName(serviceName, properties);
@@ -77,22 +84,58 @@ public class MinionDetector implements Action {
             return null;
         }
 
-        System.out.printf("Trying to detect the '%s' service on %s ...\n", serviceName, address);
+        System.out.printf("Trying to detect the '%s' service on %s ", serviceName, address);
+        final CompletableFuture<Boolean> future = detectService(detector, ipAddress);
+        while (true) {
+            try {
+                boolean isServiceDetected = future.get(1, TimeUnit.SECONDS);
+                System.out.printf("\nThe '%s' service %s detected on %s\n", serviceName,
+                        isServiceDetected ? "WAS" : "WAS NOT", address);
+                break;
+            } catch (TimeoutException e) {
+                // pass
+            }
+            System.out.print(".");
+            System.out.flush();
+        }
+        return null;
+    }
+
+    private CompletableFuture<Boolean> detectService(ServiceDetector detector, InetAddress address) {
         detector.init();
         if (detector instanceof SyncServiceDetector) {
-            SyncServiceDetector syncDetector = (SyncServiceDetector)detector;
-            isServiceDetected = syncDetector.isServiceDetected(ipAddress);
+            final SyncServiceDetector syncDetector = (SyncServiceDetector)detector;
+            return CompletableFuture.supplyAsync(new Supplier<Boolean>() {
+                @Override
+                public Boolean get() {
+                    try {
+                        return syncDetector.isServiceDetected(address);
+                    } finally {
+                        syncDetector.dispose();
+                    }
+                }
+            }, executor);
         } else if (detector instanceof AsyncServiceDetector) {
-            AsyncServiceDetector asyncDetector = (AsyncServiceDetector)detector;
-            DetectFuture future = asyncDetector.isServiceDetected(ipAddress);
-            future.awaitFor();
-            isServiceDetected = future.isServiceDetected();
+            final AsyncServiceDetector asyncDetector = (AsyncServiceDetector)detector;
+            // TODO: We should update the AsyncServiceDetector interface to return
+            // a CompletableFuture instead of a DetectFuture.
+            return CompletableFuture.supplyAsync(new Supplier<Boolean>() {
+                @Override
+                public Boolean get() {
+                    DetectFuture future = asyncDetector.isServiceDetected(address);
+                    try {
+                        future.awaitFor();
+                        return future.isServiceDetected();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    } finally {
+                        asyncDetector.dispose();
+                    }
+                }
+            }, executor);
+        } else {
+            throw new IllegalArgumentException("Unsupported detector type.");
         }
-        detector.dispose();
-
-        System.out.printf("The '%s' service %s detected on %s\n", serviceName,
-                isServiceDetected ? "WAS" : "WAS NOT", address);
-        return null;
     }
 
     private Map<String, String> parse(List<String> attributeList) {
