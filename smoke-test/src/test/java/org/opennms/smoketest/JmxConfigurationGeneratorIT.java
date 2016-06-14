@@ -93,7 +93,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
     public void verifyCompMemberSelection() throws Exception {
         configureJMXConnection(false);
 
-        selectNodeByName("PS MarkSweep", true);
+        selectNodeByName("Code Cache", true);
 
         // go to last page
         findElementById("next").click();
@@ -106,8 +106,8 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
         // verify output
         final String jmxDatacollectionConfigContent = findElementByXpath("//textarea").getAttribute("value");
 
-        Assert.assertEquals(1, find("<comp-attrib", jmxDatacollectionConfigContent));
-        Assert.assertEquals(7, find("<comp-member", jmxDatacollectionConfigContent));
+        Assert.assertEquals(2, find("<comp-attrib", jmxDatacollectionConfigContent));
+        Assert.assertEquals(8, find("<comp-member", jmxDatacollectionConfigContent));
     }
 
     protected void configureJMXConnection(final boolean skipDefaultVM) throws Exception {
