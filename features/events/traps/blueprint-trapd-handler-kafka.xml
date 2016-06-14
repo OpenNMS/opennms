@@ -24,6 +24,11 @@
 		<argument value="seda:handleMessage"/>
 	</bean>
 
+		<!-- Camel Event marshalling processor -->
+	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
+		<argument value="org.opennms.netmgt.snmp.TrapNotification" />
+	</bean>
+	
 	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapNotificationHandlerCamel"/>
 
 	<camelContext id="trapNotificationHandler" xmlns="http://camel.apache.org/schema/blueprint">
@@ -36,13 +41,9 @@
 				<!-- <simple>${body.remoteAddress}</simple> -->
 				<simple>trap</simple>
 			</setHeader>
- 			<log message="address:       ${body.sourceAddress}"/>
-			<log message="port:          ${body.port}"/>
- 			<transform>
-				<simple>${body.byteBuffer}</simple>
-			</transform>
-			<convertBodyTo type="java.lang.String"/>
-			<log message="bytes:         ${body}"/>
+
+			<bean ref="marshaller"/>
+
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
 			<to uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>
