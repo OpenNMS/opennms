@@ -23,17 +23,17 @@
 		<argument value="org.opennms.netmgt.config.trapd.TrapdConfiguration" />
 	</bean>
 
-	<camelContext id="trapConnectionHandlerDefaultContext"
-		xmlns="http://camel.apache.org/schema/blueprint">
-		<propertyPlaceholder id="properties"
-			location="blueprint:trapHandlerDefaultProperties" />
-		<route id="unmarshal">
-			<from uri="http://localhost:8980/opennms/rest/config/trapd" />
-			<bean ref="unmarshaller" />
-			<to uri="bean:trapdConfig?method=onUpdate" />
-			<bean ref="trapReceiver" method="setTrapdConfig" />
-		</route>
-	</camelContext>
+<!-- 	<camelContext id="trapConnectionHandlerDefaultContext" -->
+<!-- 		xmlns="http://camel.apache.org/schema/blueprint"> -->
+<!-- 		<propertyPlaceholder id="properties" -->
+<!-- 			location="blueprint:trapHandlerDefaultProperties" /> -->
+<!-- 		<route id="unmarshal"> -->
+<!-- 			<from uri="http://localhost:8980/opennms/rest/config/trapd" /> -->
+<!-- 			<bean ref="unmarshaller" /> -->
+<!-- 			<to uri="bean:trapdConfig?method=onUpdate" /> -->
+<!-- 			<bean ref="trapReceiver" method="setTrapdConfig" /> -->
+<!-- 		</route> -->
+<!-- 	</camelContext> -->
      
     <bean id="trapdConfig" class="org.opennms.netmgt.trapd.TrapdConfigBean">
         <property name="snmpTrapPort" value="${trapd.listen.port}"/>
