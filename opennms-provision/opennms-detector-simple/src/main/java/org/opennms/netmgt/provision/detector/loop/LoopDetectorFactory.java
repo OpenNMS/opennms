@@ -26,8 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision;
+package org.opennms.netmgt.provision.detector.loop;
 
-public interface SyncDetectorFactory<T extends SyncServiceDetector> {
-    T createDetector();
+import org.opennms.netmgt.provision.ServiceDetectorFactory;
+
+public class LoopDetectorFactory
+        implements ServiceDetectorFactory<LoopDetector> {
+
+    @Override
+    public LoopDetector createDetector() {
+        return new LoopDetector();
+    }
+
 }

@@ -20,33 +20,9 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.netmgt.provision.detector.icmp.*;org.opennms.netmgt.provision.detector.loop.*;org.opennms.netmgt.provision.detector.smb.*;org.opennms.netmgt.provision.detector.sms.*;org.opennms.netmgt.provision.detector.snmp.*;org.opennms.netmgt.provision.detector.factory.sync.*;version="${project.version}"</Export-Package>
+            <Export-Package>org.opennms.netmgt.provision.detector.icmp.*;org.opennms.netmgt.provision.detector.loop.*;org.opennms.netmgt.provision.detector.smb.*;org.opennms.netmgt.provision.detector.sms.*;org.opennms.netmgt.provision.detector.snmp.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-artifacts</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <configuration>
-              <artifacts>
-
-                <artifact>
-                  <file>blueprint-detector.xml</file>
-                  <type>xml</type>
-                  <classifier>blueprint-detector</classifier>
-                </artifact>
-
-              </artifacts>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

@@ -39,111 +39,60 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.netmgt.icmp.Pinger;
-import org.opennms.netmgt.icmp.PingerFactory;
-import org.opennms.netmgt.provision.AsyncDetectorFactory;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.ServiceDetector;
-import org.opennms.netmgt.provision.SyncDetectorFactory;
 import org.opennms.netmgt.provision.SyncServiceDetector;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.PropertyAccessorFactory;
+import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 
-@Command(scope = "minion", name = "detect", description = "Detects services at given ipAddress")
+@Command(scope = "minion", name = "detect", description = "Manually invoke and test provisiond detectors.",
+    detailedDescription="Example usage:\n"
+            + "\t minion:detect LOOP 127.0.0.1 ipMatch=127.0.*.*\n"
+            + "\t minion:detect HTTP 127.0.0.1 port=8000\n")
 @Service
 public class MinionDetector implements Action {
 
-    @Argument(index = 0, name = "detectorType", description = "Type of detector", required = true, multiValued = false, valueToShowInHelp = "icmp")
-    @Completion(DetectorTypeCompleter.class)
-    String detectorType = null;
+    @Argument(index = 0, name = "service", description = "Service to detect", required = true, multiValued = false, valueToShowInHelp = "icmp")
+    @Completion(ServiceNameCompleter.class)
+    String serviceName = null;
 
-    @Argument(index = 1, name = "address", description = "The address to be detected", required = true, multiValued = false)
+    @Argument(index = 1, name = "address", description = "The IP address against which the detector will run", required = true, multiValued = false)
     String address = null;
 
-    @Argument(index = 2, name = "attributes", description = "Attributes to be set in key=value  form", multiValued = true)
+    @Argument(index = 2, name = "attributes", description = "Detector attributes in key=value form", multiValued = true)
     List<String> attributes;
 
-    @SuppressWarnings("rawtypes")
     @Reference
-    List<SyncDetectorFactory> detectorFactoryList;
-
-    @SuppressWarnings("rawtypes")
-    @Reference
-    List<AsyncDetectorFactory> asyncdetectorFactoryList;
-
-    @Reference
-    Pinger pinger;
+    ServiceDetectorRegistry serviceDetectorRegistry;
 
     @Override
     public Object execute() throws Exception {
-
-        PingerFactory.setInstance(pinger);
         InetAddress ipAddress = InetAddress.getByName(address);
         boolean isServiceDetected = false;
         Map<String, String> properties = parse(attributes);
 
-        for (@SuppressWarnings("rawtypes")
-        SyncDetectorFactory detectorFactory : detectorFactoryList) {
-
-            SyncServiceDetector detector = detectorFactory.createDetector();
-
-            if ((detector.getServiceName().equals(detectorType))) {
-                System.out.println("Trying to detect   " + detectorType
-                        + "   service at    " + address);
-                try {
-                    setAttributes(properties, detector);
-                    isServiceDetected = detector.isServiceDetected(ipAddress);
-                } catch (Exception e) {
-                    System.out.println(" Exception caused for detectorType "
-                            + detectorType);
-                }
-                System.out.println(detectorType + "   service detected at "
-                        + ipAddress + "   is   " + isServiceDetected);
-
-            }
+        ServiceDetector detector = serviceDetectorRegistry.getDetectorByServiceName(serviceName, properties);
+        if (detector == null) {
+            System.out.println("No detector found with service name: " + serviceName);
+            return null;
         }
 
-        for (@SuppressWarnings("rawtypes")
-        AsyncDetectorFactory detectorFactory : asyncdetectorFactoryList) {
-
-            AsyncServiceDetector detector = detectorFactory.createDetector();
-
-            if ((detector.getServiceName().equals(detectorType))) {
-                System.out.println("Trying to detect   " + detectorType
-                        + "   service at    " + address);
-                try {
-                    detector.init();
-                    setAttributes(properties, detector);
-                    DetectFuture future = detector.isServiceDetected(ipAddress);
-                    future.awaitFor();
-                    isServiceDetected = future.isServiceDetected();
-                } catch (Exception e) {
-                    System.out.println(" Exception caused for detectorType "
-                            + detectorType);
-                }
-                System.out.println(detectorType + "   service detected at "
-                        + ipAddress + "   is   " + isServiceDetected);
-
-            }
+        System.out.printf("Trying to detect the '%s' service on %s ...\n", serviceName, address);
+        detector.init();
+        if (detector instanceof SyncServiceDetector) {
+            SyncServiceDetector syncDetector = (SyncServiceDetector)detector;
+            isServiceDetected = syncDetector.isServiceDetected(ipAddress);
+        } else if (detector instanceof AsyncServiceDetector) {
+            AsyncServiceDetector asyncDetector = (AsyncServiceDetector)detector;
+            DetectFuture future = asyncDetector.isServiceDetected(ipAddress);
+            future.awaitFor();
+            isServiceDetected = future.isServiceDetected();
         }
+        detector.dispose();
 
+        System.out.printf("The '%s' service %s detected on %s\n", serviceName,
+                isServiceDetected ? "WAS" : "WAS NOT", address);
         return null;
-
-    }
-
-    private void setAttributes(Map<String, String> properties,
-            ServiceDetector detector) {
-
-        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(detector);
-
-        try {
-            wrapper.setPropertyValues(properties);
-        } catch (BeansException e) {
-            System.out.println("Could not set properties on detector "
-                    + e.getMessage());
-        }
     }
 
     private Map<String, String> parse(List<String> attributeList) {
@@ -164,9 +113,4 @@ public class MinionDetector implements Action {
         }
         return properties;
     }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
 }

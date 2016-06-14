@@ -194,7 +194,6 @@
             <feature>opennms-core-web</feature>
             <feature>opennms-dao-api</feature>
             <feature>opennms-dao</feature>
-            <feature>opennms-detector-simple</feature>
             <feature>opennms-discovery</feature>
             <feature>opennms-discovery-daemon</feature>
             <feature>opennms-events-api</feature>
@@ -207,6 +206,7 @@
             <feature>opennms-model</feature>
             <feature>opennms-poller-api</feature>
             <feature>opennms-provisioning</feature>
+            <feature>opennms-provisioning-detectors</feature>
             <feature>opennms-reporting</feature>
             <feature>opennms-rrd-api</feature>
             <feature>opennms-rrd-jrobin</feature>

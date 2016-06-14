@@ -50,7 +50,6 @@
                                 <!-- <feature>opennms-trapd-handler-kafka</feature> -->
                                 <feature>minion-heartbeat</feature>
                                 <feature>minion-snmp-proxy</feature>
-                                <feature>opennms-detector-simple</feature>
                                 <feature>minion-provisiond-shell</feature>
                             </features>
                             <repository>target/maven-repo</repository>

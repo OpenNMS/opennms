@@ -21,21 +21,13 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.factory.async;
+package org.opennms.netmgt.provision;
 
-import org.opennms.netmgt.provision.AsyncDetectorFactory;
-import org.opennms.netmgt.provision.detector.simple.FtpDetector;
-
-public class FtpDetectorFactory  implements AsyncDetectorFactory<FtpDetector> {
-
-    @Override
-    public FtpDetector createDetector() {
-        return new FtpDetector();
-    }
-
+public interface ServiceDetectorFactory<T extends ServiceDetector> {
+    T createDetector();
 }

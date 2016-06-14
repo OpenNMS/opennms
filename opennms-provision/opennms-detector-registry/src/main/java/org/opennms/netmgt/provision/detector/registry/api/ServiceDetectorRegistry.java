@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,16 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.factory.sync;
+package org.opennms.netmgt.provision.detector.registry.api;
 
-import org.opennms.netmgt.provision.SyncDetectorFactory;
-import org.opennms.netmgt.provision.detector.smb.SmbDetector;
+import java.util.Map;
+import java.util.Set;
 
-public class SmbDetectorFactory implements SyncDetectorFactory<SmbDetector> {
+import org.opennms.netmgt.provision.ServiceDetector;
 
-    @Override
-    public SmbDetector createDetector() {
-        return new SmbDetector();
-    }
+/**
+ * Used to keep track of all the available {@link ServiceDetector} implementations, and
+ * provides the ability to instantiate these.
+ *
+ * @author jwhite
+ */
+public interface ServiceDetectorRegistry {
+
+    Set<String> getClassNames();
+
+    ServiceDetector getDetectorByClassName(String className);
+
+    ServiceDetector getDetectorByClassName(String className, Map<String, String> properties);
+
+    Set<String> getServiceNames();
+
+    ServiceDetector getDetectorByServiceName(String serviceName);
+
+    ServiceDetector getDetectorByServiceName(String serviceName, Map<String, String> properties);
 
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -21,22 +21,22 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.factory.async;
+package org.opennms.netmgt.provision.detector.icmp;
 
-import org.opennms.netmgt.provision.AsyncDetectorFactory;
-import org.opennms.netmgt.provision.detector.simple.HttpDetector;
+import org.opennms.netmgt.provision.ServiceDetectorFactory;
 
-public class HttpDetectorFactory
-        implements AsyncDetectorFactory<HttpDetector> {
+public class IcmpDetectorFactory
+        implements ServiceDetectorFactory<IcmpDetector> {
 
     @Override
-    public HttpDetector createDetector() {
-        return new HttpDetector();
+    public IcmpDetector createDetector() {
+        return new IcmpDetector();
+
     }
 
 }

@@ -7,4 +7,3 @@ opennms-trapd-handler-minion
 minion-heartbeat
 minion-snmp-proxy
 minion-provisiond-shell
-opennms-detector-simple

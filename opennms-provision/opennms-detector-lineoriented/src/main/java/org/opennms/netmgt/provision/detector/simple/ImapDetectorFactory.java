@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -21,22 +21,21 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * OpenNMS(R) Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.factory.sync;
+package org.opennms.netmgt.provision.detector.simple;
 
-import org.opennms.netmgt.provision.SyncDetectorFactory;
-import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
+import org.opennms.netmgt.provision.ServiceDetectorFactory;
 
-public class SnmpDetectorFactory
-        implements SyncDetectorFactory<SnmpDetector> {
+public class ImapDetectorFactory
+        implements ServiceDetectorFactory<ImapDetector> {
 
     @Override
-    public SnmpDetector createDetector() {
-        return new SnmpDetector();
+    public ImapDetector createDetector() {
+        return new ImapDetector();
     }
 
 }

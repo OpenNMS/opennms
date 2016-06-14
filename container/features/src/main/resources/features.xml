@@ -638,10 +638,14 @@
     </feature>
 
     <feature name="opennms-provisioning" description="OpenNMS :: Provisioning" version="${project.version}">
+      <feature>opennms-provisioning-api</feature>
+      <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-provisioning-api" description="OpenNMS :: Provisioning :: API" version="${project.version}">
       <bundle dependency="true">mvn:org.apache.mina/mina-core/${minaVersion}</bundle>
       <bundle dependency="true">mvn:io.netty/netty/3.9.4.Final</bundle>
       <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
-      <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-reporting" description="OpenNMS :: Reporting" version="${project.version}">
@@ -863,17 +867,12 @@
         <bundle>mvn:org.opennms.features/opennms-integration-tsrm/${project.version}</bundle>
     </feature>
     
-    
-    <feature name="opennms-detector-simple" description="OpenNMS :: Provision :: Detector" version="${project.version}">
-      <bundle>blueprint:mvn:org.opennms/opennms-detector-simple/${project.version}/xml/blueprint-detector</bundle>
-      <bundle>blueprint:mvn:org.opennms/opennms-detector-lineoriented/${project.version}/xml/blueprint-async-detector</bundle>
-      <bundle>mvn:org.opennms/opennms-detector-simple/${project.version}</bundle>
-      <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
+    <feature name="opennms-provisioning-detectors" description="OpenNMS :: Provisioning :: Detectors" version="${project.version}">
+      <feature>opennms-provisioning-api</feature>
+      <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
       <bundle>wrap:mvn:org.samba.jcifs/jcifs/1.3.14</bundle>
-      <bundle start-level="30" dependency='true'>mvn:org.apache.mina/mina-core/2.0.7</bundle>
-      <bundle>mvn:org.opennms/opennms-detector-lineoriented/${project.version}</bundle>
       <bundle>wrap:mvn:com.novell.ldap/jldap/4.3</bundle>
+      <bundle>mvn:org.opennms/opennms-detector-lineoriented/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detector-simple/${project.version}</bundle>
     </feature>
-
-    
 </features>
