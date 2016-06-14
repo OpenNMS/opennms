@@ -89,19 +89,19 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEdgeEditWindow newEdgeWindow() {
-            findElementById("addEdgeButton").click();
+            waitForElement(By.id("addEdgeButton")).click();
             wait.until(pageContainsText("Business Service Edge Edit"));
             return new BsmAdminPageEdgeEditWindow();
         }
 
         public BsmAdminPageAttributeEditWindow newAttributeWindow() {
-            findElementById("addAttributeButton").click();
+            waitForElement(By.id("addAttributeButton")).click();
             wait.until(pageContainsText("Attribute"));
             return new BsmAdminPageAttributeEditWindow();
         }
 
         public BsmAdminPageAttributeEditWindow editAttributeWindow() {
-            findElementById("editAttributeButton").click();
+            waitForElement(By.id("editAttributeButton")).click();
             wait.until(pageContainsText("Attribute"));
             return new BsmAdminPageAttributeEditWindow();
         }
