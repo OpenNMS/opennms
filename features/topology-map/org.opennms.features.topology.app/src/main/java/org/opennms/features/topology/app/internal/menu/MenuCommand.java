@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,39 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.topology.app.internal.menu;
 
-import com.vaadin.ui.UI;
+import java.util.List;
+
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 /**
- * Context object to allow access to the underlying UI and GraphContainer.
- *
- * @author Donald Desloge
- * @author Markus von Rüden
- *
+ * Interface for implementations for {@link MenuItem} clicks.
  */
-public interface OperationContext {
-	
-	enum DisplayLocation { MENUBAR, CONTEXTMENU, SEARCH }
-
+public interface MenuCommand {
     /**
-     * Returns the current UI, the operation was triggered from
+     * Is executed, when the {@link MenuItem} is selected/clicked.
      *
-     * @return the current UI, the operation was triggered from
+     * @param targets The targets of the command (e.g. current selection)
+     * @param operationContext The context of the command
      */
-    UI getMainWindow();
-
-    /**
-     * Returns the current {@link GraphContainer}
-     *
-     * @return The current {@link GraphContainer}
-     */
-    GraphContainer getGraphContainer();
-
-    /**
-     * Returns the {@link DisplayLocation} the operation was triggered from
-     *
-     * @return the {@link DisplayLocation} the operation was triggered from
-     */
-    DisplayLocation getDisplayLocation();
+    void execute(List<VertexRef> targets, OperationContext operationContext);
 }

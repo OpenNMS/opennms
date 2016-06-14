@@ -26,30 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.app.internal.menu;
 
-import java.util.List;
+import java.util.Dictionary;
 
-import com.vaadin.event.Action;
+import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
 
-import org.opennms.features.topology.api.Operation;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.VertexRef;
-
-public interface Command {
-
-    void doCommand(List<VertexRef> target, OperationContext operationContext);
-
-    void undoCommand();
-
-    String getMenuPosition();
+/**
+ * ManagedService to listen for changes to the TopologyUI menu.
+ */
+public class MenuConfigManagedService implements ManagedService {
     
-    String getContextMenuPosition();
+    private MenuManager m_menuManager;
 
-    boolean isAction();
+    public void setMenuManager(MenuManager menuManager) {
+        m_menuManager = menuManager;
+    }
     
-    Action getAction();
-    
-    Operation getOperation();
-
+    @Override
+    public void updated(Dictionary<String,?> properties) throws ConfigurationException {
+        m_menuManager.updateMenuConfig(properties);
+    }
 }
