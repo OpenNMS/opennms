@@ -25,7 +25,7 @@
 	</bean>
 
 		<!-- Camel Event marshalling processor -->
-	<bean id="kafkaSrializeProcessor" class="org.opennms.netmgt.trapd.KafkaSerializeTrapsProcessor">
+	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
 		<argument value="org.opennms.netmgt.snmp.TrapNotification" />
 	</bean>
 	
@@ -42,7 +42,7 @@
 				<simple>trap</simple>
 			</setHeader>
 
-			<bean ref="kafkaSrializeProcessor"/>
+			<bean ref="marshaller"/>
 
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
 			<to uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
