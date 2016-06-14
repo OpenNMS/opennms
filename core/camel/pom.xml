@@ -29,6 +29,7 @@
               org.opennms.netmgt.config.trapd;resolution:=optional,
               org.opennms.netmgt.syslogd;resolution:=optional,
               org.opennms.minion.core.api;resolution:=optional,
+              org.opennms.netmgt.snmp;resolution:=optional,
               *
             </Import-Package>
             <Export-Package>org.opennms.core.camel.*;version="${project.version}"</Export-Package>
