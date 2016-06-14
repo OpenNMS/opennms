@@ -716,6 +716,33 @@
                   <ignore/>
                 </action>
               </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.opennms.maven.plugins</groupId>
+                  <artifactId>features-maven-plugin</artifactId>
+                  <versionRange>[1.0-SNAPSHOT,)</versionRange>
+                  <goals>
+                    <goal>generate-features-xml</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>com.vaadin</groupId>
+                  <artifactId>vaadin-maven-plugin</artifactId>
+                  <versionRange>[1.0.2,)</versionRange>
+                  <goals>
+                    <goal>resources</goal>
+                    <goal>update-widgetset</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore></ignore>
+                </action>
+              </pluginExecution>
             </pluginExecutions>
           </lifecycleMappingMetadata>
         </configuration>
@@ -1290,7 +1317,7 @@
     <log4j2Version>2.5</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <minionKarafVersion>4.0.4</minionKarafVersion>
-    <newtsVersion>1.4.0</newtsVersion>
+    <newtsVersion>1.4.1</newtsVersion>
     <paxExamVersion>4.8.0</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <postgresqlVersion>9.4.1208</postgresqlVersion>

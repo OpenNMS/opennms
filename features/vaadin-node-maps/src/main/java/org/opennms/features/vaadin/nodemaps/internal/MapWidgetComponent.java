@@ -38,7 +38,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import com.github.wolfie.refresher.Refresher;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.features.geocoder.Coordinates;
@@ -61,6 +60,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionOperations;
+
+import com.github.wolfie.refresher.Refresher;
 
 /**
  * @author Marcus Hellberg (marcus@vaadin.com)
@@ -338,5 +339,9 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
 
     public void setSearchString(final String searchString) {
         getState().searchString = searchString;
+    }
+
+    public void setMaxClusterRadius(final Integer radius) {
+        getState().maxClusterRadius = radius;
     }
 }

@@ -39,6 +39,7 @@ import org.opennms.netmgt.collectd.SnmpCollector;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
+import org.opennms.netmgt.config.datacollection.MibObjProperty;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -195,6 +196,11 @@ public class MockDataCollectionConfig implements DataCollectionConfigDao {
     @Override
     public List<MibObject> getMibObjectList(String cName, String aSysoid, String anAddress, int ifType) {
         return getAttrList();
+    }
+
+    @Override
+    public List<MibObjProperty> getMibObjProperties(String cName, String aSysoid, String anAddress) {
+        return new ArrayList<MibObjProperty>();
     }
 
     @Override
