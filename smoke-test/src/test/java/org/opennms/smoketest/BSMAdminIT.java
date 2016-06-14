@@ -44,6 +44,7 @@ import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -83,10 +84,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow name(String newName) {
-            WebElement nameField = findElementById("nameField");
-            nameField.clear();
-            nameField.sendKeys(newName);
-            nameField.sendKeys(Keys.ENTER);
+            enterText(By.id("nameField"), newName).sendKeys(Keys.ENTER);
             return new BsmAdminPageEditWindow(newName);
         }
 
@@ -221,6 +219,11 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         public BsmAdminPage open() {
             m_driver.get(getBsmBaseUrl());
+            try {
+				Thread.sleep(2000);
+            } catch (final InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
             switchToVaadinFrame();
             return this;
         }
@@ -232,7 +235,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow openEditDialog(String businessServiceName) {
-            findElementById("editButton-" + businessServiceName).click();
+            waitForElement(By.id("editButton-" + businessServiceName)).click();
             wait.until(pageContainsText("Business Service Edit"));
             return new BsmAdminPageEditWindow(businessServiceName);
         }
@@ -290,21 +293,18 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEdgeEditWindow friendlyName(String friendlyName) throws InterruptedException {
-            enterText(By.id("friendlyNameField"), friendlyName != null ? friendlyName : "");
-            findElementById("friendlyNameField").sendKeys(Keys.ENTER);
+            enterText(By.id("friendlyNameField"), friendlyName != null ? friendlyName : "").sendKeys(Keys.ENTER);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow reductionKey(String reductionKey) throws InterruptedException {
             selectEdgeType("Reduction Key");
-            enterText(By.id("reductionKeyField"), reductionKey);
-            findElementById("reductionKeyField").sendKeys(Keys.ENTER);
+            enterText(By.id("reductionKeyField"), reductionKey).sendKeys(Keys.ENTER);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow weight(int weight) {
-            enterText(By.id("weightField"), String.valueOf(weight));
-            findElementById("weightField").sendKeys(Keys.ENTER);
+            enterText(By.id("weightField"), String.valueOf(weight)).sendKeys(Keys.ENTER);
             return this;
         }
 
@@ -682,7 +682,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
                             input.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
                             WebElement elementFound = input.findElement(by);
                             return elementFound != null;
-                        } catch (NoSuchElementException ex) {
+                        } catch (NoSuchElementException|StaleElementReferenceException ex) {
                             return false;
                         } finally {
                             // set the implicit wait timeout back to the value it has been before
@@ -853,7 +853,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
                     try {
                         driver.findElement(by).click();
                         return false;
-                    } catch (NoSuchElementException e) {
+                    } catch (NoSuchElementException|StaleElementReferenceException e) {
                         return true;
                     }
                 }
