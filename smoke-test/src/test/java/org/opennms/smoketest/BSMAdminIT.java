@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,11 +51,14 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BSMAdminIT extends OpenNMSSeleniumTestCase {
+    public static final Logger LOG = LoggerFactory.getLogger(BSMAdminIT.class);
 
     /**
      * Class to control the inputs of the "Business Service Edit"-Window
@@ -72,47 +75,55 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPage save() {
+            LOG.debug("BsmAdminPageEditWindow({}).save()", this.businessServiceName);
             clickElementUntilItDisappears(By.id("saveButton"));
             wait.until(pageContainsText(businessServiceName));
             return new BsmAdminPage().open();
         }
 
         public BsmAdminPage cancel() {
+            LOG.debug("BsmAdminPageEditWindow({}).cancel()", this.businessServiceName);
             clickElementUntilItDisappears(By.id("cancelButton"));
             wait.until(ExpectedConditions.elementToBeClickable(By.id("createButton")));
             return new BsmAdminPage();
         }
 
         public BsmAdminPageEditWindow name(String newName) {
+            LOG.debug("BsmAdminPageEditWindow({}).name({})", this.businessServiceName, newName);
             enterText(By.id("nameField"), newName).sendKeys(Keys.ENTER);
             return new BsmAdminPageEditWindow(newName);
         }
 
         public BsmAdminPageEdgeEditWindow newEdgeWindow() {
+            LOG.debug("BsmAdminPageEditWindow({}).newEdgeWindow()", this.businessServiceName);
             waitForElement(By.id("addEdgeButton")).click();
             wait.until(pageContainsText("Business Service Edge Edit"));
             return new BsmAdminPageEdgeEditWindow();
         }
 
         public BsmAdminPageAttributeEditWindow newAttributeWindow() {
+            LOG.debug("BsmAdminPageEditWindow({}).newAttributeWindow()", this.businessServiceName);
             waitForElement(By.id("addAttributeButton")).click();
             wait.until(pageContainsText("Attribute"));
             return new BsmAdminPageAttributeEditWindow();
         }
 
         public BsmAdminPageAttributeEditWindow editAttributeWindow() {
+            LOG.debug("BsmAdminPageEditWindow({}).editAttributeWindow()", this.businessServiceName);
             waitForElement(By.id("editAttributeButton")).click();
             wait.until(pageContainsText("Attribute"));
             return new BsmAdminPageAttributeEditWindow();
         }
 
         public BsmAdminPageEdgeEditWindow editEdgeWindow() {
+            LOG.debug("BsmAdminPageEditWindow({}).editEdgeWindow()", this.businessServiceName);
             findElementById("editEdgeButton").click();
             wait.until(pageContainsText("Business Service Edge Edit"));
             return new BsmAdminPageEdgeEditWindow();
         }
 
         public BsmAdminPageEdgeEditWindow addChildEdge(String childServiceText, String mapFunctionText, int weight) throws InterruptedException {
+            LOG.debug("BsmAdminPageEditWindow({}).addChildEdge({}, {}, {})", this.businessServiceName, childServiceText, mapFunctionText, weight);
             BsmAdminPageEdgeEditWindow editPage = newEdgeWindow()
                     .selectMapFunction(mapFunctionText)
                     .selectChildService(childServiceText)
@@ -123,10 +134,12 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow addReductionKeyEdge(String reductionKeyText, String mapFunctionText, int weight) throws InterruptedException {
+            LOG.debug("BsmAdminPageEditWindow({}).addReductionKeyEdge({}, {}, {})", this.businessServiceName, reductionKeyText, mapFunctionText, weight);
             return addReductionKeyEdge(reductionKeyText, mapFunctionText, weight, null);
         }
 
         public BsmAdminPageEditWindow addReductionKeyEdge(String reductionKeyText, String mapFunctionText, int weight, String friendlyName) throws InterruptedException {
+            LOG.debug("BsmAdminPageEditWindow({}).addReductionKeyEdge({}, {}, {}, {})", this.businessServiceName, reductionKeyText, mapFunctionText, weight, friendlyName);
             newEdgeWindow()
                     .selectMapFunction(mapFunctionText)
                     .reductionKey(reductionKeyText)
@@ -138,6 +151,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow addAttribute(String key, String value) throws InterruptedException {
+            LOG.debug("BsmAdminPageEditWindow({}).addAttribute({}, {})", this.businessServiceName, key, value);
             newAttributeWindow()
                     .key(key)
                     .value(value)
@@ -146,6 +160,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow editAttribute(String key, String value) throws InterruptedException {
+            LOG.debug("BsmAdminPageEditWindow({}).editAttribute({}, {})", this.businessServiceName, key, value);
             getSelectWebElement("attributeList").selectByVisibleText(key);
             editAttributeWindow()
                     .value(value)
@@ -154,6 +169,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow editEdge(String edgeValueString, String mapFunctionText, int weight) throws InterruptedException {
+            LOG.debug("BsmAdminPageEditWindow({}).editEdge({}, {}, {})", this.businessServiceName, edgeValueString, mapFunctionText, weight);
             getSelectWebElement("edgeList").selectByVisibleText(edgeValueString);
             editEdgeWindow()
                     .selectMapFunction(mapFunctionText)
@@ -164,6 +180,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow editEdge(String edgeValueString, String mapFunctionText, int weight, String friendlyName) throws InterruptedException {
+            LOG.debug("BsmAdminPageEditWindow({}).editEdge({}, {}, {}, {})", this.businessServiceName, edgeValueString, mapFunctionText, weight, friendlyName);
             getSelectWebElement("edgeList").selectByVisibleText(edgeValueString);
             editEdgeWindow()
                     .selectMapFunction(mapFunctionText)
@@ -179,6 +196,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow addIpServiceEdge(String ipServiceText, String mapFunctionText, int weight, String friendlyName) throws InterruptedException {
+            LOG.debug("BsmAdminPageEditWindow({}).addIpServiceEdge({}, {}, {}, {})", this.businessServiceName, ipServiceText, mapFunctionText, weight, friendlyName);
             newEdgeWindow()
                     .selectIpService(ipServiceText)
                     .friendlyName(friendlyName)
@@ -190,23 +208,27 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow removeEdge(String edgeValueString) {
+            LOG.debug("BsmAdminPageEditWindow({}).removeEdge({})", this.businessServiceName, edgeValueString);
             getSelectWebElement("edgeList").selectByVisibleText(edgeValueString);
             findElementById("removeEdgeButton").click();
             return this;
         }
 
         public BsmAdminPageEditWindow setReductionFunction(final String reductionFunctionValueString) {
+            LOG.debug("BsmAdminPageEditWindow({}).setReductionFunction({})", this.businessServiceName, reductionFunctionValueString);
             getSelectWebElement("reduceFunctionNativeSelect").selectByVisibleText(reductionFunctionValueString);
             return this;
         }
 
         public BsmAdminPageEditWindow setThreshold(final float threshold) {
+            LOG.debug("BsmAdminPageEditWindow({}).setThreshold({})", this.businessServiceName, threshold);
             findElementById("thresholdTextField").clear();
             findElementById("thresholdTextField").sendKeys(String.valueOf(threshold));
             return this;
         }
 
         public BsmAdminPageEditWindow setThresholdStatus(String thresholdStatusString) {
+            LOG.debug("BsmAdminPageEditWindow({}).setThresholdStatus({})", this.businessServiceName, thresholdStatusString);
             getSelectWebElement("thresholdStatusSelect").selectByVisibleText(thresholdStatusString);
             return this;
         }
@@ -229,26 +251,31 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow openNewDialog(String businessServiceName) throws InterruptedException {
+            LOG.debug("BsmAdminPage().openNewDialog({})", businessServiceName);
             findElementById("createButton").click();
             wait.until(pageContainsText("Business Service Edit")); // we wait until the edit dialog appears
             return new BsmAdminPageEditWindow().name(businessServiceName);
         }
 
         public BsmAdminPageEditWindow openEditDialog(String businessServiceName) {
+            LOG.debug("BsmAdminPage().openEditDialog({})", businessServiceName);
             waitForElement(By.id("editButton-" + businessServiceName)).click();
             wait.until(pageContainsText("Business Service Edit"));
             return new BsmAdminPageEditWindow(businessServiceName);
         }
 
         public void delete(String businessServiceName) {
+            LOG.debug("BsmAdminPage().delete({})", businessServiceName);
             delete(businessServiceName, false);
         }
 
         public void rename(String serviceName, String newServiceName) {
+            LOG.debug("BsmAdminPage().rename({}, {})", serviceName, newServiceName);
             openEditDialog(serviceName).name(newServiceName).save();
         }
 
         public void delete(String serviceName, boolean withConfirmDialog) {
+            LOG.debug("BsmAdminPage().delete({}, {})", serviceName, withConfirmDialog);
             findDeleteButton(serviceName).click();
             if (withConfirmDialog) { // we remove the parent element first, the confirm dialog must be present
                 findElementById("confirmationDialog.button.ok").click();
@@ -257,58 +284,69 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public void collapseAll() {
-            findElementById("collapseButton").click();
+            LOG.debug("BsmAdminPage().collapseAll()");
+            waitForElement(By.id("collapseButton")).click();
         }
 
         public void expandAll() {
-            findElementById("expandButton").click();
+            LOG.debug("BsmAdminPage().expandAll()");
+            waitForElement(By.id("expandButton")).click();
         }
     }
 
     private class BsmAdminPageEdgeEditWindow {
         private BsmAdminPageEdgeEditWindow selectEdgeType(String edgeType) {
+            LOG.debug("BsmAdminPageEdgeEditWindow().selectEdgeType({})", edgeType);
             getSelectWebElement("edgeTypeSelector").selectByVisibleText(edgeType);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow selectIpService(String ipServiceText) {
+            LOG.debug("BsmAdminPageEdgeEditWindow().selectIpService({})", ipServiceText);
             selectEdgeType("IP Service");
             enterText(By.xpath("//div[@id='ipServiceList']/input[1]"), ipServiceText);
             // Click on the item that appears
-            findElementByXpath("//span[text()='" + ipServiceText + "']").click();
+            waitForElement(By.xpath("//span[text()='" + ipServiceText + "']")).click();
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow selectChildService(String childServiceText) {
+            LOG.debug("BsmAdminPageEdgeEditWindow().selectChildService({})", childServiceText);
             selectEdgeType("Child Service");
             enterText(By.xpath("//div[@id='childServiceList']/input[1]"), childServiceText);
             // Click on the item that appears
-            findElementByXpath("//span[text()='" + childServiceText + "']").click();
+            waitForElement(By.xpath("//span[text()='" + childServiceText + "']")).click();
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow selectMapFunction(String mapFunctionText) {
+            LOG.debug("BsmAdminPageEdgeEditWindow().selectMapFunction({})", mapFunctionText);
             getSelectWebElement("mapFunctionSelector").selectByVisibleText(mapFunctionText);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow friendlyName(String friendlyName) throws InterruptedException {
+            LOG.debug("BsmAdminPageEdgeEditWindow().friendlyName({})", friendlyName);
             enterText(By.id("friendlyNameField"), friendlyName != null ? friendlyName : "").sendKeys(Keys.ENTER);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow reductionKey(String reductionKey) throws InterruptedException {
+            LOG.debug("BsmAdminPageEdgeEditWindow().reductionKey({})", reductionKey);
             selectEdgeType("Reduction Key");
             enterText(By.id("reductionKeyField"), reductionKey).sendKeys(Keys.ENTER);
+            findElementById("reductionKeyField").sendKeys(Keys.ENTER);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow weight(int weight) {
+            LOG.debug("BsmAdminPageEdgeEditWindow().weight({})", weight);
             enterText(By.id("weightField"), String.valueOf(weight)).sendKeys(Keys.ENTER);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow confirm() {
+            LOG.debug("BsmAdminPageEdgeEditWindow().confirm()");
             clickElementUntilItDisappears(By.id("saveEdgeButton"));
             wait.until(pageContainsText("Business Service Edit"));
             return new BsmAdminPageEdgeEditWindow();
@@ -317,18 +355,21 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     private class BsmAdminPageAttributeEditWindow {
         public BsmAdminPageAttributeEditWindow key(String key) throws InterruptedException {
+            LOG.debug("BsmAdminPageAttributeEditWindow().key({})", key);
             findElementById("keyField").clear();
             findElementById("keyField").sendKeys(key);
             return this;
         }
 
         public BsmAdminPageAttributeEditWindow value(String value) {
+            LOG.debug("BsmAdminPageAttributeEditWindow().value({})", value);
             findElementById("valueField").clear();
             findElementById("valueField").sendKeys(value);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow confirm() {
+            LOG.debug("BsmAdminPageAttributeEditWindow().confirm({})");
             findElementById("okBtn").click();
             wait.until(pageContainsText("Business Service Edit"));
             return new BsmAdminPageEdgeEditWindow();
@@ -390,9 +431,9 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     public void testCanCreateAndDeleteBusinessServiceWithThreshold() throws InterruptedException {
         final String businessServiceName = createUniqueBusinessServiceName();
         bsmAdminPage.openNewDialog(businessServiceName)
-                    .setReductionFunction("Threshold")
-                    .setThreshold(0.25f)
-                    .save();
+                .setReductionFunction("Threshold")
+                .setThreshold(0.25f)
+                .save();
 
         bsmAdminPage.delete(businessServiceName);
     }
