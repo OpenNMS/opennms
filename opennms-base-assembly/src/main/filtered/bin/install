@@ -27,8 +27,23 @@ if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
 fi
 
+OPTIONS=""
+for opt in $ADDITIONAL_MANAGER_OPTIONS; do
+	case "$opt" in
+		-Dcom.sun.management.jmxremote.*)
+			# skip this option for the installer
+			;;
+		-Dopennms.poller.server.serverHost*)
+			# skip this option for the installer
+			;;
+		*)
+			OPTIONS="$OPTIONS $opt"
+			;;
+	esac
+done
+
 exec "$OPENNMS_BINDIR"/runjava -r -- \
-	$ADDITIONAL_MANAGER_OPTIONS \
+	$OPTIONS \
 	-Dopennms.home="$OPENNMS_HOME" \
 	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
 	-cp "$OPENNMS_HOME/lib/opennms_bootstrap.jar" \

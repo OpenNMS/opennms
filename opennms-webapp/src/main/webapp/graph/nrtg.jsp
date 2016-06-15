@@ -101,7 +101,7 @@ pageContext.setAttribute("resourceId", resourceId);
 </div> <!-- row -->
 
 <script type="text/javascript">
-    var defaultPollingInterval = 1000,
+    var defaultPollingInterval = 10000,
             defaultSlidingWindow = 30;
 
     function getBaseHref() {
