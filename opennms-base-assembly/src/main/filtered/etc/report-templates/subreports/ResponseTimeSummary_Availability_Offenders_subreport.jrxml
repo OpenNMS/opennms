@@ -15,12 +15,14 @@
 	</parameter>
 	<parameter name="DS_SURVEILLANCE_CATEGORY" class="java.lang.String">
 		<parameterDescription><![CDATA[Surveillance category to include in this report]]></parameterDescription>
+		<defaultValueExpression><![CDATA[new String("Routers")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE_NUMBER" class="java.lang.Integer">
-		<parameterDescription><![CDATA[Report Time Range in Days]]></parameterDescription>
+		<parameterDescription><![CDATA[Report time range in days]]></parameterDescription>
 		<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME" class="java.util.Date">
+		<parameterDescription><![CDATA[The beginning of the time period for the report]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400000L * $P{TIME_RANGE_NUMBER}))]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
