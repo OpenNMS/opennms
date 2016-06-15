@@ -82,9 +82,10 @@ public class NavigateToOperation implements Constants, Operation {
 
         // If no breadcrumb is defined yet, add source before target.
         if (breadcrumbCriteria.isEmpty()) {
+            final GraphProvider graphProvider = graphContainer.getBaseTopology();
             breadcrumbCriteria.setNewRoot(new BreadcrumbCriteria.Breadcrumb(
-                    graphContainer.getBaseTopology().getTopologyProviderInfo().getName(),
-                    (theGraphContainer) -> theGraphContainer.selectTopologyProvider(graphContainer.getBaseTopology(), true)));
+                    graphProvider.getTopologyProviderInfo().getName(),
+                    (theGraphContainer) -> theGraphContainer.selectTopologyProvider(graphProvider, true)));
         }
         graphContainer.selectTopologyProvider(targetGraphProvider, false);
 

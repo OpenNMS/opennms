@@ -133,6 +133,25 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         assertEquals("South 3", topologyUIPage.getVisibleVertices().get(0).getLabel());
     }
 
+    @Test
+    public void verifyNavigateToAndBreadcrumbs() {
+        topologyUIPage.selectTopologyProvider(() -> LABEL);
+        topologyUIPage.findVertex("East Region").contextMenu().click("Navigate To");
+        assertEquals(
+                Lists.newArrayList(
+                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:markets:", "East 1"),
+                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:markets:", "East 2"),
+                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:markets:", "East 3"),
+                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:markets:", "East 4")
+                ), topologyUIPage.getFocusedVertices());
+        assertEquals("Markets", topologyUIPage.getSelectedLayer());
+        assertEquals(Lists.newArrayList("regions", "East Region"), topologyUIPage.getBreadcrumbs().getLabels());
+
+        topologyUIPage.getBreadcrumbs().click("regions");
+        assertEquals(Lists.newArrayList(), topologyUIPage.getBreadcrumbs().getLabels());
+        assertEquals(4, topologyUIPage.getFocusedVertices().size());
+    }
+
     private static boolean existsGraph() throws IOException {
         try (HttpClientWrapper client = createClientWrapper()) {
             HttpGet httpGet = new HttpGet(URL);
@@ -161,7 +180,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
             CloseableHttpResponse response = client.execute(httpDelete);
             assertEquals(200, response.getStatusLine().getStatusCode());
         }
-        // We wait to give teh GraphMLMetaTopologyFactory the chance to clean up afterwards
+        // We wait to give the GraphMLMetaTopologyFactory the chance to clean up afterwards
         Thread.sleep(20000);
     }
 
