@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.service.model.functions.reduce;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterables;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.functions.annotations.Function;
 import org.opennms.netmgt.bsm.service.model.functions.annotations.Parameter;
@@ -36,6 +37,7 @@ import org.opennms.netmgt.bsm.service.model.functions.annotations.Parameter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Function(name = "ExponentialPropagation", description = "")
 public class ExponentialPropagation implements ReductionFunction {
@@ -47,6 +49,16 @@ public class ExponentialPropagation implements ReductionFunction {
 
     @Override
     public Optional<Status> reduce(List<Status> statuses) {
+        // Exit early for no incoming statuses
+        if (statuses.isEmpty()) {
+            return Optional.empty();
+        }
+
+        // Handle corner case where all incoming statuses are indeterminate
+        if (Iterables.all(statuses, s -> s == Status.INDETERMINATE)) {
+            return Optional.of(Status.INDETERMINATE);
+        }
+
         // Get the exponential sum of all child states
         final double sum = statuses.stream()
                                    .filter(status -> status.ordinal() >= Status.WARNING.ordinal())                          // Ignore normal and indeterminate
@@ -57,7 +69,7 @@ public class ExponentialPropagation implements ReductionFunction {
         final int res = (int) Math.floor(Math.log(sum) / Math.log(this.base)) + Status.WARNING.ordinal(); // Revert offset from above
 
         // Find the resulting status
-        return Optional.of(Status.get(Math.max(res, Status.CRITICAL.ordinal())));
+        return Optional.of(Status.get(Math.max(Math.min(res, Status.CRITICAL.ordinal()), Status.NORMAL.ordinal())));
     }
 
     public void setBase(final double base) {
