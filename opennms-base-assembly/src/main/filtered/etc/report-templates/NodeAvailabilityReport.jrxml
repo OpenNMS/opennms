@@ -46,20 +46,20 @@
 		</parameter>
 		<parameter name="DS_AVAILABILITY_WARNING" class="java.lang.Double" isForPrompting="false"/>
 		<parameter name="DS_AVAILABILITY_CRITICAL" class="java.lang.Double" isForPrompting="false"/>
-		<parameter name="TIME_RANGE_NUMBER" class="java.lang.Integer" isForPrompting="false">
+		<parameter name="DS_TIME_RANGE_NUMBER" class="java.lang.Integer" isForPrompting="false">
 			<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_TIME_RANGE" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA[$P{TIME_RANGE_NUMBER} + " Days"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[$P{DS_TIME_RANGE_NUMBER} + " Days"]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_START_TIME" class="java.util.Date">
-			<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400000L * $P{TIME_RANGE_NUMBER}))]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400000L * $P{DS_TIME_RANGE_NUMBER}))]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_START_TIME_STRING" class="java.lang.String" isForPrompting="false">
 			<defaultValueExpression><![CDATA["yyyy-MM-d HH:mm:ss Z"]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_END_TIME" class="java.util.Date" isForPrompting="false">
-			<defaultValueExpression><![CDATA[new java.util.Date($P{DS_START_TIME}.getTime() + (86400000L * $P{TIME_RANGE_NUMBER}))]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[new java.util.Date($P{DS_START_TIME}.getTime() + (86400000L * $P{DS_TIME_RANGE_NUMBER}))]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_END_TIME_STRING" class="java.lang.String" isForPrompting="false">
 			<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format($P{DS_END_TIME})]]></defaultValueExpression>
