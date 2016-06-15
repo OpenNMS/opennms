@@ -41,7 +41,7 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.ui.info.breadcrumbs.BreadcrumbCriteria;
+import org.opennms.features.topology.app.internal.ui.breadcrumbs.BreadcrumbCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

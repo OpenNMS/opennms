@@ -87,6 +87,7 @@ import org.opennms.features.topology.app.internal.ui.NoContentAvailableWindow;
 import org.opennms.features.topology.app.internal.ui.SearchBox;
 import org.opennms.features.topology.app.internal.ui.ToolbarPanel;
 import org.opennms.features.topology.app.internal.ui.ToolbarPanelController;
+import org.opennms.features.topology.app.internal.ui.breadcrumbs.BreadcrumbComponent;
 import org.opennms.osgi.EventConsumer;
 import org.opennms.osgi.OnmsServiceManager;
 import org.opennms.osgi.VaadinApplicationContext;
@@ -474,6 +475,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private TopologyComponent m_topologyComponent;
     private Window m_noContentWindow;
     private InfoPanel m_infoPanel;
+    private BreadcrumbComponent m_breadcrumbComponent;
     private final GraphContainer m_graphContainer;
     private SelectionManager m_selectionManager;
     private final CommandManager m_commandManager;
@@ -491,7 +493,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private OnmsServiceManager m_serviceManager;
     private VaadinApplicationContext m_applicationContext;
     private VerticesUpdateManager m_verticesUpdateManager;
-    int m_settingFragment = 0;
+    private int m_settingFragment = 0;
     private SearchBox m_searchBox;
     private TabSheet tabSheet;
     private BundleContext m_bundlecontext;
@@ -613,6 +615,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // Register the Toolbar Panel
         m_graphContainer.addChangeListener(m_toolbarPanel);
         m_selectionManager.addSelectionListener(m_toolbarPanel);
+
+        // Register the Breadcrumb Panel
+        m_graphContainer.addChangeListener(m_breadcrumbComponent);
     }
 
     private boolean noAdditionalFocusCriteria() {
@@ -718,6 +723,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // Info Panel
         m_infoPanel = new InfoPanel(m_searchBox);
 
+        // Breadcrumb
+        m_breadcrumbComponent = new BreadcrumbComponent();
+
         // Toolbar
         m_toolbarPanel = new ToolbarPanel(new ToolbarPanelController() {
             @Override
@@ -771,6 +779,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // Map Layout (we need to wrap it in an absolute layout otherwise it shows up twice on the topology map)
         AbsoluteLayout mapLayout = new AbsoluteLayout();
         mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
+        mapLayout.addComponent(m_breadcrumbComponent, "top:10px; left: 50px");
         mapLayout.setSizeFull();
 
         HorizontalLayout layout = new HorizontalLayout();
@@ -1001,8 +1010,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         String fragment = event.getUriFragment();
         m_historyManager.applyHistory(m_applicationContext.getUsername(), fragment, m_graphContainer);
 
-        // This is a hack to fix issue SPC-796 so that the display states of the 
-        // TopologyComponent and NoContentAvailableWindow are reset correctly 
+        // This is a hack to fix issue SPC-796 so that the display states of the
+        // TopologyComponent and NoContentAvailableWindow are reset correctly
         // after a history operation
         graphChanged(m_graphContainer);
 

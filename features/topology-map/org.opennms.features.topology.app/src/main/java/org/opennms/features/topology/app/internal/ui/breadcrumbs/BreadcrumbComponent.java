@@ -26,54 +26,49 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.ui.info.breadcrumbs;
+package org.opennms.features.topology.app.internal.ui.breadcrumbs;
 
 import static org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 
-import java.util.Collection;
-
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.info.InfoPanelItemProvider;
-import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
-import org.opennms.features.topology.api.info.item.InfoPanelItem;
 
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.BaseTheme;
 
 
 /**
- * Visualizes an existing {@link BreadcrumbCriteria}.
- * If no criteria is found, it does not provide any components.
+ * Component to visualizes breadcrumbs.
+ * It requires a {@link BreadcrumbCriteria} registered to the {@link GraphContainer}.
+ * If no criteria is found, it does not show anything.
  *
  * @author mvrueden
  */
-public class BreadcrumbInfoPanelItemProvider implements InfoPanelItemProvider {
+public class BreadcrumbComponent extends CustomComponent implements GraphContainer.ChangeListener {
 
-    @Override
-    public Collection<? extends InfoPanelItem> getContributions(GraphContainer container) {
-        return InfoPanelItemProvider.contributeIf(
-                getBreadcrumbCriteria(container) != null,
-                () -> new DefaultInfoPanelItem()
-                        .withOrder(-100)
-                        .withTitle("Breadcrumbs")
-                        .withComponent(createComponent(container)));
+    public BreadcrumbComponent() {
+        final HorizontalLayout rootLayout = new HorizontalLayout();
+        rootLayout.setSpacing(true);
+        setCompositionRoot(rootLayout);
+        setId("breadcrumbs");
     }
 
-    // Component for the breadcrumbs
-    private Component createComponent(GraphContainer container) {
-        final BreadcrumbCriteria criteria = getBreadcrumbCriteria(container);
-        final HorizontalLayout navigationLayout = new HorizontalLayout();
-        for (BreadcrumbCriteria.Breadcrumb eachBreadcrumb : criteria.getBreadcrumbs()) {
-            if (navigationLayout.getComponentCount() >= 1) {
-                navigationLayout.addComponent(new Label(" > "));
+    @Override
+    public void graphChanged(GraphContainer graphContainer) {
+        final BreadcrumbCriteria criteria = getBreadcrumbCriteria(graphContainer);
+        final HorizontalLayout breadcrumbLayout = (HorizontalLayout) getCompositionRoot();
+        breadcrumbLayout.removeAllComponents();
+
+        if (criteria != null) {
+            for (BreadcrumbCriteria.Breadcrumb eachBreadcrumb : criteria.getBreadcrumbs()) {
+                if (breadcrumbLayout.getComponentCount() >= 1) {
+                    breadcrumbLayout.addComponent(new Label(" > "));
+                }
+                breadcrumbLayout.addComponent(createButton(graphContainer, eachBreadcrumb));
             }
-            navigationLayout.addComponent(createButton(container, eachBreadcrumb));
         }
-        navigationLayout.setSpacing(true);
-        return navigationLayout;
     }
 
     private static BreadcrumbCriteria getBreadcrumbCriteria(GraphContainer container) {

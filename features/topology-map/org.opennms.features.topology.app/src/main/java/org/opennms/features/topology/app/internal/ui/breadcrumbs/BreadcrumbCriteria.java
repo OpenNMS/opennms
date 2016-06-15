@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.ui.info.breadcrumbs;
+package org.opennms.features.topology.app.internal.ui.breadcrumbs;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +44,18 @@ import com.google.common.collect.Lists;
  */
 public class BreadcrumbCriteria extends Criteria {
 
+    /**
+     * Element to describe a breadcrumb.
+     *
+     * @author mvrueden
+     */
     public static class Breadcrumb {
+
+        /**
+         * Interface to define the click behaviour of a breadcrumb.
+         *
+         * @author mvrueden
+         */
         public interface ClickListener {
             void clicked(GraphContainer graphContainer);
         }
