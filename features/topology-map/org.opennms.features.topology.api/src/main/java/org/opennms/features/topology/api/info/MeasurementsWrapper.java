@@ -145,6 +145,10 @@ public class MeasurementsWrapper {
         }
     }
 
+    public QueryResponse query(QueryRequest request) throws Exception {
+        return measurementsService.query(request);
+    }
+
     private QueryResponse queryInt(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation) {
         QueryRequest request = new QueryRequest();
         request.setRelaxed(true);

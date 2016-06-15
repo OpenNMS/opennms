@@ -67,6 +67,7 @@ import javax.script.SimpleBindings;
 import javax.script.SimpleScriptContext;
 
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
@@ -84,17 +85,20 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
     private final ScriptEngineManager scriptEngineManager;
     private final TransactionOperations transactionOperations;
     private final NodeDao nodeDao;
+    private final SnmpInterfaceDao snmpInterfaceDao;
     private final MeasurementsWrapper measurementsWrapper;
 
     public GraphMLEdgeStatusProvider(final GraphMLTopologyProvider provider,
                                      final ScriptEngineManager scriptEngineManager,
                                      final TransactionOperations transactionOperations,
                                      final NodeDao nodeDao,
+                                     final SnmpInterfaceDao snmpInterfaceDao,
                                      final MeasurementsService measurementsService) {
         this.provider = Objects.requireNonNull(provider);
         this.scriptEngineManager = Objects.requireNonNull(scriptEngineManager);
         this.transactionOperations = Objects.requireNonNull(transactionOperations);
         this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
         this.measurementsWrapper = new MeasurementsWrapper(Objects.requireNonNull(measurementsService));
     }
 
@@ -163,6 +167,7 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
                           bindings.put("targetNode", targetNode);
                           bindings.put("measurements", measurementsWrapper);
                           bindings.put("nodeDao", nodeDao);
+                          bindings.put("snmpInterfaceDao", snmpInterfaceDao);
 
                           context.setBindings(bindings,
                                               ScriptContext.GLOBAL_SCOPE);
