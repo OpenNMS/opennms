@@ -36,8 +36,6 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.info.InfoPanelItemProvider;
 import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
 import org.opennms.features.topology.api.info.item.InfoPanelItem;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.operations.NavigateToOperation;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -72,7 +70,7 @@ public class BreadcrumbInfoPanelItemProvider implements InfoPanelItemProvider {
             if (navigationLayout.getComponentCount() >= 1) {
                 navigationLayout.addComponent(new Label(" > "));
             }
-            navigationLayout.addComponent(createButton(container, eachBreadcrumb.getSourceVertex(), eachBreadcrumb.getTargetNamespace()));
+            navigationLayout.addComponent(createButton(container, eachBreadcrumb));
         }
         navigationLayout.setSpacing(true);
         return navigationLayout;
@@ -82,16 +80,13 @@ public class BreadcrumbInfoPanelItemProvider implements InfoPanelItemProvider {
         return VertexHopCriteria.getSingleCriteriaForGraphContainer(container, BreadcrumbCriteria.class, false);
     }
 
-    private static Button createButton(GraphContainer container, VertexRef sourceVertex, String targetNamespace) {
+    private static Button createButton(GraphContainer container, BreadcrumbCriteria.Breadcrumb breadcrumb) {
         Button button = new Button();
         button.addStyleName(BaseTheme.BUTTON_LINK);
-        button.addClickListener((event) -> {
-            // only navigate if namespace is different, otherwise we switch to the same target, which does not make any sense
-            if (!container.getBaseTopology().getVertexNamespace().equals(targetNamespace)) {
-                new NavigateToOperation().navigateTo(container, sourceVertex, targetNamespace);
-            }
-        });
-        button.setCaption(sourceVertex.getLabel());
+        button.setCaption(breadcrumb.getLabel());
+        if (breadcrumb.getClickListener() != null) {
+            button.addClickListener((event) -> breadcrumb.getClickListener().clicked(container));
+        }
         return button;
     }
 }

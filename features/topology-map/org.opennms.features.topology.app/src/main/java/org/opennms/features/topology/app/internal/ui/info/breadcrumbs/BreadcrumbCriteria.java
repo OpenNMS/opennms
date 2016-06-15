@@ -32,8 +32,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.google.common.collect.Lists;
 
@@ -45,20 +45,24 @@ import com.google.common.collect.Lists;
 public class BreadcrumbCriteria extends Criteria {
 
     public static class Breadcrumb {
-        private final String targetNamespace;
-        private final VertexRef sourceVertex;
-
-        public Breadcrumb(String targetNamespace, VertexRef sourceVertex) {
-            this.targetNamespace = Objects.requireNonNull(targetNamespace);
-            this.sourceVertex = Objects.requireNonNull(sourceVertex);
+        public interface ClickListener {
+            void clicked(GraphContainer graphContainer);
         }
 
-        public String getTargetNamespace() {
-            return targetNamespace;
+        private final String label;
+        private final ClickListener clickListener;
+
+        public Breadcrumb(String label, ClickListener clickListener) {
+            this.label = Objects.requireNonNull(label);
+            this.clickListener = Objects.requireNonNull(clickListener);
         }
 
-        public VertexRef getSourceVertex() {
-            return sourceVertex;
+        public Breadcrumb.ClickListener getClickListener() {
+            return clickListener;
+        }
+
+        public String getLabel() {
+            return label;
         }
 
         @Override
@@ -71,8 +75,7 @@ public class BreadcrumbCriteria extends Criteria {
             }
             if (obj instanceof Breadcrumb) {
                 Breadcrumb other = (Breadcrumb) obj;
-                boolean equals = Objects.equals(targetNamespace, other.targetNamespace)
-                        && Objects.equals(sourceVertex, other.sourceVertex);
+                boolean equals = Objects.equals(label, other.label);
                 return equals;
             }
             return false;
@@ -80,24 +83,27 @@ public class BreadcrumbCriteria extends Criteria {
 
         @Override
         public int hashCode() {
-            return Objects.hash(targetNamespace, sourceVertex);
+            return Objects.hash(label);
         }
     }
 
     private List<Breadcrumb> breadcrumbs = Lists.newArrayList();
 
-    public void setNewRoot(VertexRef sourceVertex, String targetNamespace) {
-        final Breadcrumb newRoot = new Breadcrumb(targetNamespace, sourceVertex);
-        if (breadcrumbs.contains(newRoot)) {
-            int index = breadcrumbs.indexOf(newRoot);
+    public void setNewRoot(final Breadcrumb breadcrumb) {
+        if (breadcrumbs.contains(breadcrumb)) {
+            int index = breadcrumbs.indexOf(breadcrumb);
             breadcrumbs = breadcrumbs.subList(0, index + 1);
         } else {
-            breadcrumbs.add(newRoot);
+            breadcrumbs.add(breadcrumb);
         }
     }
 
     public List<Breadcrumb> getBreadcrumbs() {
         return Collections.unmodifiableList(breadcrumbs);
+    }
+
+    public boolean isEmpty() {
+        return breadcrumbs.isEmpty();
     }
 
     @Override

@@ -68,7 +68,7 @@ public class NavigateToOperation implements Constants, Operation {
         navigateTo(graphContainer, vertexRef.get(), targetNamespace);
 	}
 
-    public void navigateTo(GraphContainer graphContainer, VertexRef sourceVertex, String targetNamespace) {
+    private void navigateTo(GraphContainer graphContainer, VertexRef sourceVertex, String targetNamespace) {
         // Find the graph provider for the target namespace
         final GraphProvider targetGraphProvider = graphContainer.getMetaTopologyProvider().getGraphProviders().stream()
                 .filter(g -> g.getVertexNamespace().equals(targetNamespace))
@@ -99,7 +99,20 @@ public class NavigateToOperation implements Constants, Operation {
         targetVertices.stream().forEach(v -> graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(v)));
 
         // Update Criteria for Breadcrumbs
-        breadcrumbCriteria.setNewRoot(sourceVertex, targetNamespace);
+        if (breadcrumbCriteria.isEmpty()) {
+            // if no breadcrumb is defined yet, add source before target
+            breadcrumbCriteria.setNewRoot(new BreadcrumbCriteria.Breadcrumb(
+                    graphContainer.getBaseTopology().getTopologyProviderInfo().getName(),
+                    (theGraphContainer) -> theGraphContainer.selectTopologyProvider(graphContainer.getBaseTopology(), true)));
+        }
+        breadcrumbCriteria.setNewRoot(new BreadcrumbCriteria.Breadcrumb(
+                sourceVertex.getLabel(),
+                (theGraphContainer) -> {
+                    // only navigate if namespace is different, otherwise we switch to the same target, which does not make any sense
+                    if (!theGraphContainer.getBaseTopology().getVertexNamespace().equals(targetNamespace)) {
+                        new NavigateToOperation().navigateTo(theGraphContainer, sourceVertex, targetNamespace);
+                    }
+                }));
 
         // Render
         graphContainer.redoLayout();
