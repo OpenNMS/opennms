@@ -50,25 +50,4 @@ public interface IconRepository {
      * @return The icon id, or null if no mapping is defined.
      */
     String getSVGIconId(String iconKey);
-
-    /**
-     * Adds a custom icon mapping. The <code>iconKey</code> must be unique in this {@link IconRepository}.
-     *
-     * @param iconKey The icon key
-     * @param iconId The icon id for the icon key
-     */
-    void addIconMapping(String iconKey, String iconId);
-
-    /**
-     * Removes the given <code>iconKey</code> from this {@link IconRepository}.
-     *
-     * @param iconKey The icon key to remove
-     */
-    void removeIconMapping(String iconKey);
-
-    /**
-     * Persists this {@link IconRepository}.
-     * Should be invoked if changes to this {@link IconRepository} should be persisted permanently (e.g. on disk)
-     */
-    void save();
 }

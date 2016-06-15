@@ -48,6 +48,8 @@
                                 <feature>opennms-trapd-listener</feature>
                                 <feature>opennms-trapd-handler-minion</feature>
                                 <!-- <feature>opennms-trapd-handler-kafka</feature> -->
+                                <feature>minion-heartbeat</feature>
+                                <feature>minion-snmp-proxy</feature>
                             </features>
                             <repository>target/maven-repo</repository>
                         </configuration>
@@ -103,6 +105,11 @@
             <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>core-impl</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

@@ -32,7 +32,10 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.opennms.features.topology.api.IconRepository;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
@@ -58,6 +61,7 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 	private Map<String, GraphMLMetaTopologyProvider> m_providers = Maps.newHashMap();
 	private Map<String, ServiceRegistration<MetaTopologyProvider>> m_registrations =  Maps.newHashMap();
 	private Map<String, List<ServiceRegistration<SearchProvider>>> m_searchProviders = Maps.newHashMap();
+	private Map<String, ServiceRegistration<IconRepository>> m_iconRepositories = Maps.newHashMap();
 
 	public void setBundleContext(BundleContext bundleContext) {
 		m_bundleContext = bundleContext;
@@ -91,12 +95,23 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 
 			// Create and register a SearchProvider for each GraphMLTopologyProvider
 			m_searchProviders.putIfAbsent(pid, Lists.newArrayList());
+
+			Set<String> iconKeys = metaTopologyProvider.getGraphProviders().stream()
+					.map(eachProvider -> eachProvider.getVertexNamespace())
+					.flatMap(eachNamespace -> metaTopologyProvider.getRawTopologyProvider(eachNamespace).getVertices().stream())
+					.map(eachVertex -> eachVertex.getIconKey())
+					.filter(eachIconKey -> eachIconKey != null)
+					.collect(Collectors.toSet());
+
+			m_iconRepositories.put(pid, m_bundleContext.registerService(IconRepository.class, new GraphMLIconRepository(iconKeys), new Hashtable<>()));
+
 			metaTopologyProvider.getGraphProviders().forEach(it -> {
 				GraphMLSearchProvider searchProvider = new GraphMLSearchProvider(metaTopologyProvider.getRawTopologyProvider(it.getVertexNamespace()));
 				ServiceRegistration<SearchProvider> searchProviderServiceRegistration = m_bundleContext.registerService(SearchProvider.class, searchProvider, new Hashtable<>());
 				m_searchProviders.get(pid).add(searchProviderServiceRegistration);
 			});
 		} else {
+			// TODO we set the new location, but a reload is never triggered
 			LOG.debug("Service with pid '{}' updated. Updating properties.", pid);
 			m_providers.get(pid).setTopologyLocation(location);
 			ServiceRegistration<MetaTopologyProvider> registration = m_registrations.get(pid);
@@ -117,8 +132,12 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 			LOG.debug("Unregister MetaTopologyProvider with pid '{}'", pid);
 			registration.unregister();
 			m_providers.remove(pid);
+
 			m_searchProviders.get(pid).forEach(eachServiceRegistration -> eachServiceRegistration.unregister());
 			m_searchProviders.remove(pid);
+
+			m_iconRepositories.get(pid).unregister();
+			m_iconRepositories.remove(pid);
 		}
 	}
 }

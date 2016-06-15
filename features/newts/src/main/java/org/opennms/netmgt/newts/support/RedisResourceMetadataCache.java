@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.newts.support;
 
-import static com.codahale.metrics.MetricRegistry.name;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +41,6 @@ import org.opennms.newts.cassandra.search.ResourceIdSplitter;
 import org.opennms.newts.cassandra.search.ResourceMetadata;
 
 import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
@@ -51,6 +48,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Transaction;
 
 /**
@@ -79,30 +78,26 @@ public class RedisResourceMetadataCache implements SearchableResourceMetadataCac
 
     private final ResourceIdSplitter m_resourceIdSplitter;
 
-    private final Jedis m_jedis;
-
-    private final Meter m_metricReqs;
-    private final Meter m_attributeReqs;
-    private final Meter m_metricMisses;
-    private final Meter m_attributeMisses;
+    private final JedisPool m_pool;
 
     @Inject
-    public RedisResourceMetadataCache(@Named("redis.hostname") String hostname, @Named("redis.port") Integer port, MetricRegistry registry, ResourceIdSplitter resourceIdSplitter) {
+    public RedisResourceMetadataCache(@Named("redis.hostname") String hostname, @Named("redis.port") Integer port, @Named("newts.writer_threads") Integer numWriterThreads, MetricRegistry registry, ResourceIdSplitter resourceIdSplitter) {
         Preconditions.checkNotNull(hostname, " hostname argument");
         Preconditions.checkNotNull(port, "port argument");
-        m_jedis = new Jedis(hostname, port);
+
+        JedisPoolConfig poolConfig = new JedisPoolConfig();
+        poolConfig.setMinIdle(numWriterThreads);
+        poolConfig.setMaxTotal(numWriterThreads * 4);
+        m_pool = new JedisPool(poolConfig, hostname, port);
 
         Preconditions.checkNotNull(registry, "registry argument");
-        m_metricReqs = registry.meter(name("cache", "metric-reqs"));
-        m_metricMisses = registry.meter(name("cache", "metric-misses"));
-        m_attributeReqs = registry.meter(name("cache", "attribute-reqs"));
-        m_attributeMisses = registry.meter(name("cache", "attribute-misses"));
-
         registry.register(MetricRegistry.name("cache", "size"),
                 new Gauge<Long>() {
                     @Override
                     public Long getValue() {
-                        return m_jedis.dbSize();
+                        try (Jedis jedis = m_pool.getResource()) {
+                            return jedis.dbSize();
+                        }
                     }
                 });
         registry.register(MetricRegistry.name("cache", "max-size"),
@@ -120,46 +115,54 @@ public class RedisResourceMetadataCache implements SearchableResourceMetadataCac
     public void merge(Context context, Resource resource, ResourceMetadata metadata) {
         final Optional<ResourceMetadata> o = get(context, resource);
 
-        if (!o.isPresent()) {
-            final ResourceMetadata newMetadata = new ResourceMetadata(m_metricReqs, m_attributeReqs, m_metricMisses, m_attributeMisses);
-            newMetadata.merge(metadata);
-            final Transaction t = m_jedis.multi();
-            final byte[] key = key(METADATA_PREFIX, context.getId(), resource.getId());
-            t.set(key, conf.asByteArray(newMetadata));
+        try (Jedis jedis = m_pool.getResource()) {
+            if (!o.isPresent()) {
+                final ResourceMetadata newMetadata = new ResourceMetadata();
+                newMetadata.merge(metadata);
+                final Transaction t = jedis.multi();
+                final byte[] key = key(METADATA_PREFIX, context.getId(), resource.getId());
+                t.set(key, conf.asByteArray(newMetadata));
 
-            // Index the key, element by element, in order to support calls to getResourceIdsWithPrefix()
-            final List<String> elements = Lists.newArrayList(SEARCH_PREFIX, context.getId());
-            for (String el : m_resourceIdSplitter.splitIdIntoElements(resource.getId())) {
-                elements.add(el);
-                t.lpush(m_resourceIdSplitter.joinElementsToId(elements).getBytes(), key);
+                // Index the key, element by element, in order to support calls to getResourceIdsWithPrefix()
+                final List<String> elements = Lists.newArrayList(SEARCH_PREFIX, context.getId());
+                for (String el : m_resourceIdSplitter.splitIdIntoElements(resource.getId())) {
+                    elements.add(el);
+                    t.lpush(m_resourceIdSplitter.joinElementsToId(elements).getBytes(), key);
+                }
+
+                // Update the keys in transaction
+                t.exec();
+            } else if (o.get().merge(metadata)) {
+                // Update the value stored in the cache if it was changed as a result of the merge
+                jedis.set(key(METADATA_PREFIX, context.getId(), resource.getId()), conf.asByteArray(metadata));
             }
-
-            // Update the keys in transaction
-            t.exec();
-        } else if (o.get().merge(metadata)) {
-            // Update the value stored in the cache if it was changed as a result of the merge
-            m_jedis.set(key(METADATA_PREFIX, context.getId(), resource.getId()), conf.asByteArray(metadata));
         }
     }
 
     @Override
     public Optional<ResourceMetadata> get(Context context, Resource resource) {
-        final byte[] bytes = m_jedis.get(key(METADATA_PREFIX, context.getId(), resource.getId()));
-        return (bytes != null) ? Optional.of((ResourceMetadata)conf.asObject(bytes)): Optional.absent();
+        try (Jedis jedis = m_pool.getResource()) {
+            final byte[] bytes = jedis.get(key(METADATA_PREFIX, context.getId(), resource.getId()));
+            return (bytes != null) ? Optional.of((ResourceMetadata)conf.asObject(bytes)): Optional.absent();
+        }
     }
 
     @Override
     public void delete(final Context context, final Resource resource) {
-        m_jedis.del(key(METADATA_PREFIX, context.getId(), resource.getId()));
+        try (Jedis jedis = m_pool.getResource()) {
+            jedis.del(key(METADATA_PREFIX, context.getId(), resource.getId()));
+        }
     }
 
     @Override
     public List<String> getResourceIdsWithPrefix(Context context, String resourceIdPrefix) {
-        final List<String> elements = Lists.newArrayList(SEARCH_PREFIX, context.getId());
-        elements.addAll(m_resourceIdSplitter.splitIdIntoElements(resourceIdPrefix));
-        return m_jedis.lrange(m_resourceIdSplitter.joinElementsToId(elements).getBytes(), 0, -1).stream()
-                .map(bytes -> resourceId(METADATA_PREFIX, context.getId(), bytes))
-                .collect(Collectors.toList()); 
+        try (Jedis jedis = m_pool.getResource()) {
+            final List<String> elements = Lists.newArrayList(SEARCH_PREFIX, context.getId());
+            elements.addAll(m_resourceIdSplitter.splitIdIntoElements(resourceIdPrefix));
+            return jedis.lrange(m_resourceIdSplitter.joinElementsToId(elements).getBytes(), 0, -1).stream()
+                    .map(bytes -> resourceId(METADATA_PREFIX, context.getId(), bytes))
+                    .collect(Collectors.toList());
+        }
     }
 
     /**

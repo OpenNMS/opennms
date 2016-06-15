@@ -78,6 +78,8 @@ public interface GraphProvider extends VertexProvider, EdgeProvider, SelectionAw
 
 	Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId);
 
+	int getDefaultSzl();
+
     List<Criteria> getDefaultCriteria();
 
 	TopologyProviderInfo getTopologyProviderInfo();

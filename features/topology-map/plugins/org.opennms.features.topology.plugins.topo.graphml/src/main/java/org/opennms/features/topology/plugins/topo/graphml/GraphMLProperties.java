@@ -45,4 +45,5 @@ public interface GraphMLProperties {
     String PREFERRED_LAYOUT = "preferred-layout";
     String FOCUS_STRATEGY = "focus-strategy";
     String FOCUS_IDS = "focus-ids";
+    String SEMANTIC_ZOOM_LEVEL = "semantic-zoom-level";
 }

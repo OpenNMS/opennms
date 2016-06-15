@@ -39,6 +39,7 @@ import java.util.Iterator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 
@@ -72,6 +73,7 @@ public class GraphMLMetaTopologyProviderTest {
         assertEquals("regions", regionsGraphProvider.getTopologyProviderInfo().getName());
         assertNull(metaTopoProvider.getPreferredLayout(regionsGraphProvider));
         assertEquals(GraphMLTopologyProvider.DEFAULT_DESCRIPTION, regionsGraphProvider.getTopologyProviderInfo().getDescription());
+        assertEquals(AbstractTopologyProvider.DEFAULT_SEMANTIC_ZOOM_LEVEL, regionsGraphProvider.getDefaultSzl());
         assertEquals(4, regionsGraphProvider.getVertexTotalCount());
         for (String region : Lists.newArrayList("north", "south", "east", "west")) {
             // Every vertex should link to 4 other vertices
@@ -85,6 +87,7 @@ public class GraphMLMetaTopologyProviderTest {
         assertEquals("Markets", marketsGraphProvider.getTopologyProviderInfo().getName());
         assertEquals("The Markets Layer", marketsGraphProvider.getTopologyProviderInfo().getDescription());
         assertEquals("Some Layout", metaTopoProvider.getPreferredLayout(marketsGraphProvider));
+        assertEquals(0, marketsGraphProvider.getDefaultSzl());
         assertEquals(16, marketsGraphProvider.getVertexTotalCount());
     }
 }

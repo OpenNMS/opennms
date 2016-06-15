@@ -84,7 +84,7 @@ public class NavigateToOperation implements Constants, Operation {
         // TODO: Consolidate that this is configurable and we can define a default SZL and default Focus per layer
         // TODO: Use a default SZL per graph?
         graphContainer.clearCriteria(); // Remove all criteria
-        graphContainer.setSemanticZoomLevel(1); // Reset the SZL to 1
+        graphContainer.setSemanticZoomLevel(targetGraphProvider.getDefaultSzl());  // Use the default SZL
         graphContainer.addCriteria(breadcrumbCriteria); // add it again, it was cleared
 
         // Find the vertices in other graphs that this vertex links to

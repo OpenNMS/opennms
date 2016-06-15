@@ -105,12 +105,7 @@ public abstract class XADataSourceFactory {
 
 			if (pool != null) {
 				if (pool.getLoginTimeout() > 0) {
-					try {
-						xaDataSource.setLoginTimeout(pool.getLoginTimeout());
-					} catch (SQLException e) {
-						// This should never be thrown
-						throw new UnsupportedOperationException("Cannot set login timeout on PGXADataSource", e);
-					}
+					xaDataSource.setLoginTimeout(pool.getLoginTimeout());
 				}
 
 				if (pool.getIdleTimeout() > 0) {
