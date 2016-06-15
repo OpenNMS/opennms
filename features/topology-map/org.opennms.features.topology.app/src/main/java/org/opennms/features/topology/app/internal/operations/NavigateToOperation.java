@@ -79,6 +79,13 @@ public class NavigateToOperation implements Constants, Operation {
         }
         // Get the Breadcrumb (before) navigating, otherwise it is lost
         BreadcrumbCriteria breadcrumbCriteria = VertexHopGraphProvider.VertexHopCriteria.getSingleCriteriaForGraphContainer(graphContainer, BreadcrumbCriteria.class, true);
+
+        // If no breadcrumb is defined yet, add source before target.
+        if (breadcrumbCriteria.isEmpty()) {
+            breadcrumbCriteria.setNewRoot(new BreadcrumbCriteria.Breadcrumb(
+                    graphContainer.getBaseTopology().getTopologyProviderInfo().getName(),
+                    (theGraphContainer) -> theGraphContainer.selectTopologyProvider(graphContainer.getBaseTopology(), true)));
+        }
         graphContainer.selectTopologyProvider(targetGraphProvider, false);
 
         // TODO: Consolidate that this is configurable and we can define a default SZL and default Focus per layer
@@ -99,12 +106,6 @@ public class NavigateToOperation implements Constants, Operation {
         targetVertices.stream().forEach(v -> graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(v)));
 
         // Update Criteria for Breadcrumbs
-        if (breadcrumbCriteria.isEmpty()) {
-            // if no breadcrumb is defined yet, add source before target
-            breadcrumbCriteria.setNewRoot(new BreadcrumbCriteria.Breadcrumb(
-                    graphContainer.getBaseTopology().getTopologyProviderInfo().getName(),
-                    (theGraphContainer) -> theGraphContainer.selectTopologyProvider(graphContainer.getBaseTopology(), true)));
-        }
         breadcrumbCriteria.setNewRoot(new BreadcrumbCriteria.Breadcrumb(
                 sourceVertex.getLabel(),
                 (theGraphContainer) -> {
