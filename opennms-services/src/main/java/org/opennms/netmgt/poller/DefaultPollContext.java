@@ -30,9 +30,11 @@ package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -382,41 +384,54 @@ public class DefaultPollContext implements PollContext, EventListener {
      */
     /** {@inheritDoc} */
     @Override
-    public void onEvent(final Event e) {
+    public void onEvent(final Event event) {
         if (LOG.isDebugEnabled()) {
             // CAUTION: m_pendingPollEvents.size() is not a constant-time operation
-            LOG.debug("onEvent: Received event: {} uei: {}, dbid: {}, pendingEventCount: {}", e, e.getUei(), e.getDbid(), m_pendingPollEvents.size());
+            LOG.debug("onEvent: Received event: {} uei: {}, dbid: {}, pendingEventCount: {}", event, event.getUei(), event.getDbid(), m_pendingPollEvents.size());
+        }
+
+        for (final PendingPollEvent pollEvent : m_pendingPollEvents) {
+            LOG.trace("onEvent: comparing event to pollEvent: {}", pollEvent);
+            // TODO: This equals comparison is more like a '==' operation because
+            // I think that both events would have to be identical instances to
+            // have the same event ID. This will probably cause problems if we
+            // cluster event processing and the event instances are ever not 
+            // identical.
+            if (event.equals(pollEvent.getEvent())) {
+                LOG.trace("onEvent: found matching pollEvent, completing pollEvent: {}", pollEvent);
+                // Thread-safe and idempotent
+                pollEvent.complete(event);
+                // TODO: Can we break here? I think there should only be one 
+                // instance of any given event in m_pendingPollEvents
+                // break;
+            }
         }
 
         for (final Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext();) {
             final PendingPollEvent pollEvent = it.next();
-            LOG.trace("onEvent: comparing event to pollEvent: {}", pollEvent);
-            if (e.equals(pollEvent.getEvent())) {
-                LOG.trace("onEvent: found matching pollEvent, completing pollEvent: {}", pollEvent);
-                it.remove();
-                // Thread-safe and idempotent
-                pollEvent.complete(e);
-                // Thread-safe and idempotent
-                processPending(pollEvent);
-                continue;
-            }
-
             LOG.trace("onEvent: determining if pollEvent is pending: {}", pollEvent);
             if (!pollEvent.isPending()) {
-                LOG.trace("onEvent: pollEvent is no longer pending, processing pollEvent: {}", pollEvent);
+                try {
+                    // Thread-safe and idempotent
+                    processPending(pollEvent);
+                } catch (Throwable e) {
+                    LOG.error("Unexpected exception while processing pollEvent: " + pollEvent, e);
+                }
+                // TODO: Should we remove the task before processing it? This would
+                // reduce the chances that two threads could process the same event
+                // simultaneously, although since the call is now thread-safe and
+                // idempotent, that's not really a problem.
                 it.remove();
-                // Thread-safe and idempotent
-                processPending(pollEvent);
                 continue;
             }
 
             // If the event was not completed and it is still pending, then don't do anything to it
         }
-        LOG.debug("onEvent: Finished processing event: {} uei: {}, dbid: {}", e, e.getUei(), e.getDbid());
+        LOG.debug("onEvent: Finished processing event: {} uei: {}, dbid: {}", event, event.getUei(), event.getDbid());
     }
 
     private static void processPending(final PendingPollEvent pollEvent) {
-        LOG.trace("onEvent: processing pending pollEvent...: {}", pollEvent);
+        LOG.trace("onEvent: pollEvent is no longer pending, processing pollEvent: {}", pollEvent);
         // Thread-safe and idempotent
         pollEvent.processPending();
         LOG.trace("onEvent: processing of pollEvent completed: {}", pollEvent);
