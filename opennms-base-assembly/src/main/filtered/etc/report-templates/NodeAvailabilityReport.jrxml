@@ -53,10 +53,11 @@
 			<defaultValueExpression><![CDATA[$P{DS_TIME_RANGE_NUMBER} + " Days"]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_START_TIME" class="java.util.Date">
+			<parameterDescription><![CDATA[The beginning of the time period for the report]]></parameterDescription>
 			<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400000L * $P{DS_TIME_RANGE_NUMBER}))]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_START_TIME_STRING" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["yyyy-MM-d HH:mm:ss Z"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format($P{DS_START_TIME})]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_END_TIME" class="java.util.Date" isForPrompting="false">
 			<defaultValueExpression><![CDATA[new java.util.Date($P{DS_START_TIME}.getTime() + (86400000L * $P{DS_TIME_RANGE_NUMBER}))]]></defaultValueExpression>
