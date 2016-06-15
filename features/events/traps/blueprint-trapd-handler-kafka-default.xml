@@ -51,6 +51,7 @@
 	</bean>
 
     <bean id="deserializer" class="org.opennms.netmgt.trapd.TrapdKafkaDeSerializer">
+    	<argument value="org.opennms.netmgt.snmp.TrapNotification" />
 	</bean>
 	
 	<camelContext id="trapNotificationHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
