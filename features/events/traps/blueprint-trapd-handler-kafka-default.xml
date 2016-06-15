@@ -50,8 +50,7 @@
 		<property name="processorFactory" ref="processorFactory"/>
 	</bean>
 
-    <bean id="unmarshaller" class="org.opennms.netmgt.trapd.TrapdKafkaDeSerializer">
-		<argument value="org.opennms.netmgt.snmp.TrapNotification" />
+    <bean id="deserializer" class="org.opennms.netmgt.trapd.TrapdKafkaDeSerializer">
 	</bean>
 	
 	<camelContext id="trapNotificationHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
@@ -59,14 +58,12 @@
 		
 		<route id="receiveTrapConnection">
 			<from uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}"/>
-			<process ref="unmarshaller"/>
-<!-- 				<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/> -->
+			<process ref="deserializer"/>
 			<to uri="seda:trapHandler"/>
 		</route>
 
 		<route id="trapHandler">
 			<from uri="seda:trapHandler" />
-<!-- 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification" /> -->
 			<!--
 				Pass the message to the default handler which will convert it into 
 				an event and broadcast the event.
