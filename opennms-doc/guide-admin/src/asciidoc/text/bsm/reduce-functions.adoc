@@ -18,21 +18,26 @@ For this operation the following _Reduce Functions_ are available:
 | `Exponential Propagation` | This reduce function uses computes sum of the given child severities based on a base number. For this computation the severities are mapped to
                               numbers:
 
-                              asciimath:[INDETERMINATE=0, NORMAL=0, WARNING=1, MINOR=2, MAJOR=3, CRITICAL=4]
+                              asciimath:[WARNING=0, MINOR=1, MAJOR=2, CRITICAL=3]
+
+                              All other severities are ignored.
 
                               For the aggregation the following formula will be used to compute the resulting Business Service severity from its _n_ child entities based on the base number _b_:
 
                               asciimath:[severity = \|__log_{b}( sum_(i=1)^n b^(ch\ildSeverity_{i}) )__\|]
 
+                              Results lower as _0_ are treated as _NORMAL_ and results higher than _3_ are treated as _CRITICAL_.
+                              If all input values are of severity _INDETERMINATE_, the result is _INDETERMINATE_.
+
                               For example if the Business Service depends on four child entities with the severities _WARNING_, _WARNING_, _NORMAL_ and _NORMAL_ and the base defined by the number 2 the following computation will be made:
 
-                              asciimath:[severity = \|__log_{2}( 2^{1} + 2.0^{1} + 2.0^{0} + 2^{0} )__\| = \|__log_{2}( 2 + 2 + 1 + 1)__\| = \|__log_{2}( 6 )__\| = \|__2.584__\| = 2]
+                              asciimath:[severity = \|__log_{2}( 2^{0} + 2^{0} + 0 + 0 )__\| = \|__log_{2}( 1 + 1 + 0 + 0)__\| = \|__log_{2}( 2 )__\| = \|__1__\| = 1]
 
-                              which corresponds to the severity MINOR. The same computation with the base value of 3 results in:
+                              which corresponds to the severity _MINOR_. The same computation with the base value of 3 results in:
 
-                              asciimath:[severity = \|__log_{3}( 3^{1} + 3.0^{1} + 3.0^{0} + 3.0^{0} )__\| = \|__log_{3}( 3 + 3 + 1 + 1)__\| = \|__log_{3}( 8 )__\| = \|__1.892__\| = 1]
+                              asciimath:[severity = \|__log_{3}( 3^{0} + 3^{0} + 0 + 0 )__\| = \|__log_{3}( 1 + 1 + 0 + 0)__\| = \|__log_{3}( 2 )__\| = \|__0.63__\| = 0]
 
-                              which means WARNING. In summary the base value defines how many items of a severity _x_ will result in a severity _x+1_.
+                              which means _WARNING_. In summary the base value defines how many items of a severity _x_ will result in a severity _x+1_.
 |===
 
 The following table shows the status calculation with _Edges_ assigned to an _IP Service_.
