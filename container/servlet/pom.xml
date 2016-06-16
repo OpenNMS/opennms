@@ -12,7 +12,7 @@
     <groupId>org.opennms.container</groupId>
     <artifactId>org.opennms.container.servlet</artifactId>
     <packaging>war</packaging>
-    <name>OpenNMS OSGi Container - Web Servlet</name>
+    <name>OpenNMS :: OSGi Container :: Web Servlet</name>
 
     <properties>
         <jetty.port>8080</jetty.port>

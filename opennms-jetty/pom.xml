@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-jetty</artifactId>
-  <name>OpenNMS Jetty Integration</name>
+  <name>OpenNMS :: Jetty</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

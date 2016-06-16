@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-snmp-scanners</artifactId>
-  <name>OpenNMS Provision SNMP Scanners</name>
+  <name>OpenNMS :: Provisioning :: SNMP Scanners</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -38,11 +38,6 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>

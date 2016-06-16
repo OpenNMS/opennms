@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>opennms-topology-runtime-application</artifactId>
-  <name>OpenNMS :: Features :: Topology :: Runtime (Application)</name>
+  <name>OpenNMS :: Features :: Topology :: Features :: Application</name>
   <packaging>pom</packaging>
   <build>
     <plugins>

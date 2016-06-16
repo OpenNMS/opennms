@@ -117,7 +117,6 @@
     <module>integration-tests</module>
 
     <!-- old structure -->
-    <module>opennms-test</module>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
     <module>opennms-model</module>
@@ -2579,12 +2578,6 @@
         <artifactId>spring-test-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-test</artifactId>
-        <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>

@@ -13,7 +13,7 @@
 	<groupId>org.opennms.features.topology</groupId>
 	<artifactId>netutils</artifactId>
 	<packaging>${packaging.type}</packaging>
-	<name>OpenNMS Features Topology NetUtils</name>
+	<name>OpenNMS :: Features :: Topology :: Plugins :: Net Utils</name>
 
 	<properties>
 		<packaging.type>bundle</packaging.type>

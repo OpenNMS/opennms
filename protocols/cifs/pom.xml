@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.protocols</groupId>
     <artifactId>org.opennms.protocols.cifs</artifactId>
-    <name>OpenNMS Protocols CIFS Support</name>
+    <name>OpenNMS :: Protocols :: CIFS</name>
 
     <dependencies>
         <dependency>
@@ -42,11 +42,6 @@
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>jcifs-dependencies</artifactId>
             <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-test</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.core.test-api</groupId>

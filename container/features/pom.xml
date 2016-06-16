@@ -9,7 +9,7 @@
   <groupId>org.opennms.karaf</groupId>
   <artifactId>opennms</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS OSGi Container - OpenNMS Features</name>
+  <name>OpenNMS :: OSGi Container :: Karaf Features</name>
   <build>
     <plugins>
       <plugin>

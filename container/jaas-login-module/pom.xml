@@ -13,7 +13,7 @@
     <groupId>org.opennms.container</groupId>
     <artifactId>jaas-login-module</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS OSGi Container - JAAS Login Module for Karaf</name>
+    <name>OpenNMS :: OSGi Container :: Karaf JAAS Login Module</name>
 
     <build>
         <plugins>

@@ -14,7 +14,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology.plugins.topo</groupId>
   <artifactId>application</artifactId>
-  <name>${bundle.symbolicName}</name>
+  <name>OpenNMS :: Features :: Topology :: Plugins :: Application</name>
   <packaging>bundle</packaging>
 
   <dependencies>
