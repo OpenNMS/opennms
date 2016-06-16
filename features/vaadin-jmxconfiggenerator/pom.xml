@@ -38,7 +38,8 @@
                     <features>
                         <feature>vaadin</feature>
                         <feature>jmxconfiggenerator</feature>
-                        <feature>opennms-config-jaxb</feature>
+                        <!-- These classes are exposed via the system classpath (for now) -->
+                        <!-- <feature>opennms-config-jaxb</feature> -->
                     </features>
                 </configuration>
             </plugin>

@@ -466,7 +466,10 @@
     </feature>
 
     <feature name="opennms-collection-commands" description="OpenNMS :: Collection :: Shell Commands" version="${project.version}">
+      <!--
+      These classes are in the system classpath inside OpenNMS
       <feature>opennms-collection-api</feature>
+      -->
       <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.commands/${project.version}</bundle>
     </feature>
 
