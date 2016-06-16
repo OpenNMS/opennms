@@ -23,7 +23,9 @@ export BUILDDEFINES=\
 	-Dmaven.test.skip.exec=true \
 	-DskipITs=true \
 	-Dproduct.release=1 \
-	-Dproduct.snapshot=true
+	-Dproduct.snapshot=true \
+	-Daether.connector.basic.threads=1 \
+	-Daether.connector.resumeDownloads=false
 
 configure:
 
