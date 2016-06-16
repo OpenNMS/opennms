@@ -60,6 +60,7 @@
 			<from uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}"/>
             <log message="${body}"/>
             <bean ref="kafkaDecoder" method="fromBytes"/>
+            <log message="${body}"/>
             
 			<!-- <convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/> -->
 			<to uri="seda:trapHandler"/>
