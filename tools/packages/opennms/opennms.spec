@@ -521,7 +521,8 @@ if [ "%{skip_compile}" = 1 ]; then
 else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	    -Dopennms.home="%{instprefix}" install
+		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false -T0.5C \
+		-Dopennms.home="%{instprefix}" install
 fi
 
 echo "=== BUILDING ASSEMBLIES ==="
@@ -531,6 +532,9 @@ echo "=== BUILDING ASSEMBLIES ==="
 	-Ddist.name="$RPM_BUILD_ROOT" \
 	-Dopennms.home="%{instprefix}" \
 	-Dbuild.profile=full \
+	-Daether.connector.basic.threads=1 \
+	-Daether.connector.resumeDownloads=false \
+	-T0.5C \
 	install
 
 cd opennms-tools
