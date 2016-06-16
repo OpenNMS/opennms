@@ -193,25 +193,29 @@ public class MenuManager {
 
 	// adds menu items for the "navigate to" operation
 	private void addNavigateToItems(MenuBuilder menuBuilder, List<VertexRef> targets, OperationContext operationContext) {
-		final GraphContainer graphContainer = operationContext.getGraphContainer();
-		// Find the vertices in other graphs that this vertex links to
-		final Collection<VertexRef> oppositeVertices = graphContainer.getMetaTopologyProvider().getOppositeVertices(targets.get(0));
+		if (!targets.isEmpty()) {
+			menuBuilder.createPath("Navigate To");
 
-		// Find all namespaces
-		final Set<String> targetNamespaces = oppositeVertices.stream().map(v -> v.getNamespace()).collect(Collectors.toSet());
+			final GraphContainer graphContainer = operationContext.getGraphContainer();
+			// Find the vertices in other graphs that this vertex links to
+			final Collection<VertexRef> oppositeVertices = graphContainer.getMetaTopologyProvider().getOppositeVertices(targets.get(0));
 
-		// Find provider for namespaces and add menu entry
-		for (String eachTargetNamespace : targetNamespaces) {
-			// Find the graph provider for the target namespace
-			final GraphProvider targetGraphProvider = graphContainer.getMetaTopologyProvider().getGraphProviders().stream()
-					.filter(g -> g.getVertexNamespace().equals(eachTargetNamespace))
-					.findFirst().orElse(null);
-			if (targetGraphProvider == null) {
-				LOG.warn("No graph provider found for namespace '{}'.", eachTargetNamespace);
-				continue;
+			// Find all namespaces
+			final Set<String> targetNamespaces = oppositeVertices.stream().map(v -> v.getNamespace()).collect(Collectors.toSet());
+
+			// Find provider for namespaces and add menu entry
+			for (String eachTargetNamespace : targetNamespaces) {
+				// Find the graph provider for the target namespace
+				final GraphProvider targetGraphProvider = graphContainer.getMetaTopologyProvider().getGraphProviders().stream()
+						.filter(g -> g.getVertexNamespace().equals(eachTargetNamespace))
+						.findFirst().orElse(null);
+				if (targetGraphProvider == null) {
+					LOG.warn("No graph provider found for namespace '{}'.", eachTargetNamespace);
+					continue;
+				}
+				NavigationMenuItem item = new NavigationMenuItem(targetGraphProvider, targets.get(0));
+				menuBuilder.addMenuItem(item, "Navigate To");
 			}
-			NavigationMenuItem item = new NavigationMenuItem(targetGraphProvider, targets.get(0));
-			menuBuilder.addMenuItem(item, "Navigate To");
 		}
 	}
 }

@@ -60,7 +60,11 @@ public class SimpleMenuItem extends AbstractMenuItem {
 
     @Override
     public boolean isEnabled(List<VertexRef> targets, OperationContext operationContext) {
-        return true;
+        if (getCommand() != null) {
+            return true;
+        } else {
+            return !getChildren().isEmpty();
+        }
     }
 
     @Override
