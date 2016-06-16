@@ -30,11 +30,12 @@ package org.opennms.smoketest.minion;
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.util.Date;
+import java.util.concurrent.Callable;
 
 import org.junit.Assume;
 import org.junit.Before;
@@ -126,25 +127,7 @@ public class TrapTest {
             }
         }
 
-        Thread.sleep(5000);
-
-        // Send a trap to the Minion listener
         final InetSocketAddress trapAddr = minionSystem.getServiceAddress(ContainerAlias.MINION, 162, "udp");
-
-        for (int i = 0; i < 3; i++) {
-            LOG.info("Sending trap");
-            try {
-                SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
-                pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
-                // warmStart
-                pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.6.3.1.1.5.2")));
-                pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.4.1.5813")));
-                pdu.send(InetAddressUtils.str(trapAddr.getAddress()), trapAddr.getPort(), "public");
-            } catch (Throwable e) {
-                LOG.error(e.getMessage(), e);
-            }
-            LOG.info("Trap has been sent");
-        }
 
         // Connect to the postgresql container
         InetSocketAddress pgsql = minionSystem.getServiceAddress(ContainerAlias.POSTGRES, 5432);
@@ -157,6 +140,32 @@ public class TrapTest {
                 .ge("eventTime", startOfTest)
                 .toCriteria();
 
-        await().atMost(1, MINUTES).pollInterval(5, SECONDS).until(DaoUtils.countMatchingCallable(eventDao, criteria), equalTo(3));
+        // Send traps to the Minion listener until one makes it through
+        await().atMost(5, MINUTES).pollInterval(30, SECONDS).until(new Callable<Boolean>() {
+            @Override public Boolean call() throws Exception {
+                sendTrap(trapAddr);
+                try {
+                    await().atMost(30, SECONDS).pollInterval(5, SECONDS).until(DaoUtils.countMatchingCallable(eventDao, criteria), greaterThanOrEqualTo(1));
+                } catch (final Exception e) {
+                    return false;
+                }
+                return true;
+            }
+        });
+    }
+
+    private void sendTrap(final InetSocketAddress trapAddr) {
+        LOG.info("Sending trap");
+        try {
+            SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
+            pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
+            // warmStart
+            pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.6.3.1.1.5.2")));
+            pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.4.1.5813")));
+            pdu.send(InetAddressUtils.str(trapAddr.getAddress()), trapAddr.getPort(), "public");
+        } catch (Throwable e) {
+            LOG.error(e.getMessage(), e);
+        }
+        LOG.info("Trap has been sent");
     }
 }
