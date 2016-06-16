@@ -1,29 +1,29 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
- * <p>
- * Copyright (C) 2016 The OpenNMS Group, Inc.
+ *
+ * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
- * <p>
+ *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- * <p>
+ *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
- * <p>
+ *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * <p>
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
- * <p>
+ *      http://www.gnu.org/licenses/
+ *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.netmgt.bsm.service.model.functions.reduce;
@@ -39,7 +39,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Function(name = "ExponentialPropagation", description = "")
+@Function(name = "ExponentialPropagation", description = "Propagate severities using a given base number")
 public class ExponentialPropagation implements ReductionFunction {
 
     @Parameter(key = "base",
@@ -54,7 +54,8 @@ public class ExponentialPropagation implements ReductionFunction {
             return Optional.empty();
         }
 
-        // Handle corner case where all incoming statuses are indeterminate
+        // Unfortunately, our computation will result in a normal severity when all input statuses are
+        // indeterminate. So, we have to handle this case explicitely here...
         if (Iterables.all(statuses, s -> s == Status.INDETERMINATE)) {
             return Optional.of(Status.INDETERMINATE);
         }
@@ -68,7 +69,8 @@ public class ExponentialPropagation implements ReductionFunction {
         // Get the log n of the sum
         final int res = (int) Math.floor(Math.log(sum) / Math.log(this.base)) + Status.WARNING.ordinal(); // Revert offset from above
 
-        // Find the resulting status
+        // Find the resulting status and treat values lower than NORMAL.ordinal() as NORMAL.ordinal() and
+        // all values higher than CRITICAL.ordinal() as CRITICAL.ordinal()
         return Optional.of(Status.get(Math.max(Math.min(res, Status.CRITICAL.ordinal()), Status.NORMAL.ordinal())));
     }
 
