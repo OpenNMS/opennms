@@ -249,13 +249,17 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             testCase.m_driver.findElement(By.id("TopologyComponent")).click();
         }
 
-        public void click(String menuItem) {
-            try {
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
-                testCase.findElementByXpath("//*[@class='v-context-menu-container']//*[@class='v-context-menu']//*[text()='" + menuItem + "']").click();
-                waitForTransition();
-            } finally {
-                testCase.setImplicitWait();
+        public void click(String... menuPath) {
+            if (menuPath != null && menuPath.length > 0) {
+                try {
+                    testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                    for (String eachPath : menuPath) {
+                        testCase.findElementByXpath("//*[@class='v-context-menu-container']//*[@class='v-context-menu']//*[text()='" + eachPath + "']").click();
+                    }
+                    waitForTransition();
+                } finally {
+                    testCase.setImplicitWait();
+                }
             }
         }
     }
@@ -330,6 +334,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
         public TopologyUIPage selectLayout(Layout layout) {
             clickOnMenuItemsWithLabels("View", layout.getLabel());
+            waitForTransition();
             return this;
         }
 
@@ -511,11 +516,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             Actions actions = new Actions(testCase.m_driver);
             actions.moveToElement(showEntireMap);
             actions.clickAndHold();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw Throwables.propagate(e);
-            }
+            waitForTransition();
             actions.release();
             showEntireMap.click();
         }
@@ -621,10 +622,10 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
      * This should be used after adding or removing vertices from focus and/or
      * changing the SZL.
      */
-    private static void waitForTransition() {
+    public static void waitForTransition() {
         try {
             // TODO: Find a better way that does not require an explicit sleep
-            Thread.sleep(2000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             throw Throwables.propagate(e);
         }

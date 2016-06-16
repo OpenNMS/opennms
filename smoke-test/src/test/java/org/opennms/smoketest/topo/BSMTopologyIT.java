@@ -41,7 +41,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.smoketest.BSMAdminIT;
 import org.opennms.smoketest.BSMAdminIT.BsmAdminPage;
-import org.opennms.smoketest.BSMAdminIT.BsmAdminPageEditWindow;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.TopologyIT.TopologyProvider;
 import org.opennms.smoketest.TopologyIT.TopologyUIPage;
@@ -158,7 +157,7 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
             bsmAdminPage.expandAll();
             final String linkFrom = businessServiceNames.get(i);
             final String linkTo = businessServiceNames.get(i+1);
-            final BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(linkFrom);
+            final BSMAdminIT.BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(linkFrom);
             bsmAdminPageEditWindow.addChildEdge(linkTo, "Identity", 1);
             bsmAdminPageEditWindow.save();
         }
