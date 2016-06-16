@@ -278,7 +278,7 @@ public class TsrmTicketerPlugin implements Plugin {
 
     @Override
     public void saveOrUpdate(Ticket ticket) throws PluginException {
-
+        LOG.debug("saveOrUpdate called with ticket: {}", ticket);
         String ticketId = ticket.getId();
 
         if (StringUtils.isEmpty(ticketId)) {

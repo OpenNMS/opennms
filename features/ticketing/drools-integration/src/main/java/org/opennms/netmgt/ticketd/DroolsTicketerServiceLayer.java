@@ -107,8 +107,8 @@ public class DroolsTicketerServiceLayer extends DefaultTicketerServiceLayer {
 	 */
     @Override
     protected Ticket createTicketFromAlarm(OnmsAlarm alarm) {
-        LOG.debug("createTicketFromAlarm: Processing ticket.");
-        
+        LOG.debug("Initializing ticket from alarm: {}", alarm);
+
         // Call superclass method if the knowledge-base was not properly created.
         if( m_knowledgeBase == null ) {
             LOG.error("KnowledgeBase is NULL, creating basic ticket form alarm.");
@@ -127,8 +127,8 @@ public class DroolsTicketerServiceLayer extends DefaultTicketerServiceLayer {
         } finally {
             session.dispose();
         }
-        
-        LOG.debug("createTicketFromAlarm: Succesfully processed ticket.");
+
+        LOG.debug("Succesfully initialized ticket: {} from alarm: {}.", ticket, alarm);
         return ticket;
     }
 }
