@@ -228,7 +228,7 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="input_severity" class="col-sm-2 control-label">Description:</label>
+          <label for="input_severity" class="col-sm-2 control-label">Severity:</label>
           <div class="col-sm-10">
                 <select name="severity" id="input_severity" class="form-control">
                   <option value="">--Select One--</option>
