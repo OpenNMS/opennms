@@ -2,9 +2,6 @@ package org.opennms.netmgt.trapd;
 
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
-
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Deepak
  */
-public class TrapdKafkaDeSerializer implements Processor {
+public class TrapdKafkaDeSerializer {
 	public static final Logger LOG = LoggerFactory.getLogger(TrapdKafkaDeSerializer.class);
 
 	private final Class<?> m_class;
@@ -27,12 +24,9 @@ public class TrapdKafkaDeSerializer implements Processor {
 		m_class = Class.forName(className);
 	}
 
-	@Override
-	public void process(final Exchange exchange) throws Exception {
-		byte[] bytes = exchange.getIn().getBody(byte[].class);
-		ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes));
-		TrapNotification trapNotification = (TrapNotification)in.readObject();
-		exchange.getIn().setBody(trapNotification, m_class);
-	}
+    public TrapNotification process(final  byte[] bytes) throws Exception {
+        ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes));
+        return (TrapNotification)in.readObject();
+    }
 }
 

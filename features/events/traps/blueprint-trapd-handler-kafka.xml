@@ -38,7 +38,7 @@
 			</setHeader>
 
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
-			<to uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
+			<to uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;serializerClass=org.opennms.netmgt.trapd.TrapdKafkaEncoder"/>
 		</route>
 	</camelContext>
 </blueprint>
