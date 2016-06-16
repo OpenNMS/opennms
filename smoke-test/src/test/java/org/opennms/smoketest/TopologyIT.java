@@ -34,6 +34,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -133,7 +134,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
         public void centerOnMap() {
             getElement().findElement(By.xpath("//a[@class='icon-location-arrow']")).click();
-            ui.waitForTransition();
+            waitForTransition();
         }
 
         public void removeFromFocus() {
@@ -143,7 +144,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             } finally {
                 ui.testCase.setImplicitWait();
             }
-            ui.waitForTransition();
+            waitForTransition();
         }
 
         private WebElement getElement() {
@@ -215,6 +216,80 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         @Override
         public String toString() {
             return String.format("VisibleVertex[label='%s']", label);
+        }
+
+        public ContextMenu contextMenu() {
+            try {
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                Actions action = new Actions(testCase.m_driver);
+                action.contextClick(getElement());
+                action.build().perform();
+                return new ContextMenu(testCase);
+            } finally {
+                testCase.setImplicitWait();
+            }
+        }
+    }
+
+    /**
+     * Represents the Context Menu
+     */
+    public static class ContextMenu {
+
+        private final OpenNMSSeleniumTestCase testCase;
+
+        public ContextMenu(OpenNMSSeleniumTestCase testCase) {
+            this.testCase = Objects.requireNonNull(testCase);
+        }
+
+        /**
+         * Closes the context menu without clicking on an item
+         */
+        public void close() {
+            testCase.m_driver.findElement(By.id("TopologyComponent")).click();
+        }
+
+        public void click(String menuItem) {
+            try {
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.findElementByXpath("//*[@class='v-context-menu-container']//*[@class='v-context-menu']//*[text()='" + menuItem + "']").click();
+                waitForTransition();
+            } finally {
+                testCase.setImplicitWait();
+            }
+        }
+    }
+
+    /**
+     * Represents the Breadcrumbs
+     */
+    public static class Breadcrumbs {
+
+        private final OpenNMSSeleniumTestCase testCase;
+
+        public Breadcrumbs(OpenNMSSeleniumTestCase testCase) {
+            this.testCase = Objects.requireNonNull(testCase);
+        }
+
+        public List<String> getLabels() {
+            try {
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                List<WebElement> breadcrumbs = testCase.m_driver.findElements(By.xpath("//*[@id='breadcrumbs']//span[@class='v-button-caption']"));
+                return breadcrumbs.stream().map(eachBreadcrumb -> eachBreadcrumb.getText()).collect(Collectors.toList());
+            } finally {
+                testCase.setImplicitWait();
+            }
+        }
+
+        public void click(String label) {
+            try {
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                WebElement element = testCase.findElementByXpath("//*[@id='breadcrumbs']//*[contains(text(), '" + label + "')]");
+                element.click();
+                waitForTransition();
+            } finally {
+                testCase.setImplicitWait();
+            }
         }
     }
 
@@ -370,14 +445,40 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             Objects.requireNonNull(layerName, "The layer name cannot be null");
             try {
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
-                if (!isLayoutComponentVisible()) {
-                    testCase.findElementById("layerToggleButton").click();
-                }
+                openLayerSelectionComponent();
                 WebElement layerElement = testCase.findElementById("layerComponent").findElement(By.xpath("//div[text() = '" + layerName + "']"));
                 layerElement.click();
                 waitForTransition();
             } finally {
                 testCase.setImplicitWait();
+            }
+        }
+
+        public VisibleVertex findVertex(String label) {
+            return getVisibleVertices().stream().filter(eachVertex -> eachVertex.getLabel().equals(label)).findFirst().orElse(null);
+        }
+
+        public String getSelectedLayer() {
+            try {
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                openLayerSelectionComponent();
+                WebElement selectedLayer = testCase.findElementByXpath("//div[@id='layerComponent']//div[contains(@class, 'selected')]//div[contains(@class, 'v-label')]");
+                if (selectedLayer != null) {
+                    return selectedLayer.getText();
+                }
+                return null;
+            } finally {
+                testCase.setImplicitWait();
+            }
+        }
+
+        public Breadcrumbs getBreadcrumbs() {
+            return new Breadcrumbs(testCase);
+        }
+
+        private void openLayerSelectionComponent() {
+            if (!isLayoutComponentVisible()) {
+                testCase.findElementById("layerToggleButton").click();
             }
         }
 
@@ -389,20 +490,6 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         private boolean isLayoutComponentVisible() {
             WebElement layerToggleButton = testCase.findElementById("layerToggleButton");
             return layerToggleButton.getCssValue("class").contains("expanded");
-        }
-
-        /**
-         * This method is used to block and wait for any transitions to occur.
-         * This should be used after adding or removing vertices from focus and/or
-         * changing the SZL.
-         */
-        private void waitForTransition() {
-            try {
-                // TODO: Find a better way that does not require an explicit sleep
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                throw Throwables.propagate(e);
-            }
         }
 
         private WebElement getMenubarElement(String itemName) {
@@ -462,7 +549,6 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             } finally {
                 testCase.setImplicitWait();
             }
-
         }
     }
 
@@ -477,7 +563,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
         public TopologyUIPage selectItemThatContains(String substring) {
             ui.testCase.findElementByXpath(String.format(XPATH, substring)).click();
-            ui.waitForTransition();
+            waitForTransition();
             return ui;
         }
 
@@ -528,5 +614,19 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             .setAutomaticRefresh(true)
             .setAutomaticRefresh(false)
             .setAutomaticRefresh(true);
+    }
+
+    /**
+     * This method is used to block and wait for any transitions to occur.
+     * This should be used after adding or removing vertices from focus and/or
+     * changing the SZL.
+     */
+    private static void waitForTransition() {
+        try {
+            // TODO: Find a better way that does not require an explicit sleep
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw Throwables.propagate(e);
+        }
     }
 }

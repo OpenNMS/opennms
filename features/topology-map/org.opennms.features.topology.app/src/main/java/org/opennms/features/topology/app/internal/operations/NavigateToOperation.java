@@ -37,10 +37,11 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.ui.breadcrumbs.BreadcrumbCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,35 +65,60 @@ public class NavigateToOperation implements Constants, Operation {
         final String targetNamespace = oppositeVertices.stream().findFirst()
                 .map(v -> v.getNamespace()).orElse(null);
 
-        // Filter the vertices for those matching the target namespace
-        final List<VertexRef> targetVertices = oppositeVertices.stream()
-            .filter(v -> v.getNamespace().matches(targetNamespace))
-            .collect(Collectors.toList());
+        navigateTo(graphContainer, vertexRef.get(), targetNamespace);
+	}
 
+    private void navigateTo(GraphContainer graphContainer, VertexRef sourceVertex, String targetNamespace) {
         // Find the graph provider for the target namespace
-
-        final GraphProvider targetGraphProvider = metaTopologyProvider.getGraphProviders().stream()
-            .filter(g -> g.getVertexNamespace().equals(targetNamespace))
-            .findFirst().orElse(null);
+        final GraphProvider targetGraphProvider = graphContainer.getMetaTopologyProvider().getGraphProviders().stream()
+                .filter(g -> g.getVertexNamespace().equals(targetNamespace))
+                .findFirst().orElse(null);
         if (targetGraphProvider == null) {
             LOG.warn("No graph provider found for namespace '{}'.", targetNamespace);
             return;
         }
+        // Get the Breadcrumb (before) navigating, otherwise it is lost
+        BreadcrumbCriteria breadcrumbCriteria = VertexHopGraphProvider.VertexHopCriteria.getSingleCriteriaForGraphContainer(graphContainer, BreadcrumbCriteria.class, true);
 
-        operationContext.getGraphContainer().selectTopologyProvider(targetGraphProvider, false);
+        // If no breadcrumb is defined yet, add source before target.
+        if (breadcrumbCriteria.isEmpty()) {
+            final GraphProvider graphProvider = graphContainer.getBaseTopology();
+            breadcrumbCriteria.setNewRoot(new BreadcrumbCriteria.Breadcrumb(
+                    graphProvider.getTopologyProviderInfo().getName(),
+                    (theGraphContainer) -> theGraphContainer.selectTopologyProvider(graphProvider, true)));
+        }
+        graphContainer.selectTopologyProvider(targetGraphProvider, false);
 
         // TODO: Consolidate that this is configurable and we can define a default SZL and default Focus per layer
         // TODO: Use a default SZL per graph?
         graphContainer.clearCriteria(); // Remove all criteria
-        // Use the default SZL
-        graphContainer.setSemanticZoomLevel(targetGraphProvider.getDefaultSzl());
+        graphContainer.setSemanticZoomLevel(targetGraphProvider.getDefaultSzl());  // Use the default SZL
+        graphContainer.addCriteria(breadcrumbCriteria); // add it again, it was cleared
+
+        // Find the vertices in other graphs that this vertex links to
+        final Collection<VertexRef> oppositeVertices = graphContainer.getMetaTopologyProvider().getOppositeVertices(sourceVertex);
+
+        // Filter the vertices for those matching the target namespace
+        final List<VertexRef> targetVertices = oppositeVertices.stream()
+                .filter(v -> v.getNamespace().matches(targetNamespace))
+                .collect(Collectors.toList());
 
         // Add the target vertices to focus
-        targetVertices.stream().forEach(v -> graphContainer.addCriteria(new DefaultVertexHopCriteria(v)));
+        targetVertices.stream().forEach(v -> graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(v)));
+
+        // Update Criteria for Breadcrumbs
+        breadcrumbCriteria.setNewRoot(new BreadcrumbCriteria.Breadcrumb(
+                sourceVertex.getLabel(),
+                (theGraphContainer) -> {
+                    // only navigate if namespace is different, otherwise we switch to the same target, which does not make any sense
+                    if (!theGraphContainer.getBaseTopology().getVertexNamespace().equals(targetNamespace)) {
+                        new NavigateToOperation().navigateTo(theGraphContainer, sourceVertex, targetNamespace);
+                    }
+                }));
 
         // Render
         graphContainer.redoLayout();
-	}
+    }
 
 	@Override
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {

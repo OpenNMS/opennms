@@ -427,5 +427,4 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
             <argument ref="measurementsService"/>
         </bean>
     </service>
-
 </blueprint>

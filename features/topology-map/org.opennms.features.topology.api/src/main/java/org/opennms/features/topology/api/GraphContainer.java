@@ -68,6 +68,7 @@ public interface GraphContainer extends DisplayState {
      *
      * @param topologyProvider the provider to select.
      */
+    // TODO Define a "Operation"-List which is executed afterwards (or empty list)
     void selectTopologyProvider(GraphProvider topologyProvider, boolean resetCriteriaAndSzl);
 
     void addChangeListener(ChangeListener listener);
