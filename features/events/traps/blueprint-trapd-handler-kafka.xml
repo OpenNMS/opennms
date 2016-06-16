@@ -40,7 +40,7 @@
 				<simple>trap</simple>
 			</setHeader>
 			
-            <bean ref="kafkaEncoder" method="fromBytes"/>
+            <bean ref="kafkaEncoder" method="toBytes"/>
 
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
 			<to uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}"/>
