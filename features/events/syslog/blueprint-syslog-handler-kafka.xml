@@ -42,7 +42,7 @@
 				<simple>${body.sourceAddress}</simple>
 			</setHeader>
 			
-			<!-- <bean ref="marshaller"/> -->
+			<bean ref="marshaller"/>
 	
 			<to uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>
