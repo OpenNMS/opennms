@@ -39,11 +39,19 @@
 				<!-- <simple>${body.remoteAddress}</simple> -->
 				<simple>trap</simple>
 			</setHeader>
-			
-            <bean ref="kafkaEncoder" method="toBytes"/>
-
+			<to uri="seda:trapHandler1"/>
+		</route>
+		
+		<route id="sendTrapViaKafka1">
+			<from uri="seda:trapHandler1"/>
+			  <bean ref="kafkaEncoder" method="toBytes"/>
+			<to uri="seda:trapHandler2"/>
+		</route>
+		
+		<route id="sendTrapViaKafka2">
+			<from uri="seda:trapHandler2"/>
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
-			<to uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}"/>
+			<to uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>
 	</camelContext>
 </blueprint>

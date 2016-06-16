@@ -24,6 +24,7 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
     public Object fromBytes(byte[] bytes) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+        	System.out.println("######################################################## bytes is : "+bytes);
             return objectMapper.readValue(bytes, TrapNotification.class);
         } catch (IOException e) {
         	LOG.error(String.format("Json processing failed for object: %s", bytes.toString()), e);
