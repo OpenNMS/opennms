@@ -30,9 +30,12 @@ package org.opennms.web.springframework.security;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
@@ -50,8 +53,8 @@ public abstract class LoginModuleUtils {
 
     protected LoginModuleUtils() {}
 
-    public static boolean doLogin(final LoginHandler handler) throws LoginException {
-        LOG.debug("OpenNMSLoginModule: login()");
+    public static boolean doLogin(final OpenNMSLoginHandler handler, final Subject subject, final Map<String, ?> sharedState, final Map<String, ?> options) throws LoginException {
+        LOG.debug("OpenNMSLoginModule: login(): handler={}, subject={}, sharedState={}, options={}", handler.getClass(), subject.getClass(), sharedState, options);
         final Callback[] callbacks = new Callback[2];
 
         callbacks[0] = new NameCallback("Username: ");
@@ -105,18 +108,19 @@ public abstract class LoginModuleUtils {
             throw new FailedLoginException(msg);
         };
 
-        boolean allowed = false;
-        final Set<Principal> principals = new HashSet<Principal>();
-        for (final GrantedAuthority auth : onmsUser.getAuthorities()) {
-            final Set<Principal> ps = handler.createPrincipals(auth);
-            for (final Principal p : ps) {
-                if ("admin".equals(p.getName())) {
+        boolean allowed = true;
+        final Set<Principal> principals = LoginModuleUtils.createPrincipals(handler, onmsUser.getAuthorities());
+        handler.setPrincipals(principals);
+
+        if (handler.requiresAdminRole()) {
+            allowed = false;
+            for (final Principal principal : principals) {
+                final String name = principal.getName().toLowerCase().replaceAll("^role_", "");
+                if ("admin".equals(name)) {
                     allowed = true;
                 }
             }
-            principals.addAll(ps);
         }
-        handler.setPrincipals(principals);
 
         if (!allowed) {
             final String msg = "User " + user + " is not an administrator!  OSGi console access is forbidden.";
@@ -125,5 +129,15 @@ public abstract class LoginModuleUtils {
         }
         LOG.debug("Successfully logged in {}.", user);
         return true;
+    }
+    
+    public static Set<Principal> createPrincipals(final LoginHandler handler, final Collection<? extends GrantedAuthority> collection) {
+        final Set<Principal> principals = new HashSet<Principal>();
+        for (final GrantedAuthority auth : collection) {
+            final Set<Principal> ps = handler.createPrincipals(auth);
+            LOG.debug("granted authority: {}, principals: {}", auth, ps.stream().map(p -> {return p.getName();}).toArray());
+            principals.addAll(ps);
+        }
+        return principals;
     }
 }

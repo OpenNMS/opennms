@@ -49,6 +49,10 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.outage.filter.ForeignSourceFilter;
+import org.opennms.web.outage.filter.NegativeForeignSourceFilter;
+import org.opennms.web.outage.filter.NegativeNodeFilter;
+import org.opennms.web.outage.filter.NodeFilter;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageIdFilter;
 import org.opennms.web.outage.filter.RegainedServiceDateBeforeFilter;
@@ -133,6 +137,35 @@ public class DaoWebOutageRepositoryIT implements InitializingBean {
         outage = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new OutageIdFilter(2)));
         assertEquals(1, outage.length);
         assertEquals(2, outage[0].getId());
+    }
+    
+    /**
+     * @see http://issues.opennms.org/browse/NMS-8275
+     */
+    @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    public void testGetMatchingOutagesByForeignSource() {
+        Outage[] outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new ForeignSourceFilter("imported:")));
+        assertEquals(3, outages.length);
+        outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new ForeignSourceFilter("DOESNT_EXIST")));
+        assertEquals(0, outages.length);
+        outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new NegativeForeignSourceFilter("imported:")));
+        assertEquals(0, outages.length);
+        outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new NegativeForeignSourceFilter("DOESNT_EXIST")));
+        assertEquals(3, outages.length);
+    }
+    
+    @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    public void testGetMatchingOutagesByNodeId(){
+        Outage[] outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new NodeFilter(m_dbPopulator.getNode2().getId(), null)));
+        assertEquals(1, outages.length);
+        outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new NodeFilter(Integer.MAX_VALUE, null)));
+        assertEquals(0, outages.length);
+        outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new NegativeNodeFilter(m_dbPopulator.getNode2().getId(), null)));
+        assertEquals(2, outages.length);
+        outages = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new NegativeNodeFilter(Integer.MAX_VALUE, null)));
+        assertEquals(3, outages.length);
     }
     
     @Test
