@@ -40,7 +40,7 @@
       <feature>activemq</feature>
     </feature>
 
-    <feature name="opennms-activemq-component" description="OpenNMS :: Features: ActiveMQ :: Component" version="${project.version}">
+    <feature name="opennms-activemq-component" description="OpenNMS :: Features :: ActiveMQ :: Component" version="${project.version}">
       <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.component/${project.version}</bundle>
     </feature>
 
@@ -235,10 +235,6 @@
       <bundle>mvn:commons-net/commons-net/3.3</bundle>
     </feature>
 
-    <feature name="lmax-disruptor" description="LMAX :: Disruptor" version="3.3.2">
-      <bundle>mvn:com.lmax/disruptor/3.3.2</bundle>
-    </feature>
-
     <feature name="dnsjava" description="dnsjava" version="${dnsjavaVersion}">
       <bundle dependency="true">wrap:mvn:org.dnsjava/dnsjava/${dnsjavaVersion}</bundle>
     </feature>
@@ -273,6 +269,11 @@
       <bundle dependency="true">wrap:mvn:javax.validation/validation-api/1.0.0.GA$Bundle-SymbolicName=javax.validation:validation-api&amp;Bundle-Version=1.0.0&amp;Export-Package=javax.validation;version="1.0.0",javax.validation.bootstrap;version="1.0.0",javax.validation.constraints;version="1.0.0",javax.validation.groups;version="1.0.0",javax.validation.metadata;version="1.0.0",javax.validation.spi;version="1.0.0"</bundle>
       <bundle>wrap:mvn:org.hibernate/hibernate-validator-annotation-processor/4.1.0.Final</bundle>
       <bundle>wrap:mvn:org.hibernate/hibernate-validator/4.1.0.Final</bundle>
+    </feature>
+
+    <feature name="java-native-access" description="Java Native Access (JNA)" version="4.2.1">
+      <bundle>wrap:mvn:net.java.dev.jna/jna/4.2.1$Export-Package=com.sun.jna</bundle>
+      <bundle>wrap:mvn:net.java.dev.jna/jna-platform/4.2.1$Export-Package=com.sun.jna.platform</bundle>
     </feature>
 
     <feature name="javax.mail" description="javax.mail" version="1.4.5">
@@ -320,6 +321,10 @@
       <bundle>wrap:mvn:net.sf.json-lib/json-lib/2.2.3/jar/jdk15</bundle>
     </feature>
 
+    <feature name="lmax-disruptor" description="LMAX :: Disruptor" version="3.3.2">
+      <bundle>mvn:com.lmax/disruptor/3.3.2</bundle>
+    </feature>
+
     <feature name="org.json" description="org.json" version="20140107">
       <bundle>wrap:mvn:org.json/json/20140107$Export-Package=org.json</bundle>
     </feature>
@@ -349,11 +354,6 @@
       <bundle>wrap:mvn:org.springframework.webflow/spring-js/${springWebFlowVersion}</bundle>
       <bundle>wrap:mvn:org.springframework.webflow/spring-js-resources/${springWebFlowVersion}</bundle>
       <bundle>wrap:mvn:org.springframework.webflow/spring-webflow/${springWebFlowVersion}</bundle>
-    </feature>
-
-    <feature name="net.java.dev.jna" description="Java Native Access (JNA)" version="4.2.1">
-      <bundle>wrap:mvn:net.java.dev.jna/jna/4.2.1$Export-Package=com.sun.jna</bundle>
-      <bundle>wrap:mvn:net.java.dev.jna/jna-platform/4.2.1$Export-Package=com.sun.jna.platform</bundle>
     </feature>
 
     <feature name="jicmp" description="jicmp" version="1.4.4">
@@ -455,7 +455,7 @@
       <bundle>mvn:org.opennms/opennms-model/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-collection-api" description="OpenNMS :: Collection API" version="${project.version}">
+    <feature name="opennms-collection-api" description="OpenNMS :: Collection :: API" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
 
       <feature>opennms-config-api</feature>
@@ -481,7 +481,7 @@
       <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.rrd/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-config-api" description="OpenNMS :: Configuration API" version="${project.version}">
+    <feature name="opennms-config-api" description="OpenNMS :: Configuration :: API" version="${project.version}">
       <feature>opennms-core</feature>
       <feature>opennms-model</feature>
 
@@ -515,7 +515,7 @@
       <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-dao-api" description="OpenNMS :: DAO API" version="${project.version}">
+    <feature name="opennms-dao-api" description="OpenNMS :: DAO :: API" version="${project.version}">
       <feature>opennms-core</feature>
       <feature>opennms-model</feature>
       <feature>opennms-config-api</feature>
@@ -557,7 +557,7 @@
       <bundle>blueprint:mvn:org.opennms.features/org.opennms.features.discovery/${project.version}/xml/blueprint-discovery</bundle>
     </feature>
 
-    <feature name="opennms-events-api" description="OpenNMS :: Events API" version="${project.version}">
+    <feature name="opennms-events-api" description="OpenNMS :: Events :: API" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
 
       <feature>castor</feature>
@@ -591,7 +591,7 @@
 
     <feature name="opennms-icmp-jna" description="OpenNMS :: ICMP :: JNA" version="${project.version}">
       <feature>opennms-icmp-api</feature>
-      <feature>net.java.dev.jna</feature>
+      <feature>java-native-access</feature>
 
       <bundle>mvn:org.opennms.core/org.opennms.core.icmp-jna/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-icmp-jna/${project.version}</bundle>
@@ -621,7 +621,7 @@
       <bundle>mvn:org.opennms/opennms-javamail-api/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-poller-api" description="OpenNMS :: Poller API" version="${project.version}">
+    <feature name="opennms-poller-api" description="OpenNMS :: Poller :: API" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
 
       <feature>hibernate36</feature>
@@ -674,7 +674,7 @@
       <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.sdo/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-rrd-api" description="OpenNMS :: RRD API" version="${project.version}">
+    <feature name="opennms-rrd-api" description="OpenNMS :: RRD :: API" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
 
       <feature>opennms-core</feature>
@@ -813,6 +813,12 @@
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-listener</bundle>
     </feature>
 
+    <feature name="tsrm-troubleticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: Tivoli Service Request Manager (TSRM)">
+        <feature version="${cxfVersion}">cxf-jaxws</feature>
+        <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features/opennms-integration-tsrm/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-webapp" description="OpenNMS :: Webapp" version="${project.version}">
       <feature>war</feature>
 
@@ -858,11 +864,5 @@
 
       <!-- The main webapp WAR file -->
       <bundle>mvn:org.opennms/opennms-webapp/${project.version}/war</bundle>
-    </feature>
-
-    <feature name="tsrm-troubleticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: Tivoli Service Request Manager (TSRM)">
-        <feature version="${cxfVersion}">cxf-jaxws</feature>
-        <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features/opennms-integration-tsrm/${project.version}</bundle>
     </feature>
 </features>

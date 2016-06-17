@@ -211,6 +211,10 @@ include::text/ticketing/jira.adoc[]
 // TSRM Ticketer
 include::text/ticketing/tsrm.adoc[]
 
+[[ga-rmi]]
+== Enabling RMI
+include::text/rmi.adoc[]
+
 [[ga-opennms-plugin-manager]]
 == Plugin Manager
 include::text/plugin-manager/introduction.adoc[]

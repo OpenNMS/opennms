@@ -210,7 +210,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureJna() {
-		installFeature("net.java.dev.jna");
+		installFeature("java-native-access");
 		System.out.println(executeCommand("features:list -i"));
 	}
 
