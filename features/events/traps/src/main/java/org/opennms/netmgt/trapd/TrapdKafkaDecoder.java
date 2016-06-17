@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.netmgt.snmp.TrapNotification;
+import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,11 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
         ObjectMapper objectMapper = new ObjectMapper();
         try {
         	System.out.println("######################################################## bytes is : "+bytes);
-            return objectMapper.readValue(bytes, TrapNotification.class);
+        	Snmp4JTrapNotifier.Snmp4JV2TrapInformation v2Trap = objectMapper.readValue(bytes, Snmp4JTrapNotifier.Snmp4JV2TrapInformation.class);
+        	System.out.println("####################################################### v2Trap is : "+v2Trap);
+        	System.out.println("####################################################### v2Trap.toString is : "+v2Trap.toString());
+
+            return objectMapper.readValue(bytes, Snmp4JTrapNotifier.Snmp4JV2TrapInformation.class); 
         } catch (IOException e) {
         	System.out.println("e is : "+e);
         	e.printStackTrace();
