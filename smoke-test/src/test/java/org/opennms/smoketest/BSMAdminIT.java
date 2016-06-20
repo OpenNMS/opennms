@@ -705,7 +705,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     private void verifyElementPresent(String text) {
         final String escapedText = text.replace("\'", "\\\'");
         final String xpathExpression = "//*[contains(., \'" + escapedText + "\')]";
-        Assert.assertNotNull("element with xpath is not present: " + xpathExpression, findElementByXpath(xpathExpression));
+        Assert.assertNotNull("element with xpath is not present: " + xpathExpression, waitForElement(By.xpath(xpathExpression)));
     }
 
     /**
@@ -886,15 +886,18 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
      * @param by selector
      */
     private void clickElementUntilItDisappears(By by) {
+        // click once to make sure the element *ever* existed
+        waitForElement(by).click();
+
         try {
             setImplicitWait(100, TimeUnit.MILLISECONDS);
             wait.until(new ExpectedCondition<Boolean>() {
                 @Override
-                public Boolean apply(WebDriver driver) {
+                public Boolean apply(final WebDriver driver) {
                     try {
                         driver.findElement(by).click();
                         return false;
-                    } catch (NoSuchElementException|StaleElementReferenceException e) {
+                    } catch (NullPointerException|NoSuchElementException|StaleElementReferenceException e) {
                         return true;
                     }
                 }
