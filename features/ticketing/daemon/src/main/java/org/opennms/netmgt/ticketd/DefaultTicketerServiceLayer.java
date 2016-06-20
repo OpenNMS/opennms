@@ -65,9 +65,6 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 
     static final String COMMS_ERROR_UEI = "uei.opennms.org/troubleTicket/communicationError";
 
-    /**
-     * <p>Constructor for DefaultTicketerServiceLayer.</p>
-     */
     public DefaultTicketerServiceLayer() {
         m_eventIpcManager = EventIpcManagerFactory.getIpcManager();
     }
@@ -170,10 +167,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
             return;
         }
 
-        Ticket ticket = createTicketFromAlarm(alarm);
-        if (attributes.containsKey("user"))
-            ticket.setUser(attributes.get("user"));
-        ticket.setAttributes(attributes);
+        Ticket ticket = createTicketFromAlarm(alarm, attributes);
 
         try {
             m_ticketerPlugin.saveOrUpdate(ticket);
@@ -193,12 +187,13 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
      * Called from API implemented method after successful retrieval of Alarm.
      * 
      * @param alarm OpenNMS Model class alarm
+     * @param attributes
      * @return OpenNMS Ticket with contents of alarm.
      * TODO: Add alarm attributes to Ticket.
      * TODO: Add alarmid to Ticket class for ability to reference back to Alarm (waffling on this
      * since ticket isn't a persisted object and other reasons)
      */
-    protected Ticket createTicketFromAlarm(OnmsAlarm alarm) {
+    protected Ticket createTicketFromAlarm(OnmsAlarm alarm, Map<String, String> attributes) {
         Ticket ticket = new Ticket();
         ticket.setSummary(alarm.getLogMsg());
         ticket.setDetails(alarm.getDescription());
@@ -206,6 +201,9 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
         ticket.setAlarmId(alarm.getId());
         ticket.setNodeId(alarm.getNodeId());
         ticket.setIpAddress(alarm.getIpAddr());
+        ticket.setAttributes(attributes);
+        if (attributes.containsKey("user"))
+            ticket.setUser(attributes.get("user"));
         return ticket;
     }
 
