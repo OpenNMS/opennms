@@ -85,7 +85,7 @@ public class NavigationMenuItem extends AbstractMenuItem {
                 // TODO: Consolidate that this is configurable and we can define a default SZL and default Focus per layer
                 // TODO: Use a default SZL per graph?
                 graphContainer.clearCriteria(); // Remove all criteria
-                graphContainer.setSemanticZoomLevel(targetGraphProvider.getDefaultSzl());  // Use the default SZL
+                graphContainer.setSemanticZoomLevel(targetGraphProvider.getDefaults().getSemanticZoomLevel());  // Use the default SZL
                 graphContainer.addCriteria(breadcrumbCriteria); // add it again, it was cleared
 
                 // Find the vertices in other graphs that this vertex links to

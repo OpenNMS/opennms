@@ -44,7 +44,6 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.o
     <!-- Meta topology provider -->
     <bean id="applicationMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
         <argument ref="applicationTopologyHopProvider" />
-        <property name="preferredLayout" value="Hierarchy Layout"/>
     </bean>
 
     <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="applicationMetaTopologyProvider">

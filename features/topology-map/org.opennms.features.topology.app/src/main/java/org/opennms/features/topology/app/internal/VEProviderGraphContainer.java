@@ -279,7 +279,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
 
         public void switchLayoutProvider(GraphContainer graphContainer, GraphProvider topologyProvider, boolean resetCriteriaAndSzl) {
-            final String preferredLayout = graphContainer.getMetaTopologyProvider().getPreferredLayout(topologyProvider);
+            final String preferredLayout = topologyProvider.getDefaults().getPreferredLayout();
 
             // We automatically set status providers if there are any
             StatusProvider vertexStatusProvider = findVertexStatusProvider(topologyProvider);
@@ -296,8 +296,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             graphContainer.setBaseTopology(topologyProvider);
             if (resetCriteriaAndSzl) {
                 graphContainer.clearCriteria(); // remove all criteria
-                graphContainer.setSemanticZoomLevel(topologyProvider.getDefaultSzl()); // use the default SZL
-                List<Criteria> defaultCriteriaList = graphContainer.getBaseTopology().getDefaultCriteria();
+                graphContainer.setSemanticZoomLevel(topologyProvider.getDefaults().getSemanticZoomLevel()); // use the default SZL
+                List<Criteria> defaultCriteriaList = topologyProvider.getDefaults().getCriteria();
                 if (defaultCriteriaList != null) {
                     defaultCriteriaList.forEach(eachCriteria -> graphContainer.addCriteria(eachCriteria));
                 }

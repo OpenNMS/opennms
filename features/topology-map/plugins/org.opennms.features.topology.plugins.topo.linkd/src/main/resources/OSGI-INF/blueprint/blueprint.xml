@@ -112,7 +112,6 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <!-- Meta topology provider -->
     <bean id="enhancedLinkdMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
         <argument ref="topologyACLProvider" />
-        <property name="preferredLayout" value="D3 Layout"/>
     </bean>
 
     <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="enhancedLinkdMetaTopologyProvider">

@@ -55,14 +55,6 @@ public class SimpleMetaTopologyProvider implements MetaTopologyProvider {
     }
 
     @Override
-    public String getPreferredLayout(GraphProvider graphProvider) {
-        if (this.graphProvider.equals(graphProvider)) {
-            return preferredLayout;
-        }
-        return null;
-    }
-
-    @Override
     public Collection<VertexRef> getOppositeVertices(VertexRef vertexRef) {
         return Collections.emptySet();
     }
