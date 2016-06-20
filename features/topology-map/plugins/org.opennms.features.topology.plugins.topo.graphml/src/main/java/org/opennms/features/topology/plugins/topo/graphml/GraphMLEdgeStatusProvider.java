@@ -28,6 +28,33 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import org.apache.commons.io.FilenameUtils;
+import org.opennms.features.topology.api.info.MeasurementsWrapper;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.EdgeStatusProvider;
+import org.opennms.features.topology.api.topo.SimpleConnector;
+import org.opennms.features.topology.api.topo.Status;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.measurements.api.MeasurementsService;
+import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.support.TransactionOperations;
+
+import javax.script.Compilable;
+import javax.script.CompiledScript;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
+import javax.script.SimpleScriptContext;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
@@ -45,36 +72,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.common.collect.ImmutableMap;
-import org.apache.commons.io.FilenameUtils;
-import org.opennms.features.topology.api.info.MeasurementsWrapper;
-import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.EdgeProvider;
-import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.EdgeStatusProvider;
-import org.opennms.features.topology.api.topo.Status;
-
-import com.google.common.collect.Lists;
-
-import javax.script.Compilable;
-import javax.script.CompiledScript;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.script.SimpleBindings;
-import javax.script.SimpleScriptContext;
-
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.measurements.api.MeasurementsService;
-import org.opennms.netmgt.model.OnmsNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
-
-
+/**
+ * TODO: implement test for the status provider
+ */
 public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
 
     private final static Logger LOG = LoggerFactory.getLogger(GraphMLEdgeStatusProvider.class);
@@ -134,6 +134,16 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
         }
     }
 
+    private OnmsNode getNodeForEdgeVertexConnector(SimpleConnector simpleConnector) {
+        if (simpleConnector != null && simpleConnector.getVertex() instanceof AbstractVertex) {
+            AbstractVertex abstractVertex = (AbstractVertex) simpleConnector.getVertex();
+            if (abstractVertex.getNodeID() != null) {
+                return nodeDao.get(abstractVertex.getNodeID());
+            }
+        }
+        return null;
+    }
+
     private GraphMLEdgeStatus computeEdgeStatus(final List<StatusScript> scripts, final GraphMLEdge edge) {
         return scripts.stream()
                       .flatMap(script -> {
@@ -146,25 +156,8 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
 
                           bindings.put("edge", edge);
 
-                          OnmsNode sourceNode = null;
-                          OnmsNode targetNode = null;
-
-                          if (edge.getSource() != null && edge.getSource().getVertex() instanceof AbstractVertex) {
-                              AbstractVertex abstractVertex = (AbstractVertex) edge.getSource().getVertex();
-                              if (abstractVertex.getNodeID() != null) {
-                                  sourceNode = nodeDao.get(abstractVertex.getNodeID());
-                              }
-                          }
-
-                          if (edge.getTarget() != null && edge.getTarget().getVertex() instanceof AbstractVertex) {
-                              AbstractVertex abstractVertex = (AbstractVertex) edge.getTarget().getVertex();
-                              if (abstractVertex.getNodeID() != null) {
-                                  targetNode = nodeDao.get(abstractVertex.getNodeID());
-                              }
-                          }
-
-                          bindings.put("sourceNode", sourceNode);
-                          bindings.put("targetNode", targetNode);
+                          bindings.put("sourceNode", getNodeForEdgeVertexConnector(edge.getSource()));
+                          bindings.put("targetNode", getNodeForEdgeVertexConnector(edge.getTarget()));
                           bindings.put("measurements", measurementsWrapper);
                           bindings.put("nodeDao", nodeDao);
                           bindings.put("snmpInterfaceDao", snmpInterfaceDao);

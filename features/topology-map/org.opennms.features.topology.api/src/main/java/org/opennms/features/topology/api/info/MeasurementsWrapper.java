@@ -28,10 +28,8 @@
 
 package org.opennms.features.topology.api.info;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import com.google.common.base.Throwables;
+import com.google.gwt.thirdparty.guava.common.primitives.Doubles;
 import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.measurements.model.Expression;
 import org.opennms.netmgt.measurements.model.QueryRequest;
@@ -42,8 +40,9 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Throwables;
-import com.google.gwt.thirdparty.guava.common.primitives.Doubles;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class MeasurementsWrapper {
     private final static Logger LOG = LoggerFactory.getLogger(MeasurementsWrapper.class);
@@ -54,10 +53,25 @@ public class MeasurementsWrapper {
         this.measurementsService = measurementsService;
     }
 
+    /**
+     * Queries the Measuement Api for the last value found in a given timeframe.
+     *
+     * @param resource the resource to be used
+     * @param attribute the attribute to query for
+     * @return the last known value
+     */
     public double getLastValue(final String resource, final String attribute) {
         return getLastValue(resource, attribute, "AVERAGE");
     }
 
+    /**
+     * Queries the Measuement Api for the last value found in a given timeframe.
+     *
+     * @param resource the resource to be used
+     * @param attribute the attribute to query for
+     * @param aggregation the aggregation method
+     * @return the last known value
+     */
     public double getLastValue(final String resource, final String attribute, final String aggregation) {
         long end = System.currentTimeMillis();
         long start = end - (15 * 60 * 1000);
@@ -77,6 +91,17 @@ public class MeasurementsWrapper {
         return Double.NaN;
     }
 
+    /**
+     * A method to query the Measurements Api for a given resource/attribute.
+     *
+     * @param resource the resource to be used
+     * @param attribute the attribute to query for
+     * @param start the start timestamp
+     * @param end the end timestamp
+     * @param step the step size
+     * @param aggregation the aggregation method
+     * @return the list of double values
+     */
     public List<Double> query(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation) {
         QueryResponse.WrappedPrimitive[] columns = queryInt(resource, attribute, start, end, step, aggregation).getColumns();
 
@@ -87,6 +112,14 @@ public class MeasurementsWrapper {
         return Collections.emptyList();
     }
 
+    /**
+     * This method computes the utilization of a given interface resource. The method returns two double values
+     * encapsulated in a list. It uses the HC attributes for the computation and non-HC as fallback attributes.
+     *
+     * @param node the node to be used
+     * @param ifName the inteface of the node
+     * @return the in/out percentage utilization encapsulated in a list
+     */
     public List<Double> computeUtilization(final OnmsNode node, final String ifName) {
         long end = System.currentTimeMillis();
         long start = end - (15 * 60 * 1000);
@@ -101,6 +134,17 @@ public class MeasurementsWrapper {
         return Arrays.asList(Double.NaN, Double.NaN);
     }
 
+    /**
+     * This method computes the utilization of a given interface resource. The method returns two double values
+     * encapsulated in a list. It uses the HC attributes for the computation and non-HC as fallback attributes.
+     *
+     * @param resource the resource for which the utilization must be computed
+     * @param start the start timestamp
+     * @param end the end timestamp
+     * @param step the step size
+     * @param aggregation the aggregation function
+     * @return a list containing two double values for the in/out percentage utilization
+     */
     public List<Double> computeUtilization(final String resource, final long start, final long end, final long step, final String aggregation) {
         QueryRequest request = new QueryRequest();
         request.setRelaxed(true);
@@ -112,17 +156,21 @@ public class MeasurementsWrapper {
         sourceIn.setAggregation(aggregation);
         sourceIn.setTransient(true);
         sourceIn.setAttribute("ifHCInOctets");
+        // using non-HC attributes as fallback
+        sourceIn.setFallbackAttribute("ifInOctets");
         sourceIn.setResourceId(resource);
-        sourceIn.setLabel("ifHCInOctets");
+        sourceIn.setLabel("ifInOctets");
 
         Source sourceOut = new Source();
         sourceOut.setAggregation(aggregation);
         sourceOut.setTransient(true);
         sourceOut.setAttribute("ifHCOutOctets");
+        // using non-HC attributes as fallback
+        sourceOut.setFallbackAttribute("ifOutOctets");
         sourceOut.setResourceId(resource);
-        sourceOut.setLabel("ifHCOutOctets");
+        sourceOut.setLabel("ifOutOctets");
 
-        request.setExpressions(Arrays.asList(new Expression("ifHCInPercent", "(8 * ifHCInOctects / 1000000) / ifHCInOctets.ifHighSpeed * 100", false), new Expression("ifHCOutPercent", "(8 * ifHCOutOctects / 1000000) / ifHCOutOctets.ifHighSpeed * 100", false)));
+        request.setExpressions(Arrays.asList(new Expression("ifInPercent", "(8 * ifInOctects / 1000000) / ifInOctets.ifHighSpeed * 100", false), new Expression("ifOutPercent", "(8 * ifOutOctects / 1000000) / ifOutOctets.ifHighSpeed * 100", false)));
 
         request.setSources(Arrays.asList(sourceIn, sourceOut));
 
@@ -145,6 +193,12 @@ public class MeasurementsWrapper {
         }
     }
 
+    /**
+     * Method to query the Measurements Api.
+     * @param request the request instance
+     * @return the response instance
+     * @throws Exception
+     */
     public QueryResponse query(QueryRequest request) throws Exception {
         return measurementsService.query(request);
     }
