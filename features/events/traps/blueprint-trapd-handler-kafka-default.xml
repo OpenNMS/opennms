@@ -50,8 +50,7 @@
 		<property name="processorFactory" ref="processorFactory"/>
 	</bean>
 
-    <bean id="deserializer" class="org.opennms.netmgt.trapd.TrapdKafkaDeSerializer">
-    	<argument value="org.opennms.netmgt.snmp.TrapNotification" />
+    <bean id="kafkaDecoder" class="org.opennms.netmgt.trapd.TrapdKafkaDecoder">
 	</bean>
 	
 	<camelContext id="trapNotificationHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
@@ -59,7 +58,10 @@
 		
 		<route id="receiveTrapConnectionViaKafka">
 			<from uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}"/>
-			<bean ref="unmarshaller"/>
+            <log message="${body}"/>
+            <bean ref="kafkaDecoder" method="fromBytes"/>
+            <log message="${body}"/>
+            
 			<!-- <convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/> -->
 			<to uri="seda:trapHandler"/>
 		</route>
