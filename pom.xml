@@ -1777,32 +1777,32 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>ncs-alarm-gui</artifactId>
+        <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>ncs-drools</artifactId>
+        <artifactId>org.opennms.features.ncs.ncs-drools</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>ncs-model</artifactId>
+        <artifactId>org.opennms.features.ncs.ncs-model</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>ncs-northbounder</artifactId>
+        <artifactId>org.opennms.features.ncs.ncs-northbounder</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>ncs-persistence</artifactId>
+        <artifactId>org.opennms.features.ncs.ncs-persistence</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>ncs-test</artifactId>
+        <artifactId>org.opennms.features.ncs.ncs-test</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>

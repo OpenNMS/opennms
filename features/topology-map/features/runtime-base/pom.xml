@@ -57,42 +57,42 @@
     <!-- main topology app -->
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>app</artifactId>
+      <artifactId>org.opennms.features.topology.app</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- topology HistoryManager -->
     <dependency>
       <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>history</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.topo.history</artifactId>
       <version>${project.version}</version>
     </dependency>
     
     <!-- plugins -->
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>layout</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.layout</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>netutils</artifactId>
+      <artifactId>org.opennms.features.topology.netutils</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>widgetset</artifactId>
+      <artifactId>org.opennms.features.topology.widgetset</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!--
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>ssh</artifactId>
+      <artifactId>org.opennms.features.topology.ssh</artifactId>
       <version>${project.version}</version>
     </dependency>
     -->
     <dependency>
       <groupId>org.opennms.features.topology.themes</groupId>
-      <artifactId>default-theme</artifactId>
+      <artifactId>org.opennms.features.topology.themes.default-theme</artifactId>
       <version>${project.version}</version>
     </dependency>
 

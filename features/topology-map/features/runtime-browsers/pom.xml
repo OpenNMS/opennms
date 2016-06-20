@@ -46,7 +46,7 @@
 
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>browsers</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.browsers</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

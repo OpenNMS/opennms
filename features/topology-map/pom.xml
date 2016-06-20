@@ -9,7 +9,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
-  <artifactId>topology</artifactId>
+  <artifactId>org.opennms.features.topology</artifactId>
 
   <name>OpenNMS :: Features :: Topology (OSGi project)</name>
 

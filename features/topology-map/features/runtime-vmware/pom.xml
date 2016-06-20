@@ -46,7 +46,7 @@
 
     <dependency>
       <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>vmware</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.topo.vmware</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

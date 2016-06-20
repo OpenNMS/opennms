@@ -58,7 +58,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>ncs</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.ncs</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

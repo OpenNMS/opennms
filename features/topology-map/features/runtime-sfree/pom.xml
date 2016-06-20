@@ -47,7 +47,7 @@
     <dependency>
       <groupId>org.opennms.features.topology.plugins.topo</groupId>
       <version>${project.version}</version>
-      <artifactId>sfree</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.topo.sfree</artifactId>
     </dependency>
     
   </dependencies>
