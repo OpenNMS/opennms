@@ -50,10 +50,6 @@ import com.vaadin.ui.MenuBar;
  */
 public class MenuBuilder {
 
-	public interface Hook {
-		void doSomething();
-	}
-
 	private static final Logger LOG = LoggerFactory.getLogger(MenuBuilder.class);
 
 	private static final String TOP_LEVEL_ADDITIONS = "Additions";
@@ -197,7 +193,7 @@ public class MenuBuilder {
 		}
 	}
 
-	public MenuBar build(List<VertexRef> targets, OperationContext operationContext, Hook... hooks) {
+	public MenuBar build(List<VertexRef> targets, OperationContext operationContext, Runnable... hooks) {
 		return build(targets, operationContext, hooks == null ? Collections.emptyList() : Arrays.asList(hooks));
 	}
 
@@ -209,7 +205,7 @@ public class MenuBuilder {
 	 * @param hooks Optional hooks to be executed after a menu item's command has been executed.
 	 * @return The converted {@link MenuBar}
 	 */
-	public MenuBar build(List<VertexRef> targets, OperationContext operationContext, List<Hook> hooks) {
+	public MenuBar build(List<VertexRef> targets, OperationContext operationContext, List<Runnable> hooks) {
 		determineAndApplyOrder();
 
 		// Build root menu
@@ -225,7 +221,7 @@ public class MenuBuilder {
 		return menuBar;
 	}
 
-	private void addItems(MenuBar.MenuItem currentMenuItem, MenuItem currentParent, List<VertexRef> targets, OperationContext operationContext, List<Hook> hooks) {
+	private void addItems(MenuBar.MenuItem currentMenuItem, MenuItem currentParent, List<VertexRef> targets, OperationContext operationContext, List<Runnable> hooks) {
 		if (currentMenuItem != null) {
 			// Now add children
 			List<MenuItem> childItems = new ArrayList<>(currentParent.getChildren());
@@ -275,7 +271,7 @@ public class MenuBuilder {
 		}
 	}
 
-	private static MenuBar.MenuItem addItem(ItemAddBehaviour<MenuBar.MenuItem> behaviour, MenuItem eachChildElement, List<VertexRef> targets, OperationContext operationContext, List<Hook> hooks) {
+	private static MenuBar.MenuItem addItem(ItemAddBehaviour<MenuBar.MenuItem> behaviour, MenuItem eachChildElement, List<VertexRef> targets, OperationContext operationContext, List<Runnable> hooks) {
 		boolean visibility = eachChildElement.isVisible(targets, operationContext);
 		if (visibility) { // only add item if it is actually visible
 			final MenuBar.MenuItem childMenuItem = behaviour.addItem();
@@ -295,7 +291,7 @@ public class MenuBuilder {
 				if (eachChildElement.getCommand() != null) {
 					childMenuItem.setCommand((MenuBar.Command) selectedItem -> {
 						eachChildElement.getCommand().execute(targets, operationContext);
-						hooks.forEach(hook -> hook.doSomething());
+						hooks.forEach(hook -> hook.run());
 					});
 				}
 			}
