@@ -498,7 +498,7 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
-        public void selectTopologyProvider(GraphProvider topologyProvider, boolean resetCriteriaAndSzl) {
+        public void selectTopologyProvider(GraphProvider topologyProvider, Callback... callbacks) {
 
         }
     }

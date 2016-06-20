@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal.ui;
 
 import static org.opennms.features.topology.app.internal.ui.ToolbarPanelController.ActiveTool;
 
+import org.opennms.features.topology.api.Callbacks;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphContainer.ChangeListener;
 import org.opennms.features.topology.api.SelectionContext;
@@ -330,7 +331,7 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
                 if (selected) {
                     verticalLayout.addStyleName(Styles.SELECTED);
                 }
-                verticalLayout.addLayoutClickListener((event) -> graphContainer.selectTopologyProvider(topologyProvider, true));
+                verticalLayout.addLayoutClickListener((event) -> graphContainer.selectTopologyProvider(topologyProvider, Callbacks.applyDefaults()));
                 layerLayout.addComponent(verticalLayout);
             });
         } else {

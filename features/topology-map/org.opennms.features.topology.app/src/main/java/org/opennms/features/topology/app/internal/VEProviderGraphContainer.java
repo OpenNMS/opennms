@@ -278,7 +278,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             m_bundleContext = bundleContext;
         }
 
-        public void switchLayoutProvider(GraphContainer graphContainer, GraphProvider topologyProvider, boolean resetCriteriaAndSzl) {
+        public void switchLayoutProvider(GraphContainer graphContainer, GraphProvider topologyProvider, Callback... callbacks) {
             final String preferredLayout = topologyProvider.getDefaults().getPreferredLayout();
 
             // We automatically set status providers if there are any
@@ -294,12 +294,9 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
                 graphContainer.setLayoutAlgorithm(layoutAlgorithm);
             }
             graphContainer.setBaseTopology(topologyProvider);
-            if (resetCriteriaAndSzl) {
-                graphContainer.clearCriteria(); // remove all criteria
-                graphContainer.setSemanticZoomLevel(topologyProvider.getDefaults().getSemanticZoomLevel()); // use the default SZL
-                List<Criteria> defaultCriteriaList = topologyProvider.getDefaults().getCriteria();
-                if (defaultCriteriaList != null) {
-                    defaultCriteriaList.forEach(eachCriteria -> graphContainer.addCriteria(eachCriteria));
+            if (callbacks != null) {
+                for (Callback eachCallback : callbacks) {
+                    eachCallback.callback(graphContainer, topologyProvider);
                 }
             }
             graphContainer.redoLayout();
@@ -772,8 +769,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
 
     @Override
-    public void selectTopologyProvider(GraphProvider topologyProvider, boolean resetCriteriaAndSzl) {
-        new TopologyProviderSelectionHelper(m_bundleContext).switchLayoutProvider(this, topologyProvider, resetCriteriaAndSzl);
+    public void selectTopologyProvider(GraphProvider graphProvider, Callback... callback) {
+        new TopologyProviderSelectionHelper(m_bundleContext).switchLayoutProvider(this, graphProvider, callback);
     }
 
     @Override

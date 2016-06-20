@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.topology.api.AbstractCheckedOperation;
+import org.opennms.features.topology.api.Callbacks;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
@@ -71,22 +72,22 @@ public class MetaTopologySelectorOperation extends AbstractCheckedOperation {
     }
 
     public void execute(GraphContainer container) {
-		execute(container, true);
+		execute(container, Callbacks.applyDefaults());
 	}
 
 	/**
-	 * Changes the base topology to {@link #m_metaTopologyProvider} and optionally resets all criteria and sets the szl to 1.
+	 * Changes the base topology to {@link #m_metaTopologyProvider} and optionally executes callbacks (e.g. to reset criteria, set default SZL, etc.)
 	 * @param container The GraphContainer.
-	 * @param resetCriteriaAndSzl Defines if the criteria and szl is reset.
+	 * @param callbacks Define callbacks to execute AFTER the topology provider has changed.
      */
-	private void execute(GraphContainer container, boolean resetCriteriaAndSzl) {
+	private void execute(GraphContainer container, GraphContainer.Callback... callbacks) {
 	    LOG.debug("Active provider is: {}", m_metaTopologyProvider);
 
         // only change if provider changed
 	    final MetaTopologyProvider currentMetaTopologyProvider = container.getMetaTopologyProvider();
         if(currentMetaTopologyProvider == null || !currentMetaTopologyProvider.equals(m_metaTopologyProvider)) {
             container.setMetaTopologyProvider(m_metaTopologyProvider);
-			container.selectTopologyProvider(m_metaTopologyProvider.getDefaultGraphProvider(), resetCriteriaAndSzl);
+			container.selectTopologyProvider(m_metaTopologyProvider.getDefaultGraphProvider(), callbacks);
         }
     }
 
@@ -115,7 +116,7 @@ public class MetaTopologySelectorOperation extends AbstractCheckedOperation {
     public void applyHistory(GraphContainer container, Map<String, String> settings) {
         // If the class name and label tuple is set to true, then set the base topology provider
         if ("true".equals(settings.get(this.getClass().getName() + "." + getLabel()))) {
-            execute(container, false);
+            execute(container);
         }
     }
 

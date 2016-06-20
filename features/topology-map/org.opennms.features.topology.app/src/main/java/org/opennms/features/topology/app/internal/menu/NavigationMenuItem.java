@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.features.topology.api.Callbacks;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
@@ -78,15 +79,12 @@ public class NavigationMenuItem extends AbstractMenuItem {
                     final GraphProvider graphProvider = graphContainer.getBaseTopology();
                     breadcrumbCriteria.setNewRoot(new BreadcrumbCriteria.Breadcrumb(
                             graphProvider.getTopologyProviderInfo().getName(),
-                            (theGraphContainer) -> theGraphContainer.selectTopologyProvider(graphProvider, true)));
+                            (theGraphContainer) -> theGraphContainer.selectTopologyProvider(graphProvider, Callbacks.applyDefaults())));
                 }
-                graphContainer.selectTopologyProvider(targetGraphProvider, false);
-
-                // TODO: Consolidate that this is configurable and we can define a default SZL and default Focus per layer
-                // TODO: Use a default SZL per graph?
-                graphContainer.clearCriteria(); // Remove all criteria
-                graphContainer.setSemanticZoomLevel(targetGraphProvider.getDefaults().getSemanticZoomLevel());  // Use the default SZL
-                graphContainer.addCriteria(breadcrumbCriteria); // add it again, it was cleared
+                graphContainer.selectTopologyProvider(targetGraphProvider,
+                        Callbacks.clearCriteria(),
+                        Callbacks.applyDefaultSemanticZoomLevel(),
+                        (theGraphContainer, theGraphProvider) -> theGraphContainer.addCriteria(breadcrumbCriteria));
 
                 // Find the vertices in other graphs that this vertex links to
                 final Collection<VertexRef> oppositeVertices = graphContainer.getMetaTopologyProvider().getOppositeVertices(sourceVertex);
