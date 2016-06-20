@@ -190,9 +190,14 @@ public abstract class AbstractTask implements Task {
     
     final void submitIfReady() {
         if (isReady()) {
-            doSubmit();
-            submitted();
-            completeSubmit();
+            try {
+                doSubmit();
+            } catch (Throwable e) {
+                LOG.error("Unexpected throwable while trying to submit task: " + this, e);
+            } finally {
+                submitted();
+                completeSubmit();
+            }
         }
     }
 
@@ -262,9 +267,17 @@ public abstract class AbstractTask implements Task {
     @Override
     public final void schedule() {
         m_scheduleCalled.set(true);
-        preSchedule();
+        try {
+            preSchedule();
+        } catch (Throwable e) {
+            LOG.error("preSchedule() failed for task " + this, e);
+        }
         getCoordinator().schedule(this);
-        postSchedule();
+        try {
+            postSchedule();
+        } catch (Throwable e) {
+            LOG.error("postSchedule() failed for task " + this, e);
+        }
     }
         
     /**
@@ -338,8 +351,8 @@ public abstract class AbstractTask implements Task {
      * @throws java.lang.InterruptedException if any.
      */
     @Override
-    public final void waitFor(final long timeout, final TimeUnit unit) throws InterruptedException {
-        m_latch.await(timeout, unit);
+    public final boolean waitFor(final long timeout, final TimeUnit unit) throws InterruptedException {
+        return m_latch.await(timeout, unit);
     }
 
     /**

@@ -7,7 +7,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rrd-model</artifactId>
-  <name>OpenNMS RRD PRM (object-relational mapping)</name>
+  <name>OpenNMS :: RRD :: ORM</name>
+  <description>Object-relational mapping for RRD data.</description>
   <packaging>bundle</packaging>
   <properties>
     <skipITs>true</skipITs>
@@ -57,11 +58,6 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

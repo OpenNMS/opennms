@@ -1,0 +1,74 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+By default, the RMI port in the OpenNMS server is disabled, for security reasons.  If you wish to enable it so you can access OpenNMS through jconsole, remote-manage OpenNMS, or use the remote poller over RMI, you will have to add some settings to the default OpenNMS install.
+
+=== Enabling RMI
+
+To enable the RMI port in OpenNMS, you will have to add the following to the `${OPENNMS_HOME}/etc/opennms.conf` file.  If you do not have an `opennms.conf` file, you can create it.
+
+[source, bash, options="nowrap", opennms.conf]
+----
+# Configure remote JMX
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.port=18980"
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.local.only=false"
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dopennms.poller.server.serverHost=0.0.0.0"
+----
+
+This tells OpenNMS to listen for RMI on port `18980`, and to listen on all interfaces.  (Originally, RMI was only used for the Remote Poller, so despite the porperty name mentioning the "opennms poller server" it applies to RMI as a whole.)  With this configuration, RMI is unauthenticated, so anyone is able to connect.
+
+=== Enabling Authentication for RMI
+
+To require authentication, you must add some additional configuration.
+
+First, enable authentication for JMX in `opennms.conf` after the other settings:
+
+[source, bash, options="nowrap"]
+----
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.authenticate=true"
+----
+
+This tells OpenNMS to enable authentication.  Authentication will only be allowed for users that are in the `admin` role.  To make a user an admin, add them to the `role.admin.users` entry in `${OPENNMS_HOME}/etc/magic-users.properties`:
+
+[options="nowrap"]
+----
+...
+
+role.admin.name=OpenNMS Administrator
+role.admin.users=admin,myuser
+
+...
+----
+
+=== Creating Custom Authentication Roles
+
+By default, RMI will only authenticate users in the `admin` role.  To create a custom role for RMI access, first add the role to `${OPENNMS_HOME}/etc/magic-users.properties`:
+
+[options="nowrap"]
+----
+...
+
+# add mycustomrole to the end of the roles= entry
+roles=rtc, admin, rouser, dashboard, provision, remoting, rest, asset, mobile, mycustomrole
+
+# ...and then give it a name and a list of users
+role.mycustomrole.name=OpenNMS Remote RMI User
+role.mycustomrole.users=admin,myuser
+
+...
+----
+
+Then, you must configure JMX to know about the new custom role by adding it to `${OPENNMS_HOME}/etc/jmxremote.access`:
+
+[options="nowrap"]
+----
+admin readwrite
+mycustomrole readonly
+----
+
+The possible types of access are:
+
+readwrite:: Allows retrieving JMX metrics as well as executing MBeans.
+readonly:: Allows retrieving JMX metrics but does *not* allow executing MBeans, even if they just return simple values.
+

@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>castor-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Castor</name>
+  <name>OpenNMS :: Dependencies :: Castor</name>
   <properties>
     <castorVersion>1.1.2.1</castorVersion>
   </properties>

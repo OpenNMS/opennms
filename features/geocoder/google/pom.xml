@@ -9,7 +9,7 @@
   <groupId>org.opennms.features.geocoder</groupId>
   <artifactId>org.opennms.features.geocoder.google</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features Google Geocoder</name>
+  <name>OpenNMS :: Features :: Geocoder :: Google</name>
 
   <description>Google Geocoder implementation</description>
   <properties>

@@ -95,7 +95,7 @@ public abstract class OutageUtil extends Object {
         if (type.equals(NodeFilter.TYPE)) {
             filter = new NodeFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(ForeignSourceFilter.TYPE)) {
-            filter = new ForeignSourceFilter(value, servletContext);
+            filter = new ForeignSourceFilter(value);
         } else if (type.equals(InterfaceFilter.TYPE)) {
             filter = new InterfaceFilter(value);
         } else if (type.equals(ServiceFilter.TYPE)) {
@@ -103,7 +103,7 @@ public abstract class OutageUtil extends Object {
         } else if (type.equals(OutageIdFilter.TYPE)) {
             filter = new OutageIdFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NegativeForeignSourceFilter.TYPE)) {
-            filter = new NegativeForeignSourceFilter(value, servletContext);
+            filter = new NegativeForeignSourceFilter(value);
         } else if (type.equals(NegativeNodeFilter.TYPE)) {
             filter = new NegativeNodeFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(NegativeInterfaceFilter.TYPE)) {

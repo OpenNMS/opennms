@@ -12,7 +12,7 @@
     <groupId>org.opennms.container</groupId>
     <artifactId>bridge</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS OSGi Container - Web Servlet OSGi Bridge</name>
+    <name>OpenNMS :: OSGi Container :: Web Servlet OSGi Bridge</name>
 
     <build>
         <plugins>

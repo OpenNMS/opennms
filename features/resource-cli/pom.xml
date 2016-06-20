@@ -11,7 +11,7 @@
     <groupId>org.opennms.features</groupId>
     <artifactId>resource-cli</artifactId>
     <packaging>jar</packaging>
-    <name>OpenNMS Features Resource CLI tool</name>
+    <name>OpenNMS :: Features :: Resource CLI Tool</name>
     <url>http://www.opennms.org</url>
 
     <dependencies>

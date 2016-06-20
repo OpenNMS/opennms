@@ -9,7 +9,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>root-webapp</artifactId>
   <packaging>war</packaging>
-  <name>OpenNMS Features ROOT Web Application</name>
+  <name>OpenNMS :: Features :: ROOT Web Application</name>
   <build>
     <plugins>
       <plugin>

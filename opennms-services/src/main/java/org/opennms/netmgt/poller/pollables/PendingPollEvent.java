@@ -29,9 +29,11 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.opennms.netmgt.poller.DefaultPollContext;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +50,10 @@ public class PendingPollEvent extends PollEvent {
     private static final long PENDING_EVENT_TIMEOUT = Long.getLong("org.opennms.netmgt.poller.pendingEventTimeout", 1000L * 60L * 10L);
 
     private final Event m_event;
-    private Date m_date;
+    private final Date m_date;
     private long m_expirationTimeInMillis;
-    private volatile boolean m_pending = true;
-    private List<Runnable> m_pendingOutages = new LinkedList<Runnable>();
+    private final AtomicBoolean m_pending = new AtomicBoolean(true);
+    private final Queue<Runnable> m_pendingOutages = new ConcurrentLinkedQueue<Runnable>();
 
     /**
      * <p>Constructor for PendingPollEvent.</p>
@@ -90,11 +92,10 @@ public class PendingPollEvent extends PollEvent {
      *
      * @param r a {@link java.lang.Runnable} object.
      */
-    public synchronized void addPending(Runnable r) {
-        if (m_pending) {
+    public void addPending(Runnable r) {
+        if (m_pending.get()) {
             m_pendingOutages.add(r);
-        }
-        else {
+        } else {
             r.run();
         }
     }
@@ -114,14 +115,14 @@ public class PendingPollEvent extends PollEvent {
      * @return a boolean.
      */
 
-    public synchronized boolean isPending() {
-        if (m_pending) {
+    public boolean isPending() {
+        if (m_pending.get()) {
             // still pending, check if we've timed out
             if (isTimedOut()) {
-                m_pending = false;
+                m_pending.set(false);
             }
         }
-        return m_pending;
+        return m_pending.get();
     }
 
     boolean isTimedOut() {
@@ -129,27 +130,38 @@ public class PendingPollEvent extends PollEvent {
     }
 
     /**
-     * <p>complete</p>
+     * Changes the state of this event from "pending" to "not pending".
+     * It is important that this call be thread-safe and idempotent because
+     * it may be invoked by multiple {@link DefaultPollContext#onEvent(Event)}
+     * threads.
      *
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public synchronized void complete(Event e) {
-        m_pending = false;
+    public void complete(Event e) {
+        m_pending.set(false);
     }
     
     /**
-     * <p>processPending</p>
+     * Synchronously processes all pending tasks attached to this event.
+     * It is important that this call be thread-safe and idempotent because
+     * it may be invoked by multiple {@link DefaultPollContext#onEvent(Event)}
+     * threads.
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public synchronized void processPending() {
-        for (Runnable r : m_pendingOutages) {
-            r.run();
+    public void processPending() {
+        while (!m_pendingOutages.isEmpty()) {
+            Runnable runnable = m_pendingOutages.poll();
+            if (runnable != null) {
+                runnable.run();
+            } else {
+                return;
+            }
         }
-        m_pendingOutages.clear();
-        
     }
     
     public String toString() {
-        return m_event+", uei: "+m_event.getUei()+", id: "+m_event.getDbid()+", isPending: "+m_pending+", list size: "+m_pendingOutages.size();
+        return m_event+", uei: "+m_event.getUei()+", id: "+m_event.getDbid()+", isPending: "+m_pending.get()+", list size: "+m_pendingOutages.size();
     }
 
     // for unit testing

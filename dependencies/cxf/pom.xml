@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>cxf-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies CXF</name>
+  <name>OpenNMS :: Dependencies :: CXF</name>
   <dependencies>
     <!-- JAX-RS front end -->
     <dependency>

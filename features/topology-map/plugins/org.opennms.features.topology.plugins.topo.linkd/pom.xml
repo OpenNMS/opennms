@@ -17,7 +17,7 @@
   <groupId>org.opennms.features.topology.plugins.topo</groupId>
   <artifactId>linkd</artifactId>
 
-  <name>${bundle.symbolicName}</name>
+  <name>OpenNMS :: Features :: Topology :: Plugins :: Linkd</name>
 
   <packaging>bundle</packaging>
 

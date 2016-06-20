@@ -9,7 +9,7 @@
   <groupId>org.opennms.container</groupId>
   <artifactId>standalone</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS OSGi Container - Standalone</name>
+  <name>OpenNMS :: OSGi Container :: Standalone</name>
 
   <dependencies>
     <dependency>

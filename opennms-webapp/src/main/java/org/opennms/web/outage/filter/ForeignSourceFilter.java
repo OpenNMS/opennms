@@ -52,20 +52,20 @@ public class ForeignSourceFilter extends EqualsFilter<String> {
      *
      * @param foreignSource a {@link java.lang.String} object.
      */
-    public ForeignSourceFilter(String foreignSource, ServletContext servletContext) {
-        super(TYPE, SQLType.STRING, "OUTAGES.NODEID", "NODE.foreignSource", foreignSource);
+    public ForeignSourceFilter(String foreignSource) {
+        super(TYPE, SQLType.STRING, "OUTAGES.IFSERVICEID", "NODE.foreignSource", foreignSource);
     }
 
     /** {@inheritDoc} */
     @Override
     public String getSQLTemplate() {
-        return " " + getSQLFieldName() + " in (SELECT DISTINCT NODE.nodeID FROM NODE WHERE NODE.foreignSource=%s)";
+        return " " + getSQLFieldName() + " IN (SELECT DISTINCT ifservices.id FROM ifservices, ipinterface, node WHERE ifservices.ipinterfaceid = ipinterface.id AND ipinterface.nodeid = node.nodeid AND node.foreignSource=%s)";
     }
 
     /** {@inheritDoc} */
     @Override
     public Criterion getCriterion() {
-        return Restrictions.sqlRestriction(" {alias}.nodeid in (SELECT DISTINCT NODE.nodeID FROM NODE WHERE NODE.foreignSource=?)", getValue(), StringType.INSTANCE);
+        return Restrictions.sqlRestriction(" {alias}.ifserviceid IN (SELECT DISTINCT ifservices.id FROM ifservices, ipinterface, node WHERE ifservices.ipinterfaceid = ipinterface.id AND ipinterface.nodeid = node.nodeid AND node.foreignSource=?)", getValue(), StringType.INSTANCE);
     }
 
     /**

@@ -75,6 +75,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("guava");
         installFeature("hibernate36");
         installFeature("hibernate-validator41");
+        installFeature("java-native-access");
         installFeature("jaxb");
         installFeature("jfreechart");
         installFeature("jicmp");
@@ -83,7 +84,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("jrobin");
         installFeature("json-lib");
         installFeature("lmax-disruptor");
-        installFeature("net.java.dev.jna");
         // Causes the test to die?
         //installFeature("onms-camel-elasticsearch");
         //installFeature("opennms-activemq-config");

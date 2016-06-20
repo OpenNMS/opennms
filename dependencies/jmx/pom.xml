@@ -10,7 +10,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jmx-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies JMX</name>
+  <name>OpenNMS :: Dependencies :: JMX</name>
   <description>
     This module is used to provide a single artifact that the OpenNMS project
     can depend on to use JMX.

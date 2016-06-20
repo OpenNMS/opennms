@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.schema</artifactId>
-  <name>OpenNMS Core Schema</name>
+  <name>OpenNMS :: Core :: Schema</name>
   <build>
     <testResources>
       <testResource>
