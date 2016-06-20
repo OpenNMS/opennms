@@ -58,16 +58,9 @@ public class SaveToXmlTest {
 		}
 
 		@Override
-		public boolean isChecked() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
 		public DisplayLocation getDisplayLocation() {
 			return DisplayLocation.MENUBAR;
 		}
-
 	}
 
 	@Test

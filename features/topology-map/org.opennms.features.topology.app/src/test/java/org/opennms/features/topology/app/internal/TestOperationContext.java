@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,23 +28,38 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.Dictionary;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.OperationContext;
 
-import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedService;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.UI;
 
-public class MenuConfigManagedService implements ManagedService {
-    
-    private CommandManager m_commandManager;
+public class TestOperationContext implements OperationContext {
 
-    public void setCommandManager(CommandManager commandManager) {
-        m_commandManager = commandManager;
+    private final GraphContainer m_graphContainer;
+    private final UI m_window;
+
+    public TestOperationContext(GraphContainer graphContainer) {
+        m_graphContainer = graphContainer;
+        m_window = new UI() {
+            @Override
+            protected void init(VaadinRequest request) {
+            }};
     }
-    
-    // Implements OSGi API
+
     @Override
-    public void updated(Dictionary<String,?> properties) throws ConfigurationException {
-        m_commandManager.updateMenuConfig(properties);
+    public UI getMainWindow() {
+        return m_window;
+    }
+
+    @Override
+    public GraphContainer getGraphContainer() {
+        return m_graphContainer;
+    }
+
+    @Override
+    public DisplayLocation getDisplayLocation() {
+        return DisplayLocation.MENUBAR;
     }
 
 }

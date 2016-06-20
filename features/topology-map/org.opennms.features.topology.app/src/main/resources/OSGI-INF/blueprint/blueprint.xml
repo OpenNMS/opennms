@@ -18,7 +18,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </cm:property-placeholder>
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
-        <argument ref="commandManager"/>
+        <argument ref="menuManager"/>
         <argument ref="historyManager"/>
         <argument ref="veGraphContainer" />
         <argument ref="iconRepoManager"/>
@@ -156,25 +156,20 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <service-properties>
             <entry key="service.pid" value="org.opennms.features.topology.app.menu"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.MenuConfigManagedService">
-            <property name="commandManager" ref="commandManager"/>
+        <bean class="org.opennms.features.topology.app.internal.menu.MenuConfigManagedService">
+            <property name="menuManager" ref="menuManager"/>
         </bean>
     </service>
     
-    <bean id="commandManager" class="org.opennms.features.topology.app.internal.CommandManager" />
-    
-    <reference-list interface="org.opennms.features.topology.app.internal.Command" availability="optional">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">
-        </reference-listener>
-    </reference-list>
+    <bean id="menuManager" class="org.opennms.features.topology.app.internal.menu.MenuManager" />
     
     <reference-list interface="org.opennms.features.topology.api.Operation" availability="optional">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="menuManager">
         </reference-listener>
     </reference-list>
     
     <reference-list interface="org.opennms.features.topology.api.CheckedOperation" availability="optional">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="menuManager">
         </reference-listener>
     </reference-list>
 
@@ -358,13 +353,13 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <bean class="org.opennms.features.topology.app.internal.operations.AutoRefreshToggleOperation"/>
     </service>
 
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <entry key="operation.contextMenuLocation" value=""/>
-            <entry key="operation.label" value="Navigate To"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.NavigateToOperation"/>
-    </service>
+    <!--<service interface="org.opennms.features.topology.api.Operation" >-->
+        <!--<service-properties>-->
+            <!--<entry key="operation.contextMenuLocation" value=""/>-->
+            <!--<entry key="operation.label" value="Navigate To"/>-->
+        <!--</service-properties>-->
+        <!--<bean class="org.opennms.features.topology.app.internal.menu.NavigationMenuItem.NavigateToOperation"/>-->
+    <!--</service>-->
 
     <!-- removed for SPC-247
     <service interface="org.opennms.features.topology.api.Operation" >

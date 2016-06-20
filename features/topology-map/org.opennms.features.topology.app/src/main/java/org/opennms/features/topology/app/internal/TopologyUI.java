@@ -34,6 +34,7 @@ import static org.opennms.features.topology.app.internal.operations.MetaTopology
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -74,9 +75,11 @@ import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.menu.MenuUpdateListener;
+import org.opennms.features.topology.app.internal.menu.MenuManager;
+import org.opennms.features.topology.app.internal.menu.TopologyContextMenu;
 import org.opennms.features.topology.app.internal.operations.MetaTopologySelectorOperation;
 import org.opennms.features.topology.app.internal.operations.RedoLayoutOperation;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
@@ -123,7 +126,6 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
@@ -140,7 +142,7 @@ import com.vaadin.ui.Window;
 @StyleSheet(value = {
         "theme://ionicons/css/ionicons.min.css"
 })
-public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
+public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
 
     private class DynamicUpdateRefresher implements Refresher.RefreshListener {
         private final Object lockObject = new Object();
@@ -256,7 +258,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
 
         private boolean executeOperationWithLabel(String operationLabel) {
-            final CheckedOperation operation = m_commandManager.findOperationByLabel(CheckedOperation.class, operationLabel);
+            final CheckedOperation operation = m_menuManager.findOperationByLabel(CheckedOperation.class, operationLabel);
             if (operation != null) {
                 final DefaultOperationContext operationContext = new DefaultOperationContext(TopologyUI.this, m_graphContainer, DisplayLocation.MENUBAR);
                 final List<VertexRef> targets = Collections.<VertexRef>emptyList();
@@ -331,7 +333,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     /**
      * Helper class to load components to show in the info panel.
      */
-    public class InfoPanelItemManager implements SelectionListener, MenuItemUpdateListener, GraphContainer.ChangeListener {
+    public class InfoPanelItemManager implements SelectionListener, MenuUpdateListener, GraphContainer.ChangeListener {
 
         // Panel InfoPanelItem to visualize the selection context
         private final InfoPanelItemProvider selectionContextPanelItem = container -> {
@@ -459,7 +461,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
 
         @Override
-        public void updateMenuItems() {
+        public void updateMenu() {
             refreshInfoPanel();
         }
 
@@ -478,9 +480,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private BreadcrumbComponent m_breadcrumbComponent;
     private final GraphContainer m_graphContainer;
     private SelectionManager m_selectionManager;
-    private final CommandManager m_commandManager;
+    private final MenuManager m_menuManager;
     private MenuBar m_menuBar;
-    private TopoContextMenu m_contextMenu;
+    private TopologyContextMenu m_contextMenu;
     private VerticalLayout m_layout;
     private VerticalLayout m_rootLayout;
     private final IconRepositoryManager m_iconRepositoryManager;
@@ -509,9 +511,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
     }
 
-    public TopologyUI(CommandManager commandManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager) {
+    public TopologyUI(MenuManager menuManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager) {
         // Ensure that selection changes trigger a history save operation
-        m_commandManager = commandManager;
+        m_menuManager = menuManager;
         m_historyManager = historyManager;
         m_iconRepositoryManager = iconRepoManager;
 
@@ -597,8 +599,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_selectionManager.addSelectionListener(this);
         m_graphContainer.addChangeListener(this);
         m_graphContainer.getMapViewManager().addListener(this);
-        m_commandManager.addMenuItemUpdateListener(this);
-        m_commandManager.addCommandUpdateListener(this);
+        m_menuManager.addMenuItemUpdateListener(this);
 
         m_graphContainer.addChangeListener(m_searchBox);
         m_selectionManager.addSelectionListener(m_searchBox);
@@ -609,7 +610,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // Register the Info Panel to listen for certain events
         final InfoPanelItemManager infoPanelItemManager = new InfoPanelItemManager();
         m_selectionManager.addSelectionListener(infoPanelItemManager);
-        m_commandManager.addMenuItemUpdateListener(infoPanelItemManager);
+        m_menuManager.addMenuItemUpdateListener(infoPanelItemManager);
         m_graphContainer.addChangeListener(infoPanelItemManager);
 
         // Register the Toolbar Panel
@@ -702,7 +703,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_mapLayout = createMapLayout();
         m_mapLayout.setSizeFull();
 
-        menuBarUpdated(m_commandManager);
+        updateMenu();
         if(m_widgetManager.widgetCount() != 0) {
             updateWidgetView(m_widgetManager);
         }else {
@@ -718,7 +719,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_topologyComponent.addVertexUpdateListener(this);
 
         // Search Box
-        m_searchBox = new SearchBox(m_serviceManager, new CommandManager.DefaultOperationContext(this, m_graphContainer, OperationContext.DisplayLocation.SEARCH));
+        m_searchBox = new SearchBox(m_serviceManager, new DefaultOperationContext(this, m_graphContainer, OperationContext.DisplayLocation.SEARCH));
 
         // Info Panel
         m_infoPanel = new InfoPanel(m_searchBox);
@@ -930,51 +931,43 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     }
 
 	@Override
-	public void updateMenuItems() {
-		updateMenuItems(m_menuBar.getItems());
-	}
+	public void updateMenu() {
+        if(m_menuBar != null) {
+            m_rootLayout.removeComponent(m_menuBar);
+        }
+        if(m_contextMenu != null) {
+            m_contextMenu.detach();
+        }
 
-	private void updateMenuItems(List<MenuItem> menuItems) {
-		for(MenuItem menuItem : menuItems) {
-			if(menuItem.hasChildren()) {
-				updateMenuItems(menuItem.getChildren());
-			}else {
-				m_commandManager.updateMenuItem(menuItem, m_graphContainer, this);
-			}
-		}
-	}
-
-	@Override
-	public void menuBarUpdated(CommandManager commandManager) {
-		if(m_menuBar != null) {
-			m_rootLayout.removeComponent(m_menuBar);
-		}
-
-		if(m_contextMenu != null) {
-			m_contextMenu.detach();
-		}
-
-		m_menuBar = commandManager.getMenuBar(m_graphContainer, this);
-		m_menuBar.setWidth(100, Unit.PERCENTAGE);
-		// Set expand ratio so that extra space is not allocated to this vertical component
+        final DefaultOperationContext operationContext = new DefaultOperationContext(this, getGraphContainer(), DisplayLocation.MENUBAR);
+        m_menuBar = m_menuManager.getMenuBar(new ArrayList<>(getGraphContainer().getSelectionManager().getSelectedVertexRefs()), operationContext);
+        m_menuBar.setWidth(100, Unit.PERCENTAGE);
+        // Set expand ratio so that extra space is not allocated to this vertical component
         if (m_showHeader) {
             m_rootLayout.addComponent(m_menuBar, 1);
         } else {
             m_rootLayout.addComponent(m_menuBar, 0);
         }
-
-		m_contextMenu = commandManager.getContextMenu(new DefaultOperationContext(this, m_graphContainer, DisplayLocation.CONTEXTMENU));
-		m_contextMenu.setAsContextMenuOf(this);
-
-        updateMenuItems();
 	}
 
 	@Override
 	public void showContextMenu(Object target, int left, int top) {
-		// The target must be set before we update the operation context because the op context
-		// operations are dependent on the target of the right-click
-		m_contextMenu.setTarget(target);
-		m_contextMenu.updateOperationContext(new DefaultOperationContext(this, m_graphContainer, DisplayLocation.CONTEXTMENU));
+        Collection<VertexRef> selectedVertexRefs = getGraphContainer().getSelectionManager().getSelectedVertexRefs();
+        List<VertexRef> targets;
+        // If the user right-clicks on a vertex that is already selected...
+        if(selectedVertexRefs.contains(target)) {
+            // ... then use the entire selection as the target of the operation
+            targets = Lists.newArrayList(selectedVertexRefs);
+        } else{
+            // Otherwise, just use the single vertex that was right-clicked on as the target
+            targets = TopologyContextMenu.asVertexList(target);
+        }
+
+        // The target must be set before we update the operation context because the op context
+        // operations are dependent on the target of the right-click
+        // we have to generate the context menu here
+        m_contextMenu = m_menuManager.getContextMenu(targets, new DefaultOperationContext(this, m_graphContainer, DisplayLocation.CONTEXTMENU));
+        m_contextMenu.setAsContextMenuOf(this);
 		m_contextMenu.open(left, top);
 	}
 
@@ -1050,7 +1043,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
 
         updateTabVisibility();
-        updateMenuItems();
+        updateMenu();
 
         synchronized (m_currentHudDisplayLock) {
             if (m_currentHudDisplay != null) {
@@ -1110,9 +1103,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
     @Override
     public void detach() {
-        m_commandManager.removeCommandUpdateListener(this);
-        m_commandManager.removeMenuItemUpdateListener(this);
-        super.detach();    //To change body of overridden methods use File | Settings | File Templates.
+        m_menuManager.removeMenuItemUpdateListener(this);
+        super.detach();
     }
 
     public void setServiceManager(BundleContext bundleContext) {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,38 @@
 
 package org.opennms.features.topology.app.internal;
 
-public interface MenuItemUpdateListener {
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.OperationContext;
 
-    void updateMenuItems();
+import com.vaadin.ui.UI;
+
+/**
+ * Default implementation.
+ */
+public class DefaultOperationContext implements OperationContext {
+
+    private final UI m_mainWindow;
+    private final GraphContainer m_graphContainer;
+    private final DisplayLocation m_displayLocation;
+
+    public DefaultOperationContext(UI mainWindow, GraphContainer graphContainer, DisplayLocation displayLocation) {
+        m_mainWindow = mainWindow;
+        m_graphContainer = graphContainer;
+        m_displayLocation = displayLocation;
+    }
+
+    @Override
+    public UI getMainWindow() {
+        return m_mainWindow;
+    }
+
+    @Override
+    public GraphContainer getGraphContainer() {
+        return m_graphContainer;
+    }
+
+    @Override
+    public DisplayLocation getDisplayLocation() {
+        return m_displayLocation;
+    }
 }

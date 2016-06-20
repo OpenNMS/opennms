@@ -26,9 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.app.internal.menu;
 
-public interface CommandUpdateListener {
+/**
+ * Listener to indicate that the menu has changed
+ */
+public interface MenuUpdateListener {
 
-    void menuBarUpdated(CommandManager commandManager);
+    void updateMenu();
 }
