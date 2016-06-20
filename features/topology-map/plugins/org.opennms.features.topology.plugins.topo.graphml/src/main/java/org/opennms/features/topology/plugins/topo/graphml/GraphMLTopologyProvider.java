@@ -30,6 +30,8 @@ package org.opennms.features.topology.plugins.topo.graphml;
 
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 
@@ -49,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class GraphMLTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
@@ -143,11 +146,23 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
 
     @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType contentType) {
+        Set<Integer> nodeIds = selectedVertices.stream()
+                .filter(eachVertex -> eachVertex.getNamespace().equals(getVertexNamespace()) && eachVertex instanceof GraphMLVertex)
+                .map(eachVertex -> (GraphMLVertex) eachVertex)
+                .filter(eachVertex -> eachVertex.getNodeID() != null)
+                .map(eachVertex -> eachVertex.getNodeID())
+                .collect(Collectors.toSet());
+        if (contentType == ContentType.Alarm) {
+            return new SelectionChangedListener.AlarmNodeIdSelection(nodeIds);
+        }
+        if (contentType == ContentType.Node) {
+            return new SelectionChangedListener.IdSelection<>(nodeIds);
+        }
         return SelectionChangedListener.Selection.NONE;
     }
 
     @Override
     public boolean contributesTo(ContentType type) {
-        return false;
+        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
     }
 }
