@@ -29,14 +29,12 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import com.vaadin.data.Item;
+import java.util.stream.Collectors;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
@@ -51,12 +49,15 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 
+import com.google.common.collect.Lists;
+import com.vaadin.data.Item;
+
 public class AlarmStatusProviderTest {
 
     private class TestVertex extends AbstractRef implements Vertex {
 
-        public TestVertex() {
-            super("nodes", "1", null);
+        public TestVertex(String nodeId) {
+            super("nodes", nodeId, null);
         }
 
         @Override
@@ -146,20 +147,22 @@ public class AlarmStatusProviderTest {
     
     @Test
     public void testGetAlarmStatus() {
-        Vertex vertex = new TestVertex();
-        List<VertexRef> vertexList = new ArrayList<>();
-        vertexList.add(vertex);
+        Vertex vertex = new TestVertex("1");
+        Vertex vertex2 = new TestVertex("2");
+        Vertex vertex3 = new TestVertex("3");
+        List<VertexRef> vertexList = Lists.newArrayList(vertex, vertex2, vertex3);
 
         EasyMock.expect(
-                m_alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(EasyMock.<List<Integer>>anyObject())).andReturn(createNormalAlarmSummaryList());
+                m_alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(EasyMock.anyObject())).andReturn(createNormalAlarmSummaryList());
         
         EasyMock.replay(m_alarmDao);
         
         Map<VertexRef, Status> statusMap = m_statusProvider.getStatusForVertices(m_vertexProvider, vertexList, new Criteria[0]);
-        assertEquals(1, statusMap.size());
-        assertEquals(vertex, new ArrayList<>(statusMap.keySet()).get(0));
-        String computeStatus = statusMap.get(vertex).computeStatus();
-        assertTrue(computeStatus.equals("major"));
+        assertEquals(3, statusMap.size());
+        assertEquals(vertex, statusMap.keySet().stream().sorted((v1, v2) -> v1.getId().compareTo(v2.getId())).collect(Collectors.toList()).get(0));
+        assertEquals("major", statusMap.get(vertex).computeStatus()); // use defined status
+        assertEquals("normal", statusMap.get(vertex2).computeStatus()); // fallback to normal
+        assertEquals("indeterminate", statusMap.get(vertex3).computeStatus()); // use defined status
         
         EasyMock.verify(m_alarmDao);
     }
@@ -167,7 +170,8 @@ public class AlarmStatusProviderTest {
 
     private List<AlarmSummary> createNormalAlarmSummaryList() {
         List<AlarmSummary> alarms = new ArrayList<>();
-        alarms.add(new AlarmSummary(1, "node1", new Date(), OnmsSeverity.MAJOR, 1L));
+        alarms.add(new AlarmSummary(1, "node1", new Date(), OnmsSeverity.MAJOR, 1L)); // simulate 1 major alarm
+        alarms.add(new AlarmSummary(3, "node3", new Date(), OnmsSeverity.INDETERMINATE, 5L)); // simulate 5 indeterminate alarms
         return alarms;
     }
 

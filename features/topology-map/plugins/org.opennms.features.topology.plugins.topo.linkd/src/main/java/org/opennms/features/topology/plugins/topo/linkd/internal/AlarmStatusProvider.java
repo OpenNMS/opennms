@@ -1,4 +1,4 @@
-package org.opennms.features.topology.plugins.topo.linkd.internal; /*******************************************************************************
+/*******************************************************************************
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
@@ -26,6 +26,7 @@ package org.opennms.features.topology.plugins.topo.linkd.internal; /************
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,7 +87,7 @@ public class AlarmStatusProvider implements StatusProvider {
         // status for all known node ids
         for (Integer eachNodeId : nodeIdMap.keySet()) {
             AlarmSummary summary = nodeIdToAlarmSummaryMap.get(eachNodeId);
-            AlarmStatus status = summary == null ? createIndeterminateStatus() : createStatus(summary);
+            AlarmStatus status = summary == null ? createDefaultStatus() : createStatus(summary);
             VertexRef ref = nodeIdMap.get(eachNodeId);
             returnMap.put(ref, status);
 
@@ -108,7 +109,7 @@ public class AlarmStatusProvider implements StatusProvider {
                 AlarmStatus groupStatus = calculateAlarmStatusForGroup(alarmSummariesForGroup);
                 returnMap.put(eachRef, groupStatus);
             } else {
-                returnMap.put(eachRef, createIndeterminateStatus());
+                returnMap.put(eachRef, createDefaultStatus());
             }
         }
 
@@ -195,8 +196,8 @@ public class AlarmStatusProvider implements StatusProvider {
         return false;
     }
 
-    private static AlarmStatus createIndeterminateStatus() {
-        return new AlarmStatus(OnmsSeverity.INDETERMINATE.getLabel(), 0);
+    private static AlarmStatus createDefaultStatus() {
+        return new AlarmStatus(OnmsSeverity.NORMAL.getLabel(), 0);
     }
 
     private static AlarmStatus calculateAlarmStatusForGroup(List<AlarmSummary> alarmSummaries) {
@@ -214,6 +215,6 @@ public class AlarmStatusProvider implements StatusProvider {
             }
             return new AlarmStatus(severity.getLabel(), count);
         }
-        return createIndeterminateStatus();
+        return createDefaultStatus();
     }
 }
