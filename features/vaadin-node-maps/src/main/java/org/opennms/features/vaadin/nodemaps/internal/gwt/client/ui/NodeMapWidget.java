@@ -89,6 +89,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
     private MarkerFilterImpl m_filter;
     private NodeIdSelectionRpc m_clientToServerRpc;
     private boolean m_groupByState;
+    private int m_maxClusterRadius;
 
     private OpenNMSEventManager m_eventManager;
     private ComponentTracker m_componentTracker;
@@ -209,6 +210,10 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
     private void addMarkerLayer() {
         LOG.info("NodeMapWidget.addMarkerLayer()");
 
+        if (m_markerClusterGroup != null) {
+            m_map.removeLayer(m_markerClusterGroup);
+        }
+
         final Options markerClusterOptions = new Options();
         markerClusterOptions.setProperty("zoomToBoundsOnClick", false);
         markerClusterOptions.setProperty("iconCreateFunction", new IconCreateCallback());
@@ -222,11 +227,13 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
 
         m_stateClusterGroups = new MarkerClusterGroup[52];
 
+        LOG.info("Creating marker cluster with maximum cluster radius " + m_maxClusterRadius);
+
         final Options[] stateClusterOptions = new Options[m_stateClusterGroups.length];
         for (int i = 0; i < m_stateClusterGroups.length; i++) {
             //stateClusterOptions[i] = new Options();
             stateClusterOptions[i] = markerClusterOptions;
-            stateClusterOptions[i].setProperty("maxClusterRadius", 350);
+            stateClusterOptions[i].setProperty("maxClusterRadius", m_maxClusterRadius > 0? m_maxClusterRadius:350);
             stateClusterOptions[i].setProperty("inUs", true);
             stateClusterOptions[i].setProperty("stateID", i);
             stateClusterOptions[i].setProperty("stateData", StatesData.getPolygonInfo(i, StatesData.getInstance()));
@@ -483,5 +490,14 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
     public void setGroupByState(final boolean groupByState) {
         m_groupByState = groupByState;
         LOG.info("NodeMapWidget.setGroupByState(): group by state: " + (groupByState? "yes":"no"));
+    }
+
+    public void setMaxClusterRadius(final int maxClusterRadius) {
+        if (m_maxClusterRadius != maxClusterRadius) {
+            m_maxClusterRadius = maxClusterRadius;
+            if (m_map != null) {
+                addMarkerLayer();
+            }
+        }
     }
 }

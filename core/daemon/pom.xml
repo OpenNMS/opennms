@@ -9,7 +9,7 @@
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.daemon</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Core Daemon</name>
+  <name>OpenNMS :: Core :: Daemon</name>
   <description>
   The OpenNMS Daemon launches and acts as a container for OpenNMS Services such as the poller or collector.
   </description>
@@ -81,10 +81,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-bootstrap</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-api</artifactId>
     </dependency>
     <dependency>
@@ -104,10 +100,6 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
@@ -173,12 +165,6 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.github.stefanbirkner</groupId>
-      <artifactId>system-rules</artifactId>
-      <version>1.5.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

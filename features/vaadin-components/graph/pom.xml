@@ -18,7 +18,7 @@
         <bundle.namespace>org.opennms.features.vaadin.components.graph</bundle.namespace>
     </properties>
 
-    <name>OpenNMS Features :: Vaadin :: Components :: Graph</name>
+    <name>OpenNMS :: Features :: Vaadin :: Components :: Graph</name>
     <packaging>bundle</packaging>
 
     <build>

@@ -66,7 +66,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class CriteriaBuilderSearchVisitorTest {
+public class CriteriaBuilderSearchVisitorIT {
 
 	@Autowired
 	private ScanReportDao m_dao;

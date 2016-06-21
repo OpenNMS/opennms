@@ -15,7 +15,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.topology.plugins</groupId>
     <artifactId>browsers</artifactId>
-    <name>${bundle.symbolicName}</name>
+    <name>OpenNMS :: Features :: Topology :: Plugins :: Browsers</name>
     <packaging>bundle</packaging>
     <build>
         <plugins>
@@ -75,11 +75,6 @@
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.lib</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-test</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>

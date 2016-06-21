@@ -13,7 +13,7 @@
     <artifactId>history</artifactId>
     <packaging>bundle</packaging>
 
-    <name>${bundle.symbolicName}</name>
+    <name>OpenNMS :: Features :: Topology :: Plugins :: History</name>
     
     <properties>
         <bundle.symbolicName>org.opennms.features.topology.plugins.topo.history</bundle.symbolicName>

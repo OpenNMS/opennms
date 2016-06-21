@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jaxb-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies JAXB</name>
+  <name>OpenNMS :: Dependencies :: JAXB</name>
   <dependencies>
     <dependency>
       <groupId>org.eclipse.persistence</groupId>

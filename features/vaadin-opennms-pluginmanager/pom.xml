@@ -12,7 +12,7 @@
   <groupId>org.opennms.plugins</groupId>
   <artifactId>vaadin-opennms-pluginmanager</artifactId>
   <packaging>bundle</packaging>
-  <name>vaadin-opennms-pluginmanager</name>
+  <name>OpenNMS :: Plugins :: Admin UI</name>
   <description>
     OpenNMS Vaadin Administration UI for installing Plugin modules.
   </description>

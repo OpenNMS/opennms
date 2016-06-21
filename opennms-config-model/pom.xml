@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config-model</artifactId>
-  <name>OpenNMS Configuration Model</name>
+  <name>OpenNMS :: Model :: Config :: Castor</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -160,10 +160,6 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-config-jaxb</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.xml</artifactId>
     </dependency>
@@ -174,14 +170,6 @@
     <dependency>
       <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-model</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
     </dependency>
   </dependencies>
 

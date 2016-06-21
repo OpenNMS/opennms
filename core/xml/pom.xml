@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.xml</artifactId>
-  <name>OpenNMS Core Library (XML)</name>
+  <name>OpenNMS :: Core :: XML</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -28,10 +28,6 @@
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.api</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>

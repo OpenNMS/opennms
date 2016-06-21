@@ -10,7 +10,7 @@
     <groupId>org.opennms.features</groupId>
     <artifactId>vaadin-jmxconfiggenerator</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS Features JMX Config Generator Web UI</name>
+    <name>OpenNMS :: Features :: JMX Config Generator :: Web UI</name>
     <url>http://www.opennms.org</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -38,7 +38,8 @@
                     <features>
                         <feature>vaadin</feature>
                         <feature>jmxconfiggenerator</feature>
-                        <feature>opennms-config-jaxb</feature>
+                        <!-- These classes are exposed via the system classpath (for now) -->
+                        <!-- <feature>opennms-config-jaxb</feature> -->
                     </features>
                 </configuration>
             </plugin>

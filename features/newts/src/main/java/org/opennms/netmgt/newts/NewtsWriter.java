@@ -40,6 +40,7 @@ import javax.inject.Named;
 
 import org.joda.time.Duration;
 import org.opennms.core.logging.Logging;
+import org.opennms.netmgt.newts.support.NewtsUtils;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.search.Indexer;
@@ -211,7 +212,7 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
         // Partition the samples into collections smaller then max_batch_size
         for (List<Sample> batch : Lists.partition(samples, m_maxBatchSize)) {
             try {
-                if (event.isIndexOnly()) {
+                if (event.isIndexOnly() && !NewtsUtils.DISABLE_INDEXING) {
                     LOG.debug("Indexing {} samples", batch.size());
                     m_indexer.update(batch);
                 } else {

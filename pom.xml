@@ -117,7 +117,6 @@
     <module>integration-tests</module>
 
     <!-- old structure -->
-    <module>opennms-test</module>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
     <module>opennms-model</module>
@@ -716,6 +715,33 @@
                   <ignore/>
                 </action>
               </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.opennms.maven.plugins</groupId>
+                  <artifactId>features-maven-plugin</artifactId>
+                  <versionRange>[1.0-SNAPSHOT,)</versionRange>
+                  <goals>
+                    <goal>generate-features-xml</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>com.vaadin</groupId>
+                  <artifactId>vaadin-maven-plugin</artifactId>
+                  <versionRange>[1.0.2,)</versionRange>
+                  <goals>
+                    <goal>resources</goal>
+                    <goal>update-widgetset</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore></ignore>
+                </action>
+              </pluginExecution>
             </pluginExecutions>
           </lifecycleMappingMetadata>
         </configuration>
@@ -726,15 +752,16 @@
         <version>2.2</version>
         <dependencies>
           <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <version>${postgresqlVersion}</version>
           </dependency>
         </dependencies>
       </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.5.201505241946</version>
+        <version>0.7.6.201602180812</version>
         <configuration>
           <!-- TODO: Figure out how to configure this to be the same path for all projects -->
           <classDumpDir>${opennms.build.basedir}/target/jacoco/classes</classDumpDir>
@@ -1003,9 +1030,9 @@
         <artifactId>sonar-maven-plugin</artifactId>
         <dependencies>
           <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.1-901-1.jdbc4</version>
+            <version>${postgresqlVersion}</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -1290,7 +1317,7 @@
     <log4j2Version>2.5</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <minionKarafVersion>4.0.4</minionKarafVersion>
-    <newtsVersion>1.4.0</newtsVersion>
+    <newtsVersion>1.4.1</newtsVersion>
     <paxExamVersion>4.8.0</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <postgresqlVersion>9.4.1208</postgresqlVersion>
@@ -2552,12 +2579,6 @@
         <artifactId>spring-test-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-test</artifactId>
-        <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>

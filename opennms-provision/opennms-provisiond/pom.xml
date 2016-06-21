@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-provisiond</artifactId>
-  <name>OpenNMS Provision Daemon</name>
+  <name>OpenNMS :: Provisioning :: Daemon</name>
   <packaging>bundle</packaging>
   <properties>
     <skipITs>true</skipITs>
@@ -106,11 +106,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-detector-simple</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

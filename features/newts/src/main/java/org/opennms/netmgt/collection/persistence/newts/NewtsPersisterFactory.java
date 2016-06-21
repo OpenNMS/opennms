@@ -31,9 +31,9 @@ package org.opennms.netmgt.collection.persistence.newts;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.dao.support.NewtsResourceStorageDao;
 import org.opennms.netmgt.newts.NewtsWriter;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.newts.api.Context;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -44,10 +44,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class NewtsPersisterFactory implements PersisterFactory {
 
     @Autowired
-    private NewtsResourceStorageDao m_resourceStorageDao;
+    private NewtsWriter m_newtsWriter;
 
     @Autowired
-    private NewtsWriter m_newtsWriter;
+    private Context m_context;
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository) {
@@ -59,7 +59,7 @@ public class NewtsPersisterFactory implements PersisterFactory {
             boolean forceStoreByGroup, boolean dontReorderAttributes) {
         // We ignore the forceStoreByGroup flag since we always store by group, and we ignore
         // the dontReorderAttributes flag since attribute order does not matter
-        NewtsPersister persister =  new NewtsPersister(params, repository, m_newtsWriter, m_resourceStorageDao);
+        NewtsPersister persister =  new NewtsPersister(params, repository, m_newtsWriter, m_context);
         persister.setIgnorePersist(dontPersistCounters);
         return persister;
     }

@@ -9,7 +9,7 @@
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.profiler</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS Core Profiler</name>
+    <name>OpenNMS :: Core :: Profiler</name>
     <build>
         <plugins>
             <plugin>

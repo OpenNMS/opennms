@@ -17,7 +17,7 @@
   <groupId>org.opennms.features.topology.plugins.topo</groupId>
   <artifactId>sfree</artifactId>
 
-  <name>${bundle.symbolicName}</name>
+  <name>OpenNMS :: Features :: Topology :: Plugins :: SFree</name>
 
   <packaging>bundle</packaging>
 
