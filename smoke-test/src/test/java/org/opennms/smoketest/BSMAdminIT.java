@@ -242,10 +242,10 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         public BsmAdminPage open() {
             m_driver.get(getBsmBaseUrl());
             try {
-				Thread.sleep(2000);
+                Thread.sleep(2000);
             } catch (final InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
+                Thread.currentThread().interrupt();
+            }
             switchToVaadinFrame();
             return this;
         }
@@ -304,7 +304,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         public BsmAdminPageEdgeEditWindow selectIpService(String ipServiceText) {
             LOG.debug("BsmAdminPageEdgeEditWindow().selectIpService({})", ipServiceText);
             selectEdgeType("IP Service");
-            enterText(By.xpath("//div[@id='ipServiceList']/input[1]"), ipServiceText);
+            enterText(By.xpath("//div[@id='ipServiceList']/input[1]"), ipServiceText).sendKeys(Keys.ENTER);
             // Click on the item that appears
             waitForElement(By.xpath("//span[text()='" + ipServiceText + "']")).click();
             return this;
@@ -363,14 +363,15 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         public BsmAdminPageAttributeEditWindow value(String value) {
             LOG.debug("BsmAdminPageAttributeEditWindow().value({})", value);
-            findElementById("valueField").clear();
-            findElementById("valueField").sendKeys(value);
+            enterText(By.id("valueField"), value);
+            //findElementById("valueField").clear();
+            //findElementById("valueField").sendKeys(value);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow confirm() {
             LOG.debug("BsmAdminPageAttributeEditWindow().confirm({})");
-            findElementById("okBtn").click();
+            waitForElement(By.id("okBtn")).click();
             wait.until(pageContainsText("Business Service Edit"));
             return new BsmAdminPageEdgeEditWindow();
         }
@@ -713,25 +714,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
      * @param by
      */
     private void verifyElementNotPresent(final By by) {
-        new WebDriverWait(m_driver, 5 /* seconds */).until(
-                ExpectedConditions.not(new ExpectedCondition<Boolean>() {
-                    @Nullable
-                    @Override
-                    public Boolean apply(@Nullable WebDriver input) {
-                        try {
-                            // the default implicit wait timeout is too long, make it shorter
-                            input.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-                            WebElement elementFound = input.findElement(by);
-                            return elementFound != null;
-                        } catch (NoSuchElementException|StaleElementReferenceException ex) {
-                            return false;
-                        } finally {
-                            // set the implicit wait timeout back to the value it has been before
-                            input.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
-                        }
-                    }
-                })
-        );
+        new WebDriverWait(m_driver, 5 /* seconds */).until(getElementNotPresentCondition(by));
     }
 
     @Test
@@ -875,7 +858,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
      * @return
      */
     private Select getSelectWebElement(String id) {
-        return new Select(findElementByXpath("//*[@id=\"" + id + "\"]/select"));
+        return new Select(waitForElement(By.xpath("//*[@id=\"" + id + "\"]/select")));
     }
 
     /**
@@ -886,16 +869,19 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
      * @param by selector
      */
     private void clickElementUntilItDisappears(By by) {
+        scrollToElement(by);
+
         // click once to make sure the element *ever* existed
         waitForElement(by).click();
 
         try {
-            setImplicitWait(100, TimeUnit.MILLISECONDS);
+            setImplicitWait(200, TimeUnit.MILLISECONDS);
             wait.until(new ExpectedCondition<Boolean>() {
                 @Override
                 public Boolean apply(final WebDriver driver) {
                     try {
                         driver.findElement(by).click();
+                        LOG.debug("clickElementUntilItDisappears: element still exists: {}", by);
                         return false;
                     } catch (NullPointerException|NoSuchElementException|StaleElementReferenceException e) {
                         return true;
@@ -905,5 +891,25 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         } finally {
             setImplicitWait();
         }
+    }
+
+    private ExpectedCondition<Boolean> getElementNotPresentCondition(final By by) {
+        return ExpectedConditions.not(new ExpectedCondition<Boolean>() {
+           @Nullable
+           @Override
+           public Boolean apply(@Nullable WebDriver input) {
+               try {
+                   // the default implicit wait timeout is too long, make it shorter
+                   input.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+                   WebElement elementFound = input.findElement(by);
+                   return elementFound != null;
+               } catch (NoSuchElementException|StaleElementReferenceException ex) {
+                   return false;
+               } finally {
+                   // set the implicit wait timeout back to the value it has been before
+                   input.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
+               }
+           }
+       });
     }
 }
