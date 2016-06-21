@@ -19,6 +19,15 @@
 	<!-- Get the current OnmsDistPoller for this system -->
 	<bean id="distPoller" factory-ref="distPollerDao" factory-method="whoami"/>
 
+	<bean id="queueNameFactory" class="org.opennms.core.camel.JmsQueueNameFactory">
+		<argument value="Discovery"/>
+		<argument value="Discoverer"/>
+		<argument>
+			<!-- Get the location name of the current monitoring system -->
+			<bean factory-ref="distPoller" factory-method="getLocation"/>
+		</argument>
+	</bean>
+
 	<!-- Configuration properties -->
 	<!-- 
 		update-strategy="reload" causes unit test failures because the Blueprint context
@@ -29,9 +38,8 @@
 	-->
 	<cm:property-placeholder id="discovererProperties" persistent-id="org.opennms.netmgt.discoverer" update-strategy="none" placeholder-prefix="$[" placeholder-suffix="]">
 		<cm:default-properties>
-			<!-- Get the location name of the current monitoring system -->
-			<cm:property name="monitoringLocationName">
-				<bean factory-ref="distPoller" factory-method="getLocation"/>
+			<cm:property name="queueName">
+				<bean factory-ref="queueNameFactory" factory-method="getName"/>
 			</cm:property>
 		</cm:default-properties>
 	</cm:property-placeholder>
@@ -49,10 +57,9 @@
 
 		<!-- Location queue -->
 		<route id="discovererRoute">
-			<!-- TODO: Use a more sophisticated naming convention for this queue. See NMS-8217 -->
-			<from uri="queuingservice:Location-{{monitoringLocationName}}" />
-			<log loggingLevel="INFO" message="blueprint-discovery.xml: Executing DiscoveryJob" />
-			<log loggingLevel="INFO" message="blueprint-discovery.xml: ${body}" />
+			<from uri="queuingservice:{{queueName}}" />
+			<log loggingLevel="INFO" message="blueprint-discoverer.xml: Executing DiscoveryJob" />
+			<log loggingLevel="INFO" message="blueprint-discoverer.xml: ${body}" />
 			<bean ref="discoverer" />
 		</route>
 	</camelContext>
