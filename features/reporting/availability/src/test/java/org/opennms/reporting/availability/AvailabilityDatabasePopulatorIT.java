@@ -109,6 +109,8 @@ public class AvailabilityDatabasePopulatorIT implements InitializingBean {
 		List<OnmsNode> nodes = m_nodeDao.findAll();
 		for (OnmsNode node : nodes) {
 			m_nodeDao.initialize(node);
+			// TODO: Is this necessary?
+			m_nodeDao.initialize(node.getLocation());
 		}
 		for (OnmsNode node : nodes) {
 			System.err.println("NODE "+ node.toString());

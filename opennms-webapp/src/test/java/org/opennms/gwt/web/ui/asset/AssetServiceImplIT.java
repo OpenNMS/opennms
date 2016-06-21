@@ -49,6 +49,7 @@ import org.opennms.gwt.web.ui.asset.server.AssetServiceImpl;
 import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
@@ -83,6 +84,9 @@ public class AssetServiceImplIT implements InitializingBean {
 
 	@Autowired
 	private AssetService m_assetService;
+
+	@Autowired
+	private MonitoringLocationDao m_locationDao;
 
 	@Autowired
 	private NodeDao m_nodeDao;
@@ -133,7 +137,7 @@ public class AssetServiceImplIT implements InitializingBean {
 
 	@Test
 	public void testCreateAndGets() {
-		OnmsNode onmsNode = new OnmsNode("myNode");
+		OnmsNode onmsNode = new OnmsNode(m_locationDao.getDefaultLocation(), "myNode");
 		m_nodeDao.save(onmsNode);
 		OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
 		assetRecord.setAssetNumber("imported-id: 7");
@@ -150,7 +154,7 @@ public class AssetServiceImplIT implements InitializingBean {
 
 	@Test
 	public void testAssetServiceImpl() throws Exception {
-        OnmsNode onmsNode = new OnmsNode("myNode");
+        OnmsNode onmsNode = new OnmsNode(m_locationDao.getDefaultLocation(), "myNode");
 		m_nodeDao.save(onmsNode);
 		OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
 		assetRecord.setAssetNumber("imported-id: " + onmsNode.getId());
@@ -160,7 +164,7 @@ public class AssetServiceImplIT implements InitializingBean {
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
-		onmsNode = new OnmsNode("myNode2");
+		onmsNode = new OnmsNode(m_locationDao.getDefaultLocation(), "myNode2");
 		m_nodeDao.save(onmsNode);
 		assetRecord = onmsNode.getAssetRecord();
 		assetRecord.setAssetNumber("imported-id: 23");
@@ -179,7 +183,7 @@ public class AssetServiceImplIT implements InitializingBean {
 
 	@Test
 	public void testSaveOrUpdate() throws Exception {
-		OnmsNode onmsNode = new OnmsNode("myNode");
+		OnmsNode onmsNode = new OnmsNode(m_locationDao.getDefaultLocation(), "myNode");
 		m_nodeDao.save(onmsNode);
 		OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
 		assetRecord.setAssetNumber("imported-id: " + onmsNode.getId());
@@ -265,7 +269,7 @@ public class AssetServiceImplIT implements InitializingBean {
 
 	@Test
 	public void testAssetSuggestion() throws Exception {
-	OnmsNode onmsNode = new OnmsNode("your Node");
+	OnmsNode onmsNode = new OnmsNode(m_locationDao.getDefaultLocation(), "your Node");
 		onmsNode.setSysObjectId("mySysOid");
 		m_nodeDao.save(onmsNode);
 		OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
@@ -276,7 +280,7 @@ public class AssetServiceImplIT implements InitializingBean {
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
-		onmsNode = new OnmsNode("his Node");
+		onmsNode = new OnmsNode(m_locationDao.getDefaultLocation(), "his Node");
 		m_nodeDao.save(onmsNode);
 		assetRecord = onmsNode.getAssetRecord();
 		assetRecord.setAssetNumber("imported-id: 999");

@@ -71,10 +71,11 @@ public class SnmpTrapNorthbounderTest extends AbstractTrapReceiverTest {
         nbi.afterPropertiesSet();
 
         // Setup test node
-        OnmsNode node = new OnmsNode("my-test-server");
+        OnmsNode node = new OnmsNode();
         node.setForeignSource("Server-MacOS");
         node.setForeignId("1");
         node.setId(1);
+        node.setLabel("my-test-server");
         OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
         snmpInterface.setId(1);
         snmpInterface.setIfAlias("Connection to OpenNMS Wifi");

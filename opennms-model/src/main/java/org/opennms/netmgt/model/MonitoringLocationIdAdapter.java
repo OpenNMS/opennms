@@ -26,14 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@XmlSchema(
-    namespace="http://xmlns.opennms.org/xsd/config/monitoring-locations",
-    elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
-    xmlns={
-        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/monitoring-locations")
-    }
-)
-package org.opennms.netmgt.config.monitoringLocations;
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlSchema;
+package org.opennms.netmgt.model;
 
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+
+public class MonitoringLocationIdAdapter extends XmlAdapter<String, OnmsMonitoringLocation> {
+
+    @Override
+    public String marshal(final OnmsMonitoringLocation v) throws Exception {
+        return v == null? null : v.getLocationName();
+    }
+
+    @Override
+    public OnmsMonitoringLocation unmarshal(final String v) throws Exception {
+        if (v == null) return null;
+        final OnmsMonitoringLocation location = new OnmsMonitoringLocation(v, v);
+        return location;
+    }
+
+}
