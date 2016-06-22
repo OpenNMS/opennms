@@ -60,8 +60,8 @@
       &lt;p>The administrator has forced a services scan on
       this node to update the list of supported
       services.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>A services scan has been forced on this
-      node.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">A services scan has been forced on this
+      node.</logmsg>
       <severity>Warning</severity>
    </event>
    <event>
@@ -70,8 +70,8 @@
       <descr>&lt;p>A services scan has been completed.&lt;/p>
       &lt;p>The list of services on this node has been
       updated.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>A services scan has been completed on this
-      node.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">A services scan has been completed on this
+      node.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -79,8 +79,8 @@
       <event-label>OpenNMS-defined internal event: capsd interfaceSupportsSNMP</event-label>
       <descr>&lt;p>A services scan has verified that this interface
       supports the SNMP protocol.&lt;/p></descr>
-      <logmsg dest="logonly">&lt;p>A services scan has verified that this interface
-      supports the SNMP protocol.&lt;/p></logmsg>
+      <logmsg dest="logonly">A services scan has verified that this interface
+      supports the SNMP protocol.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -91,8 +91,8 @@
       has been added to the database under all nodes that have it.
       If this address is in error, please take steps to correct it.
       &lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>A services scan has discovered a duplicate IP address:
-      %interface%.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">A services scan has discovered a duplicate IP address:
+      %interface%.</logmsg>
       <severity>Minor</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
    </event>
@@ -105,10 +105,10 @@
                         the NMS host server name: %host%, and the optional parameter 
                         of a node label: %nodelabel%. This event will cause an 
                         addInterface event. &lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>A request has been made to add an interface/server
+      <logmsg dest="logndisplay">A request has been made to add an interface/server
                         mapping as well as the interface to the database. The interface:
       %interface%, the NMS host: %host%,  and node label: %nodelabel%
-                        are specified. &lt;/p></logmsg>
+                        are specified. </logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -120,9 +120,9 @@
                         the service name: %service%, and the optional parameter 
                         action: %action%. This event will cause a changeService
                         event with the specified action. &lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>A request has been made to add or remove an 
+      <logmsg dest="logndisplay">A request has been made to add or remove an 
                         interface/service mapping, as well as add or remove a service:
-                        %service% from the specified interface: %interface%. &lt;/p></logmsg>
+                        %service% from the specified interface: %interface%.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -132,8 +132,8 @@
       to the database. The required paramater is the IP
       address for the main interface: %interface%, and
       the optional parameter of a node label: %nodelabel%.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>A request has been made to add a node with interface:
-      %interface% and node label: %nodelabel%.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">A request has been made to add a node with interface:
+      %interface% and node label: %nodelabel%.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -142,8 +142,8 @@
       <descr>&lt;p>This event is an external command to delete a node
       from the database. The required paramater is the IP
       address for one interface: %interface%.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>A request has been made to delete a node with interface:
-      %interface%.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">A request has been made to delete a node with interface:
+      %interface%.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -152,8 +152,8 @@
       <descr>&lt;p>This event is an external command to add an interface
       to the database. The required paramater is the IP
       address for the main interface: %interface%.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>A request has been made to add an interface 
-      %interface%.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">A request has been made to add an interface 
+      %interface%.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -163,8 +163,8 @@
       from the database. The required paramater is the IP
       address for the interface: %interface%, or the nodeid %nodeid%
       and ifIndex %ifindex%.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>A request has been made to delete an interface:
-      %interface% on node %nodeid% with ifIndex %ifindex%.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">A request has been made to delete an interface:
+      %interface% on node %nodeid% with ifIndex %ifindex%.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -174,8 +174,8 @@
       The paramters include the interface, %interface%, the service,
       %service%, and any required qualifiers, %parm[#2]%. The action
       taken will be: %parm[#1]%.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>A request has been made to %parm[#1]% the %service% service
-      on interface: %interface%.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">A request has been made to %parm[#1]% the %service% service
+      on interface: %interface%.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -184,15 +184,15 @@
       <descr>&lt;p>This event will cause the importer to run the model-import process.
         The parameters include foreignSource, url, and deleteThreshold that override
         configuration properties as well as XML and default values.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>A request had been made to run the model-import process with the
-        parms: %parm[all]%.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">A request had been made to run the model-import process with the
+        parms: %parm[all]%.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
       <uei>uei.opennms.org/internal/importer/importStarted</uei>
       <event-label>OpenNMS-defined internal event: importer process has started</event-label>
       <descr>&lt;p>This event indicates the model-importer process has started&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>This event indicates the model-importer process has started from resource: %parm[importResource]% &lt;/p></logmsg>
+      <logmsg dest="logndisplay">This event indicates the model-importer process has started from resource: %parm[importResource]% </logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -200,7 +200,7 @@
       <event-label>OpenNMS-defined internal event: importer process successfully completed</event-label>
       <descr>&lt;p>This event indicates the model-importer process has completed successfully. There 
         is 1 parameter called importStats: %parm[importStats]%&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>This event indicates the model-importer process has completed successfully from resource: %parm[importResource]%&lt;/p></logmsg>
+      <logmsg dest="logndisplay">This event indicates the model-importer process has completed successfully from resource: %parm[importResource]%</logmsg>
       <severity>Normal</severity>
       <alarm-data reduction-key="%uei%:%parm[importResource]%" alarm-type="2" clear-key="uei.opennms.org/internal/importer/importFailed:%parm[importResource]%" auto-clean="true"/>
    </event>
@@ -209,7 +209,7 @@
       <event-label>OpenNMS-defined internal event: importer process failed.</event-label>
       <descr>&lt;p>This event indicates the model-importer process has failed.  There is 1 parameter 
         called failureMessage: %parm[failureMessage]%&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>This event indicates the model-importer process has failed from resource: %parm[importResource]% with reason: %parm[failureMessage]%&lt;/p></logmsg>
+      <logmsg dest="logndisplay">This event indicates the model-importer process has failed from resource: %parm[importResource]% with reason: %parm[failureMessage]%</logmsg>
       <severity>Warning</severity>
       <alarm-data reduction-key="%uei%:%parm[importResource]%" alarm-type="1" auto-clean="false"/>
    </event>
@@ -280,7 +280,7 @@
       Responsible user: &lt;em>%parm[remoteUser]%&lt;/em>
       at &lt;em>%parm[remoteHost]% (%parm[remoteAddr]%)&lt;/em>
       &lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>Notifications have been disabled.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">Notifications have been disabled.</logmsg>
       <severity>Minor</severity>
    </event>
    <event>
@@ -294,7 +294,7 @@
       Responsible user: &lt;em>%parm[remoteUser]%&lt;/em>
       at &lt;em>%parm[remoteHost]% (%parm[remoteAddr]%)&lt;/em>
       &lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>Notifications have been enabled.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">Notifications have been enabled.</logmsg>
       <severity>Warning</severity>
    </event>
    <event>
@@ -302,7 +302,7 @@
       <event-label>OpenNMS-defined internal event: reload specified daemon configuration</event-label>
       <descr>&lt;p>The administrator has changed the daemon: %parm[daemonName]% 
       configuration files and requests the configuration to be re-marshaled and applied.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>The daemon: %parm[daemonName]% configuration files has changed.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">The daemon: %parm[daemonName]% configuration files has changed.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -311,8 +311,8 @@
       <descr>&lt;p>The administrator has changed the daemon: %parm[daemonName]% 
       configuration files and the request for the configuration to be re-marshaled and applied 
       has failed.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>The daemon: %parm[daemonName]% configuration changes have failed to be 
-      applied. Reason: %parm[reason]%.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">The daemon: %parm[daemonName]% configuration changes have failed to be 
+      applied. Reason: %parm[reason]%.</logmsg>
       <severity>Major</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%parm[daemonName]%" alarm-type="1" auto-clean="false"/>
    </event>
@@ -322,8 +322,8 @@
       <descr>&lt;p>The administrator has changed the daemon: %parm[daemonName]% 
       configuration files and the request for the configuration to be re-marshaled and applied 
       has succeeded.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>The daemon: %parm[daemonName]% configuration changes have successfully been 
-      applied.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">The daemon: %parm[daemonName]% configuration changes have successfully been 
+      applied.</logmsg>
       <severity>Normal</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/internal/reloadDaemonConfigFailed:%dpname%:%parm[daemonName]%" auto-clean="false"/>
    </event>
@@ -333,8 +333,8 @@
       <descr>&lt;p>The administrator has changed the poller
       configuration files. The pollers and related services will
       now restart to detect the changes.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>The poller configuration files have
-      changed.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">The poller configuration files have
+      changed.</logmsg>
       <severity>Warning</severity>
    </event>
    <event>
@@ -342,7 +342,7 @@
       <event-label>OpenNMS-defined internal event: reloadScriptConfig</event-label>
       <descr>&lt;p>The administrator has changed the ScriptD
       configuration. ScriptD will load the new configuration.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>The ScriptD configuration files have changed.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">The ScriptD configuration files have changed.</logmsg>
       <severity>Minor</severity>
    </event>
    <event>
@@ -350,7 +350,7 @@
       <event-label>OpenNMS-defined internal event: reloadVacuumdConfig</event-label>
       <descr>&lt;p>The administrator has changed the Vacuumd
         configuration. Vacuumd will load the new configuration.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>The Vacuumd configuration files have changed.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">The Vacuumd configuration files have changed.</logmsg>
       <severity>Minor</severity>
    </event>
    <event>
@@ -358,7 +358,7 @@
       <event-label>OpenNMS-defined internal event: reloadSnmpPollerConfig</event-label>
       <descr>&lt;p>The administrator has changed the SnmpPoller
         configuration. SnmpPoller will load the new configuration.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>The SnmpPoller configuration files have changed.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">The SnmpPoller configuration files have changed.</logmsg>
       <severity>Minor</severity>
    </event>
    <event>
@@ -368,9 +368,9 @@
                         %parm[firstIPAddress]%-%parm[lastIPAddress]% has been
                         updated with community string
                         &quot;%parm[communityString]%&quot;&lt;/p></descr>
-      <logmsg dest="logonly">&lt;p>SNMP community string
+      <logmsg dest="logonly">SNMP community string
                         &quot;%parm[communityString]%&quot; has been defined
-                        for IP %parm[firstIPAddress]%-%parm[lastIPAddress]%.&lt;/p></logmsg>
+                        for IP %parm[firstIPAddress]%-%parm[lastIPAddress]%.</logmsg>
       <severity>Warning</severity>
    </event>
    <event>
@@ -466,10 +466,10 @@
       <event-label>OpenNMS-defined node event: duplicateNodeDeleted</event-label>
       <descr>&lt;p>Node :%nodeid% labled: %nodelabel%; was determined to be a 
       duplicate node and is has been deleted.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>Node #&lt;a
+      <logmsg dest="logndisplay">Node #&lt;a
       href=&quot;element/node.jsp?node=%nodeid%&quot;>%nodeid%&lt;/a>
       was determined to be a duplicate node and is being flagged
-      for deletion.&lt;/p></logmsg>
+      for deletion.</logmsg>
       <severity>Minor</severity>
    </event>
    <event>
@@ -544,8 +544,8 @@
       should be aware that the active configuration on this SNMP
       device has changed, and the hardware configuration may have
       been impacted as well.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>SNMP Interface Index %parm[oldIfIndex]% has changed
-      to %parm[newIfIndex]% on %interface%&lt;/p></logmsg>
+      <logmsg dest="logndisplay">SNMP Interface Index %parm[oldIfIndex]% has changed
+      to %parm[newIfIndex]% on %interface%</logmsg>
       <severity>Warning</severity>
    </event>
    <event>
@@ -752,8 +752,8 @@
       <event-label>OpenNMS-defined node event: nodeInfoChanged</event-label>
       <descr>&lt;p>Node information has changed for node
       #%nodeid%.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>Node information has changed for &lt;a
-      href=&quot;element/node.jsp?node=%nodeid%&quot;>%nodeid%&lt;/a>.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">Node information has changed for &lt;a
+      href=&quot;element/node.jsp?node=%nodeid%&quot;>%nodeid%&lt;/a>.</logmsg>
       <severity>Warning</severity>
    </event>
    <event>
@@ -979,8 +979,8 @@
       <event-label>OpenNMS-defined internal event: alarmEscalated</event-label>
       <descr>&lt;p>Alarm #&lt;a href=&quot;/opennms/alarm/detail.htm?id=%parm[alarmId]%&quot;>%parm[alarmId]%&lt;/a>
         was determined to require an escalation of its severity.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>Alarm #&lt;a href=&quot;/opennms/alarm/detail.htm?id=%parm[alarmId]%&quot;>%parm[alarmId]%&lt;/a>
-        for node:%nodelabel%; interface:%interface%; service:%service%; was escalated.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">Alarm #&lt;a href=&quot;/opennms/alarm/detail.htm?id=%parm[alarmId]%&quot;>%parm[alarmId]%&lt;/a>
+        for node:%nodelabel%; interface:%interface%; service:%service%; was escalated.</logmsg>
       <severity>Minor</severity>
    </event>
    <event>
@@ -988,22 +988,22 @@
       <event-label>OpenNMS-defined node event: assetInfoChanged</event-label>
       <descr>&lt;p>The Asset info for node %nodeid% (%nodelabel%)
                 has been changed via the webUI.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>The Asset info for node %nodeid% (%nodelabel%)
-                has been changed via the webUI.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">The Asset info for node %nodeid% (%nodelabel%)
+                has been changed via the webUI.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
       <uei>uei.opennms.org/services/passiveServiceStatus</uei>
       <event-label>OpenNMS-defined service event: passiveServiceStatus</event-label>
       <descr>&lt;p>Status information for service %parm[passiveServiceName]% has been updated.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>Status information for service %parm[passiveServiceName]% has been updated.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">Status information for service %parm[passiveServiceName]% has been updated.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
       <uei>uei.opennms.org/internal/demandPollService</uei>
       <event-label>OpenNMS-defined node event: DemandPoll</event-label>
       <descr>&lt;p>The Demand Poll requested on %nodeid% (%nodelabel%)</descr>
-      <logmsg dest="logndisplay">&lt;p>The Demand Poll requested on %nodeid% (%nodelabel%).&lt;/p></logmsg>
+      <logmsg dest="logndisplay">The Demand Poll requested on %nodeid% (%nodelabel%).</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -1211,7 +1211,7 @@
       &lt;p>Alert reason: %parm[action.shortReason]% &lt;/p>
       &lt;p>Alert reason: %parm[action.longReason]% &lt;/p>
       &lt;p>&lt;a href=&quot;%parm[resource.url]%&quot; > %parm[resource.name]% &lt;/a>&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>&lt;a href=&quot;%parm[alert.url]%&quot; > Hyperic Alert: %parm[action.longReason]% &lt;/a>&lt;/p></logmsg>
+      <logmsg dest="logndisplay">&lt;a href=&quot;%parm[alert.url]%&quot; > Hyperic Alert: %parm[action.longReason]% &lt;/a></logmsg>
       <severity>Minor</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%:%parm[resource.name]%:%parm[alertDef.name]%" alarm-type="3" auto-clean="false"/>
    </event>
@@ -1265,7 +1265,7 @@
       &lt;p>ATAG: %parm[atag]% &lt;/p>
       &lt;p>Verb: %parm[verb]% &lt;/p>
       &lt;p>Auto Block: %parm[autoblock]% &lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p> %host%:%parm[verb]%:%parm[autoblock]% &lt;/p></logmsg>
+      <logmsg dest="logndisplay"> %host%:%parm[verb]%:%parm[autoblock]% </logmsg>
       <severity>Warning</severity>
       <alarm-data reduction-key="%uei%:%host%:%parm[aid]%" alarm-type="3" auto-clean="false"/>
    </event>
@@ -1274,7 +1274,7 @@
       <event-label>OpenNMS-defined Provisioning Adapter Failed message</event-label>
       <descr>A provisioning adapter failed for host: %host%.&lt;p>
       &lt;p>Message: %parm[reason]% &lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p> %host%:%parm[host]%:%parm[reason]% &lt;/p></logmsg>
+      <logmsg dest="logndisplay"> %host%:%parm[host]%:%parm[reason]% </logmsg>
       <severity>Major</severity>
       <alarm-data reduction-key="%uei%:%host%:%parm[reason]%" alarm-type="3" auto-clean="false"/>
    </event>
@@ -1284,7 +1284,7 @@
       <descr>A message received requesting an Acknowledgable be acknowledged.
       &lt;p>Acknowledgement Request:%parm[refId]% of type:%parm[ackType]% was received with the action:%parm[ackAction]% was received for User: %parm[ackUser]%&lt;/p>
       Typically received from an external source or as a choice of an AckReader implementation.</descr>
-      <logmsg dest="logndisplay">&lt;p>Acknowledgement Request:%parm[refId]% of type:%parm[ackType]% was received with the action:%parm[ackAction]% was received for User: %parm[ackUser]%.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">Acknowledgement Request:%parm[refId]% of type:%parm[ackType]% was received with the action:%parm[ackAction]% was received for User: %parm[ackUser]%.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -1293,7 +1293,7 @@
       <descr>A message from the acknowledgment service that an acknowledgment has been processed:
       &lt;p>Acknowledgable:%parm[refId]% of type:%parm[ackType]% was processed with the action:%parm[ackAction]%&lt;/p>
       Typically the result of a request via an AckReader or a generated acknowledge request event.</descr>
-      <logmsg dest="logndisplay">&lt;p>Acknowledgable:%parm[refId]% of type:%parm[ackType]% was processed with the action:%parm[ackAction]%; Acknowledgment:%parm[ackId]%.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">Acknowledgable:%parm[refId]% of type:%parm[ackType]% was processed with the action:%parm[ackAction]%; Acknowledgment:%parm[ackId]%.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -1302,7 +1302,7 @@
       <descr>A message from the Provisiond NodeScan lifecycle that a NodeScan has completed:
       &lt;p>The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has completed.&lt;/p>
       Typically the result of a request of an import request or a scheduled/user forced rescan.</descr>
-      <logmsg dest="logndisplay">&lt;p>The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has completed.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has completed.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -1310,7 +1310,7 @@
       <event-label>OpenNMS-defined Provisiond Event: nodeScanAborted</event-label>
       <descr>A message from the Provisiond NodeScan lifecycle that a NodeScan has Aborted:
       &lt;p>The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has aborted for the following reason: %parm[reason]% &lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has aborted for the following reason: %parm[reason]% &lt;/p></logmsg>
+      <logmsg dest="logndisplay">The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has aborted for the following reason: %parm[reason]% </logmsg>
       <severity>Warning</severity>
    </event>
    <event>
@@ -1318,7 +1318,7 @@
       <event-label>OpenNMS-defined DISCARD-MATCHING-MESSAGES</event-label>
       <descr>DISCARD-MATCHING-MESSAGES is used in the syslogd to generate events that 
         have no matching events. This event is not persisted by default.</descr>
-      <logmsg dest="donotpersist">&lt;p>DISCARD-MATCHING-MESSAGES.&lt;/p></logmsg>
+      <logmsg dest="donotpersist">&lt;p>DISCARD-MATCHING-MESSAGES.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
@@ -1326,7 +1326,7 @@
       <event-label>OpenNMS-defined Reportd Event: reportRunFailed</event-label>
       <descr>A message from the Reportd reporting service that a report has failed to run:
       &lt;p>The report with name %parm[reportName]% failed to run for the following reason: %parm[reason]% &lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>The report with name %parm[reportName]% failed to run for the following reason: %parm[reason]% &lt;/p></logmsg>
+      <logmsg dest="logndisplay">The report with name %parm[reportName]% failed to run for the following reason: %parm[reason]% </logmsg>
       <severity>Minor</severity>
       <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%" alarm-type="3" auto-clean="false"/>
    </event>
@@ -1335,7 +1335,7 @@
       <event-label>OpenNMS-defined Reportd Event: reportDeliveryFailed</event-label>
       <descr>A message from the Reportd delivery service that a report could not be delivered:
       &lt;p>The report with name %parm[reportName]% could not be delivered for the following reason: %parm[reason]% &lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>The report with name %parm[reportName]% could not be delivered for the following reason: %parm[reason]% &lt;/p></logmsg>
+      <logmsg dest="logndisplay">The report with name %parm[reportName]% could not be delivered for the following reason: %parm[reason]% </logmsg>
       <severity>Minor</severity>
       <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%" alarm-type="3" auto-clean="false"/>
    </event>
@@ -1343,57 +1343,57 @@
       <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted</uei>
       <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryStarted</event-label>
       <descr>&lt;p>The Linkd process has started its attempt to discover links for this node.&lt;/p></descr>
-      <logmsg dest="donotpersist">&lt;p>Linkd %parm[runnable]% started.&lt;/p></logmsg>
+      <logmsg dest="donotpersist">&lt;p>Linkd %parm[runnable]% started.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
       <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted</uei>
       <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryCompleted</event-label>
       <descr>&lt;p>The Linkd process has finished its attempt to discover links for this node.&lt;/p></descr>
-      <logmsg dest="donotpersist">&lt;p>Linkd %parm[runnable]% completed.&lt;/p></logmsg>
+      <logmsg dest="donotpersist">&lt;p>Linkd %parm[runnable]% completed.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
       <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended</uei>
       <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoverySuspended</event-label>
       <descr>&lt;p>The Linkd process suspended its attempt to discover links for this node.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>Linkd %parm[runnable]% suspended.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">Linkd %parm[runnable]% suspended.</logmsg>
       <severity>Warning</severity>
    </event>
    <event>
       <uei>uei.opennms.org/internal/linkd/linkDiscoveryStarted</uei>
       <event-label>OpenNMS-defined Linkd Event: linkDiscoveryStarted</event-label>
       <descr>&lt;p>The Linkd process has started its attempt to discover links.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>Linkd %parm[runnable]% started.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">Linkd %parm[runnable]% started.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
       <uei>uei.opennms.org/internal/linkd/linkDiscoveryCompleted</uei>
       <event-label>OpenNMS-defined Linkd Event: linkDiscoveryCompleted</event-label>
       <descr>&lt;p>The Linkd process has finished its attempt to discover links.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>Linkd %parm[runnable]% completed.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">Linkd %parm[runnable]% completed.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
       <uei>uei.opennms.org/internal/linkd/linkDiscoverySuspended</uei>
       <event-label>OpenNMS-defined Linkd Event: linkDiscoverySuspended</event-label>
       <descr>&lt;p>The Linkd process suspended its attempt to discover links.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>Linkd %parm[runnable]% suspended.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">Linkd %parm[runnable]% suspended.</logmsg>
       <severity>Warning</severity>
    </event>
    <event>
       <uei>uei.opennms.org/internal/discovery/hardwareInventoryFailed</uei>
       <event-label>OpenNMS-defined internal event: reload specified daemon configuration failed</event-label>
       <descr>&lt;p>The hardware discovery on node %nodelabel% (IP address %interface%) has failed.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>The hardware discovery on node %nodelabel% (IP address %interface%) has failed.&lt;/p>
-      &lt;p>Reason: %parm[reason]%.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">The hardware discovery on node %nodelabel% (IP address %interface%) has failed.&lt;/p>
+      &lt;p>Reason: %parm[reason]%.</logmsg>
       <severity>Minor</severity>
    </event>
    <event>
       <uei>uei.opennms.org/internal/discovery/hardwareInventorySuccessful</uei>
       <event-label>OpenNMS-defined internal event: hardware discovery successful</event-label>
       <descr>&lt;p>The hardware discovery on node %nodelabel% (IP address %interface%) has been completed successfuly.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>The hardware discovery on node %nodelabel% (IP address %interface%) has been completed successfuly.&lt;/p></logmsg>
+      <logmsg dest="logndisplay">The hardware discovery on node %nodelabel% (IP address %interface%) has been completed successfuly.</logmsg>
       <severity>Normal</severity>
    </event>
    <event>
