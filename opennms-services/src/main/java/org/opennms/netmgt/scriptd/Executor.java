@@ -32,15 +32,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.ScriptdConfigFactory;
 import org.opennms.netmgt.config.scriptd.Engine;
 import org.opennms.netmgt.config.scriptd.EventScript;
@@ -54,6 +52,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Script;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used as a thread for launching scripts to handle received
@@ -68,7 +68,7 @@ final class Executor implements Runnable, PausableFiber {
     /**
      * The input queue of events.
      */
-    private final FifoQueue<Event> m_execQ;
+    private final BlockingQueue<Event> m_execQ;
 
     /**
      * The worker thread that executes the <code>run</code> method.
@@ -122,7 +122,7 @@ final class Executor implements Runnable, PausableFiber {
      * @param nodeDao
      *            The <em>DAO</em> for fetching node information
      */
-    Executor(FifoQueue<Event> execQ, ScriptdConfigFactory config, NodeDao nodeDao) {
+    Executor(BlockingQueue<Event> execQ, ScriptdConfigFactory config, NodeDao nodeDao) {
         m_execQ = execQ;
         m_config = config;
 
@@ -217,15 +217,12 @@ final class Executor implements Runnable, PausableFiber {
 
             Event event = null;
             try {
-                event = m_execQ.remove(1000);
+                event = m_execQ.poll(1000, TimeUnit.MILLISECONDS);
                 if (event == null) // status check time
                 {
                     continue; // goto top of loop
                 }
             } catch (InterruptedException ex) {
-                break;
-            } catch (FifoQueueException ex) {
-                LOG.warn("The input event queue has errors, exiting...", ex);
                 break;
             }
 
