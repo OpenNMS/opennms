@@ -57,7 +57,7 @@ public class TrapdEncoderDecoderTest {
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapAddress,
 				new IpAddress("127.0.0.1")));
 
-		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString("Major")));
+		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString("TESTING TRAPS MSGS")));
 		snmp4JV2cTrapPdu.setType(PDU.NOTIFICATION);
 		
 		TrapNotification snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
