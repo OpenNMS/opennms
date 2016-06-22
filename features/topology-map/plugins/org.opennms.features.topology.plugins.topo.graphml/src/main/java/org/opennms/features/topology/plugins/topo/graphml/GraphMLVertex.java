@@ -37,8 +37,7 @@ public class GraphMLVertex extends AbstractVertex {
     private HashMap<String, Object> properties = new HashMap<>();
 
     protected GraphMLVertex(String namespace, GraphMLNode graphMLNode) {
-        super(namespace, graphMLNode.getProperty(GraphMLProperties.ID),
-                graphMLNode.getProperty(GraphMLProperties.LABEL));
+        super(namespace, graphMLNode.getId(), graphMLNode.getProperty(GraphMLProperties.LABEL, graphMLNode.getId()));
 
         setIconKey(graphMLNode.getProperty(GraphMLProperties.ICON_KEY));
         setIpAddress(graphMLNode.getProperty(GraphMLProperties.IP_ADDRESS));
