@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.scriptd;
 
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Queue;
+
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class receives all events on behalf of the <em>Scriptd</em> service.
@@ -49,7 +49,7 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * The location where executable events are enqueued to be executed.
      */
-    private final FifoQueue<Event> m_execQ;
+    private final Queue<Event> m_execQ;
 
     /**
      * This constructor subscribes to eventd for all events
@@ -58,7 +58,7 @@ final class BroadcastEventProcessor implements EventListener {
      *            The queue where executable events are stored.
      * 
      */
-    BroadcastEventProcessor(FifoQueue<Event> execQ) {
+    BroadcastEventProcessor(Queue<Event> execQ) {
         // set up the executable queue first
 
         m_execQ = execQ;
@@ -91,18 +91,9 @@ final class BroadcastEventProcessor implements EventListener {
             return;
         }
 
+        m_execQ.add(event);
 
-        try {
-            m_execQ.add(event);
-
-            LOG.debug("Added event \'{}\' to scriptd execution queue.", event.getUei());
-        }
-
-        catch (FifoQueueException ex) {
-            LOG.error("Failed to add event to scriptd execution queue", ex);
-        } catch (InterruptedException ex) {
-            LOG.error("Failed to add event to scriptd execution queue", ex);
-        }
+        LOG.debug("Added event \'{}\' to scriptd execution queue.", event.getUei());
 
     } // end onEvent()
 
