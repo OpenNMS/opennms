@@ -1,22 +1,17 @@
 package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
-import java.net.InetAddress;
+import java.io.OutputStream;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.json.JSONObject;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotification;
@@ -26,11 +21,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
+import org.snmp4j.asn1.BERInputStream;
 import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.smi.AbstractVariable;
+import org.snmp4j.smi.Counter32;
+import org.snmp4j.smi.Counter64;
+import org.snmp4j.smi.Gauge32;
+import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.IpAddress;
+import org.snmp4j.smi.Null;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
+import org.snmp4j.smi.Opaque;
 import org.snmp4j.smi.TimeTicks;
+import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
 import kafka.serializer.Decoder;
@@ -42,36 +46,33 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
     @Override
     public Object fromBytes(byte[] bytes) {
         ObjectMapper objectMapper = new ObjectMapper();
-        TrapNotification snmp4JV2cTrap = null;
+        TrapNotification snmp4JTrap = null;
         try {        	
         	
         	JsonNode result = objectMapper.readTree(bytes);
-        	System.out.println("result is : "+result);
+        	LOG.debug("result is : "+result);
         	
         	String version = result.findValue("version").asText();
-
-
-			
         	
         	if(version.equalsIgnoreCase("v2") || version.equalsIgnoreCase("v3")){
-        		snmp4JV2cTrap = parseV2Information(result);
+        		snmp4JTrap = parseV2Information(result);
         	}else if(version.equalsIgnoreCase("v1")){
-        		//snmp4JV2cTrap =  parseV1Information(result);
+        		snmp4JTrap =  parseV1Information(result);
         	}
             
         } catch (IOException e) {
-        	//System.out.println("e is : "+e);
-        	//e.printStackTrace();
+        	LOG.error(String.format("Json processing failed for object: %s", bytes.toString()), e);
+        } catch (Exception e) {
         	LOG.error(String.format("Json processing failed for object: %s", bytes.toString()), e);
         }
-        return snmp4JV2cTrap;
+        return snmp4JTrap;
         	
     }
     
     public TrapInformation parseV2Information(JsonNode result){
     	
     	String trapAddress = result.findValue("trapAddress").asText();
-
+    	LOG.debug("1");
     	JsonNode trapProcessorRoot = result.findValue("trapProcessor");
     	        	
     	TrapProcessor trapProcessor = new BasicTrapProcessor();
@@ -94,39 +95,63 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
 		PDU snmp4JV2cTrapPdu = new PDU();
 		
 		JsonNode varBindRoot = trapProcessorRoot.findValue("varBinds");
-		System.out.println("varBindRoot is : "+varBindRoot);
+		LOG.debug("varBindRoot is : "+varBindRoot);
 		
 		String varBindValue = "";
+		OID oid = null;
 	    Iterator<Map.Entry<String,JsonNode>> fieldsIterator = varBindRoot.getFields();
 	    	while (fieldsIterator.hasNext()) {
 
 	           Map.Entry<String,JsonNode> field = fieldsIterator.next();
-	           System.out.println("Key: " + field.getKey() + "\tValue:" + field.getValue());
+	           LOG.debug("Key: " + field.getKey() + "\tValue:" + field.getValue());
 	           varBindValue = field.getKey();
+	           
+	           String type = field.getValue().findValue("type").asText();
+	           LOG.debug("type is : "+type); 
+	           	            
+				LOG.debug("varBindValue is : "+varBindValue);
+				oid = new OID(varBindValue);
+				snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.sysUpTime, new TimeTicks(5000)));   
+				snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(oid)));
+				snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapAddress,
+						new IpAddress(trapAddress)));
+				
+		           if(type!=null && type.equalsIgnoreCase("67")){
+		        	   LOG.debug("{67}value is : "+field.getValue().findValue("value").asInt());
+		        	   snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new TimeTicks(field.getValue().findValue("value").asInt())));
+		           }else if(type!=null && type.equalsIgnoreCase("6")){
+		        	   LOG.debug("{6}value is : "+field.getValue().findValue("value").toString());
+		        	   snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(field.getValue().findValue("value").toString())));
+		           }else if(type!=null && type.equalsIgnoreCase("64")){
+		        	   LOG.debug("{64}value is : "+field.getValue().findValue("inetAddress").asText());
+		        	   snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new IpAddress(field.getValue().findValue("inetAddress").asText())));
+		           }else if(type!=null && type.equalsIgnoreCase("4")){
+		        	   LOG.debug("{4}value is : "+new String(Base64.getDecoder().decode(field.getValue().findValue("value").asText())));
+		        	   snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(new String(Base64.getDecoder().decode(field.getValue().findValue("value").asText())))));
+		           }else if(type!=null && type.equalsIgnoreCase("2")){
+		        	   LOG.debug("{2}value is : "+field.getValue().findValue("value").asInt());
+		        	   snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new Integer32(field.getValue().findValue("value").asInt())));
+		           }else if(type!=null && type.equalsIgnoreCase("5")){
+		        	   LOG.debug("{5}value is : "+field.getValue().findValue("value"));
+		        	   snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new Null()));
+		           }else if(type!=null && (type.equalsIgnoreCase("128") || type.equalsIgnoreCase("129") || type.equalsIgnoreCase("130"))){
+		        	   LOG.debug("{128 or 129 or 130 }value is : "+field.getValue().findValue("value"));
+		        	   snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new Null(Integer.parseInt(type))));
+		           }else{
+		        	   LOG.debug("{Any}value is : "+field.getValue().findValue("value").asText());
+		        	   snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(field.getValue().findValue("value").asText())));
+		           }
 	    	}
-		
-		String bytesValue = new String(Base64.getDecoder().decode(varBindRoot.findValue("value").asText()));
-		System.out.println("bytesValue is : "+bytesValue);
-		System.out.println("varBindValue is : "+varBindValue);
-		OID oid = new OID(varBindValue);
-		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.sysUpTime, new TimeTicks(5000)));   
-		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(oid)));
-		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapAddress,
-				new IpAddress(trapAddress)));
 
-		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(bytesValue)));
-		
-		System.out.println("type is : "+varBindRoot.findValue("type"));
-		
-		//snmp4JV2cTrapPdu.setType(varBindRoot.findValue("type").asInt()); // what should be the type? 
-		snmp4JV2cTrapPdu.setType(PDU.NOTIFICATION);
+	    	snmp4JV2cTrapPdu.setType(PDU.NOTIFICATION);
 		
 		Snmp4JTrapNotifier.Snmp4JV2TrapInformation snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
 		InetAddressUtils.getInetAddress(trapAddress), trapProcessorRoot.findValue("community").asText(),
 		snmp4JV2cTrapPdu, trapProcessor);
 		
 		return snmp4JV2cTrap;
-    }
+    
+}
     
     public TrapInformation parseV1Information(JsonNode result){
     	
@@ -154,25 +179,55 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
 		PDUv1 snmp4JV1cTrapPdu = new PDUv1();
 		
 		JsonNode varBindRoot = trapProcessorRoot.findValue("varBinds");
-		System.out.println(varBindRoot);
+		LOG.debug("varBindRoot is : "+varBindRoot);
 		
-		String bytesValue = new String(Base64.getDecoder().decode(varBindRoot.findValue("value").asText()));
-		System.out.println("bytesValue is : "+bytesValue);
-		
-		OID oid = new OID(trapIdentityRoot.findValue("enterpriseId").asText());
-		snmp4JV1cTrapPdu.add(new VariableBinding(SnmpConstants.sysUpTime, new TimeTicks(5000)));   
-		snmp4JV1cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(oid)));
-		snmp4JV1cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapAddress,
-				new IpAddress(trapAddress)));
+		String varBindValue = "";
+		OID oid = null;
+	    Iterator<Map.Entry<String,JsonNode>> fieldsIterator = varBindRoot.getFields();
+	    	while (fieldsIterator.hasNext()) {
 
-		snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(bytesValue))); // we should read this from object
-		//snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid2), new OctetString(value2))); // we should read this from object
-		
-		System.out.println("type is : "+varBindRoot.findValue("type"));
-		
-		//snmp4JV2cTrapPdu.setType(varBindRoot.findValue("type").asInt()); // what should be the type? 
-		snmp4JV1cTrapPdu.setType(PDU.NOTIFICATION);
-		
+	           Map.Entry<String,JsonNode> field = fieldsIterator.next();
+	           LOG.debug("Key: " + field.getKey() + "\tValue:" + field.getValue());
+	           varBindValue = field.getKey();
+	           
+	           String type = field.getValue().findValue("type").asText();
+	           LOG.debug("type is : "+type); 
+	           	            
+				LOG.debug("varBindValue is : "+varBindValue);
+				oid = new OID(varBindValue);
+				snmp4JV1cTrapPdu.add(new VariableBinding(SnmpConstants.sysUpTime, new TimeTicks(5000)));   
+				snmp4JV1cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(oid)));
+				snmp4JV1cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapAddress,
+						new IpAddress(trapAddress)));
+				
+		           if(type!=null && type.equalsIgnoreCase("67")){
+		        	   LOG.debug("{67}value is : "+field.getValue().findValue("value").asInt());
+		        	   snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new TimeTicks(field.getValue().findValue("value").asInt())));
+		           }else if(type!=null && type.equalsIgnoreCase("6")){
+		        	   LOG.debug("{6}value is : "+field.getValue().findValue("value").toString());
+		        	   snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(field.getValue().findValue("value").toString())));
+		           }else if(type!=null && type.equalsIgnoreCase("64")){
+		        	   LOG.debug("{64}value is : "+field.getValue().findValue("inetAddress").asText());
+		        	   snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new IpAddress(field.getValue().findValue("inetAddress").asText())));
+		           }else if(type!=null && type.equalsIgnoreCase("4")){
+		        	   LOG.debug("{4}value is : "+new String(Base64.getDecoder().decode(field.getValue().findValue("value").asText())));
+		        	   snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(new String(Base64.getDecoder().decode(field.getValue().findValue("value").asText())))));
+		           }else if(type!=null && type.equalsIgnoreCase("2")){
+		        	   LOG.debug("{2}value is : "+field.getValue().findValue("value").asInt());
+		        	   snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new Integer32(field.getValue().findValue("value").asInt())));
+		           }else if(type!=null && type.equalsIgnoreCase("5")){
+		        	   LOG.debug("{5}value is : "+field.getValue().findValue("value"));
+		        	   snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new Null()));
+		           }else if(type!=null && (type.equalsIgnoreCase("128") || type.equalsIgnoreCase("129") || type.equalsIgnoreCase("130"))){
+		        	   LOG.debug("{128 or 129 or 130 }value is : "+field.getValue().findValue("value"));
+		        	   snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new Null(Integer.parseInt(type))));
+		           }else{
+		        	   LOG.debug("{Any}value is : "+field.getValue().findValue("value").asText());
+		        	   snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(field.getValue().findValue("value").asText())));
+		           }
+	    	}
+
+		snmp4JV1cTrapPdu.setType(PDU.V1TRAP);
 		
 		Snmp4JTrapNotifier.Snmp4JV1TrapInformation snmp4JV1cTrap = new Snmp4JTrapNotifier.Snmp4JV1TrapInformation(
 		InetAddressUtils.getInetAddress(trapAddress), trapProcessorRoot.findValue("community").asText(),
@@ -204,4 +259,49 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
         }
         return ids;
     }
+    
+    private static Variable createVariable(int smiSyntax) {
+    	    switch (smiSyntax) {
+    	     	case 6: 
+    	     		return new OID();
+    	     
+    	     	case 2: 
+    	     		return new Integer32();
+    	    
+    	     	case 4: 
+    	     		return new OctetString();
+    	    
+    	     	case 66: 
+    	     		return new Gauge32();
+    	     
+    	     	case 65: 
+    	     		return new Counter32();
+    	     
+    	     	case 70: 
+    	     		return new Counter64();
+    	     
+    	     	case 5: 
+    	     		return new Null();
+    	     
+    	     	case 67: 
+    	     		return new TimeTicks();
+    	     
+    	     	case 130: 
+    	     		return new Null(130);
+    	     
+    	     	case 129: 
+    	     		return new Null(129);
+    	     
+    	     	case 128: 
+    	     		return new Null(128);
+    	     
+    	     	case 68: 
+    	     		return new Opaque();
+    	     
+    	     	case 64: 
+    	     		return new IpAddress();
+    	     }
+    	     
+    	     throw new IllegalArgumentException("Unsupported variable syntax: " + smiSyntax);
+    	  }
 }
