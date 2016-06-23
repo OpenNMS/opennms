@@ -28,14 +28,11 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.StorageStrategy;
-import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>GenericIndexResource class.</p>
@@ -44,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public class GenericIndexResource extends SnmpCollectionResource {
-    private static final Logger LOG = LoggerFactory.getLogger(GenericIndexResource.class);
+
     private final SnmpInstId m_inst;
     private final String m_name;
     private String m_resourceLabel;
@@ -62,13 +59,9 @@ public class GenericIndexResource extends SnmpCollectionResource {
         m_inst = inst;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public File getResourceDir(RrdRepository repository) {
-        String resourcePath = getStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel());
-        File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
-        LOG.debug("getResourceDir: {}", resourceDir);
-        return resourceDir;
+    public Path getPath() {
+        return getStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel());
     }
 
     /**
@@ -141,3 +134,4 @@ public class GenericIndexResource extends SnmpCollectionResource {
         return m_resourceLabel;
     }
 }
+

@@ -60,7 +60,7 @@ public class GetNodesServlet extends HttpServlet {
     // @ipv6 The regex in this statement is not IPv6-clean
     private static final String INTERFACE_QUERY = "SELECT nodeid, ipaddr, isManaged FROM ipinterface WHERE ismanaged in ('M','A','U','F') AND ipaddr <> '0.0.0.0' ORDER BY nodeid, case when (ipaddr ~ E'^([0-9]{1,3}\\.){3}[0-9]{1,3}$') then inet(ipaddr) else null end, ipaddr";
 
-    private static final String SERVICE_QUERY = "SELECT ifservices.serviceid, servicename, status FROM ifservices, service WHERE nodeid=? AND ipaddr=? AND status in ('A','U','F', 'S', 'R') AND ifservices.serviceid = service.serviceid ORDER BY servicename";
+    private static final String SERVICE_QUERY = "SELECT ifservices.serviceid, service.servicename, ifservices.status FROM ifservices, service, ipInterface, node WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = node.nodeId AND node.nodeid = ? AND ipInterface.ipaddr = ? AND ifservices.status in ('A','U','F','S','R') AND ifservices.serviceid = service.serviceid ORDER BY service.servicename";
 
     /** {@inheritDoc} */
     @Override

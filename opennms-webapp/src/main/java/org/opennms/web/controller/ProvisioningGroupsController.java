@@ -28,46 +28,37 @@
 
 package org.opennms.web.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.web.svclayer.ManualProvisioningService;
-import org.springframework.validation.BindException;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-public class ProvisioningGroupsController extends SimpleFormController {
+/**
+ * TODO: Add validation
+ */
+@Controller
+@RequestMapping("/admin/provisioningGroups.htm")
+public class ProvisioningGroupsController {
 
+    public static final String DEFAULT_PROVISIONING_GROUP_NAME = "default";
+
+    @Autowired
     private ManualProvisioningService m_provisioningService;
+
+    @Autowired
     private ForeignSourceService m_foreignSourceService;
 
-    /**
-     * <p>setProvisioningService</p>
-     *
-     * @param provisioningService a {@link org.opennms.web.svclayer.ManualProvisioningService} object.
-     */
-    public void setProvisioningService(ManualProvisioningService provisioningService) {
-        m_provisioningService = provisioningService;
-    }
-    
-    /**
-     * <p>setForeignSourceService</p>
-     *
-     * @param fss a {@link org.opennms.netmgt.provision.persist.ForeignSourceService} object.
-     */
-    public void setForeignSourceService(ForeignSourceService fss) {
-        m_foreignSourceService = fss;
-    }
-    
     public static class GroupAction {
         private String m_groupName;
         private String m_action = "show";
@@ -79,6 +70,7 @@ public class ProvisioningGroupsController extends SimpleFormController {
         public void setAction(String action) {
             m_action = action;
         }
+        
         public String getGroupName() {
             return m_groupName;
         }
@@ -93,89 +85,90 @@ public class ProvisioningGroupsController extends SimpleFormController {
             m_actionTarget = target;
         }
     }
-    
+
     /**
-     * <p>Constructor for ProvisioningGroupsController.</p>
+     * Take action based on {@link GroupAction} form binding. Uses the default name 
+     * "groupAction" for the command name.
+     * 
+     * @return View for this controller action
      */
-    public ProvisioningGroupsController() {
-        setCommandClass(GroupAction.class);
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object cmd, BindException errors) throws Exception {
-        GroupAction command = (GroupAction)cmd;
+    @RequestMapping(method=RequestMethod.POST)
+    public String onSubmit(GroupAction command, BindingResult result) {
         String action = command.getAction();
-        
+
         if (action == null || "show".equalsIgnoreCase(action)) {
-            return doShow(request, response, command, errors);
+            doShow(command);
         } else if ("addGroup".equalsIgnoreCase(action)) {
-            return doAddGroup(request, response, command, errors);
+            doAddGroup(command);
         } else if ("deleteNodes".equalsIgnoreCase(action)) {
-            return doDeleteNodes(request, response, command, errors);
+            doDeleteNodes(command);
         } else if ("import".equalsIgnoreCase(action)) {
-            return doImport(request, response, command, errors);
+            doImport(command);
         } else if ("deleteGroup".equalsIgnoreCase(action)) {
-            return doDeleteGroup(request, response, command, errors);
+            doDeleteGroup(command);
         } else if ("cloneForeignSource".equalsIgnoreCase(action)) {
-            return doCloneForeignSource(request, response, command, errors);
+            doCloneForeignSource(command);
         } else if ("resetDefaultForeignSource".equalsIgnoreCase(action)) {
-            return doResetDefaultForeignSource(request, response, command, errors);
+            doResetDefaultForeignSource(command);
         } else {
-            errors.reject("Unrecognized action: "+action);
-            return super.onSubmit(request, response, command, errors);
+            result.reject("Unrecognized action: " + action);
         }
-        
+
+        return "redirect:/admin/provisioningGroups.htm";
     }
 
-    private ModelAndView doShow(HttpServletRequest request, HttpServletResponse response, GroupAction command, BindException errors) throws Exception {
-        return showForm(request, response, errors);
+    private void doShow(GroupAction command) {
+        // Just go to the view
     }
 
-    private ModelAndView doDeleteGroup(HttpServletRequest request, HttpServletResponse response, GroupAction command, BindException errors) throws Exception {
+    private void doDeleteGroup(GroupAction command) {
         m_provisioningService.deleteProvisioningGroup(command.getGroupName());
         m_foreignSourceService.deleteForeignSource(command.getGroupName());
-        return showForm(request, response, errors);
+        //return "redirect:/admin/provisioningGroups.htm";
     }
 
-    private ModelAndView doImport(HttpServletRequest request, HttpServletResponse response, GroupAction command, BindException errors) throws Exception {
+    private void doImport(GroupAction command) {
         m_provisioningService.importProvisioningGroup(command.getGroupName());
-        Thread.sleep(500);
-        return showForm(request, response, errors);
+        try { Thread.sleep(500); } catch (InterruptedException e) {}
+        //return "redirect:/admin/provisioningGroups.htm";
     }
 
-    private ModelAndView doDeleteNodes(HttpServletRequest request, HttpServletResponse response, GroupAction command, BindException errors) throws Exception {
+    private void doDeleteNodes(GroupAction command) {
         m_provisioningService.deleteAllNodes(command.getGroupName());
-        return showForm(request, response, errors);
+        //return "redirect:/admin/provisioningGroups.htm";
     }
 
-    private ModelAndView doAddGroup(HttpServletRequest request, HttpServletResponse response, GroupAction command, BindException errors) throws Exception {
+    private void doAddGroup(GroupAction command) {
         String groupName = command.getGroupName();
-        if (groupName.equals("default") || groupName.equals("")) {
-            return showForm(request, response, errors);
-        } if (m_provisioningService.getProvisioningGroup(groupName) != null) {
+        if (groupName.equals(DEFAULT_PROVISIONING_GROUP_NAME) || groupName.equals("")) {
+            //return "redirect:/admin/provisioningGroups.htm";
+        } else if (m_provisioningService.getProvisioningGroup(groupName) != null) {
             // Requisition already exists; don't clobber it!
-            return showForm(request, response, errors);
+            //return "redirect:/admin/provisioningGroups.htm";
         } else {
             m_provisioningService.createProvisioningGroup(command.getGroupName());
         }
-        return showForm(request, response, errors);
+        //return "redirect:/admin/provisioningGroups.htm";
     }
 
-    private ModelAndView doCloneForeignSource(HttpServletRequest request, HttpServletResponse response, GroupAction command, BindException errors) throws Exception {
+    private void doCloneForeignSource(GroupAction command) {
         m_foreignSourceService.cloneForeignSource(command.getGroupName(), command.getActionTarget());
-        return showForm(request, response, errors);
+        //return "redirect:/admin/provisioningGroups.htm";
     }
 
-    private ModelAndView doResetDefaultForeignSource(HttpServletRequest request, HttpServletResponse response, GroupAction command, BindException errors) throws Exception {
-        m_foreignSourceService.deleteForeignSource("default");
-        return showForm(request, response, errors);
+    private void doResetDefaultForeignSource(GroupAction command) {
+        m_foreignSourceService.deleteForeignSource(DEFAULT_PROVISIONING_GROUP_NAME);
+        //return "redirect:/admin/provisioningGroups.htm";
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected Map<String,Object> referenceData(HttpServletRequest request) throws Exception {
-        Map<String, Object> refData = new HashMap<String, Object>();
+    /**
+     * Enrich the model using {@link ModelMap} with extra attributes necessary to 
+     * display the page.
+     * 
+     * @param map
+     */
+    @RequestMapping(method=RequestMethod.GET)
+    public void referenceData(ModelMap map) {
 
         Set<String>               names          = new TreeSet<String>();
         Map<String,Requisition>   groups         = new TreeMap<String,Requisition>();
@@ -187,6 +180,7 @@ public class ProvisioningGroupsController extends SimpleFormController {
                 groups.put(mi.getForeignSource(), mi);
             }
         }
+
         for (ForeignSource fs : m_foreignSourceService.getAllForeignSources()) {
             if (!fs.isDefault()) {
                 names.add(fs.getName());
@@ -194,13 +188,9 @@ public class ProvisioningGroupsController extends SimpleFormController {
             }
         }
 
-        refData.put("foreignSourceNames", names);
-        refData.put("groups", groups);
-        refData.put("foreignSources", foreignSources);
-        refData.put("dbNodeCounts", m_provisioningService.getGroupDbNodeCounts());
-        
-        return refData;
+        map.put("foreignSourceNames", names);
+        map.put("groups", groups);
+        map.put("foreignSources", foreignSources);
+        map.put("dbNodeCounts", m_provisioningService.getGroupDbNodeCounts());
     }
-
-    
 }

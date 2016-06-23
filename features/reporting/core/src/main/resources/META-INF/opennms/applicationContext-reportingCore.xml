@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-	http://www.springframework.org/schema/beans/spring-beans.xsd">
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 
 	<bean id="reportServiceLocator" class="org.opennms.reporting.core.svclayer.support.DefaultReportServiceLocator">
         <property name="globalReportRepository" ref="defaultGlobalReportRepository" />
@@ -10,17 +10,17 @@
 	
 	<bean id="reportWrapperService" class="org.opennms.reporting.core.svclayer.support.DefaultReportWrapperService">
 		<property name="reportServiceLocator">
-			<ref local="reportServiceLocator" />
+			<ref bean="reportServiceLocator" />
 		</property>
 		<property name="reportStoreService">
-			<ref local="reportStoreService" />
+			<ref bean="reportStoreService" />
 		</property>
 	</bean>
 
 	<bean id="reportStoreService" class="org.opennms.reporting.core.svclayer.support.DefaultReportStoreService" >
 		<property name="reportCatalogDao" ref="reportCatalogDao" />
 		<property name="reportServiceLocator">
-		 <ref local="reportServiceLocator" />
+		 <ref bean="reportServiceLocator" />
 		</property>
         <property name="globalReportRepository" ref="defaultGlobalReportRepository" />
 	</bean>

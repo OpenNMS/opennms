@@ -36,11 +36,17 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 public class MockDistPollerDao extends AbstractMockDao<OnmsDistPoller,String> implements DistPollerDao {
     @Override
     protected void generateId(final OnmsDistPoller dp) {
-        dp.setName(UUID.randomUUID().toString());
+        dp.setId(UUID.randomUUID().toString());
     }
 
     @Override
     protected String getId(final OnmsDistPoller dp) {
-        return dp == null? null : dp.getName();
+        return dp == null? null : dp.getId();
+    }
+
+    @Override
+    public OnmsDistPoller whoami() {
+        // Return the OnmsDistPoller with the default UUID
+        return get("00000000-0000-0000-0000-000000000000");
     }
 }

@@ -11,12 +11,12 @@
          <query name="opennmsQuery" recheckInterval="0" ifType="ignore">
             <statement>
                <queryString>
-                    SELECT COUNT(eventid) as EventCount
-                    FROM events
-                    WHERE eventtime
-                    BETWEEN (CURRENT_TIMESTAMP - INTERVAL '1 day')
-                    AND CURRENT_TIMESTAMP
-               </queryString>
+                   SELECT COUNT(eventid) as EventCount
+                   FROM events
+                   WHERE eventtime
+                   BETWEEN (CURRENT_TIMESTAMP - INTERVAL '1 day')
+                   AND CURRENT_TIMESTAMP;
+                </queryString>
             </statement>
             <columns>
                <column name="eventCount" data-source-name="EventCount" type="GAUGE" alias="OnmsEventCount"/>
@@ -24,7 +24,7 @@
          </query>
          <query name="opennmsNodeQuery" recheckInterval="0" ifType="ignore">
             <statement>
-               <queryString>SELECT COUNT(*) as NodeCount FROM node WHERE nodetype != 'D'</queryString>
+               <queryString>SELECT COUNT(*) as NodeCount FROM node WHERE nodetype != 'D';</queryString>
             </statement>
             <columns>
                <column name="nodeCount" data-source-name="NodeCount" type="GAUGE" alias="OnmsNodeCount"/>

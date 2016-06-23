@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.categories.CatFactory;
+import org.opennms.netmgt.config.api.CatFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.reporting.availability.svclayer.AvailabilityDataService;

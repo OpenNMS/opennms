@@ -36,10 +36,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name="groups")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonRootName("groups")
 public class OnmsGroupList extends JaxbListWrapper<OnmsGroup> {
     private static final long serialVersionUID = 1L;
 
@@ -49,12 +52,15 @@ public class OnmsGroupList extends JaxbListWrapper<OnmsGroup> {
     }
 
     @XmlElement(name="group")
+    @JsonProperty("group")
     public List<OnmsGroup> getObjects() {
         return super.getObjects();
     }
+
     public List<OnmsGroup> getGroups() {
         return getObjects();
     }
+
     public void setGroups(final List<OnmsGroup> groups) {
         setObjects(groups);
     }

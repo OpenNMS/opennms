@@ -37,6 +37,7 @@ import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceVisitor;
 import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.test.ThrowableAnticipator;
@@ -120,7 +121,7 @@ public class ResourceAttributeFilteringResourceVisitorTest extends TestCase {
 
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
-        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, attributes);
+        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, attributes, ResourcePath.get("foo"));
         
         // Expect
         m_delegatedVisitor.visit(resource);
@@ -142,7 +143,7 @@ public class ResourceAttributeFilteringResourceVisitorTest extends TestCase {
 
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
-        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, attributes);
+        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, attributes, ResourcePath.get("foo"));
         
         // Expect
         m_delegatedVisitor.visit(resource);
@@ -161,7 +162,7 @@ public class ResourceAttributeFilteringResourceVisitorTest extends TestCase {
 
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("something other than interfaceSnmp");
-        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0));
+        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0), ResourcePath.get("foo"));
 
         m_mocks.replayAll();
         filteringVisitor.visit(resource);

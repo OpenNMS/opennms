@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2014-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.core.web;
 
 import java.io.Closeable;
@@ -13,6 +41,8 @@ import java.util.Set;
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
+import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -43,8 +73,8 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
 import org.apache.http.protocol.HTTP;
@@ -59,6 +89,7 @@ public class HttpClientWrapper implements Closeable {
     private CloseableHttpClient m_httpClient;
     private CookieStore m_cookieStore;
 
+    private boolean m_useLaxRedirect = false;
     private boolean m_reuseConnections = true;
     private boolean m_usePreemptiveAuth = false;
     private boolean m_useSystemProxySettings;
@@ -79,6 +110,20 @@ public class HttpClientWrapper implements Closeable {
 
     protected HttpClientWrapper() {
         m_cookieStore = new BasicCookieStore();
+        // According to the HTTP specification, adding the default ports to the host header is optional.
+        // If the default ports are added, several Web Servers like Microsoft IIS 7.5 will complain about it, and could lead to unwanted results.
+        addRequestInterceptor(new HttpRequestInterceptor() {
+            @Override
+            public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
+                Header host = request.getFirstHeader(HTTP.TARGET_HOST);
+                if (host != null) {
+                    if (host.getValue().endsWith(":80") || host.getValue().endsWith(":443")) {
+                        request.setHeader(HTTP.TARGET_HOST, host.getValue().replaceFirst(":\\d+", ""));
+                        LOG.info("httpRequestInterceptor: removing default port from host header");
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -189,6 +234,18 @@ public class HttpClientWrapper implements Closeable {
     }
 
     /**
+     * Use LAX redirect strategy.
+     * Automatically redirects all HEAD, GET and POST requests.
+     * This strategy relaxes restrictions on automatic redirection of POST methods imposed by the HTTP specification.
+     */
+    public HttpClientWrapper useLaxRedirect() {
+        LOG.debug("useLaxRedirect()");
+        assertNotInitialized();
+        m_useLaxRedirect = true;
+        return this;
+    }
+
+    /**
      * Set the socket timeout on connections.
      */
     public HttpClientWrapper setSocketTimeout(final Integer socketTimeout) {
@@ -274,17 +331,23 @@ public class HttpClientWrapper implements Closeable {
      * Note that when you are done with the response, you must call {@link #closeResponse()} so that it gets cleaned up properly.
      */
     public CloseableHttpResponse execute(final HttpUriRequest method) throws ClientProtocolException, IOException {
-        System.err.println("execute: " + this.toString());
+        LOG.debug("execute: " + this.toString() + "; method: " + method.toString());
         // override some headers with our versions
         final HttpRequestWrapper requestWrapper = HttpRequestWrapper.wrap(method);
-        if (m_userAgent != null && !m_userAgent.trim().isEmpty()) {
+        if (!isEmpty(m_userAgent)) {
             requestWrapper.setHeader(HTTP.USER_AGENT, m_userAgent);
         }
-        if (m_virtualHost != null && !m_virtualHost.trim().isEmpty()) {
+        if (!isEmpty(m_virtualHost)) {
             requestWrapper.setHeader(HTTP.TARGET_HOST, m_virtualHost);
         }
+
         if (m_version != null) {
-            requestWrapper.setProtocolVersion(m_version);
+            if (HttpVersion.HTTP_1_1.equals(m_version) && isEmpty(m_virtualHost)) {
+                // NMS-7506, set HTTP version to 1.0 if virtual host is not set (since 1.1 requires a virtual host)
+                requestWrapper.setProtocolVersion(HttpVersion.HTTP_1_0);
+            } else {
+                requestWrapper.setProtocolVersion(m_version);
+            }
         }
 
         return getClient().execute(requestWrapper);
@@ -336,7 +399,7 @@ public class HttpClientWrapper implements Closeable {
             if (m_useSystemProxySettings) {
                 httpClientBuilder.setRoutePlanner(new SystemDefaultRoutePlanner(ProxySelector.getDefault()));
             }
-            if (m_cookieSpec != null && !m_cookieSpec.trim().isEmpty()) {
+            if (!isEmpty(m_cookieSpec)) {
                 requestConfigBuilder.setCookieSpec(m_cookieSpec);
             }
             if (m_cookieStore != null) {
@@ -352,7 +415,7 @@ public class HttpClientWrapper implements Closeable {
                 requestConfigBuilder.setConnectTimeout(m_connectionTimeout);
             }
             if (m_retries != null) {
-                httpClientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(m_retries, false));
+                httpClientBuilder.setRetryHandler(new HttpRequestRetryOnExceptionHandler(m_retries, false));
             }
             if (m_sslContext.size() != 0) {
                 configureSSLContext(httpClientBuilder);
@@ -363,7 +426,9 @@ public class HttpClientWrapper implements Closeable {
             for (final HttpResponseInterceptor interceptor : m_responseInterceptors) {
                 httpClientBuilder.addInterceptorLast(interceptor);
             }
-
+            if (m_useLaxRedirect) {
+                httpClientBuilder.setRedirectStrategy(new LaxRedirectStrategy());
+            }
             httpClientBuilder.setDefaultRequestConfig(requestConfigBuilder.build());
             m_httpClient = httpClientBuilder.build();
         }
@@ -452,5 +517,9 @@ public class HttpClientWrapper implements Closeable {
                 + ", virtualHost=" + m_virtualHost
                 + ", version=" + m_version
                 + "]";
+    }
+
+    private static boolean isEmpty(final String value) {
+        return (value == null || value.trim().isEmpty());
     }
 }

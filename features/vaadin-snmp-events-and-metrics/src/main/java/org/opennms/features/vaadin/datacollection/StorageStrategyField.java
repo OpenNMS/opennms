@@ -29,7 +29,7 @@
 package org.opennms.features.vaadin.datacollection;
 
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
-import org.opennms.netmgt.dao.support.IndexStorageStrategy;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
 import org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy;
 
 /**

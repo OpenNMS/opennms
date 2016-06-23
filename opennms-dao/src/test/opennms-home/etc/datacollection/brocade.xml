@@ -3,8 +3,8 @@
 
     <!-- Brocade Resource Types -->
 	 <resourceType name="swFCPortIndex" label="Brocade Fibre Channel Port" resourceLabel="FC port ${swFCPortSpecifier}: ${swFCPortName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
       <group name="brocade-switch-fctable" ifType="all">

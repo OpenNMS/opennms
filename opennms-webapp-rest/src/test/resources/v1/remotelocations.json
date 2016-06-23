@@ -1,0 +1,24 @@
+{
+    "count": 1, 
+    "location": [
+        {
+            "collection-package-names": [
+                "example1"
+            ], 
+            "geolocation": "Research Triangle Park, NC", 
+            "monitoring-area": "East Coast", 
+            "latitude": 35.71575, 
+            "location-name": "RDU", 
+            "longitude": -79.16262, 
+            "polling-package-names": [
+                "example1"
+            ], 
+            "priority": 1, 
+            "tags": [
+                "blah"
+            ]
+        } 
+    ], 
+    "offset": null, 
+    "totalCount": 1
+}

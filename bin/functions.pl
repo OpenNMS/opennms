@@ -12,6 +12,7 @@ use File::Spec;
 use Getopt::Long qw(:config permute bundling pass_through);
 use IO::Handle;
 use IPC::Open2;
+use Scalar::Util qw(looks_like_number);
 
 use vars qw(
 	$BUILD_PROFILE
@@ -83,17 +84,30 @@ delete $ENV{'M2_HOME'};
 
 # maven options
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
-$OOSNMP_TRUSTSTORE = File::Spec->catfile($PREFIX, 'bin', 'oosnmp.net.trustStore');
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	$MAVEN_OPTS = "-XX:PermSize=512m -XX:MaxPermSize=1g -Xmx1280m -XX:ReservedCodeCacheSize=512m -Djavax.net.ssl.trustStore=$OOSNMP_TRUSTSTORE -Djavax.net.ssl.trustStorePassword=password";
+	if (defined $TESTS) {
+		$MAVEN_OPTS = "-Xmx2048m -XX:ReservedCodeCacheSize=512m";
+	} else {
+		$MAVEN_OPTS = "-Xmx1536m -XX:ReservedCodeCacheSize=512m";
+	}
+}
 
+if (not $MAVEN_OPTS =~ /TieredCompilation/) {
+	# Improve startup speed by disabling collection of extra profiling information during compiles since they're not
+	# long-running enough for them to be a net-win for performance.
+	$MAVEN_OPTS .= " -XX:+TieredCompilation -XX:TieredStopAtLevel=1";
+}
+
+if (not $MAVEN_OPTS =~ /UseGCOverheadLimit/) {
 	# The concurrent collector will throw an OutOfMemoryError if too much time is being spent in garbage collection: if
 	# more than 98% of the total time is spent in garbage collection and less than 2% of the heap is recovered, an
 	# OutOfMemoryError will be thrown. This feature is designed to prevent applications from running for an extended
 	# period of time while making little or no progress because the heap is too small. If necessary, this feature can
 	# be disabled by adding the option -XX:-UseGCOverheadLimit to the command line.
 	$MAVEN_OPTS .= " -XX:-UseGCOverheadLimit";
+}
 
+if (not $MAVEN_OPTS =~ /UseParallelGC/) {
 	# If (a) peak application performance is the first priority and (b) there are no pause time requirements or pauses
 	# of one second or longer are acceptable, then select the parallel collector with -XX:+UseParallelGC and
 	# (optionally) enable parallel compaction with -XX:+UseParallelOldGC.
@@ -130,7 +144,7 @@ usage: $0 [-h] [-j \$JAVA_HOME] [-t] [-v]
 	-m/--maven-opts OPTS   set \$MAVEN_OPTS to OPTS
 	                       (default: $MAVEN_OPTS)
 	-p/--profile PROFILE   default, dir, full, or fulldir
-	-t/--enable-tests      enable tests when building
+	-t/--enable-tests      enable integration tests when building
 	-l/--log-level         log level (error/warning/info/debug)
 END
 	exit 1;
@@ -191,12 +205,10 @@ if ($MAVEN_VERSION =~ /^[12]/) {
 	warning("Your maven version ($MAVEN_VERSION) is too old.  There are known bugs building with a version less than 3.0.  Expect trouble.");
 }
 
+unshift(@ARGS, '-DfailIfNoTests=false');
 if (defined $TESTS) {
-	debug("tests are enabled");
-	unshift(@ARGS, '-DfailIfNoTests=false');
-} else {
-	debug("tests are not enabled, passing -Dmaven.test.skip.exec=true");
-	unshift(@ARGS, '-Dmaven.test.skip.exec=true');
+	debug("integration tests are enabled");
+	unshift(@ARGS, '-DskipITs=false');
 }
 unshift(@ARGS, '-Djava.awt.headless=true');
 
@@ -218,12 +230,18 @@ if (grep { $_ =~ /^-Dbuild.profile=/ } @ARGS) {
 	unshift(@ARGS, "-Dbuild.profile=$BUILD_PROFILE");
 }
 
+if (not grep { $_ =~ /^-Dbuild.skip.tarball=/ } @ARGS) {
+	if (abs_path(getcwd()) ne abs_path($PREFIX)) {
+		debug("not building in the root directory, passing -Dbuild.skip.tarball=true");
+		unshift(@ARGS, "-Dbuild.skip.tarball=true");
+	}
+}
 
 if (-r File::Spec->catfile($ENV{'HOME'}, '.opennms-buildrc')) {
 	if (open(FILEIN, File::Spec->catfile($ENV{'HOME'}, '/.opennms-buildrc'))) {
 		while (my $line = <FILEIN>) {
 			chomp($line);
-			if ($line !~ /^\s*$/ && $line !~ /^\s*\#/) {
+			if ($line !~ /^\s*$/ and $line !~ /^\s*\#/) {
 				unshift(@ARGS, $line);
 			}
 		}
@@ -274,7 +292,7 @@ sub find_git {
 }
 
 sub get_minimum_java {
-	my $minimum_java = '1.7';
+	my $minimum_java = '1.8';
 
 	my $pomfile = File::Spec->catfile($PREFIX, 'pom.xml');
 	if (-e $pomfile) {
@@ -301,9 +319,9 @@ sub get_version_from_java {
 	my ($output, $bindir, $shortversion, $version, $build, $java_home);
 
 	$output = `"$javacmd" -version 2>\&1`;
-	($version) = $output =~ / version \"?([\d\.]+?(?:[\-\_]\S+?)?)\"?$/ms;
-	($version, $build) = $version =~ /^([\d\.]+)(?:[\-\_](.*?))?$/;
-	($shortversion) = $version =~ /^(\d+\.\d+)/;
+	($version) = $output =~ / version \"?([\d\.]+?(?:[\+\-\_]\S+?)?)\"?$/ms;
+	($version, $build) = $version =~ /^([\d\.]+)(?:[\+\-\_](.*?))?$/;
+	($shortversion) = $version =~ /^(\d+\.\d+|\d+)/;
 	$build = 0 if (not defined $build);
 
 	$bindir = dirname($javacmd);
@@ -340,6 +358,10 @@ sub find_java_home {
 					next if ($java  =~ /openjdk/i);
 					next if ($build =~ /openjdk/i);
 				}
+				next unless (defined $shortversion and $shortversion);
+
+				$versions->{$shortversion}             = {} unless (exists $versions->{$shortversion});
+				$versions->{$shortversion}->{$version} = {} unless (exists $versions->{$shortversion}->{$version});
 
 				next if (exists $versions->{$shortversion}->{$version}->{$build});
 
@@ -351,7 +373,7 @@ sub find_java_home {
 	my $highest_valid = undef;
 
 	for my $majorversion (sort keys %$versions) {
-		if ($majorversion < $minimum_java) {
+		if (looks_like_number($majorversion) and looks_like_number($minimum_java) and $majorversion < $minimum_java) {
 			next;
 		}
 
@@ -396,6 +418,10 @@ sub clean_git {
 
 sub clean_m2_repository {
 	my %dirs;
+	my $repodir = File::Spec->catfile($ENV{'HOME'}, '.m2', 'repository');
+	if (not -d $repodir) {
+		return;
+	}
 	find(
 		{
 			wanted => sub {
@@ -405,7 +431,7 @@ sub clean_m2_repository {
 				}
 			}
 		},
-		File::Spec->catfile($ENV{'HOME'}, '.m2', 'repository')
+		$repodir
 	);
 	my @remove = sort keys %dirs;
 	info("cleaning up old m2_repo directories: " . @remove);

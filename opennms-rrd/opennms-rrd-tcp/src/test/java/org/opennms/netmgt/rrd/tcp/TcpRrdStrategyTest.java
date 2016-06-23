@@ -46,7 +46,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.rrd.RrdDataSource;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition;
 import org.opennms.test.FileAnticipator;
 import org.slf4j.Logger;
@@ -71,8 +70,8 @@ public class TcpRrdStrategyTest {
     private QueuingTcpRrdStrategy m_strategy;
     private FileAnticipator m_fileAnticipator;
     private static Thread m_listenerThread;
-    private static String m_tempDir;
     private static int m_listenPort;
+    private static final String RRD_EXTENSION = ".rrd";
 
     @BeforeClass
     public static void startListenerThread() throws Exception {
@@ -224,7 +223,6 @@ public class TcpRrdStrategyTest {
 
     public File createRrdFile() throws Exception {
         String rrdFileBase = "foo";
-        String rrdExtension = RrdUtils.getExtension();
 
         m_fileAnticipator.initialize();
 
@@ -238,13 +236,12 @@ public class TcpRrdStrategyTest {
         List<String> rraList = new ArrayList<String>();
         rraList.add("RRA:AVERAGE:0.5:1:2016");
         File tempDir = m_fileAnticipator.getTempDir(); 
-        m_tempDir = tempDir.getAbsolutePath();
         // Create an '/rrd/snmp/1' directory in the temp directory so that the
         // RRDs created by the test will have a realistic path
         File rrdDir = m_fileAnticipator.tempDir(m_fileAnticipator.tempDir(m_fileAnticipator.tempDir(tempDir, "rrd"), "snmp"), "1");
         RrdDefinition def = m_strategy.createDefinition("hello!", rrdDir.getAbsolutePath(), rrdFileBase, 300, dataSources, rraList);
         m_strategy.createFile(def, null);
 
-        return m_fileAnticipator.expecting(rrdDir, rrdFileBase + rrdExtension);
+        return m_fileAnticipator.expecting(rrdDir, rrdFileBase + RRD_EXTENSION);
     }
 }

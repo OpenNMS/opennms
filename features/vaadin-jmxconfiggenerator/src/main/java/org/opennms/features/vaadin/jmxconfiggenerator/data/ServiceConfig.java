@@ -46,7 +46,7 @@ public class ServiceConfig {
     private String password = null;
     private boolean ssl = false;
     private boolean skipDefaultVM = true;
-    private boolean runWritableMBeans = false;
+    private boolean skipNonNumber = false;
     private boolean authenticate = false;
 
     public boolean isAuthenticate() {
@@ -57,20 +57,20 @@ public class ServiceConfig {
         this.authenticate = authenticate;
     }
 
-    public boolean isRunWritableMBeans() {
-        return runWritableMBeans;
-    }
-
-    public void setRunWritableMBeans(boolean runWritableMBeans) {
-        this.runWritableMBeans = runWritableMBeans;
-    }
-
     public boolean isSkipDefaultVM() {
         return skipDefaultVM;
     }
 
     public void setSkipDefaultVM(boolean skipDefaultVM) {
         this.skipDefaultVM = skipDefaultVM;
+    }
+
+    public boolean isSkipNonNumber() {
+        return skipNonNumber;
+    }
+
+    public void setSkipNonNumber(boolean skipNonNumber) {
+        this.skipNonNumber = skipNonNumber;
     }
 
     public String getPassword() {

@@ -38,6 +38,8 @@ import javax.sql.DataSource;
 /**
  * <p>Querier class.</p>
  *
+ * @deprecated Use Hibernate instead of plain JDBC
+ *
  * @author ranger
  * @version $Id: $
  */

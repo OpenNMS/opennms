@@ -1,11 +1,11 @@
 <datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Riverbed">
    <resourceType name="rbshCpuIndivIndex" label="Riverbed Steelhead CPU" resourceLabel="CPU ${rbshCpuIndivId}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="rbshBwPort" label="Riverbed Per-Port Bandwidth" resourceLabel="Port ${rbshBwPortNumber}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <group name="riverbed-steelhead-scalars" ifType="ignore">
       <mibObj oid=".1.3.6.1.4.1.17163.1.1.1.1" instance="0" alias="rbshSystemModel" type="string"/>

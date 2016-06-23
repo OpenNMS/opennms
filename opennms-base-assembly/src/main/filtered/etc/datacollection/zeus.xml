@@ -1,11 +1,11 @@
 <datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Zeus">
    <resourceType name="virtualserverName" label="Zeus ZXTM Virtual Servers" resourceLabel="${virtualserverName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="poolName" label="Zeus ZXTM Pools" resourceLabel="${poolName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <group name="zxtm" ifType="ignore">
       <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.1" instance="0" alias="version" type="string"/>

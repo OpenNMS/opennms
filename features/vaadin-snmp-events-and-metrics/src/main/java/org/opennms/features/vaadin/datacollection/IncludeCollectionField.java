@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.vaadin.dialogs.ConfirmDialog;
 

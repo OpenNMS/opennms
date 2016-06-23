@@ -66,6 +66,7 @@ public class JuniperSyslogParser extends SyslogParser {
 
         final Matcher matcher = getMatcher();
         final SyslogMessage message = new SyslogMessage();
+        message.setParserClass(getClass());
 
         try {
             final int priorityField = Integer.parseInt(matcher.group(1));

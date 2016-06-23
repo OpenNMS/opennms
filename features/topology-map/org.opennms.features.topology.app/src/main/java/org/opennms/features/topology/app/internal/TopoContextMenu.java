@@ -216,7 +216,7 @@ public class TopoContextMenu extends ContextMenu {
 
 	private static List<VertexRef> asVertexList(Object target) {
 		if (target != null && target instanceof Collection) {
-			return new ArrayList((Collection<VertexRef>)target);
+			return new ArrayList<VertexRef>((Collection<VertexRef>)target);
 		} else if (target != null && target instanceof VertexRef) {
 			return Collections.singletonList((VertexRef)target);
 		} else {

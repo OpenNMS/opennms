@@ -79,6 +79,12 @@ public abstract class CastorUtils {
         }
     }
 
+    public static String marshal(final Object obj) throws MarshalException, ValidationException, IOException {
+        final StringWriter writer = new StringWriter();
+        marshal(obj, writer);
+        return writer.toString();
+    }
+
     private static void marshal(Object obj, Writer writer) throws IOException, MarshalException, ValidationException {
         Marshaller m = new Marshaller(writer);
         m.setSuppressNamespaces(true);

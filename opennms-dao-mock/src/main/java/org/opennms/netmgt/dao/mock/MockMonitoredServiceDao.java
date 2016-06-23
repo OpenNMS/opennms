@@ -49,10 +49,11 @@ public class MockMonitoredServiceDao extends AbstractMockDao<OnmsMonitoredServic
     private AtomicInteger m_id = new AtomicInteger(0);
 
     @Override
-    public void save(final OnmsMonitoredService svc) {
+    public Integer save(final OnmsMonitoredService svc) {
         updateParent(svc);
-        super.save(svc);
+        Integer retval = super.save(svc);
         updateSubObjects(svc);
+        return retval;
     }
 
     @Override

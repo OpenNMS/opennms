@@ -33,7 +33,7 @@ import java.util.SortedMap;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsNode;
@@ -155,7 +155,7 @@ public class FilterResourceWalker implements ResourceWalker {
     /**
      * <p>getFilterDao</p>
      *
-     * @return a {@link org.opennms.netmgt.filter.FilterDao} object.
+     * @return a {@link org.opennms.netmgt.filter.api.FilterDao} object.
      */
     public FilterDao getFilterDao() {
         return m_filterDao;
@@ -164,7 +164,7 @@ public class FilterResourceWalker implements ResourceWalker {
     /**
      * <p>setFilterDao</p>
      *
-     * @param filterDao a {@link org.opennms.netmgt.filter.FilterDao} object.
+     * @param filterDao a {@link org.opennms.netmgt.filter.api.FilterDao} object.
      */
     public void setFilterDao(FilterDao filterDao) {
         m_filterDao = filterDao;

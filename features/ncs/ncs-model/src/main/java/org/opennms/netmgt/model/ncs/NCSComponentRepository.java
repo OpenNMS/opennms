@@ -105,7 +105,7 @@ public interface NCSComponentRepository {
     /**
      * <p>save</p>
      */
-    void save(NCSComponent component);
+    Long save(NCSComponent component);
 
     /**
      * <p>saveOrUpdate</p>

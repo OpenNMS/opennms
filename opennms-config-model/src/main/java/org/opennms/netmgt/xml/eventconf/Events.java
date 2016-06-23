@@ -100,7 +100,7 @@ public class Events implements Serializable {
 	
 	@XmlTransient
 	private Map<String, Events> m_loadedEventFiles = new LinkedHashMap<String, Events>();
-	
+
 	@XmlTransient
 	private Partition m_partition;
 	
@@ -332,17 +332,51 @@ public class Events implements Serializable {
         }
 
 	}
-	
 
-	public void loadEventFiles(Resource configResource) throws IOException {
-		m_loadedEventFiles.clear();
-		
-		for(String eventFile : m_eventFiles) {
-			Resource eventResource = getRelative(configResource, eventFile);
-			Events events = JaxbUtils.unmarshal(Events.class, eventResource);
-			if (events.getEventCount() <= 0) {
-				throw new IllegalStateException("Uh oh! An event file "+eventResource.getFile()+" with no events has been laoded!");
-			}
+    public Map<String, Long> loadEventFiles(Resource configResource) throws IOException {
+        Map<String, Long> lastModifiedEventFiles = new LinkedHashMap<String, Long>();
+        loadEventFilesIfModified(configResource, lastModifiedEventFiles);
+        return lastModifiedEventFiles;
+    }
+
+    public void loadEventFilesIfModified(Resource configResource, Map<String, Long> lastModifiedEventFiles) throws IOException {
+        // Remove any event files that we're previously loaded, and no
+        // longer appear in the list of event files
+        for(Iterator<Map.Entry<String, Events>> it = m_loadedEventFiles.entrySet().iterator(); it.hasNext(); ) {
+            String eventFile = it.next().getKey();
+            if(!m_eventFiles.contains(eventFile)) {
+                // The event file was previously loaded and has been removed
+                // from the list of event files
+                it.remove();
+            }
+        }
+
+        // Conditionally load or reload the event files
+        for(String eventFile : m_eventFiles) {
+            Resource eventResource = getRelative(configResource, eventFile);
+            long lastModified = eventResource.lastModified();
+
+            // Determine whether or not the file should be loaded
+            boolean shouldLoadFile = true;
+            if (lastModifiedEventFiles.containsKey(eventFile)
+                    && lastModifiedEventFiles.get(eventFile) == lastModified) {
+                shouldLoadFile = false;
+                // If we opt out to load a particular file, it must
+                // be already loaded
+                assert(m_loadedEventFiles.containsKey(eventFile));
+            }
+
+            // Skip any files that don't need to be loaded
+            if (!shouldLoadFile) {
+                continue;
+            }
+
+            lastModifiedEventFiles.put(eventFile, lastModified);
+
+            Events events = JaxbUtils.unmarshal(Events.class, eventResource);
+            if (events.getEventCount() <= 0) {
+                throw new IllegalStateException("Uh oh! An event file "+eventResource.getFile()+" with no events has been laoded!");
+            }
             if (events.getGlobal() != null) {
                 throw new ObjectRetrievalFailureException(Resource.class, eventResource, "The event resource " + eventResource + " included from the root event configuration file cannot have a 'global' element", null);
             }
@@ -350,9 +384,9 @@ public class Events implements Serializable {
                 throw new ObjectRetrievalFailureException(Resource.class, eventResource, "The event resource " + eventResource + " included from the root event configuration file cannot include other configuration files: " + StringUtils.collectionToCommaDelimitedString(events.getEventFileCollection()), null);
             }
 
-			m_loadedEventFiles.put(eventFile, events);
-		}
-	}
+            m_loadedEventFiles.put(eventFile, events);
+        }
+    }
 
 	public boolean isSecureTag(String tag) {
 		return m_global == null ? false : m_global.isSecureTag(tag);
@@ -468,16 +502,18 @@ public class Events implements Serializable {
 		return m_loadedEventFiles.get(relativePath);
 	}
 
-	public void addLoadedEventFile(String relativePath, Events events) {
-		m_eventFiles.add(relativePath);
-		m_loadedEventFiles.put(relativePath, events);
-	}
+    public void addLoadedEventFile(String relativePath, Events events) {
+        if (!m_eventFiles.contains(relativePath)) {
+            m_eventFiles.add(relativePath);
+        }
+        m_loadedEventFiles.put(relativePath, events);
+    }
 
 	public void removeLoadedEventFile(String relativePath) {
 		m_eventFiles.remove(relativePath);
 		m_loadedEventFiles.remove(relativePath);
 	}
-	
+
 	public void saveEvents(Resource resource) {
 		final StringWriter stringWriter = new StringWriter();
 		JaxbUtils.marshal(this, stringWriter);
@@ -528,7 +564,4 @@ public class Events implements Serializable {
 		
 		saveEvents(resource);
 	}
-
-
-
 }

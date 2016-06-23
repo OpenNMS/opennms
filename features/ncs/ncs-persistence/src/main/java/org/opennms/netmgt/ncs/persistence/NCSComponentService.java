@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.ncs.persistence;
 
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.ncs.rest.NCSRestService.ComponentList;
 

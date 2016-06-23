@@ -3,12 +3,15 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config</artifactId>
   <name>OpenNMS Configuration</name>
   <packaging>bundle</packaging>
+  <properties>
+    <skipITs>true</skipITs>
+  </properties>
   <build>
     <plugins>
       <plugin>
@@ -20,20 +23,38 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <skipITs>${skipITs}</skipITs>
+          <reuseForks>false</reuseForks> <!-- blame PollerConfigFactoryIT -->
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
 
             <!-- Launch the Spring contexts when this bundle is loaded in OSGi -->
+            <!--
             <Spring-Context>
               META-INF/opennms/applicationContext-commonConfigs-osgi.xml,
               META-INF/opennms/applicationContext-commonConfigs.xml
             </Spring-Context>
+            -->
           </instructions>
         </configuration>
       </plugin>
@@ -75,12 +96,20 @@
       <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.poller</groupId>
       <artifactId>org.opennms.features.poller.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

@@ -35,23 +35,19 @@ import org.junit.Test;
  * <p>SnmpInformantOidResolverTest class.</p>
  *
  * @author <a href="mailto:ronny@opennms.org">Ronny Trommer</a>
- * @version $Id: $
- * @since 1.0-SNAPSHOT
  */
 public class SnmpInformantOidResolverTest {
 
     @Test
     public void testStringToAsciiOid() {
-        SnmpInformantOidResolver oidResolver = new SnmpInformantOidResolver();
-        Assert.assertEquals("2.67.58", oidResolver.stringToAsciiOid("C:"));
-        Assert.assertEquals("38.66.114.111.97.100.99.111.109.32.78.101.116.76.105.110.107.32.91.84.77.93.45.71.105.103.97.98.105.116.45.69.116.104.101.114.110.101.116", oidResolver.stringToAsciiOid("Broadcom NetLink [TM]-Gigabit-Ethernet"));
+        Assert.assertEquals("2.67.58", SnmpInformantOidResolver.stringToAsciiOid("C:"));
+        Assert.assertEquals("38.66.114.111.97.100.99.111.109.32.78.101.116.76.105.110.107.32.91.84.77.93.45.71.105.103.97.98.105.116.45.69.116.104.101.114.110.101.116", SnmpInformantOidResolver.stringToAsciiOid("Broadcom NetLink [TM]-Gigabit-Ethernet"));
     }
 
     @Test
     public void testAsciiOidToString() {
-        SnmpInformantOidResolver oidResolver = new SnmpInformantOidResolver();
-        Assert.assertEquals("C:", oidResolver.asciiOidToString("2.67.58"));
-        Assert.assertEquals("Broadcom NetLink [TM]-Gigabit-Ethernet", oidResolver.asciiOidToString("38.66.114.111.97.100.99.111.109.32.78.101.116.76.105.110.107.32.91.84.77.93.45.71.105.103.97.98.105.116.45.69.116.104.101.114.110.101.116"));
-        Assert.assertEquals("Broadcom NetLink (TM)-Gigabit-Ethernet", oidResolver.asciiOidToString("38.66.114.111.97.100.99.111.109.32.78.101.116.76.105.110.107.32.40.84.77.41.45.71.105.103.97.98.105.116.45.69.116.104.101.114.110.101.116"));
+        Assert.assertEquals("C:", SnmpInformantOidResolver.asciiOidToString("2.67.58"));
+        Assert.assertEquals("Broadcom NetLink [TM]-Gigabit-Ethernet", SnmpInformantOidResolver.asciiOidToString("38.66.114.111.97.100.99.111.109.32.78.101.116.76.105.110.107.32.91.84.77.93.45.71.105.103.97.98.105.116.45.69.116.104.101.114.110.101.116"));
+        Assert.assertEquals("Broadcom NetLink (TM)-Gigabit-Ethernet", SnmpInformantOidResolver.asciiOidToString("38.66.114.111.97.100.99.111.109.32.78.101.116.76.105.110.107.32.40.84.77.41.45.71.105.103.97.98.105.116.45.69.116.104.101.114.110.101.116"));
     }
 }

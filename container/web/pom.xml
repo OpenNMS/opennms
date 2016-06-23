@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>container</artifactId>
-        <version>2015.1.1</version>
+        <version>2016.1.0</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.main</artifactId>
-            <version>4.0.3</version>
+            <version>4.4.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -78,7 +78,7 @@
                             <descriptors>
                                 <descriptor>src/assembly/web.xml</descriptor>
                             </descriptors>
-                            <tarLongFileMode>gnu</tarLongFileMode>
+                            <tarLongFileMode>posix</tarLongFileMode>
                         </configuration>
                     </execution>
                 </executions>

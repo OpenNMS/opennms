@@ -31,7 +31,6 @@ package org.opennms.netmgt.jasper.helper;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.opennms.netmgt.jasper.helper.ResourceIdParser;
 
 
 public class ResourceIdParserTest {

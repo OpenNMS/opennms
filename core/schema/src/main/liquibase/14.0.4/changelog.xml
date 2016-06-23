@@ -15,37 +15,4 @@
         </rollback>
     </changeSet>
 
-<!--
-      Fix for issue NMS-7563: varchar to text for cdp cdpcacheaddress and added a column 
-       for the cdpcacheDeviceIndex
--->
-<changeSet author="rssntn67" id="1.15.2-cdplink-fix-nms7563">
-  <modifyDataType tableName="cdplink" columnName="cdpcacheaddress" newDataType="text" />
-  <dropNotNullConstraint tableName="cdplink" columnName="cdpinterfacename"/>
-  
-  <addColumn tableName="cdplink">
-    <column name="cdpcachedeviceindex" type="integer"/>
-  </addColumn>
-
-  <update tableName="cdplink">
-    <column name="cdpcachedeviceindex" type="integer" value="1"/>
-  </update>
-  
-  <addNotNullConstraint tableName="cdplink" columnName="cdpcachedeviceindex"/>
-  
-  <createIndex tableName="cdplink" indexName="cdplink_pk_new_idx">
-      <column name="nodeid" />
-      <column name="cdpcacheifindex" />
-      <column name="cdpcachedeviceindex" />
-  </createIndex>
-
-  <rollback>
-    <dropIndex      tableName="cdplink" indexName="cdplink_pk_new_idx"/>
-    <dropColumn     tableName="cdplink" columnName="cdpcachedeviceindex" />
-    <addNotNullConstraint tableName="cdplink" columnName="cdpinterfacename"/>
-    <modifyDataType tableName="cdplink" columnName="cdpcacheaddress" newDataType="varchar(64)" />
-  </rollback>
-
-
-</changeSet>
 </databaseChangeLog>

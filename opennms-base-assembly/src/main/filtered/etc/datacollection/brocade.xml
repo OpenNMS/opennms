@@ -1,7 +1,7 @@
 <datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Brocade">
    <resourceType name="swFCPortIndex" label="Brocade Fibre Channel Port" resourceLabel="FC port ${swFCPortSpecifier}: ${swFCPortName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <group name="brocade-switch-fctable" ifType="all">
       <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.11" instance="swFCPortIndex" alias="swFCPortTxWords" type="counter"/>

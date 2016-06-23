@@ -250,7 +250,7 @@ public class Invoker {
         return end;
     }
 
-    private Object invoke(Invoke invoke, ObjectInstance mbean) throws Throwable {
+    private Object invoke(final Invoke invoke, final ObjectInstance mbean) throws Throwable {
         Argument[] args = invoke.getArgument();
         Object[] parms = new Object[0];
         String[] sig = new String[0];
@@ -280,7 +280,7 @@ public class Invoker {
             	Logging.setContextMap(mdc);
             }
         } catch (Throwable t) {
-		LOG.error("An error occurred invoking operation {} on MBean {}", invoke.getMethod(), mbean.getObjectName(), t);
+            LOG.error("An error occurred invoking operation {} on MBean {}", invoke.getMethod(), mbean.getObjectName(), t);
             throw t;
         }
 

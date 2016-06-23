@@ -29,8 +29,8 @@
 package org.opennms.web.controller;
 
 import org.opennms.web.svclayer.DatabaseReportListService;
-import org.opennms.web.svclayer.support.DatabaseReportDescription;
-import org.opennms.web.svclayer.support.ReportRepositoryDescription;
+import org.opennms.web.svclayer.model.DatabaseReportDescription;
+import org.opennms.web.svclayer.model.ReportRepositoryDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.support.PagedListHolder;
@@ -40,6 +40,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 

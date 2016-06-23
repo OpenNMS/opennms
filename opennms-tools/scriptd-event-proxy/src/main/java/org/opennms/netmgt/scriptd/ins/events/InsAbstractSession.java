@@ -28,12 +28,8 @@
 
 package org.opennms.netmgt.scriptd.ins.events;
 
-import java.util.List;
-
-import org.hibernate.criterion.Restrictions;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,30 +84,35 @@ public abstract class InsAbstractSession extends Thread {
         m_criteria = criteria;
     }
     
+    /**
+     * @param nodeid
+     * @param ifindex
+     * @return
+     */
     protected String getIfAlias(final int nodeid, final int ifindex) {
 
         LOG.debug("getting ifalias for nodeid: {} and ifindex: {}", nodeid, ifindex);
 
         setCriteria("nodeid = " + nodeid + " AND snmpifindex = " + ifindex);
+
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
-        final SnmpInterfaceDao snmpInterfaceDao = BeanUtils.getBean(bf,"snmpInterfaceDao", SnmpInterfaceDao.class);
-        final TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
-        final List<OnmsSnmpInterface> iface = transTemplate.execute(
-                   new TransactionCallback<List<OnmsSnmpInterface>>() {
-                        public List<OnmsSnmpInterface> doInTransaction(final TransactionStatus status) {
-                            final OnmsCriteria onmsCriteria = new OnmsCriteria(OnmsSnmpInterface.class);
-                            onmsCriteria.add(Restrictions.sqlRestriction(getCriteria()));
-                            return snmpInterfaceDao.findMatching(onmsCriteria);
-                        }
-                   }
+        final SnmpInterfaceDao snmpInterfaceDao = BeanUtils.getBean(bf, "snmpInterfaceDao", SnmpInterfaceDao.class);
+        final TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate", TransactionTemplate.class);
+
+        final OnmsSnmpInterface iface = transTemplate.execute(
+            new TransactionCallback<OnmsSnmpInterface>() {
+                 public OnmsSnmpInterface doInTransaction(final TransactionStatus status) {
+                     return snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid, ifindex);
+                 }
+            }
         );
-        LOG.debug("interfaces found: {}", iface.size());
 
-        if (iface.size() == 0) return "-1";
-        final String ifAlias = iface.get(0).getIfAlias();
-        LOG.debug("ifalias found: {}", ifAlias);
-        
-        return ifAlias;
+        if (iface == null) {
+            return "-1";
+        } else {
+            final String ifAlias = iface.getIfAlias();
+            LOG.debug("ifalias found: {}", ifAlias);
+            return ifAlias;
+        }
     }
-
 }

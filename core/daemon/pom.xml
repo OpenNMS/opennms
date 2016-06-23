@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -13,6 +13,29 @@
   <description>
   The OpenNMS Daemon launches and acts as a container for OpenNMS Services such as the poller or collector.
   </description>
+  <properties>
+    <skipITs>true</skipITs>
+  </properties>
+  <profiles>
+    <profile>
+      <id>default-tools.jar</id>
+      <activation>
+        <property>
+          <name>java.vendor</name>
+          <value>Oracle Corporation</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
+          <version>1.8.0</version>
+          <scope>system</scope>
+          <systemPath>${java.home}/../lib/tools.jar</systemPath>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
   <build>
     <plugins>
       <plugin>
@@ -21,16 +44,40 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>org.opennms.netmgt.daemon.*;org.opennms.netmgt.vmmgr.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <skipITs>${skipITs}</skipITs>
+          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+          <systemPropertyVariables>
+            <opennms.home>${project.build.testOutputDirectory}</opennms.home>
+            <java.endorsed.dirs>${basedir}/target/endorsed</java.endorsed.dirs>
+          </systemPropertyVariables>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>com.sun</groupId>
+      <artifactId>tools</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.logging</artifactId>
@@ -76,6 +123,7 @@
     <dependency>
       <groupId>mx4j</groupId>
       <artifactId>mx4j-tools</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

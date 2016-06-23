@@ -55,8 +55,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.NotificationFactory;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
@@ -77,12 +77,9 @@ public class ManageNodeServlet extends HttpServlet {
 
     private static final long serialVersionUID = -544260517139205801L;
 
-    // FIXME: Should this be deleted?
-    //private static final String UPDATE_INTERFACE = "UPDATE ipinterface SET isManaged = ? WHERE ipaddr IN (?)";
+    private static final String UPDATE_SERVICE = "UPDATE ifservices SET status = ? FROM ipInterface INNER JOIN node ON ipInterface.nodeId = node.nodeId WHERE ifServices.ipInterfaceId = ipInterface.id AND node.nodeId = ? AND ipInterface.ipAddr = ? AND ifServices.serviceId = ?";
 
-    private static final String UPDATE_SERVICE = "UPDATE ifservices SET status = ? WHERE ipaddr = ? AND nodeID = ? AND serviceid = ?";
-
-    private static final String DELETE_SERVICE_OUTAGES = "DELETE FROM outages WHERE ipaddr = ? AND nodeID = ? AND serviceid = ? AND ifregainedservice IS NULL";
+    private static final String DELETE_SERVICE_OUTAGES = "DELETE FROM outages WHERE ifregainedservice IS NULL AND ifserviceid IN (SELECT ifServices.id FROM ifServices, ipInterface, node WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = node.nodeId AND node.nodeId = ? AND ipInterface.ipAddr = ? AND ifServices.serviceId = ?)"; 
 
     private static final String INCLUDE_FILE_NAME = "include";
 
@@ -185,8 +182,8 @@ public class ManageNodeServlet extends HttpServlet {
                             // newEvent.setTime(curDate);
 
                             stmt.setString(1, String.valueOf("A"));
-                            stmt.setString(2, curInterface.getAddress());
-                            stmt.setInt(3, curInterface.getNodeid());
+                            stmt.setInt(2, curInterface.getNodeid());
+                            stmt.setString(3, curInterface.getAddress());
                             stmt.setInt(4, curService.getId());
                             LOG.debug("doPost: executing manage service update for {} {}", curInterface.getAddress(), curService.getName());
                             stmt.executeUpdate();
@@ -198,12 +195,14 @@ public class ManageNodeServlet extends HttpServlet {
                             sendEvent(bldr.getEvent());
                         } else if (!serviceList.contains(serviceKey) && curService.getStatus().equals("managed")) {
                             stmt.setString(1, String.valueOf("F"));
-                            stmt.setString(2, curInterface.getAddress());
-                            stmt.setInt(3, curInterface.getNodeid());
+                            stmt.setInt(2, curInterface.getNodeid());
+                            stmt.setString(3, curInterface.getAddress());
                             stmt.setInt(4, curService.getId());
-                            outagesstmt.setString(1, curInterface.getAddress());
-                            outagesstmt.setInt(2, curInterface.getNodeid());
+
+                            outagesstmt.setInt(1, curInterface.getNodeid());
+                            outagesstmt.setString(2, curInterface.getAddress());
                             outagesstmt.setInt(3, curService.getId());
+
                             LOG.debug("doPost: executing unmanage service update for {} {}", curInterface.getAddress(), curService.getName());
                             stmt.executeUpdate();
                             outagesstmt.executeUpdate();

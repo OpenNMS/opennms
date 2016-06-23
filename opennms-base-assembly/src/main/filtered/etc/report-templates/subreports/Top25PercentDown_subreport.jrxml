@@ -86,14 +86,16 @@ FROM
 			outage_counter
 	FROM
 		(SELECT
-			outages.nodeid,
+			ipinterface.nodeid,
 			least(('$P!{END_TIME_STRING}'::TIMESTAMP), outages.ifregainedservice) as gained_service_timestamp,
 			greatest('$P!{START_TIME_STRING}'::TIMESTAMP,outages.iflostservice) as lost_service_timestamp
 		FROM
-			outages, service, events
+			outages, ifservices, ipinterface, service, events
 		WHERE
 			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME_STRING}'::TIMESTAMP, '$P!{END_TIME}'::TIMESTAMP) AND
-			outages.serviceid = service.serviceid AND
+			outages.ifserviceid = ifservices.id AND
+			ifservices.ipinterfaceid = ipinterface.id AND
+			ifservices.serviceid = service.serviceid AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND
 			events.eventuei = 'uei.opennms.org/nodes/nodeDown')

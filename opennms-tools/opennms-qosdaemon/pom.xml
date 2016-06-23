@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-qosdaemon</artifactId>
@@ -148,7 +148,7 @@
           <descriptors>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
-          <tarLongFileMode>gnu</tarLongFileMode>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>
@@ -328,6 +328,12 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd2-dependencies</artifactId>
+      <scope>test</scope>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

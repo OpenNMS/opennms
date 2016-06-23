@@ -29,7 +29,6 @@
 package org.opennms.features.topology.app.internal;
 
 import com.github.wolfie.refresher.Refresher;
-import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.Property;
@@ -347,7 +346,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 } catch (ClassCastException e) {}
             }
         }
-        //Initialize the Base Topology provider just in case
+        // Refresh the topology provider, triggering the vertices to load if they have not yet loaded
         getGraphContainer().getBaseTopology().refresh();
     }
 

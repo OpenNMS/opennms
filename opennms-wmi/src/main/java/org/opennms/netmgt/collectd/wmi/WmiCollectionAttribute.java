@@ -38,7 +38,7 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
  * @version $Id: $
  */
 public class WmiCollectionAttribute extends AbstractCollectionAttribute {
-        private final String m_value;
+        private final Object m_value;
 
         /**
          * <p>Constructor for WmiCollectionAttribute.</p>
@@ -46,9 +46,9 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute {
          * @param resource a {@link org.opennms.netmgt.collectd.wmi.WmiCollectionResource} object.
          * @param attribType a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
          * @param alias a {@link java.lang.String} object.
-         * @param value a {@link java.lang.String} object.
+         * @param value a {@link java.lang.Object} object.
          */
-        public WmiCollectionAttribute(final WmiCollectionResource resource, final CollectionAttributeType attribType, final String value) {
+        public WmiCollectionAttribute(final WmiCollectionResource resource, final CollectionAttributeType attribType, final Object value) {
             super(attribType, resource);
             m_value = value;
         }
@@ -56,11 +56,21 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute {
         /**
          * <p>getNumericValue</p>
          *
-         * @return a {@link java.lang.String} object.
+         * @return a {@link java.lang.Number} object.
          */
         @Override
-        public String getNumericValue() {
-            return m_value;
+        public Number getNumericValue() {
+            if (m_value == null) {
+                return null;
+            } else if (m_value instanceof Number) {
+                return (Number)m_value;
+            } else {
+                try {
+                    return Double.parseDouble(m_value.toString());
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            }
         }
 
         /**
@@ -70,7 +80,11 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute {
          */
         @Override
         public String getStringValue() {
-            return m_value; //Should this be null instead?
+            if (m_value == null) {
+                return null;
+            } else {
+                return m_value.toString();
+            }
         }
 
         /**

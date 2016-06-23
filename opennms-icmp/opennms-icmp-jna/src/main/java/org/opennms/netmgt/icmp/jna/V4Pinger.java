@@ -74,8 +74,8 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
         Logging.putPrefix("icmp");
         try {
             final int pingerId = getPingerId();
-            final NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
             while (!isFinished()) {
+                final NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
                 getPingSocket().receive(datagram);
                 final long received = System.nanoTime();
     

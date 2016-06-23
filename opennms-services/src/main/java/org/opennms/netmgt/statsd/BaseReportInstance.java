@@ -38,6 +38,7 @@ import org.opennms.netmgt.dao.support.ResourceAttributeFilteringResourceVisitor;
 import org.opennms.netmgt.dao.support.ResourceTypeFilteringResourceVisitor;
 import org.opennms.netmgt.dao.support.ResourceWalker;
 import org.opennms.netmgt.dao.support.RrdStatisticAttributeVisitor;
+import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.model.AttributeStatistic;
 import org.opennms.netmgt.model.AttributeStatisticVisitorWithResults;
 import org.springframework.beans.factory.InitializingBean;
@@ -78,13 +79,8 @@ public abstract class BaseReportInstance extends AbstractReportInstance implemen
         getWalker().setResourceDao(resourceDao);
     }
 
-    /**
-     * <p>setRrdDao</p>
-     *
-     * @param rrdDao a {@link org.opennms.netmgt.dao.api.RrdDao} object.
-     */
-    public void setRrdDao(RrdDao rrdDao) {
-        m_rrdVisitor.setRrdDao(rrdDao);
+    public void setFetchStrategy(MeasurementFetchStrategy fetchStrategy) {
+        m_rrdVisitor.setFetchStrategy(fetchStrategy);
     }
 
     /**

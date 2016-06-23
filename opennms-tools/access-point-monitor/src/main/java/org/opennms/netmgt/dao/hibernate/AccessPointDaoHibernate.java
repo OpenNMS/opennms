@@ -76,6 +76,6 @@ public class AccessPointDaoHibernate extends AbstractDaoHibernate<OnmsAccessPoin
                 return session.createCriteria(OnmsAccessPoint.class).setProjection(Projections.groupProperty("pollingPackage")).add(Restrictions.like("pollingPackage", pkg)).list();
             }
         };
-        return getHibernateTemplate().executeFind(callback);
+        return (List<String>)getHibernateTemplate().executeFind(callback);
     }
 }

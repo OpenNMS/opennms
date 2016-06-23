@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -62,6 +63,8 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.springframework.core.io.ByteArrayResource;
 
+import com.google.common.collect.Maps;
+
 public class MockPollerConfig extends PollOutagesConfigManager implements PollerConfig {
 
     private String m_criticalSvcName;
@@ -80,6 +83,8 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     private boolean m_pollAll = true;
 
+    private boolean m_pathOutageEnabled = false;
+
     private boolean m_serviceUnresponsiveEnabled = false;
 
     private String m_nextOutageIdSql;
@@ -87,6 +92,8 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     private Service m_currentSvc;
 
     private MockNetwork m_network;
+
+    private Map<Package, List<String>> m_rraLists = Maps.newHashMap();
 
     public MockPollerConfig(final MockNetwork network) {
         m_network = network;
@@ -299,9 +306,13 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return null;
     }
 
+    public void setRRAList(Package pkg, List<String> rraList) {
+        m_rraLists.put(pkg, rraList);
+    }
+
     @Override
     public List<String> getRRAList(Package pkg) {
-        return null;
+        return m_rraLists.get(pkg);
     }
 
     @Override
@@ -316,17 +327,12 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     @Override
     public int getStep(Package pkg) {
-        return 0;
+        return 300;
     }
 
     @Override
     public int getThreads() {
         return m_threads;
-    }
-
-    @Override
-    public boolean shouldNotifyXmlrpc() {
-        return false;
     }
 
     /**
@@ -443,10 +449,14 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         m_defaultPollInterval = defaultPollInterval;
     }
 
-    public void populatePackage(final MockNetwork network) {
+    public void populatePackage(final MockNetwork network, MockService... exclude) {
+        final List<MockService> servicesToExclude = Arrays.asList(exclude);
         final MockVisitor populator = new MockVisitorAdapter() {
             @Override
             public void visitService(final MockService svc) {
+                if (servicesToExclude.contains(svc)) {
+                    return;
+                }
                 addService(svc);
             }
         };
@@ -498,7 +508,11 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     @Override
     public boolean isPathOutageEnabled() {
-        return false;
+        return m_pathOutageEnabled;
+    }
+
+    public void setPathOutageEnabled(boolean pathOutageEnabled) {
+        m_pathOutageEnabled = pathOutageEnabled;
     }
 
     @Override

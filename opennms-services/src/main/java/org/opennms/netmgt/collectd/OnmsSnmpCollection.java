@@ -41,9 +41,9 @@ import java.util.Map;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +86,7 @@ public class OnmsSnmpCollection {
      *
      * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param params a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
-     * @param config a {@link org.opennms.netmgt.config.DataCollectionConfigDao} object.
+     * @param config a {@link org.opennms.netmgt.config.api.DataCollectionConfigDao} object.
      */
     public OnmsSnmpCollection(SnmpCollectionAgent agent, ServiceParameters params, DataCollectionConfigDao config) {
         setDataCollectionConfigDao(config);
@@ -276,7 +276,7 @@ public class OnmsSnmpCollection {
     /**
      * <p>setDataCollectionConfig</p>
      *
-     * @param config a {@link org.opennms.netmgt.config.DataCollectionConfigDao} object.
+     * @param config a {@link org.opennms.netmgt.config.api.DataCollectionConfigDao} object.
      */
     public void setDataCollectionConfigDao(DataCollectionConfigDao config) {
         m_dataCollectionConfigDao = config;

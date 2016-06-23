@@ -267,7 +267,8 @@ create table ipInterface (
 	isManaged		char(1),
 	ipStatus		integer,
 	ipLastCapsdPoll		timestamp without time zone,
-	isSnmpPrimary           char(1),
+	isSnmpPrimary		char(1),
+	snmpInterfaceId		integer,
 
 	constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE
 );

@@ -37,6 +37,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
@@ -53,7 +54,6 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockUtil;
@@ -71,6 +71,7 @@ public class JRobinRrdStrategyTest {
     
     @Before
     public void setUp() throws Exception {
+        Locale.setDefault(Locale.US);
         // Make sure that AWT headless mode is enabled
         System.setProperty("java.awt.headless", "true");
         
@@ -520,7 +521,7 @@ public class JRobinRrdStrategyTest {
         String rrdFileBase = "foo";
 
         m_fileAnticipator.initialize();
-        String rrdExtension = RrdUtils.getExtension();
+        String rrdExtension = m_strategy.getDefaultFileExtension();
         
         List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>();
         dataSources.add(new RrdDataSource("bar", "GAUGE", 3000, "U", "U"));

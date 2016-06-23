@@ -38,6 +38,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -61,10 +62,12 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
 
     private static final long serialVersionUID = 4307231598310473690L;
 
-    @XmlAttribute(name="name")
+    @XmlAttribute(name="name", required=true)
+    @NotNull
     private String m_name;
 
-    @XmlAttribute(name="class")
+    @XmlAttribute(name="class", required=true)
+    @NotNull
     private String m_pluginClass;
 
     @XmlElement(name="parameter")

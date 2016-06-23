@@ -6,9 +6,12 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name="nodes")
+@JsonRootName("nodes")
 public class NodeList extends JaxbListWrapper<AvailabilityNode> {
     private static final long serialVersionUID = 1L;
 
@@ -26,6 +29,7 @@ public class NodeList extends JaxbListWrapper<AvailabilityNode> {
     }
 
     @XmlElement(name="node")
+    @JsonProperty("node")
     public List<AvailabilityNode> getObjects() {
         return super.getObjects();
     }

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 
@@ -51,7 +52,10 @@ public class WmiPeerFactoryTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        WmiPeerFactory.init();
+        
+        System.setProperty("opennms.home", new File("target/test-classes").getAbsolutePath());
+         
+        WmiPeerFactory.reload(); // make sure we're using a fresh WmiPeerFactory
     }
 
     /**

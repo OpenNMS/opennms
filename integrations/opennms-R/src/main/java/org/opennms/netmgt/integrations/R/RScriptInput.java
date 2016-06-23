@@ -41,19 +41,19 @@ import com.google.common.collect.RowSortedTable;
  */
 public class RScriptInput {
     private final Map<String, Object> m_arguments;
-    private final RowSortedTable<Integer, String, Double> m_table;
+    private final RowSortedTable<Long, String, Double> m_table;
 
-    public RScriptInput(RowSortedTable<Integer, String, Double> table) {
+    public RScriptInput(RowSortedTable<Long, String, Double> table) {
         m_table = table;
         m_arguments = Maps.newHashMap();
     }
 
-    public RScriptInput(RowSortedTable<Integer, String, Double> table, Map<String, Object> arguments) {
+    public RScriptInput(RowSortedTable<Long, String, Double> table, Map<String, Object> arguments) {
         m_table = table;
         m_arguments = arguments;
     }
 
-    public RowSortedTable<Integer, String, Double> getTable() {
+    public RowSortedTable<Long, String, Double> getTable() {
         return m_table;
     }
 

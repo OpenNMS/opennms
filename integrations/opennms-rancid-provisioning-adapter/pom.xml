@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-integrations</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rancid-provisioning-adapter</artifactId>
@@ -22,6 +22,10 @@
       <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>rancid-dependencies</artifactId>
       <type>pom</type>
@@ -38,11 +42,6 @@
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
@@ -50,6 +49,11 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.daemon</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -61,6 +65,12 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd2-dependencies</artifactId>
+      <scope>test</scope>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

@@ -32,7 +32,9 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -53,6 +55,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -62,6 +65,7 @@ import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
+import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -267,8 +271,8 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 	 * @return a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
 	 */
 	@XmlTransient
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="dpName", nullable=false)
+    @ManyToOne
+    @JoinColumn(name="systemId", nullable=false)
     public OnmsDistPoller getDistPoller() {
         return this.m_distPoller;
     }
@@ -784,10 +788,20 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @XmlElement(name="parms")
-    @Column(name="eventParms", length=1024)
+    @XmlTransient
+    @Column(name="eventParms")
     public String getEventParms() {
-        return this.m_eventParms;
+            return m_eventParms;
+    }
+
+    @Transient
+    @XmlElementWrapper(name="parameters")
+    @XmlElement(name="parameter")
+    public List<OnmsEventParameter> getEventParameters() {
+        if (m_eventParms == null) {
+            return null;
+        }
+        return EventParameterUtils.decode(m_eventParms).stream().map(p -> new OnmsEventParameter(p)).collect(Collectors.toList());
     }
 
     /**
@@ -808,6 +822,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     public String toString() {
         return new ToStringCreator(this)
             .append("alarmid", getId())
+            .append("distPoller", getDistPoller())
             .toString();
     }
 

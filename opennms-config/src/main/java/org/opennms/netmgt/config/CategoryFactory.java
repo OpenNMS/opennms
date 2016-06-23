@@ -39,7 +39,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.categories.CatFactory;
+import org.opennms.netmgt.config.api.CatFactory;
 import org.opennms.netmgt.config.categories.Categories;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.config.categories.Categorygroup;
@@ -178,7 +178,7 @@ public final class CategoryFactory implements CatFactory {
 	/**
 	 * <p>setInstance</p>
 	 *
-	 * @param singleton a {@link org.opennms.netmgt.config.categories.CatFactory} object.
+	 * @param singleton a {@link org.opennms.netmgt.config.api.CatFactory} object.
 	 */
 	public static void setInstance(final CatFactory singleton) {
 		m_singleton = singleton;

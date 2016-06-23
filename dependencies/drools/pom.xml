@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -15,7 +15,7 @@
     can depend on to use the drools library.
   </description>
   <properties>
-    <droolsVersion>5.1.1</droolsVersion>
+    <droolsVersion>6.0.1.Final</droolsVersion>
   </properties>
   <dependencies>
     <dependency>
@@ -28,20 +28,10 @@
       <artifactId>drools-compiler</artifactId>
       <version>${droolsVersion}</version>
     </dependency>
-    <!-- *shudder* -->
-    <!-- unfortunately, this is needed for JDK 1.7 compatibility until we can update Drools to something newer than 5.1.1 -->
     <dependency>
-       <groupId>org.eclipse.jdt.core.compiler</groupId>
-       <artifactId>ecj</artifactId>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-api</artifactId>
+      <version>${droolsVersion}</version>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>jboss-repo</id>
-      <name>JBoss Repository</name>
-      <url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
-    </repository>
-  </repositories>
 </project>

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -13,8 +13,9 @@
   <modules>
     <module>db</module>
     <module>dns</module>
-    <module>lib</module>
     <module>http</module>
+    <module>karaf</module>
+    <module>lib</module>
     <module>rest</module>
     <module>services</module>
     <module>schema</module>

@@ -1,0 +1,59 @@
+
+==== Alarms
+NOTE: the default offset is 0, the default limit is 10 results. To get all results, use `limit=0` as a parameter on the URL (ie, `GET /events?limit=0`).
+
+===== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource        | Description
+| `/alarms`       | Get a list of alarms.
+| `/alarms/count` | Get the number of alarms. (Returns plaintext, rather than _XML_ or _JSON_.)
+| `/alarms/{id}`  | Get the alarms specified by the given _ID_.
+|===
+
+Note that you can also query by severity, like so:
+
+[options="header", cols="5,10"]
+|===
+| Resource                                   | Description
+| `/alarms?comparator=ge&amp;severity=MINOR` | Get the alarms with a severity greater than or equal to _MINOR_.
+|===
+
+===== PUTs (Modifying Data)
+
+PUT requires form data using application/x-www-form-urlencoded as a Content-Type.
+
+[options="header", cols="5,10"]
+|===
+| Resource                               | Description
+| `/alarms/{id}?ack=''(true;false)''`    | Acknowledges (or unacknowledges) an alarm.
+| `/alarms?x=y&...&ack=''(true;false)''` | Acknowledges (or unacknowledges) alarms matching the additional query parameters. eg, `/alarms?node.id=4&ack=true`
+|===
+
+===== New in OpenNMS 1.11.0
+
+In OpenNMS 1.11.0, some additional features are supported in the alarm ack API:
+
+[options="header", cols="5,10"]
+|===
+| Resource                        | Description
+| `/alarms/{id}?clear=true`       | Clears an alarm.
+| `/alarms/{id}?escalate=true`    | Escalates an alarm. eg, NORMAL -> MINOR, MAJOR -> CRITICAL, etc.
+| `/alarms?x=y&...&clear=true`    | Clears alarms matching the additional query parameters.
+| `/alarms?x=y&...&escalate=true` | Escalates alarms matching the additional query parameters.
+|===
+
+Additionally, when acknowledging alarms (ack=true) you can now specify an `ackUser` parameter.
+You will only be allowed to `ack` as a different user IF you are PUTting as an authenticated user who is in the _admin_ role.
+
+===== Queries
+
+As noted above, it is possible to pass a raw `query` parameter when doing ReST queries.
+In the case of alarms, it is possible to pass severity names when querying by severity, rather than having to know the number that the severity enum maps to.
+For example:
+
+    /alarms?query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3E%20MAJOR%20AND%20alarmAckUser%20IS%20NULL
+
+This will get any alarms where the last event associated with the alarm is newer than August 19th, 2011 11:11:11, the severity is greater than _MAJOR_, and the alarm is not acknowledged (`alarmAckUser` is null).
+You should be able to use any column in the _alarm_, _event_, _node_, _ipinterface_, or _snmpinterface_ tables.

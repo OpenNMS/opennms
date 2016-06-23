@@ -138,7 +138,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         
         Map<String, String> parameters = new HashMap<String, String>(pluginConfig.getParameterMap());
 
-        
+
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(pluginInstance);
         try {
             wrapper.setPropertyValues(parameters);
@@ -156,9 +156,12 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     private <T> T beanWithNameOfType(String beanName, Class<T> pluginClass) {
         Map<String, T> beans = beansOfType(pluginClass);
         T bean = beans.get(beanName);
-        if (bean != null) debug("Found bean {} with name {} of type {}", bean, beanName, pluginClass);
+        if (bean != null) {
+            debug("Found bean {} with name {} of type {}", bean, beanName, pluginClass);
+        } else {
+            debug("Failed to find bean {} with name {} of type {}", bean, beanName, pluginClass);
+        }
         return bean;
     }
-    
     
 }

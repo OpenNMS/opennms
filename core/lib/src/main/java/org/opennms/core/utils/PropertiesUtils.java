@@ -98,8 +98,8 @@ public abstract class PropertiesUtils {
      * @return The string with appropriate substitutions made.
      * @param mapArray a {@link java.util.Map} object.
      */
-    public static String substitute(String initialString, Map<String,Object>... mapArray) {
-        String workingString = initialString;
+    @SafeVarargs
+    public static String substitute(final String initialString, final Map<String,Object>... mapArray) {
         for (final Map<String,Object> properties : mapArray) {
             final Map<String,String> convertedProperties = new HashMap<String,String>();
             for (final Map.Entry<String,Object> entry : properties.entrySet()) {
@@ -107,10 +107,10 @@ public abstract class PropertiesUtils {
                 convertedProperties.put(entry.getKey(), value == null? null : value.toString());
             }
             if (properties != null) {
-                workingString = substitute(workingString, new MapBasedSymbolTable(convertedProperties), PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, new ArrayList<String>());
+                return substitute(initialString, new MapBasedSymbolTable(convertedProperties), PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, new ArrayList<String>());
             }
         }
-        return workingString;
+        return initialString;
     }
 
     /**

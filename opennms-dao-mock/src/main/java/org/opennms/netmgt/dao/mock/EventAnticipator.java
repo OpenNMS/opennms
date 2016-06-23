@@ -36,7 +36,7 @@ import java.util.List;
 
 import org.junit.Assert;
 
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

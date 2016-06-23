@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- Syslog message match definitions for Procmail -->
+<syslogd-configuration-group>
+    <ueiList>
+        <ueiMatch>
+            <process-match expression="^procmail$"/>
+            <match type="regex" expression="^.*?Suspicious rcfile &quot;(.*?)&quot;$"/>
+            <uei>uei.opennms.org/vendor/procmail/syslog/procmail/suspiciousRcfile</uei>
+            <parameter-assignment matching-group="1" parameter-name="rcfile"/>
+        </ueiMatch>
+    </ueiList>
+</syslogd-configuration-group>

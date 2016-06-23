@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -191,6 +191,34 @@
       <artifactId>org.opennms.features.springframework-security</artifactId>
       <scope>provided</scope>
     </dependency>
+    <!--
+      Make sure that org.opennms.core.soa is marked as 'provided' so that we don't
+      include the JAR for it in this webapp. Otherwise, we will run into classloader
+      issues when trying to expose the ServiceRegistry over Spring RMI.
+      
+      @see http://issues.opennms.org/browse/NMS-7464
+    -->
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.soa</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.spring-web</artifactId>
+    </dependency>
+    <!--
+      Make sure that jetty-jsp is marked as 'provided' so that we don't
+      include the JARs for it in this webapp. Otherwise, we will run into classloader
+      issues when trying to render .jsps.
+
+      @see http://issues.opennms.org/browse/NMS-7565
+    -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-jsp</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
@@ -214,6 +242,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.services</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
@@ -222,6 +255,17 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd2-dependencies</artifactId>
+      <scope>test</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jna</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

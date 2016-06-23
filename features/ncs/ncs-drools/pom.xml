@@ -34,7 +34,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.ncs</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.ncs</groupId>
@@ -42,6 +42,9 @@
   <name>OpenNMS Features NCS Correlation Rules</name>
   <url>http://maven.apache.org</url>
   <packaging>bundle</packaging>
+  <properties>
+    <skipITs>true</skipITs>
+  </properties>
   <build>
     <plugins>
       <plugin>
@@ -50,7 +53,7 @@
           <descriptors>
             <descriptor>src/assembly/etc.xml</descriptor>
           </descriptors>
-          <tarLongFileMode>gnu</tarLongFileMode>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>
@@ -64,12 +67,27 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <!-- Don't specify argLine here or it will override the value from /pom.xml -->
           <forkMode>pertest</forkMode>
-          <argLine>-Xmx256m</argLine>
           <includes>
             <include>**/*Test.java</include>
           </includes>     
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <skipITs>${skipITs}</skipITs>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -77,7 +95,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>org.opennms.netmgt.correlation.ncs.*;version="${project.version}"</Export-Package>
@@ -119,6 +137,18 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
       <scope>test</scope>
     </dependency>
     

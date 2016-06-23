@@ -35,9 +35,9 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEvent;
@@ -143,7 +143,7 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
     /**
      * <p>setEventProxy</p>
      *
-     * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @param eventProxy a {@link org.opennms.netmgt.events.api.EventProxy} object.
      */
     public void setEventProxy(EventProxy eventProxy) {
         m_eventProxy = eventProxy;

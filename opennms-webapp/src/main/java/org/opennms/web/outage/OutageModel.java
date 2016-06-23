@@ -32,148 +32,28 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.outage.OutageSummary;
-import org.springframework.util.StringUtils;
 
 /**
  * As the nonvisual logic for the Services Down (Outage) servlet and JSPs, this
  * class queries the database for current outages and provides utility methods
  * for manipulating that list of outages.
+ * 
+ * @deprecated Use {@link OutageDao} instead.
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
  */
-public class OutageModel {
-    private final DBUtils d = new DBUtils(getClass());
+public abstract class OutageModel {
 
-    /**
-     * Create a new <code>OutageModel</code>.
-     */
-    public OutageModel() {
-    }
-
-    /**
-     * Query the database to retrieve the current outages.
-     *
-     * @return An array of {@link Outage Outage}objects, or if there are none,
-     *         an empty array.
-     * @throws java.sql.SQLException
-     *             If there is a problem getting a database connection or making
-     *             a query.
-     */
-    public Outage[] getCurrentOutages() throws SQLException {
-        Outage[] outages = new Outage[0];
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-
-            Statement stmt = conn.createStatement();
-            d.watch(stmt);
-            ResultSet rs = stmt.executeQuery("select o.outageid, o.nodeId, n.nodeLabel, o.ipaddr, ip.iphostname, s.servicename, o.serviceId, o.iflostservice, o.svclosteventid, no.notifyId, no.answeredBy from outages o left outer join notifications no on (o.svclosteventid = no.eventid) join ifservices if on (if.id = o.ifserviceid) join ipinterface ip on (ip.id = if.ipinterfaceid) join node n on (n.nodeid = ip.nodeid) join service s on (s.serviceid = if.serviceid) where ifregainedservice is null and n.nodeType != 'D' and ip.isManaged != 'D' and if.status != 'D' and o.serviceid=s.serviceid and (o.suppresstime is null or o.suppresstime < now()) order by n.nodelabel, ip.ipaddr, s.serviceName");
-            d.watch(rs);
-
-            outages = rs2Outages(rs, false, true);
-        } finally {
-            d.cleanUp();
-        }
-
-        return outages;
-    }
-
-    /**
-     * <p>getSuppressedOutages</p>
-     *
-     * @return an array of {@link org.opennms.web.outage.Outage} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    public Outage[] getSuppressedOutages() throws SQLException {
-        Outage[] outages = new Outage[0];
- 
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-
-            Statement stmt = conn.createStatement();
-            d.watch(stmt);
-            ResultSet rs = stmt.executeQuery("select o.outageid, o.nodeId, n.nodeLabel, o.ipaddr, ip.iphostname, s.servicename, o.serviceId, o.iflostservice, o.svclosteventid, no.notifyId, no.answeredBy from outages o left outer join notifications no on (o.svclosteventid = no.eventid) join ifservices if on (if.id = o.ifserviceid) join ipinterface ip on (ip.id = if.ipinterfaceid) join node n on (n.nodeid = ip.nodeid) join service s on (s.serviceid = if.serviceid) where ifregainedservice is null and n.nodeType != 'D' and ip.isManaged != 'D' and if.status != 'D' and o.serviceid=s.serviceid and o.suppresstime > now() order by n.nodelabel, ip.ipaddr, s.serviceName");
-            d.watch(rs);
-
-            outages = rs2Outages(rs, false, true);
-        } finally {
-            d.cleanUp();
-        }
-
-        return outages;
-    }
-
-    /**
-     * <p>getCurrentOutageCount</p>
-     *
-     * @return a int.
-     * @throws java.sql.SQLException if any.
-     */
-    public int getCurrentOutageCount() throws SQLException {
-        int count = 0;
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-
-            Statement stmt = conn.createStatement();
-            d.watch(stmt);
-            ResultSet rs = stmt.executeQuery("select count(o.outageid) from outages o left outer join notifications no on (o.svclosteventid = no.eventid) join ifservices if on (if.id = o.ifserviceid) join ipinterface ip on (ip.id = if.ipinterfaceid) join node n on (n.nodeid = ip.nodeid) join service s on (s.serviceid = if.serviceid) where ifregainedservice is null and n.nodeType != 'D' and ip.isManaged != 'D' and if.status != 'D' and o.serviceid=s.serviceid and (o.suppresstime is null or o.suppresstime < now()) ");
-            d.watch(rs);
-
-            if (rs.next()) {
-                count = rs.getInt("count");
-            }
-        } finally {
-            d.cleanUp();
-        }
-
-        return count;
-    }
-
-    /**
-     * <p>getSuppressedOutageCount</p>
-     *
-     * @return a int.
-     * @throws java.sql.SQLException if any.
-     */
-    public int getSuppressedOutageCount() throws SQLException {
-        int count = 0;
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-
-            Statement stmt = conn.createStatement();
-            d.watch(stmt);
-            ResultSet rs = stmt.executeQuery("select count(o.outageid) from outages o left outer join notifications no on (o.svclosteventid = no.eventid) join ifservices if on (if.id = o.ifserviceid) join ipinterface ip on (ip.id = if.ipinterfaceid) join node n on (n.nodeid = ip.nodeid) join service s on (s.serviceid = if.serviceid) where ifregainedservice is null and n.nodeType != 'D' and ip.isManaged != 'D' and if.status != 'D' and o.serviceid=s.serviceid and o.suppresstime > now() ");
-            d.watch(rs);
-
-            if (rs.next()) {
-                count = rs.getInt("count");
-            }
-        } finally {
-            d.cleanUp();
-        }
-
-        return count;
-    }
-    
     /**
      * <p>getCurrentOutagesForNode</p>
      *
@@ -181,8 +61,10 @@ public class OutageModel {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public Outage[] getCurrentOutagesForNode(int nodeId) throws SQLException {
+    public static Outage[] getCurrentOutagesForNode(int nodeId) throws SQLException {
         Outage[] outages = new Outage[0];
+
+        final DBUtils d = new DBUtils(OutageModel.class);
 
         try {
             Connection conn = DataSourceFactory.getInstance().getConnection();
@@ -190,12 +72,12 @@ public class OutageModel {
 
             PreparedStatement stmt = conn.prepareStatement(""
             		+ "SELECT DISTINCT \n" + 
-            		"         outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, \n" + 
+            		"         outages.outageid, outages.iflostservice, outages.ifregainedservice, node.nodeID, \n" + 
             		"         node.nodeLabel, \n" + 
-            		"         outages.ipaddr, \n" + 
+            		"         ipinterface.ipaddr, \n" + 
             		"         ipinterface.iphostname, \n" + 
             		"         service.servicename, \n" + 
-            		"         outages.serviceId \n" + 
+            		"         ifservices.serviceId \n" + 
             		"    from outages \n" + 
             		"    join ifservices \n" + 
             		"      on ifservices.id = outages.ifserviceid \n" + 
@@ -222,515 +104,6 @@ public class OutageModel {
 
         return outages;
     }
-    
-    /**
-     * <p>getCurrentOutagesIdsForNode</p>
-     *
-     * @param nodeId a int.
-     * @return a {@link java.util.Collection} object.
-     * @throws java.sql.SQLException if any.
-     */
-    public Collection<Integer> getCurrentOutagesIdsForNode(int nodeId) throws SQLException {
-        List<Integer> outageIds = new ArrayList<Integer>();
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-
-            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT outageid from outages where nodeid=?  and ifregainedservice is null and suppresstime is null or suppresstime < now();");
-            d.watch(stmt);
-            stmt.setInt(1, nodeId);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            while (rs.next()) {
-                outageIds.add(rs.getInt(1));
-            }
-        } finally {
-            d.cleanUp();
-        }
-
-        return outageIds;
-    }
-
-    
-    /**
-     * <p>filterNodesWithCurrentOutages</p>
-     *
-     * @param nodes an array of {@link org.opennms.netmgt.config.poller.outages.Node} objects.
-     * @return an array of {@link org.opennms.netmgt.config.poller.outages.Node} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    public OnmsNode[] filterNodesWithCurrentOutages(List<OnmsNode> nodes) throws SQLException {
-        HashMap<Integer, OnmsNode> nodeMap = new HashMap<Integer, OnmsNode>(nodes.size());
-        for (OnmsNode n : nodes) {
-            nodeMap.put(n.getId(), n);
-        }
-        
-        String nodeList = StringUtils.collectionToDelimitedString(nodeMap.keySet(), ", ");
-        
-        List<OnmsNode> newNodes = new ArrayList<OnmsNode>();
-        
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-
-            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT nodeid from outages where nodeid in ( " + nodeList + " ) and ifregainedservice is null and suppresstime is null or suppresstime < now();");
-            d.watch(stmt);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            while (rs.next()) {
-                newNodes.add(nodeMap.get(rs.getInt(1)));
-            }
-        } finally {
-            d.cleanUp();
-        }
-
-        return newNodes.toArray(new OnmsNode[newNodes.size()]);
-    }
-
-    /**
-     * <p>getNonCurrentOutagesForNode</p>
-     *
-     * @param nodeId a int.
-     * @return an array of {@link org.opennms.web.outage.Outage} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    public Outage[] getNonCurrentOutagesForNode(int nodeId) throws SQLException {
-        Outage[] outages = new Outage[0];
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-
-            PreparedStatement stmt = conn.prepareStatement(""
-            		+ "SELECT DISTINCT \n" + 
-            		"         outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, \n" + 
-            		"         node.nodeLabel, \n" + 
-            		"         outages.ipaddr, \n" + 
-            		"         ipinterface.iphostname, \n" + 
-            		"         service.servicename, \n" + 
-            		"         outages.serviceId \n" + 
-            		"    FROM outages \n" + 
-            		"    JOIN ifservices \n" + 
-            		"      ON ifservices.id = outages.ifserviceid \n" + 
-            		"    JOIN ipinterface \n" + 
-            		"      ON ipinterface.id = ifservices.ipinterfaceid \n" + 
-            		"    JOIN node \n" + 
-            		"      ON node.nodeid = ipinterface.nodeid \n" + 
-            		"    JOIN service \n" + 
-            		"      ON service.serviceid = ifservices.serviceid \n" + 
-            		"   WHERE node.nodeid = ? \n" + 
-            		"     AND outages.ifregainedservice IS NOT NULL \n" + 
-            		"     AND outages.suppresstime IS NULL \n" + 
-            		"      OR outages.suppresstime < now() \n" + 
-            		"ORDER BY outages.iflostservice desc");
-            d.watch(stmt);
-            stmt.setInt(1, nodeId);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            outages = rs2Outages(rs);
-        } finally {
-            d.cleanUp();
-        }
-
-        return outages;
-    }
-
-    /**
-     * Get all outages for a given node.
-     *
-     * @param nodeId a int.
-     * @return an array of {@link org.opennms.web.outage.Outage} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    public Outage[] getOutagesForNode(int nodeId) throws SQLException {
-        Outage[] outages = new Outage[0];
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-
-            PreparedStatement stmt = conn.prepareStatement("  "
-            		+ "SELECT DISTINCT \n" + 
-            		"         outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, \n" + 
-            		"         node.nodeLabel, \n" + 
-            		"         outages.ipaddr, \n" + 
-            		"         ipinterface.iphostname, \n" + 
-            		"         service.servicename, \n" + 
-            		"         outages.serviceId \n" + 
-            		"    FROM outages \n" + 
-            		"    JOIN ifservices \n" + 
-            		"      ON ifservices.id = outages.ifserviceid \n" + 
-            		"    JOIN ipinterface \n" + 
-            		"      ON ipinterface.id = ifservices.ipinterfaceid \n" + 
-            		"    JOIN node \n" + 
-            		"      ON node.nodeid = ipinterface.nodeid \n" + 
-            		"    JOIN service \n" + 
-            		"      ON service.serviceid = ifservices.serviceid\n" + 
-            		"   WHERE node.nodeid = ? \n" + 
-            		"     AND node.nodeid=outages.nodeid \n" + 
-            		"     AND outages.serviceid=service.serviceid \n" + 
-            		"     AND ipinterface.ipaddr=outages.ipaddr \n" + 
-            		"ORDER BY iflostservice desc");
-            d.watch(stmt);
-            stmt.setInt(1, nodeId);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            outages = rs2Outages(rs);
-        } finally {
-            d.cleanUp();
-        }
-
-        return outages;
-    }
-
-    /**
-     * Get all current outages and any resolved outages since the given time for
-     * the given node.
-     *
-     * @param nodeId
-     *            this is the node to query
-     * @param time
-     *            no resolved outages older than this time will be returned
-     * @return All current outages and resolved outages no older than
-     *         <code>time</code>.
-     * @throws java.sql.SQLException if any.
-     */
-    public Outage[] getOutagesForNode(int nodeId, Date time) throws SQLException {
-        if (time == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        Outage[] outages = new Outage[0];
-        long timeLong = time.getTime();
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-
-            PreparedStatement stmt = conn.prepareStatement("  "
-            		+ "SELECT DISTINCT \n" + 
-            		"         outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, \n" + 
-            		"         node.nodeLabel, \n" + 
-            		"         outages.ipaddr, \n" + 
-            		"         ipinterface.iphostname, \n" + 
-            		"         service.servicename, \n" + 
-            		"         outages.serviceId \n" + 
-            		"    FROM outages \n" + 
-            		"    JOIN ifservices \n" + 
-            		"      ON ifservices.id = outages.ifserviceid \n" + 
-            		"    JOIN ipinterface \n" + 
-            		"      ON ipinterface.id = ifservices.ipinterfaceid \n" + 
-            		"    JOIN node \n" + 
-            		"      ON node.nodeid = ipinterface.nodeid \n" + 
-            		"    JOIN service \n" + 
-            		"      ON service.serviceid = ifservices.serviceid\n" + 
-            		"   WHERE node.nodeid = ? \n" + 
-            		"     AND (outages.ifregainedservice >= ? OR outages.ifregainedservice IS NULL) \n" + 
-            		"ORDER BY outages.iflostservice DESC");
-            d.watch(stmt);
-            stmt.setInt(1, nodeId);
-            stmt.setTimestamp(2, new Timestamp(timeLong));
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            outages = rs2Outages(rs);
-        } finally {
-            d.cleanUp();
-        }
-
-        return outages;
-    }
-
-    /**
-     * <p>getOutagesForInterface</p>
-     *
-     * @param nodeId a int.
-     * @param ipInterface a {@link java.lang.String} object.
-     * @return an array of {@link org.opennms.web.outage.Outage} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    public Outage[] getOutagesForInterface(int nodeId, String ipInterface) throws SQLException {
-        Outage[] outages = new Outage[0];
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-
-            PreparedStatement stmt = conn.prepareStatement("  "
-            		+ "SELECT DISTINCT \n" + 
-            		"         outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, \n" + 
-            		"         node.nodeLabel, \n" + 
-            		"         outages.ipaddr, \n" + 
-            		"         ipinterface.iphostname, \n" + 
-            		"         service.servicename, \n" + 
-            		"         outages.serviceId \n" + 
-            		"    FROM outages \n" + 
-            		"    JOIN ifservices \n" + 
-            		"      ON ifservices.id = outages.ifserviceid \n" + 
-            		"    JOIN ipinterface \n" + 
-            		"      ON ipinterface.id = ifservices.ipinterfaceid \n" + 
-            		"    JOIN node \n" + 
-            		"      ON node.nodeid = ipinterface.nodeid \n" + 
-            		"    JOIN service \n" + 
-            		"      ON service.serviceid = ifservices.serviceid \n" + 
-            		"   WHERE node.nodeid = ? \n" + 
-            		"ORDER BY iflostservice desc");
-            d.watch(stmt);
-            stmt.setInt(1, nodeId);
-            stmt.setString(2, ipInterface);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            outages = rs2Outages(rs);
-        } finally {
-            d.cleanUp();
-        }
-
-        return outages;
-    }
-
-    /**
-     * Get all current outages and any resolved outages since the given time for
-     * the given interface.
-     *
-     * @param nodeId
-     *            this is the node to query
-     * @param ipAddr
-     *            this is the interface to query
-     * @param time
-     *            no resolved outages older than this time will be returned
-     * @return All current outages and resolved outages no older than
-     *         <code>time</code>.
-     * @throws java.sql.SQLException if any.
-     */
-    public Outage[] getOutagesForInterface(int nodeId, String ipAddr, Date time) throws SQLException {
-        if (ipAddr == null || time == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        Outage[] outages = new Outage[0];
-        long timeLong = time.getTime();
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-
-            PreparedStatement stmt = conn.prepareStatement("  "
-            		+ "SELECT DISTINCT \n" + 
-            		"         outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, \n" + 
-            		"         node.nodeLabel, \n" + 
-            		"         outages.ipaddr, \n" + 
-            		"         ipinterface.iphostname, \n" + 
-            		"         service.servicename, \n" + 
-            		"         outages.serviceId \n" + 
-            		"    FROM outages \n" + 
-            		"    JOIN ifservices \n" + 
-            		"      ON ifservices.id = outages.ifserviceid \n" + 
-            		"    JOIN ipinterface \n" + 
-            		"      ON ipinterface.id = ifservices.ipinterfaceid \n" + 
-            		"    JOIN node \n" + 
-            		"      ON node.nodeid = ipinterface.nodeid \n" + 
-            		"    JOIN service \n" + 
-            		"      ON service.serviceid = ifservices.serviceid \n" + 
-            		"   WHERE node.nodeid = ? \n" + 
-            		"     AND ipinterface.ipaddr = ? \n" + 
-            		"     AND (outages.ifregainedservice >= ? OR outages.ifregainedservice IS NULL) \n" + 
-            		"ORDER BY outages.iflostservice desc");
-            d.watch(stmt);
-            stmt.setInt(1, nodeId);
-            stmt.setString(2, ipAddr);
-            stmt.setTimestamp(3, new Timestamp(timeLong));
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            outages = rs2Outages(rs);
-        } finally {
-            d.cleanUp();
-        }
-
-        return outages;
-    }
-
-    /**
-     * <p>getOutagesForService</p>
-     *
-     * @param nodeId a int.
-     * @param ipInterface a {@link java.lang.String} object.
-     * @param serviceId a int.
-     * @return an array of {@link org.opennms.web.outage.Outage} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    public Outage[] getOutagesForService(int nodeId, String ipInterface, int serviceId) throws SQLException {
-        Outage[] outages = new Outage[0];
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-            
-            PreparedStatement stmt = conn.prepareStatement("  "
-            		+ "SELECT DISTINCT \n" + 
-            		"         outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, \n" + 
-            		"         node.nodeLabel, \n" + 
-            		"         outages.ipaddr, \n" + 
-            		"         ipinterface.iphostname, \n" + 
-            		"         service.servicename, \n" + 
-            		"         outages.serviceId \n" + 
-            		"    FROM outages \n" + 
-            		"    JOIN ifservices \n" + 
-            		"      ON ifservices.id = outages.ifserviceid \n" + 
-            		"    JOIN ipinterface \n" + 
-            		"      ON ipinterface.id = ifservices.ipinterfaceid \n" + 
-            		"    JOIN node \n" + 
-            		"      ON node.nodeid = ipinterface.nodeid \n" + 
-            		"    JOIN service \n" + 
-            		"      ON service.serviceid = ifservices.serviceid \n" + 
-            		"   WHERE node.nodeid = ? \n" + 
-            		"ORDER BY outages.iflostservice desc");
-            d.watch(stmt);
-            stmt.setInt(1, nodeId);
-            stmt.setString(2, ipInterface);
-            stmt.setInt(3, serviceId);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            outages = rs2Outages(rs);
-        } finally {
-            d.cleanUp();
-        }
-
-        return outages;
-    }
-
-    /**
-     * Get all current outages and any resolved outages since the given time for
-     * the given service.
-     *
-     * @param nodeId
-     *            this is the node to query
-     * @param ipAddr
-     *            this is the interface to query
-     * @param serviceId
-     *            this is the service to query
-     * @param time
-     *            no resolved outages older than this time will be returned
-     * @return All current outages and resolved outages no older than
-     *         <code>time</code>.
-     * @throws java.sql.SQLException if any.
-     */
-    public Outage[] getOutagesForService(int nodeId, String ipAddr, int serviceId, Date time) throws SQLException {
-        if (ipAddr == null || time == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        Outage[] outages = new Outage[0];
-        long timeLong = time.getTime();
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-            
-            PreparedStatement stmt = conn.prepareStatement("  "
-            		+ "SELECT DISTINCT \n" + 
-            		"         outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, \n" + 
-            		"         node.nodeLabel, \n" + 
-            		"         outages.ipaddr, \n" + 
-            		"         ipinterface.iphostname, \n" + 
-            		"         service.servicename, \n" + 
-            		"         outages.serviceId \n" + 
-            		"    FROM outages \n" + 
-            		"    JOIN ifservices \n" + 
-            		"      ON ifservices.id = outages.ifserviceid \n" + 
-            		"    JOIN ipinterface  \n" + 
-            		"      ON ipinterface.id = ifservices.ipinterfaceid \n" + 
-            		"    JOIN node \n" + 
-            		"      ON node.nodeid = ipinterface.nodeid \n" + 
-            		"    JOIN service \n" + 
-            		"      ON service.serviceid = ifservices.serviceid \n" + 
-            		"   WHERE node.nodeid = ? \n" + 
-            		"     AND ipinterface.ipaddr= ? \n" + 
-            		"     AND service.serviceid = ? \n" + 
-            		"     AND (outages.ifregainedservice >= ? OR outages.ifregainedservice IS NULL) \n" + 
-            		"ORDER BY outages.iflostservice DESC");
-            d.watch(stmt);
-            stmt.setInt(1, nodeId);
-            stmt.setString(2, ipAddr);
-            stmt.setInt(3, serviceId);
-            stmt.setTimestamp(4, new Timestamp(timeLong));
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            outages = rs2Outages(rs);
-        } finally {
-            d.cleanUp();
-        }
-
-        return outages;
-    }
-
-    /**
-     * Return a list of IP addresses, the number of services down on each IP
-     * address, and the longest time a service has been down for each IP
-     * address. The list will be sorted in ascending order from the service down
-     * longest to the service down shortest.
-     *
-     * @return an array of {@link org.opennms.netmgt.model.outage.OutageSummary} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    public OutageSummary[] getCurrentOutageSummaries() throws SQLException {
-        OutageSummary[] summaries = new OutageSummary[0];
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-            
-            Statement stmt = conn.createStatement();
-            d.watch(stmt);
-            //FIXME: This query is questionable at best but rewritten to follow relationships
-            ResultSet rs = stmt.executeQuery("  "
-            		+ "SELECT DISTINCT \n" + 
-            		"         node.nodeid, max(outages.iflostservice) as timeDown, \n" + 
-            		"         node.nodelabel, \n" + 
-            		"         now() as timeNow \n" + 
-            		"    FROM node \n" + 
-            		"    JOIN ipinterface \n" + 
-            		"      ON ipinterface.nodeid = node.nodeid \n" + 
-            		"    JOIN ifservices \n" + 
-            		"      ON ifservices.ipinterfaceid = ipinterface.id \n" + 
-            		"    JOIN outages \n" + 
-            		"      ON outages.ifserviceid = ifservices.id\n" + 
-            		"   WHERE outages.ifregainedservice IS NULL \n" + 
-            		"     AND node.nodeType != 'D' \n" + 
-            		"     AND ipinterface.ismanaged != 'D' \n" + 
-            		"     AND ifservices.status != 'D' \n" + 
-            		"GROUP BY node.nodeid, node.nodelabel \n" + 
-            		"ORDER BY timeDown DESC");
-            d.watch(rs);
-
-            List<OutageSummary> list = new ArrayList<OutageSummary>();
-
-            while (rs.next()) {
-                int nodeId = rs.getInt("nodeID");
-                Timestamp timeDownTS = rs.getTimestamp("timeDown");
-                long timeDown = timeDownTS.getTime();
-                Date downDate = new Date(timeDown);
-                String nodeLabel = rs.getString("nodelabel");
-                Date now = new Date(rs.getTimestamp("timeNow").getTime());
-
-                list.add(new OutageSummary(nodeId, nodeLabel, downDate, null, now));
-            }
-
-            summaries = list.toArray(new OutageSummary[list.size()]);
-        } finally {
-            d.cleanUp();
-        }
-
-        return summaries;
-    }
 
     /**
      * Return a list of IP addresses, the number of services down on each IP
@@ -741,19 +114,20 @@ public class OutageModel {
      * @return an array of {@link org.opennms.netmgt.model.outage.OutageSummary} objects.
      * @throws java.sql.SQLException if any.
      */
-    public OutageSummary[] getAllOutageSummaries(Date date) throws SQLException {
+    public static OutageSummary[] getAllOutageSummaries(Date date) throws SQLException {
         OutageSummary[] summaries = new OutageSummary[0];
+
+        final DBUtils d = new DBUtils(OutageModel.class);
 
         try {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             
             PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT DISTINCT outages.nodeid, outages.iflostservice as timeDown, outages.ifregainedservice as timeUp, node.nodelabel "
+                    "SELECT DISTINCT node.nodeid, outages.iflostservice as timeDown, outages.ifregainedservice as timeUp, node.nodelabel "
                         + "FROM outages, node, ipinterface, ifservices "
-                        + "WHERE node.nodeid=outages.nodeid AND ipinterface.nodeid=outages.nodeid AND ifservices.nodeid=outages.nodeid "
-                        + "AND ipinterface.ipaddr=outages.ipaddr AND ifservices.ipaddr=outages.ipaddr "
-                        + "AND ifservices.serviceid=outages.serviceid "
+                        + "WHERE node.nodeid=ipinterface.nodeid "
+                        + "AND ipinterface.id=ifservices.ipinterfaceid AND ifservices.id=outages.ifserviceid "
                         + "AND node.nodeType != 'D' "
                         + "AND ipinterface.ismanaged != 'D' "
                         + "AND ifservices.status != 'D' "
@@ -793,79 +167,6 @@ public class OutageModel {
     }
 
     /**
-     * Return a list of IP addresses, the number of services down on each IP
-     * address, and the longest time a service has been down for each IP
-     * address. The list will be sorted in ascending order from the service down
-     * longest to the service down shortest. This is a clone of
-     * getCurrentOutageSummaries for Harrah's (special consideration).
-     *
-     * @return an array of {@link org.opennms.netmgt.model.outage.OutageSummary} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    public OutageSummary[] getCurrentSDSOutageSummaries() throws SQLException {
-        OutageSummary[] summaries = new OutageSummary[0];
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-            
-            Statement stmt = conn.createStatement();
-            d.watch(stmt);
-            ResultSet rs = stmt.executeQuery("  "
-            		+ "SELECT DISTINCT \n" + 
-            		"         outages.nodeid, max(outages.iflostservice) AS timeDown, \n" + 
-            		"         node.nodelabel \n" + 
-            		"    FROM outages \n" + 
-            		"    JOIN ifservices \n" + 
-            		"      ON ifservices.id = outages.ifserviceid \n" + 
-            		"    JOIN ipinterface \n" + 
-            		"      ON ipinterface.id = ifservices.ipinterfaceid \n" + 
-            		"    JOIN node \n" + 
-            		"      ON node.nodeid = ipinterface.nodeid \n" + 
-            		"    JOIN assets \n" + 
-            		"      ON assets.nodeid = node.nodeid \n" + 
-            		"   WHERE outages.ifregainedservice IS NULL \n" + 
-            		"     and node.nodeType != 'D' \n" + 
-            		"     and ipinterface.ismanaged != 'D' \n" + 
-            		"     and ifservices.status != 'D' \n" + 
-            		"     and assets.displaycategory != 'SDS-A-Side' \n" + 
-            		"     and assets.displaycategory != 'SDS-B-Side' \n" + 
-            		"group by outages.nodeid, node.nodelabel \n" + 
-            		"order by timeDown desc;");
-            d.watch(rs);
-
-            List<OutageSummary> list = new ArrayList<OutageSummary>();
-
-            while (rs.next()) {
-                int nodeId = rs.getInt("nodeID");
-                Timestamp timeDownTS = rs.getTimestamp("timeDown");
-                long timeDown = timeDownTS.getTime();
-                Date downDate = new Date(timeDown);
-                String nodeLabel = rs.getString("nodelabel");
-
-                list.add(new OutageSummary(nodeId, nodeLabel, downDate));
-            }
-
-            summaries = list.toArray(new OutageSummary[list.size()]);
-        } finally {
-            d.cleanUp();
-        }
-
-        return summaries;
-    }
-
-    /**
-     * <p>rs2Outages</p>
-     *
-     * @param rs a {@link java.sql.ResultSet} object.
-     * @return an array of {@link org.opennms.web.outage.Outage} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    protected static Outage[] rs2Outages(ResultSet rs) throws SQLException {
-        return rs2Outages(rs, true);
-    }
-
-    /**
      * <p>rs2Outages</p>
      *
      * @param rs a {@link java.sql.ResultSet} object.
@@ -873,7 +174,7 @@ public class OutageModel {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    protected static Outage[] rs2Outages(ResultSet rs, boolean includesRegainedTime) throws SQLException {
+    private static Outage[] rs2Outages(ResultSet rs, boolean includesRegainedTime) throws SQLException {
         return rs2Outages(rs, includesRegainedTime, false);
     }
 
@@ -890,7 +191,7 @@ public class OutageModel {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    protected static Outage[] rs2Outages(ResultSet rs, boolean includesRegainedTime, boolean includesNotifications) throws SQLException {
+    private static Outage[] rs2Outages(ResultSet rs, boolean includesRegainedTime, boolean includesNotifications) throws SQLException {
         Outage[] outages = null;
         List<Outage> list = new ArrayList<Outage>();
 

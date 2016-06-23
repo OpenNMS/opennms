@@ -111,7 +111,7 @@ public class UnimplementedMonitoredServiceDao implements MonitoredServiceDao {
     }
 
     @Override
-    public void save(OnmsMonitoredService entity) {
+    public Integer save(OnmsMonitoredService entity) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

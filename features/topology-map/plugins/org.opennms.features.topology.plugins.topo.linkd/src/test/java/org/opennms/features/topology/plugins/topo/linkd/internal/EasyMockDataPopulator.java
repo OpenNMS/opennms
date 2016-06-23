@@ -29,7 +29,6 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,16 +42,12 @@ import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -85,9 +80,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class EasyMockDataPopulator {
     
-    @Autowired
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-    
     @Autowired 
     private NodeDao m_nodeDao;
     
@@ -113,16 +105,14 @@ public class EasyMockDataPopulator {
     private OnmsNode m_node8;
     
     private List<OnmsNode> m_nodes;
-    private List<DataLinkInterface> m_links;
 
     public void populateDatabase() {
-        final OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
 
         final String icmp = "ICMP";
         final String snmp = "SNMP";
         final String http = "HTTP";
         
-        final NetworkBuilder builder = new NetworkBuilder(distPoller);
+        final NetworkBuilder builder = new NetworkBuilder();
         
         setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType(NodeType.ACTIVE).setSysObjectId("1.3.6.1.4.1.5813.1.25").getNode());
         Assert.assertNotNull("newly built node 1 should not be null", getNode1());
@@ -171,7 +161,6 @@ public class EasyMockDataPopulator {
         builder.addService(http);
         builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(icmp);
-        builder.addAtInterface(node1, "192.168.2.1", "AA:BB:CC:DD:EE:FF").setIfIndex(1).setLastPollTime(new Date()).setStatus('A');
         OnmsNode node2 = builder.getCurrentNode();
         setNode2(node2);
         
@@ -259,37 +248,6 @@ public class EasyMockDataPopulator {
         nodes.add(node7);
         nodes.add(node8);
         setNodes(nodes);
-        
-        final DataLinkInterface dli12 = new DataLinkInterface(getNode2(), -1, getNode1().getId(), -1,StatusType.ACTIVE, new Date());
-        final DataLinkInterface dli23 = new DataLinkInterface(getNode3(), -1, getNode2().getId(), -1, StatusType.ACTIVE, new Date());
-        final DataLinkInterface dli34 = new DataLinkInterface(getNode4(), -1, getNode3().getId(), -1, StatusType.ACTIVE, new Date());
-        final DataLinkInterface dli45 = new DataLinkInterface(getNode5(), -1, getNode4().getId(), -1, StatusType.ACTIVE, new Date());
-        final DataLinkInterface dli56 = new DataLinkInterface(getNode6(), -1, getNode5().getId(), -1, StatusType.ACTIVE, new Date());
-        final DataLinkInterface dli67 = new DataLinkInterface(getNode7(), -1, getNode6().getId(), -1, StatusType.ACTIVE, new Date());
-        final DataLinkInterface dli78 = new DataLinkInterface(getNode8(), -1, getNode7().getId(), -1, StatusType.ACTIVE, new Date());
-        final DataLinkInterface dli81 = new DataLinkInterface(getNode1(), -1, getNode8().getId(), -1, StatusType.ACTIVE, new Date());
-        
-        dli12.setId(10012);
-        dli23.setId(10023);
-        dli34.setId(10034);
-        dli45.setId(10045);
-        dli56.setId(10056);
-        dli67.setId(10067);
-        dli78.setId(10078);
-        dli81.setId(10081);
-
-        List<DataLinkInterface> links = new ArrayList<DataLinkInterface>();
-        
-        links.add(dli12);
-        links.add(dli23);
-        links.add(dli34);
-        links.add(dli45);
-        links.add(dli56);
-        links.add(dli67);
-        links.add(dli78);
-        links.add(dli81);
-        setLinks(links);
-
     }
     
     private List<OnmsIpInterface> getList(Set<OnmsIpInterface> ipset) {
@@ -302,7 +260,6 @@ public class EasyMockDataPopulator {
     }
     public void setUpMock() {
         
-        EasyMock.expect(m_dataLinkInterfaceDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_nodeDao.getAllLabelsById());
         EasyMock.expectLastCall().andReturn(getNodeLabelsById()).anyTimes();
 
@@ -313,7 +270,6 @@ public class EasyMockDataPopulator {
             EasyMock.expect(m_ipInterfaceDao.findByNodeId(i)).andReturn(getList(getNode(i).getIpInterfaces())).anyTimes();
         }
 
-        EasyMock.replay(m_dataLinkInterfaceDao);
         EasyMock.replay(m_nodeDao);
         EasyMock.replay(m_snmpInterfaceDao);
         EasyMock.replay(m_ipInterfaceDao);
@@ -344,7 +300,6 @@ public class EasyMockDataPopulator {
     }
 
     public void tearDown() {
-        EasyMock.reset(m_dataLinkInterfaceDao);
         EasyMock.reset(m_nodeDao);
         EasyMock.reset(m_snmpInterfaceDao);
         EasyMock.reset(m_ipInterfaceDao);
@@ -422,22 +377,6 @@ public class EasyMockDataPopulator {
         m_node8 = node8;
     }
 
-    private void setLinks(final List<DataLinkInterface> links) {
-        m_links=links;
-    }
-    
-    public List<DataLinkInterface> getLinks() {
-        return m_links;
-    }
-
-    public DataLinkInterfaceDao getDataLinkInterfaceDao() {
-        return m_dataLinkInterfaceDao;
-    }
-
-    public void setDataLinkInterfaceDao(final DataLinkInterfaceDao dataLinkInterfaceDao) {
-        this.m_dataLinkInterfaceDao = dataLinkInterfaceDao;
-    }
-
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
@@ -446,6 +385,7 @@ public class EasyMockDataPopulator {
         this.m_nodeDao = nodeDao;
     }
 
+    @SuppressWarnings("deprecation")
     public void check(GraphProvider topologyProvider) {
         String vertexNamespace = topologyProvider.getVertexNamespace();
         Assert.assertEquals(8, topologyProvider.getVertices().size());

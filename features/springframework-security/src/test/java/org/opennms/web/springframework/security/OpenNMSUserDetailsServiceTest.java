@@ -59,10 +59,10 @@ public class OpenNMSUserDetailsServiceTest extends TestCase {
 		SpringSecurityUserDao userDao = createMock(SpringSecurityUserDao.class);
 		OpenNMSUserDetailsService detailsService = new OpenNMSUserDetailsService();
 		detailsService.setUserDao(userDao);
-		
-		OnmsUser user = new OnmsUser();
+
+		SpringSecurityUser user = new SpringSecurityUser(new OnmsUser());
 		expect(userDao.getByUsername("test_user")).andReturn(user);
-		
+
 		replay(userDao);
 		
 		UserDetails userDetails = detailsService.loadUserByUsername("test_user");

@@ -36,7 +36,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 
 public class NoContentAvailableWindow extends Window {

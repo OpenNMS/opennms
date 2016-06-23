@@ -35,6 +35,7 @@ import junit.framework.TestCase;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceVisitor;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
@@ -95,7 +96,7 @@ public class ResourceTypeFilteringResourceVisitorTest extends TestCase {
 
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
-        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0));
+        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
         m_delegatedVisitor.visit(resource);
 
         m_mocks.replayAll();
@@ -111,7 +112,7 @@ public class ResourceTypeFilteringResourceVisitorTest extends TestCase {
 
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("something other than interfaceSnmp");
-        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0));
+        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
 
         m_mocks.replayAll();
         filteringVisitor.visit(resource);

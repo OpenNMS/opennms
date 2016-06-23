@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.sms-reflector.build</groupId>
     <artifactId>shared-plugin-settings</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>compiled-bundle-settings</artifactId>
@@ -53,8 +53,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>

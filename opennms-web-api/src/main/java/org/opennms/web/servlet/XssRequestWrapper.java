@@ -62,11 +62,10 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
      *
      * @param req a {@link javax.servlet.http.HttpServletRequest} object.
      */
-    @SuppressWarnings("unchecked")
     public XssRequestWrapper(HttpServletRequest req) 
     {
         super(req);
-        original_parameters = req.getParameterMap();   
+        original_parameters = req.getParameterMap();
         sanitized_parameters = getParameterMap();
         snzLogger();
     }       
@@ -129,7 +128,7 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
         return super.getRequest().getCharacterEncoding();
     }
 
-    private  Map<String, String[]> sanitizeParamMap(Map<String, String[]> raw) 
+    private static Map<String, String[]> sanitizeParamMap(Map<String, String[]> raw) 
     {       
         Map<String, String[]> res = new HashMap<String, String[]>();
         if (raw==null) {

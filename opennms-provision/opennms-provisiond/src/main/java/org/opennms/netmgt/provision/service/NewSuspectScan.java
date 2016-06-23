@@ -34,10 +34,11 @@ import java.net.InetAddress;
 
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,7 @@ public class NewSuspectScan implements Scan {
      *
      * @param ipAddress a {@link java.net.InetAddress} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
      */
@@ -100,8 +101,13 @@ public class NewSuspectScan implements Scan {
         	phase.getBuilder().addSequence(
         			new NodeInfoScan(node, m_ipAddress, null, createScanProgress(), m_agentConfigFactory, m_provisionService, null),
         			new IpInterfaceScan(node.getId(), m_ipAddress, null, m_provisionService),
-        			new NodeScan(node.getId(), null, null, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator)
-        			);
+				new NodeScan(node.getId(), null, null, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator),
+				new RunInBatch() {
+					@Override
+					public void run(BatchTask batch) {
+						LOG.info("Done scanning scan new suspect address {} for foreign source {}", addrString, m_foreignSource);
+					}
+				});
         }
     }
 

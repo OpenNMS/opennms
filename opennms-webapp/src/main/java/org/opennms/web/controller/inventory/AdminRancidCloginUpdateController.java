@@ -30,7 +30,6 @@ package org.opennms.web.controller.inventory;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,68 +37,35 @@ import org.opennms.web.api.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * <p>AdminRancidCloginUpdateController class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
  */
-@SuppressWarnings("deprecation")
-public class AdminRancidCloginUpdateController extends SimpleFormController {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(AdminRancidCloginUpdateController.class);
+@Controller
+@RequestMapping("/admin/rancid/rancidClogin.htm")
+public class AdminRancidCloginUpdateController {
 
-    
-    InventoryService m_inventoryService;
-    
-    /** {@inheritDoc} */
-    @Override
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
-            Object command, BindException errors) throws ServletException, IOException, Exception {
+    private static final Logger LOG = LoggerFactory.getLogger(AdminRancidCloginDeleteController.class);
+
+    @Autowired
+    private InventoryService m_inventoryService;
+
+    @RequestMapping(method=RequestMethod.POST)
+    public String onSubmit(HttpServletRequest request, HttpServletResponse response, AdminRancidCloginCommClass bean) throws IOException {
 
         LOG.debug("AdminRancidCloginUpdateController ModelAndView onSubmit");
-        
-        AdminRancidCloginCommClass bean = (AdminRancidCloginCommClass) command;
-        if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
 
-            boolean done = m_inventoryService.updateClogin(bean.getDeviceName(), bean.getGroupName(), bean.getUserID(), bean.getPass(),
-                                            bean.getEnpass(), bean.getLoginM(), bean.getAutoE());
+        if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
+            boolean done = m_inventoryService.updateClogin(bean.getDeviceName(), bean.getGroupName(), bean.getUserID(), bean.getPass(), bean.getEnpass(), bean.getLoginM(), bean.getAutoE());
             if (!done){
                 LOG.debug("AdminRancidCloginUpdateController error on submitting cLogin changes");
             }
         }
-        String redirectURL = request.getHeader("Referer");
-        response.sendRedirect(redirectURL);
-        return super.onSubmit(request, response, command, errors);
-    }
-    /** {@inheritDoc} */
-    @Override
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
-        LOG.debug("AdminRancidCloginIpdateController initBinder");
-    }
-    
-    /**
-     * <p>getInventoryService</p>
-     *
-     * @return a {@link org.opennms.web.svclayer.inventory.InventoryService} object.
-     */
-    public InventoryService getInventoryService() {
-        return m_inventoryService;
-    }
 
-    /**
-     * <p>setInventoryService</p>
-     *
-     * @param inventoryService a {@link org.opennms.web.svclayer.inventory.InventoryService} object.
-     */
-    public void setInventoryService(InventoryService inventoryService) {
-        m_inventoryService = inventoryService;
+        return "admin/rancid/rancidAdmin";
     }
-
 }

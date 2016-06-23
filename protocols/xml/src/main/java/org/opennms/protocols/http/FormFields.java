@@ -40,6 +40,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 /**
@@ -48,6 +50,7 @@ import org.opennms.core.config.api.JaxbListWrapper;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name="form-fields")
+@JsonRootName("form-fields")
 public class FormFields extends JaxbListWrapper<FormField> {
 
     /** The Constant serialVersionUID. */
@@ -71,6 +74,7 @@ public class FormFields extends JaxbListWrapper<FormField> {
      * @see org.opennms.core.config.api.JaxbListWrapper#getObjects()
      */
     @XmlElement(name="form-field")
+    @JsonProperty("form-field")
     public List<FormField> getObjects() {
         return super.getObjects();
     }

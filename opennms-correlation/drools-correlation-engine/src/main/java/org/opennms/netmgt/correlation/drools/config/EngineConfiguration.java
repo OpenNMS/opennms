@@ -63,7 +63,7 @@ import org.exolab.castor.xml.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.correlation.CorrelationEngine;
-import org.opennms.netmgt.model.events.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.xml.sax.ContentHandler;

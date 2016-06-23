@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+  <!--
+       Fix for issue NMS-7441: varchar to text for lldp and cdp
+       checked all the table used by enhanced linkd including ospf, bridge and isis.
+       
+  -->
+<changeSet author="rssntn67" id="1.15.2-usetextforlldpcdp">
+  <modifyDataType tableName="lldpelement"    columnName="lldpchassisid"          newDataType="text" />
+  <modifyDataType tableName="lldpelement"    columnName="lldpsysname"            newDataType="text" />
+  <modifyDataType tableName="lldplink"       columnName="lldpportid"             newDataType="text" />
+  <modifyDataType tableName="lldplink"       columnName="lldpportdescr"          newDataType="text" />
+  <modifyDataType tableName="lldplink"       columnName="lldpremchassisid"       newDataType="text" />
+  <modifyDataType tableName="lldplink"       columnName="lldpremsysname"         newDataType="text" />
+  <modifyDataType tableName="lldplink"       columnName="lldpremportid"          newDataType="text" />
+  <modifyDataType tableName="lldplink"       columnName="lldpremportdescr"       newDataType="text" />
+  <modifyDataType tableName="cdpelement"     columnName="cdpglobaldeviceid"      newDataType="text" />
+  <modifyDataType tableName="cdplink"        columnName="cdpinterfacename"       newDataType="text" />
+  <modifyDataType tableName="cdplink"        columnName="cdpcachedeviceid"       newDataType="text" />
+  <modifyDataType tableName="cdplink"        columnName="cdpcachedeviceport"     newDataType="text" />
+  <modifyDataType tableName="cdplink"        columnName="cdpcachedeviceplatform" newDataType="text" />
+  <modifyDataType tableName="bridgeelement"  columnName="vlanname"               newDataType="text" />
+  <modifyDataType tableName="bridgemaclink"  columnName="bridgeportifname"       newDataType="text" />
+  <modifyDataType tableName="bridgestplink"  columnName="stpportifname"          newDataType="text" />
+  <modifyDataType tableName="bridgebridgelink"  columnName="bridgeportifname"    newDataType="text" />
+  <modifyDataType tableName="bridgebridgelink"  columnName="designatedbridgeportifname"    newDataType="text" />
+
+  <rollback>
+    <modifyDataType tableName="lldpelement"    columnName="lldpchassisid"          newDataType="varchar(255)" />
+    <modifyDataType tableName="lldpelement"    columnName="lldpsysname"            newDataType="varchar(255)" />
+    <modifyDataType tableName="lldplink"       columnName="lldpportid"             newDataType="varchar(255)" />
+    <modifyDataType tableName="lldplink"       columnName="lldpportdescr"          newDataType="varchar(255)" />
+    <modifyDataType tableName="lldplink"       columnName="lldpremchassisid"       newDataType="varchar(255)" />
+    <modifyDataType tableName="lldplink"       columnName="lldpremsysname"         newDataType="varchar(255)" />
+    <modifyDataType tableName="lldplink"       columnName="lldpremportid"          newDataType="varchar(255)" />
+    <modifyDataType tableName="lldplink"       columnName="lldpremportdescr"       newDataType="varchar(255)" />
+    <modifyDataType tableName="cdpelement"     columnName="cdpglobaldeviceid"      newDataType="varchar(255)" />
+    <modifyDataType tableName="cdplink"        columnName="cdpinterfacename"       newDataType="varchar(96)"  />
+    <modifyDataType tableName="cdplink"        columnName="cdpcachedeviceid"       newDataType="varchar(64)"  />
+    <modifyDataType tableName="cdplink"        columnName="cdpcachedeviceport"     newDataType="varchar(96)"  />
+    <modifyDataType tableName="cdplink"        columnName="cdpcachedeviceplatform" newDataType="varchar(96)"  />
+    <modifyDataType tableName="bridgeelement"  columnName="vlanname"               newDataType="varchar(64)" />
+    <modifyDataType tableName="bridgemaclink"  columnName="bridgeportifname"       newDataType="varchar(32)" />
+    <modifyDataType tableName="bridgestplink"  columnName="stpportifname"          newDataType="varchar(32)" />
+    <modifyDataType tableName="bridgebridgelink"  columnName="bridgeportifname"    newDataType="varchar(32)" />
+    <modifyDataType tableName="bridgebridgelink"  columnName="designatedbridgeportifname"    newDataType="varchar(32)" />
+  </rollback>
+</changeSet>
+
+<!--
+      Fix for issue NMS-7563: varchar to text for cdp cdpcacheaddress and added a column 
+       for the cdpcacheDeviceIndex
+-->
+<changeSet author="rssntn67" id="1.15.2-cdplink-fix-nms7563">
+  <preConditions onFail="MARK_RAN">
+    <not><changeSetExecuted id="1.15.2-cdplink-fix-nms7563" author="rssntn67" changeLogFile="14.0.4/changelog.xml" /></not>
+  </preConditions>
+
+  <modifyDataType tableName="cdplink" columnName="cdpcacheaddress" newDataType="text" />
+  <dropNotNullConstraint tableName="cdplink" columnName="cdpinterfacename"/>
+  
+  <addColumn tableName="cdplink">
+    <column name="cdpcachedeviceindex" type="integer"/>
+  </addColumn>
+
+  <update tableName="cdplink">
+    <column name="cdpcachedeviceindex" type="integer" value="1"/>
+  </update>
+  
+  <addNotNullConstraint tableName="cdplink" columnName="cdpcachedeviceindex"/>
+  
+  <createIndex tableName="cdplink" indexName="cdplink_pk_new_idx">
+      <column name="nodeid" />
+      <column name="cdpcacheifindex" />
+      <column name="cdpcachedeviceindex" />
+  </createIndex>
+
+  <rollback>
+    <dropIndex      tableName="cdplink" indexName="cdplink_pk_new_idx"/>
+    <dropColumn     tableName="cdplink" columnName="cdpcachedeviceindex" />
+    <addNotNullConstraint tableName="cdplink" columnName="cdpinterfacename"/>
+    <modifyDataType tableName="cdplink" columnName="cdpcacheaddress" newDataType="varchar(64)" />
+  </rollback>
+
+
+</changeSet>
+
+</databaseChangeLog>

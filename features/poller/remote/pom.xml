@@ -3,12 +3,15 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.poller</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.poller</groupId>
   <artifactId>org.opennms.features.poller.remote</artifactId>
   <name>OpenNMS :: Features :: Poller :: Remote</name>
+  <properties>
+    <skipITs>true</skipITs>
+  </properties>
   <build>
     <plugins>
       <plugin>
@@ -18,6 +21,27 @@
           <execution>
             <goals>
               <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <skipITs>${skipITs}</skipITs>
+          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+          <systemPropertyVariables>
+            <opennms.home>${project.build.testOutputDirectory}</opennms.home>
+            <java.endorsed.dirs>${basedir}/target/endorsed</java.endorsed.dirs>
+          </systemPropertyVariables>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
             </goals>
           </execution>
         </executions>
@@ -34,8 +58,8 @@
     pull in a bunch of other dependencies like jetty-jsp we do not want here.
     See issue #NMS-6945 for more details -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <groupId>org.eclipse.jetty.orbit</groupId>
+      <artifactId>javax.servlet</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -111,8 +135,19 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd2-dependencies</artifactId>
+      <scope>test</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -434,6 +434,7 @@ Collection<String> dutySchedules = user.getDutyScheduleCollection();
       </div>
       <table class="table table-condensed table-striped table-bordered">
         <thead>
+          <tr>
           <th>&nbsp;</th>
           <th>Delete</th>
           <th>Mo</th>
@@ -445,6 +446,7 @@ Collection<String> dutySchedules = user.getDutyScheduleCollection();
           <th>Su</th>
           <th>Begin Time</th>
           <th>End Time</th>
+          </tr>
         </thead>
         <%
         int i = 0;

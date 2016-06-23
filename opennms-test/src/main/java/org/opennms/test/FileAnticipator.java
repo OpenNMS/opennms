@@ -34,15 +34,22 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
+
 import junit.framework.AssertionFailedError;
 
 import org.apache.commons.io.FileUtils;
@@ -64,10 +71,12 @@ public class FileAnticipator extends Assert {
     private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
     
     private List<File> m_expecting = new LinkedList<File>();
+    private List<File> m_expectingPrefixes = new LinkedList<File>();
+    private Map<File, List<String>> m_suffixesToExclude = new HashMap<File, List<String>>();
     private List<File> m_deleteMe = new LinkedList<File>();
     private File m_tempDir = null;
     private boolean m_initialized = false;
-    
+
     /**
      * <p>Constructor for FileAnticipator.</p>
      *
@@ -418,13 +427,33 @@ public class FileAnticipator extends Assert {
 
         return internalExpecting(parent, name);
     }
-    
+
+    public void expectingFileWithPrefix(File parent, String prefix, String... suffixesToExclude) {
+        if (parent == null) {
+            throw new IllegalArgumentException("parent argument cannot be null");
+        }
+        if (prefix == null) {
+            throw new IllegalArgumentException("prefix argument cannot be null");
+        }
+
+        assertInitialized();
+
+        internalExpectingFileWithPrefix(parent, prefix, suffixesToExclude);
+    }
+
     private File internalExpecting(File parent, String name) {
         File f = new File(parent, name);
         m_expecting.add(f);
         return f;
     }
-    
+
+    private File internalExpectingFileWithPrefix(File parent, String prefix, String[] suffixesToExclude) {
+        File f = new File(parent, prefix);
+        m_expectingPrefixes.add(f);
+        m_suffixesToExclude.put(f, Arrays.asList(suffixesToExclude));
+        return f;
+    }
+
     /**
      * Delete expected files, throwing an AssertionFailedError if any of
      * the expected files don't exist.
@@ -453,6 +482,18 @@ public class FileAnticipator extends Assert {
         });
         
         List<String> errors = new ArrayList<String>();
+
+        for (ListIterator<File> i = m_expectingPrefixes.listIterator(m_expectingPrefixes.size()); i.hasPrevious(); ) {
+            File f = i.previous();
+            List<Path> matches = getMatches(f);
+            if (matches.size() < 1 && !ignoreNonExistantFiles) {
+                errors.add("Expected prefix that needs to be deleted does not exist: " + f.getAbsolutePath());
+            }
+            for (Path match : matches) {
+                if (!match.toFile().delete()) errors.add("Could not delete expected file: " + match.toAbsolutePath());
+            }
+            i.remove();
+        }
 
         for (ListIterator<File> i = m_expecting.listIterator(m_expecting.size()); i.hasPrevious(); ) {
             File f = i.previous();
@@ -500,13 +541,61 @@ public class FileAnticipator extends Assert {
     }
 
     public boolean foundExpected() {
-        LOG.debug("checking for {} expected files...", m_expecting.size());
+        LOG.debug("checking for {} expected files...", m_expecting.size() + m_expectingPrefixes.size());
         for (final File expected : m_expecting) {
             if (!expected.exists()) {
                 return false;
             }
         }
+
+        // Handle files with prefixes
+        for (final File expected : m_expectingPrefixes) {
+            if (getMatches(expected).size() < 1) {
+                return false;
+            }
+        }
+
         return true;
     }
-    
+
+    private List<Path> getMatches(File expectedFileWithPrefix) {
+        List<Path> filteredMatches = new LinkedList<Path>();
+
+        // Split the filename into its parent folder and the requested prefix
+        String prefix = expectedFileWithPrefix.getName();
+        File parent = expectedFileWithPrefix.getParentFile();
+
+        // Find all files in the parent folder that match the prefix
+        List<Path> matches;
+        try {
+            matches = Files.list(parent.toPath())
+                    .filter(p -> p.getFileName().toString().startsWith(prefix))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            return filteredMatches;
+        }
+
+        // Grab the list of excluded sufixes for this particular expectation
+        List<String> suffixesToExclude = m_suffixesToExclude.get(expectedFileWithPrefix);
+        if (suffixesToExclude == null) {
+            suffixesToExclude = new ArrayList<String>(0);
+        }
+
+        // Filter the list of matches
+        for (Path match : matches) {
+            boolean shouldAdd = true;
+            for (String suffix : suffixesToExclude) {
+                if (match.getFileName().toString().endsWith(suffix)) {
+                    shouldAdd = false;
+                    break;
+                }
+            }
+
+            if (shouldAdd) {
+                filteredMatches.add(match);
+            }
+        }
+
+        return filteredMatches;
+    }
 }

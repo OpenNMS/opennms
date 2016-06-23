@@ -70,11 +70,11 @@ public class GenericIndexResourceTypeTest {
         org.opennms.netmgt.config.datacollection.ResourceType rt = new org.opennms.netmgt.config.datacollection.ResourceType();
         
         PersistenceSelectorStrategy ps = new PersistenceSelectorStrategy();
-        ps.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");
+        ps.setClazz("org.opennms.netmgt.collection.support.PersistAllSelectorStrategy");
         rt.setPersistenceSelectorStrategy(ps);
         
         StorageStrategy ss = new StorageStrategy();
-        ss.setClazz("org.opennms.netmgt.dao.support.IndexStorageStrategy");
+        ss.setClazz("org.opennms.netmgt.collection.support.IndexStorageStrategy");
         rt.setStorageStrategy(ss);
         
         return new GenericIndexResourceType(null, null, rt);

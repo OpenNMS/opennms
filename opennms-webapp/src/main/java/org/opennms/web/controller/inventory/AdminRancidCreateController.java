@@ -30,7 +30,6 @@ package org.opennms.web.controller.inventory;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,71 +37,38 @@ import org.opennms.web.api.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 
 /**
  * <p>AdminRancidCreateController class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
  */
-@SuppressWarnings("deprecation")
-public class AdminRancidCreateController extends SimpleFormController {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(AdminRancidCreateController.class);
+@Controller
+@RequestMapping("/admin/rancid/rancidCreate.htm")
+public class AdminRancidCreateController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AdminRancidCreateController.class);
 
-    InventoryService m_inventoryService;
-        
-    /**
-     * <p>getInventoryService</p>
-     *
-     * @return a {@link org.opennms.web.svclayer.inventory.InventoryService} object.
-     */
-    public InventoryService getInventoryService() {
-        return m_inventoryService;
-    }
+    @Autowired
+    private InventoryService m_inventoryService;
 
-    /**
-     * <p>setInventoryService</p>
-     *
-     * @param inventoryService a {@link org.opennms.web.svclayer.inventory.InventoryService} object.
-     */
-    public void setInventoryService(InventoryService inventoryService) {
-        m_inventoryService = inventoryService;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
-            Object command, BindException errors) throws ServletException, IOException, Exception {
+    @RequestMapping(method=RequestMethod.POST)
+    public String onSubmit(HttpServletRequest request, HttpServletResponse response, AdminRancidRouterDbCommClass bean) throws IOException {
 
         LOG.debug("AdminRancidCreateController ModelAndView onSubmit");
 
-        AdminRancidRouterDbCommClass bean = (AdminRancidRouterDbCommClass) command;
-                       
         LOG.debug("AdminRancidCreateController ModelAndView onSubmit updating device[{}] group[{}] status[{}]", bean.getDeviceName(), bean.getGroupName(), bean.getStatusName());
+
         if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
             boolean done = m_inventoryService.createNodeOnRouterDb(bean.getGroupName(), bean.getDeviceName(), bean.getDeviceTypeName(), bean.getStatusName(),bean.getComment());
             if (!done){
                 LOG.debug("AdminRancidCreateController ModelAndView onSubmit error while updating status for{}/{}", bean.getGroupName(), bean.getDeviceName());
             }
         }
-        String redirectURL = request.getHeader("Referer");
-        response.sendRedirect(redirectURL);
-        return super.onSubmit(request, response, command, errors);
-    }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
-        throws ServletException {
-        LOG.debug("AdminRancidCreateController initBinder");
+        return "admin/rancid/rancidAdmin";
     }
-    
 }

@@ -1,11 +1,11 @@
 <datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Mikrotik">
    <resourceType name="mtxrWlStatIndex" label="Local PtP or SU Interface (Mikrotik)" resourceLabel="${mtxrWlStatSsid}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="mtxrWlRtabAddr" label="Subscriber or Remote Radio (Mikrotik)" resourceLabel="SU ${index}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <group name="mtxrWlStatIndex" ifType="all">
       <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.1.1.2" instance="mtxrWlStatIndex" alias="mtxrWlStatTxRate" type="Gauge32"/>

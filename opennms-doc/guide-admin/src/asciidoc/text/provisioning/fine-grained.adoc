@@ -1,0 +1,119 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+=== Fine Grained Provisioning Using _provision.pl_
+
+_provision.pl_ provides an example command-line interface to the provisioning-related {opennms-product-name} REST API endpoints.
+
+The script has many options but the first 3 optional parameters are described here:
+
+NOTE: You can use `--help` to the script to see all the available options.
+
+ --username (default: admin)
+ --password (default: admin)
+ --url (default: http://localhost:8980/opennms/rest)
+
+==== Create a new requisition
+
+_provision.pl_ provides easy access to the requisition REST service using the _requisition_ option:
+
+[source, bash]
+----
+${OPENNMS_HOME}/bin/provision.pl requisition customer1
+----
+
+This command will create a new, empty (containing no nodes) requisition in {opennms-product-name}.
+
+The new requisition starts life in the `pending` state.
+This allows you to iteratively build the requisition and then later actually import the nodes in the requisition into {opennms-product-name}.
+This handles all adds/changes/deletes at once.
+So, you could be making changes all day and then at night either have a schedule in {opennms-product-name} that imports the group automatically or you can send a command through the REST service from an outside system to have the pending requisition imported/reimported.
+
+You can get a list of all existing requisitions with the `list` option of the `provision.pl` script:
+
+[source, bash]
+----
+${OPENNMS_HOME}/bin/provision.pl list
+----
+
+===== Create a new Node
+
+[source, bash]
+----
+${OPENNMS_HOME}/bin/provision.pl node add customer1 1 node-a
+----
+
+This command creates a node element in the requisition _customer1_ called _node-a_ using the script's _node_ option. The node's foreign-ID is _1_ but it can be any alphanumeric value as long as it is unique within the requisition.
+Note the node has no interfaces or services yet.
+
+===== Add an Interface Element to that Node
+
+[source, bash]
+----
+${OPENNMS_HOME}/bin/provision.pl interface add customer1 1 127.0.0.1
+----
+
+This command adds an interface element to the node element using the _interface_ option to the `provision.pl` command and it can now be seen in the pending requisition by running `provision.pl requisition list customer1`.
+
+===== Add a Couple of Services to that Interface
+
+[source, bash]
+----
+${OPENNMS_HOME}/bin/provision.pl service add customer1 1 127.0.0.1 ICMP
+${OPENNMS_HOME}/bin/provision.pl service add customer1 1 127.0.0.1 SNMP
+----
+
+This adds the 2 services to the specified 127.0.0.1 interface and is now in the pending requisition.
+
+===== Set the Primary SNMP Interface
+
+[source, bash]
+----
+${OPENNMS_HOME}/bin/provision.pl interface set customer1 1 127.0.0.1 snmp-primary P
+----
+
+This sets the 127.0.0.1 interface to be the node's Primary SNMP interface.
+
+===== Add a couple of Node Categories
+
+[source, bash]
+----
+${OPENNMS_HOME}/bin/provision.pl category add customer1 1 Routers
+${OPENNMS_HOME}/bin/provision.pl category add customer1 1 Production
+----
+
+This adds the two categories to the node and is now in the pending requisition.
+
+These categories are case-sensitive but do not have to be already defined in {opennms-product-name}.
+They will be created on the fly during the import if they do not already exist.
+
+===== Setting Asset Fields on a Node
+
+[source, bash]
+----
+${OPENNMS_HOME}/bin/provision.pl asset add customer1 1 serialnumber 9999
+----
+
+This will add value of `9999` to the asset field: _serialnumber_.
+
+.Deploy the Import Requisition (Creating the Group)
+[source, bash]
+----
+${OPENNMS_HOME}/bin/provision.pl requisition import customer1
+----
+
+This will cause {opennms-product-name} Provisiond to import the pending `customer1` requisition.
+The formerly pending requisition will move into the `deployed` state inside {opennms-product-name}.
+
+.Deleting a Node from a Requisition
+
+Very much the same as the add, except that a single delete command and a re-import is required.
+What happens is that the audit phase is run by Provisiond and it will be determined that a node has been removed from the requisition and the node will be deleted from the DB and all services will stop activities related to it.
+
+[source, bash]
+----
+${OPENNMS_HOME}/bin/provision.pl node delete customer1 1 node-a
+${OPENNMS_HOME}/bin/provision.pl requisition import customer1
+----
+This completes the life cycle of managing a node element, iteratively, in a import requisition.

@@ -34,8 +34,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 
-import org.opennms.netmgt.filter.FilterDao;
-import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
 
 public abstract class UnimplementedFilterDao implements FilterDao {
     @Override

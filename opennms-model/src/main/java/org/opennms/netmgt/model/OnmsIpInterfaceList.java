@@ -36,10 +36,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name = "ipInterfaces")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonRootName("ipInterfaces")
 public class OnmsIpInterfaceList extends JaxbListWrapper<OnmsIpInterface> {
     private static final long serialVersionUID = 1L;
 
@@ -49,9 +52,11 @@ public class OnmsIpInterfaceList extends JaxbListWrapper<OnmsIpInterface> {
     }
 
     @XmlElement(name="ipInterface")
+    @JsonProperty("ipInterface")
     public List<OnmsIpInterface> getObjects() {
         return super.getObjects();
     }
+
     public List<OnmsIpInterface> getIpInterfaces() {
         return getObjects();
     }

@@ -28,7 +28,7 @@
 
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.Rrd;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 

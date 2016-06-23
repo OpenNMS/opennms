@@ -38,7 +38,7 @@ import org.opennms.netmgt.collection.api.ServiceCollector;
 /**
  * This is a simple {@link CollectionSet} that is used to encapsulate the collection
  * of a single resource. The status is initially set to 
- * {@link CollectionConstants#COLLECTION_FAILED}. It is up to the collector to set it
+ * {@link ServiceCollector#COLLECTION_FAILED}. It is up to the collector to set it
  * to a different value upon collection completion.
  */
 public class SingleResourceCollectionSet extends AbstractCollectionSet {

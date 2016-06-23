@@ -3,24 +3,16 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-services</artifactId>
   <name>OpenNMS Services</name>
+  <properties>
+    <skipITs>true</skipITs>
+  </properties>
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -45,12 +37,33 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <!-- Don't specify argLine here or it will override the value from /pom.xml -->
+          <systemPropertyVariables>
+            <opennms.home>${project.build.testOutputDirectory}</opennms.home>
+            <java.endorsed.dirs>${basedir}/target/endorsed</java.endorsed.dirs>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <skipITs>${skipITs}</skipITs>
+          <reuseForks>false</reuseForks>
           <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
           <systemPropertyVariables>
             <opennms.home>${project.build.testOutputDirectory}</opennms.home>
             <java.endorsed.dirs>${basedir}/target/endorsed</java.endorsed.dirs>
           </systemPropertyVariables>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -112,6 +125,10 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.web</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -196,6 +213,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jmx-dependencies</artifactId>
+      <scope>compile</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
       <scope>compile</scope>
       <type>pom</type>
@@ -235,10 +258,6 @@
       <artifactId>org.opennms.features.poller.api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.ticketing</groupId>
-      <artifactId>org.opennms.features.ticketing.api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
       <scope>test</scope>
@@ -246,6 +265,11 @@
     <dependency>
       <groupId>com.jcraft</groupId>
       <artifactId>jsch</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>camel-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -266,16 +290,6 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jivesoftware</groupId>
-      <artifactId>smack</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>jivesoftware</groupId>
-      <artifactId>smackx</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
@@ -307,13 +321,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>mx4j</groupId>
-      <artifactId>mx4j-tools</artifactId>
+      <groupId>org.eclipse.jetty.orbit</groupId>
+      <artifactId>javax.servlet</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -352,6 +361,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd2-dependencies</artifactId>
+      <scope>test</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
       <scope>test</scope>
@@ -373,6 +388,11 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>quartz-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>smack-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
@@ -407,12 +427,22 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.daemon</artifactId>
+      <!-- <scope>test</scope> -->
+    </dependency>
+    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.measurements</groupId>
+      <artifactId>org.opennms.features.measurements.impl</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-    
+
   <repositories>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
@@ -422,5 +452,6 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
+
 
 </project>

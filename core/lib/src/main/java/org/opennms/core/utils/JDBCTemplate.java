@@ -36,6 +36,8 @@ import javax.sql.DataSource;
 
 /**
  * <p>Abstract JDBCTemplate class.</p>
+ * 
+ * @deprecated Use Hibernate instead of plain JDBC
  *
  * @author brozow
  * @version $Id: $

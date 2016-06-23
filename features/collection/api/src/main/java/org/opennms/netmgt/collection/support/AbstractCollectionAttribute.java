@@ -83,10 +83,10 @@ public abstract class AbstractCollectionAttribute implements CollectionAttribute
     /**
      * <p>getNumericValue</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link java.lang.Number} object.
      */
     @Override
-    public abstract String getNumericValue();
+    public abstract Number getNumericValue();
 
     /**
      * <p>getStringValue</p>

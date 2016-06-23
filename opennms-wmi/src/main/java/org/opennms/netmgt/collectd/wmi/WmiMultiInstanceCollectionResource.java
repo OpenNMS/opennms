@@ -29,10 +29,10 @@
 package org.opennms.netmgt.collectd.wmi;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,13 +69,13 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
 
     /** {@inheritDoc} */
     @Override
-    public File getResourceDir(final RrdRepository repository) {
-        String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel());
+    public Path getPath() {
+        String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel()).toString();
         //WMI instances can have special characters in them. See NMS-6924.
         resourcePath = resourcePath.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_");
-        File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
+        File resourceDir = new File(resourcePath);
         LOG.debug("getResourceDir: {}", resourceDir);
-        return resourceDir;
+        return resourceDir.toPath();
     }
 
     /**

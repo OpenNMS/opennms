@@ -118,7 +118,7 @@ public class FasterFilesystemForeignSourceRepositoryTest {
         assertEquals("node1", node.getNodeLabel());
     }
 
-    private FasterFilesystemForeignSourceRepository repo(File foreignSourceDir, File requisitionDir) throws Exception {
+    private static FasterFilesystemForeignSourceRepository repo(File foreignSourceDir, File requisitionDir) throws Exception {
         FasterFilesystemForeignSourceRepository repo = new FasterFilesystemForeignSourceRepository();
         repo.setForeignSourcePath(foreignSourceDir.getAbsolutePath());
         repo.setRequisitionPath(requisitionDir.getAbsolutePath());
@@ -126,13 +126,13 @@ public class FasterFilesystemForeignSourceRepositoryTest {
         return repo;
     }
 
-    private <T> Set<T> set(T... items) {
-        Set<T> set = new HashSet<T>();
+    private static Set<String> set(String... items) {
+        Set<String> set = new HashSet<String>();
         Collections.addAll(set, items);
         return set;
     }
 
-    private String fs(String name) {
+    private static String fs(String name) {
         String template = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
                 "<foreign-source date-stamp=\"2012-12-17T13:59:04.299-05:00\" name=\"_TEMPLATE_\" xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\">\n" + 
                 "    <scan-interval>1d</scan-interval>\n" + 
@@ -146,7 +146,7 @@ public class FasterFilesystemForeignSourceRepositoryTest {
         return template.replaceAll("_TEMPLATE_", name);
     }
 
-    private String req(String name) {
+    private static String req(String name) {
         String template = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
                 "<model-import last-import=\"2012-12-17T14:00:08.997-05:00\" foreign-source=\"_TEMPLATE_\" date-stamp=\"2012-12-17T14:00:08.757-05:00\" xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\">\n" + 
                 "    <node node-label=\"node1\" foreign-id=\"1234\" building=\"_TEMPLATE_\">\n" + 

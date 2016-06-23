@@ -34,11 +34,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,7 +149,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     /**
      * <p>setEventForwarder</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
@@ -158,7 +158,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     /**
      * <p>getEventForwarder</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;

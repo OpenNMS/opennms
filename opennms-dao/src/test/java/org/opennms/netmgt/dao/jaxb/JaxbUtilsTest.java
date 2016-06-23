@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Locale;
 
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -66,6 +67,7 @@ public class JaxbUtilsTest {
 
 	@Before
 	public void setUp() {
+		Locale.setDefault(Locale.US);
 		MockLogAppender.setupLogging();
 	}
 	
@@ -133,18 +135,9 @@ public class JaxbUtilsTest {
 		assertNotNull(log.getEvents());
 		assertEquals(2, log.getEvents().getEventCount());
 		assertEquals("JaxbUtilsTest", log.getEvents().getEvent(0).getSource());
-		
-		final InputStream is = new ByteArrayInputStream(m_logXml.getBytes());
-		final Log log2 = CastorUtils.unmarshal(Log.class, is);
-		is.close();
-		
-		assertNotNull(log2.getEvents());
-		assertEquals(2, log2.getEvents().getEventCount());
-		assertEquals("JaxbUtilsTest", log2.getEvents().getEvent(0).getSource());
-		assertNotNull(log2.getEvents().getEvent(0).getTime());
-		LOG.debug("castor log = {}", log2);
+		assertEquals(1300739661000L, log.getEvents().getEvent(0).getTime().getTime());
 	}
-	
+
     /**
      * This test can be used to compare the performance of JAXB vs. Castor in XML unmarshalling speed.
      * After running this test on my system when preparing for the OpenNMS 1.10 release, JAXB was
@@ -197,25 +190,16 @@ public class JaxbUtilsTest {
         
         System.out.printf("JAXB marshal: %dms, Castor marshal: %dms\n", jaxbTime, castorTime);
     }
-    
+
 	@Test
 	public void testUnmarshalLogNoNamespace() throws Exception {
 		final Log log = JaxbUtils.unmarshal(Log.class, m_logXmlWithoutNamespace);
 		assertNotNull(log.getEvents());
 		assertEquals(2, log.getEvents().getEventCount());
 		assertEquals("JaxbUtilsTest", log.getEvents().getEvent(0).getSource());
-		
-		final InputStream is = new ByteArrayInputStream(m_logXmlWithoutNamespace.getBytes());
-		final Log log2 = CastorUtils.unmarshal(Log.class, is);
-		is.close();
-		
-		assertNotNull(log2.getEvents());
-		assertEquals(2, log2.getEvents().getEventCount());
-		assertEquals("JaxbUtilsTest", log2.getEvents().getEvent(0).getSource());
-		assertNotNull(log2.getEvents().getEvent(0).getTime());
-		LOG.debug("castor log = {}", log2);
+		assertEquals(1300739661000L, log.getEvents().getEvent(0).getTime().getTime());
 	}
-	
+
 	private Event getEvent() {
 		final EventBuilder eb = new EventBuilder("uei.opennms.org/test", "JaxbUtilsTest");
 		final Event e = eb
@@ -253,6 +237,8 @@ public class JaxbUtilsTest {
 		assertNotNull(log);
 		assertNotNull(log.getEvents());
 		assertEquals(1, log.getEvents().getEvent().length);
+		// Make sure that the time was parsed properly to a specific epoch time
+		assertEquals(1302631500000L, log.getEvents().getEvent(0).getTime().getTime());
 	}
 	
 	@Test

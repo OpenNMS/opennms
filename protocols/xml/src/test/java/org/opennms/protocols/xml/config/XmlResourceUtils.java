@@ -28,8 +28,8 @@
 
 package org.opennms.protocols.xml.config;
 
-import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;

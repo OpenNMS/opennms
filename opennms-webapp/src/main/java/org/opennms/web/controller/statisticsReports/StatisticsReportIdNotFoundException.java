@@ -51,7 +51,8 @@ public class StatisticsReportIdNotFoundException extends RuntimeException {
      * @param msg a {@link java.lang.String} object.
      * @param id a {@link java.lang.String} object.
      */
-    public StatisticsReportIdNotFoundException(String msg, String id) {
+    public StatisticsReportIdNotFoundException(String msg, String id, Throwable cause) {
+        super(cause);
         this.message = msg;
         this.badId = id;
     }

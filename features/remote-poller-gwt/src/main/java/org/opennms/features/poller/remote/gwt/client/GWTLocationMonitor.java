@@ -45,7 +45,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GWTLocationMonitor implements Serializable, IsSerializable, Comparable<GWTLocationMonitor> {
 
 	private static final long serialVersionUID = 4018139006210721415L;
-	private Integer m_id;
+	private String m_id;
 	private String m_status;
 	private String m_definitionName;
 	private String m_name;
@@ -54,17 +54,17 @@ public class GWTLocationMonitor implements Serializable, IsSerializable, Compara
 	/**
 	 * <p>getId</p>
 	 *
-	 * @return a {@link java.lang.Integer} object.
+	 * @return a {@link java.lang.String} object.
 	 */
-	public Integer getId() {
+	public String getId() {
 		return m_id;
 	}
 	/**
 	 * <p>setId</p>
 	 *
-	 * @param id a {@link java.lang.Integer} object.
+	 * @param id a {@link java.lang.String} object.
 	 */
-	public void setId(final Integer id) {
+	public void setId(final String id) {
 		m_id = id;
 	}
 
@@ -160,7 +160,7 @@ public class GWTLocationMonitor implements Serializable, IsSerializable, Compara
 	 */
         @Override
 	public int hashCode() {
-	    return this.getId();
+	    return this.getId().hashCode();
 	}
 
 	/**

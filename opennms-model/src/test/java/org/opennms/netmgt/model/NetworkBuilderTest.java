@@ -78,7 +78,7 @@ public class NetworkBuilderTest {
     
     @Test
     public void testIpInterface() {
-        final NetworkBuilder builder = new NetworkBuilder("localhost", "127.0.0.1");
+        final NetworkBuilder builder = new NetworkBuilder();
         builder.addNode("node1");
         final InterfaceBuilder ib = builder.addSnmpInterface(1)
             .addIpInterface("192.168.1.1");
@@ -88,7 +88,7 @@ public class NetworkBuilderTest {
 
     @Test
     public void testDuplicateServiceAndCategoryNames() {
-        final NetworkBuilder builder = new NetworkBuilder("localhost", "127.0.0.1");
+        final NetworkBuilder builder = new NetworkBuilder();
         builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType(NodeType.ACTIVE);
         builder.addCategory("DEV_AC");
         builder.addCategory("IMP_mid");
@@ -132,7 +132,7 @@ public class NetworkBuilderTest {
         assertEquals("imported:", node1.getForeignSource());
         assertEquals("1", node1.getForeignId());
         assertEquals(NodeType.ACTIVE, node1.getType());
-        assertEquals("127.0.0.1", node1.getDistPoller().getIpAddress());
+        //assertEquals("127.0.0.1", node1.getDistPoller().getIpAddress());
         assertNull(node1.getSysContact());
         assertEquals(4, node1.getSnmpInterfaces().size());
         assertEquals(4, node1.getIpInterfaces().size());
@@ -168,7 +168,6 @@ public class NetworkBuilderTest {
         builder.addService("HTTP");
         builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService("ICMP");
-        builder.addAtInterface(node1, "192.168.2.1", "AA:BB:CC:DD:EE:FF").setIfIndex(1).setLastPollTime(new Date()).setStatus('A');
         final OnmsNode node2 = builder.getCurrentNode();
         
         assertNotNull(node2);

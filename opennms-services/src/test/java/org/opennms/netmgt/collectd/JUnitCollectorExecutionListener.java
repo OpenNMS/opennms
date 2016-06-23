@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.collection.api.ServiceCollector;
@@ -39,8 +40,6 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.TestContext;
@@ -69,8 +68,6 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         if (config == null) {
             return;
         }
-
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
 
         // make a fake database schema with hibernate
         InputStream is = ConfigurationTestUtils.getInputStreamForResource(testContext.getTestInstance(), config.schemaConfig());
@@ -119,7 +116,9 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
 
         if (config.anticipateRrds().length > 0) {
             for (String rrdFile : config.anticipateRrds()) {
-                m_fileAnticipator.expecting(m_snmpRrdDirectory, rrdFile + RrdUtils.getExtension());
+                // Expect the RRD files, for which we don't know the suffix
+                // Make sure they don't match the .meta files though
+                m_fileAnticipator.expectingFileWithPrefix(m_snmpRrdDirectory, rrdFile, ".meta");
 
                 //the nrtg feature requires .meta files in parallel to the rrd/jrb files.
                 //this .meta files are expected
@@ -154,24 +153,13 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
             }
         }
 
-        deleteRecursively(m_snmpRrdDirectory);
+        FileUtils.deleteDirectory(m_snmpRrdDirectory);
+
         m_fileAnticipator.tearDown();
 
         if (e != null) {
             throw e;
         }
-    }
-
-    private static void deleteRecursively(File directory) {
-        if (!directory.exists()) return;
-
-        if (directory.isDirectory()) {
-            for (File f : directory.listFiles()) {
-                deleteRecursively(f);
-            }
-        }
-
-        directory.delete();
     }
 
     private static JUnitCollector findCollectorAnnotation(TestContext testContext) {

@@ -217,6 +217,7 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
     /** {@inheritDoc} */
     @Override
     public synchronized void save(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+        m_deployedForeignSourceRepository.validate(foreignSource);
         m_pendingForeignSourceRepository.delete(foreignSource);
         m_deployedForeignSourceRepository.save(foreignSource);
     }
@@ -229,6 +230,7 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
      */
     @Override
     public synchronized void save(final Requisition requisition) throws ForeignSourceRepositoryException {
+        m_deployedForeignSourceRepository.validate(requisition);
         m_deployedForeignSourceRepository.save(requisition);
         cleanUpSnapshots(requisition);
     }
@@ -272,6 +274,14 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
     @Override
     public void flush() throws ForeignSourceRepositoryException {
         // Unnecessary, there is no caching/delayed writes in FusedForeignSourceRepository
+        m_pendingForeignSourceRepository.flush();
+        m_deployedForeignSourceRepository.flush();
     }
 
+    @Override
+    public void clear() throws ForeignSourceRepositoryException {
+        m_pendingForeignSourceRepository.clear();
+        m_deployedForeignSourceRepository.clear();
+        super.clear();
+    }
 }

@@ -97,8 +97,7 @@ public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements
 		super.init();
 	}
 
-	// Uncomment when we require Java 7
-	//@Override
+	@Override
 	public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new SQLFeatureNotSupportedException();
 	}

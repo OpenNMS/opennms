@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -11,6 +11,7 @@
   <packaging>war</packaging>
   <name>OpenNMS Features Remote Poller GWT UI</name>
   <properties>
+    <skipITs>true</skipITs>
     <moduleName>org.opennms.features.poller.remote.gwt.client.Application</moduleName>
     <moduleHtml>index.html</moduleHtml>
     <web.port>8080</web.port>
@@ -21,20 +22,9 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>test</id>
-            <phase>test</phase>
-            <goals>
-              <goal>test</goal>
-            </goals>
-          </execution>
-        </executions>
+        <configuration>
+          <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -48,6 +38,21 @@
             </resource>
           </webResources>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <skipITs>${skipITs}</skipITs>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
@@ -94,6 +99,11 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.web</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -212,12 +222,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-api</artifactId>
+      <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
+      <artifactId>opennms-rrdtool-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -226,8 +236,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrdtool-api</artifactId>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
       <scope>provided</scope>
     </dependency>
     <!-- Test Dependencies -->
@@ -254,6 +264,12 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd2-dependencies</artifactId>
+      <type>pom</type>
       <scope>test</scope>
     </dependency>
     <dependency>

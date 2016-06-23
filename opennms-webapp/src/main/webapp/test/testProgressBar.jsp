@@ -32,8 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.svclayer.ProgressMonitor
-		"
+	import="org.opennms.web.svclayer.model.ProgressMonitor"
 %>
 <%
 String view = "/WEB-INF/jsp/progressBar.jsp";

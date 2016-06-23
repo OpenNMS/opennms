@@ -28,16 +28,17 @@
 
 package org.opennms.features.topology.plugins.ncs;
 
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.SurveillanceStatus;
@@ -123,8 +124,8 @@ public class MockNodeDao implements NodeDao {
     }
 
     @Override
-    public void save(OnmsNode entity) {
-        // TODO Auto-generated method stub
+    public Integer save(OnmsNode entity) {
+        return null;
 
     }
 
@@ -159,12 +160,6 @@ public class MockNodeDao implements NodeDao {
     }
 
     @Override
-    public List<OnmsNode> findNodes(OnmsDistPoller dp) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public OnmsNode getHierarchy(Integer id) {
         // TODO Auto-generated method stub
         return null;
@@ -172,6 +167,18 @@ public class MockNodeDao implements NodeDao {
 
     @Override
     public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Map<String, Set<String>> getForeignIdsPerForeignSourceMap() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Set<String> getForeignIdsPerForeignSource(String foreignSource) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -220,6 +227,12 @@ public class MockNodeDao implements NodeDao {
 
     @Override
     public List<OnmsNode> findByForeignSource(String foreignSource) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<OnmsNode> findByIpAddressAndService(InetAddress ipAddress, String serviceName) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -299,6 +312,11 @@ public class MockNodeDao implements NodeDao {
     @Override
     public Map<Integer, String> getAllLabelsById() {
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Map<String, Long> getNumberOfNodesBySysOid() {
         return null;
     }
 }

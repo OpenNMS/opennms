@@ -94,7 +94,11 @@ public class SyslogClient {
 
     /// Creating a Syslog instance is equivalent of the Unix openlog() call.
     // @exception SyslogException if there was a problem
-    public SyslogClient(String ident, int logopt, int facility) throws UnknownHostException {
+    public SyslogClient(final String ident, final int logopt, final int facility) throws UnknownHostException {
+        this(ident, logopt, facility, InetAddressUtils.getLocalHostAddress());
+    }
+
+    public SyslogClient(final String ident, final int logopt, final int facility, final InetAddress address) throws UnknownHostException {
         if (ident == null) {
             this.ident = Thread.currentThread().getName();
         } else {
@@ -102,7 +106,7 @@ public class SyslogClient {
         }
         this.facility = facility;
 
-        address = InetAddressUtils.getLocalHostAddress();
+        this.address = address;
         
         try {
             socket = new DatagramSocket();
@@ -117,6 +121,7 @@ public class SyslogClient {
     // actually logged.
     // @exception SyslogException if there was a problem
     public void syslog(int priority, String msg) {
+        System.err.println("Sending message: " + msg);
         final DatagramPacket packet = getPacket(priority, msg);
         try {
             socket.send(packet);

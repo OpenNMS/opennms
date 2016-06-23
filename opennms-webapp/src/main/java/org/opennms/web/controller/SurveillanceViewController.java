@@ -34,10 +34,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.web.svclayer.ProgressMonitor;
-import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
-import org.opennms.web.svclayer.SurveillanceViewError;
+import org.opennms.web.svclayer.model.ProgressMonitor;
+import org.opennms.web.svclayer.model.SimpleWebTable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;

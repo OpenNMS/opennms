@@ -50,11 +50,4 @@ public class MX4JDetector extends AbstractJsr160Detector {
         setFriendlyName("mx4j");
         setFactory("STANDARD");
     }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void onInit() {
-        expectBeanCount(greatThan(0));
-        
-    }
 }

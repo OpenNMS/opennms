@@ -32,6 +32,7 @@ public class CdpElementNode {
 
     private String m_cdpGlobalRun;
     private String m_cdpGlobalDeviceId;
+    private String m_cdpGlobalDeviceIdFormat;
     private String m_cdpCreateTime;
     private String m_cdpLastPollTime;
 
@@ -65,6 +66,14 @@ public class CdpElementNode {
 
     public void setCdpGlobalDeviceId(String cdpGlobalDeviceId) {
         m_cdpGlobalDeviceId = cdpGlobalDeviceId;
+    }
+
+    public String getCdpGlobalDeviceIdFormat() {
+        return m_cdpGlobalDeviceIdFormat;
+    }
+
+    public void setCdpGlobalDeviceIdFormat(String cdpGlobalDeviceIdFormat) {
+        m_cdpGlobalDeviceIdFormat = cdpGlobalDeviceIdFormat;
     }
 
 }

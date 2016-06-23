@@ -306,7 +306,15 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.CreateGroupOperation"/>
     </service>
-    
+
+    <service interface="org.opennms.features.topology.api.Operation">
+        <service-properties>
+            <entry key="operation.contextMenuLocation" value="" />
+            <entry key="operation.label" value="Set As Focal Point" />
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.SetFocusVertexOperation" />
+    </service>
+
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.contextMenuLocation" value=""/>

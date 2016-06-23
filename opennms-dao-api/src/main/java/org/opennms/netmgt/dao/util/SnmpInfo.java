@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.util;
 
-import org.opennms.netmgt.model.events.Constants;
+import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.xml.event.Snmp;
 
 /**
@@ -52,10 +52,10 @@ public abstract class SnmpInfo {
      * field.
      * </P>
      *
-     * @see Constants#DB_ATTRIB_DELIM
-     * @see Constants#escape
-     * @see Constants#DB_ATTRIB_DELIM
-     * @see Constants#escape
+     * @see EventDatabaseConstants#DB_ATTRIB_DELIM
+     * @see EventDatabaseConstants#escape
+     * @see EventDatabaseConstants#DB_ATTRIB_DELIM
+     * @see EventDatabaseConstants#escape
      * @return The smnpblock as a string
      * @param info a {@link org.opennms.netmgt.xml.event.Snmp} object.
      * @param maxlen a int.
@@ -70,35 +70,35 @@ public abstract class SnmpInfo {
 
         // id text
         if (info.getIdtext() != null) {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM).append(Constants.escape(info.getIdtext(), Constants.DB_ATTRIB_DELIM));
+            snmpStr.append(EventDatabaseConstants.DB_ATTRIB_DELIM).append(EventDatabaseConstants.escape(info.getIdtext(), EventDatabaseConstants.DB_ATTRIB_DELIM));
         } else {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM).append("undefined");
+            snmpStr.append(EventDatabaseConstants.DB_ATTRIB_DELIM).append("undefined");
         }
 
         // version
-        snmpStr.append(Constants.DB_ATTRIB_DELIM).append(info.getVersion());
+        snmpStr.append(EventDatabaseConstants.DB_ATTRIB_DELIM).append(info.getVersion());
 
         // specific
         if (info.hasSpecific()) {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM).append(Integer.toString(info.getSpecific()));
+            snmpStr.append(EventDatabaseConstants.DB_ATTRIB_DELIM).append(Integer.toString(info.getSpecific()));
         } else {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM).append("undefined");
+            snmpStr.append(EventDatabaseConstants.DB_ATTRIB_DELIM).append("undefined");
         }
 
         // generic
         if (info.hasGeneric()) {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM).append(Integer.toString(info.getGeneric()));
+            snmpStr.append(EventDatabaseConstants.DB_ATTRIB_DELIM).append(Integer.toString(info.getGeneric()));
         } else {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM).append("undefined");
+            snmpStr.append(EventDatabaseConstants.DB_ATTRIB_DELIM).append("undefined");
         }
 
         // community
         if (info.getCommunity() != null) {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM).append(info.getCommunity());
+            snmpStr.append(EventDatabaseConstants.DB_ATTRIB_DELIM).append(info.getCommunity());
         } else {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM).append("undefined");
+            snmpStr.append(EventDatabaseConstants.DB_ATTRIB_DELIM).append("undefined");
         }
 
-        return Constants.format(snmpStr.toString(), maxlen);
+        return EventDatabaseConstants.format(snmpStr.toString(), maxlen);
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,36 +51,40 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>
- * Check for disks via HOST-RESOURCES-MIB.  This should be extended to
+ * Check for disks via HOST-RESOURCES-MIB. This should be extended to
  * support BOTH UCD-SNMP-MIB and HOST-RESOURCES-MIB
- * </p>
  * <p>
  * This does SNMP and therefore relies on the SNMP configuration so it is not distributable.
- * </p>
  *
- * @author <A HREF="mailto:jason.aras@gmail.com">Jason Aras</A>
- * @version $Id: $
+ * @author <a href="mailto:jason.aras@gmail.com">Jason Aras</a>
+ * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
  */
-
 @Distributable(DistributionContext.DAEMON)
 final public class DiskUsageMonitor extends SnmpMonitorStrategy {
-    
+
     public static final Logger LOG = LoggerFactory.getLogger(DiskUsageMonitor.class);
-    
+
     private static final String m_serviceName = "DISK-USAGE";
-    
+
     private static final String hrStorageDescr = ".1.3.6.1.2.1.25.2.3.1.3";
-    private static final String hrStorageSize  = ".1.3.6.1.2.1.25.2.3.1.5";
-    private static final String hrStorageUsed  = ".1.3.6.1.2.1.25.2.3.1.6";
-    
+    private static final String hrStorageSize = ".1.3.6.1.2.1.25.2.3.1.5";
+    private static final String hrStorageUsed = ".1.3.6.1.2.1.25.2.3.1.6";
+
     /**
      * The available match-types for this monitor
      */
-    private static final int MATCH_TYPE_EXACT = 0;
-    private static final int MATCH_TYPE_STARTSWITH = 1;
-    private static final int MATCH_TYPE_ENDSWITH = 2;
-    private static final int MATCH_TYPE_REGEX = 3;
+    private enum MatchType {
+
+        EXACT, STARTSWITH, ENDSWITH, REGEX
+    };
+
+    /**
+     * The available require-types for this monitor
+     */
+    private enum RequireType {
+
+        NONE, ANY, ALL
+    };
 
     /**
      * <P>
@@ -96,138 +100,145 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
     /**
      * {@inheritDoc}
      *
-     * <P>
      * Initialize the service monitor.
-     * </P>
+     * <p>
+     * @param parameters
      * @exception RuntimeException
-     *                Thrown if an unrecoverable error occurs that prevents the
-     *                plug-in from functioning.
+     *                             Thrown if an unrecoverable error occurs that prevents the
+     *                             plug-in from functioning.
      */
     @Override
-    public void initialize(Map<String, Object> parameters) {
+    public void initialize(final Map<String, Object> parameters) {
         // Initialize the SnmpPeerFactory
         //
         try {
             SnmpPeerFactory.init();
         } catch (IOException ex) {
-        	LOG.error("initialize: Failed to load SNMP configuration", ex);
+            LOG.error("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
-
-        return;
     }
 
     /**
-     * <P>
      * Called by the poller framework when an interface is being added to the
      * scheduler. Here we perform any necessary initialization to prepare the
      * NetworkInterface object for polling.
-     * </P>
      *
      * @exception RuntimeException
-     *                Thrown if an unrecoverable error occurs that prevents the
-     *                interface from being monitored.
+     *                             Thrown if an unrecoverable error occurs that prevents the
+     *                             interface from being monitored.
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
     @Override
-    public void initialize(MonitoredService svc) {
+    public void initialize(final MonitoredService svc) {
         super.initialize(svc);
-        return;
     }
 
     /**
      * {@inheritDoc}
      *
-     * <P>
      * The poll() method is responsible for polling the specified address for
      * SNMP service availability.
-     * </P>
+     *
+     * @param svc
+     * @param parameters
+     * @return PollStatus
+     * <p>
      * @exception RuntimeException
-     *                Thrown for any uncrecoverable errors.
+     *                             Thrown for any unrecoverable errors.
      */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        int matchType = MATCH_TYPE_EXACT;
-        
+    public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
+        MatchType matchType = MatchType.EXACT;
+        RequireType reqType = RequireType.ALL;
+
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
         PollStatus status = PollStatus.available();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
-        
+
         // Retrieve this interface's SNMP peer object
         //
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
-        if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
+        if (agentConfig == null) {
+            throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
+        }
         final String hostAddress = InetAddressUtils.str(ipaddr);
-		LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
-        
+        LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
+
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
-        
-        String diskName = ParameterMap.getKeyedString(parameters, "disk", null);
+
+        String diskNamePattern = ParameterMap.getKeyedString(parameters, "disk", null);
+        if (diskNamePattern == null) {
+            throw new RuntimeException("Invalid null value for parameter 'disk'");
+        }
         Integer percentFree = ParameterMap.getKeyedInteger(parameters, "free", 15);
-        
+
         String matchTypeStr = ParameterMap.getKeyedString(parameters, "match-type", "exact");
-        if (matchTypeStr.equalsIgnoreCase("exact")) {
-            matchType = MATCH_TYPE_EXACT; 
-        } else if (matchTypeStr.equalsIgnoreCase("startswith")) {
-            matchType = MATCH_TYPE_STARTSWITH;
-        } else if (matchTypeStr.equalsIgnoreCase("endswith")) {
-            matchType = MATCH_TYPE_ENDSWITH;
-        } else if (matchTypeStr.equalsIgnoreCase("regex")) {
-            matchType = MATCH_TYPE_REGEX;
-        } else {
+        try {
+            matchType = MatchType.valueOf(matchTypeStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
             throw new RuntimeException("Unknown value '" + matchTypeStr + "' for parameter 'match-type'");
         }
-        
-        LOG.debug("diskName=", diskName);
-        LOG.debug("percentfree=", percentFree);
-        LOG.debug("matchType=", matchTypeStr);
-        
-        LOG.debug("poll: service= SNMP address= {}", agentConfig);
 
-        
+        String reqTypeStr = ParameterMap.getKeyedString(parameters, "require-type", "all");
         try {
-            LOG.debug("DiskUsageMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
+            reqType = RequireType.valueOf(reqTypeStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Unknown value '" + reqTypeStr + "' for parameter 'require-type'");
+        }
+
+        LOG.debug("poll: diskNamePattern={}", diskNamePattern);
+        LOG.debug("poll: percentfree={}", percentFree);
+        LOG.debug("poll: matchType={}", matchTypeStr);
+        LOG.debug("poll: reqType={}", reqTypeStr);
+
+        LOG.debug("poll: service={} address={}", svc, agentConfig);
+
+        try {
+            LOG.debug("poll: SnmpAgentConfig address: {}", agentConfig);
             SnmpObjId hrStorageDescrSnmpObject = SnmpObjId.get(hrStorageDescr);
-            
-            
-            
-            Map<SnmpInstId, SnmpValue> flagResults = SnmpUtils.getOidValues(agentConfig, "DiskUsagePoller", hrStorageDescrSnmpObject);
-            
-            if(flagResults.size() == 0) {
+
+            Map<SnmpInstId, SnmpValue> results = SnmpUtils.getOidValues(agentConfig, "DiskUsagePoller", hrStorageDescrSnmpObject);
+
+            if (results.isEmpty()) {
                 LOG.debug("SNMP poll failed: no results, addr={} oid={}", hostAddress, hrStorageDescrSnmpObject);
-                return PollStatus.unavailable();
+                return PollStatus.unavailable("No entries found in hrStorageDescr");
             }
 
             boolean foundDisk = false;
-            
-            for (Map.Entry<SnmpInstId, SnmpValue> e : flagResults.entrySet()) { 
-                foundDisk = true;
+
+            for (Map.Entry<SnmpInstId, SnmpValue> e : results.entrySet()) {
                 LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} instance={} value={}", hostAddress, hrStorageDescrSnmpObject, e.getKey(), e.getValue());
-                
-                if (isMatch(e.getValue().toString(), diskName, matchType)) {
-                  LOG.debug("DiskUsageMonitor.poll: found disk=", diskName);
-                	
-                	SnmpObjId hrStorageSizeSnmpObject = SnmpObjId.get(hrStorageSize + "." + e.getKey().toString());
-                	SnmpObjId hrStorageUsedSnmpObject = SnmpObjId.get(hrStorageUsed + "." + e.getKey().toString());
-                	
-                	
-                	SnmpValue snmpSize = SnmpUtils.get(agentConfig, hrStorageSizeSnmpObject);
-                	SnmpValue snmpUsed = SnmpUtils.get(agentConfig, hrStorageUsedSnmpObject);
-                	float calculatedPercentage = ( (( (float)snmpSize.toLong() - (float)snmpUsed.toLong() ) / (float)snmpSize.toLong() ) ) * 100;
-                
-                  LOG.debug("DiskUsageMonitor: calculatedPercentage={} percentFree={}", calculatedPercentage, percentFree);
-                	
-                	if (calculatedPercentage < percentFree) {
-                	
-                		return PollStatus.unavailable(diskName + " usage high (" + (100 - (int)calculatedPercentage)  + "%)");
-                		
-                	}
-                	else {
-                		return status;
-                	}
+                final String snmpInstance = e.getKey().toString();
+                final String diskName = e.getValue().toString();
+
+                if (isMatch(diskName, diskNamePattern, matchType)) {
+                    LOG.debug("poll: found disk={}", diskName);
+
+                    final SnmpObjId hrStorageSizeSnmpObject = SnmpObjId.get(hrStorageSize, snmpInstance);
+                    final SnmpObjId hrStorageUsedSnmpObject = SnmpObjId.get(hrStorageUsed, snmpInstance);
+
+                    final SnmpValue snmpSize = SnmpUtils.get(agentConfig, hrStorageSizeSnmpObject);
+                    final SnmpValue snmpUsed = SnmpUtils.get(agentConfig, hrStorageUsedSnmpObject);
+                    float calculatedPercentage = ((((float) snmpSize.toLong() - (float) snmpUsed.toLong()) / (float) snmpSize.toLong())) * 100;
+
+                    LOG.debug("poll: calculatedPercentage={} percentFree={}", calculatedPercentage, percentFree);
+
+                    if (calculatedPercentage < percentFree) {
+
+                        return PollStatus.unavailable(diskName + " usage high (" + (100 - (int) calculatedPercentage) + "%)");
+
+                    } else {
+                        if (matchType == MatchType.EXACT || reqType == RequireType.ANY) {
+                            return status;
+                        }
+                        if (reqType == RequireType.ALL) {
+                            foundDisk = true;
+                        }
+                    }
                 }
             }
 
@@ -235,10 +246,9 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
                 return status;
             }
             // if we get here.. it means we did not find the disk...  which means we should not be monitoring it.
-            LOG.debug("DiskUsageMonitor: no disks found");
-            return PollStatus.unavailable("could not find " + diskName + "in table");
-            
-            
+            LOG.debug("poll: no disks found");
+            return PollStatus.unavailable("Could not find " + diskNamePattern + " in hrStorageTable");
+
         } catch (NumberFormatException e) {
             String reason = "Number operator used on a non-number " + e.getMessage();
             LOG.debug(reason);
@@ -255,24 +265,24 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
 
         return status;
     }
-    
-    private boolean isMatch(String candidate, String target, int matchType) {
+
+    private boolean isMatch(final String candidate, final String target, final MatchType matchType) {
         boolean matches = false;
-        LOG.debug("isMessage: candidate is '{}', matching against target '{}'", candidate, target);
-        if (matchType == MATCH_TYPE_EXACT) {
-            LOG.debug("Attempting equality match: candidate '{}', target '{}'", candidate, target);
+        LOG.debug("isMatch: candidate is '{}', matching against target '{}'", candidate, target);
+        if (matchType == MatchType.EXACT) {
+            LOG.debug("isMatch: Attempting equality match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.equals(target);
-        } else if (matchType == MATCH_TYPE_STARTSWITH) {
-            LOG.debug("Attempting startsWith match: candidate '{}', target '{}'", candidate, target);
+        } else if (matchType == MatchType.STARTSWITH) {
+            LOG.debug("isMatch: Attempting startsWith match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.startsWith(target);
-        } else if (matchType == MATCH_TYPE_ENDSWITH) {
-            LOG.debug("Attempting endsWith match: candidate '{}', target '{}'", candidate, target);
+        } else if (matchType == MatchType.ENDSWITH) {
+            LOG.debug("isMatch: Attempting endsWith match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.endsWith(target);
-        } else if (matchType == MATCH_TYPE_REGEX) {
-            LOG.debug("Attempting endsWith match: candidate '{}', target '{}'", candidate, target);
+        } else if (matchType == MatchType.REGEX) {
+            LOG.debug("isMatch: Attempting regex match: candidate '{}', target '{}'", candidate, target);
             matches = Pattern.compile(target).matcher(candidate).find();
         }
-        LOG.debug("isMatch: Match is positive");
+        LOG.debug("isMatch: Match is {}", matches ? "positive" : "negative");
         return matches;
     }
 }

@@ -28,12 +28,15 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.*;
+
+import org.opennms.features.vaadin.components.graph.GraphContainer;
 import org.opennms.features.vaadin.dashboard.model.*;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * This class implements a {@link Dashlet} for displaying a Rrd graph.
@@ -290,7 +293,20 @@ public class RrdDashlet extends AbstractDashlet {
      * @return the component
      */
     private Component getGraphComponent(int i, int width, int height, int timeFrameType, int timeFrameValue) {
-        Image image = new Image(null, new ExternalResource(m_rrdGraphHelper.imageUrlForGraph(getDashletSpec().getParameters().get("graphUrl" + i), width, height, timeFrameType, timeFrameValue)));
+        String graphTitle = getDashletSpec().getParameters().get("graphLabel" + i);
+        String graphName = RrdGraphHelper.getGraphNameFromQuery(getDashletSpec().getParameters().get("graphUrl" + i));
+        String resourceId = getDashletSpec().getParameters().get("resourceId" + i);
+
+        GraphContainer graph = new GraphContainer(graphName, resourceId);
+        graph.setTitle(graphTitle);
+        // Setup the time span
+        Calendar cal = new GregorianCalendar();
+        graph.setEnd(cal.getTime());
+        cal.add(timeFrameType, -timeFrameValue);
+        graph.setStart(cal.getTime());
+        // Use all of the available width
+        graph.setWidthRatio(1.0d);
+
         VerticalLayout verticalLayout = new VerticalLayout();
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
@@ -315,11 +331,11 @@ public class RrdDashlet extends AbstractDashlet {
         horizontalLayout.setExpandRatio(leftLayout, 1.0f);
 
         verticalLayout.addComponent(horizontalLayout);
-        verticalLayout.addComponent(image);
-        verticalLayout.setWidth(image.getWidth() + "px");
+        verticalLayout.addComponent(graph);
+        verticalLayout.setWidth(width, Unit.PIXELS);
 
         verticalLayout.setComponentAlignment(horizontalLayout, Alignment.MIDDLE_CENTER);
-        verticalLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
+        verticalLayout.setComponentAlignment(graph, Alignment.MIDDLE_CENTER);
         verticalLayout.setMargin(true);
 
         return verticalLayout;

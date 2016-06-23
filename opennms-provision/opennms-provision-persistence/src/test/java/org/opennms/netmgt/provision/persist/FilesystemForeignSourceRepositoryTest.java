@@ -57,6 +57,8 @@ public class FilesystemForeignSourceRepositoryTest extends ForeignSourceReposito
     @Before
     public void setUp() {
         m_defaultForeignSourceName = "imported:";
+        m_foreignSourceRepository.clear();
+        m_foreignSourceRepository.flush();
     }
 
     private Requisition createRequisition() throws Exception {

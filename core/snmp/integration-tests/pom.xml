@@ -3,13 +3,16 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.snmp</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
 	 <relativePath>..</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
   <artifactId>org.opennms.core.snmp.integration-tests</artifactId>
   <name>OpenNMS Core SNMP Integration Tests</name>
+  <properties>
+    <skipITs>true</skipITs>
+  </properties>
   <build>
     <plugins>
       <plugin>
@@ -19,6 +22,21 @@
           <execution>
             <goals>
               <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <skipITs>${skipITs}</skipITs>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
             </goals>
           </execution>
         </executions>

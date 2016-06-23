@@ -35,7 +35,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -51,41 +52,27 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import javax.net.ssl.SSLContext;
-
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
-import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -97,8 +84,8 @@ import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.api.ServiceParameters.ParameterName;
+import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionSet;
@@ -107,7 +94,7 @@ import org.opennms.netmgt.config.httpdatacollection.Attrib;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
 import org.opennms.netmgt.config.httpdatacollection.Parameter;
 import org.opennms.netmgt.config.httpdatacollection.Uri;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,7 +106,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public class HttpCollector implements ServiceCollector {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(HttpCollector.class);
 
     private static final int DEFAULT_RETRY_COUNT = 2;
@@ -160,7 +147,7 @@ public class HttpCollector implements ServiceCollector {
         private Uri m_uriDef;
         private int m_status;
         private List<HttpCollectionResource> m_collectionResourceList;
-		private Date m_timestamp;
+        private Date m_timestamp;
 
         public Uri getUriDef() {
             return m_uriDef;
@@ -176,12 +163,12 @@ public class HttpCollector implements ServiceCollector {
             String collectionName=ParameterMap.getKeyedString(m_parameters, ParameterName.COLLECTION.toString(), null);
             if(collectionName==null) {
                 //Look for the old configuration style:
-            	collectionName=ParameterMap.getKeyedString(m_parameters, ParameterName.HTTP_COLLECTION.toString(), null);
+                collectionName=ParameterMap.getKeyedString(m_parameters, ParameterName.HTTP_COLLECTION.toString(), null);
             }
             if (collectionName==null) {
                 LOG.debug("no collection name found in parameters");
-            	m_status=ServiceCollector.COLLECTION_FAILED;
-            	return;
+                m_status=ServiceCollector.COLLECTION_FAILED;
+                return;
             }
             HttpCollection collection = HttpCollectionConfigFactory.getInstance().getHttpCollection(collectionName);
             m_collectionResourceList = new ArrayList<HttpCollectionResource>();
@@ -231,27 +218,27 @@ public class HttpCollector implements ServiceCollector {
             visitor.completeCollectionSet(this);
         }
 
-		@Override
-		public Date getCollectionTimestamp() {
-			return m_timestamp;
-		}
-		public void setCollectionTimestamp(Date timestamp) {
-			this.m_timestamp = timestamp;
-		}
+        @Override
+        public Date getCollectionTimestamp() {
+            return m_timestamp;
+        }
+        public void setCollectionTimestamp(Date timestamp) {
+            this.m_timestamp = timestamp;
+        }
 
-		public int getPort() { // This method has been created to deal with NMS-4886
-		    int port = getUriDef().getUrl().getPort();
-		    // Check for service assigned port if UriDef port is not supplied (i.e., is equal to the default port 80)
-		    if (port == 80 && m_parameters.containsKey(ParameterName.PORT.toString())) {
-		        try {
-		            port = Integer.parseInt(m_parameters.get(ParameterName.PORT.toString()).toString());
-		            LOG.debug("getPort: using service provided HTTP port {}", port);
-		        } catch (Exception e) {
-		            LOG.warn("Malformed HTTP port on service definition.");
-		        }
-		    }
-		    return port;
-		}
+        public int getPort() { // This method has been created to deal with NMS-4886
+            int port = getUriDef().getUrl().getPort();
+            // Check for service assigned port if UriDef port is not supplied (i.e., is equal to the default port 80)
+            if (port == 80 && m_parameters.containsKey(ParameterName.PORT.toString())) {
+                try {
+                    port = Integer.parseInt(m_parameters.get(ParameterName.PORT.toString()).toString());
+                    LOG.debug("getPort: using service provided HTTP port {}", port);
+                } catch (Exception e) {
+                    LOG.warn("Malformed HTTP port on service definition.");
+                }
+            }
+            return port;
+        }
     }
 
 
@@ -268,23 +255,18 @@ public class HttpCollector implements ServiceCollector {
      * @throws HttpCollectorException
      */
     private static void doCollection(final HttpCollectionSet collectionSet, final HttpCollectionResource collectionResource) throws HttpCollectorException {
-
-        DefaultHttpClient client = null;
-        HttpUriRequest method = null;
-
+        HttpRequestBase method = null;
+        HttpClientWrapper clientWrapper = null;
         try {
-            HttpParams params = buildParams(collectionSet);
-            client = new DefaultHttpClient(params);
+            final HttpVersion httpVersion = computeVersion(collectionSet.getUriDef());
+
+            clientWrapper = HttpClientWrapper.create()
+                    .setConnectionTimeout(ParameterMap.getKeyedInteger(collectionSet.getParameters(), ParameterName.TIMEOUT.toString(), DEFAULT_SO_TIMEOUT))
+                    .setSocketTimeout(ParameterMap.getKeyedInteger(collectionSet.getParameters(), ParameterName.TIMEOUT.toString(), DEFAULT_SO_TIMEOUT))
+                    .useBrowserCompatibleCookies();
+
             if ("https".equals(collectionSet.getUriDef().getUrl().getScheme())) {
-                final SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
-                final Scheme https = registry.getScheme("https");
-
-                // Override the trust validation with a lenient implementation
-                final SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM), SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
-                final Scheme lenient = new Scheme(https.getName(), https.getDefaultPort(), factory);
-                // This will replace the existing "https" schema
-                registry.register(lenient);
+                clientWrapper.useRelaxedSSL("https");
             }
 
             String key = ParameterName.RETRY.toString();
@@ -292,30 +274,40 @@ public class HttpCollector implements ServiceCollector {
                 key = ParameterName.RETRIES.toString();
             }
             Integer retryCount = ParameterMap.getKeyedInteger(collectionSet.getParameters(), key, DEFAULT_RETRY_COUNT);
-            client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(retryCount, false));
+            clientWrapper.setRetries(retryCount);
+
             method = buildHttpMethod(collectionSet);
-            method.getParams().setParameter(CoreProtocolPNames.USER_AGENT, determineUserAgent(collectionSet, params));
+            method.setProtocolVersion(httpVersion);
+            final String userAgent = determineUserAgent(collectionSet);
+            if (userAgent != null && !userAgent.trim().isEmpty()) {
+                clientWrapper.setUserAgent(userAgent);
+            }
+            final HttpClientWrapper wrapper = clientWrapper;
 
-            buildCredentials(collectionSet, client, method);
+            if (collectionSet.getUriDef().getUrl().getUserInfo() != null) {
+                final String userInfo = collectionSet.getUriDef().getUrl().getUserInfo();
+                final String[] streetCred = userInfo.split(":", 2);
+                if (streetCred.length == 2) {
+                    wrapper.addBasicCredentials(streetCred[0], streetCred[1]);
+                } else { 
+                    LOG.warn("Illegal value found for username/password HTTP credentials: {}", userInfo);
+                }
+            }
 
-            LOG.info("doCollection: collecting for client: {} using method: {}", client, method);
-            HttpResponse response = client.execute(method);
+            LOG.info("doCollection: collecting using method: {}", method);
+            final CloseableHttpResponse response = clientWrapper.execute(method);
             //Not really a persist as such; it just stores data in collectionSet for later retrieval
-            persistResponse(collectionSet, collectionResource, client, response);
+            persistResponse(collectionSet, collectionResource, response);
         } catch (URISyntaxException e) {
             throw new HttpCollectorException("Error building HttpClient URI", e);
         } catch (IOException e) {
             throw new HttpCollectorException("IO Error retrieving page", e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new HttpCollectorException("Could not find EmptyKeyRelaxedTrustSSLContext to allow connection to untrusted HTTPS hosts", e);
         } catch (PatternSyntaxException e) {
             throw new HttpCollectorException("Invalid regex specified in HTTP collection configuration", e);
         } catch (Throwable e) {
             throw new HttpCollectorException("Unexpected exception caught during HTTP collection", e);
         } finally {
-            if (client != null) {
-                client.getConnectionManager().shutdown();
-            }
+            IOUtils.closeQuietly(clientWrapper);
         }
     }
 
@@ -333,12 +325,12 @@ public class HttpCollector implements ServiceCollector {
         }
 
         @Override
-        public String getNumericValue() {
+        public Number getNumericValue() {
             if (m_value instanceof Number) {
-                return m_value.toString();
+                return (Number)m_value;
             } else {
                 try {
-                    return Double.valueOf(m_value.toString()).toString();
+                    return Double.valueOf(m_value.toString());
                 } catch (NumberFormatException nfe) { /* Fall through */ }
             }
             LOG.debug("Value for attribute {} does not appear to be a number, skipping", this);
@@ -467,20 +459,20 @@ public class HttpCollector implements ServiceCollector {
                         LOG.warn("processResponse: gave up attempting to parse numeric value, skipping group {}", attribDef.getMatchGroup());
                         continue;
                     }
-                    
+
                     final HttpCollectionAttribute bute = new HttpCollectionAttribute(
-                         collectionResource,
-                         new HttpCollectionAttributeType(attribDef, groupType), 
-                         num
-                     );
-                     LOG.debug("processResponse: adding found numeric attribute: {}", bute);
-                     butes.add(bute);
+                                                                                     collectionResource,
+                                                                                     new HttpCollectionAttributeType(attribDef, groupType), 
+                                                                                     num
+                            );
+                    LOG.debug("processResponse: adding found numeric attribute: {}", bute);
+                    butes.add(bute);
                 } else {
                     HttpCollectionAttribute bute =
-                        new HttpCollectionAttribute(
-                                                    collectionResource,
-                                                    new HttpCollectionAttributeType(attribDef, groupType),
-                                                    value);
+                            new HttpCollectionAttribute(
+                                                        collectionResource,
+                                                        new HttpCollectionAttributeType(attribDef, groupType),
+                                                        value);
                     LOG.debug("processResponse: adding found string attribute: {}", bute);
                     butes.add(bute);
                 }
@@ -512,7 +504,7 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private static void persistResponse(final HttpCollectionSet collectionSet, final HttpCollectionResource collectionResource, final HttpClient client, final HttpResponse response) throws IOException {
+    private static void persistResponse(final HttpCollectionSet collectionSet, final HttpCollectionResource collectionResource, final HttpResponse response) throws IOException {
         final String responseString = EntityUtils.toString(response.getEntity());
         if (responseString != null && !"".equals(responseString)) {
             // Get response's locale from the Content-Language header if available
@@ -525,14 +517,14 @@ public class HttpCollector implements ServiceCollector {
                         final String[] values = headers[0].getValue().split("-");
                         LOG.debug("doCollection: Found one Content-Language header with value: {}", headers[0].getValue());
                         switch (values.length) {
-                            case 1:
-                                responseLocale = new Locale(values[0]);
-                                break;
-                            case 2:
-                                responseLocale = new Locale(values[0], values[1]);
-                                break;
-                            default:
-                                LOG.warn("doCollection: Ignoring Content-Language header with value {}. No support for more than 1 language subtag!", headers[0].getValue());
+                        case 1:
+                            responseLocale = new Locale(values[0]);
+                            break;
+                        case 2:
+                            responseLocale = new Locale(values[0], values[1]);
+                            break;
+                        default:
+                            LOG.warn("doCollection: Ignoring Content-Language header with value {}. No support for more than 1 language subtag!", headers[0].getValue());
                         }
                     } else {
                         LOG.warn("doCollection: Multiple languages specified. That doesn't make sense. Ignoring...");
@@ -554,41 +546,9 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private static void buildCredentials(final HttpCollectionSet collectionSet, final DefaultHttpClient client, final HttpUriRequest method) {
-        if (collectionSet.getUriDef().getUrl().getUserInfo() != null) {
-            String userInfo = collectionSet.getUriDef().getUrl().getUserInfo();
-            String[] streetCred = userInfo.split(":", 2);
-            if (streetCred.length == 2) {
-                client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(streetCred[0], streetCred[1]));
-            } else { 
-                LOG.warn("Illegal value found for username/password HTTP credentials: {}", userInfo);
-            }
-        }
-    }
-
-    private static HttpParams buildParams(final HttpCollectionSet collectionSet) {
-        HttpParams params = new BasicHttpParams();
-        params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, computeVersion(collectionSet.getUriDef()));
-        params.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, ParameterMap.getKeyedInteger(collectionSet.getParameters(), ParameterName.TIMEOUT.toString(), DEFAULT_SO_TIMEOUT));
-        params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, ParameterMap.getKeyedInteger(collectionSet.getParameters(), ParameterName.TIMEOUT.toString(), DEFAULT_SO_TIMEOUT));
-        params.setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
-
-        //review the httpclient code, looks like virtual host is checked for null
-        //and if true, sets Host to the connection's host property
-        String virtualHost = collectionSet.getUriDef().getUrl().getVirtualHost();
-        if (virtualHost != null) {
-            params.setParameter(
-                                ClientPNames.VIRTUAL_HOST, 
-                                new HttpHost(virtualHost, collectionSet.getPort())
-            );
-        }
-
-        return params;
-    }
-
-    private static String determineUserAgent(final HttpCollectionSet collectionSet, final HttpParams params) {
+    private static String determineUserAgent(final HttpCollectionSet collectionSet) {
         String userAgent = collectionSet.getUriDef().getUrl().getUserAgent();
-        return (String) (userAgent == null ? params.getParameter(CoreProtocolPNames.USER_AGENT) : userAgent);
+        return (String) (userAgent == null ? null : userAgent);
     }
 
     private static HttpVersion computeVersion(final Uri uri) {
@@ -596,8 +556,8 @@ public class HttpCollector implements ServiceCollector {
                                Integer.parseInt(uri.getUrl().getHttpVersion().substring(2)));
     }
 
-    private static HttpUriRequest buildHttpMethod(final HttpCollectionSet collectionSet) throws URISyntaxException {
-        HttpUriRequest method;
+    private static HttpRequestBase buildHttpMethod(final HttpCollectionSet collectionSet) throws URISyntaxException {
+        HttpRequestBase method;
         URI uri = buildUri(collectionSet);
         if ("GET".equals(collectionSet.getUriDef().getUrl().getMethod())) {
             method = buildGetMethod(uri, collectionSet);
@@ -605,6 +565,10 @@ public class HttpCollector implements ServiceCollector {
             method = buildPostMethod(uri, collectionSet);
         }
 
+        final String virtualHost = collectionSet.getUriDef().getUrl().getVirtualHost();
+        if (virtualHost != null && !virtualHost.trim().isEmpty()) {
+            method.setHeader(HTTP.TARGET_HOST, virtualHost);
+        }
         return method;
     }
 
@@ -626,15 +590,18 @@ public class HttpCollector implements ServiceCollector {
         try {
             StringBuffer query = new StringBuffer();
             query.append(URLEncodedUtils.format(queryParams, "UTF-8"));
-            if (uri.getQuery() != null && uri.getQuery().length() > 0) {
+            if (uri.getQuery() != null && !uri.getQuery().trim().isEmpty()) {
                 if (query.length() > 0) {
                     query.append("&");
                 }
                 query.append(uri.getQuery());
             }
-            URIBuilder ub = new URIBuilder(uri);
+            final URIBuilder ub = new URIBuilder(uri);
             if (query.length() > 0) {
-                ub.setQuery(query.toString());
+                final List<NameValuePair> params = URLEncodedUtils.parse(query.toString(), Charset.forName("UTF-8"));
+                if (!params.isEmpty()) {
+                    ub.setParameters(params);
+                }
             }
             uriWithQueryString = ub.build();
             return new HttpGet(uriWithQueryString);
@@ -661,12 +628,16 @@ public class HttpCollector implements ServiceCollector {
         substitutions.put("ipaddr", InetAddressUtils.str(collectionSet.getAgent().getAddress()));
         substitutions.put("nodeid", Integer.toString(collectionSet.getAgent().getNodeId()));
 
-        URIBuilder ub = new URIBuilder();
+        final URIBuilder ub = new URIBuilder();
         ub.setScheme(collectionSet.getUriDef().getUrl().getScheme());
         ub.setHost(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getHost(), "getHost"));
         ub.setPort(collectionSet.getPort());
         ub.setPath(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getPath(), "getURL"));
-        ub.setQuery(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getQuery(), "getQuery"));
+
+        final String query = substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getQuery(), "getQuery");
+        final List<NameValuePair> params = URLEncodedUtils.parse(query, Charset.forName("UTF-8"));
+        ub.setParameters(params);
+
         ub.setFragment(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getFragment(), "getFragment"));
         return ub.build();
     }
@@ -796,8 +767,8 @@ public class HttpCollector implements ServiceCollector {
         }
 
         @Override
-        public File getResourceDir(RrdRepository repository) {
-            return new File(repository.getRrdBaseDir(), getParent());
+        public Path getPath() {
+            return m_agent.getStorageDir().toPath();
         }
 
         @Override

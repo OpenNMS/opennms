@@ -45,7 +45,6 @@ import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
-import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
@@ -63,10 +62,7 @@ import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
 import org.opennms.netmgt.config.javamail.JavamailConfiguration;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
 import org.opennms.netmgt.config.kscReports.ReportsList;
-import org.opennms.netmgt.config.linkd.LinkdConfiguration;
-import org.opennms.netmgt.config.map.adapter.MapsAdapterConfiguration;
 import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
-import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
 import org.opennms.netmgt.config.notifications.Notifications;
@@ -102,7 +98,6 @@ import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
 import org.opennms.netmgt.config.vmware.vijava.VmwareDatacollectionConfig;
 import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
-import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -221,7 +216,7 @@ public class Normalizer {
         addFile("actiond-configuration.xml", ActiondConfiguration.class, Implementation.JAXB);
         addFile("ami-config.xml", AmiConfig.class, Implementation.JAXB);
 //      addFile("availability-reports.xml", OpennmsReports.class, Implementation.CASTOR); // It has manual changes
-        addFile("capsd-configuration.xml", CapsdConfiguration.class, Implementation.CASTOR);
+//      addFile("capsd-configuration.xml", CapsdConfiguration.class, Implementation.CASTOR);
 //      addFile("categories.xml", Catinfo.class, Implementation.CASTOR); // Current format is better. Some manual adjustments have been added.
         addFile("chart-configuration.xml", ChartConfiguration.class, Implementation.CASTOR);
         addFile("collectd-configuration.xml", CollectdConfiguration.class, Implementation.JAXB);
@@ -240,10 +235,10 @@ public class Normalizer {
         addFile("jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class, Implementation.JAXB); // TODO It has manual changes
         addFile("jmx-datacollection-config.xml", JmxDatacollectionConfig.class, Implementation.JAXB); // FIXME Move commented data to examples
         addFile("ksc-performance-reports.xml", ReportsList.class, Implementation.CASTOR);
-        addFile("linkd-configuration.xml", LinkdConfiguration.class, Implementation.CASTOR);
-        addFile("mapsadapter-configuration.xml", MapsAdapterConfiguration.class, Implementation.CASTOR);
+//      addFile("linkd-configuration.xml", LinkdConfiguration.class, Implementation.CASTOR);
+//      addFile("mapsadapter-configuration.xml", MapsAdapterConfiguration.class, Implementation.CASTOR);
 //      addFile("microblog-configuration.xml", MicroblogConfiguration.class, Implementation.CASTOR); // Current format is better. Some manual adjustments have been added.
-        addFile("monitoring-locations.xml", MonitoringLocationsConfiguration.class, Implementation.JAXB);
+//      addFile("monitoring-locations.xml", MonitoringLocationsConfiguration.class, Implementation.JAXB);
         addFile("notifd-configuration.xml", NotifdConfiguration.class, Implementation.CASTOR);
         addFile("notificationCommands.xml", NotificationCommands.class, Implementation.CASTOR);
         addFile("notifications.xml", Notifications.class, Implementation.CASTOR);
@@ -281,7 +276,7 @@ public class Normalizer {
 //      addFile("vmware-datacollection-config.xml", VmwareDatacollectionConfig.class, Implementation.JAXB); // Added comments
         addFile("wmi-config.xml", WmiConfig.class, Implementation.CASTOR);
 //      addFile("wmi-datacollection-config.xml", WmiDatacollectionConfig.class, Implementation.CASTOR); // Current format is better. Some manual adjustments have been added.
-        addFile("xmlrpcd-configuration.xml", XmlrpcdConfiguration.class, Implementation.CASTOR);
+//      addFile("xmlrpcd-configuration.xml", XmlrpcdConfiguration.class, Implementation.CASTOR);
 
         for (final File file : FileUtils.listFiles(new File(configHome, "events"), new String[] { "xml" }, true)) {
             addFile("events/" + file.getName(), Events.class, Implementation.JAXB);

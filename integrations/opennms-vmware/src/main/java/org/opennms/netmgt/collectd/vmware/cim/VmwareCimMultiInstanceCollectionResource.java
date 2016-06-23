@@ -28,19 +28,11 @@
 
 package org.opennms.netmgt.collectd.vmware.cim;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.rrd.RrdRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class VmwareCimMultiInstanceCollectionResource extends VmwareCimCollectionResource {
-
-    /**
-     * logging for VMware data collection
-     */
-    private final Logger logger = LoggerFactory.getLogger(VmwareCimMultiInstanceCollectionResource.class);
 
     private final String m_inst;
     private final String m_name;
@@ -52,13 +44,10 @@ public class VmwareCimMultiInstanceCollectionResource extends VmwareCimCollectio
     }
 
     @Override
-    public File getResourceDir(RrdRepository repository) {
-        final File rrdBaseDir = repository.getRrdBaseDir();
-        final File nodeDir = new File(rrdBaseDir, getParent());
-        final File typeDir = new File(nodeDir, m_name);
-        final File instDir = new File(typeDir, m_inst.replaceAll("/", "_").replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_"));
-        logger.debug("getResourceDir: '{}'", instDir);
-        return instDir;
+    public Path getPath() {
+        return m_agent.getStorageDir().toPath()
+                    .resolve(m_name)
+                    .resolve(m_inst.replaceAll("/", "_").replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_"));
     }
 
     @Override

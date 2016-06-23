@@ -138,7 +138,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 zipDir(new File(jmxResourceDir.getAbsolutePath() + ZIP_EXT), jmxResourceDir);
             }
         } else {
-            throw new OnmsUpgradeException("This upgrade procedure requires at least OpenNMS 1.12.2, the current version is " + getOpennmsVersion());
+            throw new OnmsUpgradeException("This upgrade procedure requires at least OpenNMS 1.12.2; the current version is " + getOpennmsVersion());
         }
     }
 
@@ -375,14 +375,18 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             List<String> jmxFriendlyNames = new ArrayList<String>();
             for (String service : services) {
                 Service svc = getServiceObject(config, service);
-                String friendlyName = getSvcPropertyValue(svc, "friendly-name");
-                if (friendlyName == null) {
-                    friendlyName = getSvcPropertyValue(svc, "port"); // According with JMXCollector, port will be used if there is no friendly-name.
-                }
-                if (friendlyName == null) {
-                    log("Warning: there is no friendly-name or port parameter for service %s. The JRBs/RRDs for this service are not going to be updated.", service);
+                if (svc != null) {
+                    String friendlyName = getSvcPropertyValue(svc, "friendly-name");
+                    if (friendlyName == null) {
+                        friendlyName = getSvcPropertyValue(svc, "port"); // According with JMXCollector, port will be used if there is no friendly-name.
+                    }
+                    if (friendlyName == null) {
+                        log("Warning: there is no friendly-name or port parameter for service %s. The JRBs/RRDs for this service are not going to be updated.", service);
+                    } else {
+                        jmxFriendlyNames.add(friendlyName);
+                    }
                 } else {
-                    jmxFriendlyNames.add(friendlyName);
+                    log("Warning: JMX service %s is defined but not used in any package definition. Skipping migration.\n", service);
                 }
             }
             log("JMX friendly names found: %s\n", jmxFriendlyNames);

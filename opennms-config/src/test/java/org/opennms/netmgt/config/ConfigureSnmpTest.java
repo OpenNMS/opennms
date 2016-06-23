@@ -34,7 +34,7 @@ import junit.framework.TestCase;
 
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.Resource;
@@ -143,7 +143,7 @@ public class ConfigureSnmpTest extends TestCase {
         
         EventBuilder bldr = createConfigureSnmpEventBuilder(addr1, addr2);
         SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
-        info.setCommunityString("opennmsrules");
+        info.setReadCommunityString("opennmsrules");
         
         SnmpPeerFactory.getInstance().define(info);
         
@@ -166,7 +166,7 @@ public class ConfigureSnmpTest extends TestCase {
         final String specificAddr = "10.1.1.7";
         final EventBuilder bldr = createConfigureSnmpEventBuilder(specificAddr, null);
         final SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
-        info.setCommunityString("splice-test");
+        info.setReadCommunityString("splice-test");
         info.setVersion("v2c");
         
         SnmpPeerFactory.getInstance().define(info);
@@ -193,7 +193,7 @@ public class ConfigureSnmpTest extends TestCase {
         final String specificAddr = "10.1.1.7";
         final EventBuilder bldr = createConfigureSnmpEventBuilder(specificAddr, null);
         final SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
-        info.setCommunityString("splice2-test");
+        info.setReadCommunityString("splice2-test");
 
         SnmpPeerFactory.getInstance().define(info);
         
@@ -218,7 +218,7 @@ public class ConfigureSnmpTest extends TestCase {
     }
 
     private void addCommunityStringToEvent(final EventBuilder bldr, final String commStr) {
-        bldr.addParam(EventConstants.PARM_COMMUNITY_STRING, commStr);
+        bldr.addParam(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING, commStr);
     }
 
 }

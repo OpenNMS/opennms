@@ -51,7 +51,7 @@
                 <h3 class="panel-title">Cron Expression</h3>
             </div>
             <div class="panel-body">
-                <p>We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html" target="_blank">here</a></p>
+                <p>We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial <a href="http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger" target="_blank">here</a></p>
                 <form:form commandName="triggerDetails" cssClass="form-horizontal">
                     <div class="form-group">
                         <div class="col-md-2">

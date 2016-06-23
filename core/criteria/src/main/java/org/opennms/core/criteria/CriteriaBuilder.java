@@ -125,7 +125,11 @@ public class CriteriaBuilder {
     }
 
     public CriteriaBuilder alias(final String associationPath, final String alias, final JoinType type) {
-        m_aliasBuilder.alias(associationPath, alias, type);
+        return alias(associationPath, alias, type, null);
+    }
+
+    public CriteriaBuilder alias(final String associationPath, final String alias, final JoinType type, final Restriction joinCondition) {
+        m_aliasBuilder.alias(associationPath, alias, type, joinCondition);
         return this;
     }
 
@@ -283,13 +287,13 @@ public class CriteriaBuilder {
         return this;
     }
 
-    public CriteriaBuilder and(final Restriction lhs, final Restriction rhs) {
-        addRestriction(Restrictions.and(lhs, rhs));
+    public CriteriaBuilder and(final Restriction... restrictions) {
+        addRestriction(Restrictions.and(restrictions));
         return this;
     }
 
-    public CriteriaBuilder or(final Restriction lhs, final Restriction rhs) {
-        final Restriction restriction = Restrictions.or(lhs, rhs);
+    public CriteriaBuilder or(final Restriction... restrictions) {
+        final Restriction restriction = Restrictions.or(restrictions);
         addRestriction(restriction);
         return this;
     }

@@ -41,7 +41,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.poller.remote.MonitoringLocationListCellRenderer;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.slf4j.Logger;
@@ -137,7 +137,7 @@ class GroovyPollerView implements InitializingBean {
    }
    
    private void doRegistration() {
-       String loc = m_monLocation?.selectedItem?.name;
+       String loc = m_monLocation?.selectedItem?.locationName;
        if (loc == null) {
            LOG.warn("Null monitoring location selected");
        } else {

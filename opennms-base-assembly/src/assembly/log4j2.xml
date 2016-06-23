@@ -1,4 +1,8 @@
-<assembly>
+<assembly
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd"
+>
   <id>log4j2</id>
   <formats>
     <format>tar.gz</format>
@@ -7,11 +11,10 @@
   <fileSets>
     <fileSet>
       <filtered>false</filtered>
-      <outputDirectory>/</outputDirectory>
-      <directory>target/classes/etc</directory>
+      <!-- Output to the top-level directory -->
+      <outputDirectory></outputDirectory>
+      <directory>${project.build.directory}/classes/etc</directory>
       <includes><include>log4j2.xml</include></includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
   </fileSets>
 </assembly>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-03-09T18:12:22 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node_availability" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e068de59-e783-4e87-93ca-9b32fe7ee39a">
+<!-- 2015-08-25T10:49:08 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Interface Availability" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e068de59-e783-4e87-93ca-9b32fe7ee39a">
 	<property name="ireport.zoom" value="1.6500000000000004"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -94,20 +94,22 @@ FROM(	SELECT
 
 	FROM
 		(SELECT
-			outages.nodeid,
 			outages.iflostservice,
 			outages.ifregainedservice,
-			outages.ipaddr,
+			ipinterface.ipaddr,
 			events.eventuei,
+			node.nodeid,
 			node.nodelabel
 		FROM
-			outages, service, events, node
+			outages, service, events, node, ifservices, ipinterface
 		WHERE
 			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME_STRING}'::TIMESTAMP, '$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) AND
-			outages.serviceid = service.serviceid  AND
+			outages.ifserviceid = ifservices.id AND
+			ifservices.serviceid = service.serviceid  AND
+			ifservices.ipinterfaceid = ipinterface.id AND
 			outages.svclosteventid = events.eventid AND
 			events.eventuei = 'uei.opennms.org/nodes/interfaceDown' AND
-			node.nodeid = outages.nodeid)
+			node.nodeid = ipinterface.nodeid)
 		AS
 			outages_scope)
 	AS

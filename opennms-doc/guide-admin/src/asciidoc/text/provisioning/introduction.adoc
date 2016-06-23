@@ -1,0 +1,23 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-provisioning-introduction]]
+=== Introduction
+
+The introduction of OpenNMS version 1.8 empowers enterprises and services providers like never before with a new service daemon for maintaining the managed entity inventory in OpenNMS.
+This new daemon, _Provisiond_, unifies all previous entity control mechanisms available in 1.6 (_Capsd_ and the _Importer_), into a new and improved, massively parallel, policy based provisioning system.
+System integrators should note, _Provisiond_ comes complete with a _RESTFul Web Service API_ for easy integration with external systems such as CRM or external inventory systems as well as an adapter API for interfacing with other management systems such as configuration management.
+
+OpenNMS 1.0, introduced almost a decade ago now, provided a capabilities scanning daemon, Capsd, as the mechanism for provisioning managed entities.
+_Capsd_, deprecated with the release of 1.8.0, provided a rich automatic provisioning mechanism that simply required an IP address to seed its algorithm for creating and maintaining the managed entities (nodes, interfaces, and IP based services).
+Version 1.2 added and _XML-RPC API_ as a more controlled (directed) strategy for provisioning services that was mainly used by non telco based service providers (i.e. managed hosting companies).
+Version 1.6 followed this up with yet another and more advanced mechanism called the _Importer service daemon_.
+The _Importer_ provided large service providers with the ability to strictly control the OpenNMS entity provisioning with an XML based API for completely defining and controlling the entities where no discovery and service scanning scanning was feasible.
+
+The Importer service improved OpenNMS' scalability for maintaining managed entity databases by an order of magnitude.
+This daemon, while very simple in concept and yet extremely powerful and flexible provisioning improvement, has blazed the trail for Provisiond.
+The Importer service has been in production for 3 years in service provider networks maintaining entity counts of more than 50,000 node level entities on a single instances of OpenNMS.
+It is a rock solid provisioning tool.
+
+_Provisiond_ begins a new era of managed entity provisioning in OpenNMS.

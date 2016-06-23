@@ -30,7 +30,9 @@ package org.opennms.netmgt.jetty;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
 
+import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
@@ -71,6 +73,18 @@ public class JettyServer extends AbstractServiceDaemon {
 
         try {
             m_server = new Server();
+
+            // Add JMX MBeans for the Jetty server
+            MBeanContainer mbeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+            m_server.getContainer().addEventListener(mbeanContainer);
+            m_server.addBean(mbeanContainer);
+
+            // If we were using Jetty's loggers we would need to manually add it to the MBean registry
+            //
+            // @see http://wiki.eclipse.org/Jetty/Tutorial/JMX
+            //
+            //container.addBean(Log.getLog());
+
             if (jettyXml.exists()) {
                 jettyXmlStream = jettyXml.toURI().toURL().openStream();
             } else {

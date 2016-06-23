@@ -39,7 +39,7 @@ import liquibase.database.Database;
 import liquibase.database.core.PostgresDatabase;
 import liquibase.statement.SqlStatement;
 
-public class CreateTypeChange extends AbstractChange implements ChangeWithColumns {
+public class CreateTypeChange extends AbstractChange implements ChangeWithColumns<ColumnConfig> {
 
 	private String m_typeName;
 	private List<ColumnConfig> m_columns = new ArrayList<ColumnConfig>();

@@ -20,8 +20,12 @@ export BUILDDEFINES=\
 	-Dinstall.webapps.dir=/usr/share/opennms/webapps \
 	-Dinstall.logs.dir=/var/log/opennms \
 	-Dinstall.pid.file=/var/run/opennms.pid \
+	-Dmaven.test.skip.exec=true \
+	-DskipITs=true \
 	-Dproduct.release=1 \
-	-Dproduct.snapshot=true
+	-Dproduct.snapshot=true \
+	-Daether.connector.basic.threads=1 \
+	-Daether.connector.resumeDownloads=false
 
 configure:
 
@@ -87,28 +91,30 @@ install: build
 	chmod -R go-w debian/opennms-common/var/lib/opennms/etc-pristine/
 
 	##
+	## Setup the alarm northbounders
+	##
+	install -d -m 755 debian/opennms-plugin-northbounder-jms/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-northbounder-jms/etc/opennms
+	install -d -m 755 debian/opennms-plugin-northbounder-jms/var/lib/opennms/etc-pristine
+	mv debian/temp/lib/opennms-alarm-northbounder-jms-*.jar                                    debian/opennms-plugin-northbounder-jms/usr/share/java/opennms/
+	mv debian/temp/etc/jms-northbounder-configuration.xml                                      debian/opennms-plugin-northbounder-jms/etc/opennms/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/jms-northbounder-configuration.xml   debian/opennms-plugin-northbounder-jms/var/lib/opennms/etc-pristine/
+	
+	##
 	## Setup the provision adapter packages
 	##
 	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid,snmp-asset,snmp-hardware-inventory}/usr/share/java/opennms
 	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,snmp-hardware-inventory}/etc/opennms
 	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,snmp-hardware-inventory}/var/lib/opennms/etc-pristine
 	mv debian/temp/lib/opennms-dns-provisioning-adapter*.jar                 debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
-	mv debian/temp/lib/opennms-link-provisioning-adapter*.jar                debian/opennms-plugin-provisioning-link/usr/share/java/opennms/
-	mv debian/temp/lib/opennms-map-provisioning-adapter*.jar                 debian/opennms-plugin-provisioning-map/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-rancid-provisioning-adapter*.jar              debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-snmp-asset-provisioning-adapter*.jar          debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-snmp-hardware-inventory-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-snmp-hardware-inventory/usr/share/java/opennms/
-	mv debian/temp/etc/link-adapter-configuration.xml                        debian/opennms-plugin-provisioning-link/etc/opennms/
-	mv debian/temp/etc/endpoint-configuration.xml                            debian/opennms-plugin-provisioning-link/etc/opennms/
-	mv debian/temp/etc/mapsadapter-configuration.xml                         debian/opennms-plugin-provisioning-map/etc/opennms/
 	mv debian/temp/etc/snmp-asset-adapter-configuration.xml                  debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
 	mv debian/temp/etc/snmp-hardware-inventory-adapter-configuration.xml     debian/opennms-plugin-provisioning-snmp-hardware-inventory/etc/opennms/
 	find debian/opennms-plugin*/etc/opennms -type f -execdir chmod 644 {} \;
 	
 	# etc-pristine version
-	mv debian/opennms-common/var/lib/opennms/etc-pristine/link-adapter-configuration.xml       debian/opennms-plugin-provisioning-link/var/lib/opennms/etc-pristine/
-	mv debian/opennms-common/var/lib/opennms/etc-pristine/endpoint-configuration.xml           debian/opennms-plugin-provisioning-link/var/lib/opennms/etc-pristine/
-	mv debian/opennms-common/var/lib/opennms/etc-pristine/mapsadapter-configuration.xml        debian/opennms-plugin-provisioning-map/var/lib/opennms/etc-pristine/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-asset-adapter-configuration.xml debian/opennms-plugin-provisioning-snmp-asset/var/lib/opennms/etc-pristine/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-hardware-inventory-adapter-configuration.xml debian/opennms-plugin-provisioning-snmp-hardware-inventory/var/lib/opennms/etc-pristine/
 	
@@ -122,7 +128,6 @@ install: build
 	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xml,xmp}/var/lib/opennms/xsds
 	install -d -m 755 debian/opennms-plugin-protocol-xml/etc/opennms/xml-datacollection
 	install -d -m 755 debian/opennms-plugin-protocol-xml/etc/opennms/examples/3gpp-juniper/{datacollection,xml-datacollection,snmp-graph.properties.d}
-	install -d -m 755 debian/opennms-plugin-protocol-xml/etc/opennms/examples/opennms-mx4j
 	
 	# Setup Juniper TCA collector
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/usr/share/java/opennms
@@ -177,7 +182,6 @@ install: build
 	mv debian/temp/etc/examples/3gpp-juniper/datacollection/3gpp*                              debian/opennms-plugin-protocol-xml/etc/opennms/examples/3gpp-juniper/datacollection/
 	mv debian/temp/etc/examples/3gpp-juniper/xml-datacollection/3gpp*                          debian/opennms-plugin-protocol-xml/etc/opennms/examples/3gpp-juniper/xml-datacollection/
 	mv debian/temp/etc/examples/3gpp-juniper/snmp-graph.properties.d/3gpp*                     debian/opennms-plugin-protocol-xml/etc/opennms/examples/3gpp-juniper/snmp-graph.properties.d/
-	mv debian/temp/etc/examples/opennms-mx4j/*                                                 debian/opennms-plugin-protocol-xml/etc/opennms/examples/opennms-mx4j/
 	mv debian/temp/contrib/xml-collector/3gpp*                                                 debian/opennms-plugin-protocol-xml/usr/share/opennms/contrib/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/xml-datacollection-config.xml        debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/
 	
@@ -204,7 +208,10 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-graph.properties.d/juniper-tca* debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/snmp-graph.properties.d/
 	
 	# JIRA
-	mv debian/temp/lib/jira-*.jar                                                              debian/opennms-plugin-ticketer-jira/usr/share/java/opennms/
+	mkdir -p debian/opennms-plugin-ticketer-jira/usr/share/opennms/system/org/opennms/features/jira-troubleticketer
+	mv debian/temp/system/org/opennms/features/jira-troubleticketer/*                          debian/opennms-plugin-ticketer-jira/usr/share/opennms/system/org/opennms/features/jira-troubleticketer/
+	mkdir -p debian/opennms-plugin-ticketer-jira/usr/share/opennms/system/org/opennms/features/jira-client
+	mv debian/temp/system/org/opennms/features/jira-client/*                                   debian/opennms-plugin-ticketer-jira/usr/share/opennms/system/org/opennms/features/jira-client/
 	mv debian/temp/etc/jira.properties                                                         debian/opennms-plugin-ticketer-jira/etc/opennms/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/jira.properties                      debian/opennms-plugin-ticketer-jira/var/lib/opennms/etc-pristine/
 	

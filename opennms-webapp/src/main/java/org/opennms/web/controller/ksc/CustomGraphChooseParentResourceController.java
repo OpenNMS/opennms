@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.web.svclayer.ResourceService;
+import org.opennms.web.svclayer.api.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -83,7 +83,7 @@ public class CustomGraphChooseParentResourceController extends AbstractControlle
     /**
      * <p>getResourceService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.ResourceService} object.
+     * @return a {@link org.opennms.web.svclayer.api.ResourceService} object.
      */
     public ResourceService getResourceService() {
         return m_resourceService;
@@ -92,7 +92,7 @@ public class CustomGraphChooseParentResourceController extends AbstractControlle
     /**
      * <p>setResourceService</p>
      *
-     * @param resourceService a {@link org.opennms.web.svclayer.ResourceService} object.
+     * @param resourceService a {@link org.opennms.web.svclayer.api.ResourceService} object.
      */
     public void setResourceService(ResourceService resourceService) {
         m_resourceService = resourceService;

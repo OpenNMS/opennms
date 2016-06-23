@@ -34,9 +34,12 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name="acknowledgments")
+@JsonRootName("acknowledgments")
 public class OnmsAcknowledgmentCollection extends JaxbListWrapper<OnmsAcknowledgment> {
     private static final long serialVersionUID = 1L;
 
@@ -46,6 +49,7 @@ public class OnmsAcknowledgmentCollection extends JaxbListWrapper<OnmsAcknowledg
     }
 
     @XmlElement(name="onmsAcknowledgment")
+    @JsonProperty("onmsAcknowledgment")
     public List<OnmsAcknowledgment> getObjects() {
         return super.getObjects();
     }

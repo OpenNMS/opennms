@@ -41,6 +41,7 @@ import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.protocols.sftp.Sftp3gppUrlConnection;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
 import org.opennms.protocols.xml.collector.Sftp3gppUtils;
@@ -86,7 +87,8 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
         DateTime startTime = new DateTime();
         Sftp3gppUrlConnection connection = null;
         try {
-            File resourceDir = new File(getRrdRepository().getRrdBaseDir(), Integer.toString(agent.getNodeId()));
+            // FIXME: Does not support storeByFS
+            ResourcePath resourcePath = ResourcePath.get(Integer.toString(agent.getNodeId()));
             for (XmlSource source : collection.getXmlSources()) {
                 if (!source.getUrl().startsWith(Sftp3gppUrlHandler.PROTOCOL)) {
                     throw new CollectionException("The 3GPP SFTP Collection Handler can only use the protocol " + Sftp3gppUrlHandler.PROTOCOL);
@@ -94,14 +96,14 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
                 String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
                 Request request = parseRequest(source.getRequest(), agent, collection.getXmlRrd().getStep());
                 URL url = UrlFactory.getUrl(urlStr, request);
-                String lastFile = Sftp3gppUtils.getLastFilename(getServiceName(), resourceDir, url.getPath());
+                String lastFile = Sftp3gppUtils.getLastFilename(getResourceStorageDao(), getServiceName(), resourcePath, url.getPath());
                 connection = (Sftp3gppUrlConnection) url.openConnection();
                 if (lastFile == null) {
                     lastFile = connection.get3gppFileName();
                     LOG.debug("collect(single): retrieving file from {}{}{} from {}", url.getPath(), File.separatorChar, lastFile, agent.getHostAddress());
                     VTDNav doc = getVTDXmlDocument(urlStr, request);
                     fillCollectionSet(agent, collectionSet, source, doc);
-                    Sftp3gppUtils.setLastFilename(getServiceName(), resourceDir, url.getPath(), lastFile);
+                    Sftp3gppUtils.setLastFilename(getResourceStorageDao(), getServiceName(), resourcePath, url.getPath(), lastFile);
                     Sftp3gppUtils.deleteFile(connection, lastFile);
                 } else {
                     connection.connect();
@@ -118,7 +120,7 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
                             } finally {
                                 IOUtils.closeQuietly(is);
                             }
-                            Sftp3gppUtils.setLastFilename(getServiceName(), resourceDir, url.getPath(), fileName);
+                            Sftp3gppUtils.setLastFilename(getResourceStorageDao(), getServiceName(), resourcePath, url.getPath(), fileName);
                             Sftp3gppUtils.deleteFile(connection, fileName);
                             collected = true;
                         }

@@ -46,7 +46,7 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.categories.CatFactory;
+import org.opennms.netmgt.config.api.CatFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.reporting.availability.AvailabilityConstants;
 import org.opennms.reporting.datablock.Node;
@@ -139,7 +139,7 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
 
                         while (ipIter.hasNext()) {
                             ip = str(ipIter.next());
-                            LOG.debug("ecexuting {} for {}", ip, AvailabilityConstants.DB_GET_INFO_FOR_IP);
+                            LOG.debug("executing {} for {}", ip, AvailabilityConstants.DB_GET_INFO_FOR_IP);
 
                             // get node info for this ip
                             ipInfoGetStmt.setString(1, ip);
@@ -154,10 +154,8 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
 
                                 // get the services for this IP address
                                 ResultSet svcRS = null;
-                                servicesGetStmt.setLong(1, nodeid);
-                                servicesGetStmt.setString(2, ip);
-                                servicesGetStmt.setString(3, ip);
-                                servicesGetStmt.setLong(4, nodeid);
+                                servicesGetStmt.setString(1, ip);
+                                servicesGetStmt.setLong(2, nodeid);
                                 svcRS = servicesGetStmt.executeQuery();
                                 db.watch(svcRS);
 
@@ -183,6 +181,7 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
                         throw new AvailabilityDataServiceException("Failed to get nodes for category " + category, e);
                     } finally {
                         db.cleanUp();
+                        m_availConn = null;
                         m_catFactory.getReadLock().unlock();
                     }
 

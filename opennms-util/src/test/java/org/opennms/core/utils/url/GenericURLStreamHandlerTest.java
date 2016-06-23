@@ -47,11 +47,7 @@ import java.net.URLConnection;
  * @since 1.8.1
  */
 public class GenericURLStreamHandlerTest {
-    private GenericURLFactory m_genericURLFactory = GenericURLFactory.getInstance();
-
     private GenericURLStreamHandler m_generGenericURLStreamHandler;
-
-    private GenericURLStreamHandler m_generGenericURLStreamHandler_port;
 
     private Class<? extends URLConnection> m_testClass;
 

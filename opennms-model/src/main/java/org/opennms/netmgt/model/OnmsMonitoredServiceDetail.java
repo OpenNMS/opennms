@@ -66,7 +66,7 @@ public class OnmsMonitoredServiceDetail implements Serializable, Comparable<Onms
         m_nodeLabel = service.getIpInterface().getNode().getLabel();
         m_ipAddress = service.getIpAddress();
         m_serviceName = service.getServiceName();
-        m_isMonitored = service.getStatus().equals("A");
+        m_isMonitored = "A".equals(service.getStatus());
         m_isDown = service.isDown();
         m_statusCode = service.getStatus();
         m_status = service.getStatusLong();

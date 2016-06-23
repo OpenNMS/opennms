@@ -28,14 +28,13 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Date;
 
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
-import org.opennms.netmgt.rrd.RrdRepository;
 
 public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
 
@@ -69,10 +68,6 @@ public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
                 return null;
             }
             @Override
-            public File getResourceDir(RrdRepository repository) {
-                return null;
-            }
-            @Override
             public String getParent() {
                 return null;
             }
@@ -80,7 +75,11 @@ public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
             public TimeKeeper getTimeKeeper() {
                 return null;
             }
-        }, null);
+            @Override
+            public Path getPath() {
+                return null;
+            }
+        }, null, null);
     }
 
 }

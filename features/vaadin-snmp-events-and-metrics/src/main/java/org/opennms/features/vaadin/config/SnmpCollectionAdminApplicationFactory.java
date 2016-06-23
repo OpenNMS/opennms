@@ -28,7 +28,7 @@
 
 package org.opennms.features.vaadin.config;
 
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.vaadin.extender.AbstractApplicationFactory;
 
 import com.vaadin.ui.UI;

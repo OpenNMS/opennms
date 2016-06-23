@@ -30,6 +30,8 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -61,15 +63,76 @@ public final class CdpElement implements Serializable {
     private Integer m_id;	
     private TruthValue m_cdpGlobalRun;
     private String m_cdpGlobalDeviceId;
+    private CdpGlobalDeviceIdFormat m_cdpGlobalDeviceIdFormat;
     private Date m_cdpNodeCreateTime = new Date();
     private Date m_cdpNodeLastPollTime;
-	private OnmsNode m_node;
+    private OnmsNode m_node;
+
+    public enum CdpGlobalDeviceIdFormat {
+
+        /**
+         * SYNTAX     INTEGER { 
+         *        serialNumber(1), 
+         *        macAddress(2),
+         *        other(3) 
+         *      } 
+         */
+        serialNumber(1), macAddress(2),other(3);
+
+        private int m_type;
+
+        CdpGlobalDeviceIdFormat(int type) {
+            m_type = type;
+        }
+
+        protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
+
+        static {
+            s_typeMap.put(1, "serialNumber");
+            s_typeMap.put(2, "macAddress");
+            s_typeMap.put(3, "other");
+        }
+
+        public static String getTypeString(Integer code) {
+            if (s_typeMap.containsKey(code))
+                return s_typeMap.get(code);
+            return null;
+        }
+
+        public Integer getValue() {
+            return m_type;
+        }
+
+        public static CdpGlobalDeviceIdFormat get(Integer code) {
+            if (code == null)
+                throw new IllegalArgumentException(
+                                                   "Cannot create CdpDeviceFormat from null code");
+            switch (code) {
+            case 1:
+                return serialNumber;
+            case 2:
+                return macAddress;
+            case 3:
+                return other;
+            default:
+                throw new IllegalArgumentException(
+                                                   "Cannot create CdpDeviceIdFormat from code "
+                                                           + code);
+            }
+        }
+    }
 
     public CdpElement() {}
 
     public CdpElement(OnmsNode node, String cdpGlobalDeviceId) {
         setNode(node);
         setCdpGlobalDeviceId(cdpGlobalDeviceId);
+    }
+
+    public CdpElement(OnmsNode node, String cdpGlobalDeviceId, CdpGlobalDeviceIdFormat format) {
+        setNode(node);
+        setCdpGlobalDeviceId(cdpGlobalDeviceId);
+        setCdpGlobalDeviceIdFormat(format);
     }
 
     /**
@@ -107,6 +170,11 @@ public final class CdpElement implements Serializable {
 		return m_cdpGlobalDeviceId;
 	}
 
+    @Column(name="cdpGlobalDeviceIdFormat" , nullable = true)
+    @Type(type="org.opennms.netmgt.model.CdpGlobalDeviceIdFormatUserType")
+    public CdpGlobalDeviceIdFormat getCdpGlobalDeviceIdFormat() {
+        return m_cdpGlobalDeviceIdFormat;
+    }
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="cdpNodeCreateTime", nullable=false)
@@ -138,21 +206,26 @@ public final class CdpElement implements Serializable {
         m_node = node;
     }
 
-	public void setCdpGlobalRun(TruthValue cdpGlobalRun) {
-		m_cdpGlobalRun = cdpGlobalRun;
-	}
+    public void setCdpGlobalRun(TruthValue cdpGlobalRun) {
+        m_cdpGlobalRun = cdpGlobalRun;
+    }
 
-	public void setCdpGlobalDeviceId(String cdpGlobalDeviceId) {
-		m_cdpGlobalDeviceId = cdpGlobalDeviceId;
-	}
+    public void setCdpGlobalDeviceId(String cdpGlobalDeviceId) {
+        m_cdpGlobalDeviceId = cdpGlobalDeviceId;
+    }
 
-	public void setCdpNodeCreateTime(Date cdpNodeCreateTime) {
-		m_cdpNodeCreateTime = cdpNodeCreateTime;
-	}
+    public void setCdpGlobalDeviceIdFormat(
+            CdpGlobalDeviceIdFormat cdpGlobalDeviceIdFormat) {
+        m_cdpGlobalDeviceIdFormat = cdpGlobalDeviceIdFormat;
+    }
 
-	public void setCdpNodeLastPollTime(Date cdpNodeLastPollTime) {
-		m_cdpNodeLastPollTime = cdpNodeLastPollTime;
-	}
+    public void setCdpNodeCreateTime(Date cdpNodeCreateTime) {
+        m_cdpNodeCreateTime = cdpNodeCreateTime;
+    }
+
+    public void setCdpNodeLastPollTime(Date cdpNodeLastPollTime) {
+        m_cdpNodeLastPollTime = cdpNodeLastPollTime;
+    }
 
 
 	/**

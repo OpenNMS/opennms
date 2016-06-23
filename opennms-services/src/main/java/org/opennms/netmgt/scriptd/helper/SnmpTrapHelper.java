@@ -36,7 +36,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
@@ -1100,8 +1100,8 @@ public class SnmpTrapHelper {
     public void sendTL1AutonomousMsgTrap(Event event, String destAddr, int destPort, String trapVersion, String community) throws SnmpTrapHelperException, UnknownHostException {
         
         // Check first thing that the event is of the right type.
-        if (! org.opennms.netmgt.EventConstants.TL1_AUTONOMOUS_MESSAGE_UEI.equals(event.getUei())) {
-            throw new SnmpTrapHelperException("The event must have a UEI of " + org.opennms.netmgt.EventConstants.TL1_AUTONOMOUS_MESSAGE_UEI);
+        if (! org.opennms.netmgt.events.api.EventConstants.TL1_AUTONOMOUS_MESSAGE_UEI.equals(event.getUei())) {
+            throw new SnmpTrapHelperException("The event must have a UEI of " + org.opennms.netmgt.events.api.EventConstants.TL1_AUTONOMOUS_MESSAGE_UEI);
         }
         
         // Create a TrapBuilder and bootstrap it according to trapVersion
@@ -1127,7 +1127,7 @@ public class SnmpTrapHelper {
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.8.0", // OPENNMS-MIB::openNMS-event-nodeid 
                       EventConstants.TYPE_SNMP_OCTET_STRING, Long.toString(event.getNodeid()));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.9.0", // OPENNMS-MIB::openNMS-event-time
-                      EventConstants.TYPE_SNMP_OCTET_STRING, event.getTime());
+                      EventConstants.TYPE_SNMP_OCTET_STRING, EventConstants.formatToString(event.getTime()));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.10.0", // OPENNMS-MIB::openNMS-event-host
                       EventConstants.TYPE_SNMP_OCTET_STRING, event.getHost());
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.11.0", // OPENNMS-MIB::openNMS-event-interface

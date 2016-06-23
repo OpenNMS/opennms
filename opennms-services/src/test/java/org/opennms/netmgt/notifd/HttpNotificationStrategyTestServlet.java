@@ -34,7 +34,6 @@ public class HttpNotificationStrategyTestServlet extends HttpServlet {
     public void handleRequest(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
         m_parameters.clear();
 
-        @SuppressWarnings("unchecked")
         final Enumeration<String> e = req.getParameterNames();
         while (e.hasMoreElements()) {
             final String key = e.nextElement();

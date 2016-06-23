@@ -84,12 +84,21 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
         return find("from IsIsLink isisLink where isisLink.node.id = ?", nodeId);
     }
 
-	@Override
-	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-		for (IsIsLink link: find("from IsIsLink isisLink where isisLink.node.id = ? and isisLinkLastPollTime < ?",nodeId,now)) {
-			delete(link);
-		}
-	}
+    @Override
+    public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
+        for (IsIsLink link : find("from IsIsLink isisLink where isisLink.node.id = ? and isisLinkLastPollTime < ?",
+                                  nodeId, now)) {
+            delete(link);
+        }
+    }
+
+    @Override
+    public void deleteByNodeId(Integer nodeId) {
+        for (IsIsLink link : find("from IsIsLink isisLink where isisLink.node.id = ? ",
+                                  nodeId)) {
+            delete(link);
+        }
+    }
 
 	private final static String SQL_GET_ISIS_LINKS=
                 "select distinct on (distinct_id) " +
@@ -107,8 +116,8 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
                 "np.nodesysoid as targetnodesysoid, " +
                 "np.nodesyslocation as targetnodelocation, " +
                 "np.nodetype as targetnodetype, " +
-                "l2.isiscircifindex as l2_isiscircifindex " +
-
+                "l2.isiscircifindex as l2_isiscircifindex, " +
+                "l1.isislinklastpolltime as lastPollTime " +
                 "from isislink l1 " +
                 "left join isiselement e1 on l1.nodeid = e1.nodeid " +
                 "left join node n on n.nodeid = e1.nodeid " +
@@ -139,7 +148,10 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
 	                                (String) objs[11],
 	                                (String) objs[12],
 	                                NodeType.getNodeTypeFromChar((char)objs[13]),
-	                                (Integer) objs[14]));
+	                                (Integer) objs[14],
+	                                (Date) objs[15]
+	                                        )
+	                              );
 	            }
 	        }
 
@@ -163,6 +175,7 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
         return getHibernateTemplate().execute(new HibernateCallback<List<IsisTopologyLink>>() {
 
             @Override
+            @SuppressWarnings("unchecked")
             public List<IsisTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
                 return convertObjectToTopologyLink(session.createSQLQuery(SQL_GET_ISIS_LINKS).list());
             }

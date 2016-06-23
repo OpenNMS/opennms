@@ -70,6 +70,7 @@ public class Rfc5424SyslogParser extends SyslogParser {
 
         final Matcher matcher = getMatcher();
         final SyslogMessage message = new SyslogMessage();
+        message.setParserClass(getClass());
         try {
             final int priorityField = Integer.parseInt(matcher.group(1));
             message.setFacility(SyslogFacility.getFacilityForCode(priorityField));

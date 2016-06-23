@@ -32,21 +32,16 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.util.Assert;
 
-public class SnmpInterfaceDaoHibernate extends
-		AbstractDaoHibernate<OnmsSnmpInterface, Integer> implements
-		SnmpInterfaceDao {
+public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInterface, Integer> implements SnmpInterfaceDao {
 
-	/**
-	 * <p>Constructor for SnmpInterfaceDaoHibernate.</p>
-	 */
-	public SnmpInterfaceDaoHibernate() {
-		super(OnmsSnmpInterface.class);
-	}
-	
+    /**
+     * <p>Constructor for SnmpInterfaceDaoHibernate.</p>
+     */
+    public SnmpInterfaceDaoHibernate() {
+        super(OnmsSnmpInterface.class);
+    }
 
-
-    /** {@inheritDoc} */
-        @Override
+    @Override
     public OnmsSnmpInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifIndex) {
         Assert.notNull(nodeId, "nodeId may not be null");
         Assert.notNull(ifIndex, "ifIndex may not be null");
@@ -56,10 +51,7 @@ public class SnmpInterfaceDaoHibernate extends
         
     }
 
-
-
-    /** {@inheritDoc} */
-        @Override
+    @Override
     public OnmsSnmpInterface findByForeignKeyAndIfIndex(String foreignSource, String foreignId, Integer ifIndex) {
         Assert.notNull(foreignSource, "foreignSource may not be null");
         Assert.notNull(foreignId, "foreignId may not be null");
@@ -70,6 +62,15 @@ public class SnmpInterfaceDaoHibernate extends
                           ifIndex);
     }
 
-	
+    @Override
+    public OnmsSnmpInterface findByNodeIdAndDescription(Integer nodeId, String description) {
+        Assert.notNull(nodeId, "nodeId may not be null");
+        Assert.notNull(description, "description may not be null");
 
+        return findUnique("SELECT DISTINCT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ? AND (LOWER(snmpIf.ifDescr) LIKE LOWER(?) OR LOWER(snmpIf.ifName) LIKE LOWER(?))", 
+            nodeId, 
+            description,
+            description
+        );
+    }
 }

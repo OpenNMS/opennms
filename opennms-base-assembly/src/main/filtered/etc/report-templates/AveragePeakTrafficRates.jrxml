@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-03-10T10:30:25 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node-response-time" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dd0c0584-c0b6-4860-a6fd-62182c4d11a5">
+<!-- 2015-08-24T14:02:48 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Average and Peak Traffic Rates" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dd0c0584-c0b6-4860-a6fd-62182c4d11a5">
 	<property name="ireport.zoom" value="1.2100000000000006"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -18,7 +18,6 @@
 		<conditionalStyle>
 			<conditionExpression><![CDATA[new Boolean($V{style_helper_COUNT}%new Integer("5") == new Integer("0"))]]></conditionExpression>
 			<style mode="Opaque" forecolor="#999999">
-				<pen lineWidth="1.0" lineColor="#666666"/>
 				<box>
 					<bottomPen lineWidth="1.0"/>
 				</box>
@@ -81,6 +80,18 @@
 		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
 		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="MEASUREMENT_URL" class="java.lang.String">
+		<parameterDescription><![CDATA[The URL of the Measurements API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["http://localhost:8980/opennms/rest/measurements"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String">
+		<parameterDescription><![CDATA[The username to use to authenticate against the Measurement API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String">
+		<parameterDescription><![CDATA[The password to use to authenticate against the Measurement API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>
+	</parameter>
 	<parameter name="startDate" class="java.util.Date">
 		<parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new java.util.Date(
@@ -92,9 +103,6 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 		<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
 )]]></defaultValueExpression>
-	</parameter>
-	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["${install.dir}/share/rrd/snmp"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/subreports/"]]></defaultValueExpression>
@@ -165,7 +173,7 @@ ORDER BY
 				<textField>
 					<reportElement style="Node_Group" x="0" y="0" width="554" height="20" uuid="9cf5d812-b1e6-4d56-b134-8d7df83cd63a"/>
 					<textElement textAlignment="Left"/>
-					<textFieldExpression><![CDATA["Node " + $F{nodelabel}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Node " + $F{nodelabel} + "(" + $F{nodeid} + ")"]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement style="Table-Header" x="0" y="21" width="110" height="36" uuid="dd5b8010-f786-42da-b6cc-65ecc5a7eb74">
@@ -195,8 +203,8 @@ ORDER BY
 					<text><![CDATA[Peak Receive bps]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Interface_Header" x="451" y="21" width="104" height="36" uuid="2469a483-786b-45ae-af35-ee6fbdef24f7"/>
-					<textElement textAlignment="Right"/>
+					<reportElement style="Table-Header" x="451" y="21" width="104" height="36" uuid="2469a483-786b-45ae-af35-ee6fbdef24f7"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
 					<text><![CDATA[Peak Transmit bps]]></text>
 				</staticText>
 				<staticText>
@@ -291,8 +299,14 @@ ORDER BY
 				<subreportParameter name="snmpphysaddr">
 					<subreportParameterExpression><![CDATA[$F{snmpphysaddr}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="rrdDir">
-					<subreportParameterExpression><![CDATA[$P{rrdDir}]]></subreportParameterExpression>
+				<subreportParameter name="MEASUREMENT_URL">
+					<subreportParameterExpression><![CDATA[$P{MEASUREMENT_URL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="MEASUREMENT_USERNAME">
+					<subreportParameterExpression><![CDATA[$P{MEASUREMENT_USERNAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="MEASUREMENT_PASSWORD">
+					<subreportParameterExpression><![CDATA[$P{MEASUREMENT_PASSWORD}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="startDate">
 					<subreportParameterExpression><![CDATA[$P{startDate}]]></subreportParameterExpression>

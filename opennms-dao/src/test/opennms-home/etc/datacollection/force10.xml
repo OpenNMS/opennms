@@ -2,8 +2,8 @@
 <datacollection-group name="Force10">
 
     <resourceType name="force10StackUnit" label="Force10 Stack Unit" resourceLabel="Unit ${index}: ${f10UnitDescr}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
       <group name="force10-stack-unit-stats" ifType="all">

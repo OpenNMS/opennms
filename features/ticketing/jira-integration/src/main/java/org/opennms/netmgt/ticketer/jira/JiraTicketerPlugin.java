@@ -36,34 +36,41 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
-import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 import org.opennms.api.integration.ticketing.Plugin;
+import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.rest.client.JiraRestClient;
-import com.atlassian.jira.rest.client.JiraRestClientFactory;
-import com.atlassian.jira.rest.client.NullProgressMonitor;
+import com.atlassian.jira.rest.client.api.JiraRestClient;
+import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
+import com.atlassian.jira.rest.client.api.domain.BasicIssue;
+import com.atlassian.jira.rest.client.api.domain.Comment;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.Transition;
+import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
+import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
 import com.atlassian.jira.rest.client.auth.AnonymousAuthenticationHandler;
-import com.atlassian.jira.rest.client.domain.Comment;
-import com.atlassian.jira.rest.client.domain.Issue;
-import com.atlassian.jira.rest.client.domain.Transition;
-import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
-import com.atlassian.jira.rest.client.domain.input.TransitionInput;
-import com.atlassian.jira.rest.client.internal.jersey.JerseyJiraRestClientFactory;
+import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 
 /**
  * OpenNMS Trouble Ticket Plugin API implementation for Atlassian JIRA.
  * This implementation relies on the JIRA REST interface and is compatible
  * with JIRA 5.0+.
- * 
+ *
  * @see http://www.atlassian.com/software/jira/overview
- * @see http://docs.atlassian.com/jira-rest-java-client/1.0/apidocs/
+ * @see https://docs.atlassian.com/jira-rest-java-client-api/3.0.0/jira-rest-java-client-api/apidocs/
  *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author Seth
@@ -71,7 +78,7 @@ import com.atlassian.jira.rest.client.internal.jersey.JerseyJiraRestClientFactor
 public class JiraTicketerPlugin implements Plugin {
     private static final Logger LOG = LoggerFactory.getLogger(JiraTicketerPlugin.class);
 
-    protected final JiraRestClientFactory clientFactory = new JerseyJiraRestClientFactory();
+    protected final JiraRestClientFactory clientFactory = new AsynchronousJiraRestClientFactory();
 
     protected JiraRestClient getConnection() {
         try {
@@ -94,16 +101,22 @@ public class JiraTicketerPlugin implements Plugin {
      * Implementation of TicketerPlugin API call to retrieve a Jira trouble ticket.
      *
      * @return an OpenNMS
+     * @throws PluginException
      */
     @Override
-    public Ticket get(String ticketId) {
+    public Ticket get(String ticketId) throws PluginException {
         JiraRestClient jira = getConnection();
         if (jira == null) {
             return null;
         }
 
         // w00t
-        Issue issue = jira.getIssueClient().getIssue(ticketId, new NullProgressMonitor());
+        Issue issue;
+        try {
+            issue = jira.getIssueClient().getIssue(ticketId).get();
+        } catch (InterruptedException|ExecutionException e) {
+            throw new PluginException("Failed to get issue with id: " + ticketId, e);
+        }
 
         if (issue != null) {
             Ticket ticket = new Ticket();
@@ -111,17 +124,11 @@ public class JiraTicketerPlugin implements Plugin {
             ticket.setId(issue.getKey());
             ticket.setModificationTimestamp(String.valueOf(issue.getUpdateDate().toDate().getTime()));
             ticket.setSummary(issue.getSummary());
-
-            String allComments = "";
-            for (Comment comment : issue.getComments()) {
-                allComments = allComments + "\n" + comment.getAuthor().getDisplayName() + "\n" + comment.getBody();
-            }
-
-            ticket.setDetails(allComments.trim());
-            ticket.setState(getStateFromId(issue.getStatus().getName()));
+            ticket.setDetails(issue.getDescription());
+            ticket.setState(getStateFromStatusName(issue.getStatus().getName()));
 
             return ticket;
-        } else { 
+        } else {
             return null;
         }
     }
@@ -133,22 +140,33 @@ public class JiraTicketerPlugin implements Plugin {
      * @param stateIdString
      * @return the converted <code>org.opennms.api.integration.ticketing.Ticket.State</code>
      */
-    private static Ticket.State getStateFromId(String stateIdString) {
-        if (stateIdString == null) {
-            return Ticket.State.OPEN;
-        } else if ("Open".equals(stateIdString)) {
-            return Ticket.State.OPEN;
-        } else if ("In Progress".equals(stateIdString)) {
-            return Ticket.State.OPEN;
-        } else if ("Reopened".equals(stateIdString)) {
-            return Ticket.State.OPEN;
-        } else if ("Resolved".equals(stateIdString)) {
-            return Ticket.State.CLOSED;
-        } else if ("Closed".equals(stateIdString)) {
-            return Ticket.State.CLOSED;
-        } else {
-            return Ticket.State.OPEN;
+    private static Ticket.State getStateFromStatusName(String ticketStatusName) {
+        // Mapping of property key names to ticket states
+        // The values for the properties at these keys should contain
+        // a comma-separated list of known JIRA status names that map
+        // the respective ticket states
+        Map<Ticket.State, String> ticketStateToPropNameMap = new HashMap<>();
+        ticketStateToPropNameMap.put(Ticket.State.OPEN, "jira.status.open");
+        ticketStateToPropNameMap.put(Ticket.State.CLOSED, "jira.status.closed");
+        ticketStateToPropNameMap.put(Ticket.State.CANCELLED, "jira.status.cancelled");
+
+        Properties jiraProperties = getProperties();
+        for (Entry<Ticket.State, String> entry : ticketStateToPropNameMap.entrySet()) {
+            // Grab the value for the given property and all of the names to the set
+            Set<String> knownStateIds = new HashSet<>();
+            String stateIdsProp = jiraProperties.getProperty(entry.getValue());
+            if (stateIdsProp != null) {
+                knownStateIds.addAll(Arrays.asList(stateIdsProp.split(",")));
+            }
+
+            // If there's a match, return the current ticket state
+            if (knownStateIds.contains(ticketStatusName)) {
+                return entry.getKey();
+            }
         }
+
+        // No match, default to open
+        return Ticket.State.OPEN;
     }
 
     /**
@@ -156,7 +174,6 @@ public class JiraTicketerPlugin implements Plugin {
      *
      * @return a <code>java.util.Properties object containing jira plugin defined properties
      */
-
     private static Properties getProperties() {
         File home = new File(System.getProperty("opennms.home"));
         File etc = new File(home, "etc");
@@ -164,21 +181,16 @@ public class JiraTicketerPlugin implements Plugin {
 
         Properties props = new Properties();
 
-        InputStream in = null;
-        try {
-            in = new FileInputStream(config);
+        try (InputStream in = new FileInputStream(config)) {
             props.load(in);
         } catch (IOException e) {
             LOG.error("Unable to load {} ignoring.", config, e);
-        } finally {
-            IOUtils.closeQuietly(in);
         }
 
         LOG.debug("Loaded user: {}", props.getProperty("jira.username"));
         LOG.debug("Loaded type: {}", props.getProperty("jira.type"));
 
         return props;
-
     }
 
     /*
@@ -186,7 +198,7 @@ public class JiraTicketerPlugin implements Plugin {
     * @see org.opennms.api.integration.ticketing.Plugin#saveOrUpdate(org.opennms.api.integration.ticketing.Ticket)
     */
     @Override
-    public void saveOrUpdate(Ticket ticket) {
+    public void saveOrUpdate(Ticket ticket) throws PluginException {
 
         JiraRestClient jira = getConnection();
 
@@ -198,38 +210,64 @@ public class JiraTicketerPlugin implements Plugin {
             builder.setDescription(ticket.getDetails());
             builder.setDueDate(new DateTime(Calendar.getInstance()));
 
-            jira.getIssueClient().createIssue(builder.build(), new NullProgressMonitor());
+            BasicIssue createdIssue;
+            try {
+                createdIssue = jira.getIssueClient().createIssue(builder.build()).get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new PluginException("Failed to create issue.", e);
+            }
+            LOG.info("created ticket " + createdIssue);
+
+            ticket.setId(createdIssue.getKey());
 
         } else {
             // Otherwise update the existing ticket
             LOG.info("Received ticket: {}", ticket.getId());
 
-            Issue issue = jira.getIssueClient().getIssue(ticket.getId(), new NullProgressMonitor());
+            Issue issue;
+            try {
+                issue = jira.getIssueClient().getIssue(ticket.getId()).get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new PluginException("Failed to get issue with id:" + ticket.getId(), e);
+            }
 
-            Iterable<Transition> transitions = jira.getIssueClient().getTransitions(issue, new NullProgressMonitor());
+            Iterable<Transition> transitions;
+            try {
+                transitions = jira.getIssueClient().getTransitions(issue).get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new PluginException("Failed to get transitions for issue with id:" + issue.getId(), e);
+            }
+
             if (Ticket.State.CLOSED.equals(ticket.getState())) {
                 Comment comment = Comment.valueOf("Issue resolved by OpenNMS.");
                 for (Transition transition : transitions) {
-                    if ("Resolve Issue".equals(transition.getName())) {
+                    if (getProperties().getProperty("jira.resolve").equals(transition.getName())) {
                         LOG.info("Resolving ticket {}", ticket.getId());
                         // Resolve the issue
-                        jira.getIssueClient().transition(issue, new TransitionInput(transition.getId(), comment), new NullProgressMonitor());
+                        try {
+                            jira.getIssueClient().transition(issue, new TransitionInput(transition.getId(), comment)).get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            throw new PluginException("Failed to get resolve issue with id:" + issue.getId(), e);
+                        }
                         return;
                     }
                 }
-                LOG.warn("Could not resolve ticket {}, no \"Resolve Issue\" operation available.", ticket.getId());
+                LOG.warn("Could not resolve ticket {}, no '{}' operation available.", ticket.getId(), getProperties().getProperty("jira.resolve"));
             } else if (Ticket.State.OPEN.equals(ticket.getState())) {
-                // This case is most likely never used.
                 Comment comment = Comment.valueOf("Issue reopened by OpenNMS.");
                 for (Transition transition : transitions) {
-                    if ("Reopen Issue".equals(transition.getName())) {
+                    if (getProperties().getProperty("jira.reopen").equals(transition.getName())) {
                         LOG.info("Reopening ticket {}", ticket.getId());
                         // Resolve the issue
-                        jira.getIssueClient().transition(issue, new TransitionInput(transition.getId(), comment), new NullProgressMonitor());
+                        try {
+                            jira.getIssueClient().transition(issue, new TransitionInput(transition.getId(), comment)).get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            throw new PluginException("Failed to reopen issue with id:" + issue.getId(), e);
+                        }
                         return;
                     }
                 }
-                LOG.warn("Could not reopen ticket {}, no \"Reopen Issue\" operation available.", ticket.getId());
+                LOG.warn("Could not reopen ticket {}, no '{}' operation available.", ticket.getId(), getProperties().getProperty("jira.reopen"));
             }
         }
     }

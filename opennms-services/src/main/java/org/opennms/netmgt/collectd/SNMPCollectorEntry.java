@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.snmp.AbstractSnmpStore;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;

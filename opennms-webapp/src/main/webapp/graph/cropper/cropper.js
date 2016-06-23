@@ -167,7 +167,7 @@ $(this.north).setStyle({height:0});
 $(this.east).setStyle({width:0,height:0});
 $(this.south).setStyle({height:0});
 $(this.west).setStyle({width:0,height:0});
-$(this.imgWrap).setStyle({"width":this.imgW+"px","height":this.imgH+"px"});
+$(this.imgWrap).setStyle({"width":this.imgW+"px","height":this.imgH+"px","margin-left": "auto","margin-right":"auto"});
 $(this.selArea).hide();
 var _1a={x1:0,y1:0,x2:0,y2:0};
 var _1b=false;

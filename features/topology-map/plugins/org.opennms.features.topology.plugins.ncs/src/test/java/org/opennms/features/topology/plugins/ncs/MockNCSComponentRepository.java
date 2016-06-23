@@ -94,9 +94,9 @@ public class MockNCSComponentRepository implements NCSComponentRepository {
     }
 
     @Override
-    public void save(NCSComponent component) {
+    public Long save(NCSComponent component) {
         // TODO Auto-generated method stub
-        
+        return null;
     }
 
     @Override

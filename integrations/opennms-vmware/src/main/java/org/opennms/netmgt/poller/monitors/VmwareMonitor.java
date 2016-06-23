@@ -34,7 +34,6 @@ import com.vmware.vim25.VirtualMachinePowerState;
 import com.vmware.vim25.VirtualMachineRuntimeInfo;
 import com.vmware.vim25.mo.HostSystem;
 import com.vmware.vim25.mo.VirtualMachine;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
@@ -102,6 +101,8 @@ public class VmwareMonitor extends AbstractServiceMonitor {
                 return PollStatus.unknown();
             }
         }
+
+        boolean ignoreStandBy = getKeyedBoolean(parameters, "ignoreStandBy", false);
 
         OnmsNode onmsNode = m_nodeDao.get(svc.getNodeId());
 
@@ -194,7 +195,11 @@ public class VmwareMonitor extends AbstractServiceMonitor {
             if ("poweredOn".equals(powerState)) {
                 serviceStatus = PollStatus.available();
             } else {
-                serviceStatus = PollStatus.unavailable("The system's state is '" + powerState + "'");
+                if (ignoreStandBy && "standBy".equals(powerState)) {
+                    serviceStatus = PollStatus.up();
+                } else {
+                    serviceStatus = PollStatus.unavailable("The system's state is '" + powerState + "'");
+                }
             }
 
             vmwareViJavaAccess.disconnect();

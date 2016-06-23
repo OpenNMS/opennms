@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.geocoder</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.geocoder</groupId>
@@ -26,12 +26,12 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${project.version}"</Export-Package>
             <Private-Package>${bundle.namespace}.internal.*</Private-Package>
-            <Embed-Dependency>geocoder-java,gson,commons-httpclient</Embed-Dependency>
+            <Embed-Dependency>*;artifactId=geocoder-java|gson|commons-httpclient</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
           </instructions>
         </configuration>

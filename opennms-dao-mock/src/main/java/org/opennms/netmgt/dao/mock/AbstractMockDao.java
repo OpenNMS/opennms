@@ -49,8 +49,8 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.slf4j.Logger;
@@ -162,29 +162,33 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
 
     @Override
     public T get(final K id) {
-        LOG.debug("get({})", id);
-        return m_entries.get(id);
+        T retval = m_entries.get(id);
+        LOG.debug("get({}: {})", retval == null ? "null" : retval.getClass().getSimpleName(), id);
+        return retval;
     }
 
     @Override
     public T load(K id) {
-        LOG.debug("load({})", id);
-        return m_entries.get(id);
+        T retval = m_entries.get(id);
+        LOG.debug("load({}: {})", retval == null ? "null" : retval.getClass().getSimpleName(), id);
+        return retval;
     }
 
     @Override
-    public void save(final T entity) {
-        if (entity == null) return;
+    public K save(final T entity) {
+        if (entity == null) return null;
         K id = getId(entity);
         if (id == null) {
             generateId(entity);
             id = getId(entity);
         }
-        LOG.debug("save({})", entity);
         if (m_entries.containsKey(id)) {
-            LOG.debug("save({}): id exists: {}", entity, id);
+            LOG.debug("save({}): id already exists: {}", entity, id);
+        } else {
+            LOG.debug("save({})", entity);
         }
         m_entries.put(id, entity);
+        return id;
     }
 
     @Override

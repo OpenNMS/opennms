@@ -30,9 +30,7 @@ package org.opennms.features.topology.app.internal.jung;
 
 import java.awt.geom.Point2D;
 
-import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.DblBoundingBox;
-import org.opennms.features.topology.api.Point;
 
 public class QuadTree<Value> {
     private Node<Value> m_root;

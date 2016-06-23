@@ -404,7 +404,13 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     public void setEvent(OnmsEvent event) {
         m_event = event;
     }
-    
+
+    @Transient
+    @XmlElement(name="eventId", required=true)
+    public Integer getEventId() {
+        return m_event == null ? null : m_event.getId();
+    }
+
     /*
      * FIXME: HACK for some reason we put the eventUEI in the notifications table along with the eventId
      * so we have to HACK this so we can properly write the table
@@ -417,7 +423,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     @XmlElement(name="uei")
     @Column(name="eventUEI")
     public String getEventUei() {
-        return m_event.getEventUei();
+        return m_event == null ? null : m_event.getEventUei();
     }
     
     /**
@@ -437,7 +443,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     @Transient
     @XmlAttribute(name="severity")
     public String getSeverityLabel() {
-        return m_event.getSeverityLabel();
+        return m_event == null ? null : m_event.getSeverityLabel();
     }
 
     /**
@@ -456,15 +462,13 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     @Transient
     @XmlElement(name="nodeId", required=false)
     public Integer getNodeId() {
-        if (m_node == null) return null;
-        return m_node.getId();
+        return m_node == null ? null : m_node.getId();
     }
 
     @Transient
     @XmlElement(name="nodeLabel", required=false)
     public String getNodeLabel() {
-        if (m_node == null) return null;
-        return m_node.getLabel();
+        return m_node == null ? null : m_node.getLabel();
     }
 
     /**

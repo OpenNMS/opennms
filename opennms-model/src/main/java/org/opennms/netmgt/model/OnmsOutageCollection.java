@@ -34,6 +34,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 /**
@@ -43,6 +45,7 @@ import org.opennms.core.config.api.JaxbListWrapper;
  * @version $Id: $
  */
 @XmlRootElement(name="outages")
+@JsonRootName("outages")
 public class OnmsOutageCollection extends JaxbListWrapper<OnmsOutage> {
     private static final long serialVersionUID = 1L;
 
@@ -52,6 +55,7 @@ public class OnmsOutageCollection extends JaxbListWrapper<OnmsOutage> {
     }
 
     @XmlElement(name="outage")
+    @JsonProperty("outage")
     public List<OnmsOutage> getObjects() {
         return super.getObjects();
     }

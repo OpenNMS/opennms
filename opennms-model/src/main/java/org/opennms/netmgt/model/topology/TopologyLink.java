@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.model.topology;
 
+import java.util.Date;
+
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 
 
@@ -43,8 +45,8 @@ public abstract class TopologyLink {
     private final String m_targetSysoid;
     private final String m_targetLocation;
     private final NodeType m_targetNodeType;
-
-    public TopologyLink( 
+    private final Date m_lastPollTime;
+    public TopologyLink( Date lastPollTime,
             Integer nodeId, 
             String srcLabel, String srcSysoid, String srcLocation,
             NodeType srcNodeType,
@@ -52,6 +54,7 @@ public abstract class TopologyLink {
             String targetLabel, String targetSysoid, String targetLocation,
             NodeType targetNodeType
             ) {
+        m_lastPollTime = lastPollTime;
         m_srcNodeId = nodeId;
         m_srcLabel = srcLabel;
         m_srcSysoid = srcSysoid;
@@ -62,6 +65,10 @@ public abstract class TopologyLink {
         m_targetSysoid = targetSysoid;
         m_targetLocation = targetLocation;
         m_targetNodeType = targetNodeType;
+    }
+
+    public Date getLastPollTime() {
+        return m_lastPollTime;
     }
 
     public Integer getSrcNodeId() {

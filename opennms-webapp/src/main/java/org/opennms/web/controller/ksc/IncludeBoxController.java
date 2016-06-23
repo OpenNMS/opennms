@@ -31,7 +31,7 @@ package org.opennms.web.controller.ksc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.web.svclayer.KscReportService;
+import org.opennms.web.svclayer.api.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -56,7 +56,7 @@ public class IncludeBoxController extends AbstractController implements Initiali
     /**
      * <p>getKscReportService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.KscReportService} object.
+     * @return a {@link org.opennms.web.svclayer.api.KscReportService} object.
      */
     public KscReportService getKscReportService() {
         return m_kscReportService;
@@ -65,7 +65,7 @@ public class IncludeBoxController extends AbstractController implements Initiali
     /**
      * <p>setKscReportService</p>
      *
-     * @param kscReportService a {@link org.opennms.web.svclayer.KscReportService} object.
+     * @param kscReportService a {@link org.opennms.web.svclayer.api.KscReportService} object.
      */
     public void setKscReportService(KscReportService kscReportService) {
         m_kscReportService = kscReportService;

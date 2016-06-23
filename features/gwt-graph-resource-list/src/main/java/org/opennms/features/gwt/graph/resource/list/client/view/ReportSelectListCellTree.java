@@ -48,7 +48,7 @@ import com.google.gwt.user.cellview.client.CellTree;
 import com.google.gwt.user.cellview.client.TreeNode;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.SelectionModel;
 import com.google.gwt.view.client.TreeViewModel;
 
 public class ReportSelectListCellTree extends CellTree {
@@ -98,15 +98,15 @@ public class ReportSelectListCellTree extends CellTree {
         }
 
         private final List<ResourceType> m_resourceTypes;
-        private final MultiSelectionModel<ResourceListItem> m_multipleSelectionModel;
+        private final SelectionModel<ResourceListItem> m_selectionModel;
         private final Cell<ResourceListItem> m_resourceListItemCell;
         private final DefaultSelectionEventManager<ResourceListItem> m_selectionManager = DefaultSelectionEventManager.createCheckboxManager();
         
-        public CustomTreeModel(List<ResourceListItem> resourceList, MultiSelectionModel<ResourceListItem> selectionModel) {
+        public CustomTreeModel(List<ResourceListItem> resourceList, SelectionModel<ResourceListItem> selectionModel) {
             m_resourceTypes = new ArrayList<ResourceType>();
             organizeList(resourceList);
             
-            m_multipleSelectionModel = selectionModel;
+            m_selectionModel = selectionModel;
             
             List<HasCell<ResourceListItem, ?>> hasCells = new ArrayList<HasCell<ResourceListItem, ?>>();
             hasCells.add(new HasCell<ResourceListItem, Boolean>(){
@@ -125,7 +125,7 @@ public class ReportSelectListCellTree extends CellTree {
 
                 @Override
                 public Boolean getValue(ResourceListItem object) {
-                    return m_multipleSelectionModel.isSelected(object);
+                    return m_selectionModel.isSelected(object);
                 }
             });
             
@@ -210,7 +210,7 @@ public class ReportSelectListCellTree extends CellTree {
           }else if(value instanceof ResourceType) {
               ListDataProvider<ResourceListItem> dataProvider = new ListDataProvider<ResourceListItem>(((ResourceType) value).getResourceList());
               
-              return new DefaultNodeInfo<ResourceListItem>(dataProvider, m_resourceListItemCell, m_multipleSelectionModel, m_selectionManager, null);
+              return new DefaultNodeInfo<ResourceListItem>(dataProvider, m_resourceListItemCell, m_selectionModel, m_selectionManager, null);
           }
           return null;
         }
@@ -229,8 +229,7 @@ public class ReportSelectListCellTree extends CellTree {
         }
       }
     
-    
-    public ReportSelectListCellTree(List<ResourceListItem> resourceList, MultiSelectionModel<ResourceListItem> selectionModel) {
+    public ReportSelectListCellTree(List<ResourceListItem> resourceList, SelectionModel<ResourceListItem> selectionModel) {
         super(new CustomTreeModel(resourceList, selectionModel), null, (CellTree.Resources)GWT.create(CustomCellTreeResource.class));
         setDefaultNodeSize(10000);
         
@@ -238,8 +237,6 @@ public class ReportSelectListCellTree extends CellTree {
         for(int i = 0; i < treeNode.getChildCount(); i++) {
             treeNode.setChildOpen(i, true);
         }
-        
     }
-
-
+    
 }

@@ -1,0 +1,58 @@
+
+==== SNMP Trap Northbounder Interface Configuration
+
+===== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource        | Description
+| `/config/snmptrap-nbi` | Gets full content of the configuration.
+| `/config/snmptrap-nbi/status` | Gets the status of the SNMP Trap NBI (returns either true or false).
+| `/config/snmptrap-nbi/destinations` | Gets the name of all the existing destinations.
+| `/config/snmptrap-nbi/destinations/{name}` | Gets the content of the destination named {name}
+|===
+
+===== PUTs (Update defaults)
+
+On a successful request, the Syslog NBI will be notified about the configuration change.
+
+[options="header", cols="5,10"]
+|===
+| Resource        | Description
+| `/config/snmptrap-nbi/status?enabled=(true;false)` | Sets the status of the SNMP Trap NBI.
+|===
+
+===== POSTs (Adding Data)
+
+POST requires form data using application/x-www-form-urlencoded as a Content-Type.
+
+On a successful request, the SNMP Trap NBI will be notified about the configuration change.
+
+[options="header", cols="5,10"]
+|===
+| Resource        | Description
+| `/config/snmptrap-nbi` | Updates the full content of the configuration.
+| `/config/snmptrap-nbi/destinations` | Adds a new or overrides an existing destination.
+|===
+
+===== PUTs (Modifying Data)
+
+PUT requires form data using application/x-www-form-urlencoded as a Content-Type.
+
+On a successful request, the SNMP Trap NBI will be notified about the configuration change.
+
+[options="header", cols="5,10"]
+|===
+| Resource                               | Description
+| `/config/snmptrap-nbi/destinations/{name}` | Updates the content of the destination named {name}
+|===
+
+===== DELETEs (Remove Data)
+
+On a successful request, the SNMP Trap NBI will be notified about the configuration change.
+
+[options="header", cols="5,10"]
+|===
+| Resource                               | Description
+| `/config/snmptrap-nbi/destinations/{name}` | Updates the content of the destination named {name}
+|===

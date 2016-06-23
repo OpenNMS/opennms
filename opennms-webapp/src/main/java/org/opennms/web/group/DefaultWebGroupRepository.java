@@ -30,7 +30,7 @@ package org.opennms.web.group;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.groups.Group;
-import org.opennms.web.services.GroupService;
+import org.opennms.web.svclayer.api.GroupService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,8 +79,6 @@ public class DefaultWebGroupRepository implements WebGroupRepository, Initializi
         group.setComments(webGroup.getComments());
         group.setDutySchedule(webGroup.getDutySchedules());
         group.setUser(webGroup.getUsers());
-        if (!webGroup.getDefaultMap().equals(""))
-            group.setDefaultMap(webGroup.getDefaultMap());
 
         groupService.saveGroup(group, webGroup.getAuthorizedCategories());
     }

@@ -43,6 +43,7 @@ public class RemoteHostHttpInvokerServiceExporter extends HttpInvokerServiceExpo
 
     /**
      */
+    @Override
     protected InputStream decorateInputStream(HttpServletRequest request, InputStream is) throws IOException {
         RemoteHostThreadLocal.INSTANCE.set(request.getRemoteHost());
         return is;
@@ -50,6 +51,7 @@ public class RemoteHostHttpInvokerServiceExporter extends HttpInvokerServiceExpo
 
     /**
      */
+    @Override
     protected OutputStream decorateOutputStream(HttpServletRequest request, HttpServletResponse response, OutputStream os) throws IOException {
         return os;
     }

@@ -56,6 +56,7 @@ public class QueueingForeignSourceRepositoryTest extends ForeignSourceRepository
     @Before
     public void setUp() {
         m_defaultForeignSourceName = "imported:";
+        m_foreignSourceRepository.clear();
     }
 
     private Requisition createRequisition() throws Exception {

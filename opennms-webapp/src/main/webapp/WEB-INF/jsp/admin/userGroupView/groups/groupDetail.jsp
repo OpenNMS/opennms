@@ -70,12 +70,6 @@
           </td>
         </tr>
         <tr>
-          <th>Default Map:</th>
-          <td width="75%">
-            <%=group.getDefaultMap()%>
-          </td>
-        </tr>
-        <tr>
           <th>Assigned Users:</th>
           <td width="75%">
             <% Collection<String> users = group.getUsers();

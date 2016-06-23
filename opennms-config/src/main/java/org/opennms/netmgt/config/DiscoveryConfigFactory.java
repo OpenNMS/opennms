@@ -53,6 +53,7 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.FilteringIterator;
 import org.opennms.core.utils.InetAddressUtils;
@@ -71,12 +72,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 
 /**
- * This is the singleton class used to load the configuration for the OpenNMS
- * Discovery service from the discovery-configuration xml file.
- *
- * <strong>Note: </strong>Users of this class should make sure the
- * <em>init()</em> is called before calling any other method to ensure the
- * config is loaded before accessing other convenience methods.
+ * This class is used to load the configuration for the OpenNMS
+ * Discovery service from the discovery-configuration.xml file.
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  */
@@ -90,40 +87,16 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     public static final char COMMENT_CHAR = '#';
 
     /**
-     * The singleton instance of this factory
-     */
-    private static DiscoveryConfigFactory m_singleton = null;
-
-    /**
      * The config class loaded from the config file
      */
     private DiscoveryConfiguration m_config;
 
-    /**
-     * This member is set to true if the configuration file has been loaded.
-     */
-    private static boolean m_loaded = false;
-
-    /**
-     * Private constructor
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     */
-    private DiscoveryConfigFactory(final String configFile) throws IOException, MarshalException, ValidationException {
-        final FileSystemResource resource = new FileSystemResource(configFile);
-        setConfig(resource);
+    public static DiscoveryConfigFactory getInstance() {
+        return BeanUtils.getBean("commonContext", "discoveryFactory", DiscoveryConfigFactory.class);
     }
 
-    protected DiscoveryConfigFactory() {
-    }
-
-    protected void setConfig(final FileSystemResource resource) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(DiscoveryConfiguration.class, resource);
+    public DiscoveryConfigFactory() {
+        reload();
     }
 
     public Lock getReadLock() {
@@ -135,46 +108,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     }
 
     /**
-     * Load the config from the default config file and create the singleton
-     * instance of this factory.
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
-        if (m_loaded) {
-            // init already called - return
-            // to reload, reload() will need to be called
-            return;
-        }
-
-        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME);
-
-        LOG.debug("init: config file path: {}", cfgFile.getPath());
-
-        m_singleton = new DiscoveryConfigFactory(cfgFile.getPath());
-
-        try {
-            m_singleton.getInitialSleepTime();
-            m_singleton.getRestartSleepTime();
-            m_singleton.getIntraPacketDelay();
-            m_singleton.getConfiguredAddresses();
-        } catch (final Exception e) {
-            throw new ValidationException("An error occurred while validating the configuration: " + e, e);
-        }
-
-        m_loaded = true;
-    }
-
-    /**
-     * Reload the config from the default config file
+     * Reload the config from the default config file.
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
@@ -186,33 +120,28 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
-        m_singleton = null;
-        m_loaded = false;
+    public synchronized void reload() {
+        try {
+            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME);
+            LOG.debug("reload: config file path {}", cfgFile.getPath());
+            final FileSystemResource resource = new FileSystemResource(cfgFile);
+            m_config = CastorUtils.unmarshal(DiscoveryConfiguration.class, resource);
 
-        init();
-    }
-
-    /**
-     * Return the singleton instance of this factory.
-     *
-     * @return The current factory instance.
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
-     */
-    public static synchronized DiscoveryConfigFactory getInstance() {
-        if (!m_loaded)
-            throw new IllegalStateException("The factory has not been initialized");
-
-        return m_singleton;
-    }
-
-    /**
-     * Set the singleton instance of this factory.
-     */
-    public static synchronized void setInstance(final DiscoveryConfigFactory factory) {
-        m_singleton = factory;
-        m_loaded = true;
+            try {
+                getInitialSleepTime();
+                getRestartSleepTime();
+                getIntraPacketDelay();
+                getConfiguredAddresses();
+            } catch (final Throwable e) {
+                throw new ValidationException("An error occurred while validating the configuration: " + e.getMessage(), e);
+            }
+        } catch (MarshalException e) {
+            LOG.error("Could unmarshal configuration file: " + ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME, e);
+        } catch (ValidationException e) {
+            LOG.error("Could unmarshal configuration file: " + ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME, e);
+        } catch (IOException e) {
+            LOG.error("Could unmarshal configuration file: " + ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME, e);
+        }
     }
 
     /**

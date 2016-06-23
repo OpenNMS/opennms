@@ -2,7 +2,7 @@
 	<parent>
 		<groupId>org.opennms.features</groupId>
 		<artifactId>org.opennms.features.ticketing</artifactId>
-		<version>2015.1.1</version>
+		<version>2016.1.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>opennms-integration-remedy</artifactId>
@@ -29,7 +29,36 @@
 					</packageSpace>
 					<testCases>false</testCases>
 					<serverSide>false</serverSide>
-                    <!--subPackageByFileName>true</subPackageByFileName-->
+					<!--subPackageByFileName>true</subPackageByFileName -->
+				</configuration>
+			</plugin>
+			<!-- Mark all wsdl2java-generated classes with @SuppressWarnings -->
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>maven-replacer-plugin</artifactId>
+				<version>1.4.1</version>
+				<executions>
+					<execution>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<includes>
+						<include>target/generated-sources/axistools/wsdl2java/org/opennms/integration/remedy/ticketservice/*.java</include>
+					</includes>
+					<regex>true</regex>
+					<regexFlags>
+						<regexFlag>MULTILINE</regexFlag>
+					</regexFlags>
+					<replacements>
+						<replacement>
+							<token>^public class</token>
+							<value>@SuppressWarnings("all") public class</value>
+						</replacement>
+					</replacements>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -51,11 +80,19 @@
 			    <groupId>commons-logging</groupId>
 			    <artifactId>commons-logging</artifactId>
 			  </exclusion>
+			  <exclusion>
+			    <groupId>axis</groupId>
+			    <artifactId>axis-wsdl4j</artifactId>
+			  </exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>

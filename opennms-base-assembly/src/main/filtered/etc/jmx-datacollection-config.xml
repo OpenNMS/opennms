@@ -76,18 +76,6 @@
             <attrib name="TasksCompleted" alias="ONMSCollectTasksCpt" type="counter"/>
             <attrib name="CollectableServiceCount" alias="ONMSCollectSvcCount" type="gauge"/>
          </mbean>
-         <mbean name="OpenNMS.Capsd" objectname="OpenNMS:Name=Capsd">
-            <attrib name="ActiveSuspectThreads" alias="ActiveSuspecThreads" type="gauge"/>
-            <attrib name="ActiveRescanThreads" alias="ActiveRescanThreads" type="gauge"/>
-            <attrib name="SuspectCompletedTasks" alias="SuspectCompletTasks" type="counter"/>
-            <attrib name="RescanCompletedTasks" alias="RescanCompletTasks" type="counter"/>
-            <attrib name="SuspectTotalTasks" alias="SuspectTotalTasks" type="counter"/>
-            <attrib name="RescanTotalTasks" alias="RescanTotalTasks" type="counter"/>
-            <attrib name="SuspectTaskCompletionRatio" alias="SuspTaskComplRatio" type="gauge"/>
-            <attrib name="RescanTaskCompletionRatio" alias="RescTaskComplRatio" type="gauge"/>
-            <attrib name="SuspectQueueSize" alias="SuspectQueueSize" type="gauge"/>
-            <attrib name="RescanQueueSize" alias="RescanQueueSize" type="gauge"/>
-         </mbean>
          <mbean name="OpenNMS.JettyServer" objectname="OpenNMS:Name=JettyServer">
             <attrib name="HttpsConnectionsTotal" alias="HttpsConnTotal" type="counter"/>
             <attrib name="HttpsConnectionsOpen" alias="HttpsConnOpen" type="gauge"/>
@@ -246,6 +234,292 @@
                <comp-member name="duration" alias="PSSDuration" type="gauge"/>
                <comp-member name="endTime" alias="PSSEndTime" type="gauge"/>
             </comp-attrib>
+         </mbean>
+         <mbean name="org.opennms.newts.ring-buffer.size" objectname="org.opennms.newts:name=ring-buffer.size">
+            <attrib name="Value" alias="NewtsRingBufSize" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.newts.ring-buffer.max-size" objectname="org.opennms.newts:name=ring-buffer.max-size">
+            <attrib name="Value" alias="NewtsRingBufMaxSize" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.newts.cache.size" objectname="org.opennms.newts:name=cache.size">
+            <attrib name="Value" alias="NewtsCacheSize" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.newts.cache.max-size" objectname="org.opennms.newts:name=cache.max-size">
+            <attrib name="Value" alias="NewtsMaxCacheSize" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.newts.repository.insert-timer" objectname="org.opennms.newts:name=repository.insert-timer">
+            <attrib name="99thPercentile" alias="NewtsInsert99" type="gauge"/>
+            <attrib name="Count" alias="NewtsInsertCnt" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.newts.repository.measurement-select-timer" objectname="org.opennms.newts:name=repository.measurement-select-timer">
+            <attrib name="99thPercentile" alias="NewtsMeasSelct99" type="gauge"/>
+            <attrib name="Count" alias="NewtsMeasSelctCnt" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.newts.repository.sample-select-timer" objectname="org.opennms.newts:name=repository.sample-select-timer">
+            <attrib name="99thPercentile" alias="NewtsSmplSelct99" type="gauge"/>
+            <attrib name="Count" alias="NewtsSmplSelctCnt" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.newts.repository.samples-inserted" objectname="org.opennms.newts:name=repository.samples-inserted">
+            <attrib name="Count" alias="NewtsSmplsInsertd" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.newts.repository.samples-selected" objectname="org.opennms.newts:name=repository.samples-selected">
+            <attrib name="Count" alias="NewtsSmplsSelctd" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.newts.search.update" objectname="org.opennms.newts:name=search.update">
+            <attrib name="99thPercentile" alias="NewtsSearchUpd99" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.newts.search.delete" objectname="org.opennms.newts:name=search.delete">
+            <attrib name="99thPercentile" alias="NewtsSearchDel99" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.newts.search.inserts" objectname="org.opennms.newts:name=search.inserts">
+            <attrib name="Count" alias="NewtsSearchInserts" type="counter"/>
+         </mbean>
+      </mbeans>
+   </jmx-collection>
+   <jmx-collection name="cassandra30x">
+      <rrd step="300">
+         <rra>RRA:AVERAGE:0.5:1:2016</rra>
+         <rra>RRA:AVERAGE:0.5:12:1488</rra>
+         <rra>RRA:AVERAGE:0.5:288:366</rra>
+         <rra>RRA:MAX:0.5:288:366</rra>
+         <rra>RRA:MIN:0.5:288:366</rra>
+      </rrd>
+      <mbeans>
+         <mbean name="org.apache.cassandra.metrics.Client" objectname="org.apache.cassandra.metrics:type=Client,name=connectedNativeClients">
+            <attrib name="Value" alias="clntConNativeClnts" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Client" objectname="org.apache.cassandra.metrics:type=Client,name=connectedThriftClients">
+            <attrib name="Value" alias="clntConThriftClnts" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Compaction" objectname="org.apache.cassandra.metrics:type=Compaction,name=BytesCompacted">
+            <attrib name="Count" alias="cpctBytesCompacted" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Compaction" objectname="org.apache.cassandra.metrics:type=Compaction,name=CompletedTasks">
+            <attrib name="Value" alias="cpctCompletedTasks" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Compaction" objectname="org.apache.cassandra.metrics:type=Compaction,name=PendingTasks">
+            <attrib name="Value" alias="cpctPendingTasks" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Storage" objectname="org.apache.cassandra.metrics:type=Storage,name=Load">
+            <attrib name="Count" alias="strgLoad" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Storage" objectname="org.apache.cassandra.metrics:type=Storage,name=Exceptions">
+            <attrib name="Count" alias="strgExceptions" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=READ,name=Dropped">
+            <attrib name="Count" alias="drpdMsgRead" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=READ_REPAIR,name=Dropped">
+            <attrib name="Count" alias="drpdMsgReadRepair" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=REQUEST_RESPONSE,name=Dropped">
+            <attrib name="Count" alias="drpdMsgReqResp" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=RANGE_SLICE,name=Dropped">
+            <attrib name="Count" alias="drpdMsgRangeSlice" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=MUTATION,name=Dropped">
+            <attrib name="Count" alias="drpdMsgMutation" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=PAGED_RANGE,name=Dropped">
+            <attrib name="Count" alias="drpdMsgPagedRange" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MemtableFlushWriter,name=ActiveTasks">
+            <attrib name="Value" alias="tpIntMemTblFlsWrAt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MemtableFlushWriter,name=CurrentlyBlockedTasks">
+            <attrib name="Count" alias="tpIntMemTblFlsWrCbt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MemtableFlushWriter,name=PendingTasks">
+            <attrib name="Value" alias="tpIntMemTblFlsWrPt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MemtableFlushWriter,name=CompletedTasks">
+            <attrib name="Count" alias="tpIntMemTblFlsWrCt" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MemtablePostFlush,name=ActiveTasks">
+            <attrib name="Value" alias="tpIntMemTblPoFlsAt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MemtablePostFlush,name=CurrentlyBlockedTasks">
+            <attrib name="Count" alias="tpIntMemTblPoFlsCbt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MemtablePostFlush,name=PendingTasks">
+            <attrib name="Value" alias="tpIntMemTblPoFlsPt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MemtablePostFlush,name=CompletedTasks">
+            <attrib name="Count" alias="tpIntMemTblPoFlsCt" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=AntiEntropyStage,name=ActiveTasks">
+            <attrib name="Value" alias="tpIntAntiEntStgeAt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=AntiEntropyStage,name=CurrentlyBlockedTasks">
+            <attrib name="Count" alias="tpIntAntiEntStgeCbt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=AntiEntropyStage,name=PendingTasks">
+            <attrib name="Value" alias="tpIntAntiEntStgePt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=AntiEntropyStage,name=CompletedTasks">
+            <attrib name="Value" alias="tpIntAntiEntStgeCt" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=GossipStage,name=ActiveTasks">
+            <attrib name="Value" alias="tpIntGosStgeAt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=GossipStage,name=CurrentlyBlockedTasks">
+            <attrib name="Count" alias="tpIntGosStgeCbt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=GossipStage,name=PendingTasks">
+            <attrib name="Value" alias="tpIntGosStgePt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=GossipStage,name=CompletedTasks">
+            <attrib name="Value" alias="tpIntGosStgeCt" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MigrationStage,name=ActiveTasks">
+            <attrib name="Value" alias="tpIntMigStgeAt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MigrationStage,name=CurrentlyBlockedTasks">
+            <attrib name="Count" alias="tpIntMigStgeCbt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MigrationStage,name=PendingTasks">
+            <attrib name="Value" alias="tpIntMigStgePt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MigrationStage,name=CompletedTasks">
+            <attrib name="Value" alias="tpIntMigStgeCt" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MiscStage,name=ActiveTasks">
+            <attrib name="Value" alias="tpIntMiscStgeAt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MiscStage,name=CurrentlyBlockedTasks">
+            <attrib name="Count" alias="tpIntMiscStgeCbt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MiscStage,name=PendingTasks">
+            <attrib name="Value" alias="tpIntMiscStgePt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MiscStage,name=CompletedTasks">
+            <attrib name="Value" alias="tpIntMiscStgeCt" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=MutationStage,name=ActiveTasks">
+            <attrib name="Value" alias="tpMutStgeAt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=MutationStage,name=CurrentlyBlockedTasks">
+            <attrib name="Value" alias="tpMutStgeCbt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=MutationStage,name=PendingTasks">
+            <attrib name="Value" alias="tpMutStgePt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=MutationStage,name=CompletedTasks">
+            <attrib name="Value" alias="tpMutStgeCt" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=ReadStage,name=ActiveTasks">
+            <attrib name="Value" alias="tpReadStageAt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=ReadStage,name=CurrentlyBlockedTasks">
+            <attrib name="Value" alias="tpReadStageCbt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=ReadStage,name=PendingTasks">
+            <attrib name="Value" alias="tpReadStagePt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=ReadStage,name=CompletedTasks">
+            <attrib name="Value" alias="tpReadStageCt" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=RequestResponseStage,name=ActiveTasks">
+            <attrib name="Value" alias="tpReqRespStgeAt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=RequestResponseStage,name=CurrentlyBlockedTasks">
+            <attrib name="Value" alias="tpReqRespStgeCbt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=RequestResponseStage,name=PendingTasks">
+            <attrib name="Value" alias="tpReqRespStgePt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=RequestResponseStage,name=CompletedTasks">
+            <attrib name="Value" alias="tpReqRespStgeCt" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=ReadRepairStage,name=ActiveTasks">
+            <attrib name="Value" alias="tpReadRepairStgeAt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=ReadRepairStage,name=CurrentlyBlockedTasks">
+            <attrib name="Count" alias="tpReadRepairStgeCbt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=ReadRepairStage,name=PendingTasks">
+            <attrib name="Value" alias="tpReadRepairStgePt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=request,scope=ReadRepairStage,name=CompletedTasks">
+            <attrib name="Value" alias="tpReadRepairStgeCt" type="counter"/>
+         </mbean>
+      </mbeans>
+   </jmx-collection>
+   <jmx-collection name="cassandra30x-newts">
+      <rrd step="300">
+         <rra>RRA:AVERAGE:0.5:1:2016</rra>
+         <rra>RRA:AVERAGE:0.5:12:1488</rra>
+         <rra>RRA:AVERAGE:0.5:288:366</rra>
+         <rra>RRA:MAX:0.5:288:366</rra>
+         <rra>RRA:MIN:0.5:288:366</rra>
+      </rrd>
+      <mbeans>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=AllMemtablesLiveDataSize">
+            <attrib name="Value" alias="alMemTblLiDaSi" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=AllMemtablesOffHeapDataSize">
+            <attrib name="Value" alias="alMemTblOffHeapDaSi" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=AllMemtablesOnHeapDataSize">
+            <attrib name="Value" alias="alMemTblOnHeapDaSi" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=MemtableSwitchCount">
+            <attrib name="Value" alias="memTblSwitchCount" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=MemtableColumnsCount">
+            <attrib name="Value" alias="memTblColumnsCnt" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=MemtableLiveDataSize">
+            <attrib name="Value" alias="memTblLiveDaSi" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=MemtableOffHeapDataSize">
+            <attrib name="Value" alias="memTblOffHeapDaSi" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=MemtableOnHeapDataSize">
+            <attrib name="Value" alias="memTblOnHeapDaSi" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=ReadTotalLatency">
+            <attrib name="Count" alias="readTotLtncy" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=RangeLatency">
+            <attrib name="99thPercentile" alias="rangeLtncy99" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=WriteTotalLatency">
+            <attrib name="Count" alias="writeTotLtncy" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CasCommitTotalLatency">
+            <attrib name="Count" alias="casCommitTotLtncy" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CasPrepareTotalLatency">
+            <attrib name="Count" alias="casPrepareTotLtncy" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CasProposeTotalLatency">
+            <attrib name="Count" alias="casProposeTotLtncy" type="counter"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=BloomFilterDiskSpaceUsed">
+            <attrib name="Value" alias="blmFltrDskSpcUsed" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=BloomFilterOffHeapMemoryUsed">
+            <attrib name="Value" alias="blmFltrOffHeapMemUs" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CompressionMetadataOffHeapMemoryUsed">
+            <attrib name="Value" alias="cmpMetaOffHeapMemUs" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=IndexSummaryOffHeapMemoryUsed">
+            <attrib name="Value" alias="idxSumOffHeapMemUs" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=PendingCompactions">
+            <attrib name="Value" alias="pendingCompactions" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=PendingFlushes">
+            <attrib name="Value" alias="pendingFlushes" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=TotalDiskSpaceUsed">
+            <attrib name="Value" alias="totalDiskSpaceUsed" type="gauge"/>
+         </mbean>
+         <mbean name="org.apache.cassandra.metrics.Keyspace" objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=LiveDiskSpaceUsed">
+            <attrib name="Value" alias="liveDiskSpaceUsed" type="gauge"/>
          </mbean>
       </mbeans>
    </jmx-collection>

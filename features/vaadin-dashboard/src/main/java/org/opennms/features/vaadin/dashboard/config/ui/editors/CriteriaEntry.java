@@ -39,7 +39,7 @@ import com.vaadin.ui.TextField;
  */
 public enum CriteriaEntry {
     Property() {
-        public AbstractField getComponent(CriteriaBuilderHelper criteriaBuilderHelper) {
+        public AbstractField<Object> getComponent(CriteriaBuilderHelper criteriaBuilderHelper) {
             NativeSelect nativeSelect = new NativeSelect();
 
             nativeSelect.setCaption("Property");
@@ -65,7 +65,7 @@ public enum CriteriaEntry {
     },
 
     Value() {
-        public AbstractField getComponent(CriteriaBuilderHelper criteriaBuilderHelper) {
+        public AbstractField<String> getComponent(CriteriaBuilderHelper criteriaBuilderHelper) {
             TextField textField = new TextField();
 
             textField.setCaption("Value");
@@ -76,7 +76,7 @@ public enum CriteriaEntry {
     },
 
     StringValue() {
-        public AbstractField getComponent(CriteriaBuilderHelper criteriaBuilderHelper) {
+        public AbstractField<String> getComponent(CriteriaBuilderHelper criteriaBuilderHelper) {
             TextField textField = new TextField();
 
             textField.setCaption("Text value");
@@ -88,7 +88,7 @@ public enum CriteriaEntry {
     },
 
     IntegerValue() {
-        public AbstractField getComponent(CriteriaBuilderHelper criteriaBuilderHelper) {
+        public AbstractField<String> getComponent(CriteriaBuilderHelper criteriaBuilderHelper) {
             TextField textField = new TextField();
 
             textField.setCaption("Integer value");
@@ -105,5 +105,5 @@ public enum CriteriaEntry {
      * @param criteriaBuilderHelper the {@link CriteriaBuilderHelper} to be used
      * @return an {@link AbstractField} component
      */
-    public abstract AbstractField getComponent(CriteriaBuilderHelper criteriaBuilderHelper);
+    public abstract AbstractField<?> getComponent(CriteriaBuilderHelper criteriaBuilderHelper);
 }

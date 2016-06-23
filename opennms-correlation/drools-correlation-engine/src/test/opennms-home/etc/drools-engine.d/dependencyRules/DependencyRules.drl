@@ -1,7 +1,6 @@
 package org.opennms.netmgt.correlation.drools;
 
-import function org.opennms.core.utils.InetAddressUtils.addr;
-import function org.opennms.core.utils.InetAddressUtils.str;
+import org.opennms.core.utils.InetAddressUtils;
 
 import java.util.Date;
 import java.net.InetAddress;
@@ -10,9 +9,9 @@ import java.net.InetAddress;
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
-import org.drools.spi.KnowledgeHelper;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.drools.core.spi.KnowledgeHelper;
+import org.opennms.netmgt.model.events.EventUtils;
 
 global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
 
@@ -51,21 +50,21 @@ then
 	// Set up nodes and edges for dependency graph
 	
 	// node1 services
-	insert( svc( 1, "10.1.1.1", "ICMP" ) );
+	insert( mksvc( 1, "10.1.1.1", "ICMP" ) );
 	
-	Service http = svc( 1, "10.1.1.1", "HTTP" );
+	Service http = mksvc( 1, "10.1.1.1", "HTTP" );
 	insert( http );
 	
 	// node2 services
-	insert( svc( 2, "10.1.1.2", "ICMP" ) );
+	insert( mksvc( 2, "10.1.1.2", "ICMP" ) );
 	
-	Service dns = svc( 2, "10.1.1.2", "DNS" ); 
+	Service dns = mksvc( 2, "10.1.1.2", "DNS" ); 
 	insert( dns );
 	
 	// node3 services
-	insert( svc( 3, "10.1.1.3", "ICMP" ) );
+	insert( mksvc( 3, "10.1.1.3", "ICMP" ) );
 	
-	Service db = svc( 3, "10.1.1.3", "DB" ); 
+	Service db = mksvc( 3, "10.1.1.3", "DB" ); 
 	insert( db );
 
 	// insert the app
@@ -74,9 +73,9 @@ then
 		
 	// dependencies
 	// Note: Service Depends on ICMP is a separate rule
-	insert( new DependsOn( http, eCommerce ) );
-	insert( new DependsOn( dns, eCommerce ) );
-	insert( new DependsOn( db, eCommerce ) ); 
+	insert( new DependsOn( eCommerce, http ) );
+	insert( new DependsOn( eCommerce, dns ) );
+	insert( new DependsOn( eCommerce, db ) ); 
 	
 	insert( new Initialized() );
 		
@@ -90,8 +89,8 @@ when
 	$svc : Service( $n : node, $a : addr, svc != "ICMP" )
 	$icmp : Service( node == $n, addr == $a, svc == "ICMP" ) 
 then
-	insert( new DependsOn( $icmp, $svc ) );
-end	
+	insert( new DependsOn( $svc, $icmp ) );
+end
 
 rule "service down"
 	salience 500
@@ -164,18 +163,18 @@ then
 end	
 
 
-function Service svc( long nodeId, String addr, String svc )
+function Service mksvc( long nodeId, String addr, String svc )
 {
 	Service service = new Service();
 	service.setNode( nodeId );
-	service.setAddr( addr( addr ) );
+	service.setAddr( InetAddressUtils.addr( addr ) );
 	service.setSvc( svc );
 	return service;
 }
 
 function String svcStr( Long nodeId, InetAddress addr, String svcName )
 {
-	return "Service " + nodeId + ":" + str( addr ) + ":" + svcName;
+	return "Service " + nodeId + ":" + InetAddressUtils.str( addr ) + ":" + svcName;
 }
 
 function void println(Object msg)

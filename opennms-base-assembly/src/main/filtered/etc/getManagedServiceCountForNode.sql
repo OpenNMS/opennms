@@ -1,21 +1,30 @@
+-- ------------------------------------------------------------------------------
+-- This file is part of OpenNMS(R).
 --
---    Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+-- Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+-- OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
 --
---    This library is free software; you can redistribute it and/or
---    modify it under the terms of the GNU General Public
---    License as published by the Free Software Foundation; either
---    version 2.1 of the License, or (at your option) any later version.
+-- OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 --
---    This library is distributed in the hope that it will be useful,
---    but WITHOUT ANY WARRANTY; without even the implied warranty of
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
---    General Public License for more details.
+-- OpenNMS(R) is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU Affero General Public License as published
+-- by the Free Software Foundation, either version 3 of the License,
+-- or (at your option) any later version.
 --
---    You should have received a copy of the GNU General Public
---    License along with this library; if not, write to the Free Software
---    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-- OpenNMS(R) is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU Affero General Public License for more details.
 --
--- --------------------------------------------------------------------------
+-- You should have received a copy of the GNU Affero General Public License
+-- along with OpenNMS(R).  If not, see:
+--      http://www.gnu.org/licenses/
+--
+-- For more information contact:
+--     OpenNMS(R) Licensing <license@opennms.org>
+--     http://www.opennms.org/
+--     http://www.opennms.com/
+-- ------------------------------------------------------------------------------
 --
 -- The following PL/PgSQL function is used to calculate the number 
 -- of all managed services on node. This function looks for all managed services 
@@ -29,9 +38,7 @@
 -- $2	X time. This is the time that is closest to current
 -- $3	Y time. This is the time that is furtherest from current.
 --
-DROP FUNCTION getManagedServiceCountForNode(integer);
-
-CREATE FUNCTION getManagedServiceCountForNode(integer)
+CREATE OR REPLACE FUNCTION getManagedServiceCountForNode(integer)
         RETURNS float8 AS '
    DECLARE
         nid ALIAS FOR $1;
@@ -39,13 +46,14 @@ CREATE FUNCTION getManagedServiceCountForNode(integer)
         counter float8;
    BEGIN
         counter = 0;
-         FOR orec IN SELECT distinct ifservices.nodeid, ifservices.serviceid, ifservices.ipaddr
-                FROM ipinterface, ifservices
-                WHERE ifservices.nodeid = nid
-                        AND ipinterface.nodeid = nid
-                        AND ipinterface.ismanaged = ''M''
-                        AND ifservices.ipaddr = ipinterface.ipaddr
-                        AND ifservices.status = ''A''
+        FOR orec IN SELECT DISTINCT ifservices.ipInterfaceId, ifservices.serviceid
+                FROM ifservices, ipinterface, node 
+                WHERE ifservices.ipInterfaceId = ipInterface.id 
+                        AND ipinterface.nodeid = node.nodeid 
+                        AND ifservices.status = ''A'' 
+                        AND ipinterface.ismanaged = ''M'' 
+                        AND node.nodeid = nid 
+                        AND node.nodetype = ''A''
         LOOP
                 BEGIN
                          counter := counter + 1;

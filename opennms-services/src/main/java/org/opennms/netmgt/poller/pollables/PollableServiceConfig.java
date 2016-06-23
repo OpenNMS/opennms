@@ -32,12 +32,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.scheduler.ScheduleInterval;
@@ -62,6 +64,8 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private Timer m_timer;
     private Service m_configService;
     private ServiceMonitor m_serviceMonitor;
+    private final PersisterFactory m_persisterFactory;
+    private final ResourceStorageDao m_resourceStorageDao;
 
     /**
      * <p>Constructor for PollableServiceConfig.</p>
@@ -72,13 +76,15 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      * @param timer a {@link org.opennms.netmgt.scheduler.Timer} object.
      */
-    public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, PollOutagesConfig pollOutagesConfig, Package pkg, Timer timer) {
+    public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, PollOutagesConfig pollOutagesConfig, Package pkg, Timer timer, PersisterFactory persisterFactory, ResourceStorageDao resourceStorageDao) {
         m_service = svc;
         m_pollerConfig = pollerConfig;
         m_pollOutagesConfig = pollOutagesConfig;
         m_pkg = pkg;
         m_timer = timer;
         m_configService = findService(pkg);
+        m_persisterFactory = persisterFactory;
+        m_resourceStorageDao = resourceStorageDao;
 
         ServiceMonitor monitor = getServiceMonitor();
         monitor.initialize(m_service);
@@ -122,7 +128,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private synchronized ServiceMonitor getServiceMonitor() {
         if (m_serviceMonitor == null) {
             ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(m_service.getSvcName());
-            m_serviceMonitor = new LatencyStoringServiceMonitorAdaptor(monitor, m_pollerConfig, m_pkg);
+            m_serviceMonitor = new LatencyStoringServiceMonitorAdaptor(monitor, m_pollerConfig, m_pkg, m_persisterFactory, m_resourceStorageDao);
 
         }
         return m_serviceMonitor;

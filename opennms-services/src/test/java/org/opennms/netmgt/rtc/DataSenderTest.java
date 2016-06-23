@@ -44,7 +44,7 @@ import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.config.categories.Category;
-import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -59,7 +59,7 @@ public class DataSenderTest {
     @Ignore
     public void testSendData() throws MarshalException, ValidationException, IOException, FilterParseException, SAXException, SQLException, RTCException {
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/rtc-configuration.xml");
-        RTCConfigFactory.setInstance(new RTCConfigFactory(stream));
+        RTCConfigFactory configFactory = new RTCConfigFactory(stream);
         stream.close();
         
         Resource categoryResource = ConfigurationTestUtils.getSpringResourceForResource(this, "/org/opennms/netmgt/config/categories.xml");
@@ -71,8 +71,6 @@ public class DataSenderTest {
 
         
         DataManager dataManager = new DataManager();
-        RTCManager.setDataManager(dataManager);
-
         String categoryName = "Database Servers";
         String categoryNameUrl = "Database+Servers";
         Category category = new Category();
@@ -84,7 +82,7 @@ public class DataSenderTest {
         Map<String, RTCCategory> rtcCategories = new HashMap<String, RTCCategory>();
         rtcCategories.put(categoryName, rtcCategory);
         
-        DataSender sender = new DataSender(rtcCategories, 1);
+        DataSender sender = new DataSender(dataManager, configFactory);
         sender.subscribe("http://localhost:8080/opennms-webapp/rtc/post/" + categoryNameUrl, categoryName, "rtc", "rtc");
         sender.sendData();
     }

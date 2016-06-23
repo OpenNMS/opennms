@@ -28,8 +28,8 @@
 
 package org.opennms.protocols.xml.collector;
 
-import org.opennms.netmgt.collectd.PersistenceSelectorStrategy;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
 import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.springframework.orm.ObjectRetrievalFailureException;

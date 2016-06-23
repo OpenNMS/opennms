@@ -33,8 +33,8 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,9 +65,9 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -95,7 +95,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     private OnmsNode m_node;
 
-    private Set<OnmsMonitoredService> m_monitoredServices = new HashSet<OnmsMonitoredService>();
+    private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<OnmsMonitoredService>();
 
     private OnmsSnmpInterface m_snmpInterface;
 
@@ -354,9 +354,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_node = node;
     }
 
-    @XmlTransient
     @Transient
-    @JsonIgnore
+    @XmlTransient
     public Integer getNodeId() {
         if (m_node != null) {
             return m_node.getId();
@@ -385,6 +384,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_monitoredServices = ifServices;
     }
 
+    // TODO: Why are these annotations here?
     @Transient
     @JsonIgnore
     public void addMonitoredService(final OnmsMonitoredService svc) {
@@ -554,7 +554,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * <p>mergeMonitoredServices</p>
      *
      * @param scannedIface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
     public void mergeMonitoredServices(OnmsIpInterface scannedIface, EventForwarder eventForwarder, boolean deleteMissing) {
@@ -628,7 +628,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * <p>mergeInterface</p>
      *
      * @param scannedIface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
     public void mergeInterface(OnmsIpInterface scannedIface, EventForwarder eventForwarder, boolean deleteMissing) {

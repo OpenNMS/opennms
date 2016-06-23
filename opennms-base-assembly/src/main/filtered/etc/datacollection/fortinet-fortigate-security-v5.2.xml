@@ -1,0 +1,83 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Fortinet-Fortigate-Security-v5.2">
+   <resourceType name="fgVdEntIndexAV" label="Fortigate AV Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgVdEntIndexIPS" label="Fortigate IPS Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgWebfilterStatsEnt" label="Fortigate Webfilter Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgFgStatsEntry" label="Fortigate FortiGuard Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <group name="fgAvStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgVdEntIndexAV" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.1" instance="fgVdEntIndexAV" alias="fgAvVirusDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.2" instance="fgVdEntIndexAV" alias="fgAvVirusBlock" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.3" instance="fgVdEntIndexAV" alias="fgAvHTTPVirusDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.4" instance="fgVdEntIndexAV" alias="fgAvHTTPVirusBlock" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.5" instance="fgVdEntIndexAV" alias="fgAvSMTPVirusDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.6" instance="fgVdEntIndexAV" alias="fgAvSMTPVirusBlock" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.7" instance="fgVdEntIndexAV" alias="fgAvPOP3VirusDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.8" instance="fgVdEntIndexAV" alias="fgAvPOP3VirusBlock" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.9" instance="fgVdEntIndexAV" alias="fgAvIMAPVirusDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.10" instance="fgVdEntIndexAV" alias="fgAvIMAPVirusBlock" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.11" instance="fgVdEntIndexAV" alias="fgAvFTPVirusDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.12" instance="fgVdEntIndexAV" alias="fgAvFTPVirusBlock" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.13" instance="fgVdEntIndexAV" alias="fgAvIMVirusDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.14" instance="fgVdEntIndexAV" alias="fgAvIMVirusBlock" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.15" instance="fgVdEntIndexAV" alias="fgAvNNTPVirusDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.16" instance="fgVdEntIndexAV" alias="fgAvNNTPVirusBlock" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.17" instance="fgVdEntIndexAV" alias="fgAvOversizedDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.18" instance="fgVdEntIndexAV" alias="fgAvOversizedBlock" type="Counter32"/>
+   </group>
+   <group name="fgIpsStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgVdEntIndexIPS" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.1" instance="fgVdEntIndexIPS" alias="fgIpsIntrusionDetec" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.2" instance="fgVdEntIndexIPS" alias="fgIpsIntrusionBlock" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.3" instance="fgVdEntIndexIPS" alias="fgIpsCritSevDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.4" instance="fgVdEntIndexIPS" alias="fgIpsHighSevDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.5" instance="fgVdEntIndexIPS" alias="fgIpsMedSevDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.6" instance="fgVdEntIndexIPS" alias="fgIpsLowSevDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.7" instance="fgVdEntIndexIPS" alias="fgIpsInfoSevDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.8" instance="fgVdEntIndexIPS" alias="fgIpsSigDetect" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.9" instance="fgVdEntIndexIPS" alias="fgIpsAnomalyDetect" type="Counter32"/>
+   </group>
+   <group name="fgWebfilterStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgWebfilterStatsEnt" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.1" instance="fgWebfilterStatsEnt" alias="fgWfHTTPBlocked" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.2" instance="fgWebfilterStatsEnt" alias="fgWfHTTPSBlocked" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.3" instance="fgWebfilterStatsEnt" alias="fgWfHTTPURLBlocked" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.4" instance="fgWebfilterStatsEnt" alias="fgWfHTTPSURLBlocked" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.5" instance="fgWebfilterStatsEnt" alias="fgWfActiveXBlocked" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.6" instance="fgWebfilterStatsEnt" alias="fgWfCookieBlocked" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.7" instance="fgWebfilterStatsEnt" alias="fgWfAppletBlocked" type="Counter32"/>
+   </group>
+   <group name="fgFortiGuardStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgFgStatsEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.1" instance="fgFgStatsEntry" alias="fgFgWfHTTPExamined" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.2" instance="fgFgStatsEntry" alias="fgFgWfHTTPSExamined" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.3" instance="fgFgStatsEntry" alias="fgFgWfHTTPAllowed" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.4" instance="fgFgStatsEntry" alias="fgFgWfHTTPSAllowed" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.5" instance="fgFgStatsEntry" alias="fgFgWfHTTPBlocked" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.6" instance="fgFgStatsEntry" alias="fgFgWfHTTPSBlocked" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.7" instance="fgFgStatsEntry" alias="fgFgWfHTTPLogged" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.8" instance="fgFgStatsEntry" alias="fgFgWfHTTPSLogged" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.9" instance="fgFgStatsEntry" alias="fgFgWfHTTPOverride" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.10" instance="fgFgStatsEntry" alias="fgFgWfHTTPSOverride" type="Counter32"/>
+   </group>
+   <systemDef name="Fortinet-Fortigate-Security-v5.2">
+      <sysoidMask>.1.3.6.1.4.1.12356.</sysoidMask>
+      <collect>
+         <includeGroup>fgAvStatsTable</includeGroup>
+         <includeGroup>fgIpsStatsTable</includeGroup>
+         <includeGroup>fgWebfilterStatsTable</includeGroup>
+         <includeGroup>fgFortiGuardStatsTable</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

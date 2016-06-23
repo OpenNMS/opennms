@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>container</artifactId>
-        <version>2015.1.1</version>
+        <version>2016.1.0</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>
@@ -48,6 +48,30 @@
               <exclusion>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-asm</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-expression</artifactId>
               </exclusion>
             </exclusions>
         </dependency>
@@ -92,7 +116,7 @@
                             <descriptors>
                                 <descriptor>src/assembly/karaf.xml</descriptor>
                             </descriptors>
-                            <tarLongFileMode>gnu</tarLongFileMode>
+                            <tarLongFileMode>posix</tarLongFileMode>
                         </configuration>
                     </execution>
                 </executions>

@@ -1,14 +1,14 @@
 @def selectionBorderWidth 1px;
 .cellTableWidget {
-  
+
 }
 
 .cellTableFirstColumn {
-  
+
 }
 
 .cellTableLastColumn {
-  
+
 }
 
 .cellTableFooter {
@@ -29,15 +29,15 @@
 }
 
 .cellTableSortableHeader{
-    
+
 }
 
 .cellTableSortedHeaderAscending{
-    
+
 }
 
 .cellTableSortedHeaderDescending{
-    
+
 }
 
 .cellTableCell {
@@ -46,19 +46,19 @@
 }
 
 .cellTableFirstColumnFooter {
-  
+
 }
 
 .cellTableFirstColumnHeader {
-  
+
 }
 
 .cellTableLastColumnFooter {
-  
+
 }
 
 .cellTableLastColumnHeader {
-  
+
 }
 
 .cellTableEvenRow {

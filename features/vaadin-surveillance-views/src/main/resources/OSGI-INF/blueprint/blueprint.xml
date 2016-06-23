@@ -1,0 +1,79 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+    <reference id="resourceDao" interface="org.opennms.netmgt.dao.api.ResourceDao" availability="mandatory"/>
+    <reference id="graphDao" interface="org.opennms.netmgt.dao.api.GraphDao" availability="mandatory"/>
+    <reference id="notificationDao" interface="org.opennms.netmgt.dao.api.NotificationDao" availability="mandatory"/>
+    <reference id="categoryDao" interface="org.opennms.netmgt.dao.api.CategoryDao" availability="mandatory"/>
+    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
+    <reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao" availability="mandatory"/>
+    <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="mandatory"/>
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
+    <bean id="groupFactory" class="org.opennms.netmgt.config.GroupFactory" init-method="init" scope="prototype"/>
+
+    <bean id="groupDao" class="org.opennms.netmgt.config.GroupManagerGroupDao">
+        <property name="groupManager" ref="groupFactory"/>
+    </bean>
+
+    <bean id="surveillanceViewsUI" class="org.opennms.features.vaadin.surveillanceviews.ui.SurveillanceViewsUI" scope="prototype">
+        <property name="surveillanceViewService" ref="surveillanceViewService"/>
+    </bean>
+
+    <bean id="surveillanceViewService" class="org.opennms.features.vaadin.surveillanceviews.service.DefaultSurveillanceViewService" scope="singleton">
+        <property name="nodeDao" ref="nodeDao"/>
+        <property name="resourceDao" ref="resourceDao"/>
+        <property name="graphDao" ref="graphDao"/>
+        <property name="notificationDao" ref="notificationDao"/>
+        <property name="categoryDao" ref="categoryDao"/>
+        <property name="alarmDao" ref="alarmDao"/>
+        <property name="groupDao" ref="groupDao"/>
+        <property name="outageDao" ref="outageDao"/>
+        <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+        <property name="transactionOperations" ref="transactionOperations"/>
+    </bean>
+
+    <bean id="surveillanceViewsUIFactory" class="org.opennms.features.vaadin.surveillanceviews.ui.SurveillanceViewsUIFactory">
+        <!-- Blueprint container bean -->
+        <argument ref="blueprintContainer"/>
+        <!-- Bean id of the Vaadin application prototype -->
+        <argument value="surveillanceViewsUI"/>
+    </bean>
+
+    <service id="surveillanceViewsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="surveillanceViewsUIFactory">
+        <service-properties>
+            <entry key="alias" value="/vaadin-surveillance-views"/>
+            <entry key="init.widgetset" value="org.opennms.features.vaadin.surveillanceviews.SurveillanceViewsWidgetSet"/>
+        </service-properties>
+    </service>
+
+    <bean id="surveillanceViewsConfigUI" class="org.opennms.features.vaadin.surveillanceviews.ui.SurveillanceViewsConfigUI" scope="prototype">
+        <property name="surveillanceViewService" ref="surveillanceViewService"/>
+    </bean>
+
+    <bean id="surveillanceViewsConfigUILink" class="org.opennms.features.vaadin.surveillanceviews.ui.AdminPageNavEntry">
+        <property name="url" value="admin/surveillanceViewsConfig.jsp"/>
+        <property name="name" value="Surveillance Views Configuration"/>
+    </bean>
+
+    <bean id="surveillanceViewsConfigUIFactory" class="org.opennms.features.vaadin.surveillanceviews.ui.SurveillanceViewsConfigUIFactory">
+        <!-- Blueprint container bean -->
+        <argument ref="blueprintContainer"/>
+        <!-- Bean id of the Vaadin application prototype -->
+        <argument value="surveillanceViewsConfigUI"/>
+    </bean>
+
+    <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="surveillanceViewsConfigUIFactory">
+        <service-properties>
+            <entry key="alias" value="/vaadin-surveillance-views-config"/>
+        </service-properties>
+    </service>
+
+    <service id="surveillanceViewsConfigService" interface="org.opennms.web.navigate.PageNavEntry" ref="surveillanceViewsConfigUILink">
+        <service-properties>
+            <entry key="Page" value="admin"/>
+            <entry key="Category" value="operations"/>
+            <entry key="registration.export" value="true"/>
+        </service-properties>
+    </service>
+
+</blueprint>

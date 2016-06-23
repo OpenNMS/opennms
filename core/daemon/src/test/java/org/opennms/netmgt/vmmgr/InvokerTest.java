@@ -50,6 +50,9 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
+/**
+ * TODO: Convert this test to use {@link TestDaemon} instead of MX4J beans.
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
     OpenNMSConfigurationExecutionListener.class,

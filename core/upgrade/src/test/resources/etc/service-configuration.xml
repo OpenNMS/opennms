@@ -303,14 +303,6 @@
   </service>
 <!--
   <service>
-    <name>OpenNMS:Name=Linkd</name>
-    <class-name>org.opennms.netmgt.linkd.jmx.Linkd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service>
     <name>OpenNMS:Name=Importer</name>
     <class-name>org.opennms.netmgt.importer.jmx.ImporterService</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -337,22 +329,6 @@
   <service>
     <name>OpenNMS:Name=Syslogd</name>
     <class-name>org.opennms.netmgt.syslogd.jmx.Syslogd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service>
-    <name>OpenNMS:Name=Xmlrpcd</name>
-    <class-name>org.opennms.netmgt.xmlrpcd.jmx.Xmlrpcd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service>
-    <name>OpenNMS:Name=XmlrpcProvisioner</name>
-    <class-name>org.opennms.netmgt.xmlrpcd.jmx.Provisioner</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>

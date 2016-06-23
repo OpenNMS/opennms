@@ -3,13 +3,13 @@
 
     <!-- Riverbed Steelhead MIB Instances -->
     <resourceType name="rbshCpuIndivIndex" label="Riverbed Steelhead CPU" resourceLabel="CPU ${rbshCpuIndivId}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="rbshBwPort" label="Riverbed Per-Port Bandwidth" resourceLabel="Port ${rbshBwPortNumber}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
       <!-- Riverbed Steelhead MIBs -->

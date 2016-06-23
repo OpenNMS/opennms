@@ -191,4 +191,11 @@ public interface ForeignSourceRepository {
      * @throws ForeignSourceRepositoryException
      */
     void flush() throws ForeignSourceRepositoryException;
+
+    /**
+     * Delete all requisitions and foreign source definitions and return to defaults.
+     *
+     * @throws ForeignSourceRepositoryException
+     */
+    void clear() throws ForeignSourceRepositoryException;
 }

@@ -29,14 +29,12 @@
 package org.opennms.netmgt.rrd.rrdtool;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
 import org.opennms.core.test.MockLogAppender;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StringUtils;
 
 /**
@@ -45,8 +43,7 @@ import org.springframework.util.StringUtils;
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({})
+@RunWith(BlockJUnit4ClassRunner.class)
 public class JniRrdStrategyTest {
     
     private JniRrdStrategy m_strategy;
@@ -60,7 +57,7 @@ public class JniRrdStrategyTest {
             if (libFile.exists()) {
                 m_strategy = new JniRrdStrategy();
             } else {
-                throw new FileNotFoundException(rrdLib + " does not exist");
+                System.err.println("System property 'opennms.library.jrrd' points to non-existent file: skipping tests");
             }
         } else {
             System.err.println("System property 'opennms.library.jrrd' not set: skipping tests");

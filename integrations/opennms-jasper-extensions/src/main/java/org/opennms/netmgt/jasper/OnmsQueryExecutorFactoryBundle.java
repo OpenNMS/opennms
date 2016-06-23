@@ -29,56 +29,22 @@
 package org.opennms.netmgt.jasper;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.query.JRQueryExecuterFactory;
-import net.sf.jasperreports.engine.query.QueryExecuterFactoryBundle;
+import net.sf.jasperreports.engine.query.JRQueryExecuterFactoryBundle;
+import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 
-import org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutorFactory;
-import org.opennms.netmgt.jasper.resource.ResourceQueryExecuterFactory;
-import org.opennms.netmgt.jasper.rrdtool.RrdtoolQueryExecutorFactory;
-
-public class OnmsQueryExecutorFactoryBundle implements QueryExecuterFactoryBundle {
+public class OnmsQueryExecutorFactoryBundle implements JRQueryExecuterFactoryBundle {
     
     @Override
     public String[] getLanguages() {
-        return new String[] {"jrobin","rrdtool","resourceQuery"};
+        return SupportedLanguage.names();
     }
 
     @Override
-    public JRQueryExecuterFactory getQueryExecuterFactory(String language) throws JRException {
-        String reportLanguage = checkReportLanguage(language);
-        
-        if("jrobin".equals(reportLanguage)) {
-            return new JRobinQueryExecutorFactory();
-        } else if("rrdtool".equals(reportLanguage)) {
-            return new RrdtoolQueryExecutorFactory();
-        } else if("resourceQuery".equals(reportLanguage)) {
-            return new ResourceQueryExecuterFactory();
-        } else {
-            return null;
+    public QueryExecuterFactory getQueryExecuterFactory(String language) throws JRException {
+        SupportedLanguage supportedLanguage = SupportedLanguage.createFrom(language);
+        if (supportedLanguage != null) {
+            return supportedLanguage.getExecutorFactory();
         }
+        return null;
     }
-
-    private String checkReportLanguage(String language) {
-        boolean found = false;
-        for (String lng : getLanguages()) {
-            if (lng.equals(language)) found = true;
-        }
-        if (!found) return language;
-
-        if (language.equals("resourceQuery")) return language;
-        
-        String strategy = System.getProperty("org.opennms.rrd.strategyClass");
-        
-        if (strategy == null) return language;
-        
-        String[] strategySplit = strategy.split("\\.");
-        String rrdStrategy = strategySplit[strategySplit.length - 1];
-        if(rrdStrategy.equals("JniRrdStrategy")) {
-            return "rrdtool";
-        } else if(rrdStrategy.equals("JRobinRrdStrategy")) {
-            return "jrobin";
-        }
-        return "";
-    }
-
 }

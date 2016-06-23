@@ -40,7 +40,6 @@ import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefini
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 /**
@@ -53,7 +52,6 @@ import org.springframework.util.Assert;
  * @version $Id: $
  * @since 1.10.1
  */
-@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingDao.xml"})
 public class LegacyLocalReportsDao implements LocalReportsDao {
 
     /**

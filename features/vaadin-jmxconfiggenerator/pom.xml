@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>2015.1.1</version>
+        <version>2016.1.0</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>vaadin-jmxconfiggenerator</artifactId>
@@ -23,7 +23,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
+                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Include-Resource>{maven-resources}</Include-Resource>
                         <Import-Package>*;com.vaadin.data.util.converter;</Import-Package>
                     </instructions>
@@ -55,8 +55,8 @@
                 <configuration>
                     <!-- if you don't specify any modules, the plugin will find them -->
                     <webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets</webappDirectory>
-                    <!--extraJvmArgs>-Xmx1g -Xss1024k -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8998</extraJvmArgs -->
-                    <extraJvmArgs>-Xmx1g -Xss1024k</extraJvmArgs>
+                    <!--extraJvmArgs>-XX:MaxPermSize=256m -Xmx1g -Xss1024k -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8998</extraJvmArgs -->
+                    <extraJvmArgs>-XX:MaxMetaspaceSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
                     <runTarget>vaadin-prototype</runTarget>
                     <hostedWebapp>${project.build.directory}/${project.build.finalName}</hostedWebapp>
                     <noServer>true</noServer>
@@ -187,6 +187,12 @@
         <dependency>
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>jaxb-dependencies</artifactId>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jmx-dependencies</artifactId>
             <type>pom</type>
             <scope>provided</scope>
         </dependency>

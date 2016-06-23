@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>container</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -24,7 +24,7 @@
           <importRepositories>true</importRepositories>
           <!-- 
             Don't import other repositories that are already inside well-organized feature hierarchies
-            outside of OpenNMS (Karaf, ActiveMQ).
+            outside of OpenNMS (Karaf, ActiveMQ, Camel).
           -->
           <importRepositoryExclusions>
             <value>karaf-${karafVersion}</value>
@@ -33,14 +33,28 @@
           </importRepositoryExclusions>
           <repositories>
 
-            <!-- Karaf base features -->
-            <repository>mvn:org.opennms.container/karaf/${project.version}/xml/features</repository>
+            <!-- 
+              We rely on features from Karaf's standard repository, but don't declare that dependency in 
+              this features.xml. This will allow us to run on any version Karaf that provides features with the
+              same names, including vanilla Karaf and the org.opennms.container/karaf servlet bridge Karaf container.
+            -->
+            <!-- Karaf standard features -->
+            <!-- <descriptor>mvn:org.apache.karaf.assemblies.features/standard/${karafVersion}/xml/features</descriptor> -->
+            <!-- <descriptor>mvn:org.apache.karaf.assemblies.features/spring/${karafVersion}/xml/features</descriptor> -->
+            <!-- <descriptor>mvn:org.apache.karaf.assemblies.features/enterprise/${karafVersion}/xml/features</descriptor> -->
+
+            <!-- OpenNMS-modified Karaf base features -->
+            <!-- <repository>mvn:org.opennms.container/karaf/${project.version}/xml/features</repository> -->
+
 
             <!-- OpenNMS features bundle -->
             <repository>file:${project.build.outputDirectory}/features.xml</repository>
 
             <!-- OpenNMS OSGi core -->
             <repository>mvn:org.opennms.osgi/opennms-osgi-core/${project.version}/xml/features</repository>
+
+            <!-- JAAS Login Module -->
+            <repository>mvn:org.opennms.container/jaas-login-module/${project.version}/xml/features</repository>
 
             <!-- JMX Config Generator features -->
             <repository>mvn:org.opennms.features/jmxconfiggenerator/${project.version}/xml/features</repository>
@@ -69,6 +83,17 @@
             <repository>mvn:org.opennms.features/vaadin-dashboard/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.vaadin-dashlets/dashlet-features/${project.version}/xml</repository>
 
+            <!-- Vaadin Surveillance Views Feature-->
+            <repository>mvn:org.opennms.features/vaadin-surveillance-views/${project.version}/xml/features</repository>
+
+            <!-- Ticketing Features-->
+            <repository>mvn:org.opennms.features/jira-troubleticketer/${project.version}/xml/features</repository>
+
+            <!-- Data Choices -->
+            <repository>mvn:org.opennms.features/datachoices/${project.version}/xml/features</repository>
+
+            <!-- OpenNMS Plugin Manager Feature -->
+            <repository>mvn:org.opennms.plugins/vaadin-opennms-pluginmanager/${project.version}/xml/features</repository>
           </repositories>
 
           <!-- 
@@ -77,7 +102,109 @@
             opennms-full-assembly.
           -->
           <features>
+            <!-- Features from ActiveMQ repository -->
+            <feature>activemq-broker</feature>
+
+            <!-- Features from Karaf repository -->
+            <feature>admin</feature>
+            <feature>aries-blueprint</feature>
+            <feature>aries-proxy</feature>
+            <feature>blueprint-web</feature>
+            <feature>config</feature>
+            <feature>deployer</feature>
+            <feature>diagnostic</feature>
+            <feature>eventadmin</feature>
+            <feature>features</feature>
+            <feature>http</feature>
+            <feature>http-whiteboard</feature>
+            <feature>jaas</feature>
+            <feature>jasypt-encryption</feature>
+            <feature>jetty</feature>
+            <feature>karaf-framework</feature>
+            <feature>kar</feature>
+            <feature>management</feature>
+            <feature>obr</feature>
+            <feature>scr</feature>
+            <feature>service-security</feature>
+            <feature>service-wrapper</feature>
+            <feature>shell</feature>
+            <feature>ssh</feature>
+            <feature>war</feature>
+            <feature>webconsole</feature>
+            <feature>wrap</feature>
+            <feature>wrapper</feature>
+
+            <!-- Features from Pax Web repository -->
+            <feature>pax-http</feature>
+
+            <!-- Features from the main OpenNMS features.xml -->
+            <feature>atomikos</feature>
+            <feature>batik</feature>
+            <feature>c3p0</feature>
+            <feature>hikari-cp</feature>
+            <feature>castor</feature>
+            <feature>commons-beanutils</feature>
+            <feature>commons-cli</feature>
+            <feature>commons-codec</feature>
+            <feature>commons-collections</feature>
+            <feature>commons-configuration</feature>
+            <feature>commons-digester</feature>
+            <feature>commons-exec</feature>
+            <feature>commons-io</feature>
+            <feature>commons-jexl</feature>
+            <feature>commons-lang</feature>
+            <feature>commons-net</feature>
+            <feature>dnsjava</feature>
+            <feature>fop</feature>
+            <feature>guava</feature>
+            <feature>hibernate36</feature>
+            <feature>hibernate-validator41</feature>
+            <feature>jaxb</feature>
+            <feature>jfreechart</feature>
+            <feature>jolokia</feature>
+            <feature>jrobin</feature>
+            <feature>json-lib</feature>
+            <!--
+            <feature>opennms-activemq-config</feature>
+            <feature>opennms-activemq</feature>
+            <feature>opennms-activemq-dispatcher-config</feature>
+            <feature>opennms-activemq-dispatcher</feature>
+            <feature>opennms-activemq-event-forwarder</feature>
+            <feature>opennms-activemq-event-receiver</feature>
+            -->
+            <feature>opennms-collection-api</feature>
+            <feature>opennms-collection-commands</feature>
+            <feature>opennms-collection-persistence-rrd</feature>
+            <feature>opennms-config-api</feature>
+            <feature>opennms-config</feature>
+            <feature>opennms-config-jaxb</feature>
+            <feature>opennms-core-daemon</feature>
+            <feature>opennms-core-db</feature>
+            <feature>opennms-core</feature>
+            <feature>opennms-core-web</feature>
+            <feature>opennms-dao-api</feature>
+            <feature>opennms-dao</feature>
+            <feature>opennms-events-api</feature>
+            <feature>opennms-events-daemon</feature>
+            <feature>opennms-events-traps</feature>
+            <feature>opennms-icmp-api</feature>
+            <feature>opennms-javamail</feature>
+            <feature>opennms-model</feature>
+            <feature>opennms-poller-api</feature>
+            <feature>opennms-provisioning</feature>
+            <feature>opennms-reporting</feature>
+            <feature>opennms-rrd-api</feature>
+            <feature>opennms-rrd-jrobin</feature>
+            <feature>opennms-snmp</feature>
+            <!-- <feature>opennms-webapp</feature> -->
+            <feature>org.json</feature>
+            <feature>postgresql</feature>
+
+            <!-- Features from other OpenNMS repositories -->
             <feature>opennms-osgi-core</feature>
+            <feature>opennms-core</feature>
+            <feature>opennms-core-web</feature>
+            <feature>opennms-jaas-login-module</feature>
             <feature>dashlet-alarms</feature>
             <feature>dashlet-charts</feature>
             <feature>dashlet-image</feature>
@@ -90,6 +217,9 @@
             <feature>dashlet-topology</feature>
             <feature>dashlet-url</feature>
             <feature>nrtg</feature>
+            <feature>opennms-amqp-event-forwarder</feature>
+            <feature>opennms-amqp-event-receiver</feature>
+            <feature>opennms-amqp-alarm-northbounder</feature>
             <feature>opennms-topology-dev</feature>
             <feature>opennms-topology-runtime-base</feature>
             <feature>opennms-topology-runtime-browsers</feature>
@@ -102,6 +232,10 @@
             <feature>vaadin-jmxconfiggenerator</feature>
             <feature>vaadin-node-maps</feature>
             <feature>vaadin-snmp-events-and-metrics</feature>
+            <feature>vaadin-surveillance-views</feature>
+            <feature>jira-troubleticketer</feature>
+            <feature>datachoices</feature>
+            <feature>vaadin-opennms-pluginmanager</feature>
           </features>
         </configuration>
       </plugin>
@@ -138,6 +272,12 @@
       <artifactId>karaf</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>jaas-login-module</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -250,6 +390,54 @@
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
+    </dependency>
+      <dependency>
+          <groupId>org.opennms.features</groupId>
+          <artifactId>vaadin-surveillance-views</artifactId>
+          <version>${project.version}</version>
+          <type>pom</type>
+          <scope>provided</scope>
+      </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>vaadin-components</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>jira-troubleticketer</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>datachoices</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.commands</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>vaadin-opennms-pluginmanager</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>jsr311-api</artifactId>
+        </exclusion>
+      </exclusions> 
     </dependency>
   </dependencies>
 </project>

@@ -41,10 +41,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.netmgt.config.EnterpriseIdPartition;
-import org.opennms.netmgt.config.EventLabelComparator;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.xml.eventconf.EnterpriseIdPartition;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.EventLabelComparator;
 import org.opennms.netmgt.xml.eventconf.EventOrdering;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Events.EventCallback;

@@ -36,24 +36,12 @@
     org.opennms.core.utils.SIUtils,
     org.opennms.netmgt.model.OnmsNode,
     org.opennms.netmgt.model.OnmsResource,
+    org.opennms.netmgt.dao.api.IfLabel,
     org.opennms.web.api.Authentication,
     org.opennms.web.element.*,
-    org.opennms.web.svclayer.ResourceService,
-    org.opennms.netmgt.utils.IfLabel,
-    org.springframework.web.context.WebApplicationContext,
-    org.springframework.web.context.support.WebApplicationContextUtils"
+    org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-<%!
-  private WebApplicationContext m_webAppContext;
-  private ResourceService m_resourceService;
-  
-  public void init() throws ServletException {
-    m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-    m_resourceService = (ResourceService) m_webAppContext.getBean("resourceService", ResourceService.class);
-  }
-%>
 
 <%
   Interface intf_db = ElementUtil.getSnmpInterfaceByParams(request, getServletContext());
@@ -118,26 +106,21 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
   <%
     String ifLabel;
     if (ifIndex != -1) {
-      ifLabel = IfLabel.getIfLabelfromSnmpIfIndex(nodeId, ifIndex);
-    } else {
-      ifLabel = "no_ifLabel";
-    }
-    List<OnmsResource> resources = m_resourceService.findNodeChildResources(node);
-    for (OnmsResource resource : resources) {
-      if (resource.getName().equals(ipAddr) || resource.getName().equals(ifLabel)) {
-        %>
-          <c:url var="graphLink" value="graph/results.htm">
-            <c:param name="reports" value="all"/>
-            <c:param name="resourceId" value="<%=resource.getId()%>"/>
-          </c:url>
-          <li>
-            <a href="<c:out value="${graphLink}"/>"><c:out value="<%=resource.getResourceType().getLabel()%>"/> Graphs</a>
-          </li>
-        <% 
-      }
-    }
+      // TODO In order to show the following link only when there are metrics, an inexpensive
+      //      method has to be implemented on either ResourceService or ResourceDao
+      ifLabel = IfLabelDaoImpl.getInstance().getIfLabelfromSnmpIfIndex(nodeId, ifIndex);
+      String resourceId = OnmsResource.createResourceId("node", Integer.toString(nodeId), "interfaceSnmp", ifLabel);
   %>
-  <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
+    <c:url var="graphLink" value="graph/results.htm">
+      <c:param name="reports" value="all"/>
+      <c:param name="resourceId" value="<%=resourceId%>"/>
+    </c:url>
+    <li>
+      <a href="<c:out value="${graphLink}"/>">SNMP Interface Data Graphs</a>
+    </li>
+   <% 
+    }
+    if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
     <li>
       <a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>
     </li>
@@ -206,12 +189,6 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
       </table>
     </div>
 
-    <!-- Node Link box -->
-    <jsp:include page="/includes/interfaceLink-box.jsp" flush="false">
-        <jsp:param name="node" value="<%=nodeId%>" />
-        <jsp:param name="ifindex" value="<%=ifIndex%>" />
-    </jsp:include>                        
-
     <!-- SNMP box, if info available -->
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -264,8 +241,6 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
         <jsp:param name="ifIndex" value="<%=ifIndex%>" />
       </jsp:include>
     <% } %>
-    <!-- STP Info box -->
-    <jsp:include page="/includes/interfaceSTP-box.jsp" flush="false" />
 
   </div> <!-- right content -->
 

@@ -25,27 +25,3 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-<!-- Tooltip  Stuff -->
-ttContent = null;
-document.onmousemove = updateTT;
-
-<!-- shows the tool tip -->
-function showTT(id) {
-    ttContent = document.getElementById(id);
-    if (ttContent != null) ttContent.style.display = "block";
-}
-
-<!-- hides the tool tip -->
-function hideTT() {
-    if (ttContent != null) ttContent.style.display = "none";
-}
-
-<!-- ensures that the tool tip moves with the mouse, but only if the tool tip is visible -->
-function updateTT() {
-    if (ttContent != null && ttContent.style.display == 'block') {
-        x = (event.pageX ? event.pageX : window.event.x) + ttContent.offsetParent.scrollLeft - ttContent.offsetParent.offsetLeft;
-        y = (event.pageY ? event.pageY : window.event.y) + ttContent.offsetParent.scrollTop - ttContent.offsetParent.offsetTop;
-        ttContent.style.left = (x + 20) + "px";
-        ttContent.style.top  = (y + 20) + "px";
-    }
-}

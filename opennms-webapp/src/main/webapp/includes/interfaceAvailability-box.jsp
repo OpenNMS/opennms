@@ -106,7 +106,7 @@
     String timelineHeaderUrl = "/opennms/rest/timeline/header/" + timelineStart + "/" + timelineEnd + "/";
     String timelineEmptyUrl = "/opennms/rest/timeline/empty/" + timelineStart + "/" + timelineEnd + "/";
 
-    Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
+    Outage[] outages = OutageModel.getCurrentOutagesForNode(nodeId);
 %>
 
 <div id="availability-box" class="panel panel-default">
@@ -147,7 +147,7 @@
       String serviceClass;
 
       if( service.isManaged() ) {
-        svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
+        svcValue = CategoryModel.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
         serviceClass = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue);
       } else {
         serviceClass = "Indeterminate";

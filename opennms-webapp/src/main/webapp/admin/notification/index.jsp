@@ -48,7 +48,7 @@
       </div>
       <div class="panel-body">
         <p>
-          <a href="admin/notification/noticeWizard/eventNotices.jsp">Configure Event Notifications</a>
+          <a href="admin/notification/noticeWizard/eventNotices.htm">Configure Event Notifications</a>
         </p>
         <p>
           <a href="admin/notification/destinationPaths.jsp">Configure Destination Paths</a>

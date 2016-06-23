@@ -38,10 +38,10 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.features.vaadin.config.EditorToolbar;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Mask;
@@ -322,7 +322,7 @@ public abstract class EventPanel extends Panel {
                     event.setAlarmData(null);
                 }
                 Mask m = event.getMask();
-                if (m.getMaskelementCollection().isEmpty()) {
+                if (m != null && m.getMaskelementCollection().isEmpty()) {
                     event.setMask(null);
                 }
             }

@@ -28,13 +28,11 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.rrd.RrdRepository;
-
 
 /**
  * This class encapsulates all of the node-level data required by the SNMP data
@@ -73,10 +71,9 @@ public final class NodeInfo extends SnmpCollectionResource {
     }
 
     /** {@inheritDoc} */
-        @Override
-    public File getResourceDir(RrdRepository repository) {
-        File rrdBaseDir = repository.getRrdBaseDir();
-        return new File(rrdBaseDir, getCollectionAgent().getStorageDir().toString());
+    @Override
+    public Path getPath() {
+        return getCollectionAgent().getStorageDir().toPath();
     }
 
     /**

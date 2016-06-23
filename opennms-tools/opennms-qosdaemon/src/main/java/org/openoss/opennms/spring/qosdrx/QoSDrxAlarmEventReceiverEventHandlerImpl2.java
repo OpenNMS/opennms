@@ -404,9 +404,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 				alarm.setFirstEventTime(nnae.getEventTime());
 				alarm.setLastEventTime(nnae.getEventTime());
 				
-// TODO removed - do create distpoller with hibernate dao				
-//				alarm.setDistPoller(new OnmsDistPoller("undefined","localhost")); //simple constructor
-				alarm.setDistPoller(distPollerDao.get("localhost"));
+				alarm.setDistPoller(distPollerDao.whoami());
 				
 				alarm.setDescription(nnae.getAdditionalText()); //TODO need Qosd Not to generate this if remote
 				alarm.setCounter(new Integer(1));

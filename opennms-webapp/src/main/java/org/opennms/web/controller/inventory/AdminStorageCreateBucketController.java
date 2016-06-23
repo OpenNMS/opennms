@@ -28,81 +28,44 @@
 
 package org.opennms.web.controller.inventory;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.api.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 
 /**
  * <p>AdminStorageCreateBucketController class.</p>
- *
- * @since 1.8.1
  */
-@SuppressWarnings("deprecation")
-public class AdminStorageCreateBucketController extends SimpleFormController {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(AdminStorageCreateBucketController.class);
+@Controller
+@RequestMapping("/admin/storage/storageCreateBucket.htm")
+public class AdminStorageCreateBucketController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AdminStorageCreateBucketController.class);
 
-    InventoryService m_inventoryService;
-        
-    /**
-     * <p>getInventoryService</p>
-     *
-     * @return a {@link org.opennms.web.svclayer.inventory.InventoryService} object.
-     */
-    public InventoryService getInventoryService() {
-        return m_inventoryService;
-    }
+    @Autowired
+    private InventoryService m_inventoryService;
 
-    /**
-     * <p>setInventoryService</p>
-     *
-     * @param inventoryService a {@link org.opennms.web.svclayer.inventory.InventoryService} object.
-     */
-    public void setInventoryService(InventoryService inventoryService) {
-        m_inventoryService = inventoryService;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
-            Object command, BindException errors) throws ServletException, IOException, Exception {
+    @RequestMapping(method=RequestMethod.POST)
+    public String onSubmit(HttpServletRequest request, AdminStorageCommClass bean) {
 
         LOG.debug("AdminStorageCreateBucketController ModelAndView onSubmit");
 
-        AdminStorageCommClass bean = (AdminStorageCommClass) command;
-                       
         LOG.debug("AdminStorageCreateBucketController ModelAndView onSubmit Create bucket[{}]", bean.getBucket());
+
         if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
-
-        boolean done = m_inventoryService.createBucket(bean.getBucket());
-        if (!done){
-            LOG.error("AdminStorageCreateBucketController ModelAndView onSubmit error while deleting status for: {}", bean.getBucket());
+            boolean done = m_inventoryService.createBucket(bean.getBucket());
+            if (!done){
+                LOG.error("AdminStorageCreateBucketController ModelAndView onSubmit error while deleting status for: {}", bean.getBucket());
+            }
         }
-        }
-        String redirectURL = request.getHeader("Referer");
-        response.sendRedirect(redirectURL);
-        return super.onSubmit(request, response, command, errors);
+        
+        return "admin/storage/storageAdmin";
     }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
-        throws ServletException {
-        LOG.debug("AdminStorageCreateBucketController initBinder");
-    }
-    
-    
 }

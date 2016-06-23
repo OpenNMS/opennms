@@ -402,8 +402,8 @@ public class VmwareConfigBuilder {
         for (String groupName : groupNames) {
             if (!"node".equalsIgnoreCase(groupName)) {
                 buffer.append("  <resourceType name=\"vmware" + apiVersion + groupName + "\" label=\"VMware v" + apiVersion + " " + groupName + "\" resourceLabel=\"${vmware" + apiVersion + groupName + "Name}\">\n");
-                buffer.append("    <persistenceSelectorStrategy class=\"org.opennms.netmgt.collectd.PersistAllSelectorStrategy\"/>\n");
-                buffer.append("    <storageStrategy class=\"org.opennms.netmgt.dao.support.IndexStorageStrategy\"/>\n");
+                buffer.append("    <persistenceSelectorStrategy class=\"org.opennms.netmgt.collection.support.PersistAllSelectorStrategy\"/>\n");
+                buffer.append("    <storageStrategy class=\"org.opennms.netmgt.collection.support.IndexStorageStrategy\"/>\n");
                 buffer.append("  </resourceType>\n\n");
             }
         }

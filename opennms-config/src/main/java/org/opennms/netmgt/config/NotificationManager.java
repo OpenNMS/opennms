@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -60,13 +60,13 @@ import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.notifications.Header;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.config.notifications.Parameter;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Tticket;
@@ -264,16 +264,18 @@ public abstract class NotificationManager {
 
         for (Notification curNotif : m_notifications.getNotificationCollection()) {
 
-            LOG.debug("Checking notification {} against event {} with UEI {}", curNotif.getUei(), event.getDbid(), event.getUei());
+            LOG.trace("Checking notification {} against event {} with UEI {}", curNotif.getUei(), event.getDbid(), event.getUei());
 
             if (event.getUei().equals(curNotif.getUei()) || "MATCH-ANY-UEI".equals(curNotif.getUei())) {
                 // Match!
+            	LOG.debug("Exact match using notification UEI {} for event UEI: {}", curNotif.getUei(), event.getUei());
             } else if (curNotif.getUei().charAt(0) == '~') {
                 if (event.getUei().matches(curNotif.getUei().substring(1))) {
-                    // Match!
+                	//Match!
+                    LOG.debug("Regex hit using notification UEI {} for event UEI: {}", curNotif.getUei(), event.getUei());
                 } else {
 
-                    LOG.debug("Notification regex {} failed to match event UEI: {}", event.getUei(), curNotif.getUei());
+                    LOG.trace("Notification regex {} failed to match event UEI: {}", event.getUei(), curNotif.getUei());
                     continue;
                 }
             } else {
@@ -286,7 +288,7 @@ public abstract class NotificationManager {
              * Check if event severity matches pattern in notification
              */
 
-            LOG.debug("Checking event severity: {} against notification severity: {}", curNotif.getEventSeverity(), event.getSeverity());
+            LOG.trace("Checking event severity: {} against notification severity: {}", curNotif.getEventSeverity(), event.getSeverity());
             // parameter is optional, return true if not set
             if (curNotif.getEventSeverity() == null) {
                 // Skip matching on severity
@@ -310,14 +312,14 @@ public abstract class NotificationManager {
 
                     if (!parmsmatched) {
 
-                        LOG.debug("Event {} did not match parameters for notice {}", curNotif.getName(), event.getUei());
+                        LOG.debug("Event {} did not match parameters for notice {}", event.getUei(), curNotif.getName());
                         continue;
                     }
                     // Add this notification to the return value
                     notifList.add(curNotif);
 
 
-                    LOG.debug("Event {} matched notice {}", curNotif.getName(), event.getUei());
+                    LOG.debug("Event {} matched notice {}", event.getUei(), curNotif.getName());
 
                     if (!matchAll)
                         break;
@@ -746,7 +748,7 @@ public abstract class NotificationManager {
     public String getServiceNoticeStatus(final String nodeID, final String ipaddr, final String service) throws SQLException {
         String notify = "Y";
 
-        final String query = "SELECT notify FROM ifservices, service WHERE nodeid=? AND ipaddr=? AND ifservices.serviceid=service.serviceid AND service.servicename=?";
+        final String query = "SELECT notify FROM ifservices, ipInterface, node, service WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = node.nodeId AND node.nodeid=? AND ipInterface.ipaddr=? AND ifservices.serviceid=service.serviceid AND service.servicename=?";
         java.sql.Connection connection = null;
         final DBUtils d = new DBUtils(getClass());
 
@@ -790,7 +792,7 @@ public abstract class NotificationManager {
     public void updateNoticeWithUserInfo(final String userId, final int noticeId, final String media, final String contactInfo, final String autoNotify) throws SQLException, MarshalException, ValidationException, IOException {
         if (noticeId < 0) return;
         int userNotifId = getUserNotifId();
-        LOG.debug("updating usersnotified: ID = {} User = {}, notice ID = {}, conctactinfo = {}, media = {}, autoNotify = {}", autoNotify, userNotifId, userId, noticeId, contactInfo, media);
+        LOG.debug("updating usersnotified: ID = {} User = {}, notice ID = {}, contactinfo = {}, media = {}, autoNotify = {}", autoNotify, userNotifId, userId, noticeId, contactInfo, media);
         Connection connection = null;
         final DBUtils d = new DBUtils(getClass());
         try {
@@ -1224,7 +1226,7 @@ public abstract class NotificationManager {
     }
 
     /**
-     * Adds additional parameters defined by the user in the notificaiton
+     * Adds additional parameters defined by the user in the notification
      * configuration XML.
      *
      * @param paramMap a {@link java.util.Map} object.
@@ -1278,12 +1280,12 @@ public abstract class NotificationManager {
                 event.setDbid(rs.getInt("eventid"));
                 event.setUei(rs.getString("eventuei"));
                 event.setNodeid(rs.getLong("nodeid"));
-                event.setTime(rs.getString("eventtime"));
+                event.setTime(rs.getDate("eventtime"));
                 event.setHost(rs.getString("eventhost"));
                 event.setInterface(rs.getString("ipaddr"));
                 event.setSnmphost(rs.getString("eventsnmphost"));
                 event.setService(getServiceName(rs.getInt("serviceid")));
-                event.setCreationTime(rs.getString("eventcreatetime"));
+                event.setCreationTime(rs.getDate("eventcreatetime"));
                 event.setSeverity(rs.getString("eventseverity"));
                 event.setPathoutage(rs.getString("eventpathoutage"));
                 Tticket tticket = new Tticket();

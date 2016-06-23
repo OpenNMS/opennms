@@ -73,7 +73,7 @@ public interface RrdDao {
      * @param workDir RRD files are relative to this directory
      * @return PNG graph image
      */
-    public InputStream createGraph(String command, File workDir);
+    public InputStream createGraph(String command);
 
     /**
      * Gets the offset of the top of the graph box from the top of the image.

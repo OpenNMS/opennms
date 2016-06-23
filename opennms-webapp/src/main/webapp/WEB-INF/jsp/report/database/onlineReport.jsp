@@ -51,7 +51,7 @@
                 <h3 class="panel-title">Run Online Report</h3>
             </div>
             <div class="panel-body">
-                <form:form commandName="parameters" cssClass="form-horizontal" role="form">
+                <form:form modelAttribute="parameters" cssClass="form-horizontal" role="form">
                     <%-- // string parameters --%>
                     <c:forEach items="${parameters.stringParms}" var="stringParm" varStatus="stringParmRow">
                         <div class="form-group">
@@ -160,10 +160,25 @@
                         </div>
 
                     </div>
-
+                    <c:if test="${errorMessage != null}">
+                        <div class="form-group">
+                            <div class="col-md-4">
+                                <div class="alert alert-danger" role="alert">
+                                        ${errorMessage}
+                                        <c:if test="${errorCause != null && errorCause.message != null}">
+                                            <br/>
+                                            ${errorCause.message}
+                                        </c:if>
+                                </div>
+                            </div>
+                        </div>
+                    </c:if>
                     <div class="form-group">
                         <div class="col-md-2">
-                            <input type="submit" class="btn btn-default" value="run report" id="run"/>&#160;
+                            <input type="submit" class="btn btn-default" name="run" value="run report" id="run"/>
+                            <c:if test="${errorMessage != null}">
+                                <input type="submit" class="btn btn-default" name="cancel" value="cancel" id="cancel">
+                            </c:if>
                         </div>
                     </div>
 

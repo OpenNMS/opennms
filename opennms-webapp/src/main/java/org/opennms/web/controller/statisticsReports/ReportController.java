@@ -28,87 +28,41 @@
 
 package org.opennms.web.controller.statisticsReports;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.opennms.web.command.StatisticsReportCommand;
 import org.opennms.web.svclayer.StatisticsReportService;
-import org.opennms.web.svclayer.support.StatisticsReportModel;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
-import org.springframework.validation.BindException;
+import org.opennms.web.svclayer.model.StatisticsReportCommand;
+import org.opennms.web.svclayer.model.StatisticsReportModel;
+import org.opennms.web.validator.StatisticsReportCommandValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractCommandController;
 
 /**
  * Show a specific statistics report.
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
  */
-public class ReportController extends AbstractCommandController implements InitializingBean {
+@Controller
+@RequestMapping("/statisticsReports/report.htm")
+public class ReportController {
+
+    @Autowired
     private StatisticsReportService m_statisticsReportService;
-    private String m_successView;
 
-    /** {@inheritDoc} */
-    @Override
-    protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object cmd, BindException errors) throws Exception {
-        StatisticsReportCommand command = (StatisticsReportCommand) cmd;
+    @Autowired
+    private StatisticsReportCommandValidator m_validator;
 
+    @RequestMapping(method={ RequestMethod.GET, RequestMethod.POST })
+    public ModelAndView handle(@ModelAttribute("command") StatisticsReportCommand command, BindingResult errors) {
+        m_validator.validate(command, errors);
         try {
-        	StatisticsReportModel report = m_statisticsReportService.getReport(command, errors);
-            return new ModelAndView(getSuccessView(), "model", report);
-        } catch (org.springframework.orm.hibernate3.HibernateObjectRetrievalFailureException horfe) {
-        	throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString());
+            StatisticsReportModel report = m_statisticsReportService.getReport(command, errors);
+            return new ModelAndView("statisticsReports/report", "model", report);
+        } catch (Throwable e) {
+            throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString(), e);
         }
     }
-
-    /**
-     * <p>afterPropertiesSet</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        Assert.state(m_statisticsReportService != null, "property statisticsReportService must be set to a non-null value");
-        Assert.state(m_successView != null, "property successView must be set to a non-null value");
-    }
-
-    /**
-     * <p>getStatisticsReportService</p>
-     *
-     * @return a {@link org.opennms.web.svclayer.StatisticsReportService} object.
-     */
-    public StatisticsReportService getStatisticsReportService() {
-        return m_statisticsReportService;
-    }
-
-    /**
-     * <p>setStatisticsReportService</p>
-     *
-     * @param statisticsReportService a {@link org.opennms.web.svclayer.StatisticsReportService} object.
-     */
-    public void setStatisticsReportService(StatisticsReportService statisticsReportService) {
-        m_statisticsReportService = statisticsReportService;
-    }
-
-    /**
-     * <p>getSuccessView</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getSuccessView() {
-        return m_successView;
-    }
-
-    /**
-     * <p>setSuccessView</p>
-     *
-     * @param successView a {@link java.lang.String} object.
-     */
-    public void setSuccessView(String successView) {
-        m_successView = successView;
-    }
-
 }

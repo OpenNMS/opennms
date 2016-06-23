@@ -67,6 +67,7 @@ public class CustomSyslogParser extends SyslogParser {
     @Override
     public SyslogMessage parse() throws SyslogParserException {
         final SyslogMessage syslogMessage = new SyslogMessage();
+        syslogMessage.setParserClass(getClass());
 
         String message = getText();
 
@@ -109,13 +110,6 @@ public class CustomSyslogParser extends SyslogParser {
             oldDateMatcher = null;
         }
         LOG.trace("stdMsg = {}", Boolean.toString(oldDateMatcher != null));
-        
-        if (!this.find()) {
-            if (traceEnabled()) {
-                LOG.trace("Lenient Syslog pattern '{}' did not match '{}'", getPattern(), getText());
-            }
-            return null;
-        }
 
         String timestamp;
 

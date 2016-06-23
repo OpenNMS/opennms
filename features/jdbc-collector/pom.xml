@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -58,7 +58,7 @@
           <descriptors>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
-          <tarLongFileMode>gnu</tarLongFileMode>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>
@@ -79,14 +79,16 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-model</artifactId>
-      <scope>compile</scope>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.db</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>compile</scope>
+      <artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.api</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

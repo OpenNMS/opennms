@@ -57,12 +57,6 @@ public abstract class Vault {
     private static Properties properties = new Properties(System.getProperties());
 
     /**
-     * Stores the directory where the OpenNMS configuration files can be found.
-     * The default is <em>/opt/OpenNMS</em>.
-     */
-    private static String homeDir = "/opt/opennms/";
-
-    /**
      * Set the application configuration properties.
      *
      * @param properties a {@link java.util.Properties} object.
@@ -103,31 +97,6 @@ public abstract class Vault {
      */
     public static String getProperty(String key) {
         return properties.getProperty(key);
-    }
-
-    /**
-     * Set the directory so we will know where we can get the OpenNMS
-     * configuration files.
-     *
-     * @param homeDir a {@link java.lang.String} object.
-     */
-    public static void setHomeDir(String homeDir) {
-        if (homeDir == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        Vault.homeDir = homeDir;
-        Vault.properties.setProperty("opennms.home", homeDir);
-        System.setProperty("opennms.home", homeDir);
-    }
-
-    /**
-     * Get the directory that holds the OpenNMS configuration files.
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public static String getHomeDir() {
-        return homeDir;
     }
 
     /**

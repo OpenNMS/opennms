@@ -34,10 +34,10 @@ import java.util.Map;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
@@ -81,7 +81,8 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     public void onEvent(Event e) {
     	
     	if (e.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
-    		return;
+           handleReloadEvent(e);
+           return;
     	}
     	
         OnmsAlarm alarm = m_persister.persist(e);
@@ -96,7 +97,6 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
         
     }
 
-    @EventHandler(uei = "uei.opennms.org/internal/reloadDaemonConfig")
     private void handleReloadEvent(Event e) {
     	LOG.info("Received reload configuration event: {}", e);
 
@@ -118,6 +118,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     				if (parm.getValue().getContent().contains(nbi.getName())) {
     					LOG.debug("Handling reload event for NBI: {}", nbi.getName());
     					LOG.debug("Reloading NBI configuration for interface {} not yet implemented.", nbi.getName());
+    					nbi.reloadConfig();
     					return;
     				}
     			}
@@ -148,7 +149,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     /**
      * <p>getEventForwarder</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
@@ -157,7 +158,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     /**
      * <p>setEventForwarder</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;

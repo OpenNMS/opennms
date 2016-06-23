@@ -97,7 +97,11 @@ public class MockAgentTest extends TestCase {
         MapSubAgent interfaces = new MapSubAgent("1.3.6.1.2.1.2");
         interfaces.put("1.0", new Integer32(2));
         
-        m_proxy = new MockProxy(9161);
+        try {
+            m_proxy = new MockProxy(9161);
+        } catch (Throwable t) {
+            throw new Exception("Could not start MockProxy on 9161: " + t, t);
+        }
         
         MockAgent agent = new MockAgent();
         agent.addSubAgent(systemGroup);
@@ -110,6 +114,16 @@ public class MockAgentTest extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         m_proxy.stop();
+
+        /*
+         * Future calls to setUp() fail due to the port still being in use
+         * if I don't have the sleep:
+         *
+         * OpenJDK Runtime Environment (build 1.8.0_45-b13) on Amazon Linux AMI release 2015.03
+         *
+         * I hate it when resources don't get fully deallocated.
+         */
+	Thread.sleep(5);
         
         MockLogAppender.assertNoWarningsOrGreater();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");

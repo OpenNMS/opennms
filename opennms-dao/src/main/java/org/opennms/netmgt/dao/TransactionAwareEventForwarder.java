@@ -31,7 +31,7 @@ package org.opennms.netmgt.dao;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -59,7 +59,7 @@ public class TransactionAwareEventForwarder implements EventForwarder,
     /**
      * <p>Constructor for TransactionAwareEventForwarder.</p>
      *
-     * @param forwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param forwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @throws java.lang.Exception if any.
      */
     public TransactionAwareEventForwarder(EventForwarder forwarder)
@@ -140,7 +140,7 @@ public class TransactionAwareEventForwarder implements EventForwarder,
     /**
      * <p>setEventForwarder</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;

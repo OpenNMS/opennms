@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.core</artifactId>
@@ -17,7 +17,7 @@
           <descriptors>
             <descriptor>src/assembly/bin.xml</descriptor>
           </descriptors>
-          <tarLongFileMode>gnu</tarLongFileMode>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
       </plugin>
     </plugins>
@@ -34,6 +34,7 @@
     <module>db-install</module>
     <module>doc</module>
     <module>icmp-jna</module>
+    <module>jmx</module>
     <module>lib</module>
     <module>logging-api</module>
     <module>runtime</module>
@@ -41,6 +42,7 @@
     <module>snmp</module>
     <module>soa</module>
     <module>spring</module>
+    <module>spring-web</module>
     <module>tasks</module>
     <module>test-api</module>
     <module>upgrade</module>

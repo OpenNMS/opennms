@@ -60,7 +60,20 @@ public class GWTLatLng implements IsSerializable, Serializable {
 	public GWTLatLng() {
 	    this(0.0, 0.0);
 	}
-	
+
+
+	/**
+	 * <p>Constructor for GWTLatLng.</p>
+	 *
+	 * @param latitude a {@link java.lang.Double} object.
+	 * @param longitude a {@link java.lang.Double} object.
+	 */
+	public GWTLatLng(Float latitude, Float longitude) {
+		m_latitude = latitude.doubleValue();
+		m_longitude = longitude.doubleValue();
+	}
+
+
 	/**
 	 * <p>Constructor for GWTLatLng.</p>
 	 *

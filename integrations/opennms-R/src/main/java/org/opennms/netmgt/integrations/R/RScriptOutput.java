@@ -38,14 +38,14 @@ import com.google.common.collect.ImmutableTable;
  * @author jwhite
  */
 public class RScriptOutput {
-    private final ImmutableTable<Integer, String, Double> m_table;
+    private final ImmutableTable<Long, String, Double> m_table;
 
-    public RScriptOutput(ImmutableTable<Integer, String, Double> table) {
+    public RScriptOutput(ImmutableTable<Long, String, Double> table) {
         Preconditions.checkNotNull(table, "table argument");
         m_table = table;
     }
 
-    public ImmutableTable<Integer, String, Double> getTable() {
+    public ImmutableTable<Long, String, Double> getTable() {
         return m_table;
     }
 }

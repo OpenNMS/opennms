@@ -33,17 +33,17 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.remoting.RemoteAccessException;
 
 /**
@@ -91,14 +91,14 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
      * @return a {@link java.util.Collection} object.
      */
     @Override
-    public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
+    public Collection<LocationDef> getMonitoringLocations() {
         // leave this method as it is a 'before registration' method and we want errors to occur?
         return m_remoteBackEnd.getMonitoringLocations();
     }
 
     /** {@inheritDoc} */
     @Override
-    public PollerConfiguration getPollerConfiguration(final int locationMonitorId) {
+    public PollerConfiguration getPollerConfiguration(final String locationMonitorId) {
         if (m_serverUnresponsive) {
             return new EmptyPollerConfiguration();
         }
@@ -115,7 +115,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public MonitorStatus pollerCheckingIn(final int locationMonitorId, final Date currentConfigurationVersion) {
+    public MonitorStatus pollerCheckingIn(final String locationMonitorId, final Date currentConfigurationVersion) {
         // if we check in and get a remote exception then we switch to the EmptyConfiguration
         try {
             final MonitorStatus result = m_remoteBackEnd.pollerCheckingIn(locationMonitorId, currentConfigurationVersion);
@@ -131,7 +131,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public boolean pollerStarting(final int locationMonitorId, final Map<String, String> pollerDetails) {
+    public boolean pollerStarting(final String locationMonitorId, final Map<String, String> pollerDetails) {
         try {
             final boolean pollerStarting = m_remoteBackEnd.pollerStarting(locationMonitorId, pollerDetails);
             // If false was returned, this location monitor doesn't exist on the server, so we can't get its name
@@ -150,20 +150,20 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public void pollerStopping(final int locationMonitorId) {
+    public void pollerStopping(final String locationMonitorId) {
         m_remoteBackEnd.pollerStopping(locationMonitorId);
     }
 
     /** {@inheritDoc} */
     @Override
-    public int registerLocationMonitor(final String monitoringLocationId) {
+    public String registerLocationMonitor(final String monitoringLocationId) {
         // leave this method as it is a 'before registration' method and we want errors to occur?
     	return m_remoteBackEnd.registerLocationMonitor(monitoringLocationId);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void reportResult(final int locationMonitorID, final int serviceId, final PollStatus status) {
+    public void reportResult(final String locationMonitorID, final int serviceId, final PollStatus status) {
         if (!m_serverUnresponsive) {
             try {
                 m_remoteBackEnd.reportResult(locationMonitorID, serviceId, status);
@@ -190,7 +190,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public String getMonitorName(int locationMonitorId) {
+    public String getMonitorName(String locationMonitorId) {
         try {
             return m_remoteBackEnd.getMonitorName(locationMonitorId);
         } catch (RemoteAccessException e) {

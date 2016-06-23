@@ -55,7 +55,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * <p>The JUnit tests are basically the same as the HttpDetector with some minor changes in order to let HttpClient works.</p>
  *
  * @author Alejandro Galue <agalue@opennms.org>
- * @version $Id: $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})

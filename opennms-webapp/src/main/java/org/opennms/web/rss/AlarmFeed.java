@@ -31,8 +31,6 @@ package org.opennms.web.rss;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletContext;
-
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.AlarmRepository;

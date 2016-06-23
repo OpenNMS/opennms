@@ -1,0 +1,12 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+=== Concepts
+
+_Provisioning_ is a term that is familiar to service providers (a.k.a. operators, a.k.a. telephone companies) and OSS systems but not so much in the non OSS enterprises.
+
+Provisiond receives "requests" for adding managed entities via 2 basic mechanisms, the {opennms-product-name} traditional "New Suspect" event, typically via the _Discovery daemon_, and the import requisition (XML definition of node entities) typically via the Provisioning Groups UI.
+If you are familiar with all previous releases of OpenNMS, you will recognize the _New Suspect Event_ based _Discovery_ to be what was previously the _Capsd_ component of the auto discovery behavior.
+You will also recognize the import requisition to be of the _Model Importer_ component of OpenNMS.
+_Provisiond_ now unifies these two separate components into a massively parallel advanced policy based provisioning service.

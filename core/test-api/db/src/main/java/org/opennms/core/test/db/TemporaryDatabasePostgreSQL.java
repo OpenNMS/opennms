@@ -39,8 +39,10 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
@@ -87,6 +89,10 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
     private boolean m_destroyed = false;
 
     private JdbcTemplate m_jdbcTemplate;
+
+    private static Set<TemporaryDatabasePostgreSQL> s_toDestroy = new HashSet<TemporaryDatabasePostgreSQL>();
+
+    private static boolean s_shutdownHookInstalled = false;
 
     public TemporaryDatabasePostgreSQL() throws Exception {
         this(TEST_DB_NAME_PREFIX + System.currentTimeMillis());
@@ -333,25 +339,46 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             }
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
+        setupShutdown();
+    }
 
+    private static void setupShutdown() {
+        if (s_shutdownHookInstalled) {
+            return;
+        }
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
+                System.err.println("Running " + TemporaryDatabasePostgreSQL.class + " shutdown hook for " + s_toDestroy.size() + " temporary databases");
+
+                if (s_toDestroy.isEmpty()) {
+                    return;
+                }
+
                 try {
-                    Thread.sleep(100);
-                    destroyTestDatabase();
-                } catch (Throwable e) {
-                    e.printStackTrace();
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+                for (TemporaryDatabasePostgreSQL db : s_toDestroy) {
+                    try {
+                        db.destroyTestDatabase();
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-
         });
 
+        s_shutdownHookInstalled = true;
     }
 
     public void drop() throws TemporaryDatabaseException {
         if (!m_useExisting) {
             destroyTestDatabase();
+            s_toDestroy.remove(this);
         }
     }
 

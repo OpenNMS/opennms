@@ -33,6 +33,7 @@
 <%@page import="org.opennms.web.enlinkd.EnLinkdElementFactoryInterface"%>
 <%@page import="org.opennms.web.enlinkd.BridgeLinkNode"%>
 <%@page import="org.opennms.web.enlinkd.NodeLinkBridge"%>
+<%@page import="org.opennms.web.enlinkd.BridgeLinkSharedHost"%>
 <%@page import="org.opennms.web.enlinkd.BridgeLinkRemoteNode"%>
 <%@page import="org.opennms.web.enlinkd.LldpLinkNode"%>
 <%@page import="org.opennms.web.enlinkd.CdpLinkNode"%>
@@ -51,8 +52,7 @@
 		org.opennms.netmgt.model.OnmsNode,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.*,
-		org.opennms.web.api.Authentication,
-		org.opennms.web.svclayer.ResourceService
+		org.opennms.web.api.Authentication
 	"
 %>
 
@@ -60,48 +60,6 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<%!
-    protected int telnetServiceId;
-    protected int httpServiceId;
-    protected int dellServiceId;
-    protected int snmpServiceId;
-    private ResourceService m_resourceService;
-
-    public void init() throws ServletException {
-
-        NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
-        
-        try {
-            this.telnetServiceId = factory.getServiceIdFromName("Telnet");
-        }
-        catch (Throwable e) {
-            throw new ServletException( "Could not determine the Telnet service ID", e );
-        }        
-
-        try {
-            this.httpServiceId = factory.getServiceIdFromName("HTTP");
-        }
-        catch (Throwable e) {
-            throw new ServletException( "Could not determine the HTTP service ID", e );
-        }
-
-        try {
-            this.dellServiceId = factory.getServiceIdFromName("Dell-OpenManage");
-        }
-        catch (Throwable e) {
-            throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
-        }
-
-        try {
-            this.snmpServiceId = factory.getServiceIdFromName("SNMP");
-        }
-        catch (Throwable e) {
-            throw new ServletException( "Could not determine the SNMP service ID", e );
-        }
-
-        WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-        m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
-    }%>
 
 <%
     NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
@@ -120,69 +78,6 @@
     if( node_db == null ) {
 		throw new ElementNotFoundException("No such node in database", "node", "element/linkednode.jsp", "node", "element/nodeList.htm");
     }
-    String parentRes = Integer.toString(nodeId);
-    String parentResType = "node";
-    if (!(node_db.getForeignSource() == null) && !(node_db.getForeignId() == null)) {
-        parentRes = node_db.getForeignSource() + ":" + node_db.getForeignId();
-        parentResType = "nodeSource";
-    }
-
-    //find the telnet interfaces, if any
-    String telnetIp = null;
-    Service[] telnetServices = factory.getServicesOnNode(nodeId, this.telnetServiceId);
-    
-    if( telnetServices != null && telnetServices.length > 0 ) {
-        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
-        for( int i=0; i < telnetServices.length; i++ ) {
-            ips.add(InetAddressUtils.addr(telnetServices[i].getIpAddress()));
-        }
-        
-        InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
-        
-        if( lowest != null ) {
-            telnetIp = lowest.getHostAddress();
-        }
-    }    
-
-    //find the HTTP interfaces, if any
-    String httpIp = null;
-    Service[] httpServices = factory.getServicesOnNode(nodeId, this.httpServiceId);
-
-    if( httpServices != null && httpServices.length > 0 ) {
-        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
-        for( int i=0; i < httpServices.length; i++ ) {
-            ips.add(InetAddressUtils.addr(httpServices[i].getIpAddress()));
-        }
-
-        InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
-
-        if( lowest != null ) {
-            httpIp = lowest.getHostAddress();
-        }
-    }
-
-    //find the Dell-OpenManage interfaces, if any
-    String dellIp = null;
-    Service[] dellServices = factory.getServicesOnNode(nodeId, this.dellServiceId);
-
-    if( dellServices != null && dellServices.length > 0 ) {
-        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
-        for( int i=0; i < dellServices.length; i++ ) {
-            ips.add(InetAddressUtils.addr(dellServices[i].getIpAddress()));
-        }
-
-        InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
-
-        if( lowest != null ) {
-            dellIp = lowest.getHostAddress();
-        }
-    }
-
-    //find if SNMP is on this node 
-    Service[] snmpServices = factory.getServicesOnNode(nodeId, this.snmpServiceId);
-
-    boolean isBridge = factory.isBridgeNode(nodeId);
-    boolean isRouteIP = factory.isRouteInfoNode(nodeId);
 
 %>
 
@@ -212,247 +107,9 @@
 <!-- Body -->
   <h4>Node: <%=node_db.getLabel()%></h4>
 
-  <ul class="list-inline">
-    <li>
-		  <a href="event/list.htm?filter=node%3D<%=nodeId%>">View Events</a>
-	 </li>
-    <li>
-		<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
-	</li>
-		<% if( telnetIp != null ) { %>
-          <li>
-          <a href="telnet://<%=telnetIp%>">Telnet</a>
-          </li>
-        <% } %>
-
-        <% if( httpIp != null ) { %>
-           <li>
-           <a href="http://<%=httpIp%>">HTTP</a>
-           </li>
-        <% } %>
-
-        <% if( dellIp != null ) { %>
-          <li>
-          <a href="https://<%=dellIp%>:1311">OpenManage</a>
-          </li>
-        <% } %>
-
-        <% if (m_resourceService.findNodeChildResources(node_db).size() > 0) { %>
-	  <li>
-        <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
-          <c:param name="parentResourceType" value="<%=parentResType%>"/>
-          <c:param name="parentResource" value="<%=parentRes%>"/>
-          <c:param name="reports" value="all"/>
-        </c:url>
-          <a href="${fn:escapeXml(resourceGraphsUrl)}">Resource Graphs</a>
-	  </li>
-        <% } %>
-        
-         <li>
-         <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>
-         </li>
-        <% if( request.isUserInRole( Authentication.ROLE_ADMIN )) { %> 
-           <li>
-           <a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>">Admin</a>
-           </li>
-        <% } %>
-	  </ul>
 
 <div class="row">
 <div class="col-md-12">
-	<div class="panel panel-default">
-    <!-- general info box -->
-    <div class="panel-heading">
-			<h3 class="panel-title">General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
-    </div>
-			<% if( isRouteIP || isBridge ) { %>
-			<div class="panel-body">
-			     <ul class="list-inline">
-		            <% if( isRouteIP ) { %>
-		            <li>
-		            	<a href="element/routeipnode.jsp?node=<%=nodeId%>">View Node IP Route Info</a>
-		            </li>
-		            <% }%>
-		         
-		            <% if( isBridge ) { %>
-		            <li>
-						<a href="element/bridgenode.jsp?node=<%=nodeId%>">View Node Bridge/STP Info</a>
-					</li>
-		            <% }%>		
-		         </ul>	     
-			</div>
-			<% }%>
-	</div>
-
-<!-- LINKD Links -->
-
-  <div class="panel panel-default">
-<%
-   if (factory.getDataLinksOnNode(nodeId).isEmpty()) {
-%>
-  <div class="panel-heading">
-		<h3 class="panel-title">No Links found on <%=node_db.getLabel()%> by Linkd</h3>
-	</div>
-<% } else { %>
-  <div class="panel-heading">
-    <h3 class="panel-title"><%=node_db.getLabel()%> Links found by Linkd</h3>
-	</div>
-		<!-- Link box -->
-		<table class="table table-condensed">
-		
-		<thead>
-			<tr>
-			<th>L2 Interface</th> 
-            <th>L3 Interfaces</th>
-			<th width="10%">Link Type</th>
-			<th width="10%">Status</th>
-			<th>Discovery Protocol</th>
-			<th>Last Scan</th>
-			 
-<%--
-			// TODO - turning this off until the SET is verified.
-			<% if( request.isUserInRole( Authentication.ROLE_ADMIN )) { %> 
-			<th width="10%">Set Admin Status</th> 
-			<% } %>
---%>
-
-			<th>Linked to</th>
-			</tr>
-		</thead>
-				
-		<% for( LinkInterface linkInterface: factory.getDataLinksOnNode(nodeId)) { %>
-		    <tr>
-
-		    <td>
-		 	<% if (linkInterface.hasInterface()) { %>
-                
-                <% if (linkInterface.getInterface().getSnmpIfName() != null && !linkInterface.getInterface().getSnmpIfName().equals("")) { %>
-            	<a href="element/snmpinterface.jsp?node=<%=nodeId%>&ifindex=<%=linkInterface.getInterface().getSnmpIfIndex()%>">
-                    <%=linkInterface.getInterface().getSnmpIfName()%>
-                </a>
-                <% } else { %> 
-                 	&nbsp;
-    			<% } %> 
-            	(ifindex <%=linkInterface.getIfindex()%>)
-                
-                <% if (linkInterface.getInterface().getSnmpIfAlias() != null && !linkInterface.getInterface().getSnmpIfAlias().equals("")) { %>
-                    (ifAlias <%=linkInterface.getInterface().getSnmpIfAlias()%>)
-                <% } else { %> 
-                 	&nbsp;
-    			<% } %> 
-    			
-	            <% if (linkInterface.getInterface().getSnmpIfAdminStatus() > 0 && linkInterface.getInterface().getSnmpIfOperStatus() > 0) { %>
-            		<%=ElementUtil.getIfStatusString(linkInterface.getInterface().getSnmpIfAdminStatus())%>/<%=ElementUtil.getIfStatusString(linkInterface.getInterface().getSnmpIfOperStatus())%>
-		    	<% } %>
-    			
-			<% } else { %>
-                 <c:out value="No Interface Associated"/>
-            <% } %>
-            </td>
-            
-            <td>
-            <% if (linkInterface.hasInterface() && linkInterface.getInterface().hasIpAddresses()) { %>
-                <% for (String ipaddress : linkInterface.getInterface().getIpaddresses()) { %>
-                	<c:url var="interfaceLink" value="element/interface.jsp">
-	            	<c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
-    	        	<c:param name="intf" value="<%=ipaddress%>"/>
-        			</c:url>
-                	<a href="<c:out value="${interfaceLink}"/>"> <%=ipaddress%> </a> &nbsp;
-        		<% } %> 
-            <% } %>
-            </td>
-            
-            <td>
-            <% if (linkInterface.getLinkTypeIdString() != null ) { %>
-             	<%=linkInterface.getLinkTypeIdString()%>
-            <% } else if (linkInterface.hasInterface()) { %>
-                <%=ElementUtil.getIfTypeString(linkInterface.getInterface().getSnmpIfType())%>
-		    <% } else { %>
-     			&nbsp;
-            <% } %>
-            </td>
-            
-		    <td>
-		    <% if (linkInterface.getStatus() != null ) { %>
-             	<%=linkInterface.getStatus()%>
-            <% } else { %>
-     			&nbsp;
-		    <% } %>
-		    </td>
-
-		    <td>
-             	<%=linkInterface.getProtocol()%>
-		    </td>
-
-		    <td>
-		    <% if (linkInterface.getLastPollTime() != null ) { %>
-             	<%=linkInterface.getLastPollTime()%>
-		    <% } else { %>
-     			&nbsp;
-		    <% } %>
-		    </td>
-					
-<%--
-		    // TODO - turning this off until the SET is verified.
-		    <% if( request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
-			<td align="center"> 
-				<% if(ElementUtil.getIfStatusString[linkInterface.getInterface().getSnmpIfAdminStatus()].equalsIgnoreCase("Up") ){ %>
-		            <input type="button" value="Down" onClick="setDown(<%=linkInterface.getInterface().getNodeId()%>,<%=linkInterface.getInterface().getSnmpIfIndex()%>)"> 
-		 		<% } else if (ElementUtil.getIfStatusString[snmpIntfs[i].getSnmpIfAdminStatus()].equalsIgnoreCase("Down") ){ %>
-		            <input type="button" value="Up" onClick="setUp(<%=linkInterface.getInterface().getNodeId()%>,<%=linkInterface.getInterface().getSnmpIfIndex()%>)"> 
-				<% } else { %>
-		            <b>&nbsp;</b> 
-				<% } %>
-			</td>
-		    <% } %>
---%>
-				
-			<td>
-		       	<a href="element/linkednode.jsp?node=<%=linkInterface.getLinkedNodeId()%>"><%=factory.getNodeLabel(linkInterface.getLinkedNodeId())%></a>
-		       	&nbsp;
-		       	<%	if (linkInterface.hasLinkedInterface()) { %>
-		       	on 
-                
-                <% if (linkInterface.getLinkedInterface().getSnmpIfName() != null && !linkInterface.getLinkedInterface().getSnmpIfName().equals("")) { %>
-            	<a href="element/snmpinterface.jsp?node=<%=linkInterface.getLinkedNodeId()%>&ifindex=<%=linkInterface.getLinkedInterface().getSnmpIfIndex()%>">
-                    <%=linkInterface.getLinkedInterface().getSnmpIfName()%>
-                </a>
-                <% } else if (linkInterface.getLinkedInterface().hasIpAddresses() && linkInterface.getLinkedInterface().getIpaddresses().size() > 0 ) { %>
-	                <% for (String ipaddress : linkInterface.getLinkedInterface().getIpaddresses()) { %>
-                	<c:url var="interfaceLink" value="element/interface.jsp">
-	            	<c:param name="node" value="<%=String.valueOf(linkInterface.getLinkedNodeId())%>"/>
-    	        	<c:param name="intf" value="<%=ipaddress%>"/>
-        			</c:url>
-                	<a href="<c:out value="${interfaceLink}"/>"> <%=ipaddress%> </a> &nbsp;
-    	    		<% } %>                 
-                <% } else { %> 
-                 	&nbsp;
-    			<% } %> 
-            	(ifindex <%=linkInterface.getLinkedIfindex()%>)
-                
-                <% if (linkInterface.getLinkedInterface().getSnmpIfAlias() != null && !linkInterface.getLinkedInterface().getSnmpIfAlias().equals("")) { %>
-                    ifAlias <%=linkInterface.getLinkedInterface().getSnmpIfAlias()%>"
-                <% } else { %> 
-                 	&nbsp;
-    			<% } %> 
-    			
-	            <% if (linkInterface.getLinkedInterface().getSnmpIfAdminStatus() > 0 && linkInterface.getLinkedInterface().getSnmpIfOperStatus() > 0) { %>
-            		<%=ElementUtil.getIfStatusString(linkInterface.getLinkedInterface().getSnmpIfAdminStatus())%>/<%=ElementUtil.getIfStatusString(linkInterface.getLinkedInterface().getSnmpIfOperStatus())%>
-		    	<% } %>
-    			
-			<% } else { %>
-                 <c:out value="No Interface Associated"/>
-            <% } %>
-		       	
-			</td>
-	
-		    </tr>
-	    <% } %>
-		    
-	    </table>
-
-<% }  %>
-</div>
 
 <!--  BRIDGE Links -->
 
@@ -468,43 +125,78 @@
 	</div>
 	<% } else { %>
   <div class="panel-heading">
-    <h3 class="panel-title"><%=node_db.getLabel()%> Bridge Forwarding Table Links found by Enhanced Linkd</h3>
+    <h3 class="panel-title"><%=node_db.getLabel()%> Shared Segments found by Enhanced Linkd using Bridge Forwarding Table</h3>
 	</div>
 		<!-- Link box -->
 		<table class="table table-condensed">
 		
 		<thead>
 			<tr>
-			<th>Local Port</th> 
-			<th>Bridge Node</th>
-			<th>Bridge Port</th> 
-            <th>Bridge Vlan</th>
+			<th>Port - Ip - Mac</th> 
+			<th>Other Hosts on Segment</th> 
+			<th>Bridge Ports on Segment</th>
 			<th>Created</th>
 			<th>Last Poll</th>
 			</tr>
 		</thead>
 				
 		<% for( NodeLinkBridge nodelink: nodelinks) { %>
-			<% for( String localport: nodelink.getNodeLocalPorts()) { %>
 	    <tr>
-		    <td><%=localport%></td>
+		    <td><%=nodelink.getNodeLocalPort()%></td>
             <td>
-            	<a href="<%=nodelink.getBridgeLinkRemoteNode().getBridgeRemoteUrl()%>"><%=nodelink.getBridgeLinkRemoteNode().getBridgeRemoteNode()%></a>
-             </td>
-            <td>
-            	<a href="<%=nodelink.getBridgeLinkRemoteNode().getBridgeRemotePortUrl()%>"><%=nodelink.getBridgeLinkRemoteNode().getBridgeRemotePort()%></a>
+			<% if (nodelink.getBridgeLinkSharedHost().isEmpty()) {%>
+            	            	&nbsp;
+			<% } else { %>
+            	<table>
+            	<% for (BridgeLinkSharedHost sharedhost: nodelink.getBridgeLinkSharedHost()) {%>
+            	<tr>
+            		<td>
+		 			<% if (sharedhost.getSharedHostUrl() != null) { %>
+            		<a href="<%=sharedhost.getSharedHostUrl()%>"><%=sharedhost.getSharedHost()%></a>
+            		<% } else { %> 
+            		<%=sharedhost.getSharedHost()%>
+		    		<% } %> 
+		 			<% if (sharedhost.getSharedHostPortUrl() != null) { %>
+            		&nbsp;(<a href="<%=sharedhost.getSharedHostPortUrl()%>"><%=sharedhost.getSharedHostPort()%></a>)
+            		<% } else if (sharedhost.getSharedHostPort() != null ){ %> 
+            		&nbsp;(<%=sharedhost.getSharedHostPort()%>)
+            		<% } else { %> 
+            		&nbsp;
+    				<% } %> 
+            		</td>
+            	<tr>
+            	<% }%>
+            	</table>
+			<% } %>
             </td>
-		    <td>
-		 	<% if (nodelink.getBridgeLinkRemoteNode().getBridgeRemoteVlan() != null) { %>
-            	<%=nodelink.getBridgeLinkRemoteNode().getBridgeRemoteVlan()%>
-            <% } else { %> 
-            	&nbsp;
-    		<% } %> 
+            <td>
+		    <% if (nodelink.getBridgeLinkRemoteNodes().isEmpty()) {%>
+            	            	&nbsp;
+			<% } else { %>
+            	<table>
+            	<% for (BridgeLinkRemoteNode remote: nodelink.getBridgeLinkRemoteNodes()) {%>
+            	<tr>
+            		<td>
+            		<a href="<%=remote.getBridgeRemoteUrl()%>"><%=remote.getBridgeRemoteNode() %></a>
+            		</td>
+            		<td>
+            		<a href="<%=remote.getBridgeRemotePortUrl()%>"><%=remote.getBridgeRemotePort()%></a>
+            		</td>
+            		<td>
+         			<% if (remote.getBridgeRemoteVlan() != null) { %>
+            		VLAN(<%=remote.getBridgeRemoteVlan() %>)
+            		<% } else { %> 
+            		&nbsp;
+    				<% } %> 
+            		</td>
+            	<tr>
+            	<% }%>
+            	</table>
+			<% }%>
             </td>
 		    <td><%=nodelink.getBridgeLinkCreateTime()%></td>
 		    <td><%=nodelink.getBridgeLinkLastPollTime()%></td>
 	    </tr>
-		    <% } %>
 	    <% } %>
 		    
 	    </table>
@@ -520,47 +212,77 @@
 		
 		<thead>
 			<tr>
-			<th>Local Port</th> 
-            <th>Local Vlan</th>
-			<th>Remote Node</th>
-			<th>Remote Port</th> 
-            <th>Remote Vlan</th>
+			<th>Port</th> 
+            <th>VLAN</th>
+			<th>Hosts on Segment</th> 
+			<th>Bridge Ports on Segment</th>
 			<th>Created</th>
 			<th>Last Poll</th>
 			</tr>
 		</thead>
 				
 		<% for( BridgeLinkNode bridgelink: bridgelinks) { %>
-			<% for( BridgeLinkRemoteNode remlink: bridgelink.getBridgeLinkRemoteNodes()) { %>
-	    <tr>
-		    <td><%=bridgelink.getBridgeLocalPort()%></td>
+		<tr>
+			<td><%=bridgelink.getNodeLocalPort()%></td>
 		    <td>
-		 	<% if (bridgelink.getBridgeLocalVlan() != null) { %>
-            	<%=bridgelink.getBridgeLocalVlan()%>
+<% if (bridgelink.getBridgeLocalVlan() == null) {%>
+            	            	&nbsp;
+<% } else { %>
+		    <%=bridgelink.getBridgeLocalVlan()%>
+<%} %>
+		    </td>
+            <td>
+<% if (bridgelink.getBridgeLinkSharedHost().isEmpty()) {%>
+            	            	&nbsp;
+<% } else { %>
+            	<table>
+            	<% for (BridgeLinkSharedHost sharedhost: bridgelink.getBridgeLinkSharedHost()) {%>
+            	<tr>
+            		<td>
+		 			<% if (sharedhost.getSharedHostUrl() != null) { %>
+            		<a href="<%=sharedhost.getSharedHostUrl()%>"><%=sharedhost.getSharedHost()%></a>
+            		<% } else { %> 
+            		<%=sharedhost.getSharedHost()%>
+		    		<% } %> 
+		 			
+		 			<% if (sharedhost.getSharedHostPortUrl() != null) { %>
+            		&nbsp;(<a href="<%=sharedhost.getSharedHostPortUrl()%>"><%=sharedhost.getSharedHostPort()%></a>)
+            		<% } else if (sharedhost.getSharedHostPort() != null ){ %> 
+            		&nbsp;(<%=sharedhost.getSharedHostPort()%>)
+            		<% } else { %> 
+            		&nbsp;
+    				<% } %> 
+            		</td>
+            	<tr>
+            	<% }%>
+            	</table>
+<% }%>
+            </td>
+            <td>
+<% if (bridgelink.getBridgeLinkRemoteNodes().isEmpty()) {%>
+            	            	&nbsp;
+<% } else { %>
+            	<table>
+            	<% for (BridgeLinkRemoteNode remote: bridgelink.getBridgeLinkRemoteNodes()) {%>
+            	<tr>
+            		<td>
+            		<a href="<%=remote.getBridgeRemoteUrl()%>"><%=remote.getBridgeRemoteNode()%></a>
+            		</td>
+            		<td>
+            		<a href="<%=remote.getBridgeRemotePortUrl()%>"><%=remote.getBridgeRemotePort()%></a>
+            		</td>
+            		<td>
+         	<% if (remote.getBridgeRemoteVlan() != null) { %>
+            		
+            		VLAN(<%=remote.getBridgeRemoteVlan() %>)
             <% } else { %> 
             	&nbsp;
     		<% } %> 
-            </td>
-            <td>
-            <% if (remlink.getBridgeRemoteUrl() != null) { %>
-            	<a href="<%=remlink.getBridgeRemoteUrl()%>"><%=remlink.getBridgeRemoteNode()%></a>
-            <% } else { %> 
-				<%=remlink.getBridgeRemoteNode()%>
-    			<% } %> 
-            </td>
-            <td>
-           <% if (remlink.getBridgeRemotePortUrl() != null) { %>
-            	<a href="<%=remlink.getBridgeRemotePortUrl()%>"><%=remlink.getBridgeRemotePort()%></a>
-            <% } else { %> 
-				<%=remlink.getBridgeRemotePort() != null ? remlink.getBridgeRemotePort() : "" %>
-    			<% } %> 
-            </td>
-		    <td>
-		 	<% if (remlink.getBridgeRemoteVlan() != null) { %>
-            	<%=remlink.getBridgeRemoteVlan()%>
-            <% } else { %> 
-            	&nbsp;
-    		<% } %> 
+            		</td>
+            	<tr>
+            	<% }%>
+            	</table>
+<% }%>
             </td>
 		    <td><%=bridgelink.getBridgeLinkCreateTime()%></td>
 		    <td><%=bridgelink.getBridgeLinkLastPollTime()%></td>
@@ -570,7 +292,6 @@
 		    
 	    </table>
 
-<% }  %>
 </div>
 
 <!-- LLDP Links -->
@@ -660,7 +381,7 @@
 			<th>Version</th>
 			<th>Device Id</th>
 			<th>Device Port</th> 
-      <th>Platform</th>
+            <th>Platform</th>
 			<th>Created</th>
 			<th>Last Poll</th>
 			</tr>

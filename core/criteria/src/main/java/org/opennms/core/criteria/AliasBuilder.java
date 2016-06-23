@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.restrictions.Restriction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,11 +44,15 @@ public class AliasBuilder {
 
     final Map<String, Alias> m_aliases = new HashMap<String, Alias>();
 
-    public final AliasBuilder alias(final String associationPath, final String alias, final JoinType type) {
+    public final AliasBuilder alias(final String associationPath, final String alias, final JoinType type, final Restriction joinCondition) {
         if (m_aliases.containsKey(alias)) {
             LOG.debug("alias '{}' already associated with associationPath '{}', skipping.", alias, associationPath);
         } else {
-            m_aliases.put(alias, new Alias(associationPath, alias, type));
+            if (joinCondition == null) {
+                m_aliases.put(alias, new Alias(associationPath, alias, type));
+            } else {
+                m_aliases.put(alias, new Alias(associationPath, alias, type, joinCondition));
+            }
         }
         return this;
     }

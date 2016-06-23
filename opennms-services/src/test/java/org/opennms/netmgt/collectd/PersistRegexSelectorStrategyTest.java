@@ -41,10 +41,10 @@ import org.junit.Test;
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
@@ -53,6 +53,7 @@ import org.opennms.netmgt.dao.mock.MockDataCollectionConfigDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -79,8 +80,8 @@ public class PersistRegexSelectorStrategyTest {
     public void setUp() throws Exception {
         ipInterfaceDao = EasyMock.createMock(IpInterfaceDao.class);
         String localhost = InetAddress.getLocalHost().getHostAddress();
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", localhost);
-        NetworkBuilder builder = new NetworkBuilder(distPoller);
+
+        NetworkBuilder builder = new NetworkBuilder();
         builder.addNode("myNode");
         builder.addInterface(localhost).setIsManaged("M").setIsSnmpPrimary("P");
         OnmsNode node = builder.getCurrentNode();
@@ -112,7 +113,7 @@ public class PersistRegexSelectorStrategyTest {
         org.opennms.netmgt.config.datacollection.ResourceType rt = new org.opennms.netmgt.config.datacollection.ResourceType();
         rt.setName("myResourceType");
         StorageStrategy storageStrategy = new StorageStrategy();
-        storageStrategy.setClazz("org.opennms.netmgt.dao.support.IndexStorageStrategy");
+        storageStrategy.setClazz("org.opennms.netmgt.collection.support.IndexStorageStrategy");
         rt.setStorageStrategy(storageStrategy);
         PersistenceSelectorStrategy persistenceSelectorStrategy = new PersistenceSelectorStrategy();
         persistenceSelectorStrategy.setClazz("org.opennms.netmgt.collectd.PersistRegexSelectorStrategy");
@@ -155,7 +156,7 @@ public class PersistRegexSelectorStrategyTest {
         Expression exp = parser.parseExpression("#name matches '^Alejandro.*'");
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setVariable("name", "Alejandro Galue");
-        boolean result = exp.getValue(context, Boolean.class);
+        boolean result = (Boolean)exp.getValue(context, Boolean.class);
         Assert.assertTrue(result);
     }
 }

@@ -29,11 +29,11 @@
 package org.opennms.netmgt.collectd;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public class ForceRescanState {
      * <p>Constructor for ForceRescanState.</p>
      *
      * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
-     * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @param eventProxy a {@link org.opennms.netmgt.events.api.EventProxy} object.
      */
     public ForceRescanState(CollectionAgent agent, EventProxy eventProxy) {
         m_agent = agent;
@@ -67,7 +67,7 @@ public class ForceRescanState {
     /**
      * <p>getEventProxy</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventProxy} object.
      */
     public EventProxy getEventProxy() {
         return m_eventProxy;

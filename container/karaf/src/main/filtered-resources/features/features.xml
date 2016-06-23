@@ -170,6 +170,11 @@
         <feature version="${opennms.osgi.version}">opennms-http-whiteboard</feature>
     </feature>
 
+    <feature name="war" description="Turn Karaf as a full WebContainer" version="2.4.0" resolver="(obr)">
+        <!-- <feature version="3.1.2">pax-war</feature> -->
+        <feature version="${opennms.osgi.version}">opennms-war</feature>
+    </feature>
+
     <!-- Replace the Pax Web HTTP service with our servlet bridge -->
     <feature name="opennms-bridge-http" description="HTTP feature using custom servlet bridge" version="${opennms.osgi.version}" resolver="(obr)">
         <bundle>mvn:org.opennms.container/bridge/${project.version}</bundle>
@@ -194,11 +199,26 @@
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/3.1.2</bundle>
     </feature>
 
-    <!-- ################ END OPENNMS CUSTOMIZATION ############## -->
+    <!-- Copied out of PAX Web features.xml at mvn:org.ops4j.pax.web/pax-web-features/3.1.2/xml/features -->
+    <feature name="opennms-war" description="Provide support of a full WebContainer" version="${opennms.osgi.version}" resolver="(obr)">
+        <feature>opennms-http-whiteboard</feature>
 
-    <feature name="war" description="Turn Karaf as a full WebContainer" version="2.4.0" resolver="(obr)">
-        <feature version="3.1.2">pax-war</feature>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/3.1.2</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-war/3.1.2</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/3.1.2</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-deployer/3.1.2</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.ops4j.pax.url/pax-url-war/1.4.2</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.ops4j.pax.url/pax-url-commons/1.4.2</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.ops4j.pax.swissbox/pax-swissbox-bnd/1.7.0</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.ops4j.pax.swissbox/pax-swissbox-property/1.7.0</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.ops4j.base/ops4j-base-net/1.4.0</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.ops4j.base/ops4j-base-lang/1.4.0</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.ops4j.base/ops4j-base-monitors/1.4.0</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.ops4j.base/ops4j-base-util-property/1.4.0</bundle>
+        <bundle dependency="true" start-level="30">mvn:biz.aQute.bnd/bndlib/2.2.0</bundle>
     </feature>
+
+    <!-- ################ END OPENNMS CUSTOMIZATION ############## -->
 
     <feature name="kar" description="Provide KAR (KARaf archive) support" version="2.4.0">
         <feature>aries-blueprint</feature>
@@ -374,7 +394,7 @@
     <feature name="spring-struts" description="Spring 3.1.x Struts support" version="3.1.4.RELEASE">
         <feature version="[3.1.4.RELEASE,3.2)">spring-web</feature>
         <feature>war</feature>
-        <bundle dependency="true" start-level="30">mvn:commons-collections/commons-collections/3.2.1</bundle>
+        <bundle dependency="true" start-level="30">mvn:commons-collections/commons-collections/3.2.2</bundle>
         <bundle dependency="true" start-level="30">mvn:commons-beanutils/commons-beanutils/1.9.2</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.struts/1.3.10_1</bundle>
         <bundle start-level="30">mvn:org.springframework/spring-struts/3.1.4.RELEASE</bundle>
@@ -450,7 +470,7 @@
     <feature name="spring-struts" description="Spring 3.2.x Struts support" version="3.2.9.RELEASE_1">
         <feature version="[3.2.9.RELEASE_1,3.3)">spring-web</feature>
         <feature>war</feature>
-        <bundle dependency="true" start-level="30">mvn:commons-collections/commons-collections/3.2.1</bundle>
+        <bundle dependency="true" start-level="30">mvn:commons-collections/commons-collections/3.2.2</bundle>
         <bundle dependency="true" start-level="30">mvn:commons-beanutils/commons-beanutils/1.9.2</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.struts/1.3.10_1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-struts/3.2.9.RELEASE_1</bundle>

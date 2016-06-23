@@ -37,30 +37,26 @@ import org.junit.Ignore;
 @Ignore 
 public class JmxTestDummy implements JmxTestDummyMBean {
 
-    String name = "JmxTest";
-    
-    int x = 42;
-
-    int writable = 0;
+    private int writable = 0;
 
     @Override
     public String getName() {
-        return name;
+        return "JmxTest";
     }
 
     @Override
     public int getX() {
-        return x;
+        return 42;
     }
 
     @Override
     public Integer getInteger() {
-        return new Integer(42);
+        return getX();
     }
 
     @Override
     public Long getLong() {
-        return new Long(42);
+        return Long.valueOf(getX());
     }
 
     @Override

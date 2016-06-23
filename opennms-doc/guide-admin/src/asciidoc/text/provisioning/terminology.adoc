@@ -1,0 +1,62 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+==== Terminology
+
+The following terms are used with respect to the {opennms-product-name} provisioning system and are essential for understanding the material presented in this guide.
+
+===== Entity
+
+Entities are managed objects in {opennms-product-name} such as Nodes, IP interfaces, SNMP Interfaces, and Services.
+
+===== Foreign Source and Foreign ID
+
+The _Importer_ service from 1.6 introduced the idea of foreign sources and foreign IDs.
+The _Foreign Source_ uniquely identifies a provisioning source and is still a basic attribute of importing node entities into {opennms-product-name}.
+The concept is to provide an external (foreign) system with a way to uniquely identify itself and any node entities that it is requesting (via a requisition) to be provisioned into {opennms-product-name}.
+
+The _Foreign ID_ is the unique node ID maintained in foreign system and the foreign source uniquely identifies the external system in {opennms-product-name}.
+
+{opennms-product-name} uses the combination of the foreign source and foreign ID become the unique foreign key when synchronizing the set of nodes from each source with the nodes in the {opennms-product-name} DB.
+This way the foreign system doesn’t have to keep track of the {opennms-product-name} node IDs that are assigned when a node is first created.
+This is how _Provisiond_ can decided if a node entity from an import requisition is new, has been changed, or needs to be deleted.
+
+===== Foreign Source Definition
+
+Additionally, the foreign source has been extended to also contain specifications for how entities should be discovered and managed on the nodes from each foreign source.
+The name of the foreign source has become pervasive within the provisioning system and is used to simply some of the complexities by weaving this name into:
+
+* the name of the provisioning group in the Web-UI
+* the name of the file containing the persisted requisition (as well as the pending requisition if it is in this state)
+* the foreign-source attribute value inside the requisition (obviously, but, this is pointed out to indicate that the file name doesn’t necessarily have to equal the value of this attribute but is highly recommended as an {opennms-product-name} best practice)
+* the building attribute of the node defined in the requisition (this value is called “site” in the Web-UI and is assigned to the building column of the node’s asset record by Provisiond and is the default value used in the Site Status View feature)
+
+===== Import Requisition
+
+Import requisition is the terminology {opennms-product-name} uses to represent the set of nodes, specified in XML, to be provisioned from a foreign source into {opennms-product-name}.
+The requisition schema (XSD) can be found at the following location. http://xmlns.opennms.org/xsd/config/model-import[http://xmlns.opennms.org/xsd/config/model-import]
+
+===== Auto Discovery
+
+Auto discovery is the term used by {opennms-product-name} to characterize the automatic provisioning of nodes entities.
+Currently, {opennms-product-name} uses an ICMP ping sweep to find IP address on the network.
+For the IPs that respond and that are not currently in the DB, {opennms-product-name} generates a new suspect event.
+When this event is received by Provisiond, it creates a node and it begins a node scan based on the default foreign source definition.
+
+===== Directed Discovery
+
+Provisiond takes over for the Model Importer found in version 1.6 which implemented a unique, first of its kind, controlled mechanism for specifying managed entities directly into {opennms-product-name} from one or more data sources.
+These data sources often were in the form of an in-housed developed inventory or stand-alone provisioning system or even a set of element management systems.
+Using this mechanism, {opennms-product-name} is directed to add, update, or delete a node entity exactly as defined by the external source.
+No discovery process is used for finding more interfaces or services.
+
+===== Enhanced Directed Discovery
+
+Directed discovery is enhanced with the capability to scan nodes that have been directed nodes for entities (interfaces.
+
+===== Policy Based Discovery
+
+The phrase, Policy based Directed Discovery, is a term that represents the latest step in {opennms-product-name} provisioning evolution and best describes the new provisioning architecture now in {opennms-product-name} for maintaining its inventory of managed entities.
+This term describes the control that is given over the Provisioning system to {opennms-product-name} users for managing the behavior of the NMS with respect to the new entities that are being discovered.
+Current behaviors include persistence, data collection, service monitoring, and categorization policies.

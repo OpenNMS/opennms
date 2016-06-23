@@ -33,6 +33,13 @@
           </restriction>
         </simpleType>
       </attribute>
+      <attribute name="event-processing-mode" use="optional" default="cloud" >
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(cloud|stream)" />
+          </restriction>
+        </simpleType>
+      </attribute>      
     </complexType>
   </element>
   

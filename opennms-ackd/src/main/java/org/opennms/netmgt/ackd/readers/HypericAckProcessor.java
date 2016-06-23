@@ -55,28 +55,15 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthState;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.GtRestriction;
+import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.dao.api.AckdConfigurationDao;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
@@ -498,67 +485,37 @@ public class HypericAckProcessor implements AckProcessor {
                 alertIdString.append("id=").append(alertIds.get(i));
             }
 
-            // Create an HTTP client
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            httpClient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 3000);
-            httpClient.getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 3000);
-            HttpUriRequest httpMethod = new HttpGet(hypericUrl + alertIdString.toString());
+            final HttpClientWrapper clientWrapper = HttpClientWrapper.create()
+                    .setConnectionTimeout(3000)
+                    .setSocketTimeout(3000)
+                    // Set a custom user-agent so that it's easy to tcpdump these requests
+                    .setUserAgent("OpenNMS-Ackd.HypericAckProcessor");
 
-            // Set a custom user-agent so that it's easy to tcpdump these requests
-            httpMethod.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "OpenNMS-Ackd.HypericAckProcessor");
+            HttpUriRequest httpMethod = new HttpGet(hypericUrl + alertIdString.toString());
 
             // Parse the URI from the config so that we can deduce the username/password information
             String userinfo = null;
             try {
                 URI hypericUri = new URI(hypericUrl);
                 userinfo = hypericUri.getUserInfo();
-                // httpMethod.getParams().setParameter(ClientPNames.VIRTUAL_HOST, new HttpHost("localhost", hypericUri.getPort()));
-            } catch (URISyntaxException e) {
+            } catch (final URISyntaxException e) {
                 LOG.warn("Could not parse URI to get username/password stanza: {}", hypericUrl, e);
             }
             if (userinfo != null && !"".equals(userinfo)) {
-                // Add the credentials to the HttpClient instance
-                httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userinfo));
-
-                /**
-                 * Add an HttpRequestInterceptor that will perform preemptive auth
-                 * @see http://hc.apache.org/httpcomponents-client-4.0.1/tutorial/html/authentication.html
-                 */
-                HttpRequestInterceptor preemptiveAuth = new HttpRequestInterceptor() {
-
-                    @Override
-                    public void process(final HttpRequest request, final HttpContext context) throws IOException {
-
-                        AuthState authState = (AuthState)context.getAttribute(ClientContext.TARGET_AUTH_STATE);
-                        CredentialsProvider credsProvider = (CredentialsProvider)context.getAttribute(ClientContext.CREDS_PROVIDER);
-                        HttpHost targetHost = (HttpHost)context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
-
-                        // If not auth scheme has been initialized yet
-                        if (authState.getAuthScheme() == null) {
-                            AuthScope authScope = new AuthScope(targetHost.getHostName(), targetHost.getPort());
-                            // Obtain credentials matching the target host
-                            Credentials creds = credsProvider.getCredentials(authScope);
-                            // If found, generate BasicScheme preemptively
-                            if (creds != null) {
-                                authState.update(new BasicScheme(), creds);
-                            }
-                        }
-                    }
-
-                };
-                httpClient.addRequestInterceptor(preemptiveAuth, 0);
+                final String[] credentials = userinfo.split(":");
+                if (credentials.length == 2) {
+                    clientWrapper.addBasicCredentials(credentials[0], credentials[1])
+                        .usePreemptiveAuth();
+                } else {
+                    LOG.warn("Unable to deduce username/password from '{}'", userinfo);
+                }
             }
 
             try {
-                HttpResponse response = httpClient.execute(httpMethod);
-
-                // int statusCode = response.getStatusLine().getStatusCode();
-                // String statusText = response.getStatusLine().getReasonPhrase();
-
+                CloseableHttpResponse response = clientWrapper.execute(httpMethod);
                 retval = parseHypericAlerts(new StringReader(EntityUtils.toString(response.getEntity())));
-            } finally{
-                // Do we need to do any cleanup?
-                // httpMethod.releaseConnection();
+            } finally {
+                IOUtils.closeQuietly(clientWrapper);
             }
         }
         return retval;

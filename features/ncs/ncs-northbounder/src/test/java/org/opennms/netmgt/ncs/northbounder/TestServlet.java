@@ -36,24 +36,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class TestServlet extends HttpServlet {
-	
-	private static String m_posted = null;
+    private static final Logger LOG = LoggerFactory.getLogger(TestServlet.class);
+    private static String m_posted = null;
 
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)	throws ServletException, IOException {
-		m_posted = IOUtils.toString(req.getReader());
-	}
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        m_posted = IOUtils.toString(req.getReader());
+        LOG.debug("POST:");
+        LOG.debug(m_posted);
+    }
 
-	public static void reset() {
-		m_posted = null;
-	}
-	
-	public static String getPosted() {
-		return m_posted;
-	}
+    public static void reset() {
+        m_posted = null;
+    }
 
-	
+    public static String getPosted() {
+        return m_posted;
+    }
+
+
 }

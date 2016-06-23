@@ -120,7 +120,8 @@ public class PersistenceSerializationTest {
         policies.add(policy);
         fs.setPolicies(policies);
 
-        fsw = new ForeignSourceCollection(fsr.getForeignSources());
+        fsw = new ForeignSourceCollection();
+        fsw.getForeignSources().addAll(fsr.getForeignSources());
         c = JAXBContext.newInstance(ForeignSourceCollection.class, ForeignSource.class);
         m = c.createMarshaller();
         

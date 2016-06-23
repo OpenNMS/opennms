@@ -43,27 +43,24 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.config.api.EventdConfig;
 import org.opennms.netmgt.dao.api.EventExpander;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventIpcBroadcaster;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerProxy;
-import org.opennms.netmgt.model.events.EventListener;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
-import org.opennms.netmgt.model.events.EventWriter;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.EventIpcBroadcaster;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.events.api.EventWriter;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
-import org.springframework.util.Assert;
 
-public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpcManager, EventIpcBroadcaster, InitializingBean {
+public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpcManager, EventIpcBroadcaster {
     private static final Logger LOG = LoggerFactory.getLogger(MockEventIpcManager.class);
 
     static class ListenerKeeper {
@@ -173,6 +170,14 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         }
     }
 
+    public static interface SendNowHook {
+        public void beforeBroadcast(Event event);
+
+        public void afterBroadcast(Event event);
+
+        void finishProcessingEvents();
+    }
+
     private EventAnticipator m_anticipator;
     
     private EventWriter m_eventWriter = new EventWriter() {
@@ -192,9 +197,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     
     private ScheduledExecutorService m_scheduler = null;
 
-    private EventIpcManagerProxy m_proxy;
-
 	private EventExpander m_expander = null;
+
+	private SendNowHook m_sendNowHook;
+
+	private int m_numSchedulerThreads = 1;
 
     public MockEventIpcManager() {
         m_anticipator = new EventAnticipator();
@@ -275,7 +282,23 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     public boolean isSynchronous() {
         return m_synchronous;
     }
-    
+
+    public void setSendNowHook(SendNowHook hook) {
+        m_sendNowHook = hook;
+    }
+
+    public SendNowHook getSendNowHook() {
+        return m_sendNowHook;
+    }
+
+    public void setNumSchedulerThreads(int numThreads) {
+        m_numSchedulerThreads = numThreads;
+    }
+
+    public int getNumSchedulerTheads() {
+        return m_numSchedulerThreads;
+    }
+
     @Override
     public synchronized void sendNow(final Event event) {
         // Expand the event parms
@@ -291,6 +314,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
             @Override
             public void run() {
                 try {
+                    // Allows external classes to alter the timing/order of events
+                    if (m_sendNowHook != null) {
+                        m_sendNowHook.beforeBroadcast(event);
+                    }
+
                     m_eventWriter.writeEvent(event);
                     broadcastNow(event);
                     m_anticipator.eventProcessed(event);
@@ -299,6 +327,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
                         m_pendingEvents--;
                         LOG.debug("Finished processing event ({} remaining)", m_pendingEvents);
                         MockEventIpcManager.this.notifyAll();
+                    }
+
+                    // Allows external classes to alter the timing/order of events
+                    if (m_sendNowHook != null) {
+                        m_sendNowHook.afterBroadcast(event);
                     }
                 }
             }
@@ -310,11 +343,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
             getScheduler().schedule(r, m_eventDelay, TimeUnit.MILLISECONDS);
         }
     }
-    
+
     ScheduledExecutorService getScheduler() {
         if (m_scheduler == null) {
-            m_scheduler = Executors.newSingleThreadScheduledExecutor(
-                new LogPreservingThreadFactory(getClass().getSimpleName(), 1)
+            m_scheduler = Executors.newScheduledThreadPool(getNumSchedulerTheads(),
+                new LogPreservingThreadFactory(getClass().getSimpleName(), getNumSchedulerTheads())
             );
         }
         return m_scheduler;
@@ -331,6 +364,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
      * 
      */
     public synchronized void finishProcessingEvents() {
+        // Allow the hook to unblock any pending events
+        if (m_sendNowHook != null) {
+            m_sendNowHook.finishProcessingEvents();
+        }
+
         while (m_pendingEvents > 0) {
         	LOG.debug("Waiting for event processing: ({} remaining)", m_pendingEvents);
             try {
@@ -341,14 +379,13 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         }
     }
 
-    public EventdConfigManager getEventdConfigMgr() {
+    public EventdConfig getEventdConfig() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public void setEventdConfigMgr(final EventdConfigManager eventdConfigMgr) {
+    public void setEventdConfig(final EventdConfig eventdConfig) {
         // TODO Auto-generated method stub
-        
     }
 
     public void setDataSource(final DataSource instance) {
@@ -362,16 +399,6 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     public void reset() {
         m_listeners = new ArrayList<ListenerKeeper>();
         m_anticipator.reset();
-    }
-
-    public void setEventIpcManagerProxy(final EventIpcManagerProxy proxy) {
-        m_proxy = proxy;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        Assert.notNull(m_proxy, "expected to have proxy set");
-        m_proxy.setDelegate(this);
     }
 
     @Override

@@ -34,7 +34,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
-import org.opennms.web.svclayer.support.DatabaseReportDescription;
+import org.opennms.web.svclayer.model.DatabaseReportDescription;
 import org.opennms.web.svclayer.support.DefaultDatabaseReportListService;
 
 import java.util.ArrayList;

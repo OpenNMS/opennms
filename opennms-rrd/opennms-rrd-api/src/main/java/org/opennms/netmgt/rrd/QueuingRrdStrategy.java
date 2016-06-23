@@ -946,7 +946,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      *
      * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
      */
-    RrdStrategy<Object, Object> getDelegate() {
+    public RrdStrategy<Object, Object> getDelegate() {
         return m_delegate;
     }
 
@@ -974,7 +974,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     /** {@inheritDoc} */
     @Override
     public CreateOperation createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
-        String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
+        String fileName = directory + File.separator + rrdName + m_delegate.getDefaultFileExtension();
         Object def = m_delegate.createDefinition(creator, directory, rrdName, step, dataSources, rraList);
         return makeCreateOperation(fileName, def);
     }

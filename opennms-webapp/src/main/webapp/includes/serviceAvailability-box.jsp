@@ -88,7 +88,7 @@
     if (service.isManaged()) {
         //find the availability value for this node
         double rtcValue =
-            m_model.getServiceAvailability(service.getNodeId(),
+            CategoryModel.getServiceAvailability(service.getNodeId(),
 	                                       service.getIpAddress(),
                                            service.getServiceId());
         
@@ -109,7 +109,7 @@
     int nodeId = service.getNodeId();
     String ipAddr = service.getIpAddress();
 
-    Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
+    Outage[] outages = OutageModel.getCurrentOutagesForNode(nodeId);
 
     String warnClass = "Normal";
 

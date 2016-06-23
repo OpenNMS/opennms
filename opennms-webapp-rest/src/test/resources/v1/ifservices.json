@@ -1,0 +1,97 @@
+{
+    "count": 10, 
+    "offset": null, 
+    "monitored-service": [
+        {
+            "ipAddress": "192.168.1.1", 
+            "isDown": false, 
+            "isMonitored": true, 
+            "node": "node1", 
+            "serviceName": "ICMP", 
+            "status": "Managed", 
+            "statusCode": "A"
+        },
+        {
+            "ipAddress": "192.168.1.1", 
+            "isDown": false, 
+            "isMonitored": true, 
+            "node": "node1", 
+            "serviceName": "SNMP", 
+            "status": "Managed", 
+            "statusCode": "A"
+        },
+        {
+            "ipAddress": "192.168.1.2", 
+            "isDown": false, 
+            "isMonitored": true, 
+            "node": "node1", 
+            "serviceName": "ICMP", 
+            "status": "Managed", 
+            "statusCode": "A"
+        },
+        {
+            "ipAddress": "192.168.1.2", 
+            "isDown": false, 
+            "isMonitored": true, 
+            "node": "node1", 
+            "serviceName": "HTTP", 
+            "status": "Managed", 
+            "statusCode": "A"
+        },
+        {
+            "ipAddress": "192.168.1.3", 
+            "isDown": false, 
+            "isMonitored": true, 
+            "node": "node1", 
+            "serviceName": "ICMP", 
+            "status": "Managed", 
+            "statusCode": "A"
+        },
+        {
+            "ipAddress": "fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5", 
+            "isDown": false, 
+            "isMonitored": true, 
+            "node": "node1", 
+            "serviceName": "ICMP", 
+            "status": "Managed", 
+            "statusCode": "A"
+        },
+        {
+            "ipAddress": "192.168.2.1", 
+            "isDown": false, 
+            "isMonitored": true, 
+            "node": "node2", 
+            "serviceName": "ICMP", 
+            "status": "Managed", 
+            "statusCode": "A"
+        },
+        {
+            "ipAddress": "192.168.2.1", 
+            "isDown": false, 
+            "isMonitored": true, 
+            "node": "node2", 
+            "serviceName": "SNMP", 
+            "status": "Managed", 
+            "statusCode": "A"
+        },
+        {
+            "ipAddress": "192.168.2.2", 
+            "isDown": false, 
+            "isMonitored": true, 
+            "node": "node2", 
+            "serviceName": "ICMP", 
+            "status": "Managed", 
+            "statusCode": "A"
+        },
+        {
+            "ipAddress": "192.168.2.2", 
+            "isDown": false, 
+            "isMonitored": true, 
+            "node": "node2", 
+            "serviceName": "HTTP", 
+            "status": "Managed", 
+            "statusCode": "A"
+        }
+    ], 
+    "totalCount": 31
+}

@@ -43,7 +43,7 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
     /**
      * The node ID
      */
-    private final long m_nodeID;
+    private final int m_nodeID;
 
     /**
      * The ip address of the interface of the node
@@ -65,7 +65,7 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
      * @param svcname
      *            the service in the node
      */
-    public RTCNodeKey(long nodeid, InetAddress ip, String svcname) {
+    public RTCNodeKey(int nodeid, InetAddress ip, String svcname) {
         m_nodeID = nodeid;
         m_ip = ip;
         // m_svcName = svcname.toUpperCase();
@@ -77,7 +77,7 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
      *
      * @return the node ID
      */
-    public long getNodeID() {
+    public int getNodeID() {
         return m_nodeID;
     }
 

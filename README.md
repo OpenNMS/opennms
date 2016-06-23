@@ -21,13 +21,10 @@ Well, what does that mean?
 
 	OpenNMS is 100% Free and Open Source software, with no license fees, software subscriptions or special "enterprise" versions.
 
-Building OpenNMS
-================
+Installing OpenNMS
+==================
 
-For details on building OpenNMS, please see the wiki page: [Building_OpenNMS][]
-
-Contributing to OpenNMS
-=======================
+For details on installing OpenNMS, please see the install guide: [Installing OpenNMS][].
 
 Before making a pull request, please submit an [OCA][] for copyright assignment.  Note that this does **not** mean that you are giving up your copyright of your changes to OpenNMS, it instead allows for _dual_ copyright over contributed code.
 
@@ -37,3 +34,4 @@ If you are using Eclipse, please read the [Eclipse][] page for details on settin
 [OCA]:               http://www.opennms.org/wiki/OCA
 [Eclipse]:           http://www.opennms.org/wiki/Eclipse
 [Building_OpenNMS]:  http://www.opennms.org/wiki/Building_OpenNMS
+[Installing OpenNMS]: http://docs.opennms.org/opennms/branches/develop/guide-install/guide-install.html

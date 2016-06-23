@@ -1,21 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 
   	<bean id="availabilityReportService"
 		class="org.opennms.reporting.availability.svclayer.AvailabilityReportService"
 		scope="prototype">
 		<property name="configDao" ref="onmsDatabaseReportConfigDao" /> 
-		<property name="calendarCalculator">
-			<ref local="mockCalendarCalculator" />
-		</property>
-		<property name="classicCalculator">
-			<ref local="mockClassicCalculator" />
-		</property>
-		<property name="parameterConversionService">
-			<ref local="mockParameterConversionService" />
-		</property>
+		<property name="calendarCalculator" ref="mockCalendarCalculator" />
+		<property name="classicCalculator" ref="mockClassicCalculator" />
+		<property name="parameterConversionService" ref="mockParameterConversionService" />
 	</bean>
   
   <bean id="mockConfigDao" class="org.easymock.EasyMock" factory-method="createStrictMock">

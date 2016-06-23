@@ -1,7 +1,7 @@
 <datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Bluecat">
    <resourceType name="dhcpSubnetIP" label="Bluecat Networks Adonis DHCP">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <group name="adonisdns" ifType="ignore">
       <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.1" instance="0" alias="dnsDaemonRunning" type="INTEGER"/>

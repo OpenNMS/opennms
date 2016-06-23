@@ -5,7 +5,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -28,7 +28,7 @@
             <artifactId>vaadin-maven-plugin</artifactId>
             <version>${vaadin.plugin.version}</version>
             <configuration>
-                <extraJvmArgs>-Xmx1g -Xss1024k</extraJvmArgs>
+                <extraJvmArgs>-XX:MaxMetaspaceSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
                 <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets</webappDirectory>
                 <hostedWebapp>${basedir}/target/gwt/VAADIN/widgetsets</hostedWebapp>
                 <noServer>true</noServer>

@@ -38,7 +38,6 @@ import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
 import org.opennms.netmgt.model.IsIsLink;
-import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.slf4j.Logger;
@@ -61,7 +60,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
 	 * @param EnhancedLinkd linkd
 	 * @param LinkableNode node
 	 */
-    public NodeDiscoveryIsis(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
+    public NodeDiscoveryIsis(final EnhancedLinkd linkd, final Node node) {
     	super(linkd, node);
     }
 

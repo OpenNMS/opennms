@@ -1,0 +1,29 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-oracle-java-debian]]
+=== Debian
+
+This section describes how to install _Oracle Java SE Development Kit 8_ on a _Debian-based_ system like _Debian 8_ or _Ubuntu 14.04 LTS_.
+
+.Add Java repository from webupd8 maintainer
+[source, bash]
+----
+su -
+echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee /etc/apt/sources.list.d/webupd8team-java.list
+echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list
+----
+
+.Add repository key server and update repository
+[source, bash]
+----
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+apt-get update
+----
+
+.Install Oracle Java SE Development Kit 8
+[source, bash]
+----
+apt-get install -y oracle-java8-installer
+----

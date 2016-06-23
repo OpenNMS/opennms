@@ -48,13 +48,12 @@
         org.opennms.netmgt.config.PollOutagesConfigFactory,
         org.opennms.netmgt.config.poller.outages.Outage,
         org.opennms.netmgt.model.OnmsNode,
-        org.opennms.netmgt.poller.PathOutageManagerJdbcImpl,
+        org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl,
         org.opennms.web.api.Authentication,
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
         org.opennms.web.element.*,
         org.opennms.web.navigate.*,
-        org.opennms.web.svclayer.ResourceService,
         org.springframework.util.StringUtils,
         org.springframework.web.context.WebApplicationContext,
         org.springframework.web.context.support.WebApplicationContextUtils"
@@ -68,7 +67,6 @@
     private int m_httpServiceId;
     private int m_dellServiceId;
     private int m_snmpServiceId;
-    private ResourceService m_resourceService;
 	private AssetModel m_model = new AssetModel();
 
 	public void init() throws ServletException {
@@ -103,7 +101,6 @@
         }
 
 		final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-		m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
     }
 
 	public static String getStatusStringWithDefault(OnmsNode node_db) {
@@ -176,10 +173,8 @@
     nodeModel.put("isis",    EnLinkdElementFactory.getInstance(getServletContext()).getIsisElement(nodeId));
     nodeModel.put("bridges", EnLinkdElementFactory.getInstance(getServletContext()).getBridgeElements(nodeId));
 
-    nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
-    nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
-    nodeModel.put("criticalPath", PathOutageManagerJdbcImpl.getInstance().getPrettyCriticalPath(nodeId));
-    nodeModel.put("noCriticalPath", PathOutageManagerJdbcImpl.NO_CRITICAL_PATH);
+    nodeModel.put("criticalPath", PathOutageManagerDaoImpl.getInstance().getPrettyCriticalPath(nodeId));
+    nodeModel.put("noCriticalPath", PathOutageManagerDaoImpl.NO_CRITICAL_PATH);
     nodeModel.put("admin", request.isUserInRole(Authentication.ROLE_ADMIN));
     
     // get the child interfaces
@@ -201,8 +196,6 @@
     }
     
     nodeModel.put("status", getStatusStringWithDefault(node_db));
-    nodeModel.put("showIpRoute", NetworkElementFactory.getInstance(getServletContext()).isRouteInfoNode(nodeId));
-    nodeModel.put("showBridge", NetworkElementFactory.getInstance(getServletContext()).isBridgeNode(nodeId));
     nodeModel.put("showRancid","true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled")));
     
     nodeModel.put("node", node_db);
@@ -363,16 +356,17 @@ function confirmAssetEdit() {
       </li>
     </c:forEach>
     
-    <c:if test="${! empty model.resources}">
-      <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
-        <c:param name="parentResourceType" value="${model.parentResType}"/>
-        <c:param name="parentResource" value="${model.parentRes}"/>
-        <c:param name="reports" value="all"/>
-      </c:url>
-      <li>
-        <a href="<c:out value="${resourceGraphsUrl}"/>">Resource Graphs</a>
-      </li>
-    </c:if>
+    <%-- TODO In order to show the following link only when there are metrics, an
+              inexpensive method has to be implemented on either ResourceService
+              or ResourceDao --%>
+    <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
+      <c:param name="parentResourceType" value="${model.parentResType}"/>
+      <c:param name="parentResource" value="${model.parentRes}"/>
+      <c:param name="reports" value="all"/>
+    </c:url>
+    <li>
+      <a href="<c:out value="${resourceGraphsUrl}"/>">Resource Graphs</a>
+    </li>
     
     <c:if test="${model.admin}">
       <c:url var="rescanLink" value="element/rescan.jsp">
@@ -592,6 +586,10 @@ function confirmAssetEdit() {
         <td>${model.cdp.cdpGlobalDeviceId}</td>
       </tr>
       <tr>
+        <th>global device id format</th>
+        <td>${model.cdp.cdpGlobalDeviceIdFormat}</td>
+      </tr>
+      <tr>
         <th>global run</th>
         <td>${model.cdp.cdpGlobalRun}</td>
       </tr>
@@ -617,7 +615,7 @@ function confirmAssetEdit() {
   		 vlanid ${bridge.vlan}
   		</c:if>
   		<c:if test="${! empty bridge.vlanname}">
-  		  (${bridge.vlan})
+  		  (${bridge.vlanname})
   		</c:if>
     </h3>
     </div>

@@ -113,7 +113,7 @@ public class EventConfData extends Object {
      * @param eventvalue a {@link java.lang.String} object.
      * @param maskValues a {@link java.util.List} object.
      */
-    protected static boolean eventValuePassesMaskValue(String eventvalue, List<String> maskValues) {
+    public static boolean eventValuePassesMaskValue(String eventvalue, List<String> maskValues) {
         boolean maskMatch = false;
 
         Iterator<String> valiter = maskValues.iterator();

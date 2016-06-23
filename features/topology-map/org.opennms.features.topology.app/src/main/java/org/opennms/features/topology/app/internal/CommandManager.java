@@ -30,8 +30,6 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
@@ -307,16 +305,6 @@ public class CommandManager {
 		}
 		} catch (final RuntimeException e) {
 		    LoggerFactory.getLogger(this.getClass()).warn("updateMenuItem: operation failed", e);
-		}
-	}
-
-	private static List<VertexRef> asVertexList(Object target) {
-		if (target != null && target instanceof Collection) {
-			return new ArrayList((Collection<VertexRef>)target);
-		} else if (target != null && target instanceof VertexRef) {
-			return Collections.singletonList((VertexRef)target);
-		} else {
-			return Collections.<VertexRef>emptyList();
 		}
 	}
 }

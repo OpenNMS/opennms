@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+">
+
+  <context:annotation-config />
+
+  <bean name="rtcConfigFactory" class="org.opennms.netmgt.config.RTCConfigFactory"/>
+
+  <!--
+    LEGACY IMPLEMENTATION: This implementation uses dataManager to accumulate
+    state based on events to calculate availability. It is attached to the event
+    channel with the broadcastEventProcessor bean.
+  -->
+  <!--
+  <bean name="dataManager" class="org.opennms.netmgt.rtc.DataManager"/>
+
+  <bean name="broadcastEventProcessor" class="org.opennms.netmgt.rtc.BroadcastEventProcessor"/>
+
+  <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="broadcastEventProcessor" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+  -->
+  <!--
+    END LEGACY IMPLEMENTATION
+  -->
+
+  <bean id="availabilityServiceHibernateImpl" class="org.opennms.netmgt.rtc.AvailabilityServiceHibernateImpl"/>
+
+  <!-- This EventListener listens for subscribe and unsubscribe events -->
+  <bean id="dataSenderListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="dataSender" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+
+  <bean name="dataSender" class="org.opennms.netmgt.rtc.DataSender">
+    <!-- LEGACY IMPLEMENTATION: <constructor-arg ref="dataManager"/> -->
+    <constructor-arg ref="availabilityServiceHibernateImpl"/>
+    <constructor-arg ref="rtcConfigFactory"/>
+  </bean>
+
+  <bean name="daemon" class="org.opennms.netmgt.rtc.RTCManager"/>
+
+</beans>

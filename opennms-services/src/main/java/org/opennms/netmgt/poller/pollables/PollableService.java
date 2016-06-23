@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;

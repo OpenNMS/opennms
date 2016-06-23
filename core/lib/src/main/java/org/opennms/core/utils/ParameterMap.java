@@ -39,8 +39,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Convenience class for looking up string and integer values in a parameter
  * map.
- * 
- * @deprecated This class *modifies* the maps that are passed in, we should really do it another way.
  */
 public abstract class ParameterMap {
 	
@@ -59,7 +57,7 @@ public abstract class ParameterMap {
 	 * @param key a {@link java.lang.String} object.
 	 * @param defValue a long.
 	 */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static long getKeyedLong(final Map map, final String key, final long defValue) {
 	    
 	    if (map == null) return defValue;
@@ -109,7 +107,7 @@ public abstract class ParameterMap {
      * @param key a {@link java.lang.String} object.
      * @param defValues an array of int.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static final int[] getKeyedIntegerArray(final Map map, final String key, final int[] defValues) {
         
         if (map == null) return defValues;
@@ -156,7 +154,7 @@ public abstract class ParameterMap {
      * @param key a {@link java.lang.String} object.
      * @param defValue a {@link java.lang.String} object.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static String getKeyedString(final Map map, final String key, final String defValue) {
         
         if (map == null) return defValue;
@@ -186,7 +184,7 @@ public abstract class ParameterMap {
      * @param key a {@link java.lang.String} object.
      * @param defValue a boolean.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static boolean getKeyedBoolean(final Map map, final String key, final boolean defValue) {
         
         if (map == null) return defValue;

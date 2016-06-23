@@ -28,14 +28,14 @@
 
 package org.opennms.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.opennms.web.api.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * <p>FrontPageController class.</p>
@@ -49,7 +49,7 @@ public class FrontPageController {
 
     @RequestMapping(method = RequestMethod.GET)
     protected ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (request.isUserInRole(Authentication.ROLE_DASHBOARD)) {
+        if (request.isUserInRole(Authentication.ROLE_DASHBOARD) || "true".equals(System.getProperty("org.opennms.dashboard.redirect", "false").toLowerCase())) {
             return new ModelAndView("redirect:/dashboard.jsp");
         } else {
             return new ModelAndView("redirect:/index.jsp");

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jmx-datacollection-config rrdRepository="/opt/opennms/share/rrd/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/jmx-datacollection">
+    <jmx-collection name="jboss">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+            <mbean name="SystemInfo" objectname="jboss.system:type=ServerInfo">
+                <attrib name="FreeMemory" alias="FreeMemory" type="gauge"/>
+                <attrib name="TotalMemory" alias="TotalMemory" type="gauge"/>
+            </mbean>
+            <mbean name="DefaultDSManagedConnectionPool" objectname="jboss.jca:service=ManagedConnectionPool,name=DefaultDS">
+                <attrib name="AvailableConnectionCount" alias="DefDS_AvailConns" type="gauge"/>
+                <attrib name="ConnectionCount" alias="DefDS_Conns" type="gauge"/>
+                <attrib name="InUseConnectionCount" alias="DefDS_InUseConns" type="gauge"/>
+                <attrib name="ConnectionCreatedCount" alias="DefDS_CreatedConns" type="counter"/>
+                <attrib name="ConnectionDestroyedCount" alias="DefDS_DestroyConns" type="counter"/>
+            </mbean>
+    
+            <mbean name="GlobalRequestProcessor" objectname="jboss.web:type=GlobalRequestProcessor,name=http-0.0.0.0-8080">
+                <attrib name="requestCount" alias="GRP_requests" type="counter"/>
+                <attrib name="maxTime" alias="GRP_maxTime" type="gauge"/>
+                <attrib name="bytesSent" alias="GRP_bytesSent" type="counter"/>
+                <attrib name="bytesReceived" alias="GRP_bytesRec" type="counter"/>
+                <attrib name="processingTime" alias="GRP_procTime" type="counter"/>
+                <attrib name="errorCount" alias="GRP_errors" type="counter"/>
+            </mbean>
+      <!-- Thread Pool -->
+            <mbean name="ThreadPool" objectname="jboss.web:type=ThreadPool,name=http-0.0.0.0-8080">
+                <attrib name="currentThreadsBusy" alias="BusyThreads" type="gauge"/>
+                <attrib name="currentThreadCount" alias="Threads" type="gauge"/>
+                <attrib name="minSpareThreads" alias="MinSpareThreads" type="gauge"/>
+                <attrib name="maxSpareThreads" alias="MaxSpareThreads" type="gauge"/>
+                <attrib name="maxThreads" alias="MaxThreads" type="gauge"/>
+            </mbean>
+        </mbeans>
+    </jmx-collection>
+    <jmx-collection name="jsr160">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+      <!-- JVM Operating System -->
+            <mbean name="OS Memory by JVM" objectname="java.lang:type=OperatingSystem">
+                <attrib name="FreePhysicalMemorySize" alias="OsFreeMemory" type="gauge"/>
+                <attrib name="TotalPhysicalMemorySize" alias="OsTotalMemory" type="gauge"/>
+                <attrib name="FreeSwapSpaceSize" alias="OsFreeSwapSpace" type="gauge"/>
+                <attrib name="TotalSwapSpaceSize" alias="OsTotalSwapSpace" type="gauge"/>
+                <attrib name="MaxFileDescriptorCount" alias="OsMaxFileDescCo" type="gauge"/>
+                <attrib name="OpenFileDescriptorCount" alias="OsOpenFileDescCo" type="gauge"/>
+                <attrib name="CommittedVirtualMemorySize" alias="OsCommittVMemSize" type="gauge"/>
+                <attrib name="ProcessCpuTime" alias="OsProcessCpuTime" type="gauge"/>
+                <attrib name="AvailableProcessors" alias="OsAvailableCpus" type="gauge"/>
+                <attrib name="SystemLoadAverage" alias="OsSysLoadAverage" type="gauge"/>
+            </mbean>
+      <!-- JVM COMPILATION -->
+            <mbean name="java.lang.Compilation" objectname="java.lang:type=Compilation">
+                <attrib name="TotalCompilationTime" alias="JvmTotalCompilTime" type="counter"/>
+            </mbean>
+      <!-- JVM HEAP / NON HEAP -->
+            <mbean name="JVM Memory" objectname="java.lang:type=Memory">
+                <attrib name="ObjectPendingFinalizationCount" alias="ObjPendFinalCount" type="gauge"/>
+                <comp-attrib name="HeapMemoryUsage" alias="HeapMemoryUsage" type="Composite">
+                    <comp-member name="committed" alias="HeapCommitted" type="gauge"/>
+                    <comp-member name="init" alias="HeapMemInit" type="gauge"/>
+                    <comp-member name="max" alias="HeapMemMax" type="gauge"/>
+                    <comp-member name="used" alias="HeapMemUsed" type="gauge"/>
+                </comp-attrib>
+                <comp-attrib name="NonHeapMemoryUsage" alias="NonHeapMemoryUsage" type="Composite">
+                    <comp-member name="committed" alias="NonCommitted" type="gauge"/>
+                    <comp-member name="init" alias="NonHeapMemInit" type="gauge"/>
+                    <comp-member name="max" alias="NonHeapMemMax" type="gauge"/>
+                    <comp-member name="used" alias="NonHeapMemUsed" type="gauge"/>
+                </comp-attrib>
+            </mbean>
+      <!-- JAVA Threading -->
+            <mbean name="JVM Threading" objectname="java.lang:type=Threading">
+                <attrib name="ThreadCount" alias="ThreadCount" type="gauge"/>
+                <attrib name="PeakThreadCount" alias="PeakThreadCount" type="gauge"/>
+                <attrib name="DaemonThreadCount" alias="DaemonThreadCount" type="gauge"/>
+                <attrib name="CurrentThreadCpuTime" alias="CurThreadCpuTime" type="gauge"/>
+            </mbean>
+      <!-- JAVA ClassLoading -->
+            <mbean name="JVM ClassLoading" objectname="java.lang:type=ClassLoading">
+                <attrib name="TotalLoadedClassCount" alias="TotLoadedClasses" type="gauge"/>
+                <attrib name="LoadedClassCount" alias="LoadedClasses" type="gauge"/>
+                <attrib name="UnloadedClassCount" alias="UnloadedClass" type="gauge"/>
+            </mbean>
+      <!-- JAVA MemoryPool Eden Space -->
+            <mbean name="JVM MemoryPool:Eden Space" objectname="java.lang:type=MemoryPool,name=Eden Space">
+                <attrib name="CollectionUsageThreshold" alias="EdenCollUseThrsh" type="gauge"/>
+                <attrib name="CollectionUsageThresholdCount" alias="EdenCollUseThrshCnt" type="gauge"/>
+                <comp-attrib name="Usage" type="Composite" alias="EdenUsage">
+                    <comp-member name="init" type="gauge" alias="EdenUsageInit"/>
+                    <comp-member name="max" type="gauge" alias="EdenUsageMax"/>
+                    <comp-member name="used" type="gauge" alias="EdenUsageUsed"/>
+                    <comp-member name="committed" type="gauge" alias="EdenUsgComit"/>
+                </comp-attrib>
+                <comp-attrib name="PeakUsage" type="Composite" alias="EdenPeakUsage">
+                    <comp-member name="init" type="gauge" alias="EdenPeakUsageInit"/>
+                    <comp-member name="max" type="gauge" alias="EdenPeakUsageMax"/>
+                    <comp-member name="used" type="gauge" alias="EdenPeakUsageUsed"/>
+                    <comp-member name="committed" type="gauge" alias="EdenPeakUsgComit"/>
+                </comp-attrib>
+            </mbean>
+      <!-- JVM MemoryPool SurvivorSpace -->
+            <mbean name="JVM MemoryPool:Survivor Space" objectname="java.lang:type=MemoryPool,name=Survivor Space">
+                <attrib name="CollectionUsageThreshold" alias="SurvCollUseThresh" type="gauge"/>
+                <attrib name="CollectionUsageThresholdCount" alias="SurvCollUseThrshCnt" type="gauge"/>
+                <comp-attrib name="Usage" type="Composite" alias="SurvUsage">
+                    <comp-member name="init" type="gauge" alias="SurvUsageInit"/>
+                    <comp-member name="max" type="gauge" alias="SurvUsageMax"/>
+                    <comp-member name="used" type="gauge" alias="SurvUsageUsed"/>
+                    <comp-member name="committed" type="gauge" alias="SurvUsgComit"/>
+                </comp-attrib>
+                <comp-attrib name="PeakUsage" type="Composite" alias="SurvPeakUsage">
+                    <comp-member name="init" type="gauge" alias="SurvPeakUsageInit"/>
+                    <comp-member name="max" type="gauge" alias="SurvPeakUsageMax"/>
+                    <comp-member name="used" type="gauge" alias="SurvPeakUsageUsed"/>
+                    <comp-member name="committed" type="gauge" alias="SurvPeakUsgComit"/>
+                </comp-attrib>
+            </mbean>
+      <!-- JVM MemoryPool PERM GEN -->
+            <mbean name="JVM MemoryPool:Perm Gen" objectname="java.lang:type=MemoryPool,name=Perm Gen">
+                <attrib name="CollectionUsageThreshold" alias="PermCollUseThresh" type="gauge"/>
+                <attrib name="CollectionUsageThresholdCount" alias="PermCollUseThrshCnt" type="gauge"/>
+                <comp-attrib name="Usage" type="Composite" alias="PermUsage">
+                    <comp-member name="init" type="gauge" alias="PermUsageInit"/>
+                    <comp-member name="max" type="gauge" alias="PermUsageMax"/>
+                    <comp-member name="used" type="gauge" alias="PermUsageUsed"/>
+                    <comp-member name="committed" type="gauge" alias="PermUsgComit"/>
+                </comp-attrib>
+            </mbean>
+      <!-- JVM MemoryPool OLD GEN -->
+            <mbean name="JVM MemoryPool:Old Gen" objectname="java.lang:type=MemoryPool,name=Old Gen">
+                <attrib name="CollectionUsageThreshold" alias="OGenCollUseThresh" type="gauge"/>
+                <attrib name="CollectionUsageThresholdCount" alias="OGenCollUseThrshCnt" type="gauge"/>
+                <comp-attrib name="Usage" type="Composite" alias="OGenUsage">
+                    <comp-member name="init" type="gauge" alias="OGenUsageInit"/>
+                    <comp-member name="max" type="gauge" alias="OGenUsageMax"/>
+                    <comp-member name="used" type="gauge" alias="OGenUsageUsed"/>
+                    <comp-member name="committed" type="gauge" alias="OGenUsgComit"/>
+                </comp-attrib>
+            </mbean>
+      <!-- JVM GC Copy -->
+            <mbean name="JVM GarbageCollector:Copy" objectname="java.lang:type=GarbageCollector,name=Copy">
+                <attrib name="CollectionCount" alias="GcCoCollCnt" type="counter"/>
+                <attrib name="CollectionTime" alias="GcCoCollTime" type="counter"/>
+                <comp-attrib name="LastGcInfo" type="Composite" alias="GcCoLastGcInfo">
+                    <comp-member name="GcThreadCount" type="gauge" alias="GcCoThreadCnt"/>
+                    <comp-member name="duration" type="gauge" alias="GcCoDuration"/>
+                    <comp-member name="endTime" type="gauge" alias="GcCoEndTime"/>
+                </comp-attrib>
+            </mbean>
+      <!-- JVM GC MarkSweepCompact -->
+            <mbean name="JVM GarbageCollector:MarkSweepCompact" objectname="java.lang:type=GarbageCollector,name=MarkSweepCompact">
+                <attrib name="CollectionCount" alias="GcMscCollCnt" type="counter"/>
+                <attrib name="CollectionTime" alias="GcMscCollTime" type="counter"/>
+                <comp-attrib name="LastGcInfo" type="Composite" alias="GcMscLastGcInfo">
+                    <comp-member name="GcThreadCount" type="gauge" alias="GcMscThreadCnt"/>
+                    <comp-member name="duration" type="gauge" alias="GcMscDuration"/>
+                    <comp-member name="endTime" type="gauge" alias="GcMscEndTime"/>
+                </comp-attrib>
+            </mbean>
+      <!-- JVM GC ParNew -->
+            <mbean name="JVM GarbageCollector:ParNew" objectname="java.lang:type=GarbageCollector,name=ParNew">
+                <attrib name="CollectionCount" alias="GcParNewCollCnt" type="counter"/>
+                <attrib name="CollectionTime" alias="GcParNewCollTime" type="counter"/>
+                <comp-attrib name="LastGcInfo" type="Composite" alias="GcParNewLastGcInfo">
+                    <comp-member name="GcThreadCount" type="gauge" alias="GcParNewGcThreadCnt"/>
+                    <comp-member name="duration" type="gauge" alias="GcParNewDuration"/>
+                    <comp-member name="endTime" type="gauge" alias="GcParNewEndTime"/>
+                </comp-attrib>
+            </mbean>
+      <!-- JVM GC ConcurrentMarkSweep -->
+            <mbean name="JVM GarbageCollector:ConcurrentMarkSweep" objectname="java.lang:type=GarbageCollector,name=ConcurrentMarkSweep">
+                <attrib name="CollectionCount" alias="GcCmsCollCnt" type="counter"/>
+                <attrib name="CollectionTime" alias="GcCmsCollTime" type="counter"/>
+                <comp-attrib name="LastGcInfo" type="Composite" alias="GcCmsLastGcInfo">
+                    <comp-member name="GcThreadCount" type="gauge" alias="GcCmsGcThreadCnt"/>
+                    <comp-member name="duration" type="gauge" alias="GcCmsDuration"/>
+                    <comp-member name="endTime" type="gauge" alias="GcCmsEndTime"/>
+                </comp-attrib>
+            </mbean>
+      <!-- JVM GC PSMarkSweep -->
+            <mbean name="JVM GarbageCollector:PS MarkSweep" objectname="java.lang:type=GarbageCollector,name=PS MarkSweep">
+                <attrib name="CollectionCount" alias="GcPsMsCollCnt" type="counter"/>
+                <attrib name="CollectionTime" alias="GcPsMsCollTime" type="counter"/>
+                <comp-attrib name="LastGcInfo" alias="GcPsMsLastGcInfo" type="Composite">
+                    <comp-member name="duration" alias="GcPsMsDuration" type="gauge"/>
+                    <comp-member name="endTime" alias="GcPsMsEndTime" type="gauge"/>
+                </comp-attrib>
+            </mbean>
+      <!-- JVM GC PSScavenge -->
+            <mbean name="JVM GarbageCollector:PS Scavenge" objectname="java.lang:type=GarbageCollector,name=PS Scavenge">
+                <attrib name="CollectionCount" alias="GcPssCollCnt" type="counter"/>
+                <attrib name="CollectionTime" alias="GcPssCollTime" type="counter"/>
+                <comp-attrib name="LastGcInfo" type="Composite" alias="GcPssLastGcInfo">
+                    <comp-member name="GcThreadCount" type="gauge" alias="GcPssGcThreadCnt"/>
+                    <comp-member name="duration" type="gauge" alias="GcPssDuration"/>
+                    <comp-member name="endTime" type="gauge" alias="GcPssEndTime"/>
+                </comp-attrib>
+            </mbean>
+        </mbeans>
+    </jmx-collection>
+</jmx-datacollection-config>

@@ -172,14 +172,8 @@
 .1.0.8802.1.1.2.1.4.1.1.8.1.153.3 = STRING: "s-de-essn-brue-142 -"
 .1.0.8802.1.1.2.1.4.1.1.9.1.25.2 = STRING: "r-de-essn-brue-001"
 .1.0.8802.1.1.2.1.4.1.1.9.1.153.3 = STRING: "r-de-essn-brue-001"
-.1.0.8802.1.1.2.1.4.1.1.10.1.25.2 = STRING: "Cisco IOS Software, s72033_rp Software (s72033_rp-IPSERVICESK9_WAN-M), Version 12.2(33)SXI4a, RELEASE SOFTWARE (fc2)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2010 by Cisco Systems, Inc.
-Compiled Fri 16-Jul-10 19:51 by prod_re"
-.1.0.8802.1.1.2.1.4.1.1.10.1.153.3 = STRING: "Cisco IOS Software, s72033_rp Software (s72033_rp-IPSERVICESK9_WAN-M), Version 12.2(33)SXI4a, RELEASE SOFTWARE (fc2)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2010 by Cisco Systems, Inc.
-Compiled Fri 16-Jul-10 19:51 by prod_re"
+.1.0.8802.1.1.2.1.4.1.1.10.1.25.2 = STRING: "Cisco IOS Software, s72033_rp Software (s72033_rp-IPSERVICESK9_WAN-M), Version 12.2(33)SXI4a, RELEASE SOFTWARE (fc2) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2010 by Cisco Systems, Inc. Compiled Fri 16-Jul-10 19:51 by prod_re"
+.1.0.8802.1.1.2.1.4.1.1.10.1.153.3 = STRING: "Cisco IOS Software, s72033_rp Software (s72033_rp-IPSERVICESK9_WAN-M), Version 12.2(33)SXI4a, RELEASE SOFTWARE (fc2) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2010 by Cisco Systems, Inc. Compiled Fri 16-Jul-10 19:51 by prod_re"
 .1.0.8802.1.1.2.1.4.1.1.11.1.25.2 = STRING: "("
 .1.0.8802.1.1.2.1.4.1.1.11.1.153.3 = STRING: "("
 .1.0.8802.1.1.2.1.4.1.1.12.1.25.2 = Hex-STRING: 08 

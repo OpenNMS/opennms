@@ -53,14 +53,6 @@ import org.opennms.netmgt.poller.ServiceMonitorLocator;
 public interface PollerConfig {
 
     /**
-     * This method returns the boolean flag xmlrpc to indicate if notification
-     * to external xmlrpc server is needed.
-     *
-     * @return true if need to notify an external xmlrpc server
-     */
-    boolean shouldNotifyXmlrpc();
-
-    /**
      * This method returns the configured critical service name.
      *
      * @return the name of the configured critical service, or null if none is

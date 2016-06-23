@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-enterprise-reporting</artifactId>
-    <version>2015.1.1</version>
+    <version>2016.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-reportd</artifactId>
@@ -48,11 +48,9 @@
       <artifactId>jasper-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-    <!-- runtime only dependencies -->
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>runtime</scope>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.api</artifactId>
     </dependency>
   </dependencies>
 

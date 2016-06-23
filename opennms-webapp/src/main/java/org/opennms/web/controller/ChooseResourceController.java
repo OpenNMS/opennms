@@ -38,7 +38,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.ChooseResourceService;
-import org.opennms.web.svclayer.support.ChooseResourceModel;
+import org.opennms.web.svclayer.model.ChooseResourceModel;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;

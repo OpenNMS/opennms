@@ -30,13 +30,14 @@ package org.opennms.netmgt.notifd.asterisk;
 
 import java.util.List;
 
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.asterisk.agi.scripts.BaseOnmsAgiScript;
 import org.opennms.netmgt.asterisk.utils.AsteriskOriginator;
 import org.opennms.netmgt.asterisk.utils.AsteriskOriginatorException;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
-import org.opennms.netmgt.notifd.Notifd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +106,8 @@ public class AsteriskOriginateNotificationStrategy implements NotificationStrate
                 LOG.debug("Found: PARAM_NODE => {}", argValue);
                 ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODEID, argValue);
                 try {
-                    ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODELABEL, Notifd.getInstance().getNodeDao().get(argValue).getLabel());
+                    final NodeDao nodeDao = BeanUtils.getBean("notifdContext", "nodeDao", NodeDao.class);
+                    ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODELABEL, nodeDao.get(argValue).getLabel());
                 } catch (final Throwable t) {
                     ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODELABEL, null);
                 }

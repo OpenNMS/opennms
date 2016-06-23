@@ -5,7 +5,7 @@
 
     <resourceType name="astChanType" label="Asterisk Channel Type"
                  resourceLabel="${astChanTypeName}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="astChanTypeName" />
 		<parameter key="replace-all" value="s/\\s+//" />

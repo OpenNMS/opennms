@@ -39,7 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.dao.support.PropertiesGraphDao;
 import org.opennms.netmgt.model.PrefabGraph;
-import org.opennms.web.svclayer.GraphResultsService;
+import org.opennms.web.svclayer.api.GraphResultsService;
 import org.springframework.core.io.FileSystemResource;
 
 /**

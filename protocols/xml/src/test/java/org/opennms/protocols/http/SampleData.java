@@ -68,9 +68,11 @@ public class SampleData {
      * @return the parameter
      */
     public String getParameter(String name) {
-        for (Parameter p : parameters)
-            if (p.getName().equals(name))
+        for (Parameter p : parameters) {
+            if (p.getName().equals(name)) {
                 return p.getValue();
+            }
+        }
         return null;
     }
 

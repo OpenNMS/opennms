@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Date;
@@ -38,7 +37,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.rrd.RrdFileConstants;
 import org.opennms.netmgt.threshd.ThresholdingVisitor.ThresholdingResult;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -51,11 +49,6 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public class LatencyInterface {
-
-    /**
-     * Interface attribute key used to store the interface's node id
-     */
-    private static final String RRD_REPOSITORY_KEY = "org.opennms.netmgt.collectd.LatencyThresholder.RrdRepository";
 
     /**
      * Interface attribute key used to store configured thresholds
@@ -137,20 +130,6 @@ public class LatencyInterface {
 		return InetAddressUtils.str(getInetAddress());
 	}
 
-	File getLatencyDir() throws ThresholdingException {
-		String repository = getNetworkInterface().getAttribute(RRD_REPOSITORY_KEY);
-	    LOG.debug("check: rrd repository=", repository);
-	    // Get File object representing the
-	    // '/opt/OpenNMS/share/rrd/<svc_name>/<ipAddress>/' directory
-	    File latencyDir = new File(repository + File.separator + getHostAddress());
-	    if (!latencyDir.exists()) {
-	        throw new ThresholdingException("Latency directory for " + getServiceName() + "/" + getHostAddress() + " does not exist. Threshold checking failed for " + getHostAddress(), ThresholdingResult.THRESHOLDING_FAILED);
-	    } else if (!RrdFileConstants.isValidRRDLatencyDir(latencyDir)) {
-	        throw new ThresholdingException("Latency directory for " + getServiceName() + "/" + getHostAddress() + " is not a valid RRD latency directory. Threshold checking failed for " + getHostAddress(), ThresholdingResult.THRESHOLDING_FAILED);
-	    }
-	    return latencyDir;
-	}
-	
 	/**
 	 * Creates a new threshold event from the specified parms.
 	 * @param dsValue

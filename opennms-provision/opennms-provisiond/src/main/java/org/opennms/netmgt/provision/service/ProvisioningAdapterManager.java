@@ -30,15 +30,15 @@ package org.opennms.netmgt.provision.service;
 
 import java.util.Collection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.provision.ProvisioningAdapter;
 import org.opennms.netmgt.provision.ProvisioningAdapterException;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -194,7 +194,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
     /**
      * <p>setEventForwarder</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
@@ -203,7 +203,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
     /**
      * <p>getEventForwarder</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
