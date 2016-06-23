@@ -120,6 +120,18 @@ div.v-table-header-wrap {
     pointer-events: none;
 }
 
+.vertex .navigate-to {
+    opacity: 1;
+    fill: black;
+}
+
+.vertex .navigate-to .text {
+    font-family: Ionicons;
+    font-size: 10px;
+    fill: #505154;
+    stroke: white;
+}
+
 .vertex-label {
     alignment-base: text-before-edge;
     text-anchor: middle;

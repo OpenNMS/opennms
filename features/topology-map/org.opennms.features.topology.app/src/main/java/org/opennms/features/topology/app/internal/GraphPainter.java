@@ -136,6 +136,7 @@ public class GraphPainter extends BaseGraphVisitor {
 		v.setLabel(vertex.getLabel());
 		v.setTooltipText(getTooltipText(vertex));
         v.setStyleName(getVertexStyle(vertex));
+		v.setTargets(getTargets(vertex));
 		m_vertices.add(v);
 	}
 
@@ -159,6 +160,16 @@ public class GraphPainter extends BaseGraphVisitor {
         return style.toString();
 
     }
+
+	/**
+	 * Determines if the given vertex has "links" to vertices from other layers.
+	 *
+	 * @param vertex The vertex to check
+	 * @return True if links to other layers exists, false otherwise
+     */
+	private boolean getTargets(Vertex vertex) {
+		return !m_graphContainer.getMetaTopologyProvider().getOppositeVertices(vertex).isEmpty();
+	}
 
     private String getStatusCount(Vertex vertex) {
         Status status = m_statusMap.get(vertex);
