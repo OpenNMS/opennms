@@ -1,0 +1,124 @@
+// Allow image rendering
+:imagesdir: ../../images
+
+=== GraphML
+
+In {opennms-product-name} the `GraphMLTopoloyProvider` uses http://graphml.graphdrawing.org/[GraphML] formatted files to visualize graphs.
+
+[quote, , http://graphml.graphdrawing.org]
+____
+GraphML is a comprehensive and easy-to-use file format for graphs.
+It consists of a language core to describe the structural properties of a graph and a flexible extension mechanism to add application-specific data.
+ [...]
+Unlike many other file formats for graphs, GraphML does not use a custom syntax.
+Instead, it is based on XML and hence ideally suited as a common denominator for all kinds of services generating, archiving, or processing graphs.
+____
+
+{opennms-product-name} does not support the full feature set of GraphML.
+The following features are not supported: Nested graphs, Hyperedges, Ports and Extensions.
+For more information about GraphML refer to the http://graphml.graphdrawing.org/primer/graphml-primer.html[Official Documentation].
+
+A basic graph definition using GraphML usually consists of the following GraphML elements:
+
+ * Graph element to describe the graph
+ * Key elements to define custom properties, each element in the GraphML document can define as data elements
+ * Node and Edge elements
+ * Data elements to define custom properties, which {opennms-product-name} will then interpret.
+
+A very minimalistic example is given below:
+
+[source, xml]
+----
+include::examples/minimalistic.xml[]
+----
+<1> The optional label of the menu entry.
+<2> The graph definition.
+<3> Each graph must have a namespace, otherwise {opennms-product-name} refuses to load the graph.
+<4> Node definitions.
+
+==== Create/Update/Delete GraphML Topology
+
+In order to create a GraphML Topology, a valid GraphML xml file must exist.
+Afterwards this is send to the {opennms-product-name} REST API to create it:
+
+[source, shell]
+----
+curl -X POST -H "Content-Type: application/xml" -u admin:admin -d@graph.xml 'http://localhost:8980/opennms/rest/graphml/topology-name'
+----
+
+The `topology-name` is a unique identifier for the Topology.
+If a `label` property is defined for the Graphml element this is used to be displayed in the Topology UI, otherwise the `topology-name` defined here is used as a fallback.
+
+To delete an already existing Topology a HTTP DELETE request must be send:
+
+[source, shell]
+----
+curl -X DELETE -u admin:admin 'http://localhost:8980/opennms/rest/graphml/topology-name'
+----
+
+There is no PUT method available.
+In order to update an existing GraphML Topology one must first delete and afterwards re-create it.
+
+NOTE: Even if the HTTP Request was successful, it does not mean, that the Topology is actually loaded properly.
+The HTTP Request states that the Graph was successfully received, persisted and is in a valid GraphML format.
+However, the underlying `GraphMLTopologyProvider` may perform additional checks or encounters problems while parsing the file.
+If the Topology does not show up, the `karaf.log` should be checked for any clues what went wrong.
+In addition it may take a while before the Topology is actually selectable from the Topology UI.
+
+==== Supported Properties
+
+A various set of data elements are supported and interpreted by {opennms-product-name} while reading the GraphML file.
+The following table explains the supported properties and for which element they may be used.
+
+.Supported properties
+[options="header"]
+|=======================
+| Property                | Required | For element  | Default   | Description
+| `namespace`             | yes      | Graph        | -         | The namespace must be unique overall existing Topologies.
+| `description`           | no       | Graph        | -         | A description, which is shown in the Info Panel.
+| `preferred-layout`      | no       | Graph        | `D3`      | Defines a preferred layout.
+| `focus-strategy`        | no       | Graph        | `FIRST`   | Defines a focus strategy. More see <<gd-topology-graphml-focus-strategy>> for more information.
+| `focus-ids`             | no       | Graph        | -         | Refers to nodes ids in the graph.
+                                                                  This is required if `focus-strategy` is `SPECIFIC`.
+                                                                  If multiple ids should be add to focus, they are separated by `,`.
+                                                                  Example: `node1,node2`
+| `semantic-zoom-level`   | no       | Graph        | `1`       | Defines the default SZL.
+| `iconKey`               | no       | Node         | `generic` | Defines the icon. See <<gd-topology-graphml-icons>> for more information.
+| `label`                 | no       | Graph, Node  | -         | Defines a custom label. If not defined, the `id` is used instead.
+| `nodeID`                | no       | Node         | -         | Allows referencing the Vertex to a OpenNMS node.
+| `tooltipText`           | no       | Node, Edge   |           | Defines a custom tooltip. If not defined, the `id` attribute is used instead.
+|=======================
+
+[[gd-topology-graphml-focus-strategy]]
+==== Focus Strategies
+
+A `Focus Strategy` defines which Vertices should be added to focus when selecting the Topology.
+The following strategies are available:
+
+* *EMPTY* No Vertex is add to focus.
+* *ALL* All Vertices are add to focus.
+* *FIRST* The first Vertex is add to focus.
+* *SPECIFIC* Only Vertices which id match the graph's property `focus-ids` are added to focus.
+
+[[gd-topology-graphml-icons]]
+==== Icons
+
+With the _GraphMLTopoloygProvider_ it is not possible to change the icon from the Topology UI.
+Instead if a custom icon should be used, each node must contain a `iconKey` property referencing an SVG element.
+
+==== Edge Status Provider
+
+TODO
+
+[[gd-topology-graphml-layers]]
+==== Layers
+
+The _GraphMLTopologyProvider_ can handle GraphML files with multiple graphs.
+Each Graph is represented as a Layer in the Topology UI.
+If a vertex from one graph has an edge pointing to another graph, one can navigate to that layer.
+
+.GraphML example defining multiple layers
+[source, xml]
+----
+include::examples/layers.xml[]
+----

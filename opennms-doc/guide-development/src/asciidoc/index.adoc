@@ -26,6 +26,11 @@ include::text/minion/packaging.adoc[]
 include::text/minion/guidelines.adoc[]
 include::text/minion/testing.adoc[]
 
+== Topology
+include::text/topology/introduction.adoc[]
+include::text/topology/infopanel.adoc[]
+include::text/topology/graphml.adoc[]
+
 == CORS Support
 include::text/rest/CORS.adoc[]
 
