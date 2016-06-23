@@ -146,5 +146,12 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 
 Release 2016.1.0 is the first release of OpenNMS Meridian 2016.  It is based on OpenNMS Horizon 17.1.1, plus a number of smaller bug fixes.
 
-The codename for 2016.1.0 is _Greenwich_.
+The codename for 2016.1.0 is _Mercator_.
+
+[releasenotes-changelog-2016.1.1]
+==== Release 2016.1.1
+
+Release 2016.1.1 is an update to 2016.1.0 that provides a fix for upgrades.
+
+The codename for 2016.1.0 is _Cassini_.
 
