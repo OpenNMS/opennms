@@ -172,6 +172,8 @@ public class TsrmTicketerPlugin implements Plugin {
                 ownerGroup = incident.getOWNERGROUP();
                 MXStringType reportedBy = new MXStringType();
                 reportedBy = incident.getREPORTEDBY();
+                MXStringType changedBy = new MXStringType();
+                changedBy = incident.getCHANGEBY();
                 MXStringType shsCallerType = new MXStringType();
                 shsCallerType = incident.getSHSCALLERTYPE();
                 MXStringType shsReasonForOutage = new MXStringType();
@@ -221,9 +223,6 @@ public class TsrmTicketerPlugin implements Plugin {
                 if (ownerGroup != null) {
                     ticket.addAttribute(OWNER_GROUP, ownerGroup.getValue());
                 }
-                if (reportedBy != null) {
-                    ticket.setUser(reportedBy.getValue());
-                }
                 if (shsCallerType != null) {
                     ticket.addAttribute(SHS_CALLER_TYPE,
                                         shsCallerType.getValue());
@@ -253,9 +252,15 @@ public class TsrmTicketerPlugin implements Plugin {
                     if ((status != null) && (status.getValue() != null)
                             && (status.getValue().equals(getProperties().getProperty("tsrm.status.open")))) {
                         ticket.setState(Ticket.State.OPEN);
+                        if (reportedBy != null) {
+                            ticket.setUser(reportedBy.getValue());
+                        }
                     } else if ((status != null) && (status.getValue() != null)
                             && (status.getValue().equals(getProperties().getProperty("tsrm.status.close")))) {
                         ticket.setState(Ticket.State.CLOSED);
+                        if (changedBy != null) {
+                            ticket.setUser(changedBy.getValue());
+                        }
                     }
                 } catch (IOException e) {
                     LOG.error("Unable to load tsrm.status from properties ",
@@ -393,9 +398,16 @@ public class TsrmTicketerPlugin implements Plugin {
         }
 
         if (!StringUtils.isEmpty(ticket.getUser())) {
-            MXStringType reportedBy = new MXStringType();
-            reportedBy.setValue(ticket.getUser());
-            incident.setREPORTEDBY(reportedBy);
+            if (StringUtils.isEmpty(ticket.getId())) {
+                MXStringType reportedBy = new MXStringType();
+                reportedBy.setValue(ticket.getUser());
+                incident.setREPORTEDBY(reportedBy);
+            } else {
+                MXStringType changedBy = new MXStringType();
+                changedBy.setValue(ticket.getUser());
+                incident.setCHANGEBY(changedBy);
+                ;
+            }
         }
 
         if (!StringUtils.isEmpty(ticket.getAttribute(SHS_CALLER_TYPE))) {
