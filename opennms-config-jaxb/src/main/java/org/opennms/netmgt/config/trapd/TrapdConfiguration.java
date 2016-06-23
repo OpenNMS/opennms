@@ -77,7 +77,7 @@ public class TrapdConfiguration implements  Serializable {
     /**
      * SNMPv3 configuration.
      */
-	@XmlElement(name="snmpv3Users")
+	@XmlElement(name="snmpv3-user")
     private java.util.List<Snmpv3User> _snmpv3UserList;
 
 

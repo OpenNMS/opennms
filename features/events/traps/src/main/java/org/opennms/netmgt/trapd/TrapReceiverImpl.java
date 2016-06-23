@@ -32,14 +32,22 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.config.trapd.Snmpv3User;
+import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.snmp.BasicTrapProcessorFactory;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV3User;
@@ -64,17 +72,145 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
 
     @Resource(name="snmpV3Users")
     private List<SnmpV3User> m_snmpV3Users;
-
+    
     private boolean m_registeredForTraps;
     
 	private List<TrapNotificationHandler> m_trapNotificationHandlers = Collections.emptyList();
 	
-	private TrapdConfig m_trapdConfig;
-
-	public void setTrapdConfig(TrapdConfig m_trapdConfig) {
-		this.m_trapdConfig = m_trapdConfig;
+	
+	public void setTrapdConfig(TrapdConfiguration m_trapdConfig) {
+		if (checkForTrapdConfigurationChange(m_trapdConfig)) {
+			stop();
+			m_snmpTrapPort = m_trapdConfig.getSnmpTrapPort();
+			m_snmpTrapAddress = m_trapdConfig.getSnmpTrapAddress();
+			m_snmpV3Users = new ArrayList<SnmpV3User>(addToSnmpV3Users(
+					m_trapdConfig).values());
+			start();
+		}
 	}
 	
+	public boolean compareMap(Map<String, SnmpV3User> existingSnmpV3UserMap,
+			Map<String, SnmpV3User> updatedSnmpV3Usermap) {
+
+		if (existingSnmpV3UserMap == null || updatedSnmpV3Usermap == null)
+			return false;
+
+		for (String securityName : existingSnmpV3UserMap.keySet()) {
+			if (((existingSnmpV3UserMap.get(securityName).getAuthPassPhrase() != null && updatedSnmpV3Usermap
+					.get(securityName).getAuthPassPhrase() != null) && !existingSnmpV3UserMap
+					.get(securityName)
+					.getAuthPassPhrase()
+					.equalsIgnoreCase(
+							updatedSnmpV3Usermap.get(securityName)
+									.getAuthPassPhrase()))
+					|| ((existingSnmpV3UserMap.get(securityName)
+							.getAuthProtocol() != null && updatedSnmpV3Usermap
+							.get(securityName).getAuthProtocol() != null) && !existingSnmpV3UserMap
+							.get(securityName)
+							.getAuthProtocol()
+							.equalsIgnoreCase(
+									updatedSnmpV3Usermap.get(securityName)
+											.getAuthProtocol()))
+					|| ((existingSnmpV3UserMap.get(securityName).getEngineId() != null && updatedSnmpV3Usermap
+							.get(securityName).getEngineId() != null) && !existingSnmpV3UserMap
+							.get(securityName)
+							.getEngineId()
+							.equalsIgnoreCase(
+									updatedSnmpV3Usermap.get(securityName)
+											.getEngineId()))
+					|| ((existingSnmpV3UserMap.get(securityName)
+							.getPrivPassPhrase() != null && updatedSnmpV3Usermap
+							.get(securityName).getPrivPassPhrase() != null) && !existingSnmpV3UserMap
+							.get(securityName)
+							.getPrivPassPhrase()
+							.equalsIgnoreCase(
+									updatedSnmpV3Usermap.get(securityName)
+											.getPrivPassPhrase()))
+					|| ((existingSnmpV3UserMap.get(securityName)
+							.getPrivProtocol() != null && updatedSnmpV3Usermap
+							.get(securityName).getPrivProtocol() != null) && !existingSnmpV3UserMap
+							.get(securityName)
+							.getPrivProtocol()
+							.equalsIgnoreCase(
+									updatedSnmpV3Usermap.get(securityName)
+											.getPrivProtocol()))) {
+				return true;
+			}
+
+		}
+		for (String securityName : updatedSnmpV3Usermap.keySet()) {
+
+			if (((updatedSnmpV3Usermap.get(securityName).getAuthPassPhrase() != null && existingSnmpV3UserMap
+					.get(securityName).getAuthPassPhrase() != null) && !updatedSnmpV3Usermap
+					.get(securityName)
+					.getAuthPassPhrase()
+					.equalsIgnoreCase(
+							existingSnmpV3UserMap.get(securityName)
+									.getAuthPassPhrase()))
+					|| ((updatedSnmpV3Usermap.get(securityName)
+							.getAuthProtocol() != null && existingSnmpV3UserMap
+							.get(securityName).getAuthProtocol() != null) && !updatedSnmpV3Usermap
+							.get(securityName)
+							.getAuthProtocol()
+							.equalsIgnoreCase(
+									existingSnmpV3UserMap.get(securityName)
+											.getAuthProtocol()))
+					|| ((updatedSnmpV3Usermap.get(securityName).getEngineId() != null && existingSnmpV3UserMap
+							.get(securityName).getEngineId() != null) && !updatedSnmpV3Usermap
+							.get(securityName)
+							.getEngineId()
+							.equalsIgnoreCase(
+									existingSnmpV3UserMap.get(securityName)
+											.getEngineId()))
+					|| ((updatedSnmpV3Usermap.get(securityName)
+							.getPrivPassPhrase() != null && existingSnmpV3UserMap
+							.get(securityName).getPrivPassPhrase() != null) && !updatedSnmpV3Usermap
+							.get(securityName)
+							.getPrivPassPhrase()
+							.equalsIgnoreCase(
+									existingSnmpV3UserMap.get(securityName)
+											.getPrivPassPhrase()))
+					|| ((updatedSnmpV3Usermap.get(securityName)
+							.getPrivProtocol() != null && existingSnmpV3UserMap
+							.get(securityName).getPrivProtocol() != null) && !updatedSnmpV3Usermap
+							.get(securityName)
+							.getPrivProtocol()
+							.equalsIgnoreCase(
+									existingSnmpV3UserMap.get(securityName)
+											.getPrivProtocol()))) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	
+	private Map<String, SnmpV3User> listToMapConversion(
+			List<SnmpV3User> m_snmpV3Users) {
+		Map<String, SnmpV3User> snmpV3UserMap = Collections
+				.synchronizedMap(new ConcurrentHashMap<String, SnmpV3User>());
+		for (SnmpV3User snmpv3User : m_snmpV3Users) {
+			snmpV3UserMap.put(snmpv3User.getSecurityName(), snmpv3User);
+
+		}
+		return snmpV3UserMap;
+	}
+	
+	private boolean checkForTrapdConfigurationChange(TrapdConfiguration m_trapdConfig)
+	{
+		if ((m_trapdConfig.getSnmpTrapPort() == m_snmpTrapPort)
+				&& (m_trapdConfig.getSnmpTrapAddress().equalsIgnoreCase(m_snmpTrapAddress))
+				&& (m_snmpV3Users.isEmpty()||(m_snmpV3Users != null
+					&& compareMap(listToMapConversion(m_snmpV3Users),
+							addToSnmpV3Users(m_trapdConfig))))) {
+			return false;
+
+		}
+		return true;
+	}
+	
+
 	/**
 	 * Default constructor
 	 */
@@ -92,16 +228,12 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
      * @param messageGroup
      */
     public TrapReceiverImpl(TrapdConfig config) throws SocketException {
-        if (config == null) {
-            throw new IllegalArgumentException("Config cannot be null");
-        }
-        
-		if (m_trapdConfig != null) {
-			config = m_trapdConfig;
-		}
-        m_snmpTrapPort = config.getSnmpTrapPort();
-        m_snmpTrapAddress = config.getSnmpTrapAddress();
-        m_snmpV3Users = config.getSnmpV3Users();
+    	if (config == null) {
+    		throw new IllegalArgumentException("Config cannot be null");
+    	}
+    	m_snmpTrapPort = config.getSnmpTrapPort();
+    	m_snmpTrapAddress = config.getSnmpTrapAddress();
+    	m_snmpV3Users = config.getSnmpV3Users();
     }
 
     public TrapNotificationHandler getTrapNotificationHandlers() {
@@ -178,5 +310,27 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
         }
         return InetAddressUtils.addr(m_snmpTrapAddress);
     }
+    
+    public static Map<String, SnmpV3User> addToSnmpV3Users(TrapdConfiguration config) {
+		Map<String,SnmpV3User> snmpV3UserMap=Collections.synchronizedMap(new ConcurrentHashMap<String,SnmpV3User>());
+		if(config.getSnmpv3UserCollection()!=null)
+		{
+			List<Snmpv3User> snmpv3UserCollection = config.getSnmpv3UserCollection();
+			synchronized(snmpV3UserMap)
+			{
+				for (Snmpv3User snmpv3User : snmpv3UserCollection) {
+					SnmpV3User snmpV3User = new SnmpV3User();
+					snmpV3User.setAuthPassPhrase(snmpv3User.getAuthPassphrase());
+					snmpV3User.setAuthProtocol(snmpv3User.getAuthProtocol());
+					snmpV3User.setEngineId(snmpv3User.getEngineId());
+					snmpV3User.setPrivPassPhrase(snmpv3User.getPrivacyPassphrase());
+					snmpV3User.setPrivProtocol(snmpv3User.getPrivacyProtocol());
+					snmpV3User.setSecurityName(snmpv3User.getSecurityName());
+					snmpV3UserMap.put(snmpv3User.getSecurityName(),snmpV3User);
+				}
+			}
+		}
+		return snmpV3UserMap;
+	}
 
 }
