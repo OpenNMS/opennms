@@ -54,7 +54,7 @@ public class TrapdConfigBean implements TrapdConfig,Serializable {
 	private String m_snmpTrapAddress;
 	private int m_snmpTrapPort;
 	private boolean m_newSuspectOnTrap;
-	private List<SnmpV3User> m_snmpV3Users=new ArrayList<SnmpV3User>();
+	private List<SnmpV3User> m_snmpV3Users=Collections.emptyList();
 
 	public void setSnmpTrapAddress(String snmpTrapAddress) {
 		this.m_snmpTrapAddress = snmpTrapAddress;
