@@ -14,11 +14,7 @@
     <!-- Core -->
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-util</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
+      <artifactId>opennms-dao-api</artifactId>
     </dependency>
 
     <!-- Measurements API -->
