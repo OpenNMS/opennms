@@ -31,6 +31,7 @@ package org.opennms.features.amqp.eventreceiver;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.camel.BeanInject;
 import org.apache.camel.util.KeyValueHolder;
@@ -65,9 +66,8 @@ public class AMQPEventReceiverBlueprintTest extends CamelBlueprintTest {
         return "OSGI-INF/blueprint/blueprint-event-receiver.xml";
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    protected String useOverridePropertiesWithConfigAdmin(Dictionary props) {
+    protected String setConfigAdminInitialConfiguration(Properties props) {
         props.put("source", "direct:source");
      
         // Return the PID
