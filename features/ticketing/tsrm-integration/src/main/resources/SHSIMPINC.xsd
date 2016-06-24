@@ -128,14 +128,11 @@
       <xsd:element name="PROBLEMCODE_LONGDESCRIPTION" type="MXStringType" minOccurs="0" />
       <xsd:element name="RELATEDTOGLOBAL" type="MXBooleanType" minOccurs="0" />
       <xsd:element name="REMARKDESC_LONGDESCRIPTION" type="MXStringType" minOccurs="0" />
-      <xsd:element name="REMINDER" type="MXStringType" minOccurs="0" />
-      <xsd:element name="REMINDERDATE" type="MXDateTimeType" nillable="true" minOccurs="0" />
       <xsd:element name="REPORTDATE" type="MXDateTimeType" nillable="true" minOccurs="0" />
       <xsd:element name="REPORTEDBY" type="MXStringType" minOccurs="0" />
       <xsd:element name="REPORTEDEMAIL" type="MXStringType" minOccurs="0" />
       <xsd:element name="REPORTEDPHONE" type="MXStringType" minOccurs="0" />
       <xsd:element name="REPORTEDPRIORITY" type="MXLongType" nillable="true" minOccurs="0" />
-      <xsd:element name="RT_CREATEDATE" type="MXDateTimeType" nillable="true" minOccurs="0" />
       <xsd:element name="RT_ID" type="MXStringType" minOccurs="0" />
       <xsd:element name="SEARCHSOURCE" type="MXStringType" minOccurs="0" />
       <xsd:element name="SELFSERVSOLACCESS" type="MXBooleanType" minOccurs="0" />
@@ -146,43 +143,36 @@
       <xsd:element name="SHS_CALLERNAME" type="MXStringType" minOccurs="0" />
       <xsd:element name="SHS_CALLERTYPE" type="MXStringType" minOccurs="0" />
       <xsd:element name="SHS_DEVICE" type="MXStringType" minOccurs="0" />
-      <xsd:element name="SHS_GETSERVICE" type="MXStringType" minOccurs="0" />
       <xsd:element name="SHS_INCIDENTRESPONSIBILTY" type="MXStringType" minOccurs="0" />
       <xsd:element name="SHS_IPADDRESS" type="MXStringType" minOccurs="0" />
       <xsd:element name="SHS_ISSUE" type="MXStringType" minOccurs="0" />
       <xsd:element name="SHS_LASTCOMMLOG" type="MXDateTimeType" nillable="true" minOccurs="0" />
-      <xsd:element name="SHS_LEGACYID" type="MXStringType" minOccurs="0" />
- <xsd:element name="SHS_MACADDRESS" type="MXStringType" minOccurs="0" />
-      <xsd:element name="SHS_MO_MODULE" type="MXStringType" minOccurs="0" />
+      <xsd:element name="SHS_MACADDRESS" type="MXStringType" minOccurs="0" />
       <xsd:element name="SHS_OS" type="MXStringType" minOccurs="0" />
-      <xsd:element name="SHS_OS_DEVICE" type="MXStringType" minOccurs="0" />
       <xsd:element name="SHS_OUTGOING_WORKLOG" type="MXLongType" nillable="true" minOccurs="0" />
       <xsd:element name="SHS_PRODUCTTYPE" type="MXStringType" minOccurs="0" />
       <xsd:element name="SHS_REASONFOROUTAGE" type="MXStringType" minOccurs="0" />
-      <xsd:element name="SHS_REMINDBEFORE3" type="MXLongType" nillable="true" minOccurs="0" />
-      <xsd:element name="SHS_REPORTED_CLASSIFICATIONID" type="MXStringType" minOccurs="0" />
-      <xsd:element name="SHS_REPORTED_CLASSSTRUCTUREID" type="MXStringType" minOccurs="0" />
       <xsd:element name="SHS_RESOLUTION" type="MXStringType" minOccurs="0" />
-      <xsd:element name="SHS_RESOLU_CLASSIFICATIONID" type="MXStringType" minOccurs="0" />
-      <xsd:element name="SHS_RESOLU_CLASSSTRUCTUREID" type="MXStringType" minOccurs="0" />
       <xsd:element name="SHS_ROOMNUMBER" type="MXStringType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_1" type="MXStringType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_1_PROVIDED" type="MXBooleanType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_1_SUPPORTED" type="MXBooleanType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_2" type="MXStringType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_2_PROVIDED" type="MXBooleanType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_2_SUPPORTED" type="MXBooleanType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_3" type="MXStringType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_3_PROVIDED" type="MXBooleanType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_3_SUPPORTED" type="MXBooleanType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_4" type="MXStringType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_4_PROVIDED" type="MXBooleanType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_4_SUPPORTED" type="MXBooleanType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_5" type="MXStringType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_5_PROVIDED" type="MXBooleanType" minOccurs="0" />
-      <xsd:element name="SHS_SERVICE_5_SUPPORTED" type="MXBooleanType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_BCS" type="MXStringType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_BCS_PROVIDED" type="MXBooleanType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_BCS_SUPPORTED" type="MXBooleanType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_HSIA" type="MXStringType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_HSIA_PROVIDED" type="MXBooleanType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_HSIA_SUPPORTED" type="MXBooleanType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_IPTV" type="MXStringType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_IPTV_PROVIDED" type="MXBooleanType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_IPTV_SUPPORTED" type="MXBooleanType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_MNS" type="MXStringType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_MNS_PROVIDED" type="MXBooleanType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_MNS_SUPPORTED" type="MXBooleanType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_VOIP" type="MXStringType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_VOIP_PROVIDED" type="MXBooleanType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_VOIP_SUPPORTED" type="MXBooleanType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_WLAN" type="MXStringType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_WLAN_PROVIDED" type="MXBooleanType" minOccurs="0" />
+      <xsd:element name="SHS_SERVICE_WLAN_SUPPORTED" type="MXBooleanType" minOccurs="0" />
       <xsd:element name="SHS_USERNAME" type="MXStringType" minOccurs="0" />
-      <xsd:element name="SHS_WIFIADAPTER" type="MXStringType" minOccurs="0" />
       <xsd:element name="SHS_WIRED_WIFI" type="MXStringType" minOccurs="0" />
       <xsd:element name="SITEID" type="MXStringType" minOccurs="0" />
       <xsd:element name="SITEVISIT" type="MXBooleanType" minOccurs="0" />
