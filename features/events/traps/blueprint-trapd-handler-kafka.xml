@@ -31,31 +31,20 @@
 
 	<camelContext id="trapNotificationHandler" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:trapdHandlerKafkaProperties" />
-		<route id="sendTrapViaKafka">
+		<route id="recieveTraps">
 			<from uri="seda:handleMessage" />
 			<log message="${body}"/>
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
-			<log message="${body}"/>
-			
 			<setHeader headerName="kafka.PARTITION_KEY">
-				<!-- TODO: Partition by remote address -->
-				<!-- <simple>${body.remoteAddress}</simple> -->
 				<simple>trap</simple>
 			</setHeader>
-			
-			<to uri="seda:trapHandler1"/>
-		</route>
-		
-		<route id="sendTrapViaKafka1">
-			<from uri="seda:trapHandler1"/>
-			  <bean ref="kafkaEncoder" method="toBytes"/>
+			<bean ref="kafkaEncoder" method="toBytes"/>
 			<log message="${body}"/>
-
-			<to uri="seda:trapHandler2"/>
+			<to uri="seda:trapHandler"/>
 		</route>
 		
-		<route id="sendTrapViaKafka2">
-			<from uri="seda:trapHandler2"/>
+		<route id="sendTrapViaKafka">
+			<from uri="seda:trapHandler"/>
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
 			<to uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>

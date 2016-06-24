@@ -1,7 +1,6 @@
 package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.Map;
@@ -21,20 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
-import org.snmp4j.asn1.BERInputStream;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.smi.AbstractVariable;
-import org.snmp4j.smi.Counter32;
-import org.snmp4j.smi.Counter64;
-import org.snmp4j.smi.Gauge32;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.Null;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
-import org.snmp4j.smi.Opaque;
 import org.snmp4j.smi.TimeTicks;
-import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
 import kafka.serializer.Decoder;
@@ -72,7 +64,7 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
     public TrapInformation parseV2Information(JsonNode result){
     	
     	String trapAddress = result.findValue("trapAddress").asText();
-    	LOG.debug("1");
+    	
     	JsonNode trapProcessorRoot = result.findValue("trapProcessor");
     	        	
     	TrapProcessor trapProcessor = new BasicTrapProcessor();
@@ -259,49 +251,4 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
         }
         return ids;
     }
-    
-    private static Variable createVariable(int smiSyntax) {
-    	    switch (smiSyntax) {
-    	     	case 6: 
-    	     		return new OID();
-    	     
-    	     	case 2: 
-    	     		return new Integer32();
-    	    
-    	     	case 4: 
-    	     		return new OctetString();
-    	    
-    	     	case 66: 
-    	     		return new Gauge32();
-    	     
-    	     	case 65: 
-    	     		return new Counter32();
-    	     
-    	     	case 70: 
-    	     		return new Counter64();
-    	     
-    	     	case 5: 
-    	     		return new Null();
-    	     
-    	     	case 67: 
-    	     		return new TimeTicks();
-    	     
-    	     	case 130: 
-    	     		return new Null(130);
-    	     
-    	     	case 129: 
-    	     		return new Null(129);
-    	     
-    	     	case 128: 
-    	     		return new Null(128);
-    	     
-    	     	case 68: 
-    	     		return new Opaque();
-    	     
-    	     	case 64: 
-    	     		return new IpAddress();
-    	     }
-    	     
-    	     throw new IllegalArgumentException("Unsupported variable syntax: " + smiSyntax);
-    	  }
 }

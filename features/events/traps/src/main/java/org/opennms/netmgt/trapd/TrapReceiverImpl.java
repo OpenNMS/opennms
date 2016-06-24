@@ -34,11 +34,9 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
@@ -75,15 +73,15 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
     
     private boolean m_registeredForTraps;
     
-	private List<TrapNotificationHandler> m_trapNotificationHandlers = Collections.emptyList();
+	private List<TrapNotificationHandler> m_trapNotificationHandlers = new ArrayList<TrapNotificationHandler>();
 	
-	private Map<String,SnmpV3User> m_updatedSnmpV3Users=Collections.emptyMap();
+	private Map<String,SnmpV3User> m_updatedSnmpV3Users=new TreeMap<String, SnmpV3User>();
 	
-	private Map<String,SnmpV3User> m_SnmpV3UsersMap=Collections.emptyMap();
+	private Map<String,SnmpV3User> m_SnmpV3UsersMap=new TreeMap<String, SnmpV3User>();
 	
 	
 	public void setTrapdConfig(TrapdConfiguration m_trapdConfig) {
-	
+		m_updatedSnmpV3Users=addToSnmpV3Users(m_trapdConfig);
 		if (checkForTrapdConfigurationChange(m_trapdConfig)) {
 			stop();
 			m_snmpTrapPort = m_trapdConfig.getSnmpTrapPort();
