@@ -30,12 +30,9 @@ package org.opennms.netmgt.trapd;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.opennms.netmgt.config.TrapdConfig;
-import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.snmp.SnmpV3User;
 
@@ -54,7 +51,7 @@ public class TrapdConfigBean implements TrapdConfig,Serializable {
 	private String m_snmpTrapAddress;
 	private int m_snmpTrapPort;
 	private boolean m_newSuspectOnTrap;
-	private List<SnmpV3User> m_snmpV3Users=Collections.emptyList();
+	private List<SnmpV3User> m_snmpV3Users=new ArrayList<SnmpV3User>();
 
 	public void setSnmpTrapAddress(String snmpTrapAddress) {
 		this.m_snmpTrapAddress = snmpTrapAddress;
@@ -96,7 +93,7 @@ public class TrapdConfigBean implements TrapdConfig,Serializable {
 	public void onUpdate(TrapdConfiguration config) {
 		this.m_snmpTrapAddress = config.getSnmpTrapAddress();
 		this.m_snmpTrapPort =config.getSnmpTrapPort();
-		this.m_snmpV3Users.addAll(TrapReceiverImpl.addToSnmpV3Users(config).values());
+		this.m_snmpV3Users=new ArrayList<SnmpV3User>(TrapReceiverImpl.addToSnmpV3Users(config).values());
 	}
 
 }
