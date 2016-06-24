@@ -93,7 +93,7 @@ public class TrapdConfigBean implements TrapdConfig,Serializable {
 	public void onUpdate(TrapdConfiguration config) {
 		this.m_snmpTrapAddress = config.getSnmpTrapAddress();
 		this.m_snmpTrapPort =config.getSnmpTrapPort();
-		this.m_snmpV3Users.addAll(TrapReceiverImpl.addToSnmpV3Users(config).values());
+		this.m_snmpV3Users=new ArrayList<SnmpV3User>(TrapReceiverImpl.addToSnmpV3Users(config).values());
 	}
 
 }
