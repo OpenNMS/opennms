@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-    <artifactId>plugins</artifactId>
+    <artifactId>org.opennms.features.topology.plugins</artifactId>
     <groupId>org.opennms.features.topology</groupId>
     <version>19.0.0-SNAPSHOT</version>
   </parent>
 
     <groupId>org.opennms.features.topology.plugins.topo</groupId>
-    <artifactId>history</artifactId>
+    <artifactId>org.opennms.features.topology.plugins.topo.history</artifactId>
     <packaging>bundle</packaging>
 
     <name>OpenNMS :: Features :: Topology :: Plugins :: History</name>
@@ -53,7 +53,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.topology</groupId>
-            <artifactId>app</artifactId>
+            <artifactId>org.opennms.features.topology.app</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

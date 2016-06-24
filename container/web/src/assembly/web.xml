@@ -17,20 +17,22 @@
             <unpack>true</unpack>
             <outputDirectory>WEB-INF/karaf</outputDirectory>
             <useProjectArtifact>false</useProjectArtifact>
+            <useStrictFiltering>true</useStrictFiltering>
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <scope>provided</scope>
             <includes>
-                <include>org.opennms.container:karaf:tar.gz:${project.version}</include>
+                <include>org.opennms.container:org.opennms.container.karaf:tar.gz:${project.version}</include>
             </includes>
         </dependencySet>
         <dependencySet>
             <unpack>true</unpack>
             <outputDirectory>/</outputDirectory>
             <useProjectArtifact>false</useProjectArtifact>
+            <useStrictFiltering>true</useStrictFiltering>
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <scope>provided</scope>
             <includes>
-                <include>org.opennms.container:servlet:war:${project.version}</include>
+                <include>org.opennms.container:org.opennms.container.servlet:war:${project.version}</include>
             </includes>
         </dependencySet>
     </dependencySets>

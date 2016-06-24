@@ -37,7 +37,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>application</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.topo.application</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
