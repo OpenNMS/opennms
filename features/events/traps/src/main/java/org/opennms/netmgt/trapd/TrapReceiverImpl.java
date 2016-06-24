@@ -84,11 +84,14 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
 		m_updatedSnmpV3Users=addToSnmpV3Users(m_trapdConfig);
 		if (checkForTrapdConfigurationChange(m_trapdConfig)) {
 			stop();
+			LOG.info("TrapReceiver service has been stopped.");
 			m_snmpTrapPort = m_trapdConfig.getSnmpTrapPort();
 			m_snmpTrapAddress = m_trapdConfig.getSnmpTrapAddress();
 			m_snmpV3Users = new ArrayList<SnmpV3User>(m_updatedSnmpV3Users.values());
 			clearValues();
+			LOG.info("Starting the TrapReceiver service.");
 			start();
+			LOG.info("TrapReceiver service has been restarted successfully.");
 		}
 	}
 	
@@ -157,15 +160,18 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
 			TrapdConfiguration m_trapdConfig) {
 		m_SnmpV3UsersMap=listToMapConversion(m_snmpV3Users);
 		if (m_trapdConfig.getSnmpTrapPort() != m_snmpTrapPort) {
+			LOG.info("SNMPV3 trap port has been updated from trapd-confguration.xml.");
 			return true;
 		} else if (m_trapdConfig.getSnmpTrapAddress() != null
 				&& !m_trapdConfig.getSnmpTrapAddress().equalsIgnoreCase(
 						m_snmpTrapAddress)) {
+			LOG.info("SNMPV3 trap address has been updated from trapd-confguration.xml.");
 			return true;
 		} else if (compareSnmpV3UsersMap(m_SnmpV3UsersMap,
 				m_updatedSnmpV3Users)
 				|| compareSnmpV3UsersMap(m_updatedSnmpV3Users,
 						m_SnmpV3UsersMap)) {
+			LOG.info("SNMPV3 Users has been updated from trapd-confguration.xml.");
 			return true;
 		}
 
