@@ -148,6 +148,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                                            + "where n.id = ?", id);
 
         initialize(node.getLocation());
+        initialize(node.getCategories());
         initialize(node.getIpInterfaces());
         for (OnmsIpInterface i : node.getIpInterfaces()) {
             initialize(i.getMonitoredServices());
