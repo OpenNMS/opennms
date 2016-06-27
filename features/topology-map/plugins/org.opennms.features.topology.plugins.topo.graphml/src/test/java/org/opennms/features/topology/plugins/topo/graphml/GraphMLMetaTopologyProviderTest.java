@@ -39,7 +39,7 @@ import java.util.Iterator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 
@@ -71,9 +71,9 @@ public class GraphMLMetaTopologyProviderTest {
         GraphProvider regionsGraphProvider = it.next();
         assertEquals("acme:regions", regionsGraphProvider.getVertexNamespace());
         assertEquals("regions", regionsGraphProvider.getTopologyProviderInfo().getName());
-        assertNull(metaTopoProvider.getPreferredLayout(regionsGraphProvider));
+        assertNull(regionsGraphProvider.getDefaults().getPreferredLayout());
         assertEquals(GraphMLTopologyProvider.DEFAULT_DESCRIPTION, regionsGraphProvider.getTopologyProviderInfo().getDescription());
-        assertEquals(AbstractTopologyProvider.DEFAULT_SEMANTIC_ZOOM_LEVEL, regionsGraphProvider.getDefaultSzl());
+        assertEquals(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL, regionsGraphProvider.getDefaults().getSemanticZoomLevel());
         assertEquals(4, regionsGraphProvider.getVertexTotalCount());
         for (String region : Lists.newArrayList("north", "south", "east", "west")) {
             // Every vertex should link to 4 other vertices
@@ -86,8 +86,8 @@ public class GraphMLMetaTopologyProviderTest {
         assertEquals("acme:markets", marketsGraphProvider.getVertexNamespace());
         assertEquals("Markets", marketsGraphProvider.getTopologyProviderInfo().getName());
         assertEquals("The Markets Layer", marketsGraphProvider.getTopologyProviderInfo().getDescription());
-        assertEquals("Some Layout", metaTopoProvider.getPreferredLayout(marketsGraphProvider));
-        assertEquals(0, marketsGraphProvider.getDefaultSzl());
+        assertEquals("Some Layout", marketsGraphProvider.getDefaults().getPreferredLayout());
+        assertEquals(0, marketsGraphProvider.getDefaults().getSemanticZoomLevel());
         assertEquals(16, marketsGraphProvider.getVertexTotalCount());
     }
 }

@@ -46,6 +46,21 @@ public interface GraphContainer extends DisplayState {
         void graphChanged(GraphContainer graphContainer);
     }
 
+    /**
+     * Callback which is invoked after the {@link GraphProvider} has been changed.
+     *
+     * @see #selectTopologyProvider(GraphProvider, Callback...)
+     */
+    interface Callback {
+        /**
+         * is invoked after the {@link GraphProvider} has changed.
+         *
+         * @param graphContainer The container
+         * @param graphProvider The new graph provider
+         */
+        void callback(GraphContainer graphContainer, GraphProvider graphProvider);
+    }
+
     MetaTopologyProvider getMetaTopologyProvider();
 
     void setMetaTopologyProvider(MetaTopologyProvider metaGraphProvider);
@@ -66,10 +81,10 @@ public interface GraphContainer extends DisplayState {
     /**
      * Selects the specified {@link GraphProvider}.
      *
-     * @param topologyProvider the provider to select.
+     * @param graphProvider the provider to select.
+     * @param callbacks callbacks to invoke after the provider has been selected (e.g. apply semantic zoom level, etc)
      */
-    // TODO Define a "Operation"-List which is executed afterwards (or empty list)
-    void selectTopologyProvider(GraphProvider topologyProvider, boolean resetCriteriaAndSzl);
+    void selectTopologyProvider(GraphProvider graphProvider, Callback... callbacks);
 
     void addChangeListener(ChangeListener listener);
 

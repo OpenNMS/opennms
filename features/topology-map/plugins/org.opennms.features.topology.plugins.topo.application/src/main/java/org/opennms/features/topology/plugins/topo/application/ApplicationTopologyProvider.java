@@ -40,7 +40,7 @@ import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
@@ -99,13 +99,17 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
     }
 
     @Override
-    public List<Criteria> getDefaultCriteria() {
-        // Only show the first application by default
-        List<OnmsApplication> applications = applicationDao.findAll();
-        if (!applications.isEmpty()) {
-            return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(new ApplicationVertex(applications.get(0))));
-        }
-        return null;
+    public Defaults getDefaults() {
+        return new Defaults()
+                .withPreferredLayout("Hierarchy Layout")
+                .withCriteria(() -> {
+                    // Only show the first application by default
+                    List<OnmsApplication> applications = applicationDao.findAll();
+                    if (!applications.isEmpty()) {
+                        return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(new ApplicationVertex(applications.get(0))));
+                    }
+                    return null;
+                });
     }
 
     @Override

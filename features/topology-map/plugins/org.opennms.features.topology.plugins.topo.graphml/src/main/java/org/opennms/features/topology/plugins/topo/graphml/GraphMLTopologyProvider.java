@@ -42,8 +42,8 @@ import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.FocusStrategy;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -56,7 +56,7 @@ import com.google.common.collect.Sets;
 public class GraphMLTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
     protected static final String DEFAULT_DESCRIPTION = "This Topology Provider visualizes a predefined GraphML graph.";
-    private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyProvider.class);;
 
     private static TopologyProviderInfo createTopologyProviderInfo(GraphMLGraph graph) {
         String name = graph.getProperty(GraphMLProperties.LABEL, graph.getId());
@@ -65,6 +65,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     }
 
     private final int defaultSzl;
+    private final String preferredLayout;
     private final FocusStrategy focusStrategy;
     private final List<String> focusIds;
 
@@ -88,9 +89,14 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         defaultSzl = getDefaultSzl(graph);
         focusStrategy = getFocusStrategy(graph);
         focusIds = getFocusIds(graph);
+        preferredLayout = getPreferredLayout(graph);
         if (focusStrategy != FocusStrategy.SPECIFIC && !focusIds.isEmpty()) {
             LOG.warn("Focus ids is defined, but strategy is {}. Did you mean to specify {}={}. Ignoring focusIds.", GraphMLProperties.FOCUS_STRATEGY, FocusStrategy.SPECIFIC.name());
         }
+    }
+
+    private static String getPreferredLayout(GraphMLGraph graph) {
+        return graph.getProperty(GraphMLProperties.PREFERRED_LAYOUT);
     }
 
     private static FocusStrategy getFocusStrategy(GraphMLGraph graph) {
@@ -115,7 +121,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         if (szl != null) {
             return szl;
         }
-        return AbstractTopologyProvider.DEFAULT_SEMANTIC_ZOOM_LEVEL;
+        return Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL;
     }
 
     @Override
@@ -134,14 +140,14 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     }
 
     @Override
-    public int getDefaultSzl() {
-        return defaultSzl;
-    }
-
-    @Override
-    public List<Criteria> getDefaultCriteria() {
-        List<VertexHopGraphProvider.VertexHopCriteria> focusCriteria = focusStrategy.getFocusCriteria(this, focusIds.toArray(new String[focusIds.size()]));
-        return Lists.newArrayList(focusCriteria);
+    public Defaults getDefaults() {
+        return new Defaults()
+                .withSemanticZoomLevel(defaultSzl)
+                .withPreferredLayout(preferredLayout)
+                .withCriteria(() -> {
+                    List<VertexHopGraphProvider.VertexHopCriteria> focusCriteria = focusStrategy.getFocusCriteria(this, focusIds.toArray(new String[focusIds.size()]));
+                    return Lists.newArrayList(focusCriteria);
+                });
     }
 
     @Override

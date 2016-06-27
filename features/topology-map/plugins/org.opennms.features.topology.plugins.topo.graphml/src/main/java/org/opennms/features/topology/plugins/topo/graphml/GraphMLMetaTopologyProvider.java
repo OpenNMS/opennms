@@ -64,7 +64,6 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     private File graphMLFile;
     private final Map<String, GraphProvider> graphsByNamespace = Maps.newLinkedHashMap();
     private final Map<String, GraphMLTopologyProvider> rawGraphsByNamespace = Maps.newLinkedHashMap();
-    private final Map<String, String> preferredLayoutByNamespace = Maps.newLinkedHashMap();
     private final Map<VertexRef, List<VertexRef>> oppositeVertices = Maps.newLinkedHashMap();
 
     private VertexRef getVertex(GraphMLNode node) {
@@ -94,7 +93,6 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
                 final VertexHopGraphProvider vertexHopGraphProvider = new VertexHopGraphProvider(topoProvider);
                 graphsByNamespace.put(topoProvider.getVertexNamespace(), vertexHopGraphProvider);
                 rawGraphsByNamespace.put(topoProvider.getVertexNamespace(), topoProvider);
-                preferredLayoutByNamespace.put(topoProvider.getVertexNamespace(), eachGraph.getProperty(GraphMLProperties.PREFERRED_LAYOUT));
             }
 
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
@@ -124,11 +122,6 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     @Override
     public Collection<GraphProvider> getGraphProviders() {
         return graphsByNamespace.values();
-    }
-
-    @Override
-    public String getPreferredLayout(GraphProvider graphProvider) {
-        return preferredLayoutByNamespace.get(graphProvider.getVertexNamespace());
     }
 
     @Override

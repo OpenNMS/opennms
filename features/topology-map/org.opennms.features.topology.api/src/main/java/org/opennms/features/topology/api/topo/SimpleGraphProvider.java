@@ -32,7 +32,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -205,8 +204,8 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
     }
 
     @Override
-    public List<Criteria> getDefaultCriteria() {
-        return Collections.emptyList();
+    public Defaults getDefaults() {
+        return new Defaults();
     }
 
     void load(URI url) throws JAXBException, MalformedURLException {

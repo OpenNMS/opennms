@@ -40,7 +40,6 @@
     <!-- Meta topology provider -->
     <bean id="bsmMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
         <argument ref="bsmTopologyHopProvider" />
-        <property name="preferredLayout" value="Hierarchy Layout"/>
     </bean>
 
     <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="bsmMetaTopologyProvider">

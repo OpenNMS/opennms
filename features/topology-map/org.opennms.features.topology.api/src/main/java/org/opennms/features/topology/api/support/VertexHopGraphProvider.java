@@ -51,6 +51,7 @@ import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -716,13 +717,8 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     }
 
     @Override
-    public int getDefaultSzl() {
-        return m_delegate.getDefaultSzl();
-    }
-
-    @Override
-    public List<Criteria> getDefaultCriteria() {
-        return m_delegate.getDefaultCriteria();
+    public Defaults getDefaults() {
+        return m_delegate.getDefaults();
     }
 
     @Override
