@@ -1,5 +1,6 @@
 package org.opennms.features.topology.plugins.topo.graphml;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -55,5 +56,34 @@ public class GraphMLEdgeStatus implements Status {
     public GraphMLEdgeStatus style(final String key, final String value) {
         this.styleProperties.put(key, value);
         return this;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+
+        final GraphMLEdgeStatus that = (GraphMLEdgeStatus) o;
+        return Objects.equal(this.severity, that.severity) &&
+               Objects.equal(this.styleProperties, that.styleProperties);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.severity,
+                                this.styleProperties);
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                      .add("severity", severity)
+                      .add("styleProperties", styleProperties)
+                      .toString();
     }
 }

@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<discovery-configuration initial-sleep-time="30000" packets-per-second="1" restart-sleep-time="86400000" retries="1" timeout="2000">
+</discovery-configuration>

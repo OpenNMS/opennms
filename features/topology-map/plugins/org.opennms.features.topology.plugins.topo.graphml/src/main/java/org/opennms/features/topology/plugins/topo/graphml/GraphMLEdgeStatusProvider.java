@@ -72,9 +72,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * TODO: implement test for the status provider
- */
 public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
 
     private final static Logger LOG = LoggerFactory.getLogger(GraphMLEdgeStatusProvider.class);

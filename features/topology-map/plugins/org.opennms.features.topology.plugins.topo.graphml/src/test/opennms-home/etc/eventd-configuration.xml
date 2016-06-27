@@ -1,0 +1,10 @@
+<EventdConfiguration
+        TCPAddress="127.0.0.1"
+        TCPPort="5817"
+        UDPAddress="127.0.0.1"
+        UDPPort="5817"
+	receivers="5"
+	getNextEventID="SELECT nextval('eventsNxtId')"
+	socketSoTimeoutRequired="yes"
+	socketSoTimeoutPeriod="3000">
+</EventdConfiguration>

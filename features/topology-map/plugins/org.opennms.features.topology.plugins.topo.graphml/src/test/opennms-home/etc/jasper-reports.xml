@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasper-reports
+	xmlns:this="http://xmlns.opennms.org/xsd/config/jasper-reports"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/jasper-reports">
+	<report id="sample-report" template="sample-report.jrxml" engine="jdbc" /> 
+	<report id="trivial-report" template="trivial-report.jrxml" engine="null" /> 
+</jasper-reports>

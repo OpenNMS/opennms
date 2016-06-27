@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<surveillance-view-configuration 
+  xmlns:this="http://www.opennms.org/xsd/config/surveillance-views" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.opennms.org/xsd/config/surveillance-views http://www.opennms.org/xsd/config/surveillance-views.xsd ">
+  <views>
+	  <view name="default" refresh-seconds="300" >
+		  <rows>
+		  	<row-def label="Routers" >
+	          <category name="Routers"/>
+	        </row-def>
+	        <row-def label="Switches" >
+	          <category name="Switches" />
+	        </row-def>
+	        <row-def label="Servers" >
+	          <category name="Servers" />
+	        </row-def>
+	      </rows>
+	      <columns>
+	        <column-def label="PROD" >
+	          <category name="Production" />
+	        </column-def>
+	        <column-def label="TEST" >
+	          <category name="Test" />
+	        </column-def>
+	        <column-def label="DEV" >
+	          <category name="Development" />
+	        </column-def>
+	      </columns>
+	  </view>
+  </views>
+</surveillance-view-configuration>

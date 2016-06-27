@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<userinfo xmlns="http://xmlns.opennms.org/xsd/users">
+  <header>
+    <rev>.9</rev>
+    <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+    <mstation>master.nmanage.com</mstation>
+  </header>
+  <users>
+    <user>
+      <user-id>admin</user-id>
+      <full-name>Administrator</full-name>
+      <user-comments>
+        Default administrator, do not delete
+      </user-comments>
+      <password>21232F297A57A5A743894A0E4A801FC3</password>
+    </user>
+  </users>
+</userinfo>

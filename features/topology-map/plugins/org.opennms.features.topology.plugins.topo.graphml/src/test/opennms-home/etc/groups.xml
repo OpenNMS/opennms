@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<groupinfo  xmlns="http://xmlns.opennms.org/xsd/groups">
+    <header>
+        <rev>1.3</rev>
+        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+        <mstation>dhcp-219.internal.opennms.org</mstation>
+    </header>
+    <groups>
+	<group>
+	    <name>Admin</name>
+            <comments>The administrators</comments>
+	    <user>admin</user>
+        </group>
+    </groups>
+</groupinfo>
