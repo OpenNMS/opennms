@@ -47,8 +47,6 @@
             <cm:property name="password" value="admin"/>
         </cm:default-properties>
     </cm:property-placeholder>
-
-
      
     <bean id="trapdConfig" class="org.opennms.netmgt.trapd.TrapdConfigBean">
         <property name="snmpTrapPort" value="${trapd.listen.port}"/>
