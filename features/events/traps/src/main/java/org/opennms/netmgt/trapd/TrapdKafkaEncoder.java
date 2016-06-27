@@ -16,8 +16,8 @@ public class TrapdKafkaEncoder implements Encoder<Object>{
 	public byte[] toBytes(Object arg0) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-        	System.out.println("######################################################## (arg0).getBytes() is : "+arg0);
-        	System.out.println(" ######################################################## objectMapper.writeValueAsString(arg0).getBytes() is : "+objectMapper.writeValueAsString(arg0).getBytes());
+        	//System.out.println("######################################################## (arg0).getBytes() is : "+arg0);
+        	//System.out.println(" ######################################################## objectMapper.writeValueAsString(arg0).getBytes() is : "+objectMapper.writeValueAsString(arg0).getBytes());
         	//byte[] result = objectMapper.writeValueAsString(arg0).getBytes();
         	//objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,false);
         	//byte[] result = objectMapper.writeValueAsBytes(arg0);
