@@ -199,6 +199,7 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
     	if (config == null) {
     		throw new IllegalArgumentException("Config cannot be null");
     	}
+    	System.out.println("#######################################ConstructorCalled"+config);
     	m_snmpTrapPort = config.getSnmpTrapPort();
     	m_snmpTrapAddress = config.getSnmpTrapAddress();
     	m_snmpV3Users = config.getSnmpV3Users();
@@ -231,6 +232,7 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
     @Override
     public void start(){
         try {
+        	System.out.println("#######################################Start");
             InetAddress address = getInetAddress();
             LOG.info("Listening on {}:{}", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
             SnmpUtils.registerForTraps(this, new BasicTrapProcessorFactory(), address, m_snmpTrapPort, m_snmpV3Users); // Need to clarify 
