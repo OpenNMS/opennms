@@ -5,6 +5,7 @@
 ==== Release Meridian-2015.1.1
 
 Release 2015.1.1 is the second release of OpenNMS Meridian 2015.  It contains a number of bug fixes as well as a few security fixes over 2015.1.0.
+The codename for 2015.1.1 is _UTC_.
 
 ===== Bug
 
