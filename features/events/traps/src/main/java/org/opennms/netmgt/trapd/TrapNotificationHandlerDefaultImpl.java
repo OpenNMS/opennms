@@ -36,7 +36,6 @@ import org.opennms.core.concurrent.ExecutorFactoryJavaImpl;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandler {
 	private static final Logger LOG = LoggerFactory.getLogger(TrapNotificationHandlerDefaultImpl.class);
@@ -51,17 +50,15 @@ public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandl
 	private final ExecutorFactory m_executorFactory = new ExecutorFactoryJavaImpl();
 	private final ExecutorService m_processorExecutor = m_executorFactory.newExecutor(TRAP_PROCESSOR_THREADS, Integer.MAX_VALUE, "OpenNMS.Trapd", "trapProcessors");
 
-	@Autowired
 	private TrapQueueProcessorFactory m_processorFactory;
-	
-	@Autowired
-	private EventCreator m_eventCreator;
+
+	private TrapdIpMgr m_trapdIpManager;
 
 	@Override
 	public void handleTrapNotification(final TrapNotification message) {
 		try {
-			// HZN-632: Call message.setProcessor() to change the processor to the EventCreator
-			message.setTrapProcessor(getEventCreator());
+			// HZN-632: Call message.setProcessor() to change the processor to an EventCreator
+			message.setTrapProcessor(new EventCreator(m_trapdIpManager));
 			// Use the TrapQueueProcessorFactory to construct a TrapQueueProcessor
 			TrapQueueProcessor processor = m_processorFactory.getInstance(message);
 			// Call the processor asynchronously
@@ -86,17 +83,17 @@ public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandl
 	}
 
 	/**
-	 * @return the eventCreator
+	 * @return the trapdIpManager
 	 */
-	public EventCreator getEventCreator() {
-		return m_eventCreator;
+	public TrapdIpMgr getTrapdIpManager() {
+		return m_trapdIpManager;
 	}
 
 	/**
-	 * @param eventCreator the eventCreator to set
+	 * @param trapdIpManager the TrapdIpMgr to set
 	 */
-	public void setEventCreator(EventCreator eventCreator) {
-		this.m_eventCreator = eventCreator;
+	public void setTrapdIpManager(TrapdIpMgr trapdIpManager) {
+		this.m_trapdIpManager = trapdIpManager;
 	}
 
 }
