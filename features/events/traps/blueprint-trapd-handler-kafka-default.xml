@@ -24,10 +24,6 @@
 	
 	<bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.TrapdIpManagerDaoImpl"/>
 	
-	<bean id="eventCreator" class="org.opennms.netmgt.trapd.EventCreator">
-		<argument ref="trapdIpMgr"/>
-	</bean>
-
 	<!-- Get a reference to the org.opennms.netmgt.events.api.EventForwarder -->
 	<reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
 
