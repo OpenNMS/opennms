@@ -150,7 +150,7 @@ public class GraphAlgorithms {
      * @param elements S
      * @return P(S)
      */
-    public static <T> Set<Set<T>> generatePowerSet(Collection<T> elements) {
+    protected static <T> Set<Set<T>> generatePowerSet(Collection<T> elements) {
         Set<Set<T>> powerSet = Sets.newConcurrentHashSet(); // Allows us to modify while iterating
         powerSet.add(Sets.newHashSet());
         for (T element : elements) {
