@@ -76,7 +76,7 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
 
     private final static Logger LOG = LoggerFactory.getLogger(GraphMLEdgeStatusProvider.class);
 
-    private final static Path DIR = Paths.get(System.getProperty("opennms.home"), "etc", "graphml-edge-status");
+    private Path scriptPath;
 
     private final GraphMLTopologyProvider provider;
     private final ScriptEngineManager scriptEngineManager;
@@ -97,8 +97,16 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
         this.measurementsWrapper = new MeasurementsWrapper(Objects.requireNonNull(measurementsService));
+        this.scriptPath = Paths.get(System.getProperty("opennms.home"), "etc", "graphml-edge-status");
     }
 
+    public Path getScriptPath() {
+        return scriptPath;
+    }
+
+    public void setScriptPath(Path scriptPath) {
+        this.scriptPath = Objects.requireNonNull(scriptPath);
+    }
 
     private class StatusScript {
 
@@ -193,7 +201,7 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
     @Override
     public Map<EdgeRef, Status> getStatusForEdges(EdgeProvider edgeProvider, Collection<EdgeRef> edges, Criteria[] criteria) {
         final List<StatusScript> scripts = Lists.newArrayList();
-        try (final DirectoryStream<Path> stream = Files.newDirectoryStream(DIR)) {
+        try (final DirectoryStream<Path> stream = Files.newDirectoryStream(getScriptPath())) {
             for (final Path path : stream) {
                 final String extension = FilenameUtils.getExtension(path.toString());
                 final ScriptEngine scriptEngine = this.scriptEngineManager.getEngineByExtension(extension);
@@ -210,7 +218,7 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
                 scripts.add(new StatusScript(scriptEngine, source));
             }
         } catch (final IOException e) {
-            LOG.error("Failed to walk template directory: {}", DIR);
+            LOG.error("Failed to walk template directory: {}", getScriptPath());
             return Collections.emptyMap();
         }
 

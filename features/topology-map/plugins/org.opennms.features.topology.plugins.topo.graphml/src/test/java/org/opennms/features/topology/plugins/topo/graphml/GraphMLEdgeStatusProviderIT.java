@@ -29,7 +29,6 @@
 package org.opennms.features.topology.plugins.topo.graphml;
 
 import com.google.common.collect.ImmutableList;
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,54 +37,44 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLReader;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.topo.AbstractSearchQuery;
-import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.SearchQuery;
-import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.measurements.api.MeasurementsService;
-import org.opennms.netmgt.measurements.api.exceptions.MeasurementException;
-import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionOperations;
 
 import javax.script.ScriptEngineManager;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
+
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+@ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-//        "classpath*:/META-INF/opennms/component-measurement.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
-@JUnitConfigurationEnvironment(systemProperties = {
-        "opennms.home=src/test/opennms-home"
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
 })
-@JUnitTemporaryDatabase(reuseDatabase = true)
-@Transactional
+
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase(reuseDatabase = false)
 public class GraphMLEdgeStatusProviderIT {
 
     @Autowired
@@ -120,6 +109,8 @@ public class GraphMLEdgeStatusProviderIT {
                                                                                  this.snmpInterfaceDao,
                                                                                  request -> new QueryResponse());
 
+        provider.setScriptPath(Paths.get("src","test", "opennms-home", "etc", "graphml-edge-status"));
+
         assertThat(provider.contributesTo("acme:regions"), is(true));
         assertThat(provider.getNamespace(), is("acme:regions"));
 
@@ -136,7 +127,5 @@ public class GraphMLEdgeStatusProviderIT {
                                        new GraphMLEdgeStatus().severity(OnmsSeverity.WARNING)
                                                               .style("stroke", "pink")
                                                               .style("stroke-width", "3em"))));
-
-
     }
 }
