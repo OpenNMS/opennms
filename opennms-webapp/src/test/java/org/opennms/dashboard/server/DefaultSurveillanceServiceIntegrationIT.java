@@ -65,8 +65,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/applicationContext-reportingCore.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
-        "classpath:org/opennms/dashboard/applicationContext-svclayer-dashboard-test.xml",
-        "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml"
+        "classpath:org/opennms/dashboard/applicationContext-svclayer-dashboard-test.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
