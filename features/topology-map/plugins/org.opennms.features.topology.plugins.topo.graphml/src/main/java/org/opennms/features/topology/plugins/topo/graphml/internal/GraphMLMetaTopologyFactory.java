@@ -32,12 +32,13 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.Objects;
+
+import javax.script.ScriptEngineManager;
 
 import org.opennms.features.topology.api.IconRepository;
-import org.opennms.features.topology.plugins.topo.graphml.internal.scripting.OSGiScriptEngineManager;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
@@ -45,9 +46,7 @@ import org.opennms.features.topology.plugins.topo.graphml.GraphMLEdgeStatusProvi
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLSearchProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvider;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.measurements.api.MeasurementsService;
+import org.opennms.features.topology.plugins.topo.graphml.internal.scripting.OSGiScriptEngineManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -58,9 +57,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.springframework.transaction.support.TransactionOperations;
-
-import javax.script.ScriptEngineManager;
 
 public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 
@@ -68,24 +64,13 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 	private static final String TOPOLOGY_LOCATION = "topologyLocation";
 	private static final String LABEL = "label";
 
-	private BundleContext m_bundleContext;
-	private TransactionOperations m_transactionOperations;
+	private final GraphMLServiceAccessor m_serviceAccessor;
+	private final BundleContext m_bundleContext;
+	private final Map<String, List<ServiceRegistration<?>>> m_serviceRegistration = Maps.newHashMap();
 
-	private Map<String, GraphMLMetaTopologyProvider> m_providers = Maps.newHashMap();
-	private Map<String, ServiceRegistration<MetaTopologyProvider>> m_registrations =  Maps.newHashMap();
-	private Map<String, List<ServiceRegistration<SearchProvider>>> m_searchProviders = Maps.newHashMap();
-	private Map<String, ServiceRegistration<IconRepository>> m_iconRepositories = Maps.newHashMap();
-	private Map<String, List<ServiceRegistration<EdgeStatusProvider>>> m_edgeStatusProvider = Maps.newHashMap();
-	private NodeDao nodeDao;
-	private SnmpInterfaceDao snmpInterfaceDao;
-	private MeasurementsService measurementsService;
-
-	public void setBundleContext(BundleContext bundleContext) {
-		m_bundleContext = bundleContext;
-	}
-
-	public void setTransactionOperations(final TransactionOperations transactionOperations) {
-		this.m_transactionOperations = transactionOperations;
+	public GraphMLMetaTopologyFactory(BundleContext bundleContext, GraphMLServiceAccessor serviceAccessor) {
+		m_bundleContext = Objects.requireNonNull(bundleContext);
+		m_serviceAccessor = Objects.requireNonNull(serviceAccessor);
 	}
 
 	@Override
@@ -97,7 +82,7 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 	public void updated(String pid, @SuppressWarnings("rawtypes") Dictionary properties) throws ConfigurationException {
 		LOG.debug("updated(String, Dictionary) invoked");
 		String location = (String)properties.get(TOPOLOGY_LOCATION);
-		if (!m_providers.containsKey(pid)) {
+		if (!m_serviceRegistration.containsKey(pid)) {
 			LOG.debug("Service with pid '{}' is new. Register {}", pid, GraphMLMetaTopologyProvider.class.getSimpleName());
 			final Dictionary<String,Object> metaData = new Hashtable<>();
 			metaData.put(Constants.SERVICE_PID, pid);
@@ -109,89 +94,53 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 			final GraphMLMetaTopologyProvider metaTopologyProvider = new GraphMLMetaTopologyProvider();
 			metaTopologyProvider.setTopologyLocation(location);
 			metaTopologyProvider.load();
-			ServiceRegistration<MetaTopologyProvider> registration = m_bundleContext.registerService(MetaTopologyProvider.class, metaTopologyProvider, metaData);
-
-			m_registrations.put(pid, registration);
-			m_providers.put(pid, metaTopologyProvider);
-
-			// Create a OSGi aware script engine manager
-			final ScriptEngineManager scriptEngineManager = new OSGiScriptEngineManager(m_bundleContext);
+			registerService(pid, MetaTopologyProvider.class, metaTopologyProvider, metaData);
 
 			// Create and register additional services
-			m_searchProviders.putIfAbsent(pid, Lists.newArrayList());
-
-			Set<String> iconKeys = metaTopologyProvider.getGraphProviders().stream()
+			final Set<String> iconKeys = metaTopologyProvider.getGraphProviders().stream()
 					.map(eachProvider -> eachProvider.getVertexNamespace())
 					.flatMap(eachNamespace -> metaTopologyProvider.getRawTopologyProvider(eachNamespace).getVertices().stream())
 					.map(eachVertex -> eachVertex.getIconKey())
 					.filter(eachIconKey -> eachIconKey != null)
 					.collect(Collectors.toSet());
+			registerService(pid, IconRepository.class, new GraphMLIconRepository(iconKeys));
 
-			m_iconRepositories.put(pid, m_bundleContext.registerService(IconRepository.class, new GraphMLIconRepository(iconKeys), new Hashtable<>()));
-			m_edgeStatusProvider.putIfAbsent(pid, Lists.newArrayList());
-
+			// Create a OSGi aware script engine manager
+			final ScriptEngineManager scriptEngineManager = new OSGiScriptEngineManager(m_bundleContext);
 			metaTopologyProvider.getGraphProviders().forEach(it -> {
-				GraphMLTopologyProvider rawTopologyProvider = metaTopologyProvider.getRawTopologyProvider(it.getVertexNamespace());
-
-				// SearchProvider
-				GraphMLSearchProvider searchProvider = new GraphMLSearchProvider(rawTopologyProvider);
-				ServiceRegistration<SearchProvider> searchProviderServiceRegistration = m_bundleContext.registerService(SearchProvider.class, searchProvider, new Hashtable<>());
-				m_searchProviders.get(pid).add(searchProviderServiceRegistration);
+				// Find Topology Provider
+				final GraphMLTopologyProvider rawTopologyProvider = metaTopologyProvider.getRawTopologyProvider(it.getVertexNamespace());
 
 				// EdgeStatusProvider
-				ServiceRegistration<EdgeStatusProvider> edgeStatusProviderServiceRegistration = m_bundleContext.registerService(EdgeStatusProvider.class,
-																																new GraphMLEdgeStatusProvider(rawTopologyProvider,
-																																							  scriptEngineManager,
-																																							  m_transactionOperations,
-																																		                      nodeDao,
-																																		                      snmpInterfaceDao,
-																																		                      measurementsService),
-																																new Hashtable<>());
-				m_edgeStatusProvider.get(pid).add(edgeStatusProviderServiceRegistration);
+				registerService(pid, EdgeStatusProvider.class, new GraphMLEdgeStatusProvider(rawTopologyProvider, scriptEngineManager, m_serviceAccessor));
+
+				// SearchProvider
+				registerService(pid, SearchProvider.class, new GraphMLSearchProvider(rawTopologyProvider));
 			});
 
 		} else {
-			// TODO we set the new location, but a reload is never triggered
-			LOG.debug("Service with pid '{}' updated. Updating properties.", pid);
-			m_providers.get(pid).setTopologyLocation(location);
-			ServiceRegistration<MetaTopologyProvider> registration = m_registrations.get(pid);
-			Dictionary<String,Object> metaData = new Hashtable<>();
-			metaData.put(Constants.SERVICE_PID, pid);
-			if (properties.get(LABEL) != null) {
-				metaData.put(LABEL, properties.get(LABEL));
-			}
-			registration.setProperties(metaData);
+			LOG.warn("Service with pid '{}' updated. Updating is not supported. Ignoring...");
 		}
-	}
-
-	public void setNodeDao(NodeDao nodeDao) {
-		this.nodeDao = Objects.requireNonNull(nodeDao);
-	}
-
-	public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
-		this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
-	}
-
-	public void setMeasurementsService(MeasurementsService measurementsService) {
-		this.measurementsService = Objects.requireNonNull(measurementsService);
 	}
 
 	@Override
 	public void deleted(String pid) {
 		LOG.debug("deleted(String) invoked");
-		ServiceRegistration<MetaTopologyProvider> registration = m_registrations.remove(pid);
-		if (registration != null) {
-			LOG.debug("Unregister MetaTopologyProvider with pid '{}'", pid);
-			registration.unregister();
-			m_providers.remove(pid);
-
-			m_searchProviders.get(pid).forEach(eachServiceRegistration -> eachServiceRegistration.unregister());
-			m_searchProviders.remove(pid);
-
-			m_iconRepositories.get(pid).unregister();
-			m_iconRepositories.remove(pid);
-			m_edgeStatusProvider.get(pid).forEach(eachServiceRegistration -> eachServiceRegistration.unregister());
-			m_edgeStatusProvider.remove(pid);
+		List<ServiceRegistration<?>> serviceRegistrations = m_serviceRegistration.get(pid);
+		if (serviceRegistrations != null) {
+			LOG.debug("Unregister services for pid '{}'", pid);
+			serviceRegistrations.forEach(ServiceRegistration::unregister);
+			m_serviceRegistration.remove(pid);
 		}
+	}
+
+	private <T> void registerService(String pid, Class<T> serviceType, T serviceImpl) {
+		registerService(pid, serviceType, serviceImpl, new Hashtable<>());
+	}
+
+	private <T> void registerService(String pid, Class<T> serviceType, T serviceImpl, Dictionary<String, Object> serviceProperties) {
+		final ServiceRegistration<T> serviceRegistration = m_bundleContext.registerService(serviceType, serviceImpl, serviceProperties);
+		m_serviceRegistration.putIfAbsent(pid, Lists.newArrayList());
+		m_serviceRegistration.get(pid).add(serviceRegistration);
 	}
 }

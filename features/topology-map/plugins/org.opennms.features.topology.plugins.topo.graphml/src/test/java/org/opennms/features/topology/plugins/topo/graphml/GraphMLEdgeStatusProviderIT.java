@@ -28,7 +28,16 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
-import com.google.common.collect.ImmutableList;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import java.nio.file.Paths;
+import java.util.Map;
+
+import javax.script.ScriptEngineManager;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +49,7 @@ import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -50,13 +60,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionOperations;
 
-import javax.script.ScriptEngineManager;
-
-import java.nio.file.Paths;
-import java.util.Map;
-
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.*;
+import com.google.common.collect.ImmutableList;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -72,13 +76,12 @@ import static org.hamcrest.Matchers.*;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
 })
-
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
 public class GraphMLEdgeStatusProviderIT {
 
     @Autowired
-    DatabasePopulator databasePopulator;
+    private DatabasePopulator databasePopulator;
 
     @Autowired
     private TransactionOperations transactionOperations;
@@ -92,40 +95,36 @@ public class GraphMLEdgeStatusProviderIT {
     @Before
     public void before() {
         BeanUtils.assertAutowiring(this);
-
         this.databasePopulator.populateDatabase();
     }
 
     @Test
     public void verify() throws Exception {
+        final GraphMLServiceAccessor serviceAccessor = new GraphMLServiceAccessor();
+        serviceAccessor.setTransactionOperations(transactionOperations);
+        serviceAccessor.setNodeDao(nodeDao);
+        serviceAccessor.setSnmpInterfaceDao(snmpInterfaceDao);
+        serviceAccessor.setMeasurementsService(request -> new QueryResponse());
+
         final GraphMLGraph graph = GraphMLReader.read(getClass().getResourceAsStream("/test-graph2.xml")).getGraphs().get(0);
-
         final GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(graph);
-
-        final GraphMLEdgeStatusProvider provider = new GraphMLEdgeStatusProvider(topologyProvider,
-                                                                                 new ScriptEngineManager(),
-                                                                                 this.transactionOperations,
-                                                                                 this.nodeDao,
-                                                                                 this.snmpInterfaceDao,
-                                                                                 request -> new QueryResponse());
-
-        provider.setScriptPath(Paths.get("src","test", "opennms-home", "etc", "graphml-edge-status"));
+        final GraphMLEdgeStatusProvider provider = new GraphMLEdgeStatusProvider(
+                topologyProvider,
+                new ScriptEngineManager(),
+                serviceAccessor,
+                Paths.get("src","test", "opennms-home", "etc", "graphml-edge-status"));
 
         assertThat(provider.contributesTo("acme:regions"), is(true));
         assertThat(provider.getNamespace(), is("acme:regions"));
 
-        final EdgeRef edgeRef = topologyProvider.getEdge("acme:regions", "center_north");
-
         // Calculating the status executes some tests defined int the according scripts as a side effect
-        final Map<EdgeRef, Status> status = provider.getStatusForEdges(topologyProvider,
-                                                                       ImmutableList.of(edgeRef),
-                                                                       new Criteria[0]);
+        final EdgeRef edgeRef = topologyProvider.getEdge("acme:regions", "center_north");
+        final Map<EdgeRef, Status> status = provider.getStatusForEdges(topologyProvider, ImmutableList.of(edgeRef), new Criteria[0]);
 
         // Testing status merging from two scripts
         assertThat(status, is(notNullValue()));
-        assertThat(status, is(hasEntry(edgeRef,
-                                       new GraphMLEdgeStatus().severity(OnmsSeverity.WARNING)
-                                                              .style("stroke", "pink")
-                                                              .style("stroke-width", "3em"))));
+        assertThat(status, is(hasEntry(edgeRef, new GraphMLEdgeStatus().severity(OnmsSeverity.WARNING)
+                                                    .style("stroke", "pink")
+                                                    .style("stroke-width", "3em"))));
     }
 }

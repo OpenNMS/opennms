@@ -28,33 +28,6 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import org.apache.commons.io.FilenameUtils;
-import org.opennms.features.topology.api.info.MeasurementsWrapper;
-import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.EdgeProvider;
-import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.EdgeStatusProvider;
-import org.opennms.features.topology.api.topo.SimpleConnector;
-import org.opennms.features.topology.api.topo.Status;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.measurements.api.MeasurementsService;
-import org.opennms.netmgt.model.OnmsNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
-
-import javax.script.Compilable;
-import javax.script.CompiledScript;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.script.SimpleBindings;
-import javax.script.SimpleScriptContext;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
@@ -72,51 +45,51 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.script.Compilable;
+import javax.script.CompiledScript;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
+import javax.script.SimpleScriptContext;
+
+import org.apache.commons.io.FilenameUtils;
+import org.opennms.features.topology.api.info.MeasurementsWrapper;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.EdgeStatusProvider;
+import org.opennms.features.topology.api.topo.SimpleConnector;
+import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
+import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+
 public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
 
     private final static Logger LOG = LoggerFactory.getLogger(GraphMLEdgeStatusProvider.class);
 
-    private Path scriptPath;
-
-    private final GraphMLTopologyProvider provider;
-    private final ScriptEngineManager scriptEngineManager;
-    private final TransactionOperations transactionOperations;
-    private final NodeDao nodeDao;
-    private final SnmpInterfaceDao snmpInterfaceDao;
-    private final MeasurementsWrapper measurementsWrapper;
-
-    public GraphMLEdgeStatusProvider(final GraphMLTopologyProvider provider,
-                                     final ScriptEngineManager scriptEngineManager,
-                                     final TransactionOperations transactionOperations,
-                                     final NodeDao nodeDao,
-                                     final SnmpInterfaceDao snmpInterfaceDao,
-                                     final MeasurementsService measurementsService) {
-        this.provider = Objects.requireNonNull(provider);
-        this.scriptEngineManager = Objects.requireNonNull(scriptEngineManager);
-        this.transactionOperations = Objects.requireNonNull(transactionOperations);
-        this.nodeDao = Objects.requireNonNull(nodeDao);
-        this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
-        this.measurementsWrapper = new MeasurementsWrapper(Objects.requireNonNull(measurementsService));
-        this.scriptPath = Paths.get(System.getProperty("opennms.home"), "etc", "graphml-edge-status");
-    }
-
-    public Path getScriptPath() {
-        return scriptPath;
-    }
-
-    public void setScriptPath(Path scriptPath) {
-        this.scriptPath = Objects.requireNonNull(scriptPath);
-    }
-
+    /**
+     * Representation for the script to execute.
+     */
     private class StatusScript {
 
         private final ScriptEngine engine;
         private final String source;
 
+        /**
+         * Indicator if script has been compiled.
+         * If null, not determined yet if compilable at all.
+         */
         private Optional<CompiledScript> compiledScript = null;
 
-        private StatusScript(final ScriptEngine engine,
-                             final String source) {
+        private StatusScript(final ScriptEngine engine, final String source) {
             this.engine = Objects.requireNonNull(engine);
             this.source = Objects.requireNonNull(source);
         }
@@ -129,7 +102,6 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
                     this.compiledScript = Optional.empty();
                 }
             }
-
             if (this.compiledScript.isPresent()) {
                 return (GraphMLEdgeStatus) this.compiledScript.get().eval(context);
 
@@ -139,63 +111,25 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
         }
     }
 
-    private OnmsNode getNodeForEdgeVertexConnector(SimpleConnector simpleConnector) {
-        if (simpleConnector != null && simpleConnector.getVertex() instanceof AbstractVertex) {
-            AbstractVertex abstractVertex = (AbstractVertex) simpleConnector.getVertex();
-            if (abstractVertex.getNodeID() != null) {
-                return nodeDao.get(abstractVertex.getNodeID());
-            }
-        }
-        return null;
+    private final Path scriptPath;
+    private final GraphMLTopologyProvider provider;
+    private final ScriptEngineManager scriptEngineManager;
+    private final GraphMLServiceAccessor serviceAccessor;
+
+    public GraphMLEdgeStatusProvider(final GraphMLTopologyProvider provider,
+                                     final ScriptEngineManager scriptEngineManager,
+                                     final GraphMLServiceAccessor serviceAccessor,
+                                     final Path scriptPath) {
+        this.provider = Objects.requireNonNull(provider);
+        this.scriptEngineManager = Objects.requireNonNull(scriptEngineManager);
+        this.serviceAccessor = Objects.requireNonNull(serviceAccessor);
+        this.scriptPath = Objects.requireNonNull(scriptPath);
     }
 
-    private GraphMLEdgeStatus computeEdgeStatus(final List<StatusScript> scripts, final GraphMLEdge edge) {
-        return scripts.stream()
-                      .flatMap(script -> {
-                          final StringWriter writer = new StringWriter();
-
-                          final ScriptContext context = new SimpleScriptContext();
-                          context.setWriter(writer);
-
-                          SimpleBindings bindings = new SimpleBindings();
-
-                          bindings.put("edge", edge);
-
-                          bindings.put("sourceNode", getNodeForEdgeVertexConnector(edge.getSource()));
-                          bindings.put("targetNode", getNodeForEdgeVertexConnector(edge.getTarget()));
-                          bindings.put("measurements", measurementsWrapper);
-                          bindings.put("nodeDao", nodeDao);
-                          bindings.put("snmpInterfaceDao", snmpInterfaceDao);
-
-                          context.setBindings(bindings,
-                                              ScriptContext.GLOBAL_SCOPE);
-
-                          try {
-                              LOG.debug("Executing script: {}", script);
-                              final GraphMLEdgeStatus status = script.eval(context);
-
-                              if (status != null) {
-                                  return Stream.of(status);
-                              } else {
-                                  return Stream.empty();
-                              }
-
-                          } catch (final ScriptException e) {
-                              LOG.error("Failed to execute script: {}", e);
-                              return Stream.empty();
-
-                          } finally {
-                            LOG.info(writer.toString());
-                          }
-                      })
-                      .reduce((s1, s2) -> new GraphMLEdgeStatus(s1.getSeverity().isGreaterThan(s2.getSeverity())
-                                                                    ? s1.getSeverity()
-                                                                    : s2.getSeverity(),
-                                                                ImmutableMap.<String, String>builder()
-                                                                        .putAll(s1.getStyleProperties())
-                                                                        .putAll(s2.getStyleProperties())
-                                                                        .build()))
-                      .orElse(null);
+    public GraphMLEdgeStatusProvider(final GraphMLTopologyProvider provider,
+                                     final ScriptEngineManager scriptEngineManager,
+                                     final GraphMLServiceAccessor serviceAccessor) {
+        this(provider, scriptEngineManager, serviceAccessor, Paths.get(System.getProperty("opennms.home"), "etc", "graphml-edge-status"));
     }
 
     @Override
@@ -209,12 +143,8 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
                     LOG.warn("No script engine found for extension '{}'", extension);
                     continue;
                 }
-
                 LOG.debug("Found script: path={}, extension={}, engine={}", path, extension, scriptEngine);
-
-                final String source = Files.lines(path, Charset.defaultCharset())
-                                           .collect(Collectors.joining("\n"));
-
+                final String source = Files.lines(path, Charset.defaultCharset()).collect(Collectors.joining("\n"));
                 scripts.add(new StatusScript(scriptEngine, source));
             }
         } catch (final IOException e) {
@@ -222,15 +152,14 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
             return Collections.emptyMap();
         }
 
-        return this.transactionOperations.execute(transactionStatus -> {
-            return edges.stream()
-                        .filter(eachEdge -> eachEdge instanceof GraphMLEdge)
-                        .map(edge -> (GraphMLEdge) edge)
-                        .map(edge -> new HashMap.SimpleEntry<>(edge, computeEdgeStatus(scripts, edge)))
-                        .filter(e -> e.getValue() != null)
-                        .collect(Collectors.toMap(Map.Entry::getKey,
-                                                  Map.Entry::getValue));
-        });
+        return serviceAccessor.getTransactionOperations().execute(transactionStatus ->
+            edges.stream()
+                .filter(eachEdge -> eachEdge instanceof GraphMLEdge)
+                .map(edge -> (GraphMLEdge) edge)
+                .map(edge -> new HashMap.SimpleEntry<>(edge, computeEdgeStatus(scripts, edge)))
+                .filter(e -> e.getValue() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+        );
     }
 
     @Override
@@ -241,5 +170,63 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
     @Override
     public boolean contributesTo(String namespace) {
         return getNamespace().equals(namespace);
+    }
+
+    public Path getScriptPath() {
+        return scriptPath;
+    }
+
+    private GraphMLEdgeStatus computeEdgeStatus(final List<StatusScript> scripts, final GraphMLEdge edge) {
+        return scripts.stream()
+                .flatMap(script -> {
+                    final SimpleBindings bindings = createBindings(edge);
+                    final StringWriter writer = new StringWriter();
+                    final ScriptContext context = new SimpleScriptContext();
+                    context.setWriter(writer);
+                    context.setBindings(bindings, ScriptContext.GLOBAL_SCOPE);
+                    try {
+                        LOG.debug("Executing script: {}", script);
+                        final GraphMLEdgeStatus status = script.eval(context);
+                        if (status != null) {
+                            return Stream.of(status);
+                        } else {
+                            return Stream.empty();
+                        }
+                    } catch (final ScriptException e) {
+                        LOG.error("Failed to execute script: {}", e);
+                        return Stream.empty();
+                    } finally {
+                        LOG.info(writer.toString());
+                    }
+                })
+                .reduce((s1, s2) -> new GraphMLEdgeStatus(s1.getSeverity().isGreaterThan(s2.getSeverity())
+                        ? s1.getSeverity()
+                        : s2.getSeverity(),
+                        ImmutableMap.<String, String>builder()
+                                .putAll(s1.getStyleProperties())
+                                .putAll(s2.getStyleProperties())
+                                .build()))
+                .orElse(null);
+    }
+
+    private SimpleBindings createBindings(GraphMLEdge edge) {
+        SimpleBindings bindings = new SimpleBindings();
+        bindings.put("edge", edge);
+        bindings.put("sourceNode", getNodeForEdgeVertexConnector(edge.getSource()));
+        bindings.put("targetNode", getNodeForEdgeVertexConnector(edge.getTarget()));
+        bindings.put("measurements", new MeasurementsWrapper(serviceAccessor.getMeasurementsService()));
+        bindings.put("nodeDao", serviceAccessor.getNodeDao());
+        bindings.put("snmpInterfaceDao", serviceAccessor.getSnmpInterfaceDao());
+        return bindings;
+    }
+
+    private OnmsNode getNodeForEdgeVertexConnector(SimpleConnector simpleConnector) {
+        if (simpleConnector != null && simpleConnector.getVertex() instanceof AbstractVertex) {
+            AbstractVertex abstractVertex = (AbstractVertex) simpleConnector.getVertex();
+            if (abstractVertex.getNodeID() != null) {
+                return serviceAccessor.getNodeDao().get(abstractVertex.getNodeID());
+            }
+        }
+        return null;
     }
 }
