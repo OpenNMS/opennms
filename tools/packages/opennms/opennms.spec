@@ -188,6 +188,18 @@ embedded in the main core process.
 %{extrainfo2}
 
 
+%package webapp-remoting
+Summary:	Remote Poller webapp
+Group:		Applications/System
+Requires:	%{name}-webapp-jetty = %{version}-%{release}
+
+%description webapp-remoting
+The JNLP application that provides the Remote Poller.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %package ncs
 Summary:	Network Component Services
 Group:		Applications/System
@@ -709,6 +721,7 @@ find $RPM_BUILD_ROOT%{instprefix}/etc $RPM_BUILD_ROOT%{instprefix}/lib $RPM_BUIL
 # jetty
 find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
+	grep -v '/opennms-remoting' | \
 	grep -v '/opennms/source/' | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
@@ -718,10 +731,12 @@ find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
 	sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir}/*/WEB-INF/*.xml | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config ," | \
+	grep -v '/opennms-remoting' | \
 	grep -v '/WEB-INF/ncs' | \
 	sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir} -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+	grep -v '/opennms-remoting' | \
 	sort >> %{_tmppath}/files.jetty
 
 cd -
@@ -777,8 +792,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %files webapp-jetty -f %{_tmppath}/files.jetty
 %defattr(644 root root 755)
-%config %{jettydir}/opennms-remoting/WEB-INF/*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/*.properties
+
+%files webapp-remoting
+%defattr(644 root root 755)
+%config %{jettydir}/opennms-remoting/WEB-INF/*.xml
+%{jettydir}/opennms-remoting
 
 %files plugins
 
