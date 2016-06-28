@@ -2,11 +2,11 @@
 // Allow GitHub image rendering
 :imagesdir: ../images
 
-By default, the RMI port in the OpenNMS server is disabled, for security reasons.  If you wish to enable it so you can access OpenNMS through jconsole, remote-manage OpenNMS, or use the remote poller over RMI, you will have to add some settings to the default OpenNMS install.
+By default, the RMI port in the {opennms-product-name} server is disabled, for security reasons.  If you wish to enable it so you can access {opennms-product-name} through jconsole, remote-manage {opennms-product-name}, or use the remote poller over RMI, you will have to add some settings to the default {opennms-product-name} install.
 
 === Enabling RMI
 
-To enable the RMI port in OpenNMS, you will have to add the following to the `${OPENNMS_HOME}/etc/opennms.conf` file.  If you do not have an `opennms.conf` file, you can create it.
+To enable the RMI port in {opennms-product-name}, you will have to add the following to the `${OPENNMS_HOME}/etc/opennms.conf` file.  If you do not have an `opennms.conf` file, you can create it.
 
 [source, bash, options="nowrap", opennms.conf]
 ----
@@ -14,22 +14,12 @@ To enable the RMI port in OpenNMS, you will have to add the following to the `${
 ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.port=18980"
 ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.local.only=false"
 ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dopennms.poller.server.serverHost=0.0.0.0"
-----
-
-This tells OpenNMS to listen for RMI on port `18980`, and to listen on all interfaces.  (Originally, RMI was only used for the Remote Poller, so despite the porperty name mentioning the "opennms poller server" it applies to RMI as a whole.)  With this configuration, RMI is unauthenticated, so anyone is able to connect.
-
-=== Enabling Authentication for RMI
-
-To require authentication, you must add some additional configuration.
-
-First, enable authentication for JMX in `opennms.conf` after the other settings:
-
-[source, bash, options="nowrap"]
-----
 ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.authenticate=true"
 ----
 
-This tells OpenNMS to enable authentication.  Authentication will only be allowed for users that are in the `admin` role.  To make a user an admin, add them to the `role.admin.users` entry in `${OPENNMS_HOME}/etc/magic-users.properties`:
+This tells {opennms-product-name} to listen for RMI on port `18980`, and to listen on all interfaces.  (Originally, RMI was only used for the Remote Poller, so despite the porperty name mentioning the "opennms poller server" it applies to RMI as a whole.)
+
+Authentication will only be allowed for users that are in the `admin` role.  To make a user an admin, add them to the `role.admin.users` entry in `${OPENNMS_HOME}/etc/magic-users.properties`:
 
 [options="nowrap"]
 ----
