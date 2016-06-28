@@ -145,6 +145,16 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.daemon</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jrrd2-dependencies</artifactId>
       <scope>test</scope>
