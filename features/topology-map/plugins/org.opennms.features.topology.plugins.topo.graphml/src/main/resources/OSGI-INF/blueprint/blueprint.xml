@@ -17,7 +17,7 @@
 		<property name="transactionOperations" ref="transactionOperations" />
 		<property name="nodeDao" ref="nodeDao"/>
 		<property name="snmpInterfaceDao" ref="snmpInterfaceDao"/>
-		<property name="measurementsWrapper" ref="measurementsWrapper"/>
+		<property name="measurementsService" ref="measurementsService"/>
 	</bean>
 
 	<bean id="graphMLMetaTopologyFactory" class="org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLMetaTopologyFactory">
