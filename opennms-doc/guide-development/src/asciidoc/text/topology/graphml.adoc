@@ -70,23 +70,29 @@ In addition it may take a while before the Topology is actually selectable from 
 A various set of GraphML attributes are supported and interpreted by {opennms-product-name} while reading the GraphML file.
 The following table explains the supported attributes and for which GraphML elements they may be used.
 
-.Supported properties
-[options="header"]
+[quote, , http://graphml.graphdrawing.org/primer/graphml-primer.html#Attributes]
+____
+The type of the GraphML-Attribute can be either boolean, int, long, float, double, or string.
+These types are defined like the corresponding types in the Java(TM)-Programming language.
+____
+
+.Supported GraphML Attributes
+[options="header, autowidth"]
 |=======================
-| Property                | Required | For element  | Default   | Description
-| `namespace`             | yes      | Graph        | -         | The namespace must be unique overall existing Topologies.
-| `description`           | no       | Graph        | -         | A description, which is shown in the Info Panel.
-| `preferred-layout`      | no       | Graph        | `D3`      | Defines a preferred layout.
-| `focus-strategy`        | no       | Graph        | `FIRST`   | Defines a focus strategy. More see <<gd-topology-graphml-focus-strategy>> for more information.
-| `focus-ids`             | no       | Graph        | -         | Refers to nodes ids in the graph.
-                                                                  This is required if `focus-strategy` is `SPECIFIC`.
-                                                                  If multiple ids should be add to focus, they are separated by `,`.
-                                                                  Example: `node1,node2`
-| `semantic-zoom-level`   | no       | Graph        | `1`       | Defines the default SZL.
-| `iconKey`               | no       | Node         | `generic` | Defines the icon. See <<gd-topology-graphml-icons>> for more information.
-| `label`                 | no       | Graph, Node  | -         | Defines a custom label. If not defined, the `id` is used instead.
-| `nodeID`                | no       | Node         | -         | Allows referencing the Vertex to a OpenNMS node.
-| `tooltipText`           | no       | Node, Edge   |           | Defines a custom tooltip. If not defined, the `id` attribute is used instead.
+| Property                  | Required | For element  | Type      | Default   | Description
+| `namespace`               | yes      | Graph        | `string`  | -         | The namespace must be unique overall existing Topologies.
+| `description`             | no       | Graph        | `string`  | -         | A description, which is shown in the Info Panel.
+| `preferred-layout`        | no       | Graph        | `string`  | `D3`      | Defines a preferred layout.
+| `focus-strategy`          | no       | Graph        | `string`  | `FIRST`   | Defines a focus strategy. More see <<gd-topology-graphml-focus-strategy>> for more information.
+| `focus-ids`               | no       | Graph        | `string`  | -         | Refers to nodes ids in the graph.
+                                                                                This is required if `focus-strategy` is `SPECIFIC`.
+                                                                                If multiple ids should be add to focus, they are separated by `,`.
+                                                                                Example: `node1,node2`
+| `semantic-zoom-level`     | no       | Graph        | `int`     | `1`       | Defines the default SZL.
+| `iconKey`                 | no       | Node         | `string`  | `generic` | Defines the icon. See <<gd-topology-graphml-icons>> for more information.
+| `label`                   | no       | Graph, Node  | `string`  | -         | Defines a custom label. If not defined, the `id` is used instead.
+| `nodeID`                  | no       | Node         | `int`     | -         | Allows referencing the Vertex to a OpenNMS node.
+| `tooltipText`             | no       | Node, Edge   | `string`  |           | Defines a custom tooltip. If not defined, the `id` attribute is used instead.
 |=======================
 
 [[gd-topology-graphml-focus-strategy]]
