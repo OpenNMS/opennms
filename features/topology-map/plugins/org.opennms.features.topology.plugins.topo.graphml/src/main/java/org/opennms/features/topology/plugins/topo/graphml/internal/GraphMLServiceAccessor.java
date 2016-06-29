@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.graphml.internal;
 
 import java.util.Objects;
 
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.measurements.api.MeasurementsService;
@@ -47,6 +48,16 @@ public class GraphMLServiceAccessor {
     private MeasurementsService measurementsService;
 
     private TransactionOperations transactionOperations;
+
+    private AlarmDao alarmDao;
+
+    public AlarmDao getAlarmDao() {
+        return alarmDao;
+    }
+
+    public void setAlarmDao(AlarmDao alarmDao) {
+        this.alarmDao = alarmDao;
+    }
 
     public NodeDao getNodeDao() {
         return nodeDao;

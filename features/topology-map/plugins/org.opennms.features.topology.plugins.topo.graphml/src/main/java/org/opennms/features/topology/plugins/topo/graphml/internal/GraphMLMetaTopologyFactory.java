@@ -47,6 +47,8 @@ import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyPro
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLSearchProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvider;
 import org.opennms.features.topology.plugins.topo.graphml.internal.scripting.OSGiScriptEngineManager;
+import org.opennms.features.topology.api.topo.StatusProvider;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLVertexStatusProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -116,8 +118,16 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 
 				// SearchProvider
 				registerService(pid, SearchProvider.class, new GraphMLSearchProvider(rawTopologyProvider));
-			});
 
+				// Vertex Status Provider
+				// Only add status provider if explicitly set in GraphML document
+				if (rawTopologyProvider.requiresStatusProvider()) {
+					GraphMLVertexStatusProvider statusProvider = new GraphMLVertexStatusProvider(
+							rawTopologyProvider.getVertexNamespace(),
+							(nodeIds) -> m_serviceAccessor.getAlarmDao().getNodeAlarmSummariesIncludeAcknowledgedOnes(nodeIds));
+					registerService(pid, StatusProvider.class, statusProvider);
+				}
+			});
 		} else {
 			LOG.warn("Service with pid '{}' updated. Updating is not supported. Ignoring...");
 		}

@@ -8,16 +8,16 @@
 
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
 	<reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory" />
-
 	<reference id="measurementsService" interface="org.opennms.netmgt.measurements.api.MeasurementsService" availability="mandatory"/>
-
 	<reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+	<reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
 
 	<bean id="serviceAccessor" class="org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor">
 		<property name="transactionOperations" ref="transactionOperations" />
 		<property name="nodeDao" ref="nodeDao"/>
 		<property name="snmpInterfaceDao" ref="snmpInterfaceDao"/>
 		<property name="measurementsService" ref="measurementsService"/>
+		<property name="alarmDao" ref="alarmDao" />
 	</bean>
 
 	<bean id="graphMLMetaTopologyFactory" class="org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLMetaTopologyFactory">

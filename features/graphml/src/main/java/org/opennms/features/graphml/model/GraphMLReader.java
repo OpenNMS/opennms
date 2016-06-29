@@ -30,6 +30,7 @@ package org.opennms.features.graphml.model;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -167,6 +168,12 @@ public class GraphMLReader {
             KeyType keyType = keyIdToTypeMapping.get(eachDataElement.getKey());
             if (keyType == null) {
                 throw new InvalidGraphException("Accessing not existing attribute with key " + eachDataElement.getKey());
+            }
+            if (keyType.getAttrType() == null) {
+                throw new InvalidGraphException("Key with id='" + keyType.getId() + "' and " +
+                        "attribute name '" + keyType.getAttrName() + "' is null. " +
+                        "This is usually caused by an invalid attribute type value. " +
+                        "The following values are supported: " + Arrays.stream(KeyTypeType.values()).map(k -> k.value()).collect(Collectors.joining(", ")));
             }
             Object value = typeCastValue(eachDataElement.getContent(), keyType.getAttrType());
             graphElement.setProperty(keyType.getAttrName(), value);

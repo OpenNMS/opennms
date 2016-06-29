@@ -56,7 +56,7 @@ import com.google.common.collect.Sets;
 public class GraphMLTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
     protected static final String DEFAULT_DESCRIPTION = "This Topology Provider visualizes a predefined GraphML graph.";
-    private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyProvider.class);;
+    private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyProvider.class);
 
     private static TopologyProviderInfo createTopologyProviderInfo(GraphMLGraph graph) {
         String name = graph.getProperty(GraphMLProperties.LABEL, graph.getId());
@@ -68,6 +68,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     private final String preferredLayout;
     private final FocusStrategy focusStrategy;
     private final List<String> focusIds;
+    private final Boolean requiresStatusProvider;
 
     public GraphMLTopologyProvider(GraphMLGraph graph) {
         super(graph.getProperty(GraphMLProperties.NAMESPACE));
@@ -89,14 +90,11 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         defaultSzl = getDefaultSzl(graph);
         focusStrategy = getFocusStrategy(graph);
         focusIds = getFocusIds(graph);
-        preferredLayout = getPreferredLayout(graph);
+        preferredLayout = graph.getProperty(GraphMLProperties.PREFERRED_LAYOUT);
+        requiresStatusProvider = graph.getProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, Boolean.FALSE);
         if (focusStrategy != FocusStrategy.SPECIFIC && !focusIds.isEmpty()) {
             LOG.warn("Focus ids is defined, but strategy is {}. Did you mean to specify {}={}. Ignoring focusIds.", GraphMLProperties.FOCUS_STRATEGY, FocusStrategy.SPECIFIC.name());
         }
-    }
-
-    private static String getPreferredLayout(GraphMLGraph graph) {
-        return graph.getProperty(GraphMLProperties.PREFERRED_LAYOUT);
     }
 
     private static FocusStrategy getFocusStrategy(GraphMLGraph graph) {
@@ -170,5 +168,9 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     @Override
     public boolean contributesTo(ContentType type) {
         return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
+    }
+
+    public boolean requiresStatusProvider() {
+        return requiresStatusProvider;
     }
 }
