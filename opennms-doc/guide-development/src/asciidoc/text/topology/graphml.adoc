@@ -65,10 +65,10 @@ However, the underlying `GraphMLTopologyProvider` may perform additional checks 
 If the Topology does not show up, the `karaf.log` should be checked for any clues what went wrong.
 In addition it may take a while before the Topology is actually selectable from the Topology UI.
 
-==== Supported Properties
+==== Supported Attributes
 
-A various set of data elements are supported and interpreted by {opennms-product-name} while reading the GraphML file.
-The following table explains the supported properties and for which element they may be used.
+A various set of GraphML attributes are supported and interpreted by {opennms-product-name} while reading the GraphML file.
+The following table explains the supported attributes and for which GraphML elements they may be used.
 
 .Supported properties
 [options="header"]
