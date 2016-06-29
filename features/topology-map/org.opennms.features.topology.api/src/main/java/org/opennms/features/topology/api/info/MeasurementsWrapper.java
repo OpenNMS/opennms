@@ -31,6 +31,7 @@ package org.opennms.features.topology.api.info;
 import com.google.common.base.Throwables;
 import com.google.gwt.thirdparty.guava.common.primitives.Doubles;
 import org.opennms.netmgt.measurements.api.MeasurementsService;
+import org.opennms.netmgt.measurements.api.exceptions.MeasurementException;
 import org.opennms.netmgt.measurements.model.Expression;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
@@ -60,7 +61,7 @@ public class MeasurementsWrapper {
      * @param attribute the attribute to query for
      * @return the last known value
      */
-    public double getLastValue(final String resource, final String attribute) {
+    public double getLastValue(final String resource, final String attribute) throws MeasurementException {
         return getLastValue(resource, attribute, "AVERAGE");
     }
 
@@ -72,7 +73,7 @@ public class MeasurementsWrapper {
      * @param aggregation the aggregation method
      * @return the last known value
      */
-    public double getLastValue(final String resource, final String attribute, final String aggregation) {
+    public double getLastValue(final String resource, final String attribute, final String aggregation) throws MeasurementException {
         long end = System.currentTimeMillis();
         long start = end - (15 * 60 * 1000);
 
@@ -102,7 +103,7 @@ public class MeasurementsWrapper {
      * @param aggregation the aggregation method
      * @return the list of double values
      */
-    public List<Double> query(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation) {
+    public List<Double> query(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation) throws MeasurementException {
         QueryResponse.WrappedPrimitive[] columns = queryInt(resource, attribute, start, end, step, aggregation).getColumns();
 
         if (columns.length > 0) {
@@ -120,7 +121,7 @@ public class MeasurementsWrapper {
      * @param ifName the inteface of the node
      * @return the in/out percentage utilization encapsulated in a list
      */
-    public List<Double> computeUtilization(final OnmsNode node, final String ifName) {
+    public List<Double> computeUtilization(final OnmsNode node, final String ifName) throws MeasurementException {
         long end = System.currentTimeMillis();
         long start = end - (15 * 60 * 1000);
 
@@ -145,7 +146,7 @@ public class MeasurementsWrapper {
      * @param aggregation the aggregation function
      * @return a list containing two double values for the in/out percentage utilization
      */
-    public List<Double> computeUtilization(final String resource, final long start, final long end, final long step, final String aggregation) {
+    public List<Double> computeUtilization(final String resource, final long start, final long end, final long step, final String aggregation) throws MeasurementException {
         QueryRequest request = new QueryRequest();
         request.setRelaxed(true);
         request.setStart(start);
@@ -174,23 +175,18 @@ public class MeasurementsWrapper {
 
         request.setSources(Arrays.asList(sourceIn, sourceOut));
 
-        try {
-            QueryResponse.WrappedPrimitive[] columns = measurementsService.query(request).getColumns();
+        QueryResponse.WrappedPrimitive[] columns = measurementsService.query(request).getColumns();
 
-            double[] values1 = columns[0].getList();
-            double[] values2 = columns[1].getList();
+        double[] values1 = columns[0].getList();
+        double[] values2 = columns[1].getList();
 
-            for(int i = values1.length-1; i >= 0; i--) {
-                if (!Double.isNaN(values1[i]) && !Double.isNaN(values2[i])) {
-                    return Arrays.asList(values1[i], values2[i]);
-                }
+        for(int i = values1.length-1; i >= 0; i--) {
+            if (!Double.isNaN(values1[i]) && !Double.isNaN(values2[i])) {
+                return Arrays.asList(values1[i], values2[i]);
             }
-
-            return Arrays.asList(Double.NaN, Double.NaN);
-        } catch (Exception ex) {
-            // TODO error handling
-            throw Throwables.propagate(ex);
         }
+
+        return Arrays.asList(Double.NaN, Double.NaN);
     }
 
     /**
@@ -199,11 +195,11 @@ public class MeasurementsWrapper {
      * @return the response instance
      * @throws Exception
      */
-    public QueryResponse query(QueryRequest request) throws Exception {
+    public QueryResponse query(QueryRequest request) throws MeasurementException {
         return measurementsService.query(request);
     }
 
-    private QueryResponse queryInt(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation) {
+    private QueryResponse queryInt(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation) throws MeasurementException {
         QueryRequest request = new QueryRequest();
         request.setRelaxed(true);
         request.setStart(start);
@@ -219,11 +215,6 @@ public class MeasurementsWrapper {
 
         request.setSources(Collections.singletonList(source));
 
-        try {
-            return measurementsService.query(request);
-        } catch (Exception ex) {
-            // TODO error handling
-            throw Throwables.propagate(ex);
-        }
+        return measurementsService.query(request);
     }
 }
