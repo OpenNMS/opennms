@@ -68,7 +68,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
@@ -199,13 +198,7 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
                         LOG.info(writer.toString());
                     }
                 })
-                .reduce((s1, s2) -> new GraphMLEdgeStatus(s1.getSeverity().isGreaterThan(s2.getSeverity())
-                        ? s1.getSeverity()
-                        : s2.getSeverity(),
-                        ImmutableMap.<String, String>builder()
-                                .putAll(s1.getStyleProperties())
-                                .putAll(s2.getStyleProperties())
-                                .build()))
+                .reduce(GraphMLEdgeStatus::merge)
                 .orElse(null);
     }
 
