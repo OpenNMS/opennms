@@ -89,6 +89,7 @@ ____
                                                                                 If multiple ids should be add to focus, they are separated by `,`.
                                                                                 Example: `node1,node2`
 | `semantic-zoom-level`     | no       | Graph        | `int`     | `1`       | Defines the default SZL.
+| `vertex-status-provider`  | no       | Graph        | `boolean` | `false`   | Defines if a <<gd-topology-graphml-vertex-status-provider>> should be used.
 | `iconKey`                 | no       | Node         | `string`  | `generic` | Defines the icon. See <<gd-topology-graphml-icons>> for more information.
 | `label`                   | no       | Graph, Node  | `string`  | -         | Defines a custom label. If not defined, the `id` is used instead.
 | `nodeID`                  | no       | Node         | `int`     | -         | Allows referencing the Vertex to a OpenNMS node.
@@ -111,6 +112,13 @@ The following strategies are available:
 
 With the _GraphMLTopoloygProvider_ it is not possible to change the icon from the Topology UI.
 Instead if a custom icon should be used, each node must contain a `iconKey` property referencing an SVG element.
+
+[[gd-topology-graphml-vertex-status-provider]]
+==== Vertex Status Provider
+
+The _Vertex Status Provider_ calculates the status of the Vertex based on the "worst" unacknowledged alarm associated with the Vertex's node.
+This means in order to have a status calculated a (OpenNMS) Node must be associated with the Vertex.
+This can be achieved by setting the GraphML attribute `nodeID` on the GraphML Node accordingly.
 
 ==== Edge Status Provider
 
