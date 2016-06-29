@@ -118,12 +118,13 @@ public class DefaultAdminCategoryService implements
 
         OnmsCategory category = findCategory(categoryIdString);
         
-        final Collection<OnmsNode> memberNodes = new ArrayList<OnmsNode>();
+        final List<OnmsNode> memberNodes = new ArrayList<OnmsNode>();
         for (final OnmsNode node : getNodeDao().findByCategory(category)) {
         	if (!"D".equals(node.getType())) {
         		memberNodes.add(node);
         	}
         }
+        Collections.sort(memberNodes);
         // XXX does anything need to be initialized in each member node?
         
         return new CategoryAndMemberNodes(category, memberNodes);
