@@ -26,25 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml;
+package org.opennms.features.topology.plugins.topo.graphml.internal;
 
-public interface GraphMLProperties {
-    String ID = "id";
-    String DESCRIPTION = "description";
-    String NAMESPACE = "namespace";
-    String ICON_KEY = "iconKey";
-    String IP_ADDRESS = "ipAddr";
-    String LABEL = "label";
-    String LOCKED = "locked";
-    String NODE_ID = "nodeID";
-    String SELECTED = "selected";
-    String STYLE_NAME = "styleName";
-    String TOOLTIP_TEXT = "tooltipText";
-    String X = "x";
-    String Y = "y";
-    String PREFERRED_LAYOUT = "preferred-layout";
-    String FOCUS_STRATEGY = "focus-strategy";
-    String FOCUS_IDS = "focus-ids";
-    String SEMANTIC_ZOOM_LEVEL = "semantic-zoom-level";
-    String VERTEX_STATUS_PROVIDER = "vertex-status-provider";
+import java.util.List;
+
+import org.opennms.netmgt.model.alarm.AlarmSummary;
+
+/**
+ * Originally created to wrap the call to
+ * {@link org.opennms.netmgt.dao.api.AlarmDao#getNodeAlarmSummariesIncludeAcknowledgedOnes(List)}.
+ * This allows to provide easier custom behaviour, e.g. in test cases, instead of mocking the whole
+ * {@link org.opennms.netmgt.dao.api.AlarmDao}.
+ */
+public interface AlarmSummaryWrapper {
+
+    /**
+     * @see org.opennms.netmgt.dao.api.AlarmDao#getNodeAlarmSummariesIncludeAcknowledgedOnes(List)
+     */
+    List<AlarmSummary> getAlarmSummaries(List<Integer> nodeIds);
 }

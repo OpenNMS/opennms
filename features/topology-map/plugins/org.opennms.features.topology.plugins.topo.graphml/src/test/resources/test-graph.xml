@@ -8,16 +8,24 @@
     <key id="namespace" for="graph" attr.name="namespace" attr.type="string"></key>
     <key id="preferred-layout" for="graph" attr.name="preferred-layout" attr.type="string"></key>
     <key id="semantic-zoom-level" for="graph" attr.name="semantic-zoom-level" attr.type="int"/>
+    <key id="nodeID" for="node" attr.name="nodeID" attr.type="int"></key>
+    <key id="focus-strategy" for="graph" attr.name="focus-strategy" attr.type="string"></key>
+    <key id="vertex-status-provider" for="graph" attr.name="vertex-status-provider" attr.type="boolean"></key>
     <graph id="regions" edgedefault="undirected">
         <data key="namespace">acme:regions</data>
+        <data key="focus-strategy">ALL</data>
+        <data key="vertex-status-provider">true</data>
         <node id="north">
             <data key="label">North</data>
+            <data key="nodeID">1</data>
         </node>
         <node id="west">
             <data key="label">West</data>
+            <data key="nodeID">2</data>
         </node>
         <node id="south">
             <data key="label">South</data>
+            <data key="nodeID">3</data>
         </node>
         <node id="east">
             <data key="label">East</data>

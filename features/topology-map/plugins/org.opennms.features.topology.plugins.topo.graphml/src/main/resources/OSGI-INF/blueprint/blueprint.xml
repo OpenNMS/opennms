@@ -7,9 +7,11 @@
     ">
 
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+	<reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
 
 	<bean id="graphMLMetaTopologyFactory" class="org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLMetaTopologyFactory">
 		<property name="bundleContext" ref="blueprintBundleContext" />
+		<property name="alarmDao" ref="alarmDao" />
 	</bean>
     <service interface="org.osgi.service.cm.ManagedServiceFactory" ref="graphMLMetaTopologyFactory">
     	<service-properties>
