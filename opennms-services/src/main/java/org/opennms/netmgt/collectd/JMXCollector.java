@@ -311,7 +311,12 @@ public abstract class JMXCollector implements ServiceCollector {
                     final String attributeName = attributeSample.getCollectedAttribute().getName();
                     final AttributeGroupType attribGroupType = getAttributeGroupType(attributeSample.getMbean());
 
-                    JMXDataSource ds = nodeInfo.getDsMap().get(objectName + "|" + attributeName);
+                    String dsKey = objectName + "|" + attributeName;
+                    JMXDataSource ds = nodeInfo.getDsMap().get(dsKey);
+                    if (ds == null) {
+                        LOG.info("Could not find datasource for {}. Skipping.", dsKey);
+                        return;
+                    }
                     JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, attribGroupType);
                     collectionResource.setAttributeValue(attribType, attributeSample.getCollectedValueAsString());
                 }
@@ -322,7 +327,12 @@ public abstract class JMXCollector implements ServiceCollector {
                     final String attributeName = compositeSample.getCollectedAttribute().getName();
                     final AttributeGroupType attribGroupType = getAttributeGroupType(compositeSample.getMbean());
 
-                    JMXDataSource ds = nodeInfo.getDsMap().get(objectName + "|" + attributeName + "|" + compositeSample.getCompositeKey());
+                    String dsKey = objectName + "|" + attributeName + "|" + compositeSample.getCompositeKey();
+                    JMXDataSource ds = nodeInfo.getDsMap().get(dsKey);
+                    if (ds == null) {
+                        LOG.info("Could not find datasource for {}. Skipping.", dsKey);
+                        return;
+                    }
                     JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, attribGroupType);
                     collectionResource.setAttributeValue(attribType, compositeSample.getCollectedValueAsString());
                 }

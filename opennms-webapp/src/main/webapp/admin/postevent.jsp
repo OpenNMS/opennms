@@ -71,7 +71,7 @@
     }
 
     String intface = StringUtils.trimToEmpty(request.getParameter("interface"));
-    if (StringUtils.isNotBlank(host)) {
+    if (StringUtils.isNotBlank(intface)) {
         event.setInterface(intface);
     }
 
