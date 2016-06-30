@@ -42,18 +42,18 @@ import org.opennms.netmgt.bsm.service.model.BusinessService;
  */
 public class BusinessServiceRow {
 
-    private final long id;
+    private final long rowId;
     private final BusinessService businessService;
     private final Long parentBusinessServiceId;
 
-    public BusinessServiceRow(long id, BusinessService businessService, Long parentBusinessServiceId) {
-        this.id = id;
+    public BusinessServiceRow(long rowId, BusinessService businessService, Long parentBusinessServiceId) {
+        this.rowId = rowId;
         this.businessService = Objects.requireNonNull(businessService);
         this.parentBusinessServiceId = parentBusinessServiceId;
     }
 
-    public long getId() {
-        return id;
+    public long getRowId() {
+        return rowId;
     }
 
     public String getName() {

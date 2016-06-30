@@ -42,7 +42,7 @@ import com.google.common.base.Throwables;
  * Aspect to measure the execution time of methods.
  * Simply annotate the class or method to measure with {@link Profile}.
  * In order to get this to work, a bean of type {@link ProfilerAspect} must be in the current Spring Application Context
- * and AOP  must be enabled, e.g. <aop:aspectj-autoproxy/>.
+ * and AOP must be enabled, e.g. <aop:aspectj-autoproxy/>.
  */
 @Aspect
 public class ProfilerAspect {
