@@ -416,7 +416,7 @@ function parseContentRange(contentRange) {
 
 		$scope.containsSearchClause = function(clause) {
 			for (var i = 0; i < $scope.query.searchClauses.length; i++) {
-				if (clauseEquals(clause, $scope.query.searchClauses[i])) {
+				if ($scope.clauseEquals(clause, $scope.query.searchClauses[i])) {
 					return true;
 				}
 			}
