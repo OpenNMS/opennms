@@ -19,4 +19,10 @@
     <addForeignKeyConstraint constraintName="fk_node_location" baseTableName="node" baseColumnNames="location" referencedTableName="monitoringlocations" referencedColumnNames="id" deleteCascade="true"/>
   </changeSet>
 
+  <!-- Add fields for BSM reduce function: exponentatial propagate  -->
+  <changeSet author="fooker" id="19.0.0-bsm-exponentatial-propagate">
+    <addColumn tableName="bsm_reduce">
+      <column name="base" type="float"/>
+    </addColumn>
+  </changeSet>
 </databaseChangeLog>
