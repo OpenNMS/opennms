@@ -83,7 +83,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
                 // Skip edges where either the source of target vertices are outside of this graph
                 continue;
             }
-            GraphMLEdge newEdge = new GraphMLEdge(eachEdge, sourceVertex, targetVertex);
+            GraphMLEdge newEdge = new GraphMLEdge(getEdgeNamespace(), eachEdge, sourceVertex, targetVertex);
             addEdges(newEdge);
         }
         setTopologyProviderInfo(createTopologyProviderInfo(graph));

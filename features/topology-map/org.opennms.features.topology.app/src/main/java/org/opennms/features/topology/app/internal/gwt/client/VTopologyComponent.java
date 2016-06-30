@@ -277,7 +277,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
             D3.d3().zoomTransition(selection, width, height, p0, p1);
 
             D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT)
-                    .style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px")
                     .transition()
                     .delay(750)
                     .duration(500)
@@ -790,6 +789,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
             String ttText = sharedEdge.getTooltipText();
             edge.setTooltipText(ttText);
             edge.setStatus(sharedEdge.getStatus());
+			edge.setAdditionalStyling(JavaScriptHelper.toJavaScriptObject(sharedEdge.getAdditionalStyling()));
             graph.addEdge(edge);
 		}
 		

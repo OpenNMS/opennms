@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
@@ -38,8 +39,8 @@ import com.google.common.collect.Maps;
 public class GraphMLEdge extends AbstractEdge {
     private Map<String, Object> properties = Maps.newHashMap();
 
-    public GraphMLEdge(org.opennms.features.graphml.model.GraphMLEdge graphMLEdge, GraphMLVertex source, GraphMLVertex target) {
-        super(graphMLEdge.getProperty(GraphMLProperties.NAMESPACE),
+    public GraphMLEdge(String namespace, org.opennms.features.graphml.model.GraphMLEdge graphMLEdge, GraphMLVertex source, GraphMLVertex target) {
+        super(namespace,
               graphMLEdge.getProperty(GraphMLProperties.ID),
               source,
               target);
@@ -48,9 +49,19 @@ public class GraphMLEdge extends AbstractEdge {
         setProperties(graphMLEdge.getProperties());
     }
 
-    protected GraphMLEdge(GraphMLEdge other) {
-        super(other);
-        properties = ImmutableMap.copyOf(other.properties);
+    /**
+     * Clone constructor.
+     * It is required because each edge (whatever type) is cloned in the UI.
+     * The resulting object is of type AbstractEdge.
+     * This may be okay for edges which have the same fields. However, if a certain implementation needs Edge
+     * specific properties (e.g. a StatusProvider) there is no way to retrieve those.
+     * In order to make them accessible (without knowing the actual implementation), the clone constructor is used.
+     *
+     * @param edgeToClone The edge to clone
+     */
+    private GraphMLEdge(GraphMLEdge edgeToClone) {
+        super(edgeToClone);
+        properties = new HashMap<>(edgeToClone.getProperties());
     }
 
     public Map<String, Object> getProperties() {
@@ -63,7 +74,6 @@ public class GraphMLEdge extends AbstractEdge {
 
     @Override
     public AbstractEdge clone() {
-        // Ensures that the properties are also copied when cloned
         return new GraphMLEdge(this);
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.app.internal.gwt.client;
 
 import java.util.Map;
 
-import com.google.common.collect.Maps;
+import com.google.gwt.core.client.JavaScriptObject;
 
-public interface Status {
+public class JavaScriptHelper {
+    public static native void setAttribute(JavaScriptObject object, String attribute, String value) /*-{
+        object[attribute] = value;
+    }-*/;
 
-    String computeStatus();
-    Map<String, String> getStatusProperties();
-
-    /**
-     * Defines a CSS-Property to Value mapping, where the key defines the CSS-Property and the value the according value.
-     * Each entry is applied to the GWTEdge style attribute.
-     * If no style should be applied in addition, return an empty map.
-     *
-     * @return CSS-Property to Value-Mapping for each GWTEdge. Must NOT be null
-     */
-    Map<String, String> getStyleProperties();
+    public static JavaScriptObject toJavaScriptObject(Map<String, String> map) {
+        JavaScriptObject jsObject = JavaScriptObject.createObject();
+        for (Map.Entry<String, String> eachEntry : map.entrySet()) {
+            setAttribute(jsObject, eachEntry.getKey(), eachEntry.getValue());
+        }
+        return jsObject;
+    }
 
 }
