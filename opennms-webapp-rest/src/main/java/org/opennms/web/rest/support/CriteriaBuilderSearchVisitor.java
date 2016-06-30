@@ -51,6 +51,13 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 	private static final Logger LOG = LoggerFactory.getLogger(CriteriaBuilderSearchVisitor.class);
 
 	/**
+	 * Use this value to represent null values. This will translate into a 
+	 * {@link CriteriaBuilder#isNull(String)} or {@link CriteriaBuilder#isNotNull(String)}
+	 * call (depending on the operator).
+	 */
+	public static final String NULL_VALUE = "\u0000";
+
+	/**
 	 * Class that this {@link CriteriaBuilder} will generate {@link Criteria} for.
 	 */
 	private final Class<T> m_class;
@@ -113,7 +120,7 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 					if (isWildcard) {
 						m_criteriaBuilder.like(name, clsValue.getValue());
 					} else {
-						if (clsValue.getValue() == null) {
+						if (clsValue.getValue() == null || NULL_VALUE.equals(clsValue.getValue())) {
 							m_criteriaBuilder.isNull(name);
 						} else {
 							m_criteriaBuilder.eq(name, clsValue.getValue());
@@ -124,7 +131,7 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 					if (isWildcard) {
 						m_criteriaBuilder.not().like(name, clsValue.getValue());
 					} else {
-						if (clsValue.getValue() == null) {
+						if (clsValue.getValue() == null || NULL_VALUE.equals(clsValue.getValue())) {
 							m_criteriaBuilder.isNotNull(name);
 						} else {
 							// Match any rows that do not match the value or are null
