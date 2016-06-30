@@ -93,7 +93,7 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 			}
 
 			// Expose the MetaTopologyProvider
-			final GraphMLMetaTopologyProvider metaTopologyProvider = new GraphMLMetaTopologyProvider();
+			final GraphMLMetaTopologyProvider metaTopologyProvider = new GraphMLMetaTopologyProvider(m_serviceAccessor);
 			metaTopologyProvider.setTopologyLocation(location);
 			metaTopologyProvider.load();
 			registerService(pid, MetaTopologyProvider.class, metaTopologyProvider, metaData);

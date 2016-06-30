@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.features.graphml.model.GraphML;
@@ -50,6 +51,7 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,10 +63,16 @@ import com.google.common.collect.Maps;
 public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyProvider.class);
 
+    private final GraphMLServiceAccessor m_serviceAccessor;
+
     private File graphMLFile;
     private final Map<String, GraphProvider> graphsByNamespace = Maps.newLinkedHashMap();
     private final Map<String, GraphMLTopologyProvider> rawGraphsByNamespace = Maps.newLinkedHashMap();
     private final Map<VertexRef, List<VertexRef>> oppositeVertices = Maps.newLinkedHashMap();
+
+    public GraphMLMetaTopologyProvider(GraphMLServiceAccessor serviceAccessor) {
+        m_serviceAccessor = Objects.requireNonNull(serviceAccessor);
+    }
 
     private VertexRef getVertex(GraphMLNode node) {
         return graphsByNamespace.values().stream()
@@ -89,7 +97,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
             validate(graphML);
 
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
-                final GraphMLTopologyProvider topoProvider = new GraphMLTopologyProvider(eachGraph);
+                final GraphMLTopologyProvider topoProvider = new GraphMLTopologyProvider(eachGraph, m_serviceAccessor);
                 final VertexHopGraphProvider vertexHopGraphProvider = new VertexHopGraphProvider(topoProvider);
                 graphsByNamespace.put(topoProvider.getVertexNamespace(), vertexHopGraphProvider);
                 rawGraphsByNamespace.put(topoProvider.getVertexNamespace(), topoProvider);

@@ -37,6 +37,8 @@ public interface GraphMLProperties {
     String LABEL = "label";
     String LOCKED = "locked";
     String NODE_ID = "nodeID";
+    String FOREIGN_SOURCE = "foreignSource";
+    String FOREIGN_ID = "foreignID";
     String SELECTED = "selected";
     String STYLE_NAME = "styleName";
     String TOOLTIP_TEXT = "tooltipText";
