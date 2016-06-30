@@ -55,13 +55,13 @@ public class NodeTableCellStyleGenerator implements CellStyleGenerator {
     public String getStyle(Table source, Object itemId, Object propertyId) {
         if (itemId == null || !(itemId instanceof Integer)) return "";
         OnmsAlarm alarm = getAlarm(((Integer)itemId).intValue());
-        return cellStyleRenderer.getStyle(alarm);
+        return alarm == null ? cellStyleRenderer.getStyle(OnmsSeverity.NORMAL.getId(), false) : cellStyleRenderer.getStyle(alarm);
     }
 
     public OnmsAlarm getAlarm(int nodeId) {
         CriteriaBuilder builder = new CriteriaBuilder(OnmsAlarm.class);
         builder.alias("node", "node");
-        builder.ge("severity", OnmsSeverity.WARNING);
+        builder.ne("severity", OnmsSeverity.CLEARED);
         builder.orderBy("severity").desc();
         builder.eq("node.id", nodeId);
         builder.limit(Integer.valueOf(1));

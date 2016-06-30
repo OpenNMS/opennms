@@ -19,6 +19,10 @@
 	<!-- Persistent DiscoveryConfiguration -->
 	<reference id="discoveryFactory" interface="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory"/>
 
+	<bean id="queueNameFactory" class="org.opennms.core.camel.JmsQueueNameFactory">
+		<argument value="Discovery"/>
+		<argument value="Discoverer"/>
+	</bean>
 
 	<!-- Configuration properties -->
 	<!-- 
@@ -92,8 +96,7 @@
 				-->
 				<setExchangePattern pattern="InOut"/>
 				<recipientList>
-					<!-- TODO: NMS-8217: Use a more sophisticated naming convention for this queue -->
- 				    <simple>queuingservice:Location-${body.location}</simple>
+					<simple>queuingservice:${bean:queueNameFactory.getNameWithLocation(body.location)}</simple>
 				</recipientList>
 				<!-- Send the DiscoveryResults to the eventWriter -->
 				<bean ref="eventWriter" />

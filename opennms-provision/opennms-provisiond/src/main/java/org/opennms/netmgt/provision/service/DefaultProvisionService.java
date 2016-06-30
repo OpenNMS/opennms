@@ -49,7 +49,6 @@ import org.joda.time.Duration;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -82,6 +81,7 @@ import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -213,11 +213,19 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         return System.getProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false").equalsIgnoreCase("true");
     }
 
+    private void updateLocation(final OnmsNode node) {
+        if (node.getLocation() == null) {
+            node.setLocation(m_monitoringLocationDao.getDefaultLocation());
+        } else {
+            node.setLocation(createLocationIfNecessary(node.getLocation().getLocationName()));
+        }
+    }
+
     /** {@inheritDoc} */
     @Transactional
     @Override
     public void insertNode(final OnmsNode node) {
-
+        updateLocation(node);
         m_nodeDao.save(node);
         m_nodeDao.flush();
 
@@ -229,7 +237,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Transactional
     @Override
     public void updateNode(final OnmsNode node, String rescanExisting) {
-
+        updateLocation(node);
         final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 
         // on an update, leave categories alone, let the NodeScan handle applying requisitioned categories
@@ -707,11 +715,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
 
     @Override
-    public LocationDef createLocationIfNecessary(final String locationName) {
+    public OnmsMonitoringLocation createLocationIfNecessary(final String locationName) {
         if (locationName == null) {
-            return createLocationIfNecessary("localhost");
+            return createLocationIfNecessary(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
         } else {
-            LocationDef location = new LocationDef();
+            OnmsMonitoringLocation location = new OnmsMonitoringLocation();
             location.setLocationName(locationName);
             // NMS-7968: Set monitoring area too because it is a non-null field
             location.setMonitoringArea(locationName);
@@ -719,16 +727,16 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         }
     }
 
-    public LocationDef createLocationDefIfNecessary(final LocationDef location) {
-        return new CreateIfNecessaryTemplate<LocationDef, MonitoringLocationDao>(m_transactionManager, m_monitoringLocationDao) {
+    protected OnmsMonitoringLocation createLocationDefIfNecessary(final OnmsMonitoringLocation location) {
+        return new CreateIfNecessaryTemplate<OnmsMonitoringLocation, MonitoringLocationDao>(m_transactionManager, m_monitoringLocationDao) {
 
             @Override
-            protected LocationDef query() {
+            protected OnmsMonitoringLocation query() {
                 return m_dao.get(location.getLocationName());
             }
 
             @Override
-            public LocationDef doInsert() {
+            public OnmsMonitoringLocation doInsert() {
                 m_dao.save(location);
                 m_dao.flush();
                 return location;
@@ -1043,6 +1051,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 return getDbNode(node);
             }
 
+            private final List<String> m_categoriesAdded = new ArrayList<>();
+            private final List<String> m_categoriesDeleted = new ArrayList<>();
+
             private boolean handleCategoryChanges(final OnmsNode dbNode) {
                 final String foreignSource = dbNode.getForeignSource();
                 final List<String> categories = new ArrayList<>();
@@ -1074,6 +1085,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                         // we previously stored this category, but now it shouldn't be there anymore
                         // remove it from the category association
                         LOG.debug("Node {}/{}/{} no longer has the category: {}", dbNode.getId(), foreignSource, dbNode.getForeignId(), categoryName);
+                        m_categoriesDeleted.add(categoryName);
                         dbNode.removeCategory(reqCat.getCategory());
                         node.removeCategory(reqCat.getCategory());
                         reqIter.remove();
@@ -1084,6 +1096,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
                 // the remainder of requisitioned categories get added
                 for (final String cat : categories) {
+                    m_categoriesAdded.add(cat);
                     final OnmsCategory onmsCat = createCategoryIfNecessary(cat);
                     final RequisitionedCategoryAssociation r = new RequisitionedCategoryAssociation(dbNode, onmsCat);
                     node.addCategory(onmsCat);
@@ -1107,7 +1120,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 final OnmsNode ret = saveOrUpdate(dbNode);
 
                 if (changed) {
-                    accumulator.sendNow(EventUtils.createNodeCategoryMembershipChangedEvent("Provisiond", ret.getId(), ret.getLabel()));
+                    accumulator.sendNow(EventUtils.createNodeCategoryMembershipChangedEvent("Provisiond", ret.getId(), ret.getLabel(), m_categoriesAdded.toArray(new String[0]), m_categoriesDeleted.toArray(new String[0])));
                     LOG.debug("Node {}/{}/{} categories changed: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), getCategoriesForNode(dbNode));
                 } else {
                     LOG.debug("Node {}/{}/{} categories unchanged: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), getCategoriesForNode(dbNode));
@@ -1119,7 +1132,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             @Override
             protected OnmsNode doInsert() {
-                node.setLocation(createLocationIfNecessary(node.getLocation()).getLocationName());
+                node.setLocation(createLocationIfNecessary(node.getLocation() == null ? null : node.getLocation().getLocationName()));
                 return saveOrUpdate(node);
             }
         }.execute();
@@ -1353,9 +1366,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             protected OnmsNode doInsert() {
                 final Date now = new Date();
 
-                createLocationIfNecessary("localhost");
-                // TODO: Associate location with node if necessary
-                final OnmsNode node = new OnmsNode();
+                OnmsMonitoringLocation location = createLocationIfNecessary(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+                // Associate the location with the node
+                final OnmsNode node = new OnmsNode(location);
 
                 final String hostname = m_hostnameResolver.getHostname(addr(ipAddress));
                 if (hostname == null || ipAddress.equals(hostname)) {
@@ -1439,9 +1452,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public OnmsNode getNode(final Integer nodeId) {
         final OnmsNode node = m_nodeDao.get(nodeId);
+        // TODO: Does calling initialize() on an entity do anything?
         m_nodeDao.initialize(node);
         m_nodeDao.initialize(node.getCategories());
         m_nodeDao.initialize(node.getIpInterfaces());
+        m_nodeDao.initialize(node.getLocation());
         return node;
     }
 
@@ -1450,7 +1465,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public OnmsNode getDbNodeInitCat(final Integer nodeId) {
         final OnmsNode node = m_nodeDao.get(nodeId);
+        // TODO: Does calling initialize() on an entity do anything?
+        m_nodeDao.initialize(node);
         m_nodeDao.initialize(node.getCategories());
+        m_nodeDao.initialize(node.getLocation());
         return node;
     }
 

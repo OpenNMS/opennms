@@ -106,6 +106,7 @@
     <intercept-url pattern="/**/mib-compiler" access="ROLE_ADMIN" />
     <intercept-url pattern="/**/admin-*" access="ROLE_ADMIN" />
     <intercept-url pattern="/rtc/post/**" access="ROLE_RTC" />
+    <intercept-url pattern="/element/rescan.jsp" access="ROLE_ADMIN" />
     
     <intercept-url pattern="/frontpage.htm" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/dashboard.jsp" access="ROLE_USER,ROLE_DASHBOARD" />

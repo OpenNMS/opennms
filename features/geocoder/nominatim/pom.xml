@@ -9,7 +9,7 @@
   <groupId>org.opennms.features.geocoder</groupId>
   <artifactId>org.opennms.features.geocoder.nominatim</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features Nominatim Geocoder</name>
+  <name>OpenNMS :: Features :: Geocoder :: Nominatim</name>
 
   <description>Nominatim Geocoder implementation</description>
   <properties>

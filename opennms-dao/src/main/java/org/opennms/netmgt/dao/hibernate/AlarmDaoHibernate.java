@@ -38,6 +38,7 @@ import org.hibernate.transform.ResultTransformer;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -72,7 +73,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         sql.append("SELECT DISTINCT new org.opennms.netmgt.model.alarm.AlarmSummary( node.id, node.label, min(alarm.lastEventTime), max(alarm.severity), (count(*) - count(alarm.alarmAckTime)) ) ");
         sql.append("FROM OnmsAlarm AS alarm ");
         sql.append("LEFT JOIN alarm.node AS node ");
-        sql.append("WHERE node.id IS NOT NULL AND alarm.severity > 3 ");
+        sql.append("WHERE node.id IS NOT NULL AND alarm.severity != " + OnmsSeverity.CLEARED.getId());
 
         // optional
         if (nodeIds.size() == 1) {

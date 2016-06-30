@@ -64,6 +64,7 @@ import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -93,9 +94,10 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-alarmd.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -103,7 +105,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=true,tempDbClass=MockDatabase.class) // XXX should be false? 
-@Ignore
+@Ignore // TODO Figure out how to make this test more reliable before enabling it
 public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
     private static final long TEAR_DOWN_WAIT_MILLIS = 1000;
 
@@ -111,6 +113,9 @@ public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, Initiali
 
     @Autowired
     private Alarmd m_alarmd;
+
+    @Autowired
+    private MonitoringLocationDao m_locationDao;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -157,14 +162,12 @@ public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, Initiali
         m_vacuumd.init();
 
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
-        OnmsNode node = new OnmsNode();
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "default-1");
         node.setId(1);
-        node.setLabel("default-1");
         m_nodeDao.save(node);
 
-        node = new OnmsNode();
+        node = new OnmsNode(m_locationDao.getDefaultLocation(), "default-2");
         node.setId(2);
-        node.setLabel("default-2");
         m_nodeDao.save(node);
         m_nodeDao.flush();
 

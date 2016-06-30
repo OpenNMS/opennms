@@ -46,14 +46,24 @@
 		</parameter>
 		<parameter name="DS_AVAILABILITY_WARNING" class="java.lang.Double" isForPrompting="false"/>
 		<parameter name="DS_AVAILABILITY_CRITICAL" class="java.lang.Double" isForPrompting="false"/>
+		<parameter name="DS_TIME_RANGE_NUMBER" class="java.lang.Integer" isForPrompting="false">
+			<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
+		</parameter>
 		<parameter name="DS_TIME_RANGE" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["7 Days"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[$P{DS_TIME_RANGE_NUMBER} + " Days"]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_START_TIME" class="java.util.Date">
-			<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
+			<parameterDescription><![CDATA[The beginning of the time period for the report]]></parameterDescription>
+			<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400000L * $P{DS_TIME_RANGE_NUMBER}))]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_START_TIME_STRING" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["yyyy-MM-d HH:mm:ss Z"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format($P{DS_START_TIME})]]></defaultValueExpression>
+		</parameter>
+		<parameter name="DS_END_TIME" class="java.util.Date" isForPrompting="false">
+			<defaultValueExpression><![CDATA[new java.util.Date($P{DS_START_TIME}.getTime() + (86400000L * $P{DS_TIME_RANGE_NUMBER}))]]></defaultValueExpression>
+		</parameter>
+		<parameter name="DS_END_TIME_STRING" class="java.lang.String" isForPrompting="false">
+			<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format($P{DS_END_TIME})]]></defaultValueExpression>
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
@@ -121,7 +131,7 @@ FROM
         ifservices.ipinterfaceid = ipinterface.id
       WHERE
          events.eventuei = 'uei.opennms.org/nodes/nodeDown'
-         AND (iflostservice, ifregainedservice) OVERLAPS ('$P!{DS_START_TIME_STRING}'::TIMESTAMP, '$P!{DS_START_TIME_STRING}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL))
+         AND (iflostservice, COALESCE(ifregainedservice,'$P!{DS_END_TIME_STRING}'::TIMESTAMP)) OVERLAPS ('$P!{DS_START_TIME_STRING}'::TIMESTAMP, '$P!{DS_START_TIME_STRING}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL))
       AS
         raw_outages
     GROUP BY

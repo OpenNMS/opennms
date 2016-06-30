@@ -13,12 +13,29 @@
 		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="START_TIME" class="java.util.Date"/>
-	<parameter name="TIME_RANGE" class="java.lang.String">
-		<defaultValueExpression><![CDATA["7 Days"]]></defaultValueExpression>
+	<parameter name="DS_SURVEILLANCE_CATEGORY" class="java.lang.String">
+		<parameterDescription><![CDATA[Surveillance category to include in this report]]></parameterDescription>
+		<defaultValueExpression><![CDATA[new String("Routers")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TIME_RANGE_NUMBER" class="java.lang.Integer">
+		<parameterDescription><![CDATA[Report time range in days]]></parameterDescription>
+		<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
+	</parameter>
+	<parameter name="START_TIME" class="java.util.Date">
+		<parameterDescription><![CDATA[The beginning of the time period for the report]]></parameterDescription>
+		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400000L * $P{TIME_RANGE_NUMBER}))]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-d HH:mm:ss Z").format($P{START_TIME})]]></defaultValueExpression>
+	</parameter>
+	<parameter name="END_TIME" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new Date($P{START_TIME}.getTime() + (86400000L * $P{TIME_RANGE_NUMBER}))]]></defaultValueExpression>
+	</parameter>
+	<parameter name="END_TIME_STRING" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format($P{END_TIME})]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{TIME_RANGE_NUMBER} + " Days"]]></defaultValueExpression>
 	</parameter>
 	<queryString language="SQL">
 		<![CDATA[SELECT
@@ -30,11 +47,11 @@
 	SUM(EXTRACT (epoch from node_outages.duration)) AS outages_seconds,
 	CASE
 		WHEN
-			AVG(EXTRACT (epoch from node_outages.duration)) > node_outages.avail_total
+			SUM(EXTRACT (epoch from node_outages.duration)) > node_outages.avail_total
 		THEN
 			100
 		ELSE
-			AVG(EXTRACT (epoch from node_outages.duration)) * 100 / node_outages.avail_total
+			SUM(EXTRACT (epoch from node_outages.duration)) * 100 / node_outages.avail_total
 	END AS
 		outages_percent,
 	CASE
@@ -73,23 +90,22 @@ FROM
 		END AS
 			outage_counter
 	FROM
-	  (SELECT
+		(SELECT
 			events.nodeid,
-			outages.iflostservice,
-			outages.ifregainedservice
+			greatest('$P!{START_TIME_STRING}'::TIMESTAMP,outages.iflostservice) as iflostservice,
+			least('$P!{END_TIME_STRING}'::TIMESTAMP,COALESCE(outages.ifregainedservice,'$P!{END_TIME_STRING}'::TIMESTAMP)) as ifregainedservice
 		FROM
 			outages, service, events, ifservices
 		WHERE
-			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME_STRING}'::TIMESTAMP, '$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) AND
-			outages.ifserviceid = ifservices.id AND
-			ifservices.serviceid = service.serviceid AND
+			(iflostservice, COALESCE(ifregainedservice,'$P!{END_TIME_STRING}'::TIMESTAMP)) OVERLAPS ('$P!{START_TIME_STRING}'::TIMESTAMP, '$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) AND
+			outages.serviceid = service.serviceid AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND
 			events.eventuei = 'uei.opennms.org/nodes/nodeDown')
 		AS
 			outages_scope
 	RIGHT JOIN
-		(SELECT
+		(SELECT distinct on (node.nodeid)
 			node.nodeid,
 			node.nodelabel,
 			node.nodesyslocation,
@@ -106,7 +122,7 @@ FROM
 		ON
 			(category_node.categoryid = categories.categoryid)
 		WHERE
-			nodetype = 'A')
+			nodetype = 'A' AND categories.categoryname ILIKE '$P!{DS_SURVEILLANCE_CATEGORY}' )
 		AS
 			active_nodes
 	ON

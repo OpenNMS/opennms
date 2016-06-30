@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-bootstrap</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Launcher</name>
+  <name>OpenNMS :: Bootstrap</name>
   <build>
     <plugins>
       <plugin>

@@ -54,6 +54,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "node")
 public class RequisitionNode {
 
+    @XmlAttribute(name = "location", required = true)
+    protected String m_location;
+
     @XmlElement(name = "interface")
     protected List<RequisitionInterface> m_interfaces = new ArrayList<RequisitionInterface>();
     @XmlElement(name="category")
@@ -367,6 +370,24 @@ public class RequisitionNode {
     public void putAsset(RequisitionAsset asset) {
         deleteAsset(asset.getName());
         m_assets.add(0, asset);
+    }
+
+    /**
+     * <p>Getter for the field <code>location</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getLocation() {
+        return m_location;
+    }
+
+    /**
+     * <p>Setter for the field <code>location</code>.</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     */
+    public void setLocation(String value) {
+        m_location = value;
     }
 
     /**

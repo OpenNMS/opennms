@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-snmp-asset-provisioning-adapter</artifactId>
-  <name>OpenNMS Integrations SNMP Asset Provisioning Interface</name>
+  <name>OpenNMS :: Integrations :: Provisioning Adapter :: SNMP Asset</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -40,11 +40,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -121,9 +121,8 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     
     public void writeNode(MockNode node) {
         LOG.info("Inserting node \"{}\" into database with ID {}", node.getLabel(), node.getNodeId());
-        Object[] values = { Integer.valueOf(node.getNodeId()), node.getLabel(), new Timestamp(System.currentTimeMillis()), "A" };
-        // TODO: Add location column
-        update("insert into node (nodeID, nodeLabel, nodeCreateTime, nodeType) values (?, ?, ?, ?);", values);
+        Object[] values = { node.getLocation(), Integer.valueOf(node.getNodeId()), node.getLabel(), new Timestamp(System.currentTimeMillis()), "A" };
+        update("insert into node (location, nodeID, nodeLabel, nodeCreateTime, nodeType) values (?, ?, ?, ?, ?);", values);
     }
 
     public void writeInterface(MockInterface iface) {

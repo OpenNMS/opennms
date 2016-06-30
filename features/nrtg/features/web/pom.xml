@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.nrtg</groupId>
   <artifactId>osgi-nrtg-web</artifactId>
-  <name>OpenNMS :: Features :: NRTG :: Web</name>
+  <name>OpenNMS :: Features :: NRTG :: Features :: Web</name>
   <description>NRTG Web Runtime Feature</description>
   <packaging>pom</packaging>
   <build>

@@ -210,10 +210,11 @@ public class SnmpTrapNorthbounderConfigDaoTest {
      */
     private NorthboundAlarm createAlarm() throws UnknownHostException {
         // Build a test node
-        OnmsNode node = new OnmsNode("my-server");
+        OnmsNode node = new OnmsNode();
         node.setForeignSource("Servers");
         node.setForeignId("AAA11122");
         node.setId(1);
+        node.setLabel("my-server");
 
         // Build a test SNMP interface
         OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);

@@ -74,11 +74,12 @@ public interface Task {
     void waitFor() throws InterruptedException, ExecutionException;
 
     /**
-     * Wait for this task to complete or until a timeout occurs
+     * Wait for this task to complete or until a timeout occurs. If the
+     * timeout elapses, then false is returned.
      *
      * @param timeout a long.
      * @param unit a {@link java.util.concurrent.TimeUnit} object.
      * @throws java.lang.InterruptedException if any.
      */
-    void waitFor(long timeout, TimeUnit unit) throws InterruptedException;
+    boolean waitFor(long timeout, TimeUnit unit) throws InterruptedException;
 }

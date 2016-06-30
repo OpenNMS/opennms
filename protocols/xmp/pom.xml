@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.protocols</groupId>
   <artifactId>org.opennms.protocols.xmp</artifactId>
-  <name>OpenNMS Protocols Support for XMP (Cartographer) Agents</name>
+  <name>OpenNMS :: Protocols :: XMP (Cartographer) Agents</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

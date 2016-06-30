@@ -13,7 +13,7 @@
     <artifactId>onms-default-theme</artifactId>
     <packaging>bundle</packaging>
 
-    <name>OpenNMS Features :: Vaadin :: Theme :: Default</name>
+    <name>OpenNMS :: Features :: Vaadin :: Theme :: Default</name>
 
     <properties>
         <bundle.symbolicname>org.opennms.features.topology.themes.default-theme</bundle.symbolicname>

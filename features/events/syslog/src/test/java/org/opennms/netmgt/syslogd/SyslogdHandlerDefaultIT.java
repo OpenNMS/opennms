@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.Component;
@@ -41,6 +42,7 @@ import org.apache.camel.util.KeyValueHolder;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
@@ -84,8 +86,10 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTest {
 
 	@Test(timeout=60000)
 	public void testSyslogd() throws Exception {
+		
 		// Expect one SyslogConnection message to be broadcast on the messaging channel
-		MockEndpoint broadcastSyslog = getMockEndpoint("mock:queuingservice:broadcastSyslog", false);
+		JmsQueueNameFactory factory = new JmsQueueNameFactory("Syslogd", "BroadcastSyslog");
+		MockEndpoint broadcastSyslog = getMockEndpoint("mock:queuingservice:" + factory.getName(), false);
 		broadcastSyslog.setExpectedMessageCount(1);
 
 		MockEndpoint syslogHandler = getMockEndpoint("mock:seda:syslogHandler", false);
@@ -105,10 +109,12 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTest {
 
 		byte[] messageBytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes("US-ASCII");
 
+		UUID systemId = UUID.randomUUID();
+
 		// Send a SyslogConnection
 		template.sendBody(
-			"queuingservice:broadcastSyslog",
-			JaxbUtils.marshal(new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap(messageBytes), config))
+			"queuingservice:" + factory.getName(),
+			JaxbUtils.marshal(new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap(messageBytes), config, systemId.toString()))
 		);
 
 		assertMockEndpointsSatisfied();
@@ -119,6 +125,7 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTest {
 		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, result.getSourceAddress());
 		assertEquals(2000, result.getPort());
 		assertTrue(Arrays.equals(result.getBytes(), messageBytes));
+		assertEquals(systemId.toString(), result.getSystemId());
 
 		// Assert that the SyslogdConfig has been updated to the local copy
 		// that has been provided as an OSGi service

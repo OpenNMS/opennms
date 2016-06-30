@@ -99,7 +99,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private InetAddress m_ipAddr;
 
 	/** persistent field */
-	private OnmsDistPoller m_distPoller;
+	private OnmsMonitoringSystem m_distPoller;
 
 	/** nullable persistent field */
 	private String m_eventSnmpHost;
@@ -463,12 +463,12 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	/**
 	 * <p>getDistPoller</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+	 * @return a {@link org.opennms.netmgt.model.OnmsMonitoringSystem} object.
 	 */
 	@XmlTransient
 	@ManyToOne
 	@JoinColumn(name="systemId", nullable=false)
-	public OnmsDistPoller getDistPoller() {
+	public OnmsMonitoringSystem getDistPoller() {
 		return m_distPoller;
 	}
 
@@ -477,7 +477,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
 	 */
-	public void setDistPoller(OnmsDistPoller distPoller) {
+	public void setDistPoller(OnmsMonitoringSystem distPoller) {
 		m_distPoller = distPoller;
 	}
 
