@@ -10,7 +10,7 @@
 					<label>Add Filter:</label>
 					<form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
 						<div class="form-group">
-						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'notifyId'">
+						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'id'">
 							<option value="id">ID</option>
 							<option value="timestamp">Timestamp</option>
 							<option value="location">Location</option>
@@ -23,8 +23,8 @@
 							<option value="GT">&gt;</option>
 							<option value="GE">&gt;=</option>
 						</select>
-						<input class="form-control" type="text" ng-model="clause.value" ng-show="clause.property !== 'lastUpdated'" />
-						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-show="clause.property === 'lastUpdated'"/>
+						<input class="form-control" type="text" ng-model="clause.value" ng-if="clause.property !== 'timestamp'" />
+						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-if="clause.property === 'timestamp'"/>
 						</div>
 						<br/><br/>
 						<button class="btn btn-default" type="submit">Submit</button>
