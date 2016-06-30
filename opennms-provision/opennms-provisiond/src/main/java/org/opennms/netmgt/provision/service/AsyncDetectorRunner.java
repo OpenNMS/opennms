@@ -28,8 +28,7 @@
 
 package org.opennms.netmgt.provision.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.net.InetAddress;
 
 import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.Callback;
@@ -37,11 +36,13 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectFutureListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class AsyncDetectorRunner implements Async<Boolean> {
     private static final Logger LOG = LoggerFactory.getLogger(AsyncDetectorRunner.class);
     
-    private final IpInterfaceScan m_ifaceScan;
+    private final InetAddress m_address;
     private final AsyncServiceDetector m_detector;
     
     /**
@@ -50,25 +51,31 @@ class AsyncDetectorRunner implements Async<Boolean> {
      * @param ifaceScan a {@link org.opennms.netmgt.provision.service.IpInterfaceScan} object.
      * @param detector a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
      */
-    public AsyncDetectorRunner(IpInterfaceScan ifaceScan, AsyncServiceDetector detector) {
-        m_ifaceScan = ifaceScan;
+    public AsyncDetectorRunner(AsyncServiceDetector detector, InetAddress address) {
         m_detector = detector;
+        m_address = address;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void submit(Callback<Boolean> cb) {
+    public void supplyAsyncThenAccept(Callback<Boolean> cb) {
         try {
-            LOG.info("Attemping to detect service {} on address {}", m_detector.getServiceName(), getHostAddress());
-            DetectFuture future = m_detector.isServiceDetected(m_ifaceScan.getAddress());
-            future.addListener(listener(cb));
+            LOG.info("Attemping to detect service {} asynchronously on address {}", m_detector.getServiceName(), getHostAddress());
+            // Launch the async detector
+            DetectFuture future = m_detector.isServiceDetected(m_address);
+            // After completion, run the callback
+            future.addListener(new RunCallbackListener(cb));
+            // And dispose of the detector
+            future.addListener(new DisposeDetectorListener(m_detector));
         } catch (Throwable e) {
             cb.handleException(e);
+            // TODO: Is this necessary? Probably but not certain.
+            m_detector.dispose();
         }
     }
 
 	private String getHostAddress() {
-		return InetAddressUtils.str(m_ifaceScan.getAddress());
+		return InetAddressUtils.str(m_address);
 	}
     
     /** {@inheritDoc} */
@@ -77,21 +84,35 @@ class AsyncDetectorRunner implements Async<Boolean> {
         return String.format("Run detector %s on address %s", m_detector.getServiceName(), getHostAddress());
     }
 
-    private DetectFutureListener<DetectFuture> listener(final Callback<Boolean> cb) {
-        return new DetectFutureListener<DetectFuture>() {
-            @Override
-            public void operationComplete(DetectFuture future) {
-                try {
-                    if (future.getException() != null) {
-                        cb.handleException(future.getException());
-                    } else {
-                        cb.complete(future.isServiceDetected());
-                    }
-                } finally{
-                   m_detector.dispose();
-                }
+    private static class RunCallbackListener implements DetectFutureListener<DetectFuture> {
+
+        private final Callback<Boolean> m_callback;
+
+        public RunCallbackListener(final Callback<Boolean> cb) {
+            m_callback = cb;
+        }
+
+        @Override
+        public void operationComplete(final DetectFuture future) {
+            if (future.getException() != null) {
+                m_callback.handleException(future.getException());
+            } else {
+                m_callback.accept(future.isServiceDetected());
             }
         };
     }
-    
+
+    private static class DisposeDetectorListener implements DetectFutureListener<DetectFuture> {
+
+        private final AsyncServiceDetector m_detector;
+
+        public DisposeDetectorListener(final AsyncServiceDetector detector) {
+            m_detector = detector;
+        }
+
+        @Override
+        public void operationComplete(final DetectFuture future) {
+           m_detector.dispose();
+        };
+    }
 }

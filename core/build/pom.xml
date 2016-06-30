@@ -9,7 +9,7 @@
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.build</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Core Build Tools</name>
+  <name>OpenNMS :: Core :: Build Tools</name>
   <modules>
     <module>keystore</module>
   </modules>

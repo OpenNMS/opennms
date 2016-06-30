@@ -11,7 +11,7 @@
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>opennms-topology-runtime-ncs</artifactId>
 
-  <name>OpenNMS :: Features :: Topology :: Runtime (NCS)</name>
+  <name>OpenNMS :: Features :: Topology :: Features :: NCS</name>
 
   <description>NCS-based runtime and plugins for the OpenNMS topology web app.</description>
 
@@ -58,7 +58,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>ncs</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.ncs</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

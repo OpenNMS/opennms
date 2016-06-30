@@ -10,7 +10,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.gwt-bootstrap</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Features Bootstrap Support for GWT</name>
+  <name>OpenNMS :: Features :: Bootstrap Support for GWT</name>
 
   <dependencies>
     <dependency>

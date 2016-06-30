@@ -50,7 +50,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
     @Test
     public void testInstallAllOpenNMSFeatures() {
         final String version = getOpenNMSVersion();
-        addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("karaf").version(version).type("xml").classifier("features").getURL());
+        addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version(version).type("xml").classifier("features").getURL());
         addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("features").getURL());
 
         installFeature("atomikos");
@@ -75,6 +75,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("guava");
         installFeature("hibernate36");
         installFeature("hibernate-validator41");
+        installFeature("java-native-access");
         installFeature("jaxb");
         installFeature("jfreechart");
         installFeature("jicmp");
@@ -83,7 +84,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("jrobin");
         installFeature("json-lib");
         installFeature("lmax-disruptor");
-        installFeature("net.java.dev.jna");
         // Causes the test to die?
         //installFeature("onms-camel-elasticsearch");
         //installFeature("opennms-activemq-config");

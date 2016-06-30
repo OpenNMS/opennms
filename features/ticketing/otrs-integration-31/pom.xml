@@ -7,7 +7,7 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>opennms-integration-otrs-31</artifactId>
-	<name>OpenNMS OTRS 3.1 Integration</name>
+	<name>OpenNMS :: Features :: Ticketing :: OTRS 3.1</name>
 	<packaging>bundle</packaging>
 	<build>
 		<plugins>

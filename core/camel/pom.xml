@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.camel</artifactId>
-  <name>OpenNMS Core Camel</name>
+  <name>OpenNMS :: Core :: Camel</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -39,10 +39,6 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.xml</artifactId>
     </dependency>
     <dependency>
@@ -56,18 +52,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.compendium</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

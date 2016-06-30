@@ -48,6 +48,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +61,7 @@ import com.codahale.metrics.MetricRegistry;
  */
 public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverNioThreadPoolImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverCamelNettyImpl.class);
     
     private static final MetricRegistry METRICS = new MetricRegistry();
 
@@ -73,6 +74,8 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
     private final SyslogdConfig m_config;
 
     private DefaultCamelContext m_camel;
+
+    private DistPollerDao m_distPollerDao = null;
 
     private List<SyslogConnectionHandler> m_syslogConnectionHandlers = Collections.emptyList();
 
@@ -113,6 +116,15 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         } catch (Exception e) {
             LOG.warn("Exception while shutting down syslog Camel context", e);
         }
+    }
+
+    // Getter and setter for DistPollerDao
+    public DistPollerDao getDistPollerDao() {
+        return m_distPollerDao;
+    }
+
+    public void setDistPollerDao(DistPollerDao distPollerDao) {
+        m_distPollerDao = distPollerDao;
     }
 
     //Getter and setter for syslog handler
@@ -166,7 +178,7 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
                             // we are listening on an InetAddress, it will always be of type InetAddressSocket
                             InetSocketAddress source = (InetSocketAddress)exchange.getIn().getHeader(NettyConstants.NETTY_REMOTE_ADDRESS); 
-                            // Syslog Handler Implementation to recieve message from syslogport and pass it on to handler
+                            // Syslog Handler Implementation to receive message from syslog port and pass it on to handler
                             
                             ByteBuffer byteBuffer = buffer.toByteBuffer();
                             
@@ -176,7 +188,7 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             // Create a metric for the syslog packet size
                             packetSizeHistogram.update(byteBuffer.remaining());
                             
-                            SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), byteBuffer, m_config);
+                            SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), byteBuffer, m_config, m_distPollerDao.whoami().getId());
                             try {
                                 for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {
                                     connectionMeter.mark();

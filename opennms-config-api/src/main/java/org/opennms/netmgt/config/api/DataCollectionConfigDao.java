@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
+import org.opennms.netmgt.config.datacollection.MibObjProperty;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -65,6 +66,17 @@ public interface DataCollectionConfigDao {
      * @return a {@link java.util.List} object.
      */
     List<MibObject> getMibObjectList(String cName, String aSysoid, String anAddress, int ifType);
+
+    /**
+     * <p>getMibObjProperties</p>
+     *
+     * @param cName a {@link java.lang.String} object.
+     * @param aSysoid a {@link java.lang.String} object.
+     * @param anAddress a {@link java.lang.String} object.
+     * @param ifType a int.
+     * @return a {@link java.util.List} object.
+     */
+    List<MibObjProperty> getMibObjProperties(String cName, String aSysoid, String anAddress);
 
     /**
      * <p>getConfiguredResourceTypes</p>

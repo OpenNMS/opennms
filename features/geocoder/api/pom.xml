@@ -9,7 +9,7 @@
   <groupId>org.opennms.features.geocoder</groupId>
   <artifactId>org.opennms.features.geocoder.api</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features Geocoder API</name>
+  <name>OpenNMS :: Features :: Geocoder :: API</name>
 
   <description>API for doing a geocoder lookup (turning an address into coordinates)</description>
   <properties>

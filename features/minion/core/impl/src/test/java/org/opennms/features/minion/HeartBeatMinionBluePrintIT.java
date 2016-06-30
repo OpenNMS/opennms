@@ -38,6 +38,7 @@ import org.apache.camel.component.seda.SedaComponent;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.xml.JaxbUtils;
@@ -83,8 +84,8 @@ public class HeartBeatMinionBluePrintIT extends CamelBlueprintTest {
 
     @Test
     public void testHeartBeat() throws Exception {
-
-        MockEndpoint heartBeatqueue = getMockEndpoint("mock:queuingservice:heartBeat",
+        JmsQueueNameFactory factory = new JmsQueueNameFactory("Minion", "Heartbeat");
+        MockEndpoint heartBeatqueue = getMockEndpoint("mock:queuingservice:" + factory.getName(),
                                                       false);
         heartBeatqueue.setExpectedMessageCount(1);
 

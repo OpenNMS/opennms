@@ -92,6 +92,12 @@ if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
 	}
 }
 
+if (not $MAVEN_OPTS =~ /TieredCompilation/) {
+	# Improve startup speed by disabling collection of extra profiling information during compiles since they're not
+	# long-running enough for them to be a net-win for performance.
+	$MAVEN_OPTS .= " -XX:+TieredCompilation -XX:TieredStopAtLevel=1";
+}
+
 if (not $MAVEN_OPTS =~ /UseGCOverheadLimit/) {
 	# The concurrent collector will throw an OutOfMemoryError if too much time is being spent in garbage collection: if
 	# more than 98% of the total time is spent in garbage collection and less than 2% of the heap is recovered, an

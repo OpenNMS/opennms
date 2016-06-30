@@ -40,9 +40,4 @@
       <artifactId>sample-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-    </dependency>
-  </dependencies>
 </project>

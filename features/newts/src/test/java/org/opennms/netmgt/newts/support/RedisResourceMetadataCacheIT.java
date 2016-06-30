@@ -81,4 +81,30 @@ public class RedisResourceMetadataCacheIT {
         assertTrue(cache.getResourceIdsWithPrefix(ctx, "a:b:c").contains("a:b:c"));
         assertTrue(cache.getResourceIdsWithPrefix(ctx, "a:b:c:d").isEmpty());
     }
+
+    @Test
+    public void canUpdateEntry() {
+        Context ctx = Context.DEFAULT_CONTEXT;
+
+        RedisResourceMetadataCache cache = new RedisResourceMetadataCache(REDIS_HOSTNAME, REDIS_PORT, 8, m_registry, new EscapableResourceIdSplitter());
+
+        // Insert
+        Resource resource = new Resource("a:b:c");
+        ResourceMetadata resourceMetadata = new ResourceMetadata();
+        resourceMetadata.putAttribute("a1", "1");
+        cache.merge(ctx, resource, resourceMetadata);
+
+        // Verify
+        assertTrue("attribute a1 must be set", cache.get(ctx, resource).get().containsAttribute("a1", "1"));
+
+        // Update
+        resourceMetadata = new ResourceMetadata();
+        resourceMetadata.putAttribute("a2", "2");
+        cache.merge(ctx, resource, resourceMetadata);
+
+        // Verify
+        assertTrue("attribute a1 must be set", cache.get(ctx, resource).get().containsAttribute("a1", "1"));
+        assertTrue("attribute a2 must be set", cache.get(ctx, resource).get().containsAttribute("a2", "2"));
+
+    }
 }

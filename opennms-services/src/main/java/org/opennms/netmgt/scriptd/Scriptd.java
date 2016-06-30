@@ -30,17 +30,16 @@ package org.opennms.netmgt.scriptd;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.netmgt.config.ScriptdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.xml.event.Event;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.access.BeanFactoryReference;
@@ -111,7 +110,7 @@ public final class Scriptd extends AbstractServiceDaemon {
 
         // A queue for execution
 
-        FifoQueue<Event> execQ = new FifoQueueImpl<Event>();
+        BlockingQueue<Event> execQ = new LinkedBlockingQueue<>();
 
         // start the event reader
 

@@ -129,7 +129,7 @@ public class IfIndexNullIT extends ProvisioningITCase implements InitializingBea
     }
     
     public void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
-    	final Task t = scan.createTask();
+        final Task t = scan.createTask();
         t.schedule();
         t.waitFor();
         waitForEverything();

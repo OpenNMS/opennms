@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-ackd</artifactId>
-  <name>OpenNMS Acknowledgement Daemon</name>
+  <name>OpenNMS :: Acknowledgements :: Daemon</name>
   <packaging>bundle</packaging>
   <properties>
     <skipITs>true</skipITs>
@@ -93,11 +93,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

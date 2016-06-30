@@ -314,7 +314,7 @@ public class AnnotationIT implements InitializingBean {
 
 	@Test
 	@Transactional
-	public void testNotifacations() {
+	public void testNotifications() {
 		assertLoadAll(OnmsNotification.class, new NullChecker<OnmsNotification>());
 	}
 

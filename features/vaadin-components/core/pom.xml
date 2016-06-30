@@ -13,7 +13,7 @@
         <bundle.symbolicName>org.opennms.features.vaadin.components.core</bundle.symbolicName>
         <bundle.namespace>org.opennms.features.vaadin.components.core</bundle.namespace>
     </properties>
-    <name>OpenNMS Features :: Vaadin :: Components :: Core</name>
+    <name>OpenNMS :: Features :: Vaadin :: Components :: Core</name>
     <packaging>bundle</packaging>
     <build>
         <plugins>
@@ -55,11 +55,6 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-dao-mock</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

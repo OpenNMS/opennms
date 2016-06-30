@@ -12,6 +12,7 @@
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <include>org.dhcp.jdhcp:jdhcp</include>
       </includes>

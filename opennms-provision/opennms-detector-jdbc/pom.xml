@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-detector-jdbc</artifactId>
-  <name>OpenNMS Provision JDBC Detector</name>
+  <name>OpenNMS :: Provisioning :: JDBC Detector</name>
   <url>http://www.opennms.org</url>
   <packaging>bundle</packaging>
   <properties>
@@ -83,11 +83,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

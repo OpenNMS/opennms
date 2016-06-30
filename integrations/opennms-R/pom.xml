@@ -7,7 +7,7 @@
     <version>19.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>opennms-R</artifactId>
-  <name>OpenNMS Integrations R Interface</name>
+  <name>OpenNMS :: Integrations :: R Interface</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -64,9 +64,8 @@
       <version>${freemarkerVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.lib</artifactId>
     </dependency>
   </dependencies>
     

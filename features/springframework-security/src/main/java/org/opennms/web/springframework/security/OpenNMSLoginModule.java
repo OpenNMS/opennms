@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 
-public class OpenNMSLoginModule implements LoginModule, LoginHandler {
+public class OpenNMSLoginModule implements LoginModule, LoginHandler, OpenNMSLoginHandler {
     private static final transient Logger LOG = LoggerFactory.getLogger(OpenNMSLoginModule.class);
 
     private static transient volatile UserConfig m_userConfig;
@@ -24,8 +24,8 @@ public class OpenNMSLoginModule implements LoginModule, LoginHandler {
 
     protected Subject m_subject;
     protected CallbackHandler m_callbackHandler;
-    protected Map<String, ? super Object> m_sharedState;
-    protected Map<String, ? super Object> m_options;
+    protected Map<String, ?> m_sharedState;
+    protected Map<String, ?> m_options;
 
     protected String m_user;
     protected Set<Principal> m_principals = new HashSet<Principal>();
@@ -35,11 +35,13 @@ public class OpenNMSLoginModule implements LoginModule, LoginHandler {
         LOG.info("OpenNMS Login Module initializing.");
         m_subject = subject;
         m_callbackHandler = callbackHandler;
+        m_sharedState = sharedState;
+        m_options = options;
     }
 
     @Override
     public boolean login() throws LoginException {
-        return LoginModuleUtils.doLogin(this);
+        return LoginModuleUtils.doLogin(this, m_subject, m_sharedState, m_options);
     }
 
     @Override
@@ -119,5 +121,11 @@ public class OpenNMSLoginModule implements LoginModule, LoginHandler {
     @Override
     public void setPrincipals(final Set<Principal> principals) {
         m_principals = principals;
+    }
+
+    @Override
+    public boolean requiresAdminRole() {
+        // this LoginHandler is used for JMX access, allow JMX to handle checking roles for authority
+        return false;
     }
 }

@@ -3,18 +3,20 @@
 # Starts the remote poller.
 # w00t
 #
+# Thu Jun 9 14:10:42 EST 2016 - ranger@opennms.org
+# - updated to detect "REMOTE_POLLER_HOME" based on the script
 # Thu Sep 18 08:54:00 EST 2008 - ranger@opennms.org
 # - updated to use runjava
 # Mon Jun 16 15:52:00 EST 2008 - ranger@opennms.org
 # - updated to use the installed location
 # Tue Dec 12 23:05:42 GMT 2006 - dj@opennms.org
 
-if [ -z "$OPENNMS_HOME" ]; then
-	OPENNMS_HOME="${install.dir}"
-fi
-JAVA_CONF="$OPENNMS_HOME/etc/java.conf"
+REMOTE_POLLER_HOME="$(dirname "$0")"
+REMOTE_POLLER_HOME="$(cd "$REMOTE_POLLER_HOME/.." || exit 1; pwd)"
 
-MONITOR_JAR="$OPENNMS_HOME/bin/remote-poller.jar"
+JAVA_CONF="$REMOTE_POLLER_HOME/etc/java.conf"
+
+MONITOR_JAR="$REMOTE_POLLER_HOME/lib/remote-poller.jar"
 RMI_PORT=1099
 JVM_ARGS="-Xmx384m"
 EXTRA_ARGS=""
@@ -87,7 +89,7 @@ fi
 if [ "$JAVA_EXE" = "" ]; then
 	if [ "$JAVA_HOME" = "" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
 		echo "ERROR: $JAVA_CONF file not found, and \$JAVA_HOME is not set to a valid JDK."
-		echo "Try running $OPENNMS_HOME/bin/runjava, or set JAVA_HOME."
+		echo "Try running $REMOTE_POLLER_HOME/bin/runjava, or set JAVA_HOME."
 		exit 1
 	else
 		JAVA_EXE="$JAVA_HOME/bin/java"

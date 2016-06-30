@@ -934,6 +934,16 @@ public abstract class EventConstants {
     public static final String PARM_CAT_LABEL = "catlabel";
 
     /**
+     * Used to indicate categories added on a {@link #NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI} event.
+     */
+    public static final String PARM_CATEGORIES_ADDED = "categoriesAdded";
+
+    /**
+     * Used to indicate categories deleted on a {@link #NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI} event.
+     */
+    public static final String PARM_CATEGORIES_DELETED = "categoriesDeleted";
+
+    /**
      * The username when sent as a parameter(like for the RTC subscribe)
      */
     public static final String PARM_USER = "user";

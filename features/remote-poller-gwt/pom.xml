@@ -9,7 +9,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
   <packaging>war</packaging>
-  <name>OpenNMS Features Remote Poller GWT UI</name>
+  <name>OpenNMS :: Features :: Remote Poller :: GWT UI</name>
   <properties>
     <skipITs>true</skipITs>
     <moduleName>org.opennms.features.poller.remote.gwt.client.Application</moduleName>
@@ -259,11 +259,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

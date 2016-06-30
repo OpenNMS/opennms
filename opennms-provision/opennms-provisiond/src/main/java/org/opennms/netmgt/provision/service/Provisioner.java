@@ -45,8 +45,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -88,7 +88,7 @@ public class Provisioner implements SpringServiceDaemon {
     /** Constant <code>NAME="Provisiond"</code> */
     public static final String NAME = "Provisiond";
 
-    private DefaultTaskCoordinator m_taskCoordinator;
+    private TaskCoordinator m_taskCoordinator;
     private CoreImportActivities m_importActivities;
     private LifeCycleRepository m_lifeCycleRepository;
     private ProvisionService m_provisionService;
@@ -163,7 +163,7 @@ public class Provisioner implements SpringServiceDaemon {
      *
      * @param taskCoordinator the taskCoordinator to set
      */
-    public void setTaskCoordinator(DefaultTaskCoordinator taskCoordinator) {
+    public void setTaskCoordinator(TaskCoordinator taskCoordinator) {
         m_taskCoordinator = taskCoordinator;
     }
     
@@ -583,6 +583,8 @@ public class Provisioner implements SpringServiceDaemon {
     
     /**
      * <p>handleNewSuspectEvent</p>
+     * 
+     * TODO: HZN-613: Associate location with new nodes
      *
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
@@ -595,8 +597,9 @@ public class Provisioner implements SpringServiceDaemon {
         String foreignSource = null;
         List<Parm> parmCollection = e.getParmCollection();
         for (Parm parm : parmCollection) {
-			if (parm.getParmName().equals("foreignSource")) {
+			if ("foreignSource".equals(parm.getParmName())) {
 				foreignSource = parm.getValue().getContent();
+				break;
 			}
 		}
 
@@ -773,7 +776,13 @@ public class Provisioner implements SpringServiceDaemon {
             }
         }
     }
-    
+
+    /**
+     * TODO: HZN-613: Associate location with new nodes
+     * 
+     * @param ipAddr
+     * @param nodeLabel
+     */
     private void doAddNode(String ipAddr, String nodeLabel) {
 
         OnmsNode node = new OnmsNode();

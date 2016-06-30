@@ -13,9 +13,16 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
+	<bean id="queueNameFactory" class="org.opennms.core.camel.JmsQueueNameFactory">
+		<argument value="Syslogd"/>
+		<argument value="BroadcastSyslog"/>
+	</bean>
+
 	<cm:property-placeholder id="syslogHandlerDefaultProperties" persistent-id="org.opennms.netmgt.syslog.handler.default" update-strategy="none">
 		<cm:default-properties>
-			<cm:property name="brokerUri" value="vm://localhost?create=false" />
+			<cm:property name="queueName">
+				<bean factory-ref="queueNameFactory" factory-method="getName"/>
+			</cm:property>
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -43,9 +50,9 @@
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerDefaultProperties" />
 
 		<route id="receiveSyslogConnection">
-			<from uri="queuingservice:broadcastSyslog?concurrentConsumers=8"/>
+			<from uri="queuingservice:{{queueName}}?concurrentConsumers=8"/>
 			<!-- No performance improvement with asyncConsumer -->
-			<!-- <from uri="activemq:broadcastSyslog?asyncConsumer=true&amp;concurrentConsumers=8"/> -->
+			<!-- <from uri="activemq:{{queueName}}?asyncConsumer=true&amp;concurrentConsumers=8"/> -->
 			<to uri="seda:unmarshalMessage"/>
 		</route>
 

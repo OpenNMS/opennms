@@ -38,7 +38,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>drools-correlation-engine</artifactId>
-  <name>OpenNMS Correlation Drools Engine</name>
+  <name>OpenNMS :: Correlation :: Drools Engine</name>
   <url>http://maven.apache.org</url>
   <packaging>bundle</packaging>
   <properties>
@@ -178,11 +178,6 @@
     <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

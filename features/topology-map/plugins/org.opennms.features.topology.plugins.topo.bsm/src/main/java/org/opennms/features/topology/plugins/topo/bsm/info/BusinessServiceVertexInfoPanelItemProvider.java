@@ -54,6 +54,7 @@ import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.ExponentialPropagation;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReduceFunctionVisitor;
@@ -144,6 +145,11 @@ public class BusinessServiceVertexInfoPanelItemProvider extends VertexInfoPanelI
                         formLayout.addComponent(explainButton);
                         return null;
                     }
+
+                    @Override
+                    public Void visit(ExponentialPropagation exponentialPropagation) {
+                        return null;
+                    }
                 });
                 return null;
             }
@@ -210,6 +216,13 @@ public class BusinessServiceVertexInfoPanelItemProvider extends VertexInfoPanelI
                 return String.format("%s (%s)",
                                      function.getClass().getSimpleName(),
                                      Float.toString(function.getThreshold()));
+            }
+
+            @Override
+            public String visit(ExponentialPropagation function) {
+                return String.format("%s (%s)",
+                                     function.getClass().getSimpleName(),
+                                     Double.toString(function.getBase()));
             }
         });
     }

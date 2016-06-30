@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v1;
 
 import static org.junit.Assert.assertEquals;
+
 import java.util.Map;
 
 import javax.ws.rs.WebApplicationException;
@@ -40,6 +41,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.measurements.model.QueryRequest;
@@ -61,6 +63,9 @@ public abstract class MeasurementsRestServiceITCase {
     protected MeasurementsRestService m_svc;
 
     @Autowired
+    protected MonitoringLocationDao m_locationDao;
+
+    @Autowired
     protected NodeDao m_nodeDao;
 
     @Rule
@@ -72,9 +77,8 @@ public abstract class MeasurementsRestServiceITCase {
     public void setUp() {
         BeanUtils.assertAutowiring(this);
 
-        OnmsNode node = new OnmsNode();
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
         node.setId(1);
-        node.setLabel("node1");
         m_nodeDao.save(node);
         m_nodeDao.flush();
     }

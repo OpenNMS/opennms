@@ -38,40 +38,35 @@ import org.slf4j.LoggerFactory;
  * @author brozow
  * @version $Id: $
  */
-public class SyncTask extends Task {
+public class SyncTask extends AbstractTask {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SyncTask.class);
     
-    /** Constant <code>DEFAULT_EXECUTOR="default"</code> */
-    public static final String DEFAULT_EXECUTOR = "default";
-    /** Constant <code>ADMIN_EXECUTOR="admin"</code> */
-    public static final String ADMIN_EXECUTOR = "admin";
-    
     private final Runnable m_action;
 
-    private String m_preferredExecutor = DEFAULT_EXECUTOR;
+    private String m_preferredExecutor = TaskCoordinator.DEFAULT_EXECUTOR;
     
     /**
      * <p>Constructor for SyncTask.</p>
      *
-     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param coordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
      * @param action a {@link java.lang.Runnable} object.
      */
-    public SyncTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent, Runnable action) {
-        this(coordinator, parent, action, DEFAULT_EXECUTOR);
+    public SyncTask(TaskCoordinator coordinator, ContainerTask<?> parent, Runnable action) {
+        this(coordinator, parent, action, TaskCoordinator.DEFAULT_EXECUTOR);
     }
 
 
     /**
      * <p>Constructor for SyncTask.</p>
      *
-     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param coordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
      * @param action a {@link java.lang.Runnable} object.
      * @param preferredExecutor a {@link java.lang.String} object.
      */
-    public SyncTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent, Runnable action, String preferredExecutor) {
+    public SyncTask(TaskCoordinator coordinator, ContainerTask<?> parent, Runnable action, String preferredExecutor) {
         super(coordinator, parent);
         m_action = action;
         m_preferredExecutor = preferredExecutor;
@@ -80,7 +75,7 @@ public class SyncTask extends Task {
     /** {@inheritDoc} */
     @Override
     protected void doSubmit() {
-        submitRunnable(getRunnable(), getPreferredExecutor());
+        getCoordinator().submitToExecutor(getPreferredExecutor(), getRunnable(), this);
     }
 
     /**
@@ -88,12 +83,12 @@ public class SyncTask extends Task {
      * or a Runnable can be passed to the task in the constructor.  The Task is not complete until this method
      * finishes
      */
-    public void run() {
+    private final void run() {
         if (m_action != null) {
             m_action.run();
         }
     }
-    
+
     /**
      * This method is used by the TaskCoordinator to create runnable that will run this task
      */
@@ -104,7 +99,7 @@ public class SyncTask extends Task {
               try {
                   SyncTask.this.run();
               } catch (Throwable t) {
-                  LOG.debug("Exception occurred executing task {}", SyncTask.this, t);
+                  LOG.debug("Exception occurred executing task " + SyncTask.this, t);
               }
           }
           @Override
