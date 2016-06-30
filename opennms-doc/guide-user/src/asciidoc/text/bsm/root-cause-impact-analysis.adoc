@@ -36,4 +36,4 @@ In figure <<ug-bsm-example-ia-results, View after performing Impact Analysis>> t
 .View after performing Impact Analysis
 image:bsm/06_bsm-ia-results.png[]
 
-NOTE: For the reason the service _PSM Shop_ is introducing the critical status for the _Business Service_ _Shop_, the _HTTP_ service as no impact on the _Operational Status_ of the _PSM Shop_ and is not shown.
+NOTE: For the reason the service _PSM Shop_ is introducing the critical status for the _Business Service_ _Shop_, the _HTTP_ service has no impact on the _Operational Status_ of the _PSM Shop_ and is not shown.
