@@ -29,27 +29,29 @@
 package org.opennms.web.rest.v1;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
-
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.measurements.model.Expression;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
 
 /**
  * Tests the Measurements API with an RRD backend.
@@ -65,8 +67,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
-        "classpath*:/META-INF/opennms/component-measurement.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-measurement.xml",
         "classpath:/META-INF/opennms/applicationContext-measurements-rest-test.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
@@ -76,58 +78,78 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Ignore
 public class MeasurementsRestServiceWithRrdIT extends MeasurementsRestServiceITCase {
+    private static final Logger LOG = LoggerFactory.getLogger(MeasurementsRestServiceWithRrdIT.class);
+    private static final File s_rrdDirectory = new File("src/test/resources/share/rrd");
+
+    @BeforeClass
+    public static void preSetUp() {
+        assertTrue(s_rrdDirectory.canRead());
+        LOG.debug("using RRD base directory: {}", s_rrdDirectory.getAbsolutePath());
+        System.setProperty("rrd.base.dir", s_rrdDirectory.getAbsolutePath());
+        System.setProperty("rrd.binary", findRrdtool());
+
+        assumeRrdtoolExists("jrrd");
+    }
 
     @Before
     public void setUp() {
+        m_resourceStorageDao.setRrdDirectory(s_rrdDirectory);
+        ConfigurationTestUtils.setRelativeRrdBaseDirectory(s_rrdDirectory.toString());
+        ConfigurationTestUtils.setRrdBinary(findRrdtool());
         super.setUp();
-
-        File rrdDirectory = new File("src/test/resources/share/rrd");
-        assertTrue(rrdDirectory.canRead());
-
-        m_resourceStorageDao.setRrdDirectory(rrdDirectory);
-        System.setProperty("rrd.base.dir", rrdDirectory.getAbsolutePath());
-        System.setProperty("rrd.binary", "rrdtool");
     }
 
     @Test
-    public void canRetrieveMeasurementsFromRrd(){
+    public void canRetrieveMeasurementsFromRrd() throws Exception {
         QueryRequest request = new QueryRequest();
         request.setStart(1414602000000L);
         request.setEnd(1417046400000L);
         request.setStep(1000L);
-        request.setMaxRows(350);
+        request.setMaxRows(700);
 
-        Source ifInOctets = new Source();
-        ifInOctets.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
-        ifInOctets.setAttribute("ifInOctets");
-        ifInOctets.setAggregation("AVERAGE");
-        ifInOctets.setLabel("octetsIn");
-        request.setSources(Lists.newArrayList(ifInOctets));
+        // Average
+        Source ifInOctetsAvg = new Source();
+        ifInOctetsAvg.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctetsAvg.setAttribute("ifInOctets");
+        ifInOctetsAvg.setAggregation("AVERAGE");
+        ifInOctetsAvg.setLabel("ifInOctetsAvg");
 
-        Expression eightAsConstant = new Expression();
-        eightAsConstant.setLabel("eight");
-        eightAsConstant.setExpression("8");
-        eightAsConstant.setTransient(true);
+        // Min
+        Source ifInOctetsMin = new Source();
+        ifInOctetsMin.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctetsMin.setAttribute("ifInOctets");
+        ifInOctetsMin.setAggregation("MIN");
+        ifInOctetsMin.setLabel("ifInOctetsMin");
 
-        Expression octetsToBytes = new Expression();
-        octetsToBytes.setLabel("Bits In");
-        octetsToBytes.setExpression("octetsIn * eight");
-        request.setExpressions(Lists.newArrayList(eightAsConstant, octetsToBytes));
+        // Max
+        Source ifInOctetsMax = new Source();
+        ifInOctetsMax.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctetsMax.setAttribute("ifInOctets");
+        ifInOctetsMax.setAggregation("MAX");
+        ifInOctetsMax.setLabel("ifInOctetsMax");
 
+        request.setSources(Lists.newArrayList(
+                ifInOctetsAvg,
+                ifInOctetsMin,
+                ifInOctetsMax
+                ));
+
+        // Perform the query
         QueryResponse response = m_svc.query(request);
 
         // Validate the results
         long timestamps[] = response.getTimestamps();
         final Map<String, double[]> columns = response.columnsWithLabels();
 
-        assertEquals(7200000L, response.getStep());
-        assertEquals(341, timestamps.length);
+        assertEquals(3600000L, response.getStep());
+        assertEquals(680, timestamps.length);
 
         // Verify the values at an arbitrary index
-        final int idx = 1;
-        assertEquals(1414612800000L, timestamps[idx]);
-        assertEquals(4455.846126, columns.get("octetsIn")[idx], 0.0001);
-        assertEquals(4455.846126 * 8, columns.get("Bits In")[idx], 0.0001);
-        assertFalse("Transient values should be excluded.", columns.containsKey("eight"));
+        final int idx = 8;
+        assertEquals(1414630800000L, timestamps[idx]);
+        assertEquals(270.66140826873385, columns.get("ifInOctetsAvg")[idx], 0.0001);
+        assertEquals(259.54086378737543, columns.get("ifInOctetsMin")[idx], 0.0001);
+        assertEquals(67872.22455490529, columns.get("ifInOctetsMax")[idx], 0.0001);
     }
+
 }
