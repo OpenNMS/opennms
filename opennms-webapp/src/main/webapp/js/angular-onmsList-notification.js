@@ -6,21 +6,29 @@
 	// $filters that can be used to create human-readable versions of filter values
 	angular.module('notificationListFilters', [ 'onmsListFilters' ])
 	.filter('property', function() {
-		// TODO: Update these values
 		return function(input) {
 			switch (input) {
-			case 'id':
+			case 'notifyId':
 				return 'ID';
-			case 'label':
-				return 'Label';
-			case 'location':
-				return 'Location';
-			case 'type':
-				return 'Type';
-			case 'status':
-				return 'Status';
-			case 'lastUpdated':
-				return 'Last updated';
+			case 'event.id':
+				return 'Event ID';
+			case 'event.eventSeverity':
+				return 'Event Severity';
+			case 'pageTime':
+				return 'Sent Time';
+			case 'answeredBy':
+				return 'Responder';
+			case 'respondTime':
+				return 'Response Time';
+			case 'node.id':
+				return 'Node ID';
+			case 'node.label':
+				return 'Node Label';
+			// TODO: ipAddress doesn't work because it is type InetAddress
+			case 'ipAddress':
+				return 'IP Address';
+			case 'serviceType.name':
+				return 'Service';
 			}
 			// If no match, return the input
 			return input;
@@ -28,11 +36,14 @@
 	})
 	.filter('value', function($filter) {
 		return function(input, property) {
-			// TODO: Update these values
 			switch (property) {
-			case 'lastUpdated':
+			case 'pageTime':
+			case 'respondTime':
 				// Return the date in our preferred format
 				return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
+			}
+			if (input === '\u0000') {
+				return "null";
 			}
 			return input;
 		}
@@ -80,6 +91,18 @@
 	 */
 	.controller('NotificationListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'Notifications', function($scope, $location, $window, $log, $filter, Notifications) {
 		$log.debug('NotificationListCtrl initializing...');
+
+		$scope.unackClause = {
+			property: 'answeredBy',
+			operator: 'EQ',
+			value: '\u0000' // null
+		};
+
+		$scope.ackClause = {
+			property: 'answeredBy',
+			operator: 'NE',
+			value: '\u0000' // null
+		};
 
 		// Set the default sort and set it on $scope.$parent.query
 		$scope.$parent.defaults.orderBy = 'notifyId';
