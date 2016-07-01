@@ -29,8 +29,6 @@
 		<argument value="org.opennms.netmgt.snmp.TrapNotification" />
 	</bean>
 	
-	<bean id="kafkaPartitioner" class="kafka.producer.DefaultPartitioner" />
-	
 	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapNotificationHandlerCamel"/>
 
 	<camelContext id="trapNotificationHandler" xmlns="http://camel.apache.org/schema/blueprint">
@@ -38,14 +36,15 @@
 		<route id="sendTrapViaKafka">
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
-			<setHeader headerName="kafka.PARTITION_KEY">
-<!-- 				<simple>traps</simple> -->
-				<bean ref="kafkaPartitioner" method="partition"/>
-<!-- 				<simple>${body.getTrapAddress}</simple> -->
+		    <setHeader headerName="kafka.PARTITION_KEY">
+				<simple>${body.getPartionKey}</simple>
 			</setHeader>
-
-			<bean ref="marshaller"/>
-
+			<bean ref="kafkaEncoder" method="toBytes"/>
+			<to uri="seda:trapHandler"/>
+		</route>
+		
+		<route id="sendTrapViaKafka">
+			<from uri="seda:trapHandler"/>
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
 			<to uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>

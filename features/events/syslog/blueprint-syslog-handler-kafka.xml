@@ -29,8 +29,6 @@
 		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
 	</bean>
 	
-	<bean id="kafkaPartitioner" class="org.opennms.netmgt.syslogd.SyslogdKafkaPartitioner" />
-
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
 
 	<camelContext id="syslogConnectionHandler" xmlns="http://camel.apache.org/schema/blueprint">
@@ -38,15 +36,9 @@
 		<route id="sendSyslogViaKafka">
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
-			<setHeader headerName="kafka.PARTITION_KEY">
-				<!-- TODO: Partition by remote address -->
-				<!-- <simple>${body.remoteAddress}</simple> -->
-<!-- 				<simple>${body.sourceAddress}</simple> -->
-					<simple>
-						<bean ref="kafkaPartitioner" method="partition"/>
-					</simple>
+		    <setHeader headerName="kafka.PARTITION_KEY">
+				<simple>${body.getPartionKey}</simple>
 			</setHeader>
-			
 			<bean ref="marshaller"/>
 			
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->

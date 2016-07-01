@@ -34,6 +34,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
 import java.util.concurrent.Callable;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -225,4 +226,8 @@ public class SyslogConnection implements Callable<Callable<?>> {
         );
         return retPacket;
     }
+    
+	public int getPartionKey() {
+		return new Random().nextInt(10000);
+	}
 }

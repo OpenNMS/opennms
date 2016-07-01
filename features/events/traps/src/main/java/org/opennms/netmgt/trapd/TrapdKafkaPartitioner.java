@@ -1,26 +1,21 @@
 package org.opennms.netmgt.trapd;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import kafka.producer.Partitioner;
 
 public class TrapdKafkaPartitioner implements Partitioner{
-
+	private static Set<Integer> uniqueRandomSet=new HashSet<Integer>();
 	@Override
 	public int partition(Object arg0, int a_numPartitions) {
 		
-		int partition = 0;
-		Random rnd = new Random();
-//		if(arg0==null){
-			partition =  rnd.nextInt(a_numPartitions);
-//		}else{
-//	        String stringKey = InetAddressUtils.toIpAddrString(sourceAddress);
-//	        int offset = stringKey.lastIndexOf('.');
-//	        if (offset > 0) {
-//	           partition = Integer.parseInt( stringKey.substring(offset+1)) % a_numPartitions;
-//	        }
-//		}
-		return partition;
+		Random rand = null;
+		int randomNum;
+		rand = new Random();
+		randomNum = rand.nextInt();
+		return randomNum;
 	}
 	
 }
