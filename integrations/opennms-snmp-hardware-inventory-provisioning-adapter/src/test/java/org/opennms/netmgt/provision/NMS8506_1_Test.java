@@ -33,11 +33,12 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * The Test Class for Jira issue <a href="http://issues.opennms.org/browse/NMS-7387">NMS-7387</a>
+ * The Test Class for Jira issue <a href="http://issues.opennms.org/browse/NMS-8506">NMS-8506</a>
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class NMS7387Test extends AbstractSingleHardwareAdapterTest {
+
+public class NMS8506_1_Test extends AbstractSingleHardwareAdapterTest {
 
     /**
      * Test adapter.
@@ -47,9 +48,9 @@ public class NMS7387Test extends AbstractSingleHardwareAdapterTest {
     @Test
     @Override
     @Transactional
-    @JUnitSnmpAgent(host="192.168.0.1", resource="NMS-7387-entPhysicalTable.properties")
+    @JUnitSnmpAgent(host="192.168.0.1", resource="NMS-8506-cisco.properties")
     public void testAdapter() throws Exception {
-        performTest(61);
+        performTest(18);
     }
 
 }
