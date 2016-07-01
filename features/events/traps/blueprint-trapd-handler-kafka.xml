@@ -27,7 +27,7 @@
 	<bean id="kafkaEncoder" class="org.opennms.netmgt.trapd.TrapdKafkaEncoder">
 	</bean>
 	
-	<bean id="kafkaPartitioner" class="kafka.producer.DefaultPartitioner" />
+	<bean id="kafkaPartitioner" class="org.opennms.netmgt.trapd.TrapdKafkaPartitioner" />
 	
 	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapNotificationHandlerCamel"/>
 
@@ -38,9 +38,11 @@
 			<log message="${body}"/>
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
 			<setHeader headerName="kafka.PARTITION_KEY">
-<!-- 				<simple>traps</simple> -->
-				<bean ref="kafkaPartitioner" method="partition"/>
-<!-- 				<simple>${body.getTrapAddress}</simple> -->
+
+					<simple>
+						<bean ref="kafkaPartitioner" method="partition"/>
+					</simple>
+
 			</setHeader>
 			<bean ref="kafkaEncoder" method="toBytes"/>
 			<log message="${body}"/>
