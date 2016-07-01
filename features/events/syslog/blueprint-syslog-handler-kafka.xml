@@ -28,6 +28,8 @@
 	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
 		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
 	</bean>
+	
+	<bean id="kafkaPartitioner" class="org.opennms.netmgt.syslogd.SyslogdKafkaPartitioner" />
 
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
 
@@ -39,7 +41,10 @@
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<!-- TODO: Partition by remote address -->
 				<!-- <simple>${body.remoteAddress}</simple> -->
-				<simple>${body.sourceAddress}</simple>
+<!-- 				<simple>${body.sourceAddress}</simple> -->
+					<simple>
+						<bean ref="kafkaPartitioner" method="partition"/>
+					</simple>
 			</setHeader>
 			
 			<bean ref="marshaller"/>

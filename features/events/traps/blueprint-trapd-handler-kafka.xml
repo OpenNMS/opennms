@@ -29,6 +29,8 @@
 		<argument value="org.opennms.netmgt.snmp.TrapNotification" />
 	</bean>
 	
+	<bean id="kafkaPartitioner" class="kafka.producer.DefaultPartitioner" />
+	
 	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapNotificationHandlerCamel"/>
 
 	<camelContext id="trapNotificationHandler" xmlns="http://camel.apache.org/schema/blueprint">
@@ -37,9 +39,9 @@
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
 			<setHeader headerName="kafka.PARTITION_KEY">
-				<!-- TODO: Partition by remote address -->
-				<!-- <simple>${body.remoteAddress}</simple> -->
-				<simple>trap</simple>
+<!-- 				<simple>traps</simple> -->
+				<bean ref="kafkaPartitioner" method="partition"/>
+<!-- 				<simple>${body.getTrapAddress}</simple> -->
 			</setHeader>
 
 			<bean ref="marshaller"/>
