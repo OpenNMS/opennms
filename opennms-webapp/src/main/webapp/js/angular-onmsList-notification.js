@@ -89,20 +89,73 @@
 	/**
 	 * Notification list controller
 	 */
-	.controller('NotificationListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'Notifications', function($scope, $location, $window, $log, $filter, Notifications) {
+	.controller('NotificationListCtrl', ['$scope', '$http', '$location', '$window', '$log', '$filter', 'Notifications', function($scope, $http, $location, $window, $log, $filter, Notifications) {
 		$log.debug('NotificationListCtrl initializing...');
 
+		/**
+		 * Search clause that represents Unacknowledged Notifications
+		 */
 		$scope.unackClause = {
 			property: 'answeredBy',
 			operator: 'EQ',
 			value: '\u0000' // null
 		};
 
+		/**
+		 * Search clause that represents Acknowledged Notifications
+		 */
 		$scope.ackClause = {
 			property: 'answeredBy',
 			operator: 'NE',
 			value: '\u0000' // null
 		};
+
+		/**
+		 * Array that will hold the currently selected notification IDs.
+		 */
+		$scope.selectedNotifications = [];
+
+		/**
+		 * Toggle the selected state for one notification ID.
+		 */
+		$scope.toggleNotificationSelection = function(id) {
+			var index = $scope.selectedNotifications.indexOf(id);
+
+			if (index >= 0) {
+				$scope.selectedNotifications.splice(index, 1);
+			} else {
+				$scope.selectedNotifications.push(id);
+			}
+		}
+
+		/**
+		 * Select all of the items in the current view.
+		 */
+		$scope.selectAllNotifications = function() {
+			var newSelection = [];
+			for (var i = 0; i < $scope.$parent.items.length; i++) {
+				newSelection.push($scope.$parent.items[i].id);
+			}
+			$scope.selectedNotifications = newSelection;
+		}
+
+		/**
+		 * Acknowledge the selected notifications as the current user.
+		 */
+		$scope.acknowledgeSelectedNotifications = function() {
+			$http({
+				method: 'POST',
+				url: 'notification/acknowledge',
+				params: {
+					notices: $scope.selectedNotifications
+				}
+			}).then(function success(response) {
+				$scope.$parent.refresh();
+			}, function error(response) {
+				alert("Acknowledgement failed.")
+			})
+		}
+
 
 		// Set the default sort and set it on $scope.$parent.query
 		$scope.$parent.defaults.orderBy = 'notifyId';
@@ -110,6 +163,9 @@
 
 		// Reload all resources via REST
 		$scope.$parent.refresh = function() {
+			// Reset the list of selected notifications
+			$scope.selectedNotifications = [];
+
 			// Fetch all of the items
 			Notifications.query(
 				{

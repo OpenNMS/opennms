@@ -226,6 +226,7 @@
 
 				<tr ng-repeat-start="item in items" class="{{getSeverityClass(item.severity)}}">
 					<td class="text-nowrap" style="line-height:24px;" rowspan="2">
+						<input type="checkbox" ng-checked="selectedNotifications.indexOf(item.id) >= 0" ng-click="toggleNotificationSelection(item.id)"/>
 						{{item.id}}
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'notifyId',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'notifyId',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o fa-lg"/></a>
@@ -290,5 +291,10 @@
 			</tbody>
 		</table>
 	</div>
+
+	<button type="button" ng-click="selectedNotifications = []" class="btn btn-default">Reset</button>
+	<button type="button" ng-click="selectAllNotifications()" class="btn btn-default">Select All</button>
+	<button type="button" ng-click="acknowledgeSelectedNotifications()" class="btn btn-default">Acknowledge Notices</button>
+	<br/><br/>
 </div>
 </div>
