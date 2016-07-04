@@ -27,8 +27,6 @@
 	<bean id="kafkaEncoder" class="org.opennms.netmgt.trapd.TrapdKafkaEncoder">
 	</bean>
 	
-	<bean id="kafkaPartitioner" class="org.opennms.netmgt.trapd.TrapdKafkaPartitioner" />
-	
 	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapNotificationHandlerCamel"/>
 
 	<camelContext id="trapNotificationHandler" xmlns="http://camel.apache.org/schema/blueprint">
@@ -37,8 +35,8 @@
 			<from uri="seda:handleMessage" />
 			<log message="${body}"/>
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
-			<setHeader headerName="kafka.PARTITION_KEY">
-					<simple>random(10000)</simple>
+		    <setHeader headerName="kafka.PARTITION_KEY">
+				<simple>${body.getPartionKey}</simple>
 			</setHeader>
 			<bean ref="kafkaEncoder" method="toBytes"/>
 			<log message="${body}"/>
