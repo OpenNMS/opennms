@@ -228,6 +228,6 @@ public class SyslogConnection implements Callable<Callable<?>> {
     }
     
 	public int getPartionKey() {
-		return new Random().nextInt();
+		return new Random().nextInt(10000);
 	}
 }

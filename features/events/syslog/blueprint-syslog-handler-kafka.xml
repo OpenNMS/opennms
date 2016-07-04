@@ -30,8 +30,6 @@
 		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
 	</bean>
 	
-	<bean id="kafkaPartitioner" class="kafka.producer.DefaultPartitioner" />
-
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
 
 	<camelContext id="syslogConnectionHandler" xmlns="http://camel.apache.org/schema/blueprint">
