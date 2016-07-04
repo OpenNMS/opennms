@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.graphml;
 
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -82,21 +83,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
 
         for (GraphMLNode graphMLNode : graph.getNodes()) {
             GraphMLVertex newVertex = new GraphMLVertex(this.getVertexNamespace(), graphMLNode);
-
-            if (newVertex.getNodeID() == null &&
-                    !Strings.isNullOrEmpty((String) newVertex.getProperties().get(GraphMLProperties.FOREIGN_SOURCE)) &&
-                    !Strings.isNullOrEmpty((String) newVertex.getProperties().get(GraphMLProperties.FOREIGN_ID))
-                    ) {
-
-                OnmsNode onmsNode = m_serviceAccessor.getNodeDao().findByForeignId(
-                        (String) newVertex.getProperties().get(GraphMLProperties.FOREIGN_SOURCE),
-                        (String) newVertex.getProperties().get(GraphMLProperties.FOREIGN_ID));
-
-                if (onmsNode != null) {
-                    newVertex.setNodeID(onmsNode.getId());
-                }
-            }
-
+            setNodeIdForVertex(newVertex);
             addVertices(newVertex);
         }
         for (org.opennms.features.graphml.model.GraphMLEdge eachEdge : graph.getEdges()) {
@@ -117,6 +104,26 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         requiresStatusProvider = graph.getProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, Boolean.FALSE);
         if (focusStrategy != FocusStrategy.SPECIFIC && !focusIds.isEmpty()) {
             LOG.warn("Focus ids is defined, but strategy is {}. Did you mean to specify {}={}. Ignoring focusIds.", GraphMLProperties.FOCUS_STRATEGY, FocusStrategy.SPECIFIC.name());
+        }
+    }
+
+    private void setNodeIdForVertex(GraphMLVertex vertex) {
+        if (Objects.isNull(vertex)) {
+            return;
+        }
+        if (Objects.isNull(vertex.getNodeID())) {
+            String foreignSource = (String) vertex.getProperties().get(GraphMLProperties.FOREIGN_SOURCE);
+            String foreignId = (String) vertex.getProperties().get(GraphMLProperties.FOREIGN_ID);
+            if (!Strings.isNullOrEmpty(foreignSource) && !Strings.isNullOrEmpty(foreignId)) {
+                OnmsNode onmsNode = m_serviceAccessor.getNodeDao().findByForeignId(foreignSource, foreignId);
+                if (onmsNode != null) {
+                    vertex.setNodeID(onmsNode.getId());
+                } else {
+                    LOG.warn("no node found for the given foreignSource ({}) and foreignId ({})", foreignSource, foreignId);
+                }
+            } else {
+                LOG.warn("nodeId is null, foreignSource ({}) and foreignId ({}) must be set both", foreignSource, foreignId);
+            }
         }
     }
 
