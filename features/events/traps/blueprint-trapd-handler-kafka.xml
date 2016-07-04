@@ -40,7 +40,7 @@
 			<setHeader headerName="kafka.PARTITION_KEY">
 
 					<simple>
-						<bean ref="kafkaPartitioner" method="partition"/>
+						ref:kafkaPartitioner.partition
 					</simple>
 
 			</setHeader>
