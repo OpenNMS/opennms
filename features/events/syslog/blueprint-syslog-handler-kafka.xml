@@ -42,7 +42,7 @@
 		    <setHeader headerName="kafka.PARTITION_KEY">
 				<!-- TODO: Partition by remote address -->
 				<!-- <simple>${body.remoteAddress}</simple> -->
-				<simple>${partitionkey}</simple>
+				<simple>${body.getPartionKey}</simple>
 			</setHeader>
 			
 			<bean ref="marshaller"/>
