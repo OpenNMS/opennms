@@ -555,7 +555,7 @@ function parseContentRange(contentRange) {
 				} else {
 					// If the old clause is present and the new clause is present,
 					// then just remove the old clause (as if it had been replaced by
-					// the already-existing new clause
+					// the already-existing new clause)
 					$scope.removeSearchClause(oldClause);
 				}
 			}
