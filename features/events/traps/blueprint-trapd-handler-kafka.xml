@@ -38,7 +38,7 @@
 			<log message="${body}"/>
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
 			<setHeader headerName="kafka.PARTITION_KEY">
-					<simple>123</simple>
+					<simple>random(10000)</simple>
 			</setHeader>
 			<bean ref="kafkaEncoder" method="toBytes"/>
 			<log message="${body}"/>

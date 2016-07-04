@@ -227,12 +227,7 @@ public class SyslogConnection implements Callable<Callable<?>> {
         return retPacket;
     }
     
-    public int getPartionKey()
-    {
-    	Random rand = null;
-		int randomNum;
-		rand = new Random();
-		randomNum = rand.nextInt(300);
-		return randomNum;
-    }
+	public int getPartionKey() {
+		return new Random().nextInt();
+	}
 }

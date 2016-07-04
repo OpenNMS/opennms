@@ -30,7 +30,7 @@
 		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
 	</bean>
 	
-	<bean id="kafkaPartitioner" class="org.opennms.netmgt.syslogd.SyslogdKafkaPartitioner" />
+	<bean id="kafkaPartitioner" class="kafka.producer.DefaultPartitioner" />
 
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
 
@@ -44,7 +44,6 @@
 				<!-- <simple>${body.remoteAddress}</simple> -->
 				<simple>${body.getPartionKey}</simple>
 			</setHeader>
-			
 			<bean ref="marshaller"/>
 	
 			<to uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
