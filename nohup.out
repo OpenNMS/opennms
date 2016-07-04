@@ -1,0 +1,24 @@
+==== Building OpenNMS RPMs ====
+
+Version:  19.0.0
+Release:  0.20160704.1
+
+=== Creating Working Directories ===
+=== Copying Source to Source Directory ===
+=== Creating a tar.gz archive of the Source in /usr/src/redhat/SOURCES ===
+=== Building RPMs ===
+Executing(%prep): /bin/sh -e /Users/dp044946/git/ws/opennms/demo-june2016/target/rpm/tmp/rpm-tmp.78328
++ umask 022
++ cd /Users/dp044946/git/ws/opennms/demo-june2016/target/rpm/BUILD
++ tar -xvzf /opennms-source-19.0.0-0.20160704.1.tar.gz -C
+tar: Option -C requires an argument
+Usage:
+  List:    tar -tf <archive-filename>
+  Extract: tar -xf <archive-filename>
+  Create:  tar -cf <archive-filename> [filenames...]
+  Help:    tar --help
+error: Bad exit status from /Users/dp044946/git/ws/opennms/demo-june2016/target/rpm/tmp/rpm-tmp.78328 (%prep)
+
+
+RPM build errors:
+    Bad exit status from /Users/dp044946/git/ws/opennms/demo-june2016/target/rpm/tmp/rpm-tmp.78328 (%prep)
