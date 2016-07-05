@@ -33,13 +33,11 @@
 		<propertyPlaceholder id="properties" location="blueprint:trapdHandlerKafkaProperties" />
 		<route id="recieveTraps">
 			<from uri="seda:handleMessage" />
-			<log message="${body}"/>
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
 		    <setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${body.getPartionKey}</simple>
 			</setHeader>
 			<bean ref="kafkaEncoder" method="toBytes"/>
-			<log message="${body}"/>
 			<to uri="seda:trapHandler"/>
 		</route>
 		

@@ -17,7 +17,6 @@
 		<cm:default-properties>
 			<cm:property name="kafkahostport" value="127.0.0.1:9092" />
 			<cm:property name="kafkatopic" value="syslog" />
-			<cm:property name="partitionkey" value="0" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -38,8 +37,6 @@
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
 		    <setHeader headerName="kafka.PARTITION_KEY">
-				<!-- TODO: Partition by remote address -->
-				<!-- <simple>${body.remoteAddress}</simple> -->
 				<simple>${body.getPartionKey}</simple>
 			</setHeader>
 			<bean ref="marshaller"/>
