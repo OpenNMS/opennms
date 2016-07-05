@@ -302,9 +302,9 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         private final OpenNMSSeleniumTestCase testCase;
         private final String topologyUiUrl;
 
-        public TopologyUIPage(OpenNMSSeleniumTestCase testCase) {
+        public TopologyUIPage(OpenNMSSeleniumTestCase testCase, String baseUrl) {
             this.testCase = Objects.requireNonNull(testCase);
-            this.topologyUiUrl = testCase.getBaseUrl() + "opennms/topology";
+            this.topologyUiUrl = Objects.requireNonNull(baseUrl) + "opennms/topology";
         }
 
         public TopologyUIPage open() {
@@ -575,7 +575,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() {
-        topologyUiPage = new TopologyUIPage(this);
+        topologyUiPage = new TopologyUIPage(this, getBaseUrl());
         topologyUiPage.open();
     }
 

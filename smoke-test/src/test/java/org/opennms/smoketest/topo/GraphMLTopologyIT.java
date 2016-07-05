@@ -74,7 +74,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
             deleteGraph();
         }
         importGraph();
-        topologyUIPage = new TopologyIT.TopologyUIPage(this);
+        topologyUIPage = new TopologyIT.TopologyUIPage(this, getBaseUrl());
         topologyUIPage.open();
     }
 
