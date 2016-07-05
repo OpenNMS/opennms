@@ -18,6 +18,7 @@
 | `notifd-configuration.xml` | no               | yes          | Describes auto-acknowledge prefix, e.g. prefix "RESOLVED: " for nodeUp/nodeDown events.
 | `notificationCommands.xml` | no               | no           | Configuration for notification media, e.g. scripts, XMPP or HTTP Post, immediately applied.
 | `notifications.xml`        | no               | no           | Event notification definitions and changes are immediately applied.
+| `destinationPaths.xml`     | no               | no           | Contains paths for notification targets, e.g. JavaMail, XMPP or external scripts.
 | `users.xml`                | no               | no           | Contain pager and address information for notification destination paths.
 | `groups.xml`               | no               | no           | Groups can be used as target for notifications.
 |===
