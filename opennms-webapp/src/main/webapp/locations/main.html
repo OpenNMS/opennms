@@ -26,10 +26,10 @@
 							<option value="GT">&gt;</option>
 							<option value="GE">&gt;=</option>
 						</select>
-						<input name="clause-value-text"      class="form-control" type="text"   ng-model="clause.value" ng-show="clause.property !== 'latitude' &amp;&amp; clause.property !== 'longitude' &amp;&amp; clause.property !== 'priority'" />
-						<input name="clause-value-number"    class="form-control" type="number" ng-model="clause.value" min="{{clause.property === 'priority' ? '0' : ''}}" ng-show="clause.property === 'priority'" />
-						<input name="clause-value-latitude"  class="form-control" type="number" ng-model="clause.value" min="{{clause.property === 'latitude' ? '-90.0' : ''}}" max= "{{clause.property === 'latitude' ? '90.0' : ''}}" ng-show="clause.property === 'latitude'" />
-						<input name="clause-value-longitude" class="form-control" type="number" ng-model="clause.value" min="-180.0" max= "180.0" ng-show="clause.property === 'longitude'" />
+						<input name="clause-value-text"      class="form-control" type="text"   ng-model="clause.value" ng-if="clause.property !== 'latitude' &amp;&amp; clause.property !== 'longitude' &amp;&amp; clause.property !== 'priority'" />
+						<input name="clause-value-number"    class="form-control" type="number" ng-model="clause.value" min="{{clause.property === 'priority' ? '0' : ''}}" ng-if="clause.property === 'priority'" />
+						<input name="clause-value-latitude"  class="form-control" type="number" step="any" ng-model="clause.value" min="{{clause.property === 'latitude' ? '-90.0' : ''}}" max= "{{clause.property === 'latitude' ? '90.0' : ''}}" ng-if="clause.property === 'latitude'" />
+						<input name="clause-value-longitude" class="form-control" type="number" step="any" ng-model="clause.value" min="-180.0" max= "180.0" ng-if="clause.property === 'longitude'" />
 						</div>
 						<br/><br/>
 						<button class="btn btn-default" type="submit">Submit</button>
@@ -268,7 +268,7 @@
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
-						<onms-list-edit-in-place item="item" value="item['latitude']" value-type="'number'" on-submit="update(item)">
+						<onms-list-edit-in-place item="item" value="item['latitude']" value-type="'number'" step="'any'" on-submit="update(item)">
 							<span ng-show="item['latitude'] !== null">
 								<a style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'EQ',value:item['latitude']})"><i class="fa fa-plus-square-o fa-lg"/></a>
 								<a style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'NE',value:item['latitude']})"><i class="fa fa-minus-square-o fa-lg"/></a>
@@ -276,7 +276,7 @@
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
-						<onms-list-edit-in-place item="item" value="item['longitude']" value-type="'number'" on-submit="update(item)">
+						<onms-list-edit-in-place item="item" value="item['longitude']" value-type="'number'" step="'any'" on-submit="update(item)">
 							<span ng-show="item['longitude'] !== null">
 								<a style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'EQ',value:item['longitude']})"><i class="fa fa-plus-square-o fa-lg"/></a>
 								<a style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'NE',value:item['longitude']})"><i class="fa fa-minus-square-o fa-lg"/></a>
