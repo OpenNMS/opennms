@@ -108,10 +108,10 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     }
 
     private void setNodeIdForVertex(GraphMLVertex vertex) {
-        if (Objects.isNull(vertex)) {
+        if (vertex == null) {
             return;
         }
-        if (Objects.isNull(vertex.getNodeID())) {
+        if (vertex.getNodeID() == null) {
             String foreignSource = (String) vertex.getProperties().get(GraphMLProperties.FOREIGN_SOURCE);
             String foreignId = (String) vertex.getProperties().get(GraphMLProperties.FOREIGN_ID);
             if (!Strings.isNullOrEmpty(foreignSource) && !Strings.isNullOrEmpty(foreignId)) {
