@@ -119,10 +119,10 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
                 if (onmsNode != null) {
                     vertex.setNodeID(onmsNode.getId());
                 } else {
-                    LOG.warn("no node found for the given foreignSource ({}) and foreignId ({})", foreignSource, foreignId);
+                    LOG.warn("No node found for the given foreignSource ({}) and foreignId ({}).", foreignSource, foreignId);
                 }
             } else {
-                LOG.warn("nodeId is null, foreignSource ({}) and foreignId ({}) must be set both", foreignSource, foreignId);
+                LOG.warn("The given nodeId is null. In order to resolve the nodeId a foreignSource ({}) and foreignId ({}) must be set.", foreignSource, foreignId);
             }
         }
     }
