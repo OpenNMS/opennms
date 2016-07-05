@@ -60,7 +60,7 @@ import com.google.common.collect.Lists;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
 
-    private static final String URL = BASE_URL + "opennms/rest/graphml/test-graph";
+    private final String URL = getBaseUrl() + "opennms/rest/graphml/test-graph";
 
     private static final String LABEL = "GraphML Topology Provider (test-graph)";
 
@@ -152,7 +152,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         assertEquals(4, topologyUIPage.getFocusedVertices().size());
     }
 
-    private static boolean existsGraph() throws IOException {
+    private boolean existsGraph() throws IOException {
         try (HttpClientWrapper client = createClientWrapper()) {
             HttpGet httpGet = new HttpGet(URL);
             httpGet.addHeader("Accept", "application/xml");
@@ -161,7 +161,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         }
     }
 
-    private static void importGraph() throws IOException, InterruptedException {
+    private void importGraph() throws IOException, InterruptedException {
         try (HttpClientWrapper client = createClientWrapper()) {
             HttpPost httpPost = new HttpPost(URL);
             httpPost.setHeader("Accept", "application/xml");
@@ -174,7 +174,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         Thread.sleep(20000);
     }
 
-    private static void deleteGraph() throws IOException, InterruptedException {
+    private void deleteGraph() throws IOException, InterruptedException {
         try (HttpClientWrapper client = createClientWrapper()) {
             HttpDelete httpDelete = new HttpDelete(URL);
             CloseableHttpResponse response = client.execute(httpDelete);
