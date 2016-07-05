@@ -46,6 +46,7 @@ import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +94,9 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
     private final SyslogdConfig m_config;
 
     private final ExecutorService m_socketReceivers;
-    
+
+    private DistPollerDao m_distPollerDao = null;
+
     private List<SyslogConnectionHandler> m_syslogConnectionHandlers = Collections.emptyList();
 
     public static DatagramChannel openChannel(SyslogdConfig config) throws SocketException, IOException {
@@ -173,7 +176,16 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
             LOG.debug("Thread context stopped and joined");
         }
     }
-    
+
+    // Getter and setter for DistPollerDao
+    public DistPollerDao getDistPollerDao() {
+        return m_distPollerDao;
+    }
+
+    public void setDistPollerDao(DistPollerDao distPollerDao) {
+        m_distPollerDao = distPollerDao;
+    }
+
     //Getter and setter for syslog handler
     public SyslogConnectionHandler getSyslogConnectionHandlers() {
         return m_syslogConnectionHandlers.get(0);
@@ -266,7 +278,7 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
                             // Create a metric for the syslog packet size
                             packetSizeHistogram.update(buffer.remaining());
                             
-                            SyslogConnection connection = new SyslogConnection(SyslogConnection.copyPacket(source.getAddress(), source.getPort(), buffer), m_config);
+                            SyslogConnection connection = new SyslogConnection(SyslogConnection.copyPacket(source.getAddress(), source.getPort(), buffer), m_config, m_distPollerDao.whoami().getId());
 
                             try {
                                 for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {

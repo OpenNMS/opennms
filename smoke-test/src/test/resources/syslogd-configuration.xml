@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<syslogd-configuration>
+    <configuration
+            syslog-port="10514"
+            new-suspect-on-message="false"
+            parser="org.opennms.netmgt.syslogd.CustomSyslogParser"
+            forwarding-regexp="^((.+?) (.*))\r?\n?$"
+            matching-group-host="2"
+            matching-group-message="3"
+            discard-uei="DISCARD-MATCHING-MESSAGES"
+            />
+
+    <import-file>syslog/ApacheHTTPD.syslog.xml</import-file>
+    <import-file>syslog/LinuxKernel.syslog.xml</import-file>
+    <import-file>syslog/OpenSSH.syslog.xml</import-file>
+    <import-file>syslog/Procmail.syslog.xml</import-file>
+    <import-file>syslog/Postfix.syslog.xml</import-file>
+    <import-file>syslog/Sudo.syslog.xml</import-file>
+
+    <import-file>syslog/Cisco.syslog.xml</import-file>
+
+</syslogd-configuration>

@@ -11,7 +11,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>compiled-bundle-settings</artifactId>
 
-  <name>OpenNMS Features Topology POMs compiled - bundle instructions</name>
+  <name>OpenNMS :: Features :: Topology POMs compiled - bundle instructions</name>
 
   <packaging>pom</packaging>
 

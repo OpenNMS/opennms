@@ -82,13 +82,15 @@ import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 public class Snmp4JStrategy implements SnmpStrategy {
-	
-	private static final transient Logger LOG = LoggerFactory.getLogger(Snmp4JStrategy.class);
+
+    private static final transient Logger LOG = LoggerFactory.getLogger(Snmp4JStrategy.class);
 
     private static Map<TrapNotificationListener, RegistrationInfo> s_registrations = new HashMap<TrapNotificationListener, RegistrationInfo>();
-    
+
     private static boolean s_initialized = false;
-    
+
+    private static USM m_usm;
+
     private Snmp4JValueFactory m_valueFactory;
 
     /**
@@ -101,8 +103,8 @@ public class Snmp4JStrategy implements SnmpStrategy {
 
         SNMP4JSettings.setEnterpriseID(5813);
         //USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
-        USM usm = new USM();
-        SecurityModels.getInstance().addSecurityModel(usm);
+        m_usm = new USM();
+        SecurityModels.getInstance().addSecurityModel(m_usm);
         
         // Enable extensibility in SNMP4J so that we can subclass some SMI classes to work around
         // agent bugs
@@ -124,8 +126,14 @@ public class Snmp4JStrategy implements SnmpStrategy {
         initialize();
     }
     
+    public void clearUsers() {
+        if (m_usm != null) {
+            m_usm.removeAllUsers();
+        }
+    }
+    
     /**
-     * SNMP4J createWalker implemenetation.
+     * SNMP4J createWalker implementation.
      * 
      * @param snmpAgentConfig
      * @param name

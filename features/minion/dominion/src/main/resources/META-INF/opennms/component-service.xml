@@ -14,6 +14,18 @@
 
 	<context:annotation-config />
 
+	<bean id="queueNameFactory" class="org.opennms.core.camel.JmsQueueNameFactory">
+		<constructor-arg value="Minion"/>
+		<constructor-arg value="Heartbeat"/>
+	</bean>
+
+	<bean id="queueNameProperties" factory-bean="queueNameFactory" factory-method="getProperties"/>
+
+	<!-- Create a Camel PropertiesComponent -->
+	<bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
+		<property name="initialProperties" ref="queueNameProperties"/>
+	</bean>
+
 	<bean id="minionListener" class="org.opennms.features.minion.dominion.MinionListener">
 		<property name="minionDao" ref="minionDao" />
 	</bean>
@@ -24,7 +36,7 @@
 
 	<camelContext id="minionListenerCamelContext" xmlns="http://camel.apache.org/schema/spring">
 		<route id="minionListenerRoute">
-			<from uri="queuingservice:heartBeat" />
+			<from uri="queuingservice:{{queueName}}" />
 			<process ref="unmarshaller" />
 			<bean ref="minionListener" />
 		</route>

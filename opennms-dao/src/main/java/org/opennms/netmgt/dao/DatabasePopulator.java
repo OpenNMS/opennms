@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
@@ -66,6 +65,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -265,8 +265,11 @@ public class DatabasePopulator {
         for (final OnmsServiceType service : m_serviceTypeDao.findAll()) {
             m_serviceTypeDao.delete(service);
         }
-        for (final LocationDef location : m_monitoringLocationDao.findAll()) {
-            m_monitoringLocationDao.delete(location);
+        for (final OnmsMonitoringLocation location : m_monitoringLocationDao.findAll()) {
+            // Don't delete the default localhost monitoring location
+            if (!MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID.equals(location.getLocationName())) {
+                m_monitoringLocationDao.delete(location);
+            }
         }
         for (final OnmsCategory category : m_categoryDao.findAll()) {
             m_categoryDao.delete(category);
@@ -301,7 +304,7 @@ public class DatabasePopulator {
         LOG.debug("==== DatabasePopulator Starting ====");
 
         final NetworkBuilder builder = new NetworkBuilder();
-        
+
         final OnmsNode node1 = buildNode1(builder);
         getNodeDao().save(node1);
         getNodeDao().flush();
@@ -370,7 +373,7 @@ public class DatabasePopulator {
         getAcknowledgmentDao().save(ack);
         getAcknowledgmentDao().flush();
         
-        final LocationDef def = new LocationDef();
+        final OnmsMonitoringLocation def = new OnmsMonitoringLocation();
         def.setLocationName("RDU");
         def.setMonitoringArea("East Coast");
         def.setPollingPackageNames(Collections.singletonList("example1"));

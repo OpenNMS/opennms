@@ -257,22 +257,6 @@ public class OnmsMonitoringSystem implements Serializable {
     }
     */
 
-    /**
-     * @return the m_lastCheckedIn
-     */
-    @Column(name = "last_checkedin")
-    @Temporal(TemporalType.TIMESTAMP)
-    public Date getLastCheckedIn() {
-        return m_lastCheckedIn;
-    }
-
-    /**
-     * @param m_lastCheckedIn
-     *            the m_lastCheckedIn to set
-     */
-    public void setLastCheckedIn(Date lastCheckedIn) {
-        this.m_lastCheckedIn = lastCheckedIn;
-    }
     
     @ElementCollection
     @JoinTable(name="monitoringSystemsProperties", joinColumns = @JoinColumn(name="monitoringSystemId"))

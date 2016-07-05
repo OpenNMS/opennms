@@ -85,7 +85,7 @@ public class ImpactAnalysisOperation extends AbstractAnalysisOperation {
 
     @Override
     public String getMessageForNoResultDialog() {
-        return "No root cause was found for the selected vertices.";
+        return "No vertices are impacted by the selected vertices.";
     }
 
     @Override

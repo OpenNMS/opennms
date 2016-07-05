@@ -30,18 +30,23 @@ package org.opennms.netmgt.dao.mock;
 
 import java.util.UUID;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
-public class MockMonitoringLocationDao extends AbstractMockDao<LocationDef, String> implements MonitoringLocationDao {
+public class MockMonitoringLocationDao extends AbstractMockDao<OnmsMonitoringLocation, String> implements MonitoringLocationDao {
 
     @Override
-    protected void generateId(final LocationDef mon) {
+    protected void generateId(final OnmsMonitoringLocation mon) {
         mon.setLocationName(UUID.randomUUID().toString());
     }
 
     @Override
-    protected String getId(final LocationDef loc) {
+    protected String getId(final OnmsMonitoringLocation loc) {
         return loc.getLocationName();
+    }
+
+    @Override
+    public OnmsMonitoringLocation getDefaultLocation() {
+        return get(DEFAULT_MONITORING_LOCATION_ID);
     }
 }

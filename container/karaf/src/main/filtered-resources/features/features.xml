@@ -178,7 +178,7 @@
 
     <!-- Replace the Pax Web HTTP service with our servlet bridge -->
     <feature name="opennms-bridge-http" description="HTTP feature using custom servlet bridge" version="${opennms.osgi.version}" resolver="(obr)">
-        <bundle>mvn:org.opennms.container/bridge/${project.version}</bundle>
+        <bundle>mvn:org.opennms.container/org.opennms.container.bridge/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="${opennms.osgi.version}" resolver="(obr)">

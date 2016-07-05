@@ -38,8 +38,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.ncs</groupId>
-  <artifactId>ncs-drools</artifactId>
-  <name>OpenNMS Features NCS Correlation Rules</name>
+  <artifactId>org.opennms.features.ncs.ncs-drools</artifactId>
+  <name>OpenNMS :: Features :: NCS :: Correlation Rules</name>
   <url>http://maven.apache.org</url>
   <packaging>bundle</packaging>
   <properties>
@@ -108,7 +108,7 @@
   
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-persistence</artifactId>
+      <artifactId>org.opennms.features.ncs.ncs-persistence</artifactId>
     </dependency>
 
     <dependency>
@@ -153,14 +153,8 @@
     </dependency>
     
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-test</artifactId>
+      <artifactId>org.opennms.features.ncs.ncs-test</artifactId>
       <scope>test</scope>
     </dependency>
     

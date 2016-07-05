@@ -42,6 +42,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -79,6 +80,9 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
     private Alarmd m_alarmd;
 
     @Autowired
+    private MonitoringLocationDao m_locationDao;
+
+    @Autowired
     private NodeDao m_nodeDao;
 
     @Autowired
@@ -102,9 +106,8 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
         m_eventMgr.setEventWriter(m_database);
 
         // Events need to real nodes too
-        final OnmsNode node = new OnmsNode();
+        final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
         node.setId(1);
-        node.setLabel("node1");
         m_nodeDao.save(node);
 
         Vacuumd.destroySingleton();

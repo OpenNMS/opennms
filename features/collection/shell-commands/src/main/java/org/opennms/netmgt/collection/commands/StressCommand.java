@@ -78,6 +78,9 @@ public class StressCommand extends OsgiCommandSupport {
 
     private PersisterFactory persisterFactory;
 
+    @Option(name="-b", aliases="--burst", description="generate the collection sets in bursts instead of continously inserting them, defaults to false", required=false, multiValued=false)
+    boolean burst = false;
+
     @Option(name="-i", aliases="--interval", description="interval in seconds at which collection sets will be generated, defaults to 300", required=false, multiValued=false)
     int intervalInSeconds = 300;
 
@@ -102,6 +105,9 @@ public class StressCommand extends OsgiCommandSupport {
     @Option(name="-t", aliases="--threads", description="number of threads that will be used to generate and persist collection sets, defaults to 1", required=false, multiValued=false)
     int numberOfGeneratorThreads = 1;
 
+    @Option(name="-z", aliases="--string-variation-factor", description="when set, every n-th group will use unique string attribute values in each batch, defaults to 0", required=false, multiValued=false)
+    int stringVariationFactor = 0;
+
     private final AtomicBoolean abort = new AtomicBoolean(false);
 
     private final MetricRegistry metrics = new MetricRegistry();
@@ -111,6 +117,8 @@ public class StressCommand extends OsgiCommandSupport {
     private final Meter numericAttributesGenerated = metrics.meter("numeric-attributes-generated");
 
     private final Meter stringAttributesGenerated = metrics.meter("string-attributes-generated");
+
+    private Meter stringAttributesVaried;
 
     /**
      * Used to calculate non-constant, but predictable values stored in numeric attributes.
@@ -128,6 +136,10 @@ public class StressCommand extends OsgiCommandSupport {
         numberOfStringAttributesPerGroup = Math.max(0, numberOfStringAttributesPerGroup);
         reportIntervalInSeconds = Math.max(1, reportIntervalInSeconds);
         numberOfGeneratorThreads = Math.max(1, numberOfGeneratorThreads);
+        stringVariationFactor = Math.max(0, stringVariationFactor);
+        if (stringVariationFactor > 0) {
+            stringAttributesVaried = metrics.meter("string-attributes-varied");
+        }
 
         // Display the effective settings and rates
         double attributesPerSecond = (1 / (double)intervalInSeconds) * numberOfGroupsPerInterface
@@ -139,6 +151,9 @@ public class StressCommand extends OsgiCommandSupport {
         System.out.printf("\t with %d numeric attributes\n", numberOfNumericAttributesPerGroup);
         System.out.printf("\t with %d string attributes\n", numberOfStringAttributesPerGroup);
         System.out.printf("Across %d threads\n", numberOfGeneratorThreads);
+        if (stringVariationFactor > 0) {
+            System.out.printf("With string variation factor %d\n", stringVariationFactor);
+        }
         System.out.printf("Which will yield an effective\n");
         System.out.printf("\t %.2f numeric attributes per second\n", numberOfNumericAttributesPerGroup * attributesPerSecond);
         System.out.printf("\t %.2f string attributes per second\n", numberOfStringAttributesPerGroup * attributesPerSecond);
@@ -168,16 +183,30 @@ public class StressCommand extends OsgiCommandSupport {
                 "RRA:MIN:0.5:288:366"));
         repository.setRrdBaseDir(Paths.get(System.getProperty("opennms.home"),"share","rrd","snmp").toFile());
 
+        // Calculate how we fast we should insert the collection sets
+        int sleepTimeInMillisBetweenNodes = 0;
+        int sleepTimeInSecondsBetweenIterations = 0;
+        System.out.printf("Sleeping for\n");
+        if (burst) {
+            sleepTimeInSecondsBetweenIterations = intervalInSeconds;
+            System.out.printf("\t %d seconds between batches\n", sleepTimeInSecondsBetweenIterations);
+        } else {
+            // We want to "stream" the collection sets
+            sleepTimeInMillisBetweenNodes = Math.round((((float)intervalInSeconds * 1000) / numberOfNodes) * numberOfGeneratorThreads);
+            System.out.printf("\t %d milliseconds between nodes\n", sleepTimeInMillisBetweenNodes);
+        }
+
         // Start generating, and keep generating until we're interrupted
         try {
             reporter.start(reportIntervalInSeconds, TimeUnit.SECONDS);
+
             while (true) {
                 final Context context = batchTimer.time();
                 try {
                     // Split the tasks up among the threads
                     List<Future<Void>> futures = new ArrayList<>();
                     for (int generatorThreadId = 0; generatorThreadId < numberOfGeneratorThreads; generatorThreadId++) {
-                        futures.add(executor.submit(generateAndPersistCollectionSets(params, repository, generatorThreadId)));
+                        futures.add(executor.submit(generateAndPersistCollectionSets(params, repository, generatorThreadId, sleepTimeInMillisBetweenNodes)));
                     }
                     // Wait for all the tasks to complete before starting others
                     for (Future<Void> future : futures) {
@@ -190,7 +219,7 @@ public class StressCommand extends OsgiCommandSupport {
                 }
 
                 try {
-                    Thread.sleep(intervalInSeconds * 1000);
+                    Thread.sleep(sleepTimeInSecondsBetweenIterations * 1000);
                 } catch (InterruptedException e) {
                     break;
                 }
@@ -204,7 +233,7 @@ public class StressCommand extends OsgiCommandSupport {
         return null;
     }
 
-    private Callable<Void> generateAndPersistCollectionSets(ServiceParameters params, RrdRepository repository, int generatorThreadId) {
+    private Callable<Void> generateAndPersistCollectionSets(ServiceParameters params, RrdRepository repository, int generatorThreadId, int sleepTimeInMillisBetweenNodes) {
         return new Callable<Void>() {
             @Override
             public Void call() throws Exception {
@@ -230,18 +259,19 @@ public class StressCommand extends OsgiCommandSupport {
                         InterfaceLevelResource interfaceResource = new InterfaceLevelResource(nodeResource, "tap" + interfaceId);
 
                         // Generate the collection set
-                        CollectionSet collectionSet = generateCollectionSet(agent, interfaceResource);
+                        CollectionSet collectionSet = generateCollectionSet(agent, nodeId, interfaceId, interfaceResource);
 
                         // Persist
                         collectionSet.visit(persister);
                     }
+                    Thread.sleep(sleepTimeInMillisBetweenNodes);
                 }
                 return null;
             }
         };
     }
 
-    private CollectionSet generateCollectionSet(CollectionAgent agent, Resource resource) {
+    private CollectionSet generateCollectionSet(CollectionAgent agent, int nodeId, int interfaceId, Resource resource) {
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         for (int groupId = 0; groupId < numberOfGroupsPerInterface; groupId++) {
             String groupName = "group" + groupId;
@@ -253,10 +283,20 @@ public class StressCommand extends OsgiCommandSupport {
                 numericAttributesGenerated.mark();
             }
 
+            String stringAttributeValueSuffix = "";
+            int groupInstance = (nodeId + 1) * (interfaceId + 1) * (groupId + 1); // Add 1 to each of these to make sure they are > 0
+            if (stringVariationFactor > 0 && groupInstance % stringVariationFactor == 0) {
+                stringAttributeValueSuffix = String.format("-%d-varied", groupInstance);
+                stringAttributesVaried.mark(numberOfStringAttributesPerGroup);
+            }
+
             // String attributes
             for (int stringAttributeId = 0; stringAttributeId < numberOfStringAttributesPerGroup; stringAttributeId++) {
-                // Use constant values for the string attributes
-                builder.withStringAttribute(resource, groupName, "tag" + stringAttributeId, "key" + stringAttributeId);
+                // String attributes are stored at the resource level, and not at the group level, so we prefix
+                // the keys with the group name to make sure these don't collide
+                String key = String.format("%s-key-%d", groupName, stringAttributeId);
+                String value = String.format("%s-value-%d%s", groupName, stringAttributeId, stringAttributeValueSuffix);
+                builder.withStringAttribute(resource, groupName, key, value);
                 stringAttributesGenerated.mark();
             }
         }

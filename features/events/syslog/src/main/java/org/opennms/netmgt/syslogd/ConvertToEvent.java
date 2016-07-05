@@ -94,10 +94,11 @@ public class ConvertToEvent {
      * @throws MessageDiscardedException 
      */
     public ConvertToEvent(
+        final String systemId,
         final DatagramPacket packet,
         final SyslogdConfig config
     ) throws UnsupportedEncodingException, MessageDiscardedException {
-        this(packet.getAddress(), packet.getPort(), new String(packet.getData(), 0, packet.getLength(), "US-ASCII"), config);
+        this(systemId, packet.getAddress(), packet.getPort(), new String(packet.getData(), 0, packet.getLength(), "US-ASCII"), config);
     }
 
     /**
@@ -115,6 +116,7 @@ public class ConvertToEvent {
      * @throws MessageDiscardedException 
      */
     public ConvertToEvent(
+        final String systemId,
         final InetAddress addr,
         final int port,
         final String data,
@@ -160,6 +162,9 @@ public class ConvertToEvent {
         final String facilityTxt = message.getFacility().toString();
 
         EventBuilder bldr = new EventBuilder("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt, "syslogd");
+
+        bldr.setDistPoller(systemId);
+
         bldr.setCreationTime(message.getDate());
 
         // Set event host
@@ -168,6 +173,7 @@ public class ConvertToEvent {
         final String hostAddress = message.getHostAddress();
         if (hostAddress != null && hostAddress.length() > 0) {
             // Set nodeId
+            // TODO: HZN-816: This call should find nodes based on location/address tuple
             long nodeId = SyslogdIPMgrJDBCImpl.getInstance().getNodeId(hostAddress);
             if (nodeId != -1) {
                 bldr.setNodeid(nodeId);

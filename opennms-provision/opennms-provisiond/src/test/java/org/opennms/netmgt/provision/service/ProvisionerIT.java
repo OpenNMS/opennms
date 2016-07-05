@@ -73,6 +73,7 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -170,6 +171,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Autowired
     private CategoryDao m_categoryDao;
+
+    @Autowired
+    private MonitoringLocationDao m_locationDao;
 
     @Autowired
     private DistPollerDao m_distPollerDao;
@@ -1491,9 +1495,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         OnmsNode node = nodes.iterator().next();
         assertNotNull(node);
 
-        OnmsNode nodeCopy = new OnmsNode();
+        OnmsNode nodeCopy = new OnmsNode(m_locationDao.getDefaultLocation(), OLD_LABEL);
         nodeCopy.setId(node.getId());
-        nodeCopy.setLabel(OLD_LABEL);
         nodeCopy.setLabelSource(NodeLabelSource.USER);
 
         assertNotSame(node, nodeCopy);
@@ -1883,11 +1886,10 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     }
 
     private OnmsNode createNode(final String foreignSource) {
-        OnmsNode node = new OnmsNode();
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "default");
         //node.setId(nodeId);
         node.setLastCapsdPoll(new Date());
         node.setForeignSource(foreignSource);
-        node.setLabel("default");
 
         m_nodeDao.save(node);
         m_nodeDao.flush();

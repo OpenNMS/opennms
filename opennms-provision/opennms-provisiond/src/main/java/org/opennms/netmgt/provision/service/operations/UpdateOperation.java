@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
-
 import org.opennms.netmgt.provision.service.ProvisionService;
 
 public class UpdateOperation extends SaveOrUpdateOperation {
@@ -46,8 +45,9 @@ public class UpdateOperation extends SaveOrUpdateOperation {
      * @param rescanExisting a {@link java.lang.String} object
      */
     public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService, String rescanExisting) {
-		super(nodeId, foreignSource, foreignId, nodeLabel, building, city, provisionService, rescanExisting);
-	}
+        // TODO: HZN-613: Fill in location value
+        super(nodeId, foreignSource, foreignId, nodeLabel, building, city, null, provisionService, rescanExisting);
+    }
 
 	/**
 	 * <p>toString</p>
@@ -56,7 +56,7 @@ public class UpdateOperation extends SaveOrUpdateOperation {
 	 */
 	@Override
 	public String toString() {
-       return "UPDATE: Node: "+getNode().getId()+": "+getNode().getLabel();
+       return "UPDATE: Node: "+(getNode().getId() == null ? "[no ID]" : getNode().getId())+": "+getNode().getLabel();
     }
 
 	/** {@inheritDoc} */

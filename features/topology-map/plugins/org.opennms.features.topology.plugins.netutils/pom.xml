@@ -11,9 +11,9 @@
 	</parent>
 
 	<groupId>org.opennms.features.topology</groupId>
-	<artifactId>netutils</artifactId>
+	<artifactId>org.opennms.features.topology.netutils</artifactId>
 	<packaging>${packaging.type}</packaging>
-	<name>OpenNMS Features Topology NetUtils</name>
+	<name>OpenNMS :: Features :: Topology :: Plugins :: Net Utils</name>
 
 	<properties>
 		<packaging.type>bundle</packaging.type>
@@ -182,7 +182,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.opennms.features.topology</groupId>
-			<artifactId>api</artifactId>
+			<artifactId>org.opennms.features.topology.api</artifactId>
 			<version>${project.version}</version>
 			<scope>${scope.type}</scope>
 		</dependency>

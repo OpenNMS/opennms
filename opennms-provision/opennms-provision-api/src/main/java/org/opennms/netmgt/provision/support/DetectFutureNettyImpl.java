@@ -61,16 +61,6 @@ public class DetectFutureNettyImpl implements DetectFuture {
     }
 
     /**
-     * <p>getServiceDetector</p>
-     *
-     * @return a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
-     */
-    @Override
-    public AsyncServiceDetector getServiceDetector() {
-        return m_detector;
-    }
-
-    /**
      * <p>isServiceDetected</p>
      *
      * @return a boolean.

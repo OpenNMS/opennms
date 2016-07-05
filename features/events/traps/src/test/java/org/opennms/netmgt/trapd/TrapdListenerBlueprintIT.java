@@ -70,12 +70,10 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTest {
 	/**
 	 * This method overrides the blueprint property and sets port to 10514 instead of 162
 	 */
-	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	protected String useOverridePropertiesWithConfigAdmin(Dictionary props) throws Exception {
-		// TODO: Check that this port is available before using it
+	protected String setConfigAdminInitialConfiguration(Properties props) {
 		m_port = getAvailablePort(10500, 10900);
-		props.put(PORT_NAME, m_port);
+		props.put(PORT_NAME, String.valueOf(m_port));
 		return PERSISTANCE_ID;
 	}
 
@@ -98,7 +96,7 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTest {
 	// The location of our Blueprint XML files to be used for testing
 	@Override
 	protected String getBlueprintDescriptor() {
-		return "file:blueprint-trapd-listener.xml,file:src/test/resources/blueprint-empty-camel-context.xml";
+		return "file:blueprint-trapd-listener.xml,blueprint-empty-camel-context.xml";
 	}
 
 	private static class TrapNotificationLatch implements TrapNotificationHandler {

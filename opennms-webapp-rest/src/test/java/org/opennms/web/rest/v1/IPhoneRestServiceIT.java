@@ -47,6 +47,7 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -79,6 +80,9 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private DistPollerDao m_distPollerDao;
+
+    @Autowired
+    private MonitoringLocationDao m_locationDao;
 
     @Autowired
     private DatabasePopulator m_databasePopulator;
@@ -208,7 +212,7 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     @JUnitTemporaryDatabase
     public void testEventsForNodeId() throws Exception {
-        OnmsNode node = new OnmsNode();
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation());
         node.setId(1);
 
         OnmsEvent event = new OnmsEvent();

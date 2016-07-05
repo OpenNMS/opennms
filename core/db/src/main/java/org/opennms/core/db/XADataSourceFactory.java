@@ -30,7 +30,6 @@ package org.opennms.core.db;
 
 import java.io.IOException;
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

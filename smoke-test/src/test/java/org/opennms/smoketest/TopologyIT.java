@@ -59,8 +59,6 @@ import com.google.common.collect.Lists;
  */
 public class TopologyIT extends OpenNMSSeleniumTestCase {
 
-    private static final String TOPOLOGY_UI_URL = BASE_URL + "opennms/topology";
-
     private TopologyUIPage topologyUiPage;
 
     /**
@@ -302,13 +300,15 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
      */
     public static class TopologyUIPage {
         private final OpenNMSSeleniumTestCase testCase;
+        private final String topologyUiUrl;
 
-        public TopologyUIPage(OpenNMSSeleniumTestCase testCase) {
+        public TopologyUIPage(OpenNMSSeleniumTestCase testCase, String baseUrl) {
             this.testCase = Objects.requireNonNull(testCase);
+            this.topologyUiUrl = Objects.requireNonNull(baseUrl) + "opennms/topology";
         }
 
         public TopologyUIPage open() {
-            testCase.m_driver.get(TOPOLOGY_UI_URL);
+            testCase.m_driver.get(topologyUiUrl);
             // Wait for the "View" menu to be clickable before returning control to the test in order
             // to make sure that the page is fully loaded
             testCase.wait.until(ExpectedConditions.elementToBeClickable(getCriteriaForMenubarElement("View")));
@@ -575,7 +575,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() {
-        topologyUiPage = new TopologyUIPage(this);
+        topologyUiPage = new TopologyUIPage(this, getBaseUrl());
         topologyUiPage.open();
     }
 

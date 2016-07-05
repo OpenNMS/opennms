@@ -35,4 +35,6 @@ public interface ReduceFunctionVisitor<T> {
     T visit(HighestSeverityAbove highestSeverityAbove);
 
     T visit(Threshold threshold);
+
+    T visit(ExponentialPropagation exponentialPropagation);
 }
