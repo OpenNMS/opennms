@@ -42,6 +42,7 @@ import org.junit.rules.TemporaryFolder;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
 
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
@@ -58,7 +59,7 @@ public class GraphMLMetaTopologyProviderTest {
         Resources.asByteSource(Resources.getResource("test-graph.xml")).copyTo(Files.asByteSink(graphXml));
 
         // Initialize the meta topology provider
-        final GraphMLMetaTopologyProvider metaTopoProvider = new GraphMLMetaTopologyProvider();
+        final GraphMLMetaTopologyProvider metaTopoProvider = new GraphMLMetaTopologyProvider(new GraphMLServiceAccessor());
         metaTopoProvider.setTopologyLocation(graphXml.getAbsolutePath());
         metaTopoProvider.load();
 

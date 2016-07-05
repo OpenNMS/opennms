@@ -42,6 +42,7 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 
@@ -53,7 +54,7 @@ public class GraphMLVertexStatusProviderTest {
     @Test
     public void testStatusProvider() throws InvalidGraphException {
         GraphML graphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph.xml"));
-        GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(graphML.getGraphs().get(0));
+        GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(graphML.getGraphs().get(0), new GraphMLServiceAccessor());
         GraphMLVertexStatusProvider statusProvider = new GraphMLVertexStatusProvider(topologyProvider.getVertexNamespace(), nodeIds -> Lists.newArrayList(
                 createSummary(1, "North", OnmsSeverity.WARNING, 1),
                 createSummary(2, "West", OnmsSeverity.MINOR, 2),

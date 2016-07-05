@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.topo.graphml;
 
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -49,6 +50,7 @@ import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -105,7 +107,7 @@ public class GraphMLEdgeStatusProviderIT {
         serviceAccessor.setMeasurementsService(request -> new QueryResponse());
 
         final GraphMLGraph graph = GraphMLReader.read(getClass().getResourceAsStream("/test-graph2.xml")).getGraphs().get(0);
-        final GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(graph);
+        final GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(graph, serviceAccessor);
         final GraphMLEdgeStatusProvider provider = new GraphMLEdgeStatusProvider(
                 topologyProvider,
                 new ScriptEngineManager(),
@@ -118,6 +120,12 @@ public class GraphMLEdgeStatusProviderIT {
         // Calculating the status executes some tests defined int the according scripts as a side effect
         final EdgeRef edgeRef = topologyProvider.getEdge("acme:regions", "center_north");
         final Map<EdgeRef, Status> status = provider.getStatusForEdges(topologyProvider, ImmutableList.of(edgeRef), new Criteria[0]);
+
+        // Checking nodeID creation for vertices with only foreignSource/foreignID set
+        final VertexRef vertexRef = topologyProvider.getVertex("acme:regions", "west");
+        assertThat(vertexRef, is(notNullValue()));
+        assertThat(vertexRef, is(instanceOf(GraphMLVertex.class)));
+        assertThat(((GraphMLVertex) vertexRef).getNodeID(), is(4));
 
         // Testing status merging from two scripts
         assertThat(status, is(notNullValue()));

@@ -8,6 +8,8 @@
     <key id="namespace" for="graph" attr.name="namespace" attr.type="string"></key>
     <key id="preferred-layout" for="graph" attr.name="preferred-layout" attr.type="string"></key>
     <key id="nodeID" for="node" attr.name="nodeID" attr.type="int"></key>
+    <key id="foreignSource" for="node" attr.name="foreignSource" attr.type="string"></key>
+    <key id="foreignID" for="node" attr.name="foreignID" attr.type="string"></key>
     <graph id="regions" edgedefault="undirected">
         <data key="namespace">acme:regions</data>
         <node id="center">
@@ -20,6 +22,8 @@
         </node>
         <node id="west">
             <data key="label">West</data>
+            <data key="foreignSource">imported:</data>
+            <data key="foreignID">4</data>
         </node>
         <node id="south">
             <data key="label">South</data>
