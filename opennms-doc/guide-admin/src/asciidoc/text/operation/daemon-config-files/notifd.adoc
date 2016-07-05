@@ -11,7 +11,7 @@
 | _Notifd_            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Notifd'`
 |===
 
-.Pollerd configuration file overview
+.Notifd configuration file overview
 [options="header, autowidth"]
 |===
 | File                                | Restart Required | Reload Event | Description
