@@ -134,6 +134,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
+import org.springframework.transaction.support.TransactionOperations;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -421,21 +422,23 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             final List<InfoPanelItemProvider> infoPanelItemProviders = findInfoPanelItems();
             infoPanelItemProviders.add(selectionContextPanelItem); // manually add this, as it is not exposed via osgi
             infoPanelItemProviders.add(topologyProviderInfoPanelItem); // same here
-            return infoPanelItemProviders.stream()
-                                         .flatMap(provider -> {
-                                             try {
-                                                 return provider.getContributions(m_graphContainer).stream();
-                                             } catch (Throwable t) {
-                                                 // See NMS-8394
-                                                 LOG.error("An error occurred while retrieving the component from info panel item provider {}. "
-                                                     + "The component will not be displayed.", provider.getClass(), t);
-                                                return null;
-                                            }
-                                         })
-                                         .filter(component -> component != null)
-                                         .sorted()
-                                         .map(this::wrap)
-                                         .collect(Collectors.toList());
+            return m_transactionOperations.execute(ts -> {
+                return infoPanelItemProviders.stream()
+                                             .flatMap(provider -> {
+                                                 try {
+                                                     return provider.getContributions(m_graphContainer).stream();
+                                                 } catch (Throwable t) {
+                                                     // See NMS-8394
+                                                     LOG.error("An error occurred while retrieving the component from info panel item provider {}. "
+                                                               + "The component will not be displayed.", provider.getClass(), t);
+                                                     return null;
+                                                 }
+                                             })
+                                             .filter(component -> component != null)
+                                             .sorted()
+                                             .map(this::wrap)
+                                             .collect(Collectors.toList());
+            });
         }
 
         private List<InfoPanelItemProvider> findInfoPanelItems() {
@@ -502,6 +505,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     private final Object m_currentHudDisplayLock = new Object();
     private HudDisplay m_currentHudDisplay;
     private ToolbarPanel m_toolbarPanel;
+    private TransactionOperations m_transactionOperations;
 
     private String getHeader(HttpServletRequest request) throws Exception {
         if(m_headerProvider == null) {
@@ -511,11 +515,12 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         }
     }
 
-    public TopologyUI(MenuManager menuManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager) {
+    public TopologyUI(MenuManager menuManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager, TransactionOperations transactionOperations) {
         // Ensure that selection changes trigger a history save operation
         m_menuManager = menuManager;
         m_historyManager = historyManager;
         m_iconRepositoryManager = iconRepoManager;
+        m_transactionOperations = transactionOperations;
 
         // We set it programmatically, as we require a GraphContainer instance per Topology UI instance.
         // Scope Prototype would create too many GraphContainers, as scope singleton would create too few.
