@@ -70,6 +70,7 @@ import com.google.gwt.touch.client.Point;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.Composite;
@@ -409,6 +410,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
     private TopologyView<TopologyViewRenderer> m_topologyView;
     private List<GraphUpdateListener> m_graphListenerList = new ArrayList<GraphUpdateListener>();
     private TopologyComponentServerRpc m_serverRpc;
+	private int m_width;
+	private int m_height;
 
 
 	public VTopologyComponent() {
@@ -491,13 +494,22 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		setTopologyViewRenderer(m_graphDrawer);
 
         m_windowResizeRegistration = Window.addResizeHandler(new ResizeHandler() {
+			// Each size change will invoke a onResize(ResizeEvent).
+			// This has a huge impact on performance.
+			// Therefore the call is wrapped by a timer with a certain delay
+			// to wait before making the request.
+			final Timer resizeTimer = new Timer() {
+				@Override
+				public void run() {
+					sendPhysicalDimensions();
+				}
+			};
+
             @Override
             public void onResize(ResizeEvent resizeEvent) {
-                sendPhysicalDimensions();
+				resizeTimer.schedule(250);
             }
         });
-
-
     }
 
     
@@ -819,14 +831,16 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
         graph.setBoundingBox(GWTBoundingBox.create(x, y, width, height));
 		setGraph(graph, oldBBox);
 
-         sendPhysicalDimensions();
+        sendPhysicalDimensions();
 	}
 	
 	private void sendPhysicalDimensions() {
-	    int width = m_topologyView.getPhysicalWidth();
-	    int height = m_topologyView.getPhysicalHeight();
-	    m_serverRpc.mapPhysicalBounds(width, height);
-	    
+		// only send physicalDimensions if they actually have changed
+		if (m_width != m_topologyView.getPhysicalWidth() || m_height != m_topologyView.getPhysicalHeight()) {
+			m_width = m_topologyView.getPhysicalWidth();
+			m_height = m_topologyView.getPhysicalHeight();
+			m_serverRpc.mapPhysicalBounds(m_width, m_height);
+		}
 	}
 
     private String minEndPoint(GWTEdge edge1) {
