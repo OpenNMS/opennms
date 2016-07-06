@@ -51,6 +51,7 @@
                                 <feature>minion-heartbeat</feature>
                                 <feature>minion-snmp-proxy</feature>
                                 <feature>minion-provisiond-shell</feature>
+                                <feature>minion-provisiond-detectors</feature>
                             </features>
                             <repository>target/maven-repo</repository>
                         </configuration>

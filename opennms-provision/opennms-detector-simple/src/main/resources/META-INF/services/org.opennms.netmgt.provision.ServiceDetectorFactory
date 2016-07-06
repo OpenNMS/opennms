@@ -1,0 +1,4 @@
+org.opennms.netmgt.provision.detector.icmp.IcmpDetectorFactory
+org.opennms.netmgt.provision.detector.loop.LoopDetectorFactory
+org.opennms.netmgt.provision.detector.smb.SmbDetectorFactory
+org.opennms.netmgt.provision.detector.snmp.SnmpDetectorFactory
