@@ -40,10 +40,7 @@ public class GraphMLEdge extends AbstractEdge {
     private Map<String, Object> properties = Maps.newHashMap();
 
     public GraphMLEdge(String namespace, org.opennms.features.graphml.model.GraphMLEdge graphMLEdge, GraphMLVertex source, GraphMLVertex target) {
-        super(namespace,
-              graphMLEdge.getProperty(GraphMLProperties.ID),
-              source,
-              target);
+        super(namespace, graphMLEdge.getId(), source, target);
 
         setTooltipText(graphMLEdge.getProperty(GraphMLProperties.TOOLTIP_TEXT));
         setProperties(graphMLEdge.getProperties());
