@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.opennms.core.utils.IteratorIterator;
+import org.opennms.core.utils.IteratorUtils;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
@@ -66,7 +66,7 @@ public class DiscoveryJob implements Serializable {
         for(final IPPollRange range : m_ranges) {
             iters.add(range.iterator());
         }
-        return new IteratorIterator<IPPollAddress>(iters);
+        return IteratorUtils.concatIterators(iters);
     }
 
     public String getForeignSource() {

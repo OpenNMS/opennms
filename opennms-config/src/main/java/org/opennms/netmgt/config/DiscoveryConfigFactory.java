@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.config;
 
+import static java.util.Spliterator.IMMUTABLE;
+import static java.util.Spliterator.ORDERED;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,9 +48,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Spliterators;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
@@ -55,9 +60,8 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.FilteringIterator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.IteratorIterator;
+import org.opennms.core.utils.IteratorUtils;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
@@ -570,17 +574,20 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      */
     @Override
     public Iterator<IPPollAddress> getExcludingInterator(final Iterator<IPPollAddress> it) {
-        return new FilteringIterator<IPPollAddress>(it) {
-            @Override
-            protected boolean matches(final IPPollAddress item) {
-                return !isExcluded(item.getAddress());
-            }
-
-        };
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(it, ORDERED | IMMUTABLE), false
+            )
+            // Filter out excluded addresses
+            .filter(item -> !isExcluded(item.getAddress()))
+            .iterator();
     }
 
     /**
      * <p>getConfiguredAddresses</p>
+     * 
+     * TODO: This function is inefficient. It has O(n^2) complexity based on the
+     * product of the include ranges and exclude ranges. This might cause problems
+     * if users are using a large number of excluded ranges.
      *
      * @return a {@link java.lang.Iterable} object.
      */
@@ -599,7 +606,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 iters.add(getExcludingInterator(range.iterator()));
             }
 
-            return new IteratorIterator<IPPollAddress>(iters);
+            return IteratorUtils.concatIterators(iters);
         } finally {
             getReadLock().unlock();
         }
