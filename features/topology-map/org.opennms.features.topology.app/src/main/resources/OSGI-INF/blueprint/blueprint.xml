@@ -188,6 +188,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <bean class="org.opennms.features.topology.app.internal.operations.HierarchyLayoutOperation"/>
     </service>
 
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="Grid Layout?group=layout"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.GridLayoutOperation"/>
+    </service>
+
     <!--
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
