@@ -110,6 +110,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.RequestHandler;
+import com.vaadin.server.SessionDestroyListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
@@ -572,6 +573,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
 	@Override
     protected void init(final VaadinRequest request) {
+        // Register a cleanup
+        request.getService().addSessionDestroyListener((SessionDestroyListener) event -> m_widgetManager.removeUpdateListener(TopologyUI.this));
+
         try {
             m_headerHtml = getHeader(((VaadinServletRequest) request).getHttpServletRequest());
         } catch (final Exception e) {
@@ -1024,22 +1028,19 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
      * @param widgetManager The WidgetManager.
      */
     private void updateWidgetView(WidgetManager widgetManager) {
-        if (m_layout != null) {
-            synchronized (m_layout) {
-                m_layout.removeAllComponents();
-                if(widgetManager.widgetCount() == 0) {
-                    m_layout.addComponent(m_treeMapSplitPanel);
-                } else {
-                    VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
-                    bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
-                    // Split the screen 70% top, 30% bottom
-                    bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
-                    bottomLayoutBar.setSizeFull();
-                    bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
-                    m_layout.addComponent(bottomLayoutBar);
-                    updateTabVisibility();
-                }
-                m_layout.markAsDirty();
+        synchronized (m_layout) {
+            m_layout.removeAllComponents();
+            if(widgetManager.widgetCount() == 0) {
+                m_layout.addComponent(m_treeMapSplitPanel);
+            } else {
+                VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
+                bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
+                // Split the screen 70% top, 30% bottom
+                bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
+                bottomLayoutBar.setSizeFull();
+                bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
+                m_layout.addComponent(bottomLayoutBar);
+                updateTabVisibility();
             }
             m_layout.markAsDirty();
         }
