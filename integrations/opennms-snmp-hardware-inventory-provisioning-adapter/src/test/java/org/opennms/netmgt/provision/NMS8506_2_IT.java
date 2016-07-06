@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,15 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.functions.reduce;
+package org.opennms.netmgt.provision;
 
-public interface ReduceFunctionVisitor<T> {
+import org.junit.Test;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.springframework.transaction.annotation.Transactional;
 
-    T visit(HighestSeverity highestSeverity);
+/**
+ * The Test Class for Jira issue <a href="http://issues.opennms.org/browse/NMS-8506">NMS-8506</a>
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
+public class NMS8506_2_IT extends AbstractSingleHardwareAdapterTest {
 
-    T visit(HighestSeverityAbove highestSeverityAbove);
+    /**
+     * Test adapter.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    @Override
+    @Transactional
+    @JUnitSnmpAgent(host="192.168.0.1", resource="NMS-8506-huawei.properties")
+    public void testAdapter() throws Exception {
+        performTest(21);
+    }
 
-    T visit(Threshold threshold);
-
-    T visit(ExponentialPropagation exponentialPropagation);
 }
