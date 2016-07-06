@@ -12,6 +12,7 @@
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <nodeVersion>v5.8.0</nodeVersion>
     <npmVersion>3.7.1</npmVersion>
+    <test.fork.count>1</test.fork.count>
   </properties>
   <build>
     <pluginManagement>
@@ -128,7 +129,7 @@
             https://jira.atlassian.com/browse/BAM-15446
           -->
           <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
-          <forkCount>2</forkCount>
+          <forkCount>${test.fork.count}</forkCount>
         </configuration>
         <executions>
           <execution>
@@ -186,6 +187,11 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-bootstrap</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

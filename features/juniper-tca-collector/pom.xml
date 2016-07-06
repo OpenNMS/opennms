@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
-  <name>OpenNMS Features Juniper TCA Collector</name>
+  <name>OpenNMS :: Features :: Juniper TCA Collector</name>
   <properties>
     <skipITs>true</skipITs>
   </properties>
@@ -120,11 +120,6 @@
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -23,7 +23,9 @@ export BUILDDEFINES=\
 	-Dmaven.test.skip.exec=true \
 	-DskipITs=true \
 	-Dproduct.release=1 \
-	-Dproduct.snapshot=true
+	-Dproduct.snapshot=true \
+	-Daether.connector.basic.threads=1 \
+	-Daether.connector.resumeDownloads=false
 
 configure:
 
@@ -224,11 +226,11 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/rt.properties                        debian/opennms-plugin-ticketer-rt/var/lib/opennms/etc-pristine/
 	
 	# NCS
-	mv debian/temp/lib/ncs-*.jar                                                               debian/opennms-ncs/usr/share/java/opennms/
+	mv debian/temp/lib/org.opennms.features.ncs.ncs-*.jar                                      debian/opennms-ncs/usr/share/java/opennms/
 	mv debian/temp/etc/drools-engine.d/ncs                                                     debian/opennms-ncs/etc/opennms/drools-engine.d/
 	mv debian/temp/etc/ncs-northbounder-configuration.xml                                      debian/opennms-ncs/etc/opennms/
 	mv debian/temp/share/xsds/ncs-*.xsd                                                        debian/opennms-ncs/var/lib/opennms/xsds/
-	mv debian/temp/jetty-webapps/opennms/WEB-INF/lib/ncs-*.jar                                 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/lib/
+	mv debian/temp/jetty-webapps/opennms/WEB-INF/lib/org.opennms.features.ncs.ncs-*.jar        debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/lib/
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/ncs*.xml                                      debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/alarm/ncs-*                               debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/alarm/
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/ncs                                       debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/

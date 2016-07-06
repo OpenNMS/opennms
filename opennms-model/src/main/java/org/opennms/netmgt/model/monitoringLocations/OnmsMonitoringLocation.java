@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.monitoringLocations;
+package org.opennms.netmgt.model.monitoringLocations;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -46,6 +46,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -73,65 +74,53 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 @Table(name="monitoringLocations")
 @XmlRootElement(name="location")
 @XmlAccessorType(XmlAccessType.NONE)
-public class LocationDef implements Serializable {
+public class OnmsMonitoringLocation implements Serializable {
     private static final long serialVersionUID = -7651610012389148818L;
 
     /**
      * The name of the location.  This must be a unique identifier.
      */
-    @XmlAttribute(name="location-name")
     private String m_locationName;
 
     /**
      * The name of the monitoring area.  This field is used to group
      * multiple locations together, ie, a region, or abstract category.
      */
-    @XmlAttribute(name="monitoring-area")
     private String m_monitoringArea;
 
     /**
      * The polling packages associated with this monitoring location.
      */
-    @XmlElementWrapper(name="polling-package-names")
-    @XmlElement(name="polling-package-name")
     private List<String> m_pollingPackageNames;
 
     /**
      * The collection packages associated with this monitoring location.
      */
-    @XmlElementWrapper(name="collection-package-names")
-    @XmlElement(name="collection-package-name")
     private List<String> m_collectionPackageNames;
 
     /**
      * The geolocation (address) of this monitoring location.
      */
-    @XmlAttribute(name="geolocation")
     private String m_geolocation;
 
     /**
      * The latitude of this monitoring location.
      */
-    @XmlAttribute(name="longitude")
     private Float m_longitude;
 
     /**
      * The latitude of this monitoring location.
      */
-    @XmlAttribute(name="latitude")
     private Float m_latitude;
 
     /**
      * The priority of the location. (1=highest)
      */
-    @XmlAttribute(name="priority")
     private Long m_priority;
 
-    @XmlElementWrapper(name="tags")
-    @XmlElement(name="tag")
     private List<String> m_tags;
 
-    public LocationDef() {
+    public OnmsMonitoringLocation() {
         super();
     }
 
@@ -142,23 +131,37 @@ public class LocationDef implements Serializable {
      * @param monitoringArea
      * @param pollingPackageName
      */
-    public LocationDef(final String locationName, final String monitoringArea, final String pollingPackageName) {
-        this(locationName, monitoringArea, null, new String[] { pollingPackageName }, null, null, null, 100L);
+    public OnmsMonitoringLocation(final String locationName, final String monitoringArea) {
+        this(locationName, monitoringArea, null, null, null, null, null, null);
     }
 
-    public LocationDef(final String locationName, final String monitoringArea, final String[] pollingPackageNames, final String[] collectionPackageNames, final String geolocation, final Float latitude, final Float longitude, final Long priority, final String... tags) {
+    /**
+     * This constructor is only used during unit testing.
+     * 
+     * @param locationName
+     * @param monitoringArea
+     * @param pollingPackageName
+     */
+    public OnmsMonitoringLocation(final String locationName, final String monitoringArea, final String pollingPackageName) {
+        this(locationName, monitoringArea, null, new String[] { pollingPackageName }, null, null, null, null);
+    }
+
+    public OnmsMonitoringLocation(final String locationName, final String monitoringArea, final String[] pollingPackageNames, final String[] collectionPackageNames, final String geolocation, final Float latitude, final Float longitude, final Long priority, final String... tags) {
         m_locationName = locationName;
         m_monitoringArea = monitoringArea;
-        m_pollingPackageNames = (pollingPackageNames == null ? null : Arrays.asList(pollingPackageNames));
-        m_collectionPackageNames = (collectionPackageNames == null ? null : Arrays.asList(collectionPackageNames));
+        m_pollingPackageNames = (pollingPackageNames == null ? Collections.emptyList() : Arrays.asList(pollingPackageNames));
+        m_collectionPackageNames = (collectionPackageNames == null ? Collections.emptyList() : Arrays.asList(collectionPackageNames));
         m_geolocation = geolocation;
         m_latitude = latitude;
         m_longitude = longitude;
         m_priority = priority;
-        m_tags = (tags == null ? null : Arrays.asList(tags));
+        // Because tags is a vararg, if you have no arguments for it, it comes in as String[0]
+        m_tags = ((tags == null || tags.length == 0) ? Collections.emptyList() : Arrays.asList(tags));
     }
 
-    @Id 
+    @XmlID
+    @XmlAttribute(name="location-name")
+    @Id
     @Column(name="id", nullable=false)
     public String getLocationName() {
         return m_locationName;
@@ -168,6 +171,7 @@ public class LocationDef implements Serializable {
         m_locationName = locationName;
     }
 
+    @XmlAttribute(name="monitoring-area")
     @Column(name="monitoringArea", nullable=false)
     public String getMonitoringArea() {
         return m_monitoringArea;
@@ -177,6 +181,8 @@ public class LocationDef implements Serializable {
         m_monitoringArea = monitoringArea;
     }
 
+    @XmlElementWrapper(name="polling-package-names")
+    @XmlElement(name="polling-package-name")
     @ElementCollection
     @JoinTable(name="monitoringLocationsPollingPackages", joinColumns = @JoinColumn(name="monitoringLocationId"))
     @Column(name="packageName")
@@ -188,6 +194,8 @@ public class LocationDef implements Serializable {
         m_pollingPackageNames = pollingPackageNames;
     }
 
+    @XmlElementWrapper(name="collection-package-names")
+    @XmlElement(name="collection-package-name")
     @ElementCollection
     @JoinTable(name="monitoringLocationsCollectionPackages", joinColumns = @JoinColumn(name="monitoringLocationId"))
     @Column(name="packageName")
@@ -199,6 +207,7 @@ public class LocationDef implements Serializable {
         m_collectionPackageNames = collectionPackageNames;
     }
 
+    @XmlAttribute(name="geolocation")
     @Column(name="geolocation")
     public String getGeolocation() {
         return m_geolocation;
@@ -212,6 +221,7 @@ public class LocationDef implements Serializable {
      * The longitude coordinate of this node.
      * @return
      */
+    @XmlAttribute(name="longitude")
     @Column(name="longitude")
     public Float getLongitude() {
         return m_longitude;
@@ -225,6 +235,7 @@ public class LocationDef implements Serializable {
      * The latitude coordinate of this node.
      * @return
      */
+    @XmlAttribute(name="latitude")
     @Column(name="latitude")
     public Float getLatitude() {
         return m_latitude;
@@ -234,6 +245,7 @@ public class LocationDef implements Serializable {
         m_latitude = latitude;
     }
 
+    @XmlAttribute(name="priority")
     @Column(name="priority")
     public Long getPriority() {
         return m_priority == null ? 100L : m_priority;
@@ -243,12 +255,14 @@ public class LocationDef implements Serializable {
         m_priority = priority;
     }
 
+    @XmlElementWrapper(name="tags")
+    @XmlElement(name="tag")
     @ElementCollection
     @JoinTable(name="monitoringLocationsTags", joinColumns = @JoinColumn(name="monitoringLocationId"))
     @Column(name="tag")
     public List<String> getTags() {
         if (m_tags == null) {
-            return null;
+            return Collections.emptyList();
         } else {
             return Collections.unmodifiableList(m_tags);
         }
@@ -256,7 +270,7 @@ public class LocationDef implements Serializable {
 
     public void setTags(final List<String> tags) {
         if (tags == null || tags.size() == 0) {
-            m_tags = null;
+            m_tags = Collections.emptyList();
         } else {
             m_tags = new ArrayList<String>(tags);
         }
@@ -286,10 +300,10 @@ public class LocationDef implements Serializable {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof LocationDef)) {
+        if (!(obj instanceof OnmsMonitoringLocation)) {
             return false;
         }
-        final LocationDef other = (LocationDef) obj;
+        final OnmsMonitoringLocation other = (OnmsMonitoringLocation) obj;
         return new EqualsBuilder()
             .append(getLatitude(), other.getLatitude())
             .append(getLongitude(), other.getLongitude())
@@ -305,7 +319,7 @@ public class LocationDef implements Serializable {
 
     @Override
     public String toString() {
-        return "LocationDef [location-name=" + m_locationName +
+        return "OnmsMonitoringLocation [location-name=" + m_locationName +
                 ", monitoring-area=" + m_monitoringArea +
                 ", polling-package-names=" + m_pollingPackageNames +
                 ", collection-package-names=" + m_collectionPackageNames +

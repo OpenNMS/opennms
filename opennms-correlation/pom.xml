@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-correlation</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Correlation Engines</name>
+  <name>OpenNMS :: Correlation</name>
   <modules>
     <module>opennms-correlator</module>
     <module>drools-correlation-engine</module>

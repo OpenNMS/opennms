@@ -26,14 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@XmlSchema(
-    namespace="http://xmlns.opennms.org/xsd/config/monitoring-locations",
-    elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
-    xmlns={
-        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/monitoring-locations")
-    }
-)
-package org.opennms.netmgt.config.monitoringLocations;
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlSchema;
+package org.opennms.netmgt.provision;
 
+import org.junit.Test;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * The Test Class for Jira issue <a href="http://issues.opennms.org/browse/NMS-8506">NMS-8506</a>
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
+public class NMS8506_2_IT extends AbstractSingleHardwareAdapterTest {
+
+    /**
+     * Test adapter.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    @Override
+    @Transactional
+    @JUnitSnmpAgent(host="192.168.0.1", resource="NMS-8506-huawei.properties")
+    public void testAdapter() throws Exception {
+        performTest(21);
+    }
+
+}

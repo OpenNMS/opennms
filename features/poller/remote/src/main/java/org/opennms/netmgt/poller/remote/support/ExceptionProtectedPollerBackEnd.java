@@ -33,9 +33,9 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -113,7 +113,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
      * @return a {@link java.util.Collection} object.
      */
     @Override
-    public Collection<LocationDef> getMonitoringLocations() {
+    public Collection<OnmsMonitoringLocation> getMonitoringLocations() {
         try {
             return m_delegate.getMonitoringLocations();
         } catch (Throwable t) {

@@ -52,6 +52,7 @@ import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.ExponentialPropagation;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReduceFunctionVisitor;
@@ -61,6 +62,7 @@ import org.opennms.netmgt.bsm.service.model.functions.reduce.ThresholdResultExpl
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 
+import com.google.common.base.Strings;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Sizeable;
@@ -128,6 +130,11 @@ public class BusinessServiceVertexInfoPanelItem extends VertexInfoPanelItem {
                         });
                         explainButton.setStyleName(BaseTheme.BUTTON_LINK);
                         formLayout.addComponent(explainButton);
+                        return null;
+                    }
+
+                    @Override
+                    public Void visit(ExponentialPropagation exponentialPropagation) {
                         return null;
                     }
                 });
@@ -202,6 +209,13 @@ public class BusinessServiceVertexInfoPanelItem extends VertexInfoPanelItem {
                 return String.format("%s (%s)",
                         function.getClass().getSimpleName(),
                         Float.toString(function.getThreshold()));
+            }
+
+            @Override
+            public String visit(ExponentialPropagation function) {
+                return String.format("%s (%s)",
+                                     function.getClass().getSimpleName(),
+                                     Double.toString(function.getBase()));
             }
         });
     }
@@ -295,7 +309,7 @@ public class BusinessServiceVertexInfoPanelItem extends VertexInfoPanelItem {
         }
 
         private String getLabel(GraphEdge graphEdge, ThresholdResultExplanation explanation) {
-            if (graphEdge.getFriendlyName() != null) {
+            if (!Strings.isNullOrEmpty(graphEdge.getFriendlyName())) {
                 return graphEdge.getFriendlyName();
             }
             return GraphVertexToTopologyVertexConverter.createTopologyVertex(explanation.getGraphVertex(graphEdge)).getLabel();

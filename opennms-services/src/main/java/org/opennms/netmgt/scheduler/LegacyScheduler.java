@@ -31,15 +31,16 @@ package org.opennms.netmgt.scheduler;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.queue.FifoQueueImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -61,7 +62,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      * The map of queue that contain {@link ReadyRunnable ready runnable}
      * instances. The queues are mapped according to the interval of scheduling.
      */
-    private final Map<Long, PeekableFifoQueue<ReadyRunnable>> m_queues;
+    private final Map<Long, BlockingQueue<ReadyRunnable>> m_queues;
 
     /**
      * The total number of elements currently scheduled. This should be the sum
@@ -91,32 +92,6 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     private volatile long m_numTasksExecuted = 0;
 
     /**
-     * This queue extends the standard FIFO queue instance so that it is
-     * possible to peek at an instance without removing it from the queue.
-     * 
-     */
-    public static final class PeekableFifoQueue<T> extends FifoQueueImpl<T> {
-        /**
-         * This method allows the caller to peek at the next object that would
-         * be returned on a <code>remove</code> call. If the queue is
-         * currently empty then the caller is blocked until an object is put
-         * into the queue.
-         * 
-         * @return The object that would be returned on the next call to
-         *         <code>remove</code>.
-         * 
-         * @throws java.lang.InterruptedException
-         *             Thrown if the thread is interrupted.
-         * @throws org.opennms.core.queue.FifoQueueException
-         *             Thrown if an error occurs removing an item from the
-         *             queue.
-         */
-        public T peek() throws InterruptedException {
-            return m_delegate.peek();
-        }
-    }
-
-    /**
      * Constructs a new instance of the scheduler. The maximum number of
      * executable threads is specified in the constructor. The executable
      * threads are part of a runnable thread pool where the scheduled runnables
@@ -130,7 +105,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     public LegacyScheduler(final String parent, final int maxSize) {
         m_status = START_PENDING;
         m_runner = Executors.newFixedThreadPool(maxSize, new LogPreservingThreadFactory(parent, maxSize));
-        m_queues = new ConcurrentSkipListMap<Long, PeekableFifoQueue<ReadyRunnable>>();
+        m_queues = new ConcurrentSkipListMap<Long, BlockingQueue<ReadyRunnable>>();
         m_scheduled = 0;
         m_worker = null;
     }
@@ -174,20 +149,15 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         Long key = Long.valueOf(interval);
         if (!m_queues.containsKey(key)) {
             LOG.debug("schedule: interval queue did not exist, a new one has been created");
-            m_queues.put(key, new PeekableFifoQueue<ReadyRunnable>());
+            m_queues.put(key, new LinkedBlockingQueue<ReadyRunnable>());
         }
 
-        try {
-            m_queues.get(key).add(runnable);
-            if (m_scheduled++ == 0) {
-                LOG.debug("schedule: queue element added, calling notify all since none were scheduled");
-                notifyAll();
-            } else {
-                LOG.debug("schedule: queue element added, notification not performed");
-            }
-        } catch (InterruptedException e) {
-            LOG.info("schedule: failed to add new ready runnable instance {} to scheduler", runnable, e);
-            Thread.currentThread().interrupt();
+        m_queues.get(key).add(runnable);
+        if (m_scheduled++ == 0) {
+            LOG.debug("schedule: queue element added, calling notify all since none were scheduled");
+            notifyAll();
+        } else {
+            LOG.debug("schedule: queue element added, notification not performed");
         }
     }
 
@@ -419,7 +389,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                  * Get an iterator so that we can cycle
                  * through the queue elements.
                  */
-                for (Entry<Long, PeekableFifoQueue<ReadyRunnable>> entry : m_queues.entrySet()) {
+                for (Entry<Long, BlockingQueue<ReadyRunnable>> entry : m_queues.entrySet()) {
                     /*
                      * Peak for Runnable objects until
                      * there are no more ready runnables.
@@ -428,7 +398,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                      * if we didn't add a count then it would
                      * be possible to starve other queues.
                      */
-                    PeekableFifoQueue<ReadyRunnable> in = entry.getValue();
+                    BlockingQueue<ReadyRunnable> in = entry.getValue();
                     ReadyRunnable readyRun = null;
                     int maxLoops = in.size();
                     do {
@@ -441,7 +411,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                                  * Pop the interface/readyRunnable from the
                                  * queue for execution.
                                  */
-                                in.remove();
+                                in.take();
 
                                 // Add runnable to the execution queue
                                 m_runner.execute(readyRun);

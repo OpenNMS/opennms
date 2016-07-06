@@ -15,9 +15,9 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology.plugins.topo</groupId>
-  <artifactId>simple</artifactId>
+  <artifactId>org.opennms.features.topology.plugins.topo.simple</artifactId>
 
-  <name>${bundle.symbolicName}</name>
+  <name>OpenNMS :: Features :: Topology :: Plugins :: Simple</name>
 
   <packaging>bundle</packaging>
 
@@ -102,7 +102,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>api</artifactId>
+      <artifactId>org.opennms.features.topology.api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

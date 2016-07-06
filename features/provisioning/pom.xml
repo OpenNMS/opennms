@@ -9,7 +9,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.provisioning</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Features Provisioning</name>
+  <name>OpenNMS :: Features :: Provisioning</name>
   <modules>
     <module>api</module>
     <module>lib</module>

@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-reverse-dns-provisioning-adapter</artifactId>
-  <name>OpenNMS Integrations Reverse Zone DNS Provisioning Adaptor</name>
+  <name>OpenNMS :: Integrations :: Provisioning Adaptor :: Reverse Zone DNS</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -28,11 +28,6 @@
       <type>pom</type>
     </dependency>
     <!-- test dependencies -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>

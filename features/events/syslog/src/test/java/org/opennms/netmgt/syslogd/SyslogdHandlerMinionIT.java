@@ -40,6 +40,7 @@ import org.apache.camel.util.KeyValueHolder;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
@@ -78,7 +79,8 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
 	@Test(timeout=60000)
 	public void testSyslogd() throws Exception {
 		// Expect one SyslogConnection message to be broadcast on the messaging channel
-		MockEndpoint broadcastSyslog = getMockEndpoint("mock:queuingservice:broadcastSyslog", false);
+		JmsQueueNameFactory factory = new JmsQueueNameFactory("Syslogd", "BroadcastSyslog");
+		MockEndpoint broadcastSyslog = getMockEndpoint("mock:queuingservice:" + factory.getName(), false);
 
 		// Create a mock SyslogdConfig
 		SyslogConfigBean config = new SyslogConfigBean();

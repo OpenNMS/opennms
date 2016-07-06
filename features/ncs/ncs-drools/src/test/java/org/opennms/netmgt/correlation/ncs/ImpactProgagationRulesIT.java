@@ -44,6 +44,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -64,6 +65,9 @@ public class ImpactProgagationRulesIT extends CorrelationRulesITCase {
 	private DistPollerDao m_distPollerDao;
 	
 	@Autowired
+	MonitoringLocationDao m_locationDao;
+	
+	@Autowired
 	private NodeDao m_nodeDao;
 
 	private int m_pe1NodeId;
@@ -80,6 +84,9 @@ public class ImpactProgagationRulesIT extends CorrelationRulesITCase {
 	public void setUp() throws JAXBException, UnsupportedEncodingException {
 		
 		NetworkBuilder bldr = new NetworkBuilder();
+		// Make sure that the default OnmsMonitoringLocation is saved
+		m_locationDao.saveOrUpdate(bldr.getLocation());
+		
 		bldr.addNode("PE1").setForeignSource("space").setForeignId("1111-PE1");
 		
 		m_nodeDao.save(bldr.getCurrentNode());
