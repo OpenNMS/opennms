@@ -59,7 +59,6 @@ public class WidgetManager {
         LOG.info("Adding WidgetUpdateListener {} to WidgetManager {}", listener, this);
         synchronized (m_listeners) {
             m_listeners.add(listener);
-            updateWidgetListeners();
         }
     }
 
