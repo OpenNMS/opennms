@@ -34,6 +34,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.VerticesUpdateManager.VerticesUpdateEvent;
@@ -285,10 +289,6 @@ public class NodeMapsApplication extends UI {
         createRootLayout();
         addRefresher();
 
-        // Notify the user if no tileserver url or options are set
-        if (!NodeMapConfiguration.isValid()) {
-            new InvalidConfigurationWindow().open();
-        }
         // Schedule refresh of node data
         m_executor.scheduleWithFixedDelay(() -> m_mapWidgetComponent.refreshNodeData(), 0, 5, TimeUnit.MINUTES);
 
