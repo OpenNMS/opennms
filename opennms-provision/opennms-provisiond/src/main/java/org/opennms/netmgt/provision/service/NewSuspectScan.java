@@ -33,9 +33,9 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.net.InetAddress;
 
 import org.opennms.core.tasks.BatchTask;
-import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsNode;
@@ -54,7 +54,7 @@ public class NewSuspectScan implements Scan {
     private ProvisionService m_provisionService;
     private EventForwarder m_eventForwarder;
     private SnmpAgentConfigFactory m_agentConfigFactory;
-    private DefaultTaskCoordinator m_taskCoordinator;
+    private TaskCoordinator m_taskCoordinator;
 	private String m_foreignSource;
 	
     /**
@@ -64,9 +64,9 @@ public class NewSuspectScan implements Scan {
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
-     * @param taskCoordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param taskCoordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    public NewSuspectScan(final InetAddress ipAddress, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final DefaultTaskCoordinator taskCoordinator, String foreignSource) {
+    public NewSuspectScan(final InetAddress ipAddress, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator, String foreignSource) {
         m_ipAddress = ipAddress;
         m_provisionService = provisionService;
         m_eventForwarder = eventForwarder;

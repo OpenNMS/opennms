@@ -37,6 +37,8 @@ public interface GraphMLProperties {
     String LABEL = "label";
     String LOCKED = "locked";
     String NODE_ID = "nodeID";
+    String FOREIGN_SOURCE = "foreignSource";
+    String FOREIGN_ID = "foreignID";
     String SELECTED = "selected";
     String STYLE_NAME = "styleName";
     String TOOLTIP_TEXT = "tooltipText";
@@ -46,4 +48,5 @@ public interface GraphMLProperties {
     String FOCUS_STRATEGY = "focus-strategy";
     String FOCUS_IDS = "focus-ids";
     String SEMANTIC_ZOOM_LEVEL = "semantic-zoom-level";
+    String VERTEX_STATUS_PROVIDER = "vertex-status-provider";
 }

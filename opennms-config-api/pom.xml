@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config-api</artifactId>
-  <name>OpenNMS Configuration API</name>
+  <name>OpenNMS :: Model :: Config DAO :: API</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -28,7 +28,15 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-jaxb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-config-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
     </dependency>
   </dependencies>
 </project>

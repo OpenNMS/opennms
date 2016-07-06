@@ -147,7 +147,7 @@ public class Nms5414IT extends ProvisioningITCase {
     }
     
     public void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
-    	final Task t = scan.createTask();
+        final Task t = scan.createTask();
         t.schedule();
         t.waitFor();
         waitForEverything();

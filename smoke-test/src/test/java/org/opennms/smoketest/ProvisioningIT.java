@@ -46,7 +46,7 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
 
     @Override
     protected void provisioningPage() {
-        m_driver.get(BASE_URL + "opennms/admin/provisioningGroups.htm");
+        m_driver.get(getBaseUrl() + "opennms/admin/provisioningGroups.htm");
     }
 
     @Before
@@ -85,17 +85,18 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
             setter.setField(prefix);
         }
 
-        findElementByXpath("//input[contains(@onclick, '" + currentNode + "') and @value='Save']").click();
+        waitForElement(By.xpath("//input[contains(@onclick, '" + currentNode + "') and @value='Save']")).click();
         return currentNode;
     }
 
     protected String getCurrentNode() {
-        return findElementByXpath("//input[@name='currentNode']").getAttribute("value");
+        return waitForElement(By.xpath("//input[@name='currentNode']")).getAttribute("value");
     }
 
     @Test
     public void testRequisitionUI() throws Exception {
-        final WebElement form = findElementByXpath("//form[@name='takeAction']");
+        final WebElement form = waitForElement(By.xpath("//form[@name='takeAction']"));
+        form.findElement(By.cssSelector("input[type=text][name=groupName]")).click();
         form.findElement(By.cssSelector("input[type=text][name=groupName]")).sendKeys(REQUISITION_NAME);
         form.submit();
 
@@ -103,30 +104,30 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
         findElementById("edit_fs_anchor_" + REQUISITION_NAME).click();
 
         // add a detector
-        findElementByXpath("//input[@value='Add Detector']").click();
+        waitForElement(By.xpath("//input[@value='Add Detector']")).click();
         String detectorNode = setTreeFieldsAndSave("foreignSourceEditForm", type("name", "HTTP-8980"), select("pluginClass", "HTTP"));
 
         // set the port to 8980
-        findElementByXpath("//a[contains(@href, '"+detectorNode+"') and text() = '[Add Parameter]']").click();
+        waitForElement(By.xpath("//a[contains(@href, '"+detectorNode+"') and text() = '[Add Parameter]']")).click();
         setTreeFieldsAndSave("foreignSourceEditForm", select("key", "port"), type("value", "8980"));
 
-        findElementByXpath("//input[@value='Done']").click();
+        waitForElement(By.xpath("//input[@value='Done']")).click();
 
         // add a node
         findElementById("edit_req_anchor_" + REQUISITION_NAME).click();
-        findElementByXpath("//input[@value='Add Node']").click();
+        waitForElement(By.xpath("//input[@value='Add Node']")).click();
         String nodeForNode = setTreeFieldsAndSave("nodeEditForm", type("nodeLabel", NODE_LABEL), type("foreignId", NODE_LABEL));
 
         // add the node interface
-        findElementByXpath("//a[contains(@href, '" + nodeForNode + "') and text() = '[Add Interface]']").click();
+        waitForElement(By.xpath("//a[contains(@href, '" + nodeForNode + "') and text() = '[Add Interface]']")).click();
         setTreeFieldsAndSave("nodeEditForm", type("ipAddr", "::1"));
 
         // add the interface service
-        findElementByXpath("//a[text() = 'Add Service']").click();
+        waitForElement(By.xpath("//a[text() = 'Add Service']")).click();
         setTreeFieldsAndSave("nodeEditForm", select("serviceName", "HTTP-8980"));
 
-        findElementByXpath("//input[@value='Done']").click();
-        findElementByXpath("//input[@value='Synchronize']").click();
+        waitForElement(By.xpath("//input[@value='Done']")).click();
+        waitForElement(By.xpath("//input[@value='Synchronize']")).click();
 
         assertTrue(wait.until(new WaitForNodesInDatabase(1)));
         LOG.debug("Found 1 node in the database.");
@@ -134,10 +135,10 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
         // wait for the node scanning to complete
         Thread.sleep(5000);
 
-        m_driver.get(BASE_URL + "opennms/element/node.jsp?node="+ REQUISITION_NAME + ":" + NODE_LABEL);
-        findElementByXpath("//h3[text()='Availability']");
+        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node="+ REQUISITION_NAME + ":" + NODE_LABEL);
+        waitForElement(By.xpath("//h3[text()='Availability']"));
 
         wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));
-        findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']");
+        waitForElement(By.xpath("//a[contains(@href, 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']"));
     }
 }

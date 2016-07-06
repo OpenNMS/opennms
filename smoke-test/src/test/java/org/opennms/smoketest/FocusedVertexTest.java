@@ -11,7 +11,7 @@ public class FocusedVertexTest {
 
     @Before
     public void setUp() {
-        topologyUIPage = new TopologyIT.TopologyUIPage(new OpenNMSSeleniumTestCase());
+        topologyUIPage = new TopologyIT.TopologyUIPage(new OpenNMSSeleniumTestCase(), "");
     }
 
     @Test

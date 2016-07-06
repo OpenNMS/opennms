@@ -56,6 +56,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.events.api.EventListener;
@@ -96,6 +97,9 @@ public class SyslogdLoadIT implements InitializingBean {
 
     @Autowired
     private MockEventIpcManager m_eventIpcManager;
+
+    @Autowired
+    private DistPollerDao m_distPollerDao;
 
     @Autowired
     private Eventd m_eventd;
@@ -142,6 +146,7 @@ public class SyslogdLoadIT implements InitializingBean {
     private void startSyslogdJavaNet() throws Exception {
         m_syslogd = new Syslogd();
         SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(m_config);
+        receiver.setDistPollerDao(m_distPollerDao);
         receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
         m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
@@ -151,6 +156,7 @@ public class SyslogdLoadIT implements InitializingBean {
     private void startSyslogdNio() throws Exception {
         m_syslogd = new Syslogd();
         SyslogReceiverNioThreadPoolImpl receiver = new SyslogReceiverNioThreadPoolImpl(m_config);
+        receiver.setDistPollerDao(m_distPollerDao);
         receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
         m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
@@ -160,6 +166,7 @@ public class SyslogdLoadIT implements InitializingBean {
     private void startSyslogdNioDisruptor() throws Exception {
         m_syslogd = new Syslogd();
         SyslogReceiverNioDisruptorImpl receiver = new SyslogReceiverNioDisruptorImpl(m_config);
+        receiver.setDistPollerDao(m_distPollerDao);
         m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
@@ -168,6 +175,7 @@ public class SyslogdLoadIT implements InitializingBean {
     private void startSyslogdCamelNetty() throws Exception {
         m_syslogd = new Syslogd();
         SyslogReceiverCamelNettyImpl receiver = new SyslogReceiverCamelNettyImpl(m_config);
+        receiver.setDistPollerDao(m_distPollerDao);
         receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
         m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
@@ -199,7 +207,7 @@ public class SyslogdLoadIT implements InitializingBean {
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
-            handler.handleSyslogConnection(new SyslogConnection(pkt, m_config));
+            handler.handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId()));
         }
 
         long mid = System.currentTimeMillis();
@@ -316,12 +324,12 @@ public class SyslogdLoadIT implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - BOMfoo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId()));
 
         // handle a valid packet
         bytes = "<34>1 2003-10-11T22:14:15.000Z plonk -ev/pts/8\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId()));
 
         m_eventCounter.waitForFinish(120000);
         
@@ -342,12 +350,12 @@ public class SyslogdLoadIT implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId()));
 
         // handle a valid packet
         bytes = "<34>monkeysatemybrain!\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId()));
 
         m_eventCounter.waitForFinish(120000);
         

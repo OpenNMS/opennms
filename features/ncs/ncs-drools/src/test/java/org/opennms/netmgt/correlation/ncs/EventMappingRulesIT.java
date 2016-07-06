@@ -41,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -64,6 +65,9 @@ public class EventMappingRulesIT extends CorrelationRulesITCase {
 	DistPollerDao m_distPollerDao;
 	
 	@Autowired
+	MonitoringLocationDao m_locationDao;
+	
+	@Autowired
 	NodeDao m_nodeDao;
 
 	int m_pe1NodeId;
@@ -76,6 +80,9 @@ public class EventMappingRulesIT extends CorrelationRulesITCase {
 	public void setUp() {
 		
 		NetworkBuilder bldr = new NetworkBuilder();
+		// Make sure that the default OnmsMonitoringLocation is saved
+		m_locationDao.saveOrUpdate(bldr.getLocation());
+		
 		bldr.addNode("PE1").setForeignSource("space").setForeignId("1111-PE1");
 		
 		m_nodeDao.save(bldr.getCurrentNode());

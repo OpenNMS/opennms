@@ -43,6 +43,7 @@ import org.opennms.features.topology.app.internal.ProviderManager;
 import org.opennms.features.topology.app.internal.VEProviderGraphContainer;
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
 import org.opennms.features.topology.app.internal.ui.SearchBox;
+import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
 import org.opennms.osgi.OnmsServiceManager;
 
 public class GraphMLSearchProviderTest {
@@ -52,7 +53,7 @@ public class GraphMLSearchProviderTest {
         GraphMLGraph graph = new GraphMLGraph();
         graph.setProperty(GraphMLProperties.NAMESPACE, "namespace1:graph1");
 
-        GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(graph);
+        GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(graph, new GraphMLServiceAccessor());
         GraphMLSearchProvider searchProvider = new GraphMLSearchProvider(topologyProvider);
         Assert.assertEquals(true, searchProvider.contributesTo("namespace1:graph1"));
         Assert.assertEquals(true, searchProvider.contributesTo("namespace1:graph2"));
@@ -62,7 +63,7 @@ public class GraphMLSearchProviderTest {
 
     @Test
     public void canSearchAllSearchProviders() {
-        final GraphMLMetaTopologyProvider metaTopologyProvider = new GraphMLMetaTopologyProvider();
+        final GraphMLMetaTopologyProvider metaTopologyProvider = new GraphMLMetaTopologyProvider(new GraphMLServiceAccessor());
         metaTopologyProvider.setTopologyLocation("target/test-classes/test-graph.xml");
         metaTopologyProvider.load();
         Assert.assertNotNull(metaTopologyProvider.getDefaultGraphProvider());

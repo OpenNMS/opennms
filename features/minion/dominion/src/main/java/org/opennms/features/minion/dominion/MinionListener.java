@@ -25,8 +25,8 @@ public class MinionListener implements Processor {
                 minion.setId(minionId);
                 minion.setLocation(minionLocation);
             }
-            Date lastCheckedIn = new Date();
-            minion.setLastCheckedIn(lastCheckedIn);
+            Date lastUpdated = new Date();
+            minion.setLastUpdated(lastUpdated);
             minionDao.saveOrUpdate(minion);
         }
     }

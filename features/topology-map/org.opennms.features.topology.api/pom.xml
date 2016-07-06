@@ -15,7 +15,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology</groupId>
-  <artifactId>api</artifactId>
+  <artifactId>org.opennms.features.topology.api</artifactId>
 
   <name>${bundle.symbolicName}</name>
 
@@ -57,6 +57,16 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.criteria</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.measurements</groupId>
+      <artifactId>org.opennms.features.measurements.api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

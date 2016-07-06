@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.tasks.BatchTask;
-import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.TaskCoordinator;
 
 /**
  * LifeCycle
@@ -127,9 +127,9 @@ public interface LifeCycleInstance {
     /**
      * <p>getCoordinator</p>
      *
-     * @return a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @return a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    DefaultTaskCoordinator getCoordinator();
+    TaskCoordinator getCoordinator();
 
     
 

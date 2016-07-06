@@ -18,6 +18,7 @@
         </excludes>
       </unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
+      <useStrictFiltering>true</useStrictFiltering>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <!-- Output to the root directory -->
       <outputDirectory></outputDirectory>
@@ -26,7 +27,7 @@
         <include>org.opennms.core:org.opennms.core.soa:jar:xsds:${project.version}</include>
         <include>org.opennms.features:org.opennms.features.jdbc-collector:jar:xsds:${project.version}</include>
         <include>org.opennms.features:org.opennms.features.juniper-tca-collector:jar:xsds:${project.version}</include>
-        <include>org.opennms.features.ncs:ncs-model:jar:xsds:${project.version}</include>
+        <include>org.opennms.features.ncs:org.opennms.features.ncs.ncs-model:jar:xsds:${project.version}</include>
         <include>org.opennms.features.reporting:org.opennms.features.reporting.availability:jar:xsds:${project.version}</include>
         <include>org.opennms:opennms-config-jaxb:jar:xsds:${project.version}</include>
         <include>org.opennms:opennms-config-model:jar:xsds:${project.version}</include>

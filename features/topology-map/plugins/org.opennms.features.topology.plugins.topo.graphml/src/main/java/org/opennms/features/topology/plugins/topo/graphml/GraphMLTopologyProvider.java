@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.graphml;
 
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,14 +43,17 @@ import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.FocusStrategy;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
+import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -58,6 +62,8 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     protected static final String DEFAULT_DESCRIPTION = "This Topology Provider visualizes a predefined GraphML graph.";
     private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyProvider.class);
 
+    private final GraphMLServiceAccessor m_serviceAccessor;
+
     private static TopologyProviderInfo createTopologyProviderInfo(GraphMLGraph graph) {
         String name = graph.getProperty(GraphMLProperties.LABEL, graph.getId());
         String description = graph.getProperty(GraphMLProperties.DESCRIPTION, DEFAULT_DESCRIPTION);
@@ -65,13 +71,19 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     }
 
     private final int defaultSzl;
+    private final String preferredLayout;
     private final FocusStrategy focusStrategy;
     private final List<String> focusIds;
+    private final Boolean requiresStatusProvider;
 
-    public GraphMLTopologyProvider(GraphMLGraph graph) {
+    public GraphMLTopologyProvider(GraphMLGraph graph, GraphMLServiceAccessor serviceAccessor) {
         super(graph.getProperty(GraphMLProperties.NAMESPACE));
+
+        m_serviceAccessor = serviceAccessor;
+
         for (GraphMLNode graphMLNode : graph.getNodes()) {
             GraphMLVertex newVertex = new GraphMLVertex(this.getVertexNamespace(), graphMLNode);
+            setNodeIdForVertex(newVertex);
             addVertices(newVertex);
         }
         for (org.opennms.features.graphml.model.GraphMLEdge eachEdge : graph.getEdges()) {
@@ -88,8 +100,30 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         defaultSzl = getDefaultSzl(graph);
         focusStrategy = getFocusStrategy(graph);
         focusIds = getFocusIds(graph);
+        preferredLayout = graph.getProperty(GraphMLProperties.PREFERRED_LAYOUT);
+        requiresStatusProvider = graph.getProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, Boolean.FALSE);
         if (focusStrategy != FocusStrategy.SPECIFIC && !focusIds.isEmpty()) {
             LOG.warn("Focus ids is defined, but strategy is {}. Did you mean to specify {}={}. Ignoring focusIds.", GraphMLProperties.FOCUS_STRATEGY, FocusStrategy.SPECIFIC.name());
+        }
+    }
+
+    private void setNodeIdForVertex(GraphMLVertex vertex) {
+        if (vertex == null) {
+            return;
+        }
+        if (vertex.getNodeID() == null) {
+            String foreignSource = (String) vertex.getProperties().get(GraphMLProperties.FOREIGN_SOURCE);
+            String foreignId = (String) vertex.getProperties().get(GraphMLProperties.FOREIGN_ID);
+            if (!Strings.isNullOrEmpty(foreignSource) && !Strings.isNullOrEmpty(foreignId)) {
+                OnmsNode onmsNode = m_serviceAccessor.getNodeDao().findByForeignId(foreignSource, foreignId);
+                if (onmsNode != null) {
+                    vertex.setNodeID(onmsNode.getId());
+                } else {
+                    LOG.warn("No node found for the given foreignSource ({}) and foreignId ({}).", foreignSource, foreignId);
+                }
+            } else {
+                LOG.warn("The given nodeId is null. In order to resolve the nodeId a foreignSource ({}) and foreignId ({}) must be set.", foreignSource, foreignId);
+            }
         }
     }
 
@@ -115,7 +149,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         if (szl != null) {
             return szl;
         }
-        return AbstractTopologyProvider.DEFAULT_SEMANTIC_ZOOM_LEVEL;
+        return Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL;
     }
 
     @Override
@@ -134,14 +168,14 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     }
 
     @Override
-    public int getDefaultSzl() {
-        return defaultSzl;
-    }
-
-    @Override
-    public List<Criteria> getDefaultCriteria() {
-        List<VertexHopGraphProvider.VertexHopCriteria> focusCriteria = focusStrategy.getFocusCriteria(this, focusIds.toArray(new String[focusIds.size()]));
-        return Lists.newArrayList(focusCriteria);
+    public Defaults getDefaults() {
+        return new Defaults()
+                .withSemanticZoomLevel(defaultSzl)
+                .withPreferredLayout(preferredLayout)
+                .withCriteria(() -> {
+                    List<VertexHopGraphProvider.VertexHopCriteria> focusCriteria = focusStrategy.getFocusCriteria(this, focusIds.toArray(new String[focusIds.size()]));
+                    return Lists.newArrayList(focusCriteria);
+                });
     }
 
     @Override
@@ -164,5 +198,9 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     @Override
     public boolean contributesTo(ContentType type) {
         return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
+    }
+
+    public boolean requiresStatusProvider() {
+        return requiresStatusProvider;
     }
 }

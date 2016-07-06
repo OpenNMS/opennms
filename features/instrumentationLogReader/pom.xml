@@ -9,7 +9,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features Instrumentation Log Reader</name>
+  <name>OpenNMS :: Features :: Instrumentation Log Reader</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -30,9 +30,27 @@
     <constructor-arg ref="discoveryFactory"/>
   </bean>
 
+  <!-- DistPollerDao -->
+  <!-- <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/> -->
+
+  <!-- Get the current OnmsDistPoller for this system -->
+  <bean id="distPoller" factory-bean="distPollerDao" factory-method="whoami"/>
+
+  <bean id="queueNameFactory" class="org.opennms.core.camel.JmsQueueNameFactory">
+    <constructor-arg value="Discovery"/>
+    <constructor-arg value="Discoverer"/>
+    <constructor-arg>
+      <!-- Get the location name of the current monitoring system -->
+      <bean factory-bean="distPoller" factory-method="getLocation"/>
+    </constructor-arg>
+  </bean>
+
+  <bean id="queueNameProperties" factory-bean="queueNameFactory" factory-method="getProperties"/>
+
   <!-- Create a Camel PropertiesComponent -->
   <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
     <property name="initialProperties" ref="discoveryProperties"/>
+    <property name="overrideProperties" ref="queueNameProperties"/>
   </bean>
 
   <!--
@@ -105,7 +123,7 @@
         <setExchangePattern pattern="InOut"/>
         <recipientList>
           <!-- TODO: NMS-8217: Use a more sophisticated naming convention for this queue -->
-          <simple>queuingservice:Location-${body.location}</simple>
+          <simple>queuingservice:${bean:queueNameFactory.getNameWithLocation(body.location)}</simple>
         </recipientList>
         <!-- Send the DiscoveryResults to the eventWriter -->
         <bean ref="eventWriter" />
@@ -114,7 +132,7 @@
 
     <!-- Default localhost location queue -->
     <route id="localhostLocationDiscoveryRoute">
-      <from uri="queuingservice:Location-localhost?concurrentConsumers=8" />
+      <from uri="queuingservice:{{queueName}}?concurrentConsumers=8" />
       <log loggingLevel="INFO" message="applicationContext-discovery.xml: Executing DiscoveryJob" />
       <log loggingLevel="INFO" message="applicationContext-discovery.xml: ${body}" />
       <bean ref="discoverer" />

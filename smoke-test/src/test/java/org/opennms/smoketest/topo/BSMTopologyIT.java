@@ -61,7 +61,7 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() {
         bsmAdminPage = new BsmAdminPage(this);
-        topologyUiPage = new TopologyUIPage(this);
+        topologyUiPage = new TopologyUIPage(this, getBaseUrl());
     }
 
     @Test

@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.upgrade</artifactId>
-  <name>OpenNMS Core Upgrade Library</name>
+  <name>OpenNMS :: Core :: Upgrade</name>
   <packaging>jar</packaging>
   <dependencies>
     <!-- Upgrade API Dependencies -->
@@ -28,10 +28,6 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.db</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.test-api</groupId>
-      <artifactId>org.opennms.core.test-api.services</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

@@ -36,8 +36,6 @@ public interface MetaTopologyProvider {
 
     Collection<GraphProvider> getGraphProviders();
 
-    String getPreferredLayout(GraphProvider graphProvider);
-
     Collection<VertexRef> getOppositeVertices(VertexRef vertexRef);
 
 }

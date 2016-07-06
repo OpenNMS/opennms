@@ -134,7 +134,7 @@ public class RedisResourceMetadataCache implements SearchableResourceMetadataCac
                 t.exec();
             } else if (o.get().merge(metadata)) {
                 // Update the value stored in the cache if it was changed as a result of the merge
-                jedis.set(key(METADATA_PREFIX, context.getId(), resource.getId()), conf.asByteArray(metadata));
+                jedis.set(key(METADATA_PREFIX, context.getId(), resource.getId()), conf.asByteArray(o.get()));
             }
         }
     }

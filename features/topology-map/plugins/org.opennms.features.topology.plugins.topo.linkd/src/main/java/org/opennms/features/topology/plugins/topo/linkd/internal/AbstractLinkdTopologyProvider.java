@@ -44,7 +44,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
@@ -395,17 +395,22 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
     public abstract void load(String filename) throws MalformedURLException, JAXBException;
 
     @Override
-    public List<Criteria> getDefaultCriteria() {
-        final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
+    public Defaults getDefaults() {
+        return new Defaults()
+                .withSemanticZoomLevel(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL)
+                .withPreferredLayout("D3 Layout") // D3 Layout
+                .withCriteria(() -> {
+                    final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
 
-        if (node != null) {
-            final Vertex defaultVertex = createVertexFor(node, getAddress(node.getId()));
-            if (defaultVertex != null) {
-                return Lists.newArrayList(new LinkdHopCriteria(node.getNodeId(), node.getLabel(), m_nodeDao));
-            }
-        }
+                    if (node != null) {
+                        final Vertex defaultVertex = createVertexFor(node, getAddress(node.getId()));
+                        if (defaultVertex != null) {
+                            return Lists.newArrayList(new LinkdHopCriteria(node.getNodeId(), node.getLabel(), m_nodeDao));
+                        }
+                    }
 
-        return Lists.newArrayList();
+                    return Lists.newArrayList();
+                });
     }
 
     protected Vertex createVertexFor(OnmsNode node, OnmsIpInterface ipInterface) {

@@ -38,6 +38,7 @@ import java.util.List;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
+import org.opennms.netmgt.config.datacollection.MibObjProperty;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.core.io.ByteArrayResource;
@@ -215,6 +216,47 @@ public class DataCollectionConfigFactoryTest {
             ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
+    }
+
+    @Test
+    public void testMibObjProperties() throws Exception {
+        String xml = "<datacollection-config rrdRepository = \"" + m_rrdRepository.getAbsolutePath() + File.separator + "\">" +
+                "<snmp-collection name=\"default\" snmpStorageFlag=\"select\">" +
+                "<rrd step=\"300\">" +
+                "<rra>RRA:AVERAGE:0.5:1:8928</rra>" +
+                "<rra>RRA:AVERAGE:0.5:12:8784</rra>" +
+                "<rra>RRA:MIN:0.5:12:8784</rra>" +
+                "<rra>RRA:MAX:0.5:12:8784</rra>" +
+                "</rrd>" +
+                "<resourceType name=\"bsnAPIfLoadParametersEntry\" label=\"Cisco Wireless AP Resources\" resourceLabel=\"${bsnAPName} (index ${index})\">" +
+                "<persistenceSelectorStrategy class=\"org.opennms.netmgt.collection.support.PersistAllSelectorStrategy\"/>" +
+                "<storageStrategy class=\"org.opennms.netmgt.collection.support.IndexStorageStrategy\"/>" +
+                "</resourceType>" +
+                "<groups>" +
+                "<group name=\"bsnAPIfLoadParametersTable\" ifType=\"all\">" +
+                "<mibObj oid=\".1.3.6.1.4.1.14179.2.2.13.1.4\" instance=\"bsnAPIfLoadParametersEntry\" alias=\"bsnAPIfLoadNumOfClients\" type=\"integer\" />" +
+                "<property instance=\"bsnAPIfLoadParametersEntry\" alias=\"bsnAPName\">" +
+                "<parameter key=\"source-type\" value=\"bsnAPEntry\" />" +
+                "<parameter key=\"source-alias\" value=\"bsnAPName\" />" +
+                "<parameter key=\"index-pattern\" value=\"^(.+)\\.\\d+$\"/>" +
+                "</property>" +
+                "</group>" +
+                "</groups>" +
+                "<systems>" +
+                "<systemDef name=\"Test\">" +
+                "<sysoidMask>.1.3.6.1.4.1.9999.</sysoidMask>" +
+                "<collect>" +
+                "<includeGroup>bsnAPIfLoadParametersTable</includeGroup>" +
+                "</collect>" +
+                "</systemDef>" +
+                "</systems>" +
+                "</snmp-collection>" +
+                "</datacollection-config>";
+        initDataCollectionFactory(xml);
+        List<MibObjProperty> properties = DataCollectionConfigFactory.getInstance().getMibObjProperties("default", ".1.3.6.1.4.1.9999.1.1", null);
+        assertEquals(1,  properties.size());
+        assertEquals("bsnAPName", properties.get(0).getAlias());
+        assertEquals("bsnAPEntry", properties.get(0).getParameterValue("source-type"));
     }
 
     private static void initDataCollectionFactory(String xmlConfig) {

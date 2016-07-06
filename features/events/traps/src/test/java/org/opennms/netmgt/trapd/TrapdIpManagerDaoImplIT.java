@@ -77,7 +77,7 @@ public class TrapdIpManagerDaoImplIT implements InitializingBean {
         m_databasePopulator.populateDatabase();
         m_trapdIpMgr.dataSourceSync();
 
-        OnmsNode n = new OnmsNode("my-new-node");
+        OnmsNode n = new OnmsNode(m_databasePopulator.getMonitoringLocationDao().getDefaultLocation(), "my-new-node");
         n.setForeignSource("junit");
         n.setForeignId("10001");
         OnmsIpInterface iface = new OnmsIpInterface("192.168.1.3", n);

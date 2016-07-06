@@ -566,7 +566,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
         // Add the default criteria if we do not have already a criteria set
         if (getWrappedVertexHopCriteria(m_graphContainer).isEmpty() && noAdditionalFocusCriteria()) {
-            List<Criteria> defaultCriteriaList = m_graphContainer.getBaseTopology().getDefaultCriteria();
+            List<Criteria> defaultCriteriaList = m_graphContainer.getBaseTopology().getDefaults().getCriteria();
             if (defaultCriteriaList != null) {
                 defaultCriteriaList.forEach(eachCriteria -> m_graphContainer.addCriteria(eachCriteria)); // set default
             }

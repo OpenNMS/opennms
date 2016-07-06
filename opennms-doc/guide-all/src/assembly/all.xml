@@ -11,6 +11,7 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <dependencySets>
     <dependencySet>
+      <useStrictFiltering>true</useStrictFiltering>
       <includes><include>*:zip:docs</include></includes>
       <outputDirectory>${artifact.artifactId}</outputDirectory>
       <unpack>true</unpack>

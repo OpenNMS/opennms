@@ -83,7 +83,7 @@ public class GraphMLSearchProvider extends SimpleSearchProvider {
                     .findFirst();
             // If there is a graph provider (which should) select it
             if (first.isPresent() && first.get().getVertex(vertexRef) != null) {
-                graphContainer.selectTopologyProvider(first.get(), false);
+                graphContainer.selectTopologyProvider(first.get());
                 graphContainer.clearCriteria();
             }
         }

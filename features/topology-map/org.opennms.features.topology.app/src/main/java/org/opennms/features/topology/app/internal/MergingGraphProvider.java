@@ -43,6 +43,7 @@ import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
@@ -389,17 +390,12 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		return m_baseGraphProvider.connectVertices(sourceVertextId, targetVertextId);
 	}
 
-    @Override
-    public int getDefaultSzl() {
-        return m_baseGraphProvider.getDefaultSzl();
-    }
+	@Override
+	public Defaults getDefaults() {
+		return new Defaults();
+	}
 
-    @Override
-    public List<Criteria> getDefaultCriteria() {
-        return m_baseGraphProvider.getDefaultCriteria();
-    }
-
-    /**
+	/**
 	 * TODO This will miss edges provided by auxiliary edge providers
 	 */
 	@Override
@@ -706,17 +702,14 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 			return null;
 		}
 
-	    @Override
-	    public int getDefaultSzl() {
-	        return 0;
-	    }
+		@Override
+		public Defaults getDefaults() {
+			return new Defaults()
+					.withSemanticZoomLevel(0)
+					.withCriteria(() -> null);
+		}
 
-        @Override
-        public List<Criteria> getDefaultCriteria() {
-            return null;
-        }
-
-        @Override
+		@Override
 		public void load(String filename) {
 			// Do nothing
 		}

@@ -40,10 +40,10 @@ public class BatchTask extends ContainerTask<BatchTask> {
     /**
      * <p>Constructor for BatchTask.</p>
      *
-     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param coordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
      */
-    public BatchTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
+    public BatchTask(TaskCoordinator coordinator, ContainerTask<?> parent) {
         super(coordinator, parent);
     }
     

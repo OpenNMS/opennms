@@ -46,6 +46,7 @@ import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +82,8 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
     private Thread m_context;
 
     private final SyslogdConfig m_config;
+
+    private DistPollerDao m_distPollerDao = null;
 
     private List<SyslogConnectionHandler> m_syslogConnectionHandlers = Collections.emptyList();
 
@@ -124,6 +127,15 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
             new LinkedBlockingQueue<Runnable>(),
             new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
         );
+    }
+
+    // Getter and setter for DistPollerDao
+    public DistPollerDao getDistPollerDao() {
+        return m_distPollerDao;
+    }
+
+    public void setDistPollerDao(DistPollerDao distPollerDao) {
+        m_distPollerDao = distPollerDao;
     }
 
     public SyslogConnectionHandler getSyslogConnectionHandlers() {
@@ -264,7 +276,7 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
                 // Create a metric for the syslog packet size
                 packetSizeHistogram.update(length);
 
-                SyslogConnection connection = new SyslogConnection(pkt, m_config);
+                SyslogConnection connection = new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId());
 
                 try {
                     for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {

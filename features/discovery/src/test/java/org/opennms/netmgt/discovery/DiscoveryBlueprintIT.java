@@ -48,6 +48,7 @@ import org.apache.camel.util.KeyValueHolder;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
@@ -57,6 +58,7 @@ import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.Specific;
+import org.opennms.netmgt.dao.DistPollerDaoMinion;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -150,7 +152,8 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
         mockDiscoverer.addRoutes(new RouteBuilder() {
             @Override
             public void configure() throws Exception {
-                String from = String.format("queuingservice:Location-%s", LOCATION);
+                JmsQueueNameFactory factory = new JmsQueueNameFactory("Discovery", "Discoverer", LOCATION);
+                String from = String.format("queuingservice:%s", factory.getName());
 
                 from(from)
                 .process(new Processor() {
@@ -223,7 +226,8 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
         mockDiscoverer.addRoutes(new RouteBuilder() {
             @Override
             public void configure() throws Exception {
-                String from = String.format("queuingservice:Location-%s", LOCATION);
+                JmsQueueNameFactory factory = new JmsQueueNameFactory("Discovery", "Discoverer", LOCATION);
+                String from = String.format("queuingservice:%s", factory.getName());
 
                 from(from)
                 .process(new Processor() {

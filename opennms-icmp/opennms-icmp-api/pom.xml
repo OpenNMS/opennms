@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-icmp-api</artifactId>
-  <name>OpenNMS ICMP Pinger - API</name>
+  <name>OpenNMS :: ICMP :: API</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -28,18 +28,9 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-util</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>tracker-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
     

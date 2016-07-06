@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-detector-datagram</artifactId>
-  <name>OpenNMS Provision Datagram Detectors</name>
+  <name>OpenNMS :: Provisioning :: Datagram Detectors</name>
   <url>http://www.opennms.org</url>
   <packaging>bundle</packaging>
   <build>
@@ -75,11 +75,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-mock-simpleserver</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

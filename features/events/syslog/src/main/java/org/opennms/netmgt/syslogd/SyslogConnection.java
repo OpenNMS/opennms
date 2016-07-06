@@ -62,6 +62,7 @@ public class SyslogConnection implements Callable<Callable<?>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogConnection.class);
 
+    private String m_systemId;
     private InetAddress m_sourceAddress;
     private int m_port;
     private ByteBuffer m_bytes;
@@ -74,12 +75,14 @@ public class SyslogConnection implements Callable<Callable<?>> {
     public SyslogConnection() {
     }
 
-    public SyslogConnection(final DatagramPacket packet, final SyslogdConfig config) {
-        this(packet.getAddress(), packet.getPort(), ByteBuffer.wrap(packet.getData(), 0, packet.getLength()), config);
+    public SyslogConnection(final DatagramPacket packet, final SyslogdConfig config, final String systemId) {
+        this(packet.getAddress(), packet.getPort(), ByteBuffer.wrap(packet.getData(), 0, packet.getLength()), config, systemId);
     }
 
-    public SyslogConnection(final InetAddress sourceAddress, final int port, final ByteBuffer bytes, final SyslogdConfig config) {
-        if (sourceAddress == null) {
+    public SyslogConnection(final InetAddress sourceAddress, final int port, final ByteBuffer bytes, final SyslogdConfig config, final String systemId) {
+        if (systemId == null) {
+            throw new IllegalArgumentException("System ID cannot be null");
+        } else if (sourceAddress == null) {
             throw new IllegalArgumentException("Source address cannot be null");
         } else if (bytes == null) {
             throw new IllegalArgumentException("Bytes cannot be null");
@@ -87,10 +90,20 @@ public class SyslogConnection implements Callable<Callable<?>> {
             throw new IllegalArgumentException("Config cannot be null");
         }
 
+        m_systemId = systemId;
         m_sourceAddress = sourceAddress;
         m_port = port;
         m_bytes = bytes;
         m_config = config;
+    }
+
+    @XmlAttribute
+    public String getSystemId() {
+        return m_systemId;
+    }
+
+    public void setSystemId(String systemId) {
+        m_systemId = systemId;
     }
 
     @XmlAttribute
@@ -149,6 +162,7 @@ public class SyslogConnection implements Callable<Callable<?>> {
 
             // TODO: Change to a static call?
             ConvertToEvent re = new ConvertToEvent(
+                m_systemId,
                 m_sourceAddress,
                 m_port,
                 // Decode the packet content as ASCII
