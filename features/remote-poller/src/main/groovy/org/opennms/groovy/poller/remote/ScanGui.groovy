@@ -42,7 +42,7 @@ import javax.swing.SwingConstants
 import javax.swing.SwingUtilities
 
 import org.apache.batik.swing.JSVGCanvas
-import org.opennms.netmgt.config.monitoringLocations.LocationDef
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation
 import org.opennms.netmgt.model.ScanReport
 import org.opennms.netmgt.model.ScanReportPollResult
 import org.opennms.netmgt.poller.remote.PollerBackEnd
@@ -141,8 +141,8 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
     public void afterPropertiesSet() {
         System.err.println("afterPropertiesSet()")
         Assert.notNull(m_backEnd)
-        Collection<LocationDef> monitoringLocations = m_backEnd.getMonitoringLocations()
-        for (final LocationDef d : monitoringLocations) {
+        Collection<OnmsMonitoringLocation> monitoringLocations = m_backEnd.getMonitoringLocations()
+        for (final OnmsMonitoringLocation d : monitoringLocations) {
             def name = d.getLocationName()
             m_locations.add(name)
             def apps = m_backEnd.getApplicationsForLocation(name)

@@ -33,13 +33,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -70,17 +70,17 @@ public interface ProvisionService {
 
     /**
      * Lookup a monitoring location in the database, creating it if necessary. This
-     * method looks up the {@link LocationDef} object with the ID 'locationId' in the
-     * database and returns it. If there is no {@link LocationDef} with that name then
+     * method looks up the {@link OnmsMonitoringLocation} object with the ID 'locationId' in the
+     * database and returns it. If there is no {@link OnmsMonitoringLocation} with that name then
      * one is created using the name provided, saved in the database, and returned.
      *
      * @param locationId
-     *            The ID of the {@link LocationDef} that is needed
-     * @return a new {@link LocationDef} that will be saved to the database when the
+     *            The ID of the {@link OnmsMonitoringLocation} that is needed
+     * @return a new {@link OnmsMonitoringLocation} that will be saved to the database when the
      *         transaction is committed.
      */
     @Transactional
-    LocationDef createLocationIfNecessary(String locationId);
+    OnmsMonitoringLocation createLocationIfNecessary(String locationId);
 
     /**
      * Update the database entry for the given node. The node supplied is used

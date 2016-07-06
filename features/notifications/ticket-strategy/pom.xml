@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.notifications</groupId>
   <artifactId>org.opennms.features.notifications.ticket-strategy</artifactId>
-  <name>OpenNMS Features Notification Ticket Strategy</name>
+  <name>OpenNMS :: Features :: Notifications :: Ticket</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms.core</groupId>

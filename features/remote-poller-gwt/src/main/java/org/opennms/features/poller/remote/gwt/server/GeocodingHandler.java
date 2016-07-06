@@ -36,7 +36,7 @@ import java.util.Date;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.GeocodingFinishedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.GeocodingUpdatingRemoteEvent;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,10 +73,10 @@ class GeocodingHandler implements LocationDefHandler {
 	/**
 	 * <p>handle</p>
 	 *
-	 * @param def a {@link LocationDef} object.
+	 * @param def a {@link OnmsMonitoringLocation} object.
 	 */
         @Override
-	public void handle(final LocationDef def) {
+	public void handle(final OnmsMonitoringLocation def) {
 		final GWTLatLng latLng = m_locationDataService.getLatLng(def, false);
 		if (latLng != null) {
 			def.setLatitude(latLng.getLatitude().floatValue());

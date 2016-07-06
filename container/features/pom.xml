@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.opennms</groupId>
-    <artifactId>container</artifactId>
+    <artifactId>org.opennms.container</artifactId>
     <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
   <artifactId>opennms</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS OSGi Container - OpenNMS Features</name>
+  <name>OpenNMS :: OSGi Container :: Karaf Features</name>
   <build>
     <plugins>
       <plugin>
@@ -45,14 +45,14 @@
             <!-- <descriptor>mvn:org.apache.karaf.assemblies.features/enterprise/${karafVersion}/xml/features</descriptor> -->
 
             <!-- OpenNMS-modified Karaf base features -->
-            <!-- <repository>mvn:org.opennms.container/karaf/${project.version}/xml/features</repository> -->
+            <!-- <repository>mvn:org.opennms.container/org.opennms.container.karaf/${project.version}/xml/features</repository> -->
 
 
             <!-- OpenNMS features bundle -->
             <repository>file:${project.build.outputDirectory}/features.xml</repository>
 
             <!-- JAAS Login Module -->
-            <repository>mvn:org.opennms.container/jaas-login-module/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.container/org.opennms.container.jaas-login-module/${project.version}/xml/features</repository>
 
             <!-- JMX Config Generator features -->
             <repository>mvn:org.opennms.features/jmxconfiggenerator/${project.version}/xml/features</repository>
@@ -330,14 +330,14 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.container</groupId>
-      <artifactId>karaf</artifactId>
+      <artifactId>org.opennms.container.karaf</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
-      <artifactId>jaas-login-module</artifactId>
+      <artifactId>org.opennms.container.jaas-login-module</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

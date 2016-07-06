@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,37 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.queue;
+package org.opennms.netmgt.model;
 
-/**
- * <p>
- * The root of all exceptions dealing with queues that implement the
- * {@link FifoQueue FifoQueue} interface. This exception is the general purpose
- * exception that is thrown when a queue error occurs.
- * </p>
- *
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- */
-public class FifoQueueException extends RuntimeException {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4596596920225763462L;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-    /**
-     * Constructs a default instance of the exception with no message.
-     */
-    public FifoQueueException() {
-        super();
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+
+public class MonitoringLocationIdAdapter extends XmlAdapter<String, OnmsMonitoringLocation> {
+
+    @Override
+    public String marshal(final OnmsMonitoringLocation v) throws Exception {
+        return v == null? null : v.getLocationName();
     }
 
-    /**
-     * Constructs a new instance of the exception with the specific message.
-     *
-     * @param why
-     *            The message associated with the exception
-     */
-    public FifoQueueException(String why) {
-        super(why);
+    @Override
+    public OnmsMonitoringLocation unmarshal(final String v) throws Exception {
+        if (v == null) return null;
+        final OnmsMonitoringLocation location = new OnmsMonitoringLocation(v, v);
+        return location;
     }
+
 }

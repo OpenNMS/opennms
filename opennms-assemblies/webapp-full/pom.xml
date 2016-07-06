@@ -50,7 +50,7 @@
             </overlay>
             <overlay>
               <groupId>org.opennms.features.ncs</groupId>
-              <artifactId>ncs-alarm-gui</artifactId>
+              <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
               <excludes>
                 <exclude>META-INF/MANIFEST.MF</exclude>
                 <exclude>WEB-INF/web.xml</exclude>
@@ -130,7 +130,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-alarm-gui</artifactId>
+      <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
       <type>war</type>
       <version>${project.version}</version>
       <scope>runtime</scope>

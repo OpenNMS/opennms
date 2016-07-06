@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.ticketing</groupId>
   <artifactId>org.opennms.features.ticketing.drools-integration</artifactId>
-  <name>OpenNMS Features Drools Integration for Ticketing</name>
+  <name>OpenNMS :: Features :: Ticketing :: Drools Integration</name>
   <url>http://www.opennms.org/</url>
   <dependencies>
     <dependency>
@@ -42,11 +42,6 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.services</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

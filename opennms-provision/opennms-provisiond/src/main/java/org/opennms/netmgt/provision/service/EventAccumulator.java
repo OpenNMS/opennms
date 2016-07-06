@@ -61,11 +61,19 @@ final class EventAccumulator implements EventForwarder {
         }
     }
 
+    /**
+     * Thread-safe and idempotent.
+     */
     public void flush() {
         int i = 0;
-        while(!m_events.isEmpty()) {
-            m_eventForwarder.sendNow(m_events.remove());
-            i++;
+        while (!m_events.isEmpty()) {
+            Event event = m_events.poll();
+            if (event != null) {
+                m_eventForwarder.sendNow(event);
+                i++;
+            } else {
+                break;
+            }
         }
         LOG.debug("flush(): sent {} events: {}", i, m_events);
     }

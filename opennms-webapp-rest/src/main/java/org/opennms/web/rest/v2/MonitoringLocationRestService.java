@@ -34,22 +34,22 @@ import javax.ws.rs.Path;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.web.rest.v1.support.OnmsMonitoringLocationDefinitionList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Basic Web Service using REST for {@link LocationDef} entity
+ * Basic Web Service using REST for {@link OnmsMonitoringLocation} entity
  *
  * @author Seth
  */
 @Component
 @Path("monitoringLocations")
 @Transactional
-public class MonitoringLocationRestService extends AbstractDaoRestService<LocationDef,String> {
+public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMonitoringLocation,String> {
 
 	@Autowired
 	private MonitoringLocationDao m_dao;
@@ -58,12 +58,12 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<Locati
 		return m_dao;
 	}
 
-	protected Class<LocationDef> getDaoClass() {
-		return LocationDef.class;
+	protected Class<OnmsMonitoringLocation> getDaoClass() {
+		return OnmsMonitoringLocation.class;
 	}
 
 	protected CriteriaBuilder getCriteriaBuilder() {
-		final CriteriaBuilder builder = new CriteriaBuilder(LocationDef.class);
+		final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoringLocation.class);
 
 		// Order by location name by default
 		builder.orderBy("locationName").asc();
@@ -72,7 +72,7 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<Locati
 	}
 
 	@Override
-	protected JaxbListWrapper<LocationDef> createListWrapper(Collection<LocationDef> list) {
+	protected JaxbListWrapper<OnmsMonitoringLocation> createListWrapper(Collection<OnmsMonitoringLocation> list) {
 		return new OnmsMonitoringLocationDefinitionList(list);
 	}
 }

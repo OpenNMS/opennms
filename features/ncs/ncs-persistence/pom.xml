@@ -6,9 +6,9 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.ncs</groupId>
-  <artifactId>ncs-persistence</artifactId>
+  <artifactId>org.opennms.features.ncs.ncs-persistence</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features NCS Persistence</name>
+  <name>OpenNMS :: Features :: NCS :: Persistence</name>
   <properties>
     <skipITs>true</skipITs>
   </properties>
@@ -48,7 +48,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-model</artifactId>
+      <artifactId>org.opennms.features.ncs.ncs-model</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -127,7 +127,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-test</artifactId>
+      <artifactId>org.opennms.features.ncs.ncs-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

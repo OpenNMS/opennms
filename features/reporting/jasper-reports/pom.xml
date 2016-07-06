@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.reporting</groupId>
   <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
-  <name>OpenNMS Features Reporting Jasper</name>
+  <name>OpenNMS :: Features :: Reporting :: Jasper</name>
   <url>http://www.opennms.org/</url>
   <packaging>bundle</packaging>
   <build>
@@ -59,11 +59,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.tests</groupId>

@@ -8,7 +8,7 @@
 </parent>
   <!-- the name must alphabetically come before jasperreports jar -->
   <artifactId>jasper-extensions</artifactId>
-  <name>OpenNMS Integrations Jasper Extensions</name>
+  <name>OpenNMS :: Integrations :: Jasper Extensions</name>
   <url>http://maven.apache.org</url>
   <packaging>bundle</packaging>
   <build>

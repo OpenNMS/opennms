@@ -43,8 +43,9 @@ public class InsertOperation extends SaveOrUpdateOperation {
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      */
     public InsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
-		super(foreignSource, foreignId, nodeLabel, building, city, provisionService);
-	}
+        // TODO: HZN-613: Fill in location value
+        super(null, foreignSource, foreignId, nodeLabel, building, city, null, provisionService, Boolean.TRUE.toString());
+    }
 
 	/**
 	 * <p>toString</p>
@@ -53,7 +54,7 @@ public class InsertOperation extends SaveOrUpdateOperation {
 	 */
     @Override
 	public String toString() {
-        return "INSERT: Node: "+getNode().getId()+": "+getNode().getLabel();
+        return "INSERT: Node: "+(getNode().getId() == null ? "[no ID]" : getNode().getId())+": "+getNode().getLabel();
     }
 
     /** {@inheritDoc} */

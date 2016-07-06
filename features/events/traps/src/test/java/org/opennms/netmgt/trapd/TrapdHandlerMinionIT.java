@@ -39,6 +39,7 @@ import org.apache.camel.util.KeyValueHolder;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
@@ -95,7 +96,8 @@ public class TrapdHandlerMinionIT extends CamelBlueprintTest {
 
 	@Test
 	public void testTrapd() throws Exception {
-		MockEndpoint broadcastTrap = getMockEndpoint("mock:queuingservice:broadcastTrap", false);
+		JmsQueueNameFactory factory = new JmsQueueNameFactory("Trapd", "BroadcastTrap");
+		MockEndpoint broadcastTrap = getMockEndpoint("mock:queuingservice:" + factory.getName(), false);
 		broadcastTrap.setExpectedMessageCount(1);
 
 		PDU snmp4JV2cTrapPdu = new PDU();

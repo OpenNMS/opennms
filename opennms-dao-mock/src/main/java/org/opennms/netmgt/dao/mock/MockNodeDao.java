@@ -106,6 +106,11 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
             getCategoryDao().saveOrUpdate(cat);
         }
 
+        /* not sure if this is necessary */
+        /*
+        getMonitoringLocationDao().saveOrUpdate(node.getLocation());
+        */
+
         /** delete any interfaces that were removed compared to the database **/
         final OnmsNode dbNode = node.getId() == null ? null : get(node.getId());
         if (dbNode != null) {
