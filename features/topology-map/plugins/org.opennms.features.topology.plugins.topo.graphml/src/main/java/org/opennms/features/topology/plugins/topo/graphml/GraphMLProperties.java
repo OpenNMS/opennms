@@ -49,4 +49,5 @@ public interface GraphMLProperties {
     String FOCUS_IDS = "focus-ids";
     String SEMANTIC_ZOOM_LEVEL = "semantic-zoom-level";
     String VERTEX_STATUS_PROVIDER = "vertex-status-provider";
+    String LEVEL = "level";
 }
