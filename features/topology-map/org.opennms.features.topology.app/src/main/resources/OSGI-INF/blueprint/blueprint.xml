@@ -17,11 +17,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         </cm:default-properties>
     </cm:property-placeholder>
 
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
         <argument ref="menuManager"/>
         <argument ref="historyManager"/>
         <argument ref="veGraphContainer" />
         <argument ref="iconRepoManager"/>
+        <argument ref="transactionOperations"/>
         <property name="widgetManager" ref="widgetManager"/>
         <property name="headerProvider" ref="onmsHeaderProvider" />
         <property name="showHeader" value="${showHeader}" />
