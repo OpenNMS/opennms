@@ -59,8 +59,9 @@ public class DetectorCommand extends OsgiCommandSupport {
     @Override
     protected Object doExecute() throws Exception {
 
-        System.out.println("Trying to get detector with service name:  "
-                + serviceName + "  at  " + m_location);
+        System.out.printf("Trying to get '%s' detector on  '%s' ",
+                          serviceName,
+                          m_host);
 
         final CompletableFuture<Boolean> future = locationAwareDetectorClient.detect().atLocation(m_location).atAddress(m_host).withAttributes(attributes).byService(serviceName).execute();
         while (true) {

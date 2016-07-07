@@ -9,7 +9,13 @@
             <action class="org.opennms.netmgt.provision.detector.command.DetectorCommand">
               <property name="locationAwareDetectorClient" ref="locationAwareDetectorClient"/>
             </action>
+            <completers>
+                <ref component-id="serviceNameCompleter"/>
+                <null/>
+            </completers>
         </command>
     </command-bundle>
 
+    <bean id="serviceNameCompleter" class="org.opennms.netmgt.provision.detector.command.ServiceNameCompleter"/>
+    
 </blueprint>

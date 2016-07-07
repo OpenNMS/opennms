@@ -87,7 +87,7 @@ public class DetectorRequestExecutorImpl implements DetectorRequestExecutor {
                 break;
             } catch (TimeoutException | InterruptedException
                     | ExecutionException e) {
-                // pass
+                future.completeExceptionally(e);
             }
             System.out.print(".");
             System.out.flush();

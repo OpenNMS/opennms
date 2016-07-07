@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.provision.detector.common;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ServiceLoader;
 
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -55,6 +57,20 @@ public class ServiceDetectorFactoryProvider {
             }
         }
         return null;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public List<String> getAllDetectorNames() {
+
+        Iterator<ServiceDetectorFactory> detectorFactory = loader.iterator();
+        List<String>  detectorNames = new ArrayList<String>();
+        while (detectorFactory.hasNext()) {
+            ServiceDetectorFactory serviceDetectorFactory = detectorFactory.next();
+            ServiceDetector detector = serviceDetectorFactory.createDetector();
+            detectorNames.add(detector.getServiceName());
+            
+        }
+        return detectorNames;
     }
 
 }

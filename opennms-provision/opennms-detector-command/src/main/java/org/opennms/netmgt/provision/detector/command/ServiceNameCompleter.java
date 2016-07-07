@@ -31,13 +31,18 @@ package org.opennms.netmgt.provision.detector.command;
 import java.util.List;
 
 import org.apache.karaf.shell.console.Completer;
+import org.apache.karaf.shell.console.completer.StringsCompleter;
+import org.opennms.netmgt.provision.detector.common.ServiceDetectorFactoryProvider;
 
 public class ServiceNameCompleter implements Completer {
 
     @Override
     public int complete(String buffer, int cursor, List<String> candidates) {
-        // TODO Auto-generated method stub
-        return 0;
+        StringsCompleter serviceNames = new StringsCompleter();
+        ServiceDetectorFactoryProvider factory = new ServiceDetectorFactoryProvider();
+        List<String> detectorNames = factory.getAllDetectorNames();
+        serviceNames.getStrings().addAll(detectorNames);
+        return serviceNames.complete(buffer, cursor, candidates);
     }
 
 }
