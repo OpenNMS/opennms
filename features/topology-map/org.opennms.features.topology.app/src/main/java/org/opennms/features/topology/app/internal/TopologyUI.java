@@ -115,6 +115,8 @@ import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.RequestHandler;
+import com.vaadin.server.SessionDestroyListener;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
 import com.vaadin.server.VaadinServletRequest;
@@ -529,6 +531,9 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
 	@Override
     protected void init(final VaadinRequest request) {
+        // Register a cleanup
+        request.getService().addSessionDestroyListener((SessionDestroyListener) event -> m_widgetManager.removeUpdateListener(TopologyUI.this));
+
         try {
             m_headerHtml = getHeader(((VaadinServletRequest) request).getHttpServletRequest());
         } catch (final Exception e) {
@@ -822,24 +827,23 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
      * @param widgetManager The WidgetManager.
      */
     private void updateWidgetView(WidgetManager widgetManager) {
-        if (m_layout != null) {
-            synchronized (m_layout) {
-                m_layout.removeAllComponents();
-                if(widgetManager.widgetCount() == 0) {
-                    m_layout.addComponent(m_mapLayout);
-                } else {
-                    VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
-                    bottomLayoutBar.setFirstComponent(m_mapLayout);
-                    // Split the screen 70% top, 30% bottom
-                    bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
-                    bottomLayoutBar.setSizeFull();
-                    bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
-                    m_layout.addComponent(bottomLayoutBar);
-                    updateTabVisibility();
-                }
-                m_layout.markAsDirty();
+        synchronized (m_layout) {
+            m_layout.removeAllComponents();
+            if(widgetManager.widgetCount() == 0) {
+                m_layout.addComponent(m_mapLayout);
+            } else {
+                VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
+                bottomLayoutBar.setFirstComponent(m_mapLayout);
+                // Split the screen 70% top, 30% bottom
+                bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
+                bottomLayoutBar.setSizeFull();
+                bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
+                m_layout.addComponent(bottomLayoutBar);
+                updateTabVisibility();
             }
+            m_layout.markAsDirty();
         }
+        m_layout.markAsDirty();
     }
 
     /**
@@ -976,19 +980,14 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     }
 
     public void setWidgetManager(WidgetManager widgetManager) {
-        if(m_widgetManager != null) {
-            m_widgetManager.removeUpdateListener(this);
-        }
         m_widgetManager = widgetManager;
         m_widgetManager.addUpdateListener(this);
     }
 
     @Override
     public void widgetListUpdated(WidgetManager widgetManager) {
-        if(!isClosing()) {
-            if(widgetManager == m_widgetManager) {
-                updateWidgetView(widgetManager);
-            }
+        if(isAttached()) {
+            updateWidgetView(widgetManager);
         }
     }
 
