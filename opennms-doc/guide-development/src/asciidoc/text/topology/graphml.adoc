@@ -100,6 +100,7 @@ ____
                                                                                 Can only be used in combination with `foreignSource`. Please note that this attribute will not be
                                                                                 used when the attribute `nodeID` is set.
 | `tooltipText`             | no       | Node, Edge   | `string`  |           | Defines a custom tooltip. If not defined, the `id` attribute is used instead.
+| `level`                   | no       | Node         | `int`     | `0`       | Sets the level of the Vertex which is used by certain layout algorithms i.e. `Hierarchical Layout` and `Grid Layout`.
 |=======================
 
 [[gd-topology-graphml-focus-strategy]]
