@@ -166,6 +166,7 @@ class TrapQueueProcessor implements Callable<Void>, InitializingBean {
     public Void call() {
         try {
             processTrapEvent(((EventCreator)m_trapNotification.getTrapProcessor()).getEvent());
+            LOG.info("-----------------"+((EventCreator)m_trapNotification.getTrapProcessor()).getEvent().getInterfaceAddress());
         } catch (IllegalArgumentException e) {
             LOG.info(e.getMessage());
         } catch (Throwable e) {
