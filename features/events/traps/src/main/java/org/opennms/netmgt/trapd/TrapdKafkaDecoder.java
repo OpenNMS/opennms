@@ -144,6 +144,7 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
     public TrapInformation parseV1Information(JsonNode result){
     	
     	String trapAddress = result.findValue("trapAddress").asText();
+    	String agentAddress=result.findValue("agentAddress").asText();
 
     	JsonNode trapProcessorRoot = result.findValue("trapProcessor");
     	        	
@@ -165,6 +166,7 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
 		
 		// Setting VarBind 
 		PDUv1 snmp4JV1cTrapPdu = new PDUv1();
+		snmp4JV1cTrapPdu.setAgentAddress(new IpAddress(trapAddress));
 		
 		JsonNode varBindRoot = trapProcessorRoot.findValue("varBinds");
 		LOG.debug("varBindRoot is : "+varBindRoot);
@@ -214,7 +216,7 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
 		snmp4JV1cTrapPdu.setType(PDU.V1TRAP);
 		
 		Snmp4JTrapNotifier.Snmp4JV1TrapInformation snmp4JV1cTrap = new Snmp4JTrapNotifier.Snmp4JV1TrapInformation(
-		InetAddressUtils.getInetAddress(trapAddress), trapProcessorRoot.findValue("community").asText(),
+		InetAddressUtils.getInetAddress(agentAddress), trapProcessorRoot.findValue("community").asText(),
 		snmp4JV1cTrapPdu, trapProcessor);
 		
 		return snmp4JV1cTrap;

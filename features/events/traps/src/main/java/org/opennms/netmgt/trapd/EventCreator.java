@@ -96,7 +96,6 @@ public class EventCreator implements TrapProcessor {
     /** {@inheritDoc} */
     @Override
     public void setAgentAddress(InetAddress agentAddress) {
-    	m_eventBuilder.setInterface(agentAddress);
         m_eventBuilder.setHost(InetAddressUtils.toIpAddrString(agentAddress));
     }
 
@@ -113,6 +112,7 @@ public class EventCreator implements TrapProcessor {
     @Override
     public void setTrapAddress(InetAddress trapAddress) {
         m_eventBuilder.setSnmpHost(str(trapAddress));
+        m_eventBuilder.setInterface(trapAddress);
         long nodeId = m_trapdIpMgr.getNodeId(str(trapAddress));
         if (nodeId != -1) {
             m_eventBuilder.setNodeid(nodeId);
