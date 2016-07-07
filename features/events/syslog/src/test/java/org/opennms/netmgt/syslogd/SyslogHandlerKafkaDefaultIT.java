@@ -35,7 +35,9 @@ import java.util.Properties;
 import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
 
+import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.CamelContext;
+import org.apache.camel.Component;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
@@ -49,6 +51,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -72,7 +75,7 @@ public class SyslogHandlerKafkaDefaultIT extends CamelBlueprintTest {
 		System.setProperty("org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString());
 		System.setProperty("de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString());
 
-		zkTestServer = new TestingServer(2182);
+		zkTestServer = new TestingServer(2181);
 		Properties properties = new Properties();
 		properties.put("port", "9092");
 		properties.put("host.name", "localhost");
@@ -92,13 +95,28 @@ public class SyslogHandlerKafkaDefaultIT extends CamelBlueprintTest {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		// Register any mock OSGi services here
+		// Create a mock SyslogdConfig
+		SyslogConfigBean config = new SyslogConfigBean();
+		config.setSyslogPort(10514);
+		config.setNewSuspectOnMessage(false);
+		config.setParser("org.opennms.netmgt.syslogd.CustomSyslogParser");
+		config.setForwardingRegexp("^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)");
+		config.setMatchingGroupHost(4);
+		config.setMatchingGroupMessage(7);
+		config.setDiscardUei("DISCARD-MATCHING-MESSAGES");
+
+		services.put(SyslogdConfig.class.getName(), new KeyValueHolder<Object, Dictionary>(config, new Properties()));
+		Properties props = new Properties();
+		props.setProperty("alias", "onms.broker");
+		services.put(Component.class.getName(), new KeyValueHolder<Object, Dictionary>(
+				ActiveMQComponent.activeMQComponent("vm://localhost?create=false"), props));
+
 	}
 
 	// The location of our Blueprint XML files to be used for testing
 	@Override
 	protected String getBlueprintDescriptor() {
-		return "file:blueprint-syslog-handler-kafka-default.xml";
+		return "file:blueprint-syslog-handler-kafka-default.xml,blueprint-empty-camel-context.xml";
 	}
 
 	@Test
