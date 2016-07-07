@@ -23,7 +23,7 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <!--  don't export anything this is implementation only -->
             <Export-Package></Export-Package>
-            <!-- <Private-Package>org.opennms.netmgt.snmp.snmp4j.*</Private-Package> -->
+            <Private-Package>org.opennms.netmgt.snmp.snmp4j.*</Private-Package>
             <Import-Package>
               org.apache.commons.lang;resolution:=optional,
               org.apache.log4j;resolution:=optional,
