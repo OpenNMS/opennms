@@ -36,6 +36,7 @@ import java.util.Properties;
 import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
 
+import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Component;
 import org.apache.camel.Exchange;
@@ -138,7 +139,7 @@ public class SyslogHandlerKafkaDefaultIT extends CamelBlueprintTest {
 	// The location of our Blueprint XML files to be used for testing
 	@Override
 	protected String getBlueprintDescriptor() {
-		return "file:blueprint-syslog-handler-kafka-default.xml";
+		return "file:blueprint-syslog-handler-kafka-default.xml,blueprint-empty-camel-context.xml";
 	}
 
 	@Test
