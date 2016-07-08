@@ -33,6 +33,8 @@ import static java.math.MathContext.DECIMAL64;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -73,6 +75,13 @@ public class DiscoveryJob implements Serializable {
         Preconditions.checkState(m_ranges.stream().allMatch(range -> range.getForeignSource() == null || m_foreignSource.equals(range.getForeignSource())));
         // Verify that all ranges in this job have the same location
         Preconditions.checkState(m_ranges.stream().allMatch(range -> range.getLocation() == null || m_location.equals(range.getLocation())));
+    }
+
+    /**
+     * For testing.
+     */
+    public Collection<IPPollRange> getRanges() {
+        return Collections.unmodifiableCollection(m_ranges);
     }
 
     public Iterable<IPPollAddress> getAddresses() {

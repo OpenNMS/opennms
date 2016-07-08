@@ -271,6 +271,10 @@ public final class IPAddrRange implements Iterable<InetAddress>, Serializable {
         }
     }
 
+    public byte[] getBegin() {
+        return m_begin;
+    }
+
     public byte[] getEnd() {
         return m_end;
     }
