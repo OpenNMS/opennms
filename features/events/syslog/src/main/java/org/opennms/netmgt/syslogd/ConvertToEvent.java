@@ -33,6 +33,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -174,7 +175,12 @@ public class ConvertToEvent {
         if (hostAddress != null && hostAddress.length() > 0) {
             // Set nodeId
             // TODO: HZN-816: This call should find nodes based on location/address tuple
-            long nodeId = SyslogdIPMgrJDBCImpl.getInstance().getNodeId(hostAddress);
+        	try {
+				SyslogdIPMgrJDBCImpl.getInstance().dataSourceSync();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+			}
+        	long nodeId = SyslogdIPMgrJDBCImpl.getInstance().getNodeId(hostAddress);
             if (nodeId != -1) {
                 bldr.setNodeid(nodeId);
             }
