@@ -166,7 +166,6 @@ class TrapQueueProcessor implements Callable<Void>, InitializingBean {
     public Void call() {
         try {
             processTrapEvent(((EventCreator)m_trapNotification.getTrapProcessor()).getEvent());
-            LOG.info("-----------------"+((EventCreator)m_trapNotification.getTrapProcessor()).getEvent().getInterfaceAddress());
         } catch (IllegalArgumentException e) {
             LOG.info(e.getMessage());
         } catch (Throwable e) {
@@ -181,7 +180,7 @@ class TrapQueueProcessor implements Callable<Void>, InitializingBean {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    private void processTrapEvent(final Event event) {
+    public void processTrapEvent(final Event event) {
     	final InetAddress trapInterface = event.getInterfaceAddress();
 
     	final org.opennms.netmgt.xml.eventconf.Event econf = m_eventConfDao.findByEvent(event);
@@ -190,7 +189,7 @@ class TrapQueueProcessor implements Callable<Void>, InitializingBean {
         } else {
             event.setUei(econf.getUei());
         }
-
+        
         if (econf != null) {
             final Snmp snmp = econf.getSnmp();
             if (snmp != null) {
@@ -215,6 +214,7 @@ class TrapQueueProcessor implements Callable<Void>, InitializingBean {
 
         // send the event to eventd
         m_eventForwarder.sendNow(event);
+        sendNewSuspectEvent(InetAddressUtils.str(trapInterface));
 
         LOG.debug("Trap successfully converted and sent to eventd with UEI {}", event.getUei());
 

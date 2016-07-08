@@ -116,15 +116,6 @@ public class EventCreator implements TrapProcessor {
     	String ipAddress=str(trapAddress);
         m_eventBuilder.setSnmpHost(ipAddress);
         m_eventBuilder.setInterface(trapAddress);
-        m_eventBuilder.setService("SNMP");
-        OnmsIpInterface iface;
-        final OnmsNode node = new OnmsNode("foo");
-        node.setId(1);
-        node.setForeignSource("foo");
-        node.setForeignId("bar");
-        node.setSysObjectId(".1.2.3.4.5");
-        iface=new OnmsIpInterface(trapAddress, node);
-		m_eventBuilder.setIpInterface(iface);
         long nodeId = m_trapdIpMgr.getNodeId(ipAddress);
         if (nodeId != -1) {
             m_eventBuilder.setNodeid(nodeId);
