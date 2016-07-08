@@ -33,6 +33,9 @@
                 <groupId>org.opennms.maven.plugins</groupId>
                 <artifactId>features-maven-plugin</artifactId>
                 <configuration>
+                    <features>
+                        <feature>hibernate36</feature> <!-- Required by opennms-web-api -->
+                    </features>
                     <bundles>
                         <bundle>mvn:org.opennms.features/datachoices/${project.version}</bundle>
                         <bundle>wrap:mvn:com.google.guava/guava/${guavaVersion}</bundle>
