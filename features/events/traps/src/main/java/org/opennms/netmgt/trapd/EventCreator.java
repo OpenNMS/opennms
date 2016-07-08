@@ -34,6 +34,8 @@ import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.snmp.SyntaxToEvent;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -111,9 +113,18 @@ public class EventCreator implements TrapProcessor {
     /** {@inheritDoc} */
     @Override
     public void setTrapAddress(InetAddress trapAddress) {
-    	String ipAddress=str(trapAddress).trim();
+    	String ipAddress=str(trapAddress);
         m_eventBuilder.setSnmpHost(ipAddress);
-        m_eventBuilder.setInterface(InetAddressUtils.addr(ipAddress));
+        m_eventBuilder.setInterface(trapAddress);
+        m_eventBuilder.setService("SNMP");
+        OnmsIpInterface iface;
+        final OnmsNode node = new OnmsNode("foo");
+        node.setId(1);
+        node.setForeignSource("foo");
+        node.setForeignId("bar");
+        node.setSysObjectId(".1.2.3.4.5");
+        iface=new OnmsIpInterface(trapAddress, node);
+		m_eventBuilder.setIpInterface(iface);
         long nodeId = m_trapdIpMgr.getNodeId(ipAddress);
         if (nodeId != -1) {
             m_eventBuilder.setNodeid(nodeId);
