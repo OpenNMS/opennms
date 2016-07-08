@@ -118,15 +118,27 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	String ipAddr = request.getParameter("specificipaddress");
         	String timeout = request.getParameter("specifictimeout");
         	String retries = request.getParameter("specificretries");
+        	String foreignSource = request.getParameter("specificforeignsource");
+        	String location = request.getParameter("specificlocation");
         	Specific newSpecific = new Specific();
         	newSpecific.setContent(ipAddr);
-        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(config.getTimeout())){
+
+        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
         		newSpecific.setTimeout(WebSecurityUtils.safeParseLong(timeout));
         	}
 
-        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(config.getRetries())){
+        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries()))){
         		newSpecific.setRetries(WebSecurityUtils.safeParseInt(retries));
         	}
+
+        	if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource())){
+        		newSpecific.setForeignSource(foreignSource);
+        	}
+
+        	if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation())){
+        		newSpecific.setLocation(location);
+        	}
+
         	config.addSpecific(newSpecific);
         }
 
@@ -148,15 +160,27 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	String ipAddrEnd = request.getParameter("irend");
         	String timeout = request.getParameter("irtimeout");
         	String retries = request.getParameter("irretries");
+        	String foreignSource = request.getParameter("irforeignsource");
+        	String location = request.getParameter("irlocation");
         	IncludeRange newIR = new IncludeRange();
         	newIR.setBegin(ipAddrBase);
         	newIR.setEnd(ipAddrEnd);
-        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(config.getTimeout())){
+        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
         		newIR.setTimeout(WebSecurityUtils.safeParseLong(timeout));
         	}
-        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(config.getRetries())){
+
+        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries()))){
         		newIR.setRetries(WebSecurityUtils.safeParseInt(retries));
         	}
+
+        	if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource())){
+        		newIR.setForeignSource(foreignSource);
+        	}
+
+        	if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation())){
+        		newIR.setLocation(location);
+        	}
+
         	config.addIncludeRange(newIR);
         }
 
@@ -176,15 +200,27 @@ public class ActionDiscoveryServlet extends HttpServlet {
             String url = request.getParameter("iuurl");
             String timeout = request.getParameter("iutimeout");
             String retries = request.getParameter("iuretries");
+            String foreignSource = request.getParameter("iuforeignsource");
+            String location = request.getParameter("iulocation");
 
             IncludeUrl iu = new IncludeUrl();
             iu.setContent(url);
-            if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(config.getTimeout())){
+            if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
                 iu.setTimeout(WebSecurityUtils.safeParseLong(timeout));
             }
-            if(retries!=null && !"".equals(retries.trim()) && !retries.equals(config.getRetries())){
+
+            if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries()))){
                 iu.setRetries(WebSecurityUtils.safeParseInt(retries));
             }
+
+            if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource())){
+                iu.setForeignSource(foreignSource);
+            }
+
+            if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation())){
+                iu.setLocation(location);
+            }
+
             config.addIncludeUrl(iu);
         }
 
