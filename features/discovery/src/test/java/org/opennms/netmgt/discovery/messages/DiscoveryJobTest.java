@@ -44,7 +44,7 @@ public class DiscoveryJobTest {
         final List<IPPollRange> m_ranges = new ArrayList<IPPollRange>();
         // Make 3 ranges of 5 addresses each
         for (int i = 0; i < 3; i++) {
-            IPPollRange ipPollRange = new IPPollRange("127.0.1." + ((i * 5) + 1), "127.0.1." + ((i * 5) + 5), 50, 2);
+            IPPollRange ipPollRange = new IPPollRange(null, null, "127.0.1." + ((i * 5) + 1), "127.0.1." + ((i * 5) + 5), 50, 2);
             m_ranges.add(ipPollRange);
         }
         DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location", Double.MAX_VALUE);
@@ -68,7 +68,7 @@ public class DiscoveryJobTest {
         //  ((2^31 - 1) / 3 * 2)   *    1    *    1    *     1.5
 
         // Start the range at 0.0.0.1 so that we don't count zero as a value
-        IPPollRange ipPollRange = new IPPollRange("0.0.0.1", "85.85.85.84", 1, 0);
+        IPPollRange ipPollRange = new IPPollRange(null, null, "0.0.0.1", "85.85.85.84", 1, 0);
         m_ranges.add(ipPollRange);
         DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location", Double.MAX_VALUE);
         assertEquals(Integer.MAX_VALUE - 1, discoveryJob.calculateTaskTimeout());
@@ -79,7 +79,7 @@ public class DiscoveryJobTest {
         List<IPPollRange> m_ranges = new ArrayList<IPPollRange>();
 
         // Start the range at 0.0.0.1 so that we don't count zero as a value
-        IPPollRange ipPollRange = new IPPollRange("0.0.0.1", "85.85.85.85", 1, 0);
+        IPPollRange ipPollRange = new IPPollRange(null, null, "0.0.0.1", "85.85.85.85", 1, 0);
         m_ranges.add(ipPollRange);
         DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location", Double.MAX_VALUE);
         assertEquals(Integer.MAX_VALUE, discoveryJob.calculateTaskTimeout());
@@ -88,7 +88,7 @@ public class DiscoveryJobTest {
     @Test
     public void testTimeoutLargerThanIntegerMaxValue1() throws Exception {
         List<IPPollRange> m_ranges = new ArrayList<IPPollRange>();
-        IPPollRange ipPollRange = new IPPollRange("0.0.0.0", "89.0.0.0", 1, 0);
+        IPPollRange ipPollRange = new IPPollRange(null, null, "0.0.0.0", "89.0.0.0", 1, 0);
         m_ranges.add(ipPollRange);
         DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location", Double.MAX_VALUE);
         assertEquals(Integer.MAX_VALUE, discoveryJob.calculateTaskTimeout());
@@ -98,7 +98,7 @@ public class DiscoveryJobTest {
     public void testTimeoutLessThanIntegerMaxValueWithDefaultTimeoutRetries() throws Exception {
         List<IPPollRange> m_ranges = new ArrayList<IPPollRange>();
         // TODO: Replace defaults with constants
-        IPPollRange ipPollRange = new IPPollRange("127.0.0.1", "127.5.118.25", 2000, 1);
+        IPPollRange ipPollRange = new IPPollRange(null, null, "127.0.0.1", "127.5.118.25", 2000, 1);
         m_ranges.add(ipPollRange);
         DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location", Double.MAX_VALUE);
         assertTrue(Integer.MAX_VALUE > discoveryJob.calculateTaskTimeout()); 
@@ -108,7 +108,7 @@ public class DiscoveryJobTest {
     public void testTimeoutIntegerMaxValueWithDefaultTimeoutRetries() throws Exception {
         List<IPPollRange> m_ranges = new ArrayList<IPPollRange>();
         // TODO: Replace defaults with constants
-        IPPollRange ipPollRange = new IPPollRange("127.0.0.1", "127.5.118.26", 2000, 1);
+        IPPollRange ipPollRange = new IPPollRange(null, null, "127.0.0.1", "127.5.118.26", 2000, 1);
         m_ranges.add(ipPollRange);
         DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location", Double.MAX_VALUE);
         assertEquals(Integer.MAX_VALUE, discoveryJob.calculateTaskTimeout()); 

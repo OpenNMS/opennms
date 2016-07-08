@@ -32,14 +32,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
@@ -55,7 +52,7 @@ public class DiscoveryConfigFactoryTest {
         final URL in = this.getClass().getResource("validDiscoveryIncludeFile.txt");
         final long timeout = 100;
         final int retries = 1;
-        DiscoveryConfigFactory.addToSpecificsFromURL(specifics, in.toString(), timeout, retries);
+        DiscoveryConfigFactory.addToSpecificsFromURL(specifics, in.toString(), null, null, timeout, retries);
         assertEquals(8, specifics.size());
         assertEquals("127.0.0.1", InetAddressUtils.str(specifics.get(0).getAddress()));
         assertEquals("10.1.1.1", InetAddressUtils.str(specifics.get(1).getAddress()));
@@ -73,7 +70,7 @@ public class DiscoveryConfigFactoryTest {
         final InputStream in = this.getClass().getResourceAsStream("validDiscoveryIncludeFile.txt");
         final long timeout = 100;
         final int retries = 1;
-        DiscoveryConfigFactory.addToSpecificsFromURL(specifics, in, timeout, retries);
+        DiscoveryConfigFactory.addToSpecificsFromURL(specifics, in, null, null, timeout, retries);
         assertEquals(8, specifics.size());
         assertEquals("127.0.0.1", InetAddressUtils.str(specifics.get(0).getAddress()));
         assertEquals("10.1.1.1", InetAddressUtils.str(specifics.get(1).getAddress()));

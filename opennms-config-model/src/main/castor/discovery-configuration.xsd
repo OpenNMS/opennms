@@ -128,6 +128,13 @@
     <complexType>
       <simpleContent>
         <extension base="string">
+          <attribute name="location" type="string" use="optional">
+            <annotation>
+              <documentation>The monitoring location where this specific address
+              will be executed.</documentation>
+            </annotation>
+          </attribute>
+
           <attribute name="retries" type="int" use="optional">
             <annotation>
               <documentation>The number of times a ping is retried for this
@@ -172,6 +179,13 @@
           </annotation>
         </element>
       </sequence>
+
+      <attribute name="location" type="string" use="optional">
+        <annotation>
+          <documentation>The monitoring location where this include range
+          will be executed.</documentation>
+        </annotation>
+      </attribute>
 
       <attribute name="retries" type="int" use="optional">
         <annotation>
@@ -229,6 +243,13 @@
     <complexType>
       <simpleContent>
         <extension base="string">
+          <attribute name="location" type="string" use="optional">
+            <annotation>
+              <documentation>The monitoring location where this include URL
+              will be executed.</documentation>
+            </annotation>
+          </attribute>
+
           <attribute name="retries" type="int" use="optional">
             <annotation>
               <documentation>The number of times a ping is retried for

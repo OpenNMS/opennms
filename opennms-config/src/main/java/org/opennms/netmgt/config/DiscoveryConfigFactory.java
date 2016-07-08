@@ -241,7 +241,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      *            the retries for all entries in this URL
      * @return a boolean.
      */
-    public static boolean addToSpecificsFromURL(final List<IPPollAddress> specifics, final String url, final long timeout, final int retries) {
+    public static boolean addToSpecificsFromURL(final List<IPPollAddress> specifics, final String url, final String foreignSource, final String location, final long timeout, final int retries) {
         // open the file indicated by the URL
         InputStream is = null;
         try {
@@ -253,7 +253,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 LOG.warn("URL does not exist: {}", url);
                 return true;
             } else {
-                return addToSpecificsFromURL(specifics, fileURL.openStream(), timeout, retries);
+                return addToSpecificsFromURL(specifics, fileURL.openStream(), foreignSource, location, timeout, retries);
             }
         } catch (final IOException e) {
             LOG.error("Error reading URL: {}", url);
@@ -273,7 +273,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      * @return a boolean.
      * @throws java.io.IOException if any.
      */
-    public static boolean addToSpecificsFromURL(final List<IPPollAddress> specifics, final InputStream is, final long timeout, final int retries) throws IOException {
+    public static boolean addToSpecificsFromURL(final List<IPPollAddress> specifics, final InputStream is, final String foreignSource, final String location, final long timeout, final int retries) throws IOException {
         boolean bRet = true;
 
         try {
@@ -300,7 +300,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 }
 
                 try {
-                    specifics.add(new IPPollAddress(InetAddressUtils.addr(specIP), timeout, retries));
+                    specifics.add(new IPPollAddress(foreignSource, location, InetAddressUtils.addr(specIP), timeout, retries));
                 } catch (final IllegalArgumentException e) {
                     LOG.warn("Unknown host \'{}\' inside discovery include file: address ignored", specIP);
                 }
@@ -346,7 +346,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                     retries = defaultRetries;
                 }
 
-                addToSpecificsFromURL(specifics, url.getContent(), timeout, retries);
+                addToSpecificsFromURL(specifics, url.getContent(), url.getForeignSource(), url.getLocation(), timeout, retries);
             }
 
             return specifics;
@@ -403,7 +403,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 }
 
                 try {
-                    includes.add(new IPPollRange(ir.getBegin(), ir.getEnd(), timeout, retries));
+                    includes.add(new IPPollRange(ir.getForeignSource(), ir.getLocation(), ir.getBegin(), ir.getEnd(), timeout, retries));
                 } catch (final UnknownHostException uhE) {
                     LOG.warn("Failed to convert address range ({}, {})", ir.getBegin(), ir.getEnd(), uhE);
                 }
@@ -450,7 +450,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 final String address = s.getContent();
 
                 try {
-                    specifics.add(new IPPollAddress(InetAddressUtils.addr(address), timeout, retries));
+                    specifics.add(new IPPollAddress(s.getForeignSource(), s.getLocation(), InetAddressUtils.addr(address), timeout, retries));
                 } catch (final IllegalArgumentException e) {
                     LOG.warn("Failed to convert address {}", address, e);
                 }
