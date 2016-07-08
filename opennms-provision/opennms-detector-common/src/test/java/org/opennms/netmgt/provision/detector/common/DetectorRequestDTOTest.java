@@ -1,8 +1,37 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.provision.detector.common;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
@@ -22,9 +51,7 @@ public class DetectorRequestDTOTest  extends XmlTestNoCastor<DetectorRequestDTO>
                     getDetectorRequest(),
                     "<?xml version=\"1.0\"?>\n" +
                     "<detector-request location=\"MINION\" serviceName=\"ICMP\" address=\"localhost\">\n"+
-                    "<attributes>port=8980</attributes> \n"+
-                    "<attributes>timeout=5000</attributes> \n" +
-                    "<attributes>retries=10</attributes> \n" +
+                    "<attributes><entry> <key>port</key> <value>8980</value> </entry> </attributes> \n" +
                  "</detector-request>"
                 }
         });
@@ -35,8 +62,9 @@ public class DetectorRequestDTOTest  extends XmlTestNoCastor<DetectorRequestDTO>
         DetectorRequestDTO dto = new DetectorRequestDTO();
         dto.setAddress("localhost");
         dto.setLocation("MINION");
-        List<String> properties = Arrays.asList("port=8980", "timeout=5000", "retries=10");
-        dto.setProperties(properties);
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("port", "8980");
+        dto.setAttributes(properties);
         dto.setServiceName("ICMP");
         return dto;
     }

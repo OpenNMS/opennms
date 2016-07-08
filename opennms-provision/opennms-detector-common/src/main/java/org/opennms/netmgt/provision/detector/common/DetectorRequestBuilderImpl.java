@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.provision.detector.common;
 
-import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
     private String location;
 
-    private List<String> attributes;
+    private Map<String, String> attributes;
 
     private String address;
 
@@ -56,7 +56,8 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
     }
 
     @Override
-    public DetectorRequestBuilder withAttributes(List<String> attributes) {
+    public DetectorRequestBuilder withAttributes(
+            Map<String, String> attributes) {
         this.attributes = attributes;
         return this;
     }
@@ -66,7 +67,7 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         this.address = address;
         return this;
     }
-    
+
     @Override
     public DetectorRequestBuilder byService(String service) {
         this.service = service;
@@ -74,26 +75,28 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
     }
 
     @Override
-    public CompletableFuture<Boolean> execute() {
+    public CompletableFuture<DetectorResponseDTO> execute() {
         final DetectorRequestDTO detectorRequestDTO = new DetectorRequestDTO();
+        final CompletableFuture<DetectorResponseDTO> future = new CompletableFuture<DetectorResponseDTO>();
         detectorRequestDTO.setAddress(address);
-        detectorRequestDTO.setProperties(attributes);
+        detectorRequestDTO.setAttributes(attributes);
         detectorRequestDTO.setLocation(location);
         detectorRequestDTO.setServiceName(service);
         try {
             return client.getDetectorRequestExecutor(location).execute(detectorRequestDTO).thenApply(res -> processResponse(res));
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            DetectorResponseDTO response = new DetectorResponseDTO();
+            response.setDetected(false);
+            response.setFailureMesage(e.getMessage());
+            future.complete(response);
+            return future;
         }
-        return null;
+
     }
 
-    boolean processResponse(DetectorResponseDTO response) {
+    DetectorResponseDTO processResponse(DetectorResponseDTO response) {
 
-        return response.isDetected();
+        return response;
     }
-
-  
 
 }

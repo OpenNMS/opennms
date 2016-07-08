@@ -28,15 +28,19 @@
 
 package org.opennms.netmgt.provision.detector.command;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.opennms.netmgt.provision.detector.common.DetectorResponseDTO;
 import org.opennms.netmgt.provision.detector.common.LocationAwareDetectorClient;
 
 @Command(scope = "provision", name = "detect", description = "Detect the service on a host at specified location")
@@ -59,18 +63,24 @@ public class DetectorCommand extends OsgiCommandSupport {
     @Override
     protected Object doExecute() throws Exception {
 
-        System.out.printf("Trying to get '%s' detector on  '%s' ",
+        System.out.printf("Trying to detect '%s' service  on  '%s' ",
                           serviceName,
                           m_host);
-
-        final CompletableFuture<Boolean> future = locationAwareDetectorClient.detect().atLocation(m_location).atAddress(m_host).withAttributes(attributes).byService(serviceName).execute();
+        Map<String, String> properties = parse(attributes);
+        final CompletableFuture<DetectorResponseDTO> future = locationAwareDetectorClient.detect().atLocation(m_location).atAddress(m_host).withAttributes(properties).byService(serviceName).execute();
         while (true) {
             try {
-                boolean isServiceDetected = future.get(1, TimeUnit.SECONDS);
+                DetectorResponseDTO detectorResponse = future.get(1,
+                                                                  TimeUnit.SECONDS);
                 System.out.printf("\nThe '%s' service %s detected on %s\n",
                                   serviceName,
-                                  isServiceDetected ? "WAS" : "WAS NOT",
+                                  detectorResponse.isDetected() ? "WAS"
+                                                                : "WAS NOT",
                                   m_host);
+                if (StringUtils.isNotBlank(detectorResponse.getFailureMesage())) {
+                    System.out.printf("with error response %s",
+                                      detectorResponse.getFailureMesage());
+                }
                 break;
             } catch (TimeoutException e) {
                 // pass
@@ -84,5 +94,24 @@ public class DetectorCommand extends OsgiCommandSupport {
     public void setLocationAwareDetectorClient(
             LocationAwareDetectorClient locationAwareDetectorClient) {
         this.locationAwareDetectorClient = locationAwareDetectorClient;
+    }
+
+    private Map<String, String> parse(List<String> attributeList) {
+        Map<String, String> properties = new HashMap<>();
+        if (attributeList != null) {
+            for (String keyValue : attributeList) {
+                int splitAt = keyValue.indexOf("=");
+                if (splitAt <= 0) {
+                    throw new IllegalArgumentException("Invalid property "
+                            + keyValue);
+                } else {
+                    String key = keyValue.substring(0, splitAt);
+                    String value = keyValue.substring(splitAt + 1,
+                                                      keyValue.length());
+                    properties.put(key, value);
+                }
+            }
+        }
+        return properties;
     }
 }

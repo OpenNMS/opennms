@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.provision.detector.common;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -61,7 +61,7 @@ public class DetectorRequestDTO {
     private String location;
 
     @XmlElement(name = "attributes")
-    private List<String> attributes = new ArrayList<>(0);
+    private Map<String, String> attributes = new HashMap<>();
 
     @XmlAttribute(name = "serviceName")
     private String serviceName;
@@ -77,11 +77,11 @@ public class DetectorRequestDTO {
         this.location = location;
     }
 
-    public List<String> getProperties() {
+    public Map<String, String> getAttributes() {
         return attributes;
     }
 
-    public void setProperties(List<String> attributes) {
+    public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
     }
 
