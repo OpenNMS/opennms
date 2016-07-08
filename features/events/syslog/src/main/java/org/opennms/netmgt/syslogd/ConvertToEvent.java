@@ -178,7 +178,7 @@ public class ConvertToEvent {
         	try {
 				SyslogdIPMgrJDBCImpl.getInstance().dataSourceSync();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
         	long nodeId = SyslogdIPMgrJDBCImpl.getInstance().getNodeId(hostAddress);
             if (nodeId != -1) {

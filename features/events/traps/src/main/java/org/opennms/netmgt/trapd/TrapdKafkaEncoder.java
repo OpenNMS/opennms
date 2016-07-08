@@ -22,7 +22,7 @@ public class TrapdKafkaEncoder implements Encoder<Object>{
         	//objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,false);
         	//byte[] result = objectMapper.writeValueAsBytes(arg0);
         	
-        	byte[] result = objectMapper.writeValueAsString(arg0).getBytes();
+        	byte[] result = objectMapper.writeValueAsString(arg0).getBytes("UTF-8");
 
             return result;
         } catch (JsonProcessingException e) {
