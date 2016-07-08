@@ -29,6 +29,14 @@
 
 --%>
 <%@page language="java" contentType="text/html" session="true" import="
+  java.util.Map,
+  java.util.TreeMap,
+  org.opennms.netmgt.config.monitoringLocations.LocationDef,
+  org.opennms.netmgt.provision.persist.requisition.Requisition,
+  org.opennms.netmgt.dao.api.*,
+  org.springframework.web.context.WebApplicationContext,
+  org.springframework.web.context.support.WebApplicationContextUtils,
+  org.opennms.web.svclayer.api.RequisitionAccessService,
   org.opennms.netmgt.config.DiscoveryConfigFactory,
   org.opennms.netmgt.config.discovery.*,
   org.opennms.web.admin.discovery.DiscoveryServletConstants,
@@ -45,6 +53,8 @@
 %>
 
 <%
+WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+
 HttpSession sess = request.getSession(false);
 DiscoveryConfiguration currConfig;
 if (DiscoveryServletConstants.EDIT_MODE_SCAN.equals(request.getParameter("mode"))) {
@@ -54,6 +64,21 @@ if (DiscoveryServletConstants.EDIT_MODE_SCAN.equals(request.getParameter("mode")
 } else {
 	throw new ServletException("Cannot get discovery configuration from the session");
 }
+
+// Map of primary key to label (which in this case are the same)
+MonitoringLocationDao locationDao = context.getBean(MonitoringLocationDao.class);
+Map<String,String> locations = new TreeMap<String,String>();
+for (LocationDef location : locationDao.findAll()) {
+	locations.put(location.getLocationName(), location.getLocationName());
+}
+
+// Map of primary key to label (which in this case are the same too)
+RequisitionAccessService reqAccessService = context.getBean(RequisitionAccessService.class);
+Map<String,String> foreignsources = new TreeMap<String,String>();
+for (Requisition requisition : reqAccessService.getRequisitions()) {
+	foreignsources.put(requisition.getForeignSource(), requisition.getForeignSource());
+}
+
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -122,6 +147,8 @@ function doAddIncludeRange(){
 	opener.document.getElementById("irend").value=document.getElementById("end").value;
 	opener.document.getElementById("irtimeout").value=document.getElementById("timeout").value;
 	opener.document.getElementById("irretries").value=document.getElementById("retries").value;
+	opener.document.getElementById("irforeignsource").value=document.getElementById("foreignsource").value;
+	opener.document.getElementById("irlocation").value=document.getElementById("location").value;
 	opener.document.getElementById("modifyDiscoveryConfig").action=opener.document.getElementById("modifyDiscoveryConfig").action+"?action=<%=DiscoveryServletConstants.addIncludeRangeAction%>";
 	opener.document.getElementById("modifyDiscoveryConfig").submit();
 	window.close();
@@ -167,6 +194,27 @@ function doAddIncludeRange(){
               <input type="text" class="form-control" id="retries" name="retries" value="<%=((currConfig.getRetries()==0)?DiscoveryConfigFactory.DEFAULT_RETRIES:currConfig.getRetries())%>"/>
             </div>
           </div>
+        <div class="form-group">
+          <label for="foreignsource" class="control-label col-sm-2">Foreign Source:</label>
+          <div class="col-sm-10">
+            <select id="foreignsource" class="form-control" name="foreignsource">
+              <option value="" <%if (currConfig.getForeignSource() == null) out.print("selected");%>>None selected</option>
+              <% for (String key : foreignsources.keySet()) { %>
+                <option value="<%=key%>" <%if(key.equals(currConfig.getForeignSource())) out.print("selected");%>><%=foreignsources.get(key)%></option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="location" class="control-label col-sm-2">Location:</label>
+          <div class="col-sm-10">
+            <select id="location" class="form-control" name="location">
+              <% for (String key : locations.keySet()) { %>
+                <option value="<%=key%>" <%if(key.equals(currConfig.getLocation()) || (key.equals(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID) && currConfig.getLocation() == null)) out.print("selected");%>><%=locations.get(key)%></option>
+              <% } %>
+            </select>
+          </div>
+        </div>
           <div class="form-group">
             <div class="col-sm-12">
               <button type="button" class="btn btn-default" name="addIncludeRange" id="addIncludeRange" onclick="doAddIncludeRange();">Add</button>

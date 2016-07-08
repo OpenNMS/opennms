@@ -32,15 +32,12 @@
 <%@page language="java" contentType="text/html" session="true" import="
   java.util.Map,
   java.util.TreeMap,
-  java.util.stream.*,
   org.opennms.web.api.Util,
   org.opennms.netmgt.config.DiscoveryConfigFactory,
   org.opennms.netmgt.config.discovery.*,
   org.opennms.netmgt.config.monitoringLocations.LocationDef,
   org.opennms.netmgt.provision.persist.requisition.Requisition,
   org.opennms.netmgt.dao.api.*,
-  org.opennms.netmgt.dao.*,
-  org.opennms.netmgt.dao.hibernate.*,
   org.springframework.web.context.WebApplicationContext,
   org.springframework.web.context.support.WebApplicationContextUtils,
   org.opennms.web.svclayer.api.RequisitionAccessService,
@@ -161,22 +158,25 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 %>
 
 <form role="form" class="form-horizontal" method="post" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%= Util.calculateUrlBase(request, "admin/discovery/scanConfig") %>" onsubmit="return restartDiscovery();">
+
 <input type="hidden" id="specificipaddress" name="specificipaddress" value=""/>
 <input type="hidden" id="specifictimeout" name="specifictimeout" value=""/>
 <input type="hidden" id="specificretries" name="specificretries" value=""/>
+<input type="hidden" id="specificforeignsource" name="specificforeignsource" value=""/>
+<input type="hidden" id="specificlocation" name="specificlocation" value=""/>
 
 <input type="hidden" id="iuurl" name="iuurl" value=""/>
 <input type="hidden" id="iutimeout" name="iutimeout" value=""/>
 <input type="hidden" id="iuretries" name="iuretries" value=""/>
+<input type="hidden" id="iuforeignsource" name="iuforeignsource" value=""/>
+<input type="hidden" id="iulocation" name="iulocation" value=""/>
 
 <input type="hidden" id="irbase" name="irbase" value=""/>
 <input type="hidden" id="irend" name="irend" value=""/>
 <input type="hidden" id="irtimeout" name="irtimeout" value=""/>
 <input type="hidden" id="irretries" name="irretries" value=""/>
-
-<input type="hidden" id="specificipaddress" name="specificipaddress" value=""/>
-<input type="hidden" id="specifictimeout" name="specifictimeout" value=""/>
-<input type="hidden" id="specificretries" name="specificretries" value=""/>
+<input type="hidden" id="irforeignsource" name="irforeignsource" value=""/>
+<input type="hidden" id="irlocation" name="irlocation" value=""/>
 
 <input type="hidden" id="erbegin" name="erbegin" value=""/>
 <input type="hidden" id="erend" name="erend" value=""/>
@@ -243,16 +243,20 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>
-					<th>IP Address</th>
-					<th>Timeout (milliseconds)</th>
-					<th>Retries</th>
+					<th class="col-xs-4">IP&nbsp;Address</th>
+					<th class="col-xs-2">Timeout&nbsp;(milliseconds)</th>
+					<th class="col-xs-2">Retries</th>
+					<th class="col-xs-2">Foreign&nbsp;Source</th>
+					<th class="col-xs-2">Location</th>
 					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<specs.length; i++){%>
 					 <tr class="text-center">
 					  <td><%=specs[i].getContent()%></td>
-					  <td><%=(specs[i].getTimeout()!=0)?""+specs[i].getTimeout():""+currConfig.getTimeout() %></td>
-					  <td><%=(specs[i].getRetries()!=0)?""+specs[i].getRetries():""+currConfig.getRetries() %></td>
+					  <td><%=specs[i].hasTimeout() ? "" + specs[i].getTimeout() : "<i>Use Default</i>" %></td>
+					  <td><%=specs[i].hasRetries() ? "" + specs[i].getRetries() : "<i>Use Default</i>" %></td>
+					  <td><%=(specs[i].getForeignSource() != null) ? specs[i].getForeignSource() : "<i>Use Default</i>" %></td>
+					  <td><%=(specs[i].getLocation() != null) ? specs[i].getLocation() : "<i>Use Default</i>" %></td>
 					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteSpecific(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
@@ -280,16 +284,20 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 			    %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>
-					<th>URL</th>
-					<th>Timeout (milliseconds)</th>
-					<th>Retries</th> 
+					<th class="col-xs-4">URL</th>
+					<th class="col-xs-2">Timeout&nbsp;(milliseconds)</th>
+					<th class="col-xs-2">Retries</th> 
+					<th class="col-xs-2">Foreign&nbsp;Source</th>
+					<th class="col-xs-2">Location</th>
 					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<urls.length; i++){%>
 					 <tr class="text-center">
 					  <td><%=urls[i].getContent()%></td>
-					  <td><%=(urls[i].getTimeout()!=0)?""+urls[i].getTimeout():""+currConfig.getTimeout() %></td>
-					  <td><%=(urls[i].getRetries()!=0)?""+urls[i].getRetries():""+currConfig.getRetries() %></td>
+					  <td><%=urls[i].hasTimeout() ? "" + urls[i].getTimeout() : "<i>Use Default</i>" %></td>
+					  <td><%=urls[i].hasRetries() ? "" + urls[i].getRetries() : "<i>Use Default</i>" %></td>
+					  <td><%=(urls[i].getForeignSource() != null) ? urls[i].getForeignSource() : "<i>Use Default</i>" %></td>
+					  <td><%=(urls[i].getLocation() != null) ? urls[i].getLocation() : "<i>Use Default</i>" %></td>
 					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
@@ -317,10 +325,12 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 				    %>
 					    <table class="table table-bordered table-condensed">
 					      <tr>
-						<th>Begin Address</th>
-						<th>End Address</th>
-						<th>Timeout (milliseconds)</th>
-						<th>Retries</th>
+						<th class="col-xs-2">Begin&nbsp;Address</th>
+						<th class="col-xs-2">End&nbsp;Address</th>
+						<th class="col-xs-2">Timeout&nbsp;(milliseconds)</th>
+						<th class="col-xs-2">Retries</th>
+						<th class="col-xs-2">Foreign&nbsp;Source</th>
+						<th class="col-xs-2">Location</th>
 						<th>Action</th>
 					      </tr>
 					      <%for(int i=0; i<irange.length; i++){
@@ -329,8 +339,10 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 						 <tr class="text-center">
 						  <td><%=irange[i].getBegin()%></td>
 						  <td><%=irange[i].getEnd()%></td>
-						  <td><%=(irange[i].getTimeout()!=0)?""+irange[i].getTimeout():""+currConfig.getTimeout() %></td>
-						  <td><%=(irange[i].getRetries()!=0)?""+irange[i].getRetries():""+currConfig.getRetries() %></td>
+						  <td><%=(irange[i].hasTimeout()) ? "" + irange[i].getTimeout() : "<i>Use Default</i>" %></td>
+						  <td><%=(irange[i].hasRetries()) ? "" + irange[i].getRetries() : "<i>Use Default</i>" %></td>
+						  <td><%=(irange[i].getForeignSource() != null) ? irange[i].getForeignSource() : "<i>Use Default</i>" %></td>
+						  <td><%=(irange[i].getLocation() != null) ? irange[i].getLocation() : "<i>Use Default</i>" %></td>
 						  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteIR(<%=i%>);">Delete</button></td>
 						</tr>
 					      <%} // end for%>
@@ -358,8 +370,8 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 			    %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>
-					<th>Begin</th>
-					<th>End</th>
+					<th class="col-xs-6">Begin</th>
+					<th class="col-xs-6">End</th>
 					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<irange.length; i++){

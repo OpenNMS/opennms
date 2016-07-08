@@ -97,7 +97,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     public static final int DEFAULT_INITIAL_SLEEP_TIME = 30000;
     public static final int DEFAULT_RESTART_SLEEP_TIME = 86400000;
     public static final int DEFAULT_RETRIES = 1;
-    public static final int DEFAULT_TIMEOUT = 2000;
+    public static final long DEFAULT_TIMEOUT = 2000;
     public static final int DEFAULT_CHUNK_SIZE = 100;
 
     /**
@@ -332,14 +332,14 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
             for (final IncludeUrl url : getConfiguration().getIncludeUrlCollection()) {
 
-                long timeout = 800L;
+                long timeout = DEFAULT_TIMEOUT;
                 if (url.hasTimeout()) {
                     timeout = url.getTimeout();
                 } else if (defaultTimeout != null) {
                     timeout = getConfiguration().getTimeout();
                 }
 
-                int retries = 3;
+                int retries = DEFAULT_RETRIES;
                 if (url.hasRetries()) {
                     retries = url.getRetries();
                 } else if (defaultRetries != null) {
@@ -388,14 +388,14 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                     continue;
                 }
 
-                long timeout = 800L;
+                long timeout = DEFAULT_TIMEOUT;
                 if (ir.hasTimeout()) {
                     timeout = ir.getTimeout();
                 } else if (defaultTimeout != null) {
                     timeout = defaultTimeout;
                 }
 
-                int retries = 3;
+                int retries = DEFAULT_RETRIES;
                 if (ir.hasRetries()) {
                     retries = ir.getRetries();
                 } else if (defaultRetries != null) {
@@ -433,14 +433,14 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
             for (final Specific s : getConfiguration().getSpecificCollection()) {
 
-                long timeout = 800L;
+                long timeout = DEFAULT_TIMEOUT;
                 if (s.hasTimeout()) {
                     timeout = s.getTimeout();
                 } else if (defaultTimeout != null) {
                     timeout = defaultTimeout;
                 }
 
-                int retries = 3;
+                int retries = DEFAULT_RETRIES;
                 if (s.hasRetries()) {
                     retries = s.getRetries();
                 } else if (defaultRetries != null) {
