@@ -166,7 +166,7 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
 		
 		// Setting VarBind 
 		PDUv1 snmp4JV1cTrapPdu = new PDUv1();
-		snmp4JV1cTrapPdu.setAgentAddress(new IpAddress(trapAddress));
+		snmp4JV1cTrapPdu.setAgentAddress(new IpAddress(agentAddress));
 		
 		JsonNode varBindRoot = trapProcessorRoot.findValue("varBinds");
 		LOG.debug("varBindRoot is : "+varBindRoot);
