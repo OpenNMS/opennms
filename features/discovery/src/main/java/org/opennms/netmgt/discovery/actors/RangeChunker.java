@@ -79,7 +79,7 @@ public class RangeChunker
                 }
             }
 
-            IPPollRange range = new IPPollRange( address.getAddress(), address.getAddress(), address.getTimeout(),
+            IPPollRange range = new IPPollRange( address.getForeignSource(), address.getLocation(), address.getAddress(), address.getAddress(), address.getTimeout(),
                             address.getRetries() );
             ranges.add( range );
         }
