@@ -113,7 +113,6 @@ public class EventCreator implements TrapProcessor {
     public void setTrapAddress(InetAddress trapAddress) {
         m_eventBuilder.setSnmpHost(str(trapAddress));
         m_eventBuilder.setInterface(trapAddress);
-        m_trapdIpMgr.dataSourceSync();
         long nodeId = m_trapdIpMgr.getNodeId(str(trapAddress));
         if (nodeId != -1) {
             m_eventBuilder.setNodeid(nodeId);
