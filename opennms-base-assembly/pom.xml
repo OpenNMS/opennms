@@ -278,10 +278,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-detector-command</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-detector-camel</artifactId>
     </dependency>
     <dependency>

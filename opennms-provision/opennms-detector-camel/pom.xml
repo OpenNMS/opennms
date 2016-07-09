@@ -41,15 +41,15 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-	  <groupId>org.opennms</groupId>
-	  <artifactId>opennms-detector-common</artifactId>
-	</dependency>
-	<dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-detector-common</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>camel-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-	 <dependency>
+    <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-spring</artifactId>
       <version>${camelVersion}</version>
@@ -139,11 +139,10 @@
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.db</artifactId>
     </dependency>
-        <dependency>
+    <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.xml</artifactId>
       <scope>test</scope>
-      </dependency>
-
+    </dependency>
   </dependencies>
 </project>
