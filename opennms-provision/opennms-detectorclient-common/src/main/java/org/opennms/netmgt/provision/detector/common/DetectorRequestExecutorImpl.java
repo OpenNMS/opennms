@@ -40,24 +40,19 @@ public class DetectorRequestExecutorImpl implements DetectorRequestExecutor {
     private ServiceDetectorRegistry serviceDetectorRegistry;
 
     @Override
-    public CompletableFuture<DetectorResponseDTO> execute(
-            DetectorRequestDTO request) {
-
+    public CompletableFuture<DetectorResponseDTO> execute(DetectorRequestDTO request) {
         String serviceName = request.getServiceName();
         String address = request.getAddress();
         Map<String, String> attributes = request.getAttributes();
 
-        ServiceDetector detector = serviceDetectorRegistry.getDetectorByServiceName(serviceName,
-                                                                                    attributes);
+        ServiceDetector detector = serviceDetectorRegistry.getDetectorByServiceName(serviceName, attributes);
         DetectorHandler detectorHandler = new DetectorHandler();
-        final CompletableFuture<DetectorResponseDTO> output = detectorHandler.execute(detector,
-                                                                                      address);
+        final CompletableFuture<DetectorResponseDTO> output = detectorHandler.execute(detector, address);
 
         return output;
     }
 
-    public void setServiceDetectorRegistry(
-            ServiceDetectorRegistry serviceDetectorRegistry) {
+    public void setServiceDetectorRegistry(ServiceDetectorRegistry serviceDetectorRegistry) {
         this.serviceDetectorRegistry = serviceDetectorRegistry;
     }
 

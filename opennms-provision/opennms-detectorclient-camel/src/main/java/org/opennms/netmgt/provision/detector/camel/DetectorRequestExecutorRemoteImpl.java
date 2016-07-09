@@ -39,31 +39,29 @@ import org.opennms.netmgt.provision.detector.common.DetectorRequestDTO;
 import org.opennms.netmgt.provision.detector.common.DetectorRequestExecutor;
 import org.opennms.netmgt.provision.detector.common.DetectorResponseDTO;
 
-public class DetectorRequestExecutorRemoteImpl implements DetectorRequestExecutor{
-	
-	
+public class DetectorRequestExecutorRemoteImpl implements DetectorRequestExecutor {
+
     @EndpointInject(uri = "direct:executeDetector")
     private ProducerTemplate template;
 
     @EndpointInject(uri = "direct:executeDetector")
     private Endpoint endpoint;
-    
-	@Override
-	public CompletableFuture<DetectorResponseDTO> execute(DetectorRequestDTO request) {
-		  final CompletableFuture<DetectorResponseDTO> future = new CompletableFuture<DetectorResponseDTO>();
-	        template.asyncCallbackSendBody(endpoint, request, new Synchronization() {
-	            @Override
-	            public void onComplete(Exchange exchange) {
-	                final DetectorResponseDTO res = exchange.getOut().getBody(DetectorResponseDTO.class);
-	                future.complete(res);
-	            }
-	            @Override
-	            public void onFailure(Exchange exchange) {
-	                future.completeExceptionally(exchange.getException());
-	            }
-	        });
-	        return future;
 
-	}
+    @Override
+    public CompletableFuture<DetectorResponseDTO> execute(DetectorRequestDTO request) {
+        final CompletableFuture<DetectorResponseDTO> future = new CompletableFuture<DetectorResponseDTO>();
+        template.asyncCallbackSendBody(endpoint, request, new Synchronization() {
+            @Override
+            public void onComplete(Exchange exchange) {
+                final DetectorResponseDTO res = exchange.getOut().getBody(DetectorResponseDTO.class);
+                future.complete(res);
+            }
 
+            @Override
+            public void onFailure(Exchange exchange) {
+                future.completeExceptionally(exchange.getException());
+            }
+        });
+        return future;
+    }
 }

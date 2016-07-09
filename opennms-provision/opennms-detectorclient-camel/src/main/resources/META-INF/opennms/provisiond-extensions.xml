@@ -20,13 +20,9 @@
   
   <bean id="remoteDetector" class="org.opennms.netmgt.provision.detector.camel.DetectorRequestExecutorRemoteImpl"/>
 
-  <bean id="locationAwareDetectorClient" class="org.opennms.netmgt.provision.detector.common.DelegatingLocationAwareDetectorClientImpl">
-  </bean>
-  
- <!--   <onmsgi:reference id="serviceDetectorRegistry" interface="org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry"/>
-    -->
+  <bean id="locationAwareDetectorClient" class="org.opennms.netmgt.provision.detector.common.DelegatingLocationAwareDetectorClientImpl"/>
+
   <onmsgi:service interface="org.opennms.netmgt.provision.detector.common.LocationAwareDetectorClient" ref="locationAwareDetectorClient"/>
-  
   
   <bean id="identity" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject" ref="distPollerDao"/>
@@ -54,6 +50,4 @@
       <bean ref="unmarshalProcessor"/>
     </route>
   </camelContext>
-
-  
 </beans>

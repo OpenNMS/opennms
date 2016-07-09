@@ -44,18 +44,14 @@ public class DetectorRequestProcessor implements AsyncProcessor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
-
-        final DetectorRequestDTO requestDTO = JaxbUtils.unmarshal(DetectorRequestDTO.class,
-                                                                  exchange.getIn().getBody(String.class));
+        final DetectorRequestDTO requestDTO = JaxbUtils.unmarshal(DetectorRequestDTO.class, exchange.getIn().getBody(String.class));
         final DetectorResponseDTO responseDTO = detectorExecutor.execute(requestDTO).get();
-        exchange.getOut().setBody(JaxbUtils.marshal(responseDTO),
-                                  String.class);
+        exchange.getOut().setBody(JaxbUtils.marshal(responseDTO), String.class);
     }
 
     @Override
     public boolean process(Exchange exchange, AsyncCallback callback) {
-        final DetectorRequestDTO requestDTO = JaxbUtils.unmarshal(DetectorRequestDTO.class,
-                                                                  exchange.getIn().getBody(String.class));
+        final DetectorRequestDTO requestDTO = JaxbUtils.unmarshal(DetectorRequestDTO.class, exchange.getIn().getBody(String.class));
         final CompletableFuture<DetectorResponseDTO> future = detectorExecutor.execute(requestDTO);
         future.whenComplete((res, ex) -> {
             try {
@@ -66,11 +62,9 @@ public class DetectorRequestProcessor implements AsyncProcessor {
                     try {
                         JaxbUtils.marshal(res);
                     } catch (Throwable t) {
-                        // The first attempt may fail, but subsequent attempts
-                        // should always work
+                        // The first attempt may fail, but subsequent attempts should always work
                     }
-                    exchange.getOut().setBody(JaxbUtils.marshal(res),
-                                              String.class);
+                    exchange.getOut().setBody(JaxbUtils.marshal(res), String.class);
                 }
             } finally {
                 callback.done(false);
@@ -79,8 +73,7 @@ public class DetectorRequestProcessor implements AsyncProcessor {
         return false;
     }
 
-    public void setDetectorExecutor(
-            DetectorRequestExecutor detectorExecutor) {
+    public void setDetectorExecutor(DetectorRequestExecutor detectorExecutor) {
         this.detectorExecutor = detectorExecutor;
     }
 

@@ -43,8 +43,7 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
     private DelegatingLocationAwareDetectorClientImpl client;
 
-    public DetectorRequestBuilderImpl(
-            DelegatingLocationAwareDetectorClientImpl client) {
+    public DetectorRequestBuilderImpl(DelegatingLocationAwareDetectorClientImpl client) {
         super();
         this.client = client;
     }
@@ -56,8 +55,7 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
     }
 
     @Override
-    public DetectorRequestBuilder withAttributes(
-            Map<String, String> attributes) {
+    public DetectorRequestBuilder withAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
         return this;
     }
@@ -95,7 +93,6 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
     }
 
     DetectorResponseDTO processResponse(DetectorResponseDTO response) {
-
         return response;
     }
 

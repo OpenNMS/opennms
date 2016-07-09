@@ -62,10 +62,7 @@ public class DetectorCommand extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-
-        System.out.printf("Trying to detect '%s' service  on  '%s' ",
-                          serviceName,
-                          m_host);
+        System.out.printf("Trying to detect '%s' service  on  '%s' ", serviceName, m_host);
         Map<String, String> properties = parse(attributes);
         final CompletableFuture<DetectorResponseDTO> future = locationAwareDetectorClient.detect().atLocation(m_location).atAddress(m_host).withAttributes(properties).byService(serviceName).execute();
         while (true) {
@@ -91,8 +88,7 @@ public class DetectorCommand extends OsgiCommandSupport {
         return null;
     }
 
-    public void setLocationAwareDetectorClient(
-            LocationAwareDetectorClient locationAwareDetectorClient) {
+    public void setLocationAwareDetectorClient(LocationAwareDetectorClient locationAwareDetectorClient) {
         this.locationAwareDetectorClient = locationAwareDetectorClient;
     }
 
@@ -102,12 +98,10 @@ public class DetectorCommand extends OsgiCommandSupport {
             for (String keyValue : attributeList) {
                 int splitAt = keyValue.indexOf("=");
                 if (splitAt <= 0) {
-                    throw new IllegalArgumentException("Invalid property "
-                            + keyValue);
+                    throw new IllegalArgumentException("Invalid property " + keyValue);
                 } else {
                     String key = keyValue.substring(0, splitAt);
-                    String value = keyValue.substring(splitAt + 1,
-                                                      keyValue.length());
+                    String value = keyValue.substring(splitAt + 1, keyValue.length());
                     properties.put(key, value);
                 }
             }

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.detector.camel;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -40,24 +39,17 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-                "classpath:/META-INF/opennms/applicationContext-soa.xml",
-                "classpath:/META-INF/opennms/applicationContext-dao.xml",
-                "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-                "classpath:/META-INF/opennms/provisiond-extensions.xml"
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/provisiond-extensions.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
 public class DetectorApplicationContextIT {
 
-	 @Before
-	    public void setUp() throws Throwable {
-	    }
-
-	    @Test
-	    public void testConfig() throws Throwable {
-	        
-	        // tests loading of provisiond-extensions.xml
-	            
-	    }
-
+    @Test
+    public void testConfig() {
+        // tests loading of provisiond-extensions.xml
+    }
 }

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.detector.registry.impl;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,18 +41,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
-public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Serializable {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
+public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry {
 	private static final Logger LOG = LoggerFactory.getLogger(ServiceDetectorRegistryImpl.class);
 
     private final Map<String, ServiceDetectorFactory<? extends ServiceDetector>> m_factoriesByServiceName = new HashMap<>();
     private final Map<String, ServiceDetectorFactory<? extends ServiceDetector>> m_factoriesByClassName = new HashMap<>();
 
-    
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public synchronized void onBind(ServiceDetectorFactory factory, Map properties) {
         LOG.debug("bind called with {}: {}", factory, properties);

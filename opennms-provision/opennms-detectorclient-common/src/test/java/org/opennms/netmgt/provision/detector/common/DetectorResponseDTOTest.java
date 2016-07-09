@@ -34,11 +34,9 @@ import java.util.Collection;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class DetectorResponseDTOTest
-        extends XmlTestNoCastor<DetectorResponseDTO> {
+public class DetectorResponseDTOTest extends XmlTestNoCastor<DetectorResponseDTO> {
 
-    public DetectorResponseDTOTest(DetectorResponseDTO sampleObject,
-            String sampleXml) {
+    public DetectorResponseDTOTest(DetectorResponseDTO sampleObject, String sampleXml) {
         super(sampleObject, sampleXml, null);
     }
 
@@ -53,13 +51,10 @@ public class DetectorResponseDTOTest
         });
     }
 
-
     public static DetectorResponseDTO getDetectorResponse() {
-        
         DetectorResponseDTO response = new DetectorResponseDTO();
         response.setDetected(true);
         response.setFailureMesage("classCast exception");
         return response;
- 
     }
 }

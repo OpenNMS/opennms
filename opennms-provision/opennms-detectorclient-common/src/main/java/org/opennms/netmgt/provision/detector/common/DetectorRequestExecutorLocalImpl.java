@@ -35,12 +35,10 @@ import org.opennms.netmgt.provision.ServiceDetector;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
-public class DetectorRequestExecutorLocalImpl
-        implements DetectorRequestExecutor {
+public class DetectorRequestExecutorLocalImpl implements DetectorRequestExecutor {
 
     @Override
-    public CompletableFuture<DetectorResponseDTO> execute(
-            DetectorRequestDTO request) {
+    public CompletableFuture<DetectorResponseDTO> execute(DetectorRequestDTO request) {
 
         String serviceName = request.getServiceName();
         String address = request.getAddress();
@@ -53,8 +51,7 @@ public class DetectorRequestExecutorLocalImpl
         wrapper.setPropertyValues(attributes);
 
         DetectorHandler detectorHandler = new DetectorHandler();
-        final CompletableFuture<DetectorResponseDTO> output = detectorHandler.execute(detector,
-                                                                                      address);
+        final CompletableFuture<DetectorResponseDTO> output = detectorHandler.execute(detector, address);
 
         return output;
     }

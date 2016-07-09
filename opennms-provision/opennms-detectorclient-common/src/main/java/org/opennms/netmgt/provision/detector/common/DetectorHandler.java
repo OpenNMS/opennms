@@ -47,8 +47,7 @@ public class DetectorHandler {
 
     private Executor executor = Executors.newSingleThreadExecutor();
 
-    public CompletableFuture<DetectorResponseDTO> execute(
-            ServiceDetector detector, String address) {
+    public CompletableFuture<DetectorResponseDTO> execute(ServiceDetector detector, String address) {
 
         CompletableFuture<Boolean> future = new CompletableFuture<Boolean>();
         final CompletableFuture<DetectorResponseDTO> output = new CompletableFuture<DetectorResponseDTO>();
@@ -98,8 +97,7 @@ public class DetectorHandler {
         } else if (detector instanceof AsyncServiceDetector) {
             final AsyncServiceDetector asyncDetector = (AsyncServiceDetector) detector;
             // TODO: We should update the AsyncServiceDetector interface to
-            // return
-            // a CompletableFuture instead of a DetectFuture.
+            // return a CompletableFuture instead of a DetectFuture.
             return CompletableFuture.supplyAsync(new Supplier<Boolean>() {
                 @Override
                 public Boolean get() {

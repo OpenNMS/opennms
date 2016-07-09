@@ -32,8 +32,7 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-public class DelegatingLocationAwareDetectorClientImpl
-        implements LocationAwareDetectorClient {
+public class DelegatingLocationAwareDetectorClientImpl implements LocationAwareDetectorClient {
 
     @Autowired
     @Qualifier("localDetector")
@@ -60,7 +59,6 @@ public class DelegatingLocationAwareDetectorClientImpl
         } else {
             return remoteDetector;
         }
-
     }
 
     public void setLocalDetector(DetectorRequestExecutor localDetector) {

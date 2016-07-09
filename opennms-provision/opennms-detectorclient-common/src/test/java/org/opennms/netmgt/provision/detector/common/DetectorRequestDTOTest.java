@@ -36,11 +36,9 @@ import java.util.Map;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 
+public class DetectorRequestDTOTest extends XmlTestNoCastor<DetectorRequestDTO> {
 
-public class DetectorRequestDTOTest  extends XmlTestNoCastor<DetectorRequestDTO>{
-
-    public DetectorRequestDTOTest(DetectorRequestDTO sampleObject,
-            String sampleXml) {
+    public DetectorRequestDTOTest(DetectorRequestDTO sampleObject, String sampleXml) {
         super(sampleObject, sampleXml, null);
     } 
     
@@ -50,15 +48,14 @@ public class DetectorRequestDTOTest  extends XmlTestNoCastor<DetectorRequestDTO>
                 {
                     getDetectorRequest(),
                     "<?xml version=\"1.0\"?>\n" +
-                    "<detector-request location=\"MINION\" serviceName=\"ICMP\" address=\"localhost\">\n"+
-                    "<attributes><entry> <key>port</key> <value>8980</value> </entry> </attributes> \n" +
-                 "</detector-request>"
+                    "<detector-request location=\"MINION\" serviceName=\"ICMP\" address=\"localhost\">\n" +
+                      "<attributes><entry> <key>port</key> <value>8980</value> </entry> </attributes> \n" +
+                    "</detector-request>"
                 }
         });
     }
 
     public static DetectorRequestDTO getDetectorRequest() {
-        
         DetectorRequestDTO dto = new DetectorRequestDTO();
         dto.setAddress("localhost");
         dto.setLocation("MINION");

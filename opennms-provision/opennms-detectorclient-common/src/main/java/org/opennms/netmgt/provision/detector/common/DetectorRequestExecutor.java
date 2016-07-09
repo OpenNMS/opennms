@@ -32,7 +32,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface DetectorRequestExecutor {
 
-    CompletableFuture<DetectorResponseDTO> execute(
-            DetectorRequestDTO request);
+    CompletableFuture<DetectorResponseDTO> execute(DetectorRequestDTO request);
 
 }
