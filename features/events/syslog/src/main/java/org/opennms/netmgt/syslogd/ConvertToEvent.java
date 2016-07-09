@@ -175,11 +175,6 @@ public class ConvertToEvent {
         if (hostAddress != null && hostAddress.length() > 0) {
             // Set nodeId
             // TODO: HZN-816: This call should find nodes based on location/address tuple
-        	try {
-				SyslogdIPMgrJDBCImpl.getInstance().dataSourceSync();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
         	long nodeId = SyslogdIPMgrJDBCImpl.getInstance().getNodeId(hostAddress);
             if (nodeId != -1) {
                 bldr.setNodeid(nodeId);
