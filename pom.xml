@@ -2335,17 +2335,17 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-detector-common</artifactId>
+        <artifactId>opennms-detectorclient-common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-detector-command</artifactId>
+        <artifactId>opennms-detectorclient-camel</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-detector-camel</artifactId>
+        <artifactId>opennms-provision-command</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

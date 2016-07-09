@@ -886,11 +886,11 @@
       <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
     </feature>
     
-    <feature name="opennms-provisioning-command" description="OpenNMS :: Provisioning :: Command" version="${project.version}">
+    <feature name="opennms-provisioning-shell" description="OpenNMS :: Provisioning :: Shell" version="${project.version}">
       <feature>opennms-provisioning-detectors</feature>
       <feature>opennms-core-camel</feature>
-      <bundle>mvn:org.opennms/opennms-detector-common/${project.version}</bundle>
-      <bundle>mvn:org.opennms/opennms-detector-command/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detectorclient-common/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-provision-shell/${project.version}</bundle>
     </feature>
 
 </features>

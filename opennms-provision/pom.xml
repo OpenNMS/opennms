@@ -17,6 +17,7 @@
     <module>opennms-snmp-scanners</module>
     <module>opennms-provisiond</module>
     <module>opennms-provision-persistence</module>
+    <module>opennms-provision-shell</module>
     <module>opennms-detector-registry</module>
     <module>opennms-detector-datagram</module>
     <module>opennms-detector-jmx</module>
@@ -25,9 +26,8 @@
     <module>opennms-detector-generic</module>
     <module>opennms-detector-web</module>
     <module>opennms-detector-bsf</module>
-    <module>opennms-detector-common</module>
-    <module>opennms-detector-command</module>
-    <module>opennms-detector-camel</module>
+    <module>opennms-detectorclient-common</module>
+    <module>opennms-detectorclient-camel</module>
   </modules>
   <dependencyManagement>
     <dependencies>
@@ -93,17 +93,17 @@
             </dependency>
             <dependency>
                 <groupId>org.opennms</groupId>
-                <artifactId>opennms-detector-common</artifactId>
+                <artifactId>opennms-detectorclient-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.opennms</groupId>
-                <artifactId>opennms-detector-command</artifactId>
+                <artifactId>opennms-detectorclient-camel</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.opennms</groupId>
-                <artifactId>opennms-detector-camel</artifactId>
+                <artifactId>opennms-provision-command</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

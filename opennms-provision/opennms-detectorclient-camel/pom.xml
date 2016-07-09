@@ -6,8 +6,8 @@
     <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>opennms-detector-camel</artifactId>
-  <name>OpenNMS :: Provision :: Detector Camel</name>
+  <artifactId>opennms-detectorclient-camel</artifactId>
+  <name>OpenNMS :: Provision :: Detector Client :: Camel</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -42,7 +42,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-detector-common</artifactId>
+      <artifactId>opennms-detectorclient-common</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
