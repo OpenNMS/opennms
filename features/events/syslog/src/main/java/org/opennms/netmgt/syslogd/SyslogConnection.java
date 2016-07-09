@@ -161,6 +161,13 @@ public class SyslogConnection implements Callable<Callable<?>> {
         try {
             LOG.debug("Converting syslog message into event ({} bytes)", m_bytes.remaining());
 
+			if (!SyslogdIPMgrJDBCImpl.isDataBaseSync()) {
+				SyslogdIPMgrJDBCImpl.getInstance().dataSourceSync();
+				SyslogdIPMgrJDBCImpl.setDataBaseSync(true);
+			}
+            
+            
+            
             // TODO: Change to a static call?
             ConvertToEvent re = new ConvertToEvent(
                 m_systemId,

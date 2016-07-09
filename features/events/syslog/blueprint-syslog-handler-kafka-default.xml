@@ -36,9 +36,6 @@
 		<argument ref="syslogdConfig"/>
 	</bean>
 	
-	<bean id="syslogdJDDBCManger" class="org.opennms.netmgt.syslogd.SyslogdIPMgrJDBCImpl" init-method="dataSourceSync"/>
-	
-	
 	<camelContext id="syslogConnectionHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerDefaultKafkaProperties" />
 

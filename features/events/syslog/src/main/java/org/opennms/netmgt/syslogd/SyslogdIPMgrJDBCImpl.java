@@ -62,7 +62,17 @@ final class SyslogdIPMgrJDBCImpl implements SyslogdIPMgr{
      */
     private static Map<String,Long> m_knownips = new ConcurrentHashMap<String,Long>();
     
-    public static SyslogdIPMgr getInstance() {
+    private static boolean m_dataBaseSync;
+    
+    public static void setDataBaseSync(boolean dataBaseSync) {
+		m_dataBaseSync = dataBaseSync;
+	}
+
+	public static boolean isDataBaseSync() {
+		return m_dataBaseSync;
+	}
+
+	public static SyslogdIPMgr getInstance() {
     	return new SyslogdIPMgrJDBCImpl();
     }
 
