@@ -1,0 +1,3 @@
+org.opennms.netmgt.provision.detector.simple.FtpDetectorFactory
+org.opennms.netmgt.provision.detector.simple.HttpDetectorFactory
+org.opennms.netmgt.provision.detector.simple.ImapDetectorFactory

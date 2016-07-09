@@ -25,6 +25,9 @@
     <module>opennms-detector-generic</module>
     <module>opennms-detector-web</module>
     <module>opennms-detector-bsf</module>
+    <module>opennms-detector-common</module>
+    <module>opennms-detector-command</module>
+    <module>opennms-detector-camel</module>
   </modules>
   <dependencyManagement>
     <dependencies>
@@ -86,6 +89,21 @@
             <dependency>
                 <groupId>org.opennms</groupId>
                 <artifactId>opennms-detector-web</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms</groupId>
+                <artifactId>opennms-detector-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms</groupId>
+                <artifactId>opennms-detector-command</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms</groupId>
+                <artifactId>opennms-detector-camel</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
