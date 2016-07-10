@@ -32,11 +32,11 @@ import java.net.InetAddress;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
+import org.opennms.netmgt.provision.DetectFutureListener;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
@@ -47,8 +47,7 @@ public class DetectorRequestExecutorLocalImpl implements DetectorRequestExecutor
     @Autowired
     private ServiceDetectorRegistry serviceDetectorRegistry;
 
-    // TODO: Use a better threading strategy for sync detectors.
-    private final Executor executor = Executors.newSingleThreadExecutor();
+    private Executor executor;
 
     @Override
     public CompletableFuture<DetectorResponseDTO> execute(DetectorRequestDTO request) {
@@ -82,26 +81,32 @@ public class DetectorRequestExecutorLocalImpl implements DetectorRequestExecutor
                 }
             }, executor);
         } else if (detector instanceof AsyncServiceDetector) {
+            final CompletableFuture<DetectorResponseDTO> future = new CompletableFuture<>();
             final AsyncServiceDetector asyncDetector = (AsyncServiceDetector) detector;
-            // TODO: HZN-839: We should update the AsyncServiceDetector interface to
-            // return a CompletableFuture instead of a DetectFuture.
-            return CompletableFuture.supplyAsync(new Supplier<DetectorResponseDTO>() {
-                @Override
-                public DetectorResponseDTO get() {
-                    DetectorResponseDTO responseDTO = new DetectorResponseDTO();
-                    try {
-                        DetectFuture future = asyncDetector.isServiceDetected(address);
-                        future.awaitFor();
-                        responseDTO.setDetected(future.isServiceDetected());
-                    } catch (Throwable t) {
-                        responseDTO.setDetected(false);
-                        responseDTO.setFailureMesage(t.getMessage());
-                    } finally {
-                        asyncDetector.dispose();
+            try {
+                // TODO: HZN-839: We should update the AsyncServiceDetector interface to
+                // return a CompletableFuture instead of a DetectFuture.
+                DetectFuture detectFuture = asyncDetector.isServiceDetected(address);
+                detectFuture.addListener(new DetectFutureListener<DetectFuture>() {
+                    @Override
+                    public void operationComplete(DetectFuture detectFuture) {
+                        DetectorResponseDTO responseDTO = new DetectorResponseDTO();
+                        if (detectFuture.getException() != null) {
+                            responseDTO.setDetected(false);
+                            responseDTO.setFailureMesage(detectFuture.getException().getMessage());
+                        } else {
+                            responseDTO.setDetected(detectFuture.isServiceDetected());
+                        }
+                        future.complete(responseDTO);
                     }
-                    return responseDTO;
-                }
-            }, executor);
+                });
+            } catch (Throwable t) {
+                DetectorResponseDTO responseDTO = new DetectorResponseDTO();
+                responseDTO.setDetected(false);
+                responseDTO.setFailureMesage(t.getMessage());
+                future.complete(responseDTO);
+            }
+            return future;
         } else {
             throw new IllegalArgumentException("Unsupported detector type.");
         }
@@ -109,5 +114,9 @@ public class DetectorRequestExecutorLocalImpl implements DetectorRequestExecutor
 
     public void setServiceDetectorRegistry(ServiceDetectorRegistry serviceDetectorRegistry) {
         this.serviceDetectorRegistry = serviceDetectorRegistry;
+    }
+
+    public void setExecutor(Executor executor) {
+        this.executor = executor;
     }
 }

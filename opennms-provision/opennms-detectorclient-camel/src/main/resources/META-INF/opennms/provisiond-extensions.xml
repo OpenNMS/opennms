@@ -19,8 +19,11 @@
   <bean id="serviceDetectorRegistry" class="org.opennms.netmgt.provision.detector.registry.impl.ServiceDetectorRegistryImpl"/>
   <onmsgi:service interface="org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry" ref="serviceDetectorRegistry"/>
 
-  <bean id="localDetectorExecutor" class="org.opennms.netmgt.provision.detector.common.DetectorRequestExecutorLocalImpl"/>
-  
+  <bean id="localDetectorExecutor" class="org.opennms.netmgt.provision.detector.common.DetectorRequestExecutorLocalImpl">
+    <!-- Use the scanExecutor defined in applicationContext-provisiond.xml for executing the detectors -->
+    <property name="executor" ref="scanExecutor"/>
+  </bean>
+
   <bean id="remoteDetectorExecutor" class="org.opennms.netmgt.provision.detector.camel.DetectorRequestExecutorRemoteImpl"/>
 
   <bean id="locationAwareDetectorClient" class="org.opennms.netmgt.provision.detector.common.DelegatingLocationAwareDetectorClientImpl"/>
