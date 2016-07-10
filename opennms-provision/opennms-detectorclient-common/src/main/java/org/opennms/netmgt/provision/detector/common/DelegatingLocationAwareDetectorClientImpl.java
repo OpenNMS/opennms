@@ -29,6 +29,8 @@
 package org.opennms.netmgt.provision.detector.common;
 
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.provision.DetectorRequestBuilder;
+import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

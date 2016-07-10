@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.common;
+package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
 import java.util.Map;

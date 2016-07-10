@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.opennms.netmgt.provision.DetectorRequestBuilder;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 

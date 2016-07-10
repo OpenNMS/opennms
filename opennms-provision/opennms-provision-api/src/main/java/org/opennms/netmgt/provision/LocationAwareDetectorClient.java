@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.common;
+package org.opennms.netmgt.provision;
 
 public interface LocationAwareDetectorClient {
 

@@ -42,7 +42,7 @@ import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opennms.netmgt.provision.detector.common.LocationAwareDetectorClient;
+import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 
 @Command(scope = "provision", name = "detect", description = "Detect the service on a host at specified location")
 public class DetectCommand extends OsgiCommandSupport {
