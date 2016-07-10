@@ -41,10 +41,11 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
+import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.provision.NodePolicy;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,8 +55,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author brozow
  */
 public interface ProvisionService {
-    
-	
+
     boolean isRequisitionedEntityDeletionEnabled();
 
     boolean isDiscoveryEnabled();
@@ -135,7 +135,6 @@ public interface ProvisionService {
     @Transactional
     void deleteService(Integer nodeId, InetAddress addr, String service);
 
-
     /**
      * Insert the provided node into the database
      */
@@ -208,8 +207,8 @@ public interface ProvisionService {
 
     Requisition loadRequisition(Resource resource);
 
-    List<ServiceDetector> getDetectorsForForeignSource(String foreignSource);
-    
+    List<PluginConfig> getDetectorsForForeignSource(String foreignSource);
+
     List<NodePolicy> getNodePoliciesForForeignSource(String foreignSourceName);
     
     List<IpInterfacePolicy> getIpInterfacePoliciesForForeignSource(String foreignSourceName);
@@ -236,5 +235,7 @@ public interface ProvisionService {
 
     public HostnameResolver getHostnameResolver();
     public void setHostnameResolver(final HostnameResolver resolver);
+
+    public LocationAwareDetectorClient getLocationAwareDetectorClient();
 
 }
