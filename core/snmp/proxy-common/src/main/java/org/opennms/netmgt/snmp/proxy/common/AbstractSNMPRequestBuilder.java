@@ -57,7 +57,7 @@ public abstract class AbstractSNMPRequestBuilder<T> implements SNMPRequestBuilde
     }
 
     @Override
-    public SNMPRequestBuilder<T> atLocation(String location) {
+    public SNMPRequestBuilder<T> withLocation(String location) {
         this.location = location;
         return this;
     }

@@ -6,7 +6,7 @@
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
         <command name="provision/detect">
-            <action class="org.opennms.netmgt.provision.detector.command.DetectorCommand">
+            <action class="org.opennms.netmgt.provision.detector.command.DetectCommand">
               <property name="locationAwareDetectorClient" ref="locationAwareDetectorClient"/>
             </action>
             <completers>
@@ -16,6 +16,8 @@
         </command>
     </command-bundle>
 
-    <bean id="serviceNameCompleter" class="org.opennms.netmgt.provision.detector.command.ServiceNameCompleter"/>
-    
+    <reference id="serviceDetectorRegistry" interface="org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry" availability="mandatory"/>
+    <bean id="serviceNameCompleter" class="org.opennms.netmgt.provision.detector.command.ServiceNameCompleter">
+        <property name="serviceDetectorRegistry" ref="serviceDetectorRegistry" />
+    </bean>
 </blueprint>

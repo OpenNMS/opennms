@@ -33,19 +33,18 @@ import static org.junit.Assert.assertNotEquals;
 import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.activemq.broker.BrokerService;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Component;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
@@ -84,7 +83,8 @@ public class LocationAwareSnmpClientIT {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
 
-    private static BrokerService s_broker = null;
+    @ClassRule
+    public static ActiveMQBroker s_broker = new ActiveMQBroker();
 
     @Autowired
     private SnmpPeerFactory snmpPeerFactory;
@@ -104,19 +104,6 @@ public class LocationAwareSnmpClientIT {
     private Component queuingservice;
 
     private SnmpAgentConfig agentConfig;
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        s_broker = new BrokerService();
-        s_broker.start();
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (s_broker != null) {
-            s_broker.stop();
-        }
-    }
 
     @Before
     public void setUp() {
@@ -145,7 +132,7 @@ public class LocationAwareSnmpClientIT {
         final IPAddressGatheringTracker tracker = new IPAddressGatheringTracker();
         locationAwareSnmpClient.walk(agentConfig, tracker)
             .withDescription(tracker.getDescription())
-            .atLocation(identity.getLocation())
+            .withLocation(identity.getLocation())
             .execute().get();
         ExpectedResults.compareToKnownIpAddressList(tracker.getIpAddresses());
     }
@@ -176,7 +163,7 @@ public class LocationAwareSnmpClientIT {
         final IPAddressGatheringTracker tracker = new IPAddressGatheringTracker();
         locationAwareSnmpClient.walk(agentConfig, tracker)
             .withDescription(tracker.getDescription())
-            .atLocation(REMOTE_LOCATION_NAME)
+            .withLocation(REMOTE_LOCATION_NAME)
             .execute().get();
         ExpectedResults.compareToKnownIpAddressList(tracker.getIpAddresses());
 

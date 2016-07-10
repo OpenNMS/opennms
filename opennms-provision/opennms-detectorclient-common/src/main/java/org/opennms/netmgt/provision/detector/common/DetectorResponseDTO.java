@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.detector.common;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -52,18 +54,18 @@ public class DetectorResponseDTO {
         }
     }
 
-    @XmlAttribute(name = "isDetected")
-    private boolean isDetected;
+    @XmlAttribute(name = "detected")
+    private boolean detected;
 
-    @XmlAttribute(name = "failureMessage")
+    @XmlAttribute(name = "failure-message")
     private String failureMesage;
 
     public boolean isDetected() {
-        return isDetected;
+        return detected;
     }
 
-    public void setDetected(boolean isDetected) {
-        this.isDetected = isDetected;
+    public void setDetected(boolean detected) {
+        this.detected = detected;
     }
 
     public String getFailureMesage() {
@@ -76,12 +78,7 @@ public class DetectorResponseDTO {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((failureMesage == null) ? 0 : failureMesage.hashCode());
-        result = prime * result + (isDetected ? 1231 : 1237);
-        return result;
+        return Objects.hash(detected, failureMesage);
     }
 
     @Override
@@ -93,14 +90,8 @@ public class DetectorResponseDTO {
         if (getClass() != obj.getClass())
             return false;
         DetectorResponseDTO other = (DetectorResponseDTO) obj;
-        if (failureMesage == null) {
-            if (other.failureMesage != null)
-                return false;
-        } else if (!failureMesage.equals(other.failureMesage))
-            return false;
-        if (isDetected != other.isDetected)
-            return false;
-        return true;
+        return Objects.equals(this.detected, other.detected) &&
+                Objects.equals(this.failureMesage, other.failureMesage);
     }
 
 }

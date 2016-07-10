@@ -28,32 +28,86 @@
 
 package org.opennms.netmgt.provision.detector.common;
 
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
+import org.opennms.netmgt.provision.AsyncServiceDetector;
+import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.ServiceDetector;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
+import org.opennms.netmgt.provision.SyncServiceDetector;
+import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class DetectorRequestExecutorLocalImpl implements DetectorRequestExecutor {
 
+    @Autowired
+    private ServiceDetectorRegistry serviceDetectorRegistry;
+
+    // TODO: Use a better threading strategy for sync detectors.
+    private final Executor executor = Executors.newSingleThreadExecutor();
+
     @Override
     public CompletableFuture<DetectorResponseDTO> execute(DetectorRequestDTO request) {
-
-        String serviceName = request.getServiceName();
-        String address = request.getAddress();
-        Map<String, String> attributes = request.getAttributes();
-
-        ServiceDetectorFactoryProvider serviceProvider = new ServiceDetectorFactoryProvider();
-        ServiceDetector detector = serviceProvider.getDetector(serviceName);
-
-        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(detector);
-        wrapper.setPropertyValues(attributes);
-
-        DetectorHandler detectorHandler = new DetectorHandler();
-        final CompletableFuture<DetectorResponseDTO> output = detectorHandler.execute(detector, address);
-
-        return output;
+        String className = request.getClassName();
+        InetAddress address = request.getAddress();
+        Map<String, String> attributes = request.getAttributeMap();
+        ServiceDetector detector = serviceDetectorRegistry.getDetectorByClassName(className, attributes);
+        if (detector == null) {
+            throw new IllegalArgumentException("No detector found with class name '" + className + "'.");
+        }
+        return detectService(detector, address);
     }
 
+    private CompletableFuture<DetectorResponseDTO> detectService(ServiceDetector detector, InetAddress address) {
+        detector.init();
+        if (detector instanceof SyncServiceDetector) {
+            final SyncServiceDetector syncDetector = (SyncServiceDetector) detector;
+            return CompletableFuture.supplyAsync(new Supplier<DetectorResponseDTO>() {
+                @Override
+                public DetectorResponseDTO get() {
+                    DetectorResponseDTO responseDTO = new DetectorResponseDTO();
+                    try {
+                        responseDTO.setDetected(syncDetector.isServiceDetected(address));
+                    } catch (Throwable t) {
+                        responseDTO.setDetected(false);
+                        responseDTO.setFailureMesage(t.getMessage());
+                    } finally {
+                        syncDetector.dispose();
+                    }
+                    return responseDTO;
+                }
+            }, executor);
+        } else if (detector instanceof AsyncServiceDetector) {
+            final AsyncServiceDetector asyncDetector = (AsyncServiceDetector) detector;
+            // TODO: HZN-839: We should update the AsyncServiceDetector interface to
+            // return a CompletableFuture instead of a DetectFuture.
+            return CompletableFuture.supplyAsync(new Supplier<DetectorResponseDTO>() {
+                @Override
+                public DetectorResponseDTO get() {
+                    DetectorResponseDTO responseDTO = new DetectorResponseDTO();
+                    try {
+                        DetectFuture future = asyncDetector.isServiceDetected(address);
+                        future.awaitFor();
+                        responseDTO.setDetected(future.isServiceDetected());
+                    } catch (Throwable t) {
+                        responseDTO.setDetected(false);
+                        responseDTO.setFailureMesage(t.getMessage());
+                    } finally {
+                        asyncDetector.dispose();
+                    }
+                    return responseDTO;
+                }
+            }, executor);
+        } else {
+            throw new IllegalArgumentException("Unsupported detector type.");
+        }
+    }
+
+    public void setServiceDetectorRegistry(ServiceDetectorRegistry serviceDetectorRegistry) {
+        this.serviceDetectorRegistry = serviceDetectorRegistry;
+    }
 }

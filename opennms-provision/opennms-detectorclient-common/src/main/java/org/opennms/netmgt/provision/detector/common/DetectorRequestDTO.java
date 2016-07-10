@@ -28,18 +28,23 @@
 
 package org.opennms.netmgt.provision.detector.common;
 
-import java.util.HashMap;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.core.camel.JaxbUtilsMarshalProcessor;
 import org.opennms.core.camel.JaxbUtilsUnmarshalProcessor;
+import org.opennms.core.network.InetAddressXmlAdapter;
 
 @XmlRootElement(name = "detector-request")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -60,14 +65,15 @@ public class DetectorRequestDTO {
     @XmlAttribute(name = "location")
     private String location;
 
-    @XmlElement(name = "attributes")
-    private Map<String, String> attributes = new HashMap<>();
-
-    @XmlAttribute(name = "serviceName")
-    private String serviceName;
+    @XmlAttribute(name = "class-name")
+    private String className;
 
     @XmlAttribute(name = "address")
-    private String address;
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+    private InetAddress address;
+
+    @XmlElement(name = "attribute")
+    private List<DetectorAttributeDTO> attributes = new ArrayList<>();
 
     public String getLocation() {
         return location;
@@ -77,33 +83,47 @@ public class DetectorRequestDTO {
         this.location = location;
     }
 
-    public Map<String, String> getAttributes() {
+    public List<DetectorAttributeDTO> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(Map<String, String> attributes) {
+    public void setAttributes(List<DetectorAttributeDTO> attributes) {
         this.attributes = attributes;
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public void addAttribute(String key, String value) {
+        attributes.add(new DetectorAttributeDTO(key, value));
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+    public void addAttributes(Map<String, String> attributes) {
+        attributes.entrySet().stream()
+            .forEach(e -> this.addAttribute(e.getKey(), e.getValue()));
     }
 
-    public String getAddress() {
+    public Map<String, String> getAttributeMap() {
+        return attributes.stream().collect(Collectors.toMap(DetectorAttributeDTO::getKey,
+                DetectorAttributeDTO::getValue));
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public InetAddress getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(InetAddress address) {
         this.address = address;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, attributes, serviceName, address);
+        return Objects.hash(location, attributes, className, address);
     }
 
     @Override
@@ -118,9 +138,8 @@ public class DetectorRequestDTO {
         return Objects.equals(this.location, other.location)
                 && Objects.equals(this.location, other.location)
                 && Objects.equals(this.attributes, other.attributes)
-                && Objects.equals(this.serviceName, other.serviceName)
+                && Objects.equals(this.className, other.className)
                 && Objects.equals(this.address, other.address);
 
     }
-
 }

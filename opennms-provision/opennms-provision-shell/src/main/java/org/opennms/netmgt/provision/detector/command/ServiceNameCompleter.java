@@ -32,17 +32,20 @@ import java.util.List;
 
 import org.apache.karaf.shell.console.Completer;
 import org.apache.karaf.shell.console.completer.StringsCompleter;
-import org.opennms.netmgt.provision.detector.common.ServiceDetectorFactoryProvider;
+import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 
 public class ServiceNameCompleter implements Completer {
+
+    private ServiceDetectorRegistry serviceDetectorRegistry;
 
     @Override
     public int complete(String buffer, int cursor, List<String> candidates) {
         StringsCompleter serviceNames = new StringsCompleter();
-        ServiceDetectorFactoryProvider factory = new ServiceDetectorFactoryProvider();
-        List<String> detectorNames = factory.getAllDetectorNames();
-        serviceNames.getStrings().addAll(detectorNames);
+        serviceNames.getStrings().addAll(serviceDetectorRegistry.getServiceNames());
         return serviceNames.complete(buffer, cursor, candidates);
     }
 
+    public void setServiceDetectorRegistry(ServiceDetectorRegistry serviceDetectorRegistry) {
+        this.serviceDetectorRegistry = serviceDetectorRegistry;
+    }
 }

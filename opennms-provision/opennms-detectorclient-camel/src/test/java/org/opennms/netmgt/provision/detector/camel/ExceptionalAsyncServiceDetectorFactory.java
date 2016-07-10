@@ -28,28 +28,12 @@
 
 package org.opennms.netmgt.provision.detector.camel;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.test.context.ContextConfiguration;
+import org.opennms.netmgt.provision.ServiceDetectorFactory;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/provisiond-extensions.xml"
-})
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext=false)
-public class DetectorApplicationContextIT {
+public class ExceptionalAsyncServiceDetectorFactory implements ServiceDetectorFactory<ExceptionalAsyncServiceDetector> {
 
-    @Test
-    public void testConfig() {
-        // tests loading of provisiond-extensions.xml
+    @Override
+    public ExceptionalAsyncServiceDetector createDetector() {
+        return new ExceptionalAsyncServiceDetector();
     }
 }

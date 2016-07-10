@@ -26,26 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.snmp.proxy;
+package org.opennms.netmgt.provision.detector.camel;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import org.opennms.netmgt.provision.ServiceDetectorFactory;
 
-/**
- * Fluent API for building SNMP requests.
- *
- * The methods here are common to all SNMP request types.
- *
- * @author jwhite
- */
-public interface SNMPRequestBuilder<T> {
+public class ExceptionalSyncServiceDetectorFactory implements ServiceDetectorFactory<ExceptionalSyncServiceDetector> {
 
-    SNMPRequestBuilder<T> withLocation(String location);
-
-    SNMPRequestBuilder<T> withDescription(String string);
-
-    SNMPRequestBuilder<T> withTimeToLive(long duration, TimeUnit unit);
-
-    CompletableFuture<T> execute();
-
+    @Override
+    public ExceptionalSyncServiceDetector createDetector() {
+        return new ExceptionalSyncServiceDetector();
+    }
 }

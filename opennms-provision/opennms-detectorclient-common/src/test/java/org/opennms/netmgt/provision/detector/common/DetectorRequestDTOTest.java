@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.provision.detector.common;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
@@ -41,28 +41,26 @@ public class DetectorRequestDTOTest extends XmlTestNoCastor<DetectorRequestDTO> 
     public DetectorRequestDTOTest(DetectorRequestDTO sampleObject, String sampleXml) {
         super(sampleObject, sampleXml, null);
     } 
-    
+
     @Parameters
     public static Collection<Object[]> data() throws Exception {
         return Arrays.asList(new Object[][] {
-                {
-                    getDetectorRequest(),
-                    "<?xml version=\"1.0\"?>\n" +
-                    "<detector-request location=\"MINION\" serviceName=\"ICMP\" address=\"localhost\">\n" +
-                      "<attributes><entry> <key>port</key> <value>8980</value> </entry> </attributes> \n" +
-                    "</detector-request>"
-                }
+            {
+                getDetectorRequest(),
+                "<?xml version=\"1.0\"?>\n" +
+                "<detector-request location=\"MINION\" class-name=\"org.opennms.netmgt.provision.detector.icmp.IcmpDetector\" address=\"127.0.0.1\">\n" +
+                  "<attribute key=\"port\">8980</attribute>\n" +
+                "</detector-request>"
+            }
         });
     }
 
-    public static DetectorRequestDTO getDetectorRequest() {
+    public static DetectorRequestDTO getDetectorRequest() throws UnknownHostException {
         DetectorRequestDTO dto = new DetectorRequestDTO();
-        dto.setAddress("localhost");
         dto.setLocation("MINION");
-        Map<String, String> properties = new HashMap<String, String>();
-        properties.put("port", "8980");
-        dto.setAttributes(properties);
-        dto.setServiceName("ICMP");
+        dto.setClassName("org.opennms.netmgt.provision.detector.icmp.IcmpDetector");
+        dto.setAddress(InetAddress.getByName("127.0.0.1"));
+        dto.addAttribute("port", "8980");
         return dto;
     }
 }

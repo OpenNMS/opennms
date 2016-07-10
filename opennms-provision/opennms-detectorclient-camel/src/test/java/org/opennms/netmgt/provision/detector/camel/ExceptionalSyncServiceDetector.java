@@ -26,34 +26,66 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.common;
+package org.opennms.netmgt.provision.detector.camel;
 
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.net.InetAddress;
 
-import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.SyncServiceDetector;
 
-import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
-
-public class DetectorRequestExecutorImpl implements DetectorRequestExecutor {
-
-    private ServiceDetectorRegistry serviceDetectorRegistry;
+public class ExceptionalSyncServiceDetector implements SyncServiceDetector {
 
     @Override
-    public CompletableFuture<DetectorResponseDTO> execute(DetectorRequestDTO request) {
-        String serviceName = request.getServiceName();
-        String address = request.getAddress();
-        Map<String, String> attributes = request.getAttributes();
-
-        ServiceDetector detector = serviceDetectorRegistry.getDetectorByServiceName(serviceName, attributes);
-        DetectorHandler detectorHandler = new DetectorHandler();
-        final CompletableFuture<DetectorResponseDTO> output = detectorHandler.execute(detector, address);
-
-        return output;
+    public void init() {
+        // pass
     }
 
-    public void setServiceDetectorRegistry(ServiceDetectorRegistry serviceDetectorRegistry) {
-        this.serviceDetectorRegistry = serviceDetectorRegistry;
+    @Override
+    public String getServiceName() {
+        return "EXCEPTIONAL-SYNC";
     }
 
+    @Override
+    public void setServiceName(String serviceName) {
+        // pass
+    }
+
+    @Override
+    public int getPort() {
+        return 0;
+    }
+
+    @Override
+    public void setPort(int port) {
+        // pass
+    }
+
+    @Override
+    public int getTimeout() {
+        return 0;
+    }
+
+    @Override
+    public void setTimeout(int timeout) {
+        // pass
+    }
+
+    @Override
+    public String getIpMatch() {
+        return null;
+    }
+
+    @Override
+    public void setIpMatch(String ipMatch) {
+        // pass
+    }
+
+    @Override
+    public void dispose() {
+        // pass
+    }
+
+    @Override
+    public boolean isServiceDetected(InetAddress address) {
+        throw new IllegalArgumentException("Failure on sync detection.");
+    }
 }

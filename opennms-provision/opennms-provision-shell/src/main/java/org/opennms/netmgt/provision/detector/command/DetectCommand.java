@@ -28,23 +28,24 @@
 
 package org.opennms.netmgt.provision.detector.command;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opennms.netmgt.provision.detector.common.DetectorResponseDTO;
 import org.opennms.netmgt.provision.detector.common.LocationAwareDetectorClient;
 
 @Command(scope = "provision", name = "detect", description = "Detect the service on a host at specified location")
-public class DetectorCommand extends OsgiCommandSupport {
+public class DetectCommand extends OsgiCommandSupport {
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String m_location;
@@ -61,22 +62,27 @@ public class DetectorCommand extends OsgiCommandSupport {
     private LocationAwareDetectorClient locationAwareDetectorClient;
 
     @Override
-    protected Object doExecute() throws Exception {
-        System.out.printf("Trying to detect '%s' service  on  '%s' ", serviceName, m_host);
-        Map<String, String> properties = parse(attributes);
-        final CompletableFuture<DetectorResponseDTO> future = locationAwareDetectorClient.detect().atLocation(m_location).atAddress(m_host).withAttributes(properties).byService(serviceName).execute();
+    protected Object doExecute() throws UnknownHostException {
+        System.out.printf("Trying to detect '%s' on '%s' ", serviceName, m_host);
+        final CompletableFuture<Boolean> future = locationAwareDetectorClient.detect()
+                .withLocation(m_location)
+                .withServiceName(serviceName)
+                .withAddress(InetAddress.getByName(m_host))
+                .withAttributes(parse(attributes))
+                .execute();
+
         while (true) {
             try {
-                DetectorResponseDTO detectorResponse = future.get(1,
-                                                                  TimeUnit.SECONDS);
-                System.out.printf("\nThe '%s' service %s detected on %s\n",
-                                  serviceName,
-                                  detectorResponse.isDetected() ? "WAS"
-                                                                : "WAS NOT",
-                                  m_host);
-                if (StringUtils.isNotBlank(detectorResponse.getFailureMesage())) {
-                    System.out.printf("with error response %s",
-                                      detectorResponse.getFailureMesage());
+                try {
+                    boolean isDetected = future.get(1, TimeUnit.SECONDS);
+                    System.out.printf("\n'%s' %s detected on %s\n",
+                            serviceName,
+                            isDetected ? "WAS" : "WAS NOT",
+                            m_host);
+                } catch (InterruptedException e) {
+                    System.out.println("\nInterrupted.");
+                } catch (ExecutionException e) {
+                    System.out.printf("\nDetection failed with: %s\n", e);
                 }
                 break;
             } catch (TimeoutException e) {

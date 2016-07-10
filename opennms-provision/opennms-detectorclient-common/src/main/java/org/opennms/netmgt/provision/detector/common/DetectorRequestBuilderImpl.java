@@ -28,72 +28,96 @@
 
 package org.opennms.netmgt.provision.detector.common;
 
+import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+
+import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 
 public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
     private String location;
 
-    private Map<String, String> attributes;
+    private String className;
 
-    private String address;
+    private InetAddress address;
 
-    private String service;
+    private Map<String, String> attributes = new HashMap<>();
 
-    private DelegatingLocationAwareDetectorClientImpl client;
+    private final DelegatingLocationAwareDetectorClientImpl client;
 
-    public DetectorRequestBuilderImpl(DelegatingLocationAwareDetectorClientImpl client) {
-        super();
+    private final ServiceDetectorRegistry registry;
+
+    public DetectorRequestBuilderImpl(DelegatingLocationAwareDetectorClientImpl client, ServiceDetectorRegistry registry) {
         this.client = client;
+        this.registry = registry;
     }
 
     @Override
-    public DetectorRequestBuilder atLocation(String location) {
+    public DetectorRequestBuilder withLocation(String location) {
         this.location = location;
         return this;
     }
 
+
     @Override
-    public DetectorRequestBuilder withAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
+    public DetectorRequestBuilder withClassName(String className) {
+        this.className = className;
         return this;
     }
 
     @Override
-    public DetectorRequestBuilder atAddress(String address) {
+    public DetectorRequestBuilder withServiceName(String serviceName) {
+        ServiceDetector detector = registry.getDetectorByServiceName(serviceName);
+        if (detector == null) {
+            throw new IllegalArgumentException("No detector found with service name '" + serviceName + "'.");
+        }
+        this.className = detector.getClass().getCanonicalName();
+        return this;
+    }
+
+    @Override
+    public DetectorRequestBuilder withAddress(InetAddress address) {
         this.address = address;
         return this;
     }
 
     @Override
-    public DetectorRequestBuilder byService(String service) {
-        this.service = service;
+    public DetectorRequestBuilder withAttributes(Map<String, String> attributes) {
+        this.attributes.putAll(attributes);
         return this;
     }
 
     @Override
-    public CompletableFuture<DetectorResponseDTO> execute() {
-        final DetectorRequestDTO detectorRequestDTO = new DetectorRequestDTO();
-        final CompletableFuture<DetectorResponseDTO> future = new CompletableFuture<DetectorResponseDTO>();
-        detectorRequestDTO.setAddress(address);
-        detectorRequestDTO.setAttributes(attributes);
-        detectorRequestDTO.setLocation(location);
-        detectorRequestDTO.setServiceName(service);
-        try {
-            return client.getDetectorRequestExecutor(location).execute(detectorRequestDTO).thenApply(res -> processResponse(res));
-        } catch (Exception e) {
-            DetectorResponseDTO response = new DetectorResponseDTO();
-            response.setDetected(false);
-            response.setFailureMesage(e.getMessage());
-            future.complete(response);
-            return future;
+    public DetectorRequestBuilder withAttribute(String key, String value) {
+        attributes.put(key, value);
+        return this;
+    }
+
+    @Override
+    public CompletableFuture<Boolean> execute() {
+        if (address == null) {
+            throw new IllegalArgumentException("Address is required.");
+        } else if (className == null) {
+            throw new IllegalArgumentException("Detector class name is required.");
         }
 
-    }
+        final DetectorRequestDTO detectorRequestDTO = new DetectorRequestDTO();
+        detectorRequestDTO.setLocation(location);
+        detectorRequestDTO.setClassName(className);
+        detectorRequestDTO.setAddress(address);
+        detectorRequestDTO.addAttributes(attributes);
 
-    DetectorResponseDTO processResponse(DetectorResponseDTO response) {
-        return response;
+        return client.getDetectorRequestExecutor(location)
+            .execute(detectorRequestDTO)
+            .thenApply(res -> {
+                if (res.getFailureMesage() != null) {
+                    throw new RuntimeException(res.getFailureMesage());
+                } else {
+                    return res.isDetected();
+                }
+            });
     }
-
 }

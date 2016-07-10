@@ -28,19 +28,24 @@
 
 package org.opennms.netmgt.provision.detector.common;
 
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public interface DetectorRequestBuilder {
 
-    DetectorRequestBuilder atLocation(String location);
+    DetectorRequestBuilder withLocation(String location);
+
+    DetectorRequestBuilder withServiceName(String serviceName);
+
+    DetectorRequestBuilder withClassName(String className);
+
+    DetectorRequestBuilder withAddress(InetAddress address);
+
+    DetectorRequestBuilder withAttribute(String key, String value);
 
     DetectorRequestBuilder withAttributes(Map<String, String> attributes);
 
-    DetectorRequestBuilder atAddress(String address);
-
-    DetectorRequestBuilder byService(String service);
-
-    CompletableFuture<DetectorResponseDTO> execute();
+    CompletableFuture<Boolean> execute();
 
 }

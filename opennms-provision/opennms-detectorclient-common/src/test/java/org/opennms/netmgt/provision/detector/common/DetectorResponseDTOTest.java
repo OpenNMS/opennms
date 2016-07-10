@@ -43,11 +43,11 @@ public class DetectorResponseDTOTest extends XmlTestNoCastor<DetectorResponseDTO
     @Parameters
     public static Collection<Object[]> data() throws Exception {
         return Arrays.asList(new Object[][] {
-                {
-                    getDetectorResponse(),
-                    "<?xml version=\"1.0\"?>\n" +
-                    "<detector-response isDetected=\"true\" failureMessage=\"classCast exception\"/>"
-                }
+            {
+                getDetectorResponse(),
+                "<?xml version=\"1.0\"?>\n" +
+                "<detector-response detected=\"true\" failure-message=\"classCast exception\"/>"
+            }
         });
     }
 

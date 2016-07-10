@@ -1,0 +1,2 @@
+org.opennms.netmgt.provision.detector.camel.ExceptionalAsyncServiceDetectorFactory
+org.opennms.netmgt.provision.detector.camel.ExceptionalSyncServiceDetectorFactory

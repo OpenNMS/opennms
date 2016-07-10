@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.detector.registry.impl;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -44,8 +45,23 @@ import org.springframework.beans.PropertyAccessorFactory;
 public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry {
 	private static final Logger LOG = LoggerFactory.getLogger(ServiceDetectorRegistryImpl.class);
 
+	public static final String IMPLEMENTATION_KEY = "implementation";
+
     private final Map<String, ServiceDetectorFactory<? extends ServiceDetector>> m_factoriesByServiceName = new HashMap<>();
     private final Map<String, ServiceDetectorFactory<? extends ServiceDetector>> m_factoriesByClassName = new HashMap<>();
+
+    public ServiceDetectorRegistryImpl() {
+        // Register all of the ServiceDetectorFactory implementations available via the ServiceLoader
+        @SuppressWarnings("rawtypes")
+        ServiceLoader<ServiceDetectorFactory> loader = ServiceLoader.load(ServiceDetectorFactory.class);
+        for (ServiceDetectorFactory<?> factory : loader) {
+            // Determine the implementation type
+            Map<String, String> props = new HashMap<>();
+            props.put(IMPLEMENTATION_KEY, factory.createDetector().getClass().getCanonicalName());
+            // Register the factory
+            onBind(factory, props);
+        }
+    }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public synchronized void onBind(ServiceDetectorFactory factory, Map properties) {
@@ -106,10 +122,10 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry {
     }
 
     private static String getClassName(Map<?,?> properties) {
-        final Object implementation = properties.get("implementation");
+        final Object implementation = properties.get(IMPLEMENTATION_KEY);
         if (implementation == null || !(implementation instanceof String)) {
-            LOG.error("ServiceDetectorFactory was registered without an 'implementation' property.");
-            throw new IllegalArgumentException("ServiceDetectorFactory was registered without an 'implementation' property.");
+            LOG.error("ServiceDetectorFactory was registered without an '{}' property.", IMPLEMENTATION_KEY);
+            throw new IllegalArgumentException("ServiceDetectorFactory was registered without an '" + IMPLEMENTATION_KEY + "' property.");
         }
         return (String)implementation;
     }

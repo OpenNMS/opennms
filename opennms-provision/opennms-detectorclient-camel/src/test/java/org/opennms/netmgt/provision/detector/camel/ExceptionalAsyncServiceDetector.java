@@ -26,26 +26,67 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.snmp.proxy;
+package org.opennms.netmgt.provision.detector.camel;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import java.net.InetAddress;
 
-/**
- * Fluent API for building SNMP requests.
- *
- * The methods here are common to all SNMP request types.
- *
- * @author jwhite
- */
-public interface SNMPRequestBuilder<T> {
+import org.opennms.netmgt.provision.AsyncServiceDetector;
+import org.opennms.netmgt.provision.DetectFuture;
 
-    SNMPRequestBuilder<T> withLocation(String location);
+public class ExceptionalAsyncServiceDetector implements AsyncServiceDetector {
 
-    SNMPRequestBuilder<T> withDescription(String string);
+    @Override
+    public void init() {
+        // pass
+    }
 
-    SNMPRequestBuilder<T> withTimeToLive(long duration, TimeUnit unit);
+    @Override
+    public String getServiceName() {
+        return "EXCEPTIONAL-ASYNC";
+    }
 
-    CompletableFuture<T> execute();
+    @Override
+    public void setServiceName(String serviceName) {
+        // pass
+    }
 
+    @Override
+    public int getPort() {
+        return 0;
+    }
+
+    @Override
+    public void setPort(int port) {
+        // pass
+    }
+
+    @Override
+    public int getTimeout() {
+        return 0;
+    }
+
+    @Override
+    public void setTimeout(int timeout) {
+        // pass
+    }
+
+    @Override
+    public String getIpMatch() {
+        return null;
+    }
+
+    @Override
+    public void setIpMatch(String ipMatch) {
+        // pass
+    }
+
+    @Override
+    public void dispose() {
+        // pass
+    }
+
+    @Override
+    public DetectFuture isServiceDetected(InetAddress address) {
+        throw new IllegalArgumentException("Failure on async detection.");
+    }
 }

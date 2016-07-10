@@ -29,48 +29,52 @@
 package org.opennms.netmgt.provision.detector.common;
 
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 public class DelegatingLocationAwareDetectorClientImpl implements LocationAwareDetectorClient {
 
     @Autowired
-    @Qualifier("localDetector")
-    DetectorRequestExecutor localDetector;
+    @Qualifier("localDetectorExecutor")
+    DetectorRequestExecutor localDetectorExecutor;
 
     @Autowired
-    @Qualifier("remoteDetector")
-    DetectorRequestExecutor remoteDetector;
+    @Qualifier("remoteDetectorExecutor")
+    DetectorRequestExecutor remoteDetectorExecutor;
 
     @Autowired(required = false)
     private OnmsDistPoller identity;
 
+    @Autowired
+    private ServiceDetectorRegistry registry;
+
     @Override
     public DetectorRequestBuilder detect() {
-        return new DetectorRequestBuilderImpl(this);
+        return new DetectorRequestBuilderImpl(this, registry);
     }
 
-    protected DetectorRequestExecutor getDetectorRequestExecutor(
-            String location) {
-
-        if (location == null || (identity != null
-                && identity.getLocation().equals(location))) {
-            return localDetector;
+    protected DetectorRequestExecutor getDetectorRequestExecutor(String location) {
+        if (location == null || (identity != null && identity.getLocation().equals(location))) {
+            return localDetectorExecutor;
         } else {
-            return remoteDetector;
+            return remoteDetectorExecutor;
         }
     }
 
-    public void setLocalDetector(DetectorRequestExecutor localDetector) {
-        this.localDetector = localDetector;
+    public void setLocalDetectorExecutor(DetectorRequestExecutor localDetectorExecutor) {
+        this.localDetectorExecutor = localDetectorExecutor;
     }
 
-    public void setRemoteDetector(DetectorRequestExecutor remoteDetector) {
-        this.remoteDetector = remoteDetector;
+    public void setRemoteDetectorExecutor(DetectorRequestExecutor remoteDetectorExecutor) {
+        this.remoteDetectorExecutor = remoteDetectorExecutor;
     }
 
     public void setIdentity(OnmsDistPoller identity) {
         this.identity = identity;
     }
 
+    public void setRegistry(ServiceDetectorRegistry registry) {
+        this.registry = registry;
+    }
 }

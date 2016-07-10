@@ -62,7 +62,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 
 /**
- * Used to test the Camel context defined in blueprint-snmp-proxy.xml.
+ * Used to test the Camel context defined in blueprint.xml.
  *
  * @author jwhite
  */
@@ -95,10 +95,6 @@ public class LocationAwareSnmpClientBlueprintIT extends CamelBlueprintTest {
 
     private SnmpAgentConfig agentConfig;
 
-    /**
-     * Register a mock OSGi {@link SchedulerService} so that we can make sure that the scheduler
-     * whiteboard is working properly.
-     */
     @SuppressWarnings( "rawtypes" )
     @Override
     protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
@@ -121,7 +117,6 @@ public class LocationAwareSnmpClientBlueprintIT extends CamelBlueprintTest {
                                                        props));
     }
 
-    // The location of our Blueprint XML file to be used for testing
     @Override
     protected String getBlueprintDescriptor() {
         return "classpath:/OSGI-INF/blueprint/blueprint.xml";
@@ -156,7 +151,7 @@ public class LocationAwareSnmpClientBlueprintIT extends CamelBlueprintTest {
         final IPAddressGatheringTracker tracker = new IPAddressGatheringTracker();
         locationAwareSnmpClient.walk(agentConfig, tracker)
             .withDescription(tracker.getDescription())
-            .atLocation(identity.getLocation())
+            .withLocation(identity.getLocation())
             .execute().get();
         ExpectedResults.compareToKnownIpAddressList(tracker.getIpAddresses());
     }
@@ -164,14 +159,14 @@ public class LocationAwareSnmpClientBlueprintIT extends CamelBlueprintTest {
     /**
      * Verifies that the IP Address tables can be walked when using a remote location.
      *
-     * This should invoke the route in the Camel context initialize in this blueprint.
+     * This should invoke the route in the Camel context initialized in this blueprint.
      */
     @Test(timeout=60000)
     public void canWalkIpAddressTableViaAnotherLocation() throws Exception {
         final IPAddressGatheringTracker tracker = new IPAddressGatheringTracker();
         locationAwareSnmpClient.walk(agentConfig, tracker)
             .withDescription(tracker.getDescription())
-            .atLocation(REMOTE_LOCATION_NAME)
+            .withLocation(REMOTE_LOCATION_NAME)
             .execute().get();
         ExpectedResults.compareToKnownIpAddressList(tracker.getIpAddresses());
     }

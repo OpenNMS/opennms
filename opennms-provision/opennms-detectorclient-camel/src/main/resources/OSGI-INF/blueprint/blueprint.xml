@@ -11,12 +11,12 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <bean id="detectorRequestExecutor" class="org.opennms.netmgt.provision.detector.common.DetectorRequestExecutorImpl" >
+    <bean id="detectorRequestExecutor" class="org.opennms.netmgt.provision.detector.common.DetectorRequestExecutorLocalImpl" >
        <property name="serviceDetectorRegistry" ref="serviceDetectorRegistry"/>
     </bean>
-    
+
     <reference id="serviceDetectorRegistry" interface="org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry" availability="mandatory"/>
-    <bean id="detectorRequestProcesor" class="org.opennms.netmgt.provision.detector.camel.DetectorRequestProcessor">
+    <bean id="asyncDetectorRequestProcessor" class="org.opennms.netmgt.provision.detector.camel.AsyncDetectorRequestProcessor">
         <property name="detectorExecutor" ref="detectorRequestExecutor" />
     </bean>
 
@@ -40,7 +40,7 @@
         <route id="detectorRequestExecutor">
             <from uri="queuingservice:detector@{{monitoringLocationName}}" />
             <setExchangePattern pattern="InOut" />
-            <process ref="detectorRequestProcesor" />
+            <process ref="asyncDetectorRequestProcessor" />
         </route>
     </camelContext>
 </blueprint>

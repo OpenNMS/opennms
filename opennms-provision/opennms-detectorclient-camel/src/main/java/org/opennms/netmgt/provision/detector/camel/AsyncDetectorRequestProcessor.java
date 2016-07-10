@@ -38,7 +38,7 @@ import org.opennms.netmgt.provision.detector.common.DetectorRequestDTO;
 import org.opennms.netmgt.provision.detector.common.DetectorRequestExecutor;
 import org.opennms.netmgt.provision.detector.common.DetectorResponseDTO;
 
-public class DetectorRequestProcessor implements AsyncProcessor {
+public class AsyncDetectorRequestProcessor implements AsyncProcessor {
 
     private DetectorRequestExecutor detectorExecutor;
 
