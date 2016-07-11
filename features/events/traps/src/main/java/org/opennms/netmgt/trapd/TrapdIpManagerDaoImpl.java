@@ -58,7 +58,7 @@ public class TrapdIpManagerDaoImpl implements TrapdIpMgr {
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
 
-	/**
+    /**
      * A Map of IP addresses and node IDs
      */
     protected Map<InetAddress, Integer> m_knownips = new ConcurrentHashMap<InetAddress, Integer>();
@@ -77,14 +77,6 @@ public class TrapdIpManagerDaoImpl implements TrapdIpMgr {
     public synchronized void dataSourceSync() {
         m_knownips = m_ipInterfaceDao.getInterfacesForNodes();
     }
-    
-    public IpInterfaceDao getmIpInterfaceDao() {
-  		return m_ipInterfaceDao;
-  	}
-
-  	public void setmIpInterfaceDao(IpInterfaceDao m_ipInterfaceDao) {
-  		this.m_ipInterfaceDao = m_ipInterfaceDao;
-  	}
 
     /**
      * Returns the nodeid for the IP Address
