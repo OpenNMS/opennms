@@ -26,28 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml;
+package org.opennms.features.topology.app.internal.operations;
 
-public interface GraphMLProperties {
-    String ID = "id";
-    String DESCRIPTION = "description";
-    String NAMESPACE = "namespace";
-    String ICON_KEY = "iconKey";
-    String IP_ADDRESS = "ipAddr";
-    String LABEL = "label";
-    String LOCKED = "locked";
-    String NODE_ID = "nodeID";
-    String FOREIGN_SOURCE = "foreignSource";
-    String FOREIGN_ID = "foreignID";
-    String SELECTED = "selected";
-    String STYLE_NAME = "styleName";
-    String TOOLTIP_TEXT = "tooltipText";
-    String X = "x";
-    String Y = "y";
-    String PREFERRED_LAYOUT = "preferred-layout";
-    String FOCUS_STRATEGY = "focus-strategy";
-    String FOCUS_IDS = "focus-ids";
-    String SEMANTIC_ZOOM_LEVEL = "semantic-zoom-level";
-    String VERTEX_STATUS_PROVIDER = "vertex-status-provider";
-    String LEVEL = "level";
+import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.opennms.features.topology.app.internal.jung.GridLayoutAlgorithm;
+
+public class GridLayoutOperation extends LayoutOperation {
+
+    public GridLayoutOperation() {
+        super(new LayoutFactory() {
+            @Override
+            public LayoutAlgorithm getLayoutAlgorithm() {
+                return new GridLayoutAlgorithm();
+            }
+        });
+    }
+
+    @Override
+    public String getId() {
+        return getClass().getSimpleName();
+    }
 }

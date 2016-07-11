@@ -28,13 +28,15 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
-import java.util.HashMap;
+import java.util.Map;
 
-import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.graphml.model.GraphMLNode;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.LevelAware;
 
-public class GraphMLVertex extends AbstractVertex {
-    private HashMap<String, Object> properties = new HashMap<>();
+public class GraphMLVertex extends AbstractVertex implements LevelAware {
+    private final int level;
+    private final Map<String, Object> properties;
 
     protected GraphMLVertex(String namespace, GraphMLNode graphMLNode) {
         super(namespace, graphMLNode.getId(), graphMLNode.getProperty(GraphMLProperties.LABEL, graphMLNode.getId()));
@@ -49,14 +51,16 @@ public class GraphMLVertex extends AbstractVertex {
             setNodeID(graphMLNode.getProperty(GraphMLProperties.NODE_ID));
         }
 
-        setProperties(graphMLNode.getProperties());
+        level = graphMLNode.getProperty(GraphMLProperties.LEVEL, 0);
+        properties = graphMLNode.getProperties();
     }
 
-    public void setProperties(HashMap<String, Object> properties) {
-        this.properties = properties;
+    @Override
+    public int getLevel() {
+        return level;
     }
 
-    public HashMap<String, Object> getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 }
