@@ -13,14 +13,14 @@
   </properties>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology.plugins.topo</groupId>
-  <artifactId>application</artifactId>
+  <artifactId>org.opennms.features.topology.plugins.topo.application</artifactId>
   <name>OpenNMS :: Features :: Topology :: Plugins :: Application</name>
   <packaging>bundle</packaging>
 
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>api</artifactId>
+      <artifactId>org.opennms.features.topology.api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -32,7 +32,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>browsers</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.browsers</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

@@ -667,7 +667,7 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'gnu-crypto' | \
 	grep -v 'jdhcp' | \
 	grep -v 'jradius' | \
-	grep -v 'ncs-' | \
+	grep -v 'org.opennms.features.ncs.ncs-' | \
 	grep -v 'opennms-alarm-northbounder-jms' | \
 	grep -v 'opennms-integration-otrs' | \
 	grep -v 'opennms-integration-rt' | \
@@ -700,7 +700,7 @@ find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
 	grep -v '/WEB-INF/jsp/alarm/ncs' | \
 	grep -v '/WEB-INF/jsp/ncs/' | \
-	grep -v '/WEB-INF/lib/ncs' | \
+	grep -v '/WEB-INF/lib/org.opennms.features.ncs.ncs' | \
 	sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir}/*/WEB-INF/*.xml | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config ," | \
@@ -745,8 +745,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files ncs
 %defattr(644 root root 755)
-%{instprefix}/lib/ncs-*.jar
-%{jettydir}/%{servletdir}/WEB-INF/lib/ncs-*
+%{instprefix}/lib/org.opennms.features.ncs.ncs-*.jar
+%{jettydir}/%{servletdir}/WEB-INF/lib/org.opennms.features.ncs.ncs-*.jar
 %config(noreplace) %{instprefix}/etc/drools-engine.d/ncs/*
 %config(noreplace) %{instprefix}/etc/ncs-northbounder-configuration.xml
 %{sharedir}/xsds/ncs-*.xsd

@@ -55,7 +55,7 @@
 
     <dependency>
       <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>linkd</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.topo.linkd</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

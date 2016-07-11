@@ -32,12 +32,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
 
 import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.*;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
 
 import org.apache.cxf.common.util.CollectionUtils;
 import org.apache.cxf.common.util.StringUtils;
@@ -58,6 +65,7 @@ import com.ibm.maximo.CreateSHSIMPINCResponseType;
 import com.ibm.maximo.CreateSHSIMPINCType;
 import com.ibm.maximo.INCIDENTKeyType;
 import com.ibm.maximo.MXBooleanType;
+import com.ibm.maximo.MXDateTimeType;
 import com.ibm.maximo.MXStringQueryType;
 import com.ibm.maximo.MXStringType;
 import com.ibm.maximo.QuerySHSIMPINCResponseType;
@@ -172,6 +180,8 @@ public class TsrmTicketerPlugin implements Plugin {
                 ownerGroup = incident.getOWNERGROUP();
                 MXStringType reportedBy = new MXStringType();
                 reportedBy = incident.getREPORTEDBY();
+                MXStringType changedBy = new MXStringType();
+                changedBy = incident.getCHANGEBY();
                 MXStringType shsCallerType = new MXStringType();
                 shsCallerType = incident.getSHSCALLERTYPE();
                 MXStringType shsReasonForOutage = new MXStringType();
@@ -221,9 +231,6 @@ public class TsrmTicketerPlugin implements Plugin {
                 if (ownerGroup != null) {
                     ticket.addAttribute(OWNER_GROUP, ownerGroup.getValue());
                 }
-                if (reportedBy != null) {
-                    ticket.setUser(reportedBy.getValue());
-                }
                 if (shsCallerType != null) {
                     ticket.addAttribute(SHS_CALLER_TYPE,
                                         shsCallerType.getValue());
@@ -253,9 +260,15 @@ public class TsrmTicketerPlugin implements Plugin {
                     if ((status != null) && (status.getValue() != null)
                             && (status.getValue().equals(getProperties().getProperty("tsrm.status.open")))) {
                         ticket.setState(Ticket.State.OPEN);
+                        if (reportedBy != null) {
+                            ticket.setUser(reportedBy.getValue());
+                        }
                     } else if ((status != null) && (status.getValue() != null)
                             && (status.getValue().equals(getProperties().getProperty("tsrm.status.close")))) {
                         ticket.setState(Ticket.State.CLOSED);
+                        if (changedBy != null) {
+                            ticket.setUser(changedBy.getValue());
+                        }
                     }
                 } catch (IOException e) {
                     LOG.error("Unable to load tsrm.status from properties ",
@@ -393,9 +406,31 @@ public class TsrmTicketerPlugin implements Plugin {
         }
 
         if (!StringUtils.isEmpty(ticket.getUser())) {
-            MXStringType reportedBy = new MXStringType();
-            reportedBy.setValue(ticket.getUser());
-            incident.setREPORTEDBY(reportedBy);
+            if (StringUtils.isEmpty(ticket.getId())) {
+                MXStringType reportedBy = new MXStringType();
+                reportedBy.setValue(ticket.getUser());
+                incident.setREPORTEDBY(reportedBy);
+            } else {
+                MXStringType changedBy = new MXStringType();
+                changedBy.setValue(ticket.getUser());
+                incident.setCHANGEBY(changedBy);
+                MXDateTimeType date = new MXDateTimeType();
+                GregorianCalendar calendarTime = new GregorianCalendar();
+                calendarTime.setTime(new Date());
+                XMLGregorianCalendar value;
+                @SuppressWarnings({ "unchecked", "rawtypes" })
+                JAXBElement<MXDateTimeType> jaxbElement = new JAXBElement(new QName(MXDateTimeType.class.getName()),
+                                                                          MXDateTimeType.class,
+                                                                          date);
+                try {
+                    value = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendarTime);
+                    date.setValue(value);
+                    incident.setCHANGEDATE(jaxbElement);
+                } catch (DatatypeConfigurationException e) {
+                    LOG.error("Unable to create changedDate", e);
+                }
+
+            }
         }
 
         if (!StringUtils.isEmpty(ticket.getAttribute(SHS_CALLER_TYPE))) {

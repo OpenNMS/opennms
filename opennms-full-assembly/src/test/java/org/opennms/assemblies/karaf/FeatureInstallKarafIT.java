@@ -50,7 +50,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
     @Test
     public void testInstallAllOpenNMSFeatures() {
         final String version = getOpenNMSVersion();
-        addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("karaf").version(version).type("xml").classifier("features").getURL());
+        addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version(version).type("xml").classifier("features").getURL());
         addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("features").getURL());
 
         installFeature("atomikos");

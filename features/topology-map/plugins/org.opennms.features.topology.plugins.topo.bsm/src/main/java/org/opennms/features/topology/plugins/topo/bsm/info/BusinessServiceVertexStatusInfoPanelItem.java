@@ -55,13 +55,24 @@ import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
 
 public class BusinessServiceVertexStatusInfoPanelItem extends VertexInfoPanelItem {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BusinessServiceVertexStatusInfoPanelItem.class);
+
+    /**
+     * The number of edges the vertex may have to perform the impact analysis.
+     * See NMS-8527 for details.
+     */
+    private static final int MAX_EDGES_FOR_IMPACTING = 10;
 
     private BusinessServiceManager businessServiceManager;
     private BusinessServicesTopologyProvider businessServicesTopologyProvider;
@@ -98,16 +109,11 @@ public class BusinessServiceVertexStatusInfoPanelItem extends VertexInfoPanelIte
         final BusinessServiceStateMachine stateMachine = SimulationAwareStateMachineFactory.createStateMachine(businessServiceManager, container.getCriteria());
         final Status overallStatus = BusinessServicesStatusProvider.getStatus(stateMachine, vertex);
         rootLayout.addComponent(createStatusLabel("Overall", overallStatus));
-
         rootLayout.addComponent(new Label());
 
         final BusinessServiceGraph graph = stateMachine.getGraph();
         final BusinessService businessService = businessServiceManager.getBusinessServiceById(vertex.getServiceId());
-        final Set<GraphVertex> impactingVertices = stateMachine.calculateImpacting(businessService)
-                                                                              .stream()
-                                                                              .map(e -> graph.getDest(e))
-                                                                              .collect(Collectors.toSet());
-
+        final Set<GraphVertex> impactingVertices = getImpactingVertices(stateMachine, graph, businessService);
         for (final Edge edge : businessService.getEdges()) {
             // Get the topology vertex for the child to determine the display label
             final Vertex childVertex = businessServicesTopologyProvider.getVertex(edge.accept(new EdgeVisitor<VertexRef>() {
@@ -162,6 +168,18 @@ public class BusinessServiceVertexStatusInfoPanelItem extends VertexInfoPanelIte
         label.addStyleName("bright");
 
         return label;
+    }
+
+    private static Set<GraphVertex> getImpactingVertices(BusinessServiceStateMachine stateMachine, BusinessServiceGraph graph, BusinessService businessService) {
+        // Only consider a feasible amount of edges. See NMS-8501 and NMS-8527 for more details
+        if (graph.getOutEdges(graph.getVertexByBusinessServiceId(businessService.getId())).size() <= MAX_EDGES_FOR_IMPACTING) {
+            return stateMachine.calculateImpacting(businessService)
+                    .stream()
+                    .map(e -> graph.getDest(e))
+                    .collect(Collectors.toSet());
+        }
+        LOG.warn("Try to calculate impacting vertices for more than {} edges. This is currently not supported. See http://http://issues.opennms.org/browse/NMS-8527.", MAX_EDGES_FOR_IMPACTING);
+        return Sets.newHashSet();
     }
 }
 

@@ -177,7 +177,7 @@
 
         <dependency>
             <groupId>org.opennms.features.topology</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>org.opennms.features.topology.api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

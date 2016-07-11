@@ -126,6 +126,7 @@ chmod 755 "$RPM_BUILD_ROOT%{_initrddir}"/minion
 # Extract the core repository
 mkdir -p $RPM_BUILD_ROOT%{minionrepoprefix}/core
 tar zxvf $RPM_BUILD_DIR/%{_name}-%{version}-%{release}/features/minion/core/repository/target/core-repository-*-repo.tar.gz -C $RPM_BUILD_ROOT%{minionrepoprefix}/core
+# Create a default org.opennms.minion.controller.cfg file
 echo "location = MINION" > $RPM_BUILD_ROOT%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 echo "id = 00000000-0000-0000-0000-000000ddba11" >> $RPM_BUILD_ROOT%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
@@ -175,9 +176,9 @@ fi
 %config(noreplace) %{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
 %post features-core
-# Generate a new UUID
+# Generate a new UUID to replace the default UUID if it is still present
 UUID=$(/usr/bin/uuidgen -t)
-sed -i "s|id =.*|id = $UUID|g" "%{minioninstprefix}/etc/org.opennms.minion.controller.cfg"
+sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "%{minioninstprefix}/etc/org.opennms.minion.controller.cfg"
 # Remove the directory used as the local Maven repo cache
 rm -rf %{minionrepoprefix}/.local
 

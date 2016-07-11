@@ -35,4 +35,6 @@ public interface ReductionFunctionEntityVisitor<T> {
     T visit(HighestSeverityEntity highestSeverityEntity);
 
     T visit(ThresholdEntity thresholdEntity);
+
+    T visit(ExponentialPropagationEntity exponentialPropagationEntity);
 }

@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-    <artifactId>themes</artifactId>
+    <artifactId>org.opennms.features.topology.themes</artifactId>
     <groupId>org.opennms.features.topology</groupId>
     <version>19.0.0-SNAPSHOT</version>
   </parent>
 
     <groupId>org.opennms.features.topology.themes</groupId>
-    <artifactId>default-theme</artifactId>
+    <artifactId>org.opennms.features.topology.themes.default-theme</artifactId>
     <packaging>bundle</packaging>
     <name>OpenNMS :: Features :: Topology :: Default  Theme</name>
     <properties>
