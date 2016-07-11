@@ -63,9 +63,6 @@ class DefaultJmxConnector implements JmxServerConnector {
             final String port = ParameterMap.getKeyedString(propertiesMap, "port", "1099");
             final String protocol = ParameterMap.getKeyedString(propertiesMap, "protocol", "rmi");
             final String urlPath = ParameterMap.getKeyedString(propertiesMap, "urlPath",  "/jmxrmi");
-            final String rmiServerPort = ParameterMap.getKeyedString(propertiesMap, "rmiServerport",  "45444");
-            final String remoteJMX = ParameterMap.getKeyedString(propertiesMap, "remoteJMX",  "false");
-            
 
             // If remote JMX access is enabled, this will return a non-null value
             String jmxPort = System.getProperty(JMX_PORT_SYSTEM_PROPERTY);
@@ -89,14 +86,11 @@ class DefaultJmxConnector implements JmxServerConnector {
                 return new PlatformMBeanServerConnector().createConnection(ipAddress, propertiesMap);
             }
             JMXServiceURL url = null;
-            
-            if(remoteJMX.equalsIgnoreCase("true")){
-            	url = new JMXServiceURL("service:jmx:" + protocol + ":" + InetAddressUtils.str(ipAddress) + ":" + rmiServerPort + "://jndi/"+ protocol +"://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);	
+            if(InetAddressUtils.str(ipAddress).equals("7.40.16.72")){
+            	url = new JMXServiceURL("service:jmx:rmi://7.40.16.72:45444/jndi/rmi://7.40.16.72:1299/karaf-minion");
+            }else{
+                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);
             }
-            else{
-            	url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);
-            }
-             	
             LOG.debug("JMX: {} - {}", factory, url);
 
             final Map<String,String[]> env = new HashMap<>();
