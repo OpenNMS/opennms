@@ -1,6 +1,7 @@
 package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.Map;
@@ -66,6 +67,7 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
     	String trapAddress = result.findValue("trapAddress").asText();
     	
     	JsonNode trapProcessorRoot = result.findValue("trapProcessor");
+    	boolean printable;
     	        	
     	TrapProcessor trapProcessor = new BasicTrapProcessor();
 		trapProcessor.setAgentAddress(InetAddressUtils.getInetAddress(trapProcessorRoot.findValue("agentAddress").asText()));
@@ -104,13 +106,22 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
 				snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(oid)));
 				snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapAddress,
 						new IpAddress(trapAddress)));
-
+	
+				/***********************************************************/
+				if (field.getValue().findValue("printable") != null) {
+					printable = Boolean.valueOf(field.getValue()
+							.findValue("printable").asText());
+					if (!printable) {
+						break;
+					}
+				}
+			/***********************************************************/
 				int type = Integer.parseInt(field.getValue().findValue("type").asText());
 				
 			        switch (type) {
 		            case 2:  snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new Integer32(field.getValue().findValue("value").asInt())));
                     		 break;
-		            case 4:  snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(new String(Base64.getDecoder().decode(field.getValue().findValue("value").asText())))));
+		            case 4:  snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(new String(Base64.getDecoder().decode("CmX9qA==")))));
                     		 break;
 		            case 5:  snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new Null()));
                     		 break;
@@ -145,6 +156,7 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
     	
     	String trapAddress = result.findValue("trapAddress").asText();
     	String agentAddress=result.findValue("agentAddress").asText();
+    	Boolean printable;
 
     	JsonNode trapProcessorRoot = result.findValue("trapProcessor");
     	        	
@@ -186,6 +198,16 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
 				snmp4JV1cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(oid)));
 				snmp4JV1cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapAddress,
 						new IpAddress(trapAddress)));
+				
+				/***********************************************************/
+					if (field.getValue().findValue("printable") != null) {
+						printable = Boolean.valueOf(field.getValue()
+								.findValue("printable").asText());
+						if (!printable) {
+							break;
+						}
+					}
+				/***********************************************************/
 				
 				int type = Integer.parseInt(field.getValue().findValue("type").asText());
 				
