@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.opennms.core.utils.LocationOverrideUtils;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -40,7 +41,6 @@ import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmp.proxy.SNMPRequestBuilder;
-import org.opennms.netmgt.snmp.proxy.common.utils.LocationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,7 +119,7 @@ public class DelegatingLocationAwareSnmpClientImpl implements LocationAwareSnmpC
     }
 
     protected SnmpRequestExecutor getSnmpRequestExecutor(String location) {
-        if (LocationUtils.isLocationOverrideEnabled()) {
+        if (LocationOverrideUtils.isLocationOverrideEnabled()) {
             // Always use the remote executor when location override is enabled.
             return remoteSnmpRequestExecutor;
         }

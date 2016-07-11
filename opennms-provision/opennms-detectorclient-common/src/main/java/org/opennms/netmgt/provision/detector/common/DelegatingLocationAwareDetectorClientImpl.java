@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.detector.common;
 
+import org.opennms.core.utils.LocationOverrideUtils;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.provision.DetectorRequestBuilder;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
@@ -57,6 +58,11 @@ public class DelegatingLocationAwareDetectorClientImpl implements LocationAwareD
     }
 
     protected DetectorRequestExecutor getDetectorRequestExecutor(String location) {
+        if (LocationOverrideUtils.isLocationOverrideEnabled()) {
+            // Always use the remote executor when location override is enabled.
+            return remoteDetectorExecutor;
+        }
+
         if (location == null || (identity != null && identity.getLocation().equals(location))) {
             return localDetectorExecutor;
         } else {

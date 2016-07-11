@@ -35,10 +35,10 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.spi.Synchronization;
+import org.opennms.core.utils.LocationOverrideUtils;
 import org.opennms.netmgt.snmp.proxy.common.SnmpMultiResponseDTO;
 import org.opennms.netmgt.snmp.proxy.common.SnmpRequestDTO;
 import org.opennms.netmgt.snmp.proxy.common.SnmpRequestExecutor;
-import org.opennms.netmgt.snmp.proxy.common.utils.LocationUtils;
 
 /**
  * Asynchronously dispatches SNMP requests to a Camel route for remote execution. 
@@ -56,8 +56,8 @@ public class SnmpRequestExecutorCamelImpl implements SnmpRequestExecutor {
     @Override
     public CompletableFuture<SnmpMultiResponseDTO> execute(SnmpRequestDTO request) {
         // Optionally override the default location (used for testing)
-        if (LocationUtils.isLocationOverrideEnabled() && request.getLocation() == null) {
-            request.setLocation(LocationUtils.getLocationOverride());
+        if (LocationOverrideUtils.isLocationOverrideEnabled() && request.getLocation() == null) {
+            request.setLocation(LocationOverrideUtils.getLocationOverride());
         }
 
         final CompletableFuture<SnmpMultiResponseDTO> future = new CompletableFuture<SnmpMultiResponseDTO>();

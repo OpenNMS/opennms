@@ -35,6 +35,7 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.spi.Synchronization;
+import org.opennms.core.utils.LocationOverrideUtils;
 import org.opennms.netmgt.provision.detector.common.DetectorRequestDTO;
 import org.opennms.netmgt.provision.detector.common.DetectorRequestExecutor;
 import org.opennms.netmgt.provision.detector.common.DetectorResponseDTO;
@@ -49,6 +50,11 @@ public class DetectorRequestExecutorRemoteImpl implements DetectorRequestExecuto
 
     @Override
     public CompletableFuture<DetectorResponseDTO> execute(DetectorRequestDTO request) {
+        // Optionally override the default location (used for testing)
+        if (LocationOverrideUtils.isLocationOverrideEnabled() && request.getLocation() == null) {
+            request.setLocation(LocationOverrideUtils.getLocationOverride());
+        }
+
         final CompletableFuture<DetectorResponseDTO> future = new CompletableFuture<DetectorResponseDTO>();
         template.asyncCallbackSendBody(endpoint, request, new Synchronization() {
             @Override
