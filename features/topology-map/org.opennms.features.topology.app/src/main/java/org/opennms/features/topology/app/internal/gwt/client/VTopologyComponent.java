@@ -421,12 +421,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		m_graph = GWTGraph.create();
 	}
 
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        boolean isAttached = this.isAttached();
-    }
-
     @SuppressWarnings("serial")
     @Override
 	protected void onLoad() {
@@ -449,11 +443,12 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		m_componentHolder.add(m_topologyView.asWidget());
 		
 		m_svgDragHandlerManager = new DragHandlerManager();
-		m_svgDragHandlerManager.addDragBehaviorHandler(PanHandler.DRAG_BEHAVIOR_KEY, new PanHandler(this, serviceRegistry));
+		m_svgDragHandlerManager.addDragBehaviorHandler(PanHandler.DRAG_BEHAVIOR_KEY, new PanHandler(this));
 		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY, new MarqueeSelectHandler(this, m_topologyView));
 		m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
-		D3 svgElement = D3.d3().select(m_topologyView.getSVGElement());
         setupDragBehavior(m_topologyView.getSVGElement(), m_svgDragHandlerManager);
+
+		D3 svgElement = D3.d3().select(m_topologyView.getSVGElement());
 //        svgElement.on("dblclick", new Handler<Void>() {
 //
 //            @Override
