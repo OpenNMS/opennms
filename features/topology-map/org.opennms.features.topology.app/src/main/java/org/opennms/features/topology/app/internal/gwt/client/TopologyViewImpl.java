@@ -28,6 +28,14 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
+import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
+import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
+import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
@@ -38,14 +46,6 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.client.VTooltip;
-import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
-import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
-import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 public class TopologyViewImpl extends Composite implements TopologyView<TopologyViewRenderer>, GraphUpdateListener {
 
