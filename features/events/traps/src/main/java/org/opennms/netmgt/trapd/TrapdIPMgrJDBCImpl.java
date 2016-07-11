@@ -28,72 +28,56 @@
 
 package org.opennms.netmgt.trapd;
 
-import java.net.InetAddress;
+//import java.sql.ResultSet;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+
+
+
+
+
+import org.opennms.core.db.DataSourceFactory;
 
 /**
  * This class represents a singular instance that is used to map trap IP
  * addresses to known nodes.
- * 
- * TODO: Replace method-level synchronization with collection-level
- * synchronization.
  *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public class TrapdIpManagerDaoImpl implements TrapdIpMgr {
+public  class TrapdIPMgrJDBCImpl implements TrapdIpMgr{
+    /**
+     * The SQL statement used to extract the list of currently known IP
+     * addresses and their node IDs from the IP Interface table.
+     */
+    private static final String IP_LOAD_SQL = "SELECT ipAddr, nodeid FROM ipInterface";
 
-	@Override
-	public void dataSourceSync() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public long getNodeId(String addr) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public long setNodeId(String addr, long nodeid) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public long removeNodeId(String addr) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public long longValue(Long result) {
-		// TODO Auto-generated method stub
-		return 0;
-	}/*
-
-    private static final Logger LOG = LoggerFactory.getLogger(TrapdIpManagerDaoImpl.class);
-
-    @Autowired
-    private IpInterfaceDao m_ipInterfaceDao;
-
-    *//**
+    /**
      * A Map of IP addresses and node IDs
-     *//*
-    protected Map<InetAddress, Integer> m_knownips = new ConcurrentHashMap<InetAddress, Integer>();
+     */
+    protected static Map<String,Long> m_knownips = new ConcurrentHashMap<String,Long>();
+    
+    private static boolean m_dataBaseSync;
+    
+    public static void setDataBaseSync(boolean dataBaseSync) {
+		m_dataBaseSync = dataBaseSync;
+	}
 
-    *//**
+	public static boolean isDataBaseSync() {
+		return m_dataBaseSync;
+	}
+
+	public static TrapdIpMgr getInstance() {
+    	return new TrapdIPMgrJDBCImpl();
+    }
+
+    /**
      * Clears and synchronizes the internal known IP address cache with the
      * current information contained in the database. To synchronize the cache
      * the method opens a new connection to the database, loads the address,
@@ -102,68 +86,94 @@ public class TrapdIpManagerDaoImpl implements TrapdIpMgr {
      * @throws java.sql.SQLException
      *             Thrown if the connection cannot be created or a database
      *             error occurs.
-     *//*
+     */
     @Override
-    public synchronized void dataSourceSync() {
-        m_knownips = m_ipInterfaceDao.getInterfacesForNodes();
+    public synchronized void dataSourceSync()  {
+        java.sql.Connection c = null;
+        Statement s = null;
+        try {
+            // Get database connection
+            c = DataSourceFactory.getInstance().getConnection();
+
+            // Run with it
+            c.setReadOnly(true);
+
+            s = c.createStatement();
+            final ResultSet rs = s.executeQuery(IP_LOAD_SQL);
+
+            if (rs != null) {
+                m_knownips.clear();
+                while (rs.next()) {
+                    m_knownips.put(rs.getString(1), rs.getLong(2));
+                }
+                rs.close();
+            }
+        } 
+        catch(Exception e)
+        {
+        	
+        }
+        finally {
+            if (s != null) {
+                try {
+                    s.close();
+                } catch (final SQLException sqlE) {
+                }
+            }
+            if (c != null) {
+                try {
+                    c.close();
+                } catch (final SQLException sqlE) {
+                }
+            }
+        }
     }
 
-    *//**
+    /**
      * Returns the nodeid for the IP Address
      *
      * @param addr The IP Address to query.
      * @return The node ID of the IP Address if known.
-     *//*
+     */
     @Override
-    public synchronized int getNodeId(String addr) {
+    public synchronized long getNodeId(final String addr) {
         if (addr == null) {
             return -1;
         }
-        return intValue(m_knownips.get(InetAddressUtils.getInetAddress(addr)));
+        return TrapdIPMgrJDBCImpl.getInstance().longValue(m_knownips.get(addr));
     }
 
-    *//**
+    /**
      * Sets the IP Address and Node ID in the Map.
      *
      * @param addr   The IP Address to add.
      * @param nodeid The Node ID to add.
      * @return The nodeid if it existed in the map.
-     *//*
+     */
     @Override
-    public synchronized int setNodeId(String addr, int nodeid) {
-        if (addr == null || nodeid == -1) {
+    public long setNodeId(final String addr, final long nodeid) {
+        if (addr == null || nodeid == -1)
             return -1;
-        }
-        // Only add the address if it doesn't exist on the map. If it exists, only replace the current one if the new address is primary.
-        if (m_knownips.containsKey(InetAddressUtils.getInetAddress(addr))) {
-            OnmsIpInterface intf = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeid, addr);
-            if (intf != null && intf.isPrimary()) {
-                LOG.info("setNodeId: adding SNMP primary IP address {} to known IP list", intf);
-                return intValue(m_knownips.put(InetAddressUtils.getInetAddress(addr), nodeid));
-            } else {
-                return -1;
-            }
-        } else {
-            return intValue(m_knownips.put(InetAddressUtils.getInetAddress(addr), nodeid));
-        }
+
+        return TrapdIPMgrJDBCImpl.getInstance().longValue(m_knownips.put(addr, nodeid));
     }
 
-    *//**
+    /**
      * Removes an address from the node ID map.
      *
      * @param addr The address to remove from the node ID map.
      * @return The nodeid that was in the map.
-     *//*
+     */
     @Override
-    public synchronized int removeNodeId(String addr) {
-        if (addr == null) {
+    public long removeNodeId(final String addr) {
+        if (addr == null)
             return -1;
-        }
-        return intValue(m_knownips.remove(InetAddressUtils.getInetAddress(addr)));
+        return TrapdIPMgrJDBCImpl.getInstance().longValue(m_knownips.remove(addr));
     }
 
     @Override
-    public int intValue(final Integer result) {
+    public long longValue(final Long result) {
         return (result == null ? -1 : result);
     }
-*/}
+
+} 
