@@ -45,6 +45,8 @@ try
 		
 		//json="{\"partionKey\":6692,\"trapAddress\":\"127.0.0.1\",\"trapProcessor\":{\"varBinds\":{\".1.3.6.1.6.3.1.1.5.1\":{\"displayable\":true,\"endOfMib\":false,\"variable\":{\"value\":\"ZcO9wqg=\",\"syntax\":4,\"berpayloadLength\":5,\"printable\":false,\"berlength\":7,\"syntaxString\":\"OCTET STRING\",\"exception\":false,\"dynamic\":false},\"numeric\":false,\"bytes\":\"ZcO9wqg=\",\"type\":4,\"null\":false,\"error\":false}},\"community\":\"public\",\"trapIdentity\":{\"generic\":0,\"specific\":0,\"enterpriseId\":\".1.3.6.1.6.3.1.1.5.1\"},\"trapAddress\":\"127.0.0.1\",\"agentAddress\":\"127.0.0.1\",\"version\":\"v2\",\"timeStamp\":10154}}";
 		
+		json="{\"partionKey\":1376,\"trapAddress\":\"159.140.176.92\",\"trapProcessor\":{\"trapIdentity\":{\"generic\":2,\"specific\":0,\"enterpriseId\":\".1.3.6.1.6.3.1.1.5.3\"},\"trapAddress\":\"159.140.176.92\",\"varBinds\":{\".1.3.6.1.6.3.1.1.4.3.0\":{\"displayable\":true,\"endOfMib\":false,\"variable\":{\"value\":[1,3,6,1,6,3,1,1,5,3],\"syntax\":6,\"berlength\":11,\"valid\":true,\"exception\":false,\"berpayloadLength\":11,\"syntaxString\":\"OBJECT IDENTIFIER\",\"dynamic\":false},\"bytes\":\"LjEuMy42LjEuNi4zLjEuMS41LjM=\",\"type\":6,\"null\":false,\"error\":false,\"numeric\":false},\".1.3.6.1.2.1.2.2.1.1.527040512\":{\"displayable\":true,\"endOfMib\":false,\"variable\":{\"value\":527040512,\"syntax\":2,\"berlength\":6,\"exception\":false,\"berpayloadLength\":6,\"syntaxString\":\"Integer32\",\"dynamic\":false},\"bytes\":\"H2oAAA==\",\"type\":2,\"null\":false,\"error\":false,\"numeric\":true},\".1.3.6.1.6.3.18.1.3.0\":{\"displayable\":true,\"endOfMib\":false,\"variable\":{\"inetAddress\":\"7.192.224.90\",\"syntax\":64,\"berlength\":6,\"valid\":true,\"exception\":false,\"berpayloadLength\":6,\"syntaxString\":\"IpAddress\",\"dynamic\":false},\"bytes\":\"B8DgWg==\",\"type\":64,\"null\":false,\"error\":false,\"numeric\":false},\".1.3.6.1.2.1.2.2.1.7.527040512\":{\"displayable\":true,\"endOfMib\":false,\"variable\":{\"value\":1,\"syntax\":2,\"berlength\":3,\"exception\":false,\"berpayloadLength\":3,\"syntaxString\":\"Integer32\",\"dynamic\":false},\"bytes\":\"AQ==\",\"type\":2,\"null\":false,\"error\":false,\"numeric\":true},\".1.3.6.1.2.1.2.2.1.8.527040512\":{\"displayable\":true,\"endOfMib\":false,\"variable\":{\"value\":2,\"syntax\":2,\"berlength\":3,\"exception\":false,\"berpayloadLength\":3,\"syntaxString\":\"Integer32\",\"dynamic\":false},\"bytes\":\"Ag==\",\"type\":2,\"null\":false,\"error\":false,\"numeric\":true},\".1.3.6.1.4.1.733.6.3.18.1.5.0\":{\"displayable\":true,\"endOfMib\":false,\"variable\":{\"value\":1,\"syntax\":2,\"berlength\":3,\"exception\":false,\"berpayloadLength\":3,\"syntaxString\":\"Integer32\",\"dynamic\":false},\"bytes\":\"AQ==\",\"type\":2,\"null\":false,\"error\":false,\"numeric\":true},\".1.3.6.1.2.1.2.2.1.2.527040512\":{\"displayable\":true,\"endOfMib\":false,\"variable\":{\"value\":\"RXRoZXJuZXQxMDcvMS8x\",\"syntax\":4,\"berpayloadLength\":15,\"printable\":true,\"berlength\":17,\"exception\":false,\"syntaxString\":\"OCTET STRING\",\"dynamic\":false},\"bytes\":\"RXRoZXJuZXQxMDcvMS8x\",\"type\":4,\"null\":false,\"error\":false,\"numeric\":false},\".1.3.6.1.4.1.733.6.3.18.1.6.0\":{\"displayable\":false,\"endOfMib\":false,\"variable\":{\"value\":\"B8DgWg==\",\"syntax\":4,\"berpayloadLength\":4,\"printable\":false,\"berlength\":6,\"exception\":false,\"syntaxString\":\"OCTET STRING\",\"dynamic\":false},\"bytes\":\"B8DgWg==\",\"type\":4,\"null\":false,\"error\":false,\"numeric\":false},\".1.3.6.1.2.1.31.1.1.1.18.527040512\":{\"displayable\":true,\"endOfMib\":false,\"variable\":{\"value\":\"S0NCREFUQUhBRE9PUDQwNg==\",\"syntax\":4,\"berpayloadLength\":16,\"printable\":true,\"berlength\":18,\"exception\":false,\"syntaxString\":\"OCTET STRING\",\"dynamic\":false},\"bytes\":\"S0NCREFUQUhBRE9PUDQwNg==\",\"type\":4,\"null\":false,\"error\":false,\"numeric\":false}},\"community\":\"%0ix5fuy\",\"agentAddress\":\"159.140.176.92\",\"version\":\"v2\",\"timeStamp\":2536668870}}";
+		
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode actualObj = mapper.readTree(json);
 		
@@ -55,6 +57,10 @@ try
 		System.out.println(not);
 		
 		m_trapdIpManager=new TrapdIpManagerDaoImpl();
+		
+		TrapdIpManagerDaoImpl imp=new TrapdIpManagerDaoImpl();
+		imp.dataSourceSync();
+		
 		
 		TrapQueueProcessor trapQueu=new TrapQueueProcessor();
 		//System.out.println(((EventCreator)not.getTrapProcessor()).getEvent());
@@ -67,6 +73,8 @@ try
 		event.setTrapIdentity(process.getTrapIdentity());
 		event.setVersion(process.getVersion());
 		System.out.println(event.getEvent());
+		
+		
 		
 		EventConfDao event1=new EmptyEventConfDao();
 		EventForwarder event2=new EventForwarder() {
