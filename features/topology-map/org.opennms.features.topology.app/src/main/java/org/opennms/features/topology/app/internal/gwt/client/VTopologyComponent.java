@@ -668,6 +668,9 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
                         @Override
 			public void call(GWTVertex vertex, int index) {
+				if (D3.eventDefaultPrevented()) {
+					return;
+				}
 				NativeEvent event = D3.getEvent();
 				SVGGElement vertexElement = event.getCurrentEventTarget().cast();
 				vertexElement.getParentElement().appendChild(vertexElement);
