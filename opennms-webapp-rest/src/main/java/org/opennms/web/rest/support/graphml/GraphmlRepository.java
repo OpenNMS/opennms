@@ -39,4 +39,6 @@ public interface GraphmlRepository {
     void save(String name, String label, GraphmlType graphmlType) throws IOException;
 
     void delete(String name) throws IOException;
+
+    boolean exists(String name);
 }

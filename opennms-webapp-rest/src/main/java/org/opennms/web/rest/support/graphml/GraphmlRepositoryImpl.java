@@ -106,7 +106,8 @@ public class GraphmlRepositoryImpl implements GraphmlRepository {
         Files.delete(Paths.get(buildGraphmlFilepath(name)));
     }
 
-    protected static boolean exists(String name) {
+    @Override
+    public boolean exists(String name) {
         String filename = buildGraphmlFilepath(name);
         return new File(filename).exists() && new File(filename).isFile();
     }
