@@ -29,7 +29,7 @@ public class GraphmlRepositoryImplTest {
         graphmlRepository.save(NAME, "Label *yay*", graphmlType);
 
         // Verify that xml was generated
-        Assert.assertEquals(true, GraphmlRepositoryImpl.exists(NAME));
+        Assert.assertEquals(true, graphmlRepository.exists(NAME));
 
         // Verify cfg
         Properties properties = new Properties();
@@ -57,7 +57,7 @@ public class GraphmlRepositoryImplTest {
 
         // Delete
         graphmlRepository.delete(NAME);
-        Assert.assertEquals(false, GraphmlRepositoryImpl.exists(NAME));
-        Assert.assertEquals(false, GraphmlRepositoryImpl.exists(NAME));
+        Assert.assertEquals(false, graphmlRepository.exists(NAME));
+        Assert.assertEquals(false, graphmlRepository.exists(NAME));
     }
 }

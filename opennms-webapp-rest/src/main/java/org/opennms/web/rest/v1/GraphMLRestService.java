@@ -56,12 +56,10 @@ public class GraphMLRestService {
     @Path("{graph-name}")
     public Response createGraph(@PathParam("graph-name") String graphname,
                                 GraphmlType graphmlType) throws IOException {
+
         // Verify that it does not already exist
-        try {
-            graphmlRepository.findByName(graphname);
+        if (graphmlRepository.exists(graphname)) {
             return Response.status(500).entity("Graph with name " + graphname + " already exists").build();
-        } catch (NoSuchElementException ex) {
-            // this is fine, we expected that
         }
 
         try {
@@ -78,7 +76,9 @@ public class GraphMLRestService {
     @DELETE
     @Path("{graph-name}")
     public Response deleteGraph(@PathParam("graph-name") String graphname) throws IOException {
-        graphmlRepository.findByName(graphname); // this verifies if the element exists, otherwise a NoSuchElementException is thrown
+        if (!graphmlRepository.exists(graphname)) {
+            throw new NoSuchElementException("No GraphML file found with name  " + graphname);
+        }
         graphmlRepository.delete(graphname);
         return Response.ok().build();
     }
