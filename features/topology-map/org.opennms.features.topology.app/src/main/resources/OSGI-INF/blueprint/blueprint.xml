@@ -317,6 +317,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
+            <entry key="operation.contextMenuLocation" value=""/>
+            <entry key="operation.label" value="Remove All Others From Focus"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.RemoveFocusOtherVerticesOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
             <!-- <entry key="operation.menuLocation" value="View"/> -->
             <entry key="operation.contextMenuLocation" value=""/>
             <entry key="operation.label" value="Rename Group"/>
