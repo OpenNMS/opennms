@@ -413,6 +413,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
     private TopologyComponentServerRpc m_serverRpc;
 	private int m_width;
 	private int m_height;
+	private String m_activeTool;
 
 
 	public VTopologyComponent() {
@@ -918,7 +919,12 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	        m_svgDragHandlerManager.setCurrentDragHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY);
 	        m_topologyView.getSVGElement().getStyle().setCursor(Cursor.CROSSHAIR);
 	    }
+		m_activeTool = toolname;
     }
+
+	private boolean isMarqueeSelected() {
+		return "select".equals(m_activeTool);
+	}
 
     /**
 	 * Sets the graph, updates the ViewRenderer if need be and 
