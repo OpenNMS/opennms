@@ -102,6 +102,9 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
             setMarquee(m_x1, m_y1, 0, 0);
             D3.d3().select(m_topologyView.getMarqueeElement()).attr("display", "inline");
         }
+
+        D3.getEvent().stopPropagation();
+        D3.getEvent().preventDefault();
     }
     
     public final native void consoleLog(Object log)/*-{
@@ -119,6 +122,9 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
             );
             selectVertices();
         }
+
+        D3.getEvent().stopPropagation();
+        D3.getEvent().preventDefault();
     }
 
     @Override
@@ -138,6 +144,9 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
         });
         
         m_svgTopologyMap.setVertexSelection(vertIds);
+
+        D3.getEvent().stopPropagation();
+        D3.getEvent().preventDefault();
     }
     
     private void setMarquee(int x, int y, int width, int height) {

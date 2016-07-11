@@ -29,7 +29,7 @@
 package org.opennms.features.topology.app.internal.gwt.client.handler;
 
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent;
-import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
+import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.service.ServiceRegistry;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
@@ -38,7 +38,7 @@ import com.google.gwt.dom.client.Element;
 public class PanHandler implements DragBehaviorHandler{
     public static String DRAG_BEHAVIOR_KEY = "panHandler";
     protected PanObject m_panObject;
-    TopologyView<TopologyViewRenderer> m_topologyView;
+    TopologyView<VTopologyComponent.TopologyViewRenderer> m_topologyView;
     ServiceRegistry m_serviceRegistry;
     VTopologyComponent m_topologyComponent;
     
@@ -51,18 +51,22 @@ public class PanHandler implements DragBehaviorHandler{
     @Override
     public void onDragStart(Element elem) {
         m_panObject = new PanObject(m_topologyView);
+        D3.getEvent().stopPropagation();
+        D3.getEvent().preventDefault();
     }
 
     @Override
     public void onDrag(Element elem) {
         m_panObject.move();
+        D3.getEvent().stopPropagation();
+        D3.getEvent().preventDefault();
     }
 
     @Override
     public void onDragEnd(Element elem) {
         m_panObject = null;
         m_topologyComponent.updateMapPosition();
+        D3.getEvent().stopPropagation();
+        D3.getEvent().preventDefault();
     }
-
-    
 }
