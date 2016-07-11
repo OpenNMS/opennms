@@ -28,17 +28,6 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.EventTarget;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.client.VTooltip;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
@@ -46,6 +35,16 @@ import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.VTooltip;
 
 public class TopologyViewImpl extends Composite implements TopologyView<TopologyViewRenderer>, GraphUpdateListener {
 
@@ -114,10 +113,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         return m_svg.cast();
     }
     
-    private SVGGElement getMarginContainer() {
-        return m_marginContainer.cast();
-    }
-    
     @Override
     public SVGGElement getSVGViewPort() {
         return m_svgViewPort.cast();
@@ -131,11 +126,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     @Override
     public Element getVertexGroup() {
         return m_vertexGroup;
-    }
-
-    @Override
-    public Element getReferenceViewPort() {
-        return m_referenceMapViewport;
     }
 
     @Override

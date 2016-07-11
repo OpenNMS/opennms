@@ -71,7 +71,6 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
     }
 
     public static String DRAG_BEHAVIOR_KEY = "marqueeHandler";
-    private boolean m_dragging = false;
     private int m_x1;
     private int m_y1;
     private int m_offsetX;
@@ -86,42 +85,36 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
     
     @Override
     public void onDragStart(Element elem) {
-        if(!m_dragging) {
-            m_dragging = true;
-            
-            SVGElement svg = m_topologyView.getSVGElement().cast();
-            SVGMatrix rect = svg.getScreenCTM();
-            
-            m_offsetX = (int) rect.getE();
-            m_offsetY = (int) rect.getF();
-            consoleLog(rect);
-            consoleLog("m_offsetX: " + m_offsetX + " m_offsetY: " + m_offsetY);
-            m_x1 = D3.getEvent().getClientX() - m_offsetX;
-            m_y1 = D3.getEvent().getClientY() - m_offsetY;
-            
-            setMarquee(m_x1, m_y1, 0, 0);
-            D3.d3().select(m_topologyView.getMarqueeElement()).attr("display", "inline");
-        }
+        SVGElement svg = m_topologyView.getSVGElement().cast();
+        SVGMatrix rect = svg.getScreenCTM();
+
+        m_offsetX = (int) rect.getE();
+        m_offsetY = (int) rect.getF();
+        consoleDebug(rect);
+        consoleDebug("m_offsetX: " + m_offsetX + " m_offsetY: " + m_offsetY);
+        m_x1 = D3.getEvent().getClientX() - m_offsetX;
+        m_y1 = D3.getEvent().getClientY() - m_offsetY;
+
+        setMarquee(m_x1, m_y1, 0, 0);
+        D3.d3().select(m_topologyView.getMarqueeElement()).attr("display", "inline");
 
         D3.getEvent().stopPropagation();
         D3.getEvent().preventDefault();
     }
     
-    public final native void consoleLog(Object log)/*-{
+    public final native void consoleDebug(Object log)/*-{
         $wnd.console.log(log);
     }-*/;
 
     @Override
     public void onDrag(Element elem) {
-        if(m_dragging) {
-            int clientX = D3.getEvent().getClientX() - m_offsetX;
-            int clientY = D3.getEvent().getClientY() - m_offsetY;
-            setMarquee(
-                Math.min(m_x1, clientX), Math.min(m_y1, clientY), 
-                Math.abs(m_x1 - clientX), Math.abs(m_y1 - clientY)
-            );
-            selectVertices();
-        }
+        int clientX = D3.getEvent().getClientX() - m_offsetX;
+        int clientY = D3.getEvent().getClientY() - m_offsetY;
+        setMarquee(
+            Math.min(m_x1, clientX), Math.min(m_y1, clientY),
+            Math.abs(m_x1 - clientX), Math.abs(m_y1 - clientY)
+        );
+        selectVertices();
 
         D3.getEvent().stopPropagation();
         D3.getEvent().preventDefault();
@@ -129,15 +122,14 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
 
     @Override
     public void onDragEnd(Element elem) {
-        m_dragging = false;
-        D3.d3().select(m_topologyView.getMarqueeElement()).attr("display", "none");
-        
+        setMarqueeVisible(false);
+
         final List<String> vertIds = new ArrayList<String>();
         m_svgTopologyMap.selectAllVertexElements().each(new Handler<GWTVertex>() {
 
             @Override
             public void call(GWTVertex vert, int index) {
-                if(vert.isSelected()) {
+                if (vert.isSelected()) {
                     vertIds.add(vert.getId());
                 }
             }
@@ -152,7 +144,11 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
     private void setMarquee(int x, int y, int width, int height) {
         D3.d3().select(m_topologyView.getMarqueeElement()).attr("x", x).attr("y", y).attr("width", width).attr("height", height);
     }
-    
+
+    private void setMarqueeVisible(boolean visible) {
+        D3.d3().select(m_topologyView.getMarqueeElement()).attr("display", visible ? "inline" : "none");
+    }
+
     private void selectVertices() {
         // We use the svgIconOverlay to determine the selection and ignore the status border, the label
         // and possible invisible elements, such as status badge, navigate to target etc, as the vertex is
@@ -166,16 +162,10 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
             @Override
             public void call(GWTVertex vertex, int index) {
                 SVGElement elem = elemArray.get(index).cast();
-                
-                if(inSelection(elem)) {
-                    vertex.setSelected(true);
-                }else {
-                    vertex.setSelected(false);
-                }
-                
+                boolean selected = inSelection(elem);
+                vertex.setSelected(selected);
             }
         });
-        
     }
 
     private boolean inSelection(SVGElement elem) {
