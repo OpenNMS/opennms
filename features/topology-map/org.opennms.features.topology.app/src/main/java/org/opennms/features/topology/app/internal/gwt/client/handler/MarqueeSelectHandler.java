@@ -145,12 +145,14 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
     }
     
     private void selectVertices() {
-        D3 vertices = m_svgTopologyMap.selectAllVertexElements();
-        JsArray<JsArray<SVGElement>> selection = vertices.cast();
-        
+        // We use the svgIconOverlay to determine the selection and ignore the status border, the label
+        // and possible invisible elements, such as status badge, navigate to target etc, as the vertex is
+        // slightly greater than the svgIconOverlay and the user probably uses the icon itself to make the selection.
+        D3 iconOverlay = m_svgTopologyMap.selectAllVertexElements().select(".svgIconOverlay");
+
+        JsArray<JsArray<SVGElement>> selection = iconOverlay.cast();
         final JsArray<SVGElement> elemArray = selection.get(0);
-        
-        vertices.each(new Handler<GWTVertex>() {
+        iconOverlay.each(new Handler<GWTVertex>() {
 
             @Override
             public void call(GWTVertex vertex, int index) {
