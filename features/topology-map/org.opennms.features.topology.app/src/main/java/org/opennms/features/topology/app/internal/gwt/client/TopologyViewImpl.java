@@ -144,40 +144,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     }
 
     @Override
-    public void repaintNow(GWTGraph graph) {
-        m_presenter.getViewRenderer().draw(graph, this, graph.getBoundingBox());
-    }
-
-    @Override
-    public void onBrowserEvent(final Event event) {
-        super.onBrowserEvent(event);
-        switch(DOM.eventGetType(event)) {
-            case Event.ONCONTEXTMENU:
-
-                EventTarget target = event.getEventTarget();
-                
-                if (target.equals( getSVGElement() )) {
-                    m_presenter.onContextMenu(null, event.getClientX(), event.getClientY(), "map");
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                break;
-                
-    
-            case Event.ONCLICK:
-                if(event.getEventTarget().equals(getSVGElement())) {
-                    m_presenter.onBackgroundClick();
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                break;
-                
-        }
-
-
-    }
-
-    @Override
     public void onGraphUpdated(GWTGraph graph, GWTBoundingBox oldBBox) {
         if(m_presenter.getViewRenderer() != null){
             m_presenter.getViewRenderer().draw(graph, this, oldBBox);

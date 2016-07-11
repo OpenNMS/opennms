@@ -61,6 +61,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -459,9 +460,44 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 //                JsArrayInteger pos = D3.getMouse(m_topologyView.getSVGElement());
 //                onBackgroundDoubleClick(m_topologyView.getPoint(pos.get(0), pos.get(1)));
 //            }
-//        
+//
 //		})
-		svgElement.on("mousewheel", new Handler<Void>() {
+		svgElement.on(D3Events.CONTEXT_MENU.event(), new Handler<Void>() {
+			@Override
+			public void call(Void aVoid, int index) {
+				NativeEvent event = D3.getEvent();
+				if(D3.eventDefaultPrevented()) {
+					return;
+				}
+				if (!isMarqueeSelected()) {
+					EventTarget target = event.getEventTarget();
+					if (target.equals(m_topologyView.getSVGElement())) {
+						onContextMenu(null, event.getClientX(), event.getClientY(), "map");
+					}
+				}
+				event.preventDefault();
+				event.stopPropagation();
+			}
+		});
+
+		svgElement.on(D3Events.CLICK.event(), new Handler<Void>() {
+			@Override
+			public void call(Void aVoid, int index) {
+				NativeEvent event = D3.getEvent();
+				if (D3.eventDefaultPrevented()) {
+					return;
+				}
+				if (!isMarqueeSelected()
+					&& event.getButton() == NativeEvent.BUTTON_LEFT
+						&& event.getEventTarget().equals(m_topologyView.getSVGElement())) {
+					onBackgroundClick();
+				}
+				event.preventDefault();
+				event.stopPropagation();
+			}
+		});
+
+		svgElement.on(D3Events.MOUSE_WHEEL.event(), new Handler<Void>() {
 
             @Override
             public void call(Void t, int index) {
