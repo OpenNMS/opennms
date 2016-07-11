@@ -34,7 +34,7 @@ package org.opennms.netmgt.trapd;
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class MockTrapdIpMgr extends TrapdIPMgrJDBCImpl {
+public class MockTrapdIpMgr extends TrapdIpManagerDaoImpl {
 
     @Override
     public synchronized void dataSourceSync() {

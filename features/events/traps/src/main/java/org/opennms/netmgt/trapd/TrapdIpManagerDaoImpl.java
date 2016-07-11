@@ -53,47 +53,17 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class TrapdIpManagerDaoImpl implements TrapdIpMgr {
 
-	@Override
-	public void dataSourceSync() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public long getNodeId(String addr) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public long setNodeId(String addr, long nodeid) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public long removeNodeId(String addr) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public long longValue(Long result) {
-		// TODO Auto-generated method stub
-		return 0;
-	}/*
-
     private static final Logger LOG = LoggerFactory.getLogger(TrapdIpManagerDaoImpl.class);
 
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
 
-    *//**
+	/**
      * A Map of IP addresses and node IDs
-     *//*
+     */
     protected Map<InetAddress, Integer> m_knownips = new ConcurrentHashMap<InetAddress, Integer>();
 
-    *//**
+    /**
      * Clears and synchronizes the internal known IP address cache with the
      * current information contained in the database. To synchronize the cache
      * the method opens a new connection to the database, loads the address,
@@ -102,18 +72,26 @@ public class TrapdIpManagerDaoImpl implements TrapdIpMgr {
      * @throws java.sql.SQLException
      *             Thrown if the connection cannot be created or a database
      *             error occurs.
-     *//*
+     */
     @Override
     public synchronized void dataSourceSync() {
         m_knownips = m_ipInterfaceDao.getInterfacesForNodes();
     }
+    
+    public IpInterfaceDao getmIpInterfaceDao() {
+  		return m_ipInterfaceDao;
+  	}
 
-    *//**
+  	public void setmIpInterfaceDao(IpInterfaceDao m_ipInterfaceDao) {
+  		this.m_ipInterfaceDao = m_ipInterfaceDao;
+  	}
+
+    /**
      * Returns the nodeid for the IP Address
      *
      * @param addr The IP Address to query.
      * @return The node ID of the IP Address if known.
-     *//*
+     */
     @Override
     public synchronized int getNodeId(String addr) {
         if (addr == null) {
@@ -122,13 +100,13 @@ public class TrapdIpManagerDaoImpl implements TrapdIpMgr {
         return intValue(m_knownips.get(InetAddressUtils.getInetAddress(addr)));
     }
 
-    *//**
+    /**
      * Sets the IP Address and Node ID in the Map.
      *
      * @param addr   The IP Address to add.
      * @param nodeid The Node ID to add.
      * @return The nodeid if it existed in the map.
-     *//*
+     */
     @Override
     public synchronized int setNodeId(String addr, int nodeid) {
         if (addr == null || nodeid == -1) {
@@ -148,12 +126,12 @@ public class TrapdIpManagerDaoImpl implements TrapdIpMgr {
         }
     }
 
-    *//**
+    /**
      * Removes an address from the node ID map.
      *
      * @param addr The address to remove from the node ID map.
      * @return The nodeid that was in the map.
-     *//*
+     */
     @Override
     public synchronized int removeNodeId(String addr) {
         if (addr == null) {
@@ -166,4 +144,4 @@ public class TrapdIpManagerDaoImpl implements TrapdIpMgr {
     public int intValue(final Integer result) {
         return (result == null ? -1 : result);
     }
-*/}
+}
