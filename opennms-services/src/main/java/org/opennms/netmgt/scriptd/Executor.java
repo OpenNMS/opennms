@@ -29,12 +29,12 @@
 package org.opennms.netmgt.scriptd;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -71,12 +71,12 @@ public class Executor {
     /**
      * The configured scripts (no UEI specified).
      */
-    private final List<EventScript> m_eventScripts = new CopyOnWriteArrayList<>();
+    private final Set<EventScript> m_eventScripts = new CopyOnWriteArraySet<>();
 
     /**
      * The configured scripts (UEI specified).
      */
-    private final Map<String,List<EventScript>> m_eventScriptMap = new ConcurrentHashMap<>();
+    private final Map<String,Set<EventScript>> m_eventScriptMap = new ConcurrentHashMap<>();
 
     /**
      * The DAO object for fetching nodes
@@ -123,10 +123,14 @@ public class Executor {
      * Load the m_scripts and m_scriptMap data structures from the
      * configuration.
      * 
-     * TODO: This doesn't deregister scripts from m_eventScripts and
-     * m_eventScriptMap during config reloads.
+     * TODO: If we ever make Scriptd multithreaded then we will need
+     * to handle synchronization for m_eventScripts and m_eventScriptMap
+     * correctly.
      */
     private void loadConfig() {
+
+        m_eventScripts.clear();
+        m_eventScriptMap.clear();
 
         for (EventScript script : m_config.getEventScripts()) {
             Uei[] ueis = script.getUei();
@@ -138,10 +142,10 @@ public class Executor {
 
                     String ueiName = uei.getName();
 
-                    List<EventScript> list = m_eventScriptMap.get(ueiName);
+                    Set<EventScript> list = m_eventScriptMap.get(ueiName);
 
                     if (list == null) {
-                        list = new ArrayList<EventScript>();
+                        list = new CopyOnWriteArraySet<>();
                         list.add(script);
                         m_eventScriptMap.put(ueiName, list);
                     } else {
@@ -183,11 +187,11 @@ public class Executor {
 
                     ReloadScript[] reloadScripts = m_config.getReloadScripts();
 
-                    for (int i = 0; i < reloadScripts.length; i++) {
+                    for (ReloadScript script : reloadScripts) {
                         try {
-                            m_scriptManager.exec(reloadScripts[i].getLanguage(), "", 0, 0, reloadScripts[i].getContent());
+                            m_scriptManager.exec(script.getLanguage(), "", 0, 0, script.getContent());
                         } catch (BSFException e) {
-                            LOG.error("Reload script[{}] failed.", i, e);
+                            LOG.error("Reload script[{}] failed.", script, e);
                         }
                     }
 
@@ -199,7 +203,7 @@ public class Executor {
 
             Script[] attachedScripts = m_event.getScript();
 
-            List<EventScript> mapScripts = null;
+            Set<EventScript> mapScripts = null;
 
             try {
                 mapScripts = m_eventScriptMap.get(m_event.getUei());
@@ -212,7 +216,7 @@ public class Executor {
 
                 m_scriptManager.registerBean("event", m_event);
 
-                // And the events node
+                // And the event's node to the script context
                 OnmsNode node = null;
 
                 if (m_event.hasNodeid()) {
@@ -228,12 +232,11 @@ public class Executor {
 
                 LOG.debug("Executing attached scripts");
                 if (attachedScripts.length > 0) {
-                    for (int i = 0; i < attachedScripts.length; i++) {
+                    for (Script script : attachedScripts) {
                         try {
-                            Script script = attachedScripts[i];
                             m_scriptManager.exec(script.getLanguage(), "", 0, 0, script.getContent());
                         } catch (BSFException e) {
-                            LOG.error("Attached script [{}] execution failed", i, e);
+                            LOG.error("Attached script [{}] execution failed", script, e);
                         }
                     }
                 }
@@ -242,9 +245,8 @@ public class Executor {
 
                 LOG.debug("Executing mapped scripts");
                 if (mapScripts != null) {
-                    for (int i = 0; i < mapScripts.size(); i++) {
+                    for (EventScript script : mapScripts) {
                         try {
-                            EventScript script = (EventScript) mapScripts.get(i);
                             m_scriptManager.exec(script.getLanguage(), "", 0, 0, script.getContent());
                         } catch (BSFException e) {
                             LOG.error("UEI-specific event handler script execution failed: {}", m_event.getUei(), e);
