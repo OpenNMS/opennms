@@ -112,12 +112,11 @@ public class EventCreator implements TrapProcessor {
     @Override
     public void setTrapAddress(InetAddress trapAddress) {
         m_eventBuilder.setSnmpHost(str(trapAddress));
-        m_eventBuilder.setInterface(InetAddressUtils.getInetAddress("7.192.144.15"));
-        m_eventBuilder.setNodeid(150);
-//        long nodeId = m_trapdIpMgr.getNodeId(str(trapAddress));
-//        if (nodeId != -1) {
-//            m_eventBuilder.setNodeid(nodeId);
-//        }
+        m_eventBuilder.setInterface(trapAddress);
+        long nodeId = m_trapdIpMgr.getNodeId(str(trapAddress));
+        if (nodeId != -1) {
+            m_eventBuilder.setNodeid(nodeId);
+        }
     }
 
     /** {@inheritDoc} */
