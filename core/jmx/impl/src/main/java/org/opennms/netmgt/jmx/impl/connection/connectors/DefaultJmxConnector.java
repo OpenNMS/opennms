@@ -85,12 +85,8 @@ class DefaultJmxConnector implements JmxServerConnector {
                 // this JVM's MBeanServer directly.
                 return new PlatformMBeanServerConnector().createConnection(ipAddress, propertiesMap);
             }
-            JMXServiceURL url = null;
-            if(InetAddressUtils.str(ipAddress).equals("7.40.16.72")){
-            	url = new JMXServiceURL("service:jmx:rmi://7.40.16.72:45444/jndi/rmi://7.40.16.72:1299/karaf-minion");
-            }else{
-                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);
-            }
+
+            final JMXServiceURL url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);
             LOG.debug("JMX: {} - {}", factory, url);
 
             final Map<String,String[]> env = new HashMap<>();
