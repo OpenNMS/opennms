@@ -42,6 +42,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.snmp.BgpSessionDetector;
+import org.opennms.netmgt.provision.detector.snmp.BgpSessionDetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -56,7 +57,9 @@ public class BgpSessionDetectorTest implements InitializingBean {
     static final String TEST_IP_ADDRESS = "192.0.2.205";
 
     @Autowired
-    private BgpSessionDetector m_detector;
+    private BgpSessionDetectorFactory m_detectorFactory;
+
+    BgpSessionDetector m_detector;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -66,9 +69,11 @@ public class BgpSessionDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws InterruptedException {
         MockLogAppender.setupLogging();
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setBgpPeerIp("");
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
+        m_detector.setAgentAttributes(m_detectorFactory.getAgentAttributes(null, InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 
     @Test(timeout=20000)

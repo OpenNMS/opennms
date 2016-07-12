@@ -34,17 +34,13 @@ import java.net.InetAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>BgpSessionDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
 public class BgpSessionDetector extends SnmpDetector {
 
     private static final Logger LOG = LoggerFactory.getLogger(BgpSessionDetector.class);

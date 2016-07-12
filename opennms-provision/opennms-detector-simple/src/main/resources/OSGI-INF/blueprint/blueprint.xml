@@ -10,6 +10,13 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
+    <bean id="bgpSessionDetectorFactory" class="org.opennms.netmgt.provision.detector.snmp.BgpSessionDetectorFactory" />
+    <service ref="bgpSessionDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+        <service-properties>
+            <entry key="implementation" value="org.opennms.netmgt.provision.detector.snmp.BgpSessionDetector" />
+        </service-properties>
+    </service>
+
     <bean id="icmpDetectorFactory" class="org.opennms.netmgt.provision.detector.icmp.IcmpDetectorFactory" />
 	<service ref="icmpDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<service-properties>
