@@ -56,7 +56,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -95,8 +94,6 @@ public class SyslogdIT implements InitializingBean {
     @Autowired
     private DistPollerDao m_distPollerDao;
 
-    private EventAnticipator m_eventAnticipator;
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -106,9 +103,6 @@ public class SyslogdIT implements InitializingBean {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
         MockLogAppender.resetEvents();
-
-        m_eventAnticipator = new EventAnticipator();
-        m_eventIpcManager.setEventAnticipator(m_eventAnticipator);
 
         InputStream stream = null;
         try {
@@ -148,6 +142,7 @@ public class SyslogdIT implements InitializingBean {
     @After
     public void tearDown() throws Exception {
         m_syslogd.stop();
+        m_eventIpcManager.reset();
         MockLogAppender.assertNoErrorOrGreater();
     }
 
@@ -169,17 +164,17 @@ public class SyslogdIT implements InitializingBean {
         expectedEventBldr.setLogDest("logndisplay");
         expectedEventBldr.setLogMessage(expectedLogMsg);
     
-        m_eventAnticipator.anticipateEvent(expectedEventBldr.getEvent());
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(expectedEventBldr.getEvent());
         
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, InetAddressUtils.ONE_TWENTY_SEVEN);
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
         new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId()));
 
-        m_eventAnticipator.verifyAnticipated(5000,0,0,0,0);
-        final Event receivedEvent = m_eventAnticipator.getAnticipatedEventsRecieved().get(0);
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(5000,0,0,0,0);
+        final Event receivedEvent = m_eventIpcManager.getEventAnticipator().getAnticipatedEventsReceived().get(0);
         assertEquals("Log messages do not match", expectedLogMsg, receivedEvent.getLogmsg().getContent());
         
-        return m_eventAnticipator.getAnticipatedEventsRecieved();
+        return m_eventIpcManager.getEventAnticipator().getAnticipatedEventsReceived();
     }
     
 	private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg, Map<String,String> expectedParams) throws UnknownHostException, InterruptedException, ExecutionException {
@@ -225,12 +220,12 @@ public class SyslogdIT implements InitializingBean {
         expectedEventBldr.setLogDest("logndisplay");
         expectedEventBldr.setLogMessage(testMsg);
         
-        m_eventAnticipator.anticipateEvent(expectedEventBldr.getEvent());
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(expectedEventBldr.getEvent());
         
         final SyslogClient s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, InetAddressUtils.ONE_TWENTY_SEVEN);
         s.syslog(SyslogClient.LOG_CRIT, testPDU);
 
-        m_eventAnticipator.verifyAnticipated(10000, 0, 0, 0, 0);
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(10000, 0, 0, 0, 0);
     }
 
     @Test
@@ -249,12 +244,12 @@ public class SyslogdIT implements InitializingBean {
         expectedEventBldr.addParam("service", "local1");
         expectedEventBldr.addParam("severity", "Warning");
     
-        m_eventAnticipator.anticipateEvent(expectedEventBldr.getEvent());
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(expectedEventBldr.getEvent());
         
         final SyslogClient s = new SyslogClient("maltd", 10, SyslogClient.LOG_LOCAL1, InetAddressUtils.ONE_TWENTY_SEVEN);
         s.syslog(SyslogClient.LOG_WARNING, testPDU);
     
-        m_eventAnticipator.verifyAnticipated(5000, 0, 0, 0, 0);
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(5000, 0, 0, 0, 0);
     }
     
     @Test
@@ -272,12 +267,12 @@ public class SyslogdIT implements InitializingBean {
         expectedEventBldr.addParam("service", "local1");
         expectedEventBldr.addParam("severity", "Warning");
     
-        m_eventAnticipator.anticipateEvent(expectedEventBldr.getEvent());
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(expectedEventBldr.getEvent());
         
         final SyslogClient s = new SyslogClient(null, 10, SyslogClient.LOG_LOCAL1, InetAddressUtils.ONE_TWENTY_SEVEN);
         s.syslog(SyslogClient.LOG_WARNING, testPDU);
     
-        m_eventAnticipator.verifyAnticipated(5000, 0, 0, 0, 0);
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(5000, 0, 0, 0, 0);
     }
     
     @Test
@@ -294,12 +289,12 @@ public class SyslogdIT implements InitializingBean {
         
         expectedEventBldr.addParam("service", "local0");
     
-        m_eventAnticipator.anticipateEvent(expectedEventBldr.getEvent());
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(expectedEventBldr.getEvent());
         
         final SyslogClient s = new SyslogClient(null, 10, SyslogClient.LOG_LOCAL0, InetAddressUtils.ONE_TWENTY_SEVEN);
         s.syslog(SyslogClient.LOG_DEBUG, testPDU);
 
-        m_eventAnticipator.verifyAnticipated(5000, 0, 0, 0, 0);
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(5000, 0, 0, 0, 0);
     }
     
     @Test
@@ -316,12 +311,12 @@ public class SyslogdIT implements InitializingBean {
         
         expectedEventBldr.addParam("process", "beerd");
 
-        m_eventAnticipator.anticipateEvent(expectedEventBldr.getEvent());
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(expectedEventBldr.getEvent());
         
         final SyslogClient s = new SyslogClient("beerd", 10, SyslogClient.LOG_DAEMON, InetAddressUtils.ONE_TWENTY_SEVEN);
         s.syslog(SyslogClient.LOG_DEBUG, testPDU);
     
-        m_eventAnticipator.verifyAnticipated(5000, 0, 0, 0, 0);
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(5000, 0, 0, 0, 0);
     }
 
     @Test
@@ -372,7 +367,7 @@ public class SyslogdIT implements InitializingBean {
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, InetAddressUtils.ONE_TWENTY_SEVEN);
         sc.syslog(SyslogClient.LOG_DEBUG, testPDU);
 
-        m_eventAnticipator.verifyAnticipated(5000, 0, 0, 0, 0);
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(5000, 0, 0, 0, 0);
     }
 
     @Test
@@ -382,7 +377,7 @@ public class SyslogdIT implements InitializingBean {
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, InetAddressUtils.ONE_TWENTY_SEVEN);
         sc.syslog(SyslogClient.LOG_DEBUG, testPDU);
 
-        m_eventAnticipator.verifyAnticipated(5000, 0, 0, 0, 0);
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(5000, 0, 0, 0, 0);
     }
     
     @Test
@@ -419,12 +414,12 @@ public class SyslogdIT implements InitializingBean {
         expectedEventBldr.addParam("count", testGroups[1]);
         expectedEventBldr.addParam("replacementItem", testGroups[2]);
 
-        m_eventAnticipator.anticipateEvent(expectedEventBldr.getEvent());
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(expectedEventBldr.getEvent());
 
         final SyslogClient s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, InetAddressUtils.ONE_TWENTY_SEVEN);
         s.syslog(SyslogClient.LOG_DEBUG, testPDU);
 
-        m_eventAnticipator.verifyAnticipated(5000, 0, 0, 0, 0);
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(5000, 0, 0, 0, 0);
     }
 
 }

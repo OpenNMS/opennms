@@ -386,7 +386,7 @@ public class MockNetworkTest extends TestCase {
 
         m_eventMgr.finishProcessingEvents();
         assertEquals(0, anticipator.waitForAnticipated(0).size());
-        assertEquals(0, anticipator.unanticipatedEvents().size());
+        assertEquals(0, anticipator.getUnanticipatedEvents().size());
 
         MockNode node = m_network.getNode(1);
         Event nodeEvent = MockEventUtil.createNodeDownEvent("Test", node);
@@ -395,7 +395,7 @@ public class MockNetworkTest extends TestCase {
         m_eventMgr.sendNow(nodeEvent);
         m_eventMgr.finishProcessingEvents();
         assertEquals(0, anticipator.waitForAnticipated(0).size());
-        assertEquals(1, anticipator.unanticipatedEvents().size());
+        assertEquals(1, anticipator.getUnanticipatedEvents().size());
 
     }
     
@@ -664,7 +664,7 @@ public class MockNetworkTest extends TestCase {
 
         assertEquals(1, anticipator.waitForAnticipated(1500).size());
         assertEquals(0, anticipator.waitForAnticipated(1000).size());
-        assertEquals(1, anticipator.unanticipatedEvents().size());
+        assertEquals(1, anticipator.getUnanticipatedEvents().size());
 
     }
 

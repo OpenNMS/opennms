@@ -1729,7 +1729,7 @@ public class ThresholdingVisitorIT {
 
     private void verifyEvents(int remainEvents) {
         if (remainEvents == 0) {
-            List<Event> receivedList = m_anticipator.getAnticipatedEventsRecieved();
+            List<Event> receivedList = new ArrayList<>(m_anticipator.getAnticipatedEventsReceived());
             
             Collections.sort(receivedList, EVENT_COMPARATOR);
             Collections.sort(m_anticipatedEvents, EVENT_COMPARATOR);

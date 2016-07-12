@@ -51,7 +51,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.api.PathOutageManager;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockNetwork;
@@ -98,7 +97,6 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
     private PollableNetwork m_pNetwork;
     private PollableService m_pSvc;
     private MockService m_mSvc;
-    private EventAnticipator m_anticipator;
     private OutageAnticipator m_outageAnticipator;
     private MockEventIpcManager m_eventMgr;
     
@@ -161,12 +159,10 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
         m_pollerConfig.addService(m_mNetwork.getService(2, "192.168.1.3", "HTTP"));
         m_pollerConfig.setNextOutageIdSql(m_db.getNextOutageIdStatement());
         
-        m_anticipator = new EventAnticipator();
         m_outageAnticipator = new OutageAnticipator(m_db);
         
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
-        m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.addEventListener(m_outageAnticipator);
         
         m_pollContext = new DefaultPollContext();
@@ -212,7 +208,7 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
     @Test
     public void testSendEvent() {
        
-        m_anticipator.anticipateEvent(m_mSvc.createDownEvent());
+        m_eventMgr.getEventAnticipator().anticipateEvent(m_mSvc.createDownEvent());
         
         PollEvent e = m_pollContext.sendEvent(m_mSvc.createDownEvent());
         
@@ -220,8 +216,8 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
         assertNotNull(e);
         assertTrue("Invalid Event Id", e.getEventId() > 0);
         
-        assertEquals(0, m_anticipator.waitForAnticipated(0).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        assertEquals(0, m_eventMgr.getEventAnticipator().waitForAnticipated(0).size());
+        assertEquals(0, m_eventMgr.getEventAnticipator().getUnanticipatedEvents().size());
         
         
     }

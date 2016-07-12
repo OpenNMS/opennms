@@ -44,7 +44,6 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
@@ -90,8 +89,6 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
 
     private MockDatabase m_database;
 
-    private EventAnticipator m_anticipator;
-
     @Override
     public void setTemporaryDatabase(final MockDatabase database) {
         m_database = database;
@@ -99,8 +96,6 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
 
     @Before
     public void setUp() throws Exception {
-        m_anticipator = new EventAnticipator();
-        m_eventMgr.setEventAnticipator(m_anticipator);
 
         // Events need database IDs to make alarmd happy
         m_eventMgr.setEventWriter(m_database);
@@ -125,9 +120,9 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
     @Test
     public void canGenerateAlarmLifecycleEvents() {
         // Expect an alarmCreated event
-        m_anticipator.resetAnticipated();
-        m_anticipator.anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
-        m_anticipator.setDiscardUnanticipated(true);
+        m_eventMgr.getEventAnticipator().resetAnticipated();
+        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
+        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
 
         // Send a nodeDown
         sendNodeDownEvent(1);
@@ -136,9 +131,9 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
         await().until(allAnticipatedEventsWereReceived());
 
         // Expect an alarmUpdatedWithReducedEvent event
-        m_anticipator.resetAnticipated();
-        m_anticipator.anticipateEvent(new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, "alarmd").getEvent());
-        m_anticipator.setDiscardUnanticipated(true);
+        m_eventMgr.getEventAnticipator().resetAnticipated();
+        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, "alarmd").getEvent());
+        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
 
         // Send another nodeDown
         sendNodeDownEvent(1);
@@ -147,10 +142,10 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
         await().until(allAnticipatedEventsWereReceived());
 
         // Expect an alarmCreated and a alarmCleared event
-        m_anticipator.resetAnticipated();
-        m_anticipator.anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
-        m_anticipator.anticipateEvent(new EventBuilder(EventConstants.ALARM_CLEARED_UEI, "alarmd").getEvent());
-        m_anticipator.setDiscardUnanticipated(true);
+        m_eventMgr.getEventAnticipator().resetAnticipated();
+        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
+        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CLEARED_UEI, "alarmd").getEvent());
+        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
 
         // Send a nodeUp
         sendNodeUpEvent(1);
@@ -160,9 +155,9 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
         await().atMost(1, MINUTES).until(allAnticipatedEventsWereReceived());
 
         // Expect an alarmUncleared event
-        m_anticipator.resetAnticipated();
-        m_anticipator.anticipateEvent(new EventBuilder(EventConstants.ALARM_UNCLEARED_UEI, "alarmd").getEvent());
-        m_anticipator.setDiscardUnanticipated(true);
+        m_eventMgr.getEventAnticipator().resetAnticipated();
+        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_UNCLEARED_UEI, "alarmd").getEvent());
+        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
 
         // Send another nodeDown
         sendNodeDownEvent(1);
@@ -176,7 +171,7 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
         return new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                return m_anticipator.getAnticipatedEvents().isEmpty();
+                return m_eventMgr.getEventAnticipator().getAnticipatedEvents().isEmpty();
             }
         };
     }
