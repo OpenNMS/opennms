@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.ietf.jgss.Oid;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -167,6 +168,12 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
 		// Setting VarBind 
 		PDUv1 snmp4JV1cTrapPdu = new PDUv1();
 		snmp4JV1cTrapPdu.setAgentAddress(new IpAddress(trapAddress));
+		
+		OID enterpriseId=new OID(trapIdentityRoot.findValue("enterpriseId").asText());
+		snmp4JV1cTrapPdu.setGenericTrap(generic);
+		snmp4JV1cTrapPdu.setSpecificTrap(specific);
+		snmp4JV1cTrapPdu.setEnterprise(enterpriseId);
+		
 		
 		JsonNode varBindRoot = trapProcessorRoot.findValue("varBinds");
 		LOG.debug("varBindRoot is : "+varBindRoot);
