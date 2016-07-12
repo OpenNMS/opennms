@@ -47,8 +47,6 @@ try
 		//System.out.println(trapd.parseV1Information(actualObj));
 		TrapNotification not=trapd.parseV1Information(actualObj);
 		
-		m_trapdIpManager=new TrapdIpManagerDaoImpl();
-		
 		TrapQueueProcessor trapQueu=new TrapQueueProcessor();
 		//System.out.println(((EventCreator)not.getTrapProcessor()).getEvent());
 		BasicTrapProcessor process=(BasicTrapProcessor) not.getTrapProcessor();
