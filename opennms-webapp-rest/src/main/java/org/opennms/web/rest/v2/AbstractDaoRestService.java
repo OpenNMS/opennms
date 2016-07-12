@@ -262,7 +262,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 				LOG.debug("delete: deleting object {}", object);
 				getDao().delete(object);
 			}
-			return Response.ok().build();
+			return Response.noContent().build();
 		} finally {
 			writeUnlock();
 		}
