@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,41 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.gwt.client.d3;
+package org.opennms.core.utils;
 
-public enum D3Events {
-	
-	CLICK("click"),
-	MOUSE_DOWN("mousedown"),
-	KEY_DOWN("keydown"), 
-	CONTEXT_MENU("contextmenu"),
-	DRAG_START("dragstart"),
-	DRAG("drag"),
-	DRAG_END("dragend"),
-	MOUSE_WHEEL("mousewheel"),
-	MOUSE_OVER("mouseover"), 
-	MOUSE_OUT("mouseout"),
-	DOUBLE_CLICK("dblclick");
-	
-	private String m_event;
-	
-	D3Events(String event){
-		m_event = event;
-	}
-	
-	public String event() {
-		return m_event;
-	}
-	
-	public interface Handler <T>{
-		public void call(T t, int index);
-	}
-	
-	public interface XMLHandler<T>{
-	    public void call(T t);
-	}
-	
-	public interface AnonymousHandler{
-	    public void call();
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import org.junit.Test;
+
+public class IteratorUtilsTest {
+
+	@Test
+	public void testConcatIterators() {
+		List<String> list = Arrays.asList(new String[] {
+			"one",
+			"two",
+			"three"
+		});
+
+		// These elements will be alphabetized
+		Set<String> set = new TreeSet<>();
+		set.add("four");
+		set.add("five");
+		set.add("six");
+		set.add("seven");
+
+		Iterable<String> iterable = IteratorUtils.concatIterators(list.iterator(), set.iterator());
+
+		assertEquals(
+			"one,two,three,five,four,seven,six",
+			StreamSupport.stream(iterable.spliterator(), false).collect(Collectors.joining(","))
+		);
 	}
 }

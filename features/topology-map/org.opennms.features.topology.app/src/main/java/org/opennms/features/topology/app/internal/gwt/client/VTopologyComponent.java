@@ -61,6 +61,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -412,18 +413,13 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
     private TopologyComponentServerRpc m_serverRpc;
 	private int m_width;
 	private int m_height;
+	private String m_activeTool;
 
 
 	public VTopologyComponent() {
 		initWidget(uiBinder.createAndBindUi(this));
 		m_graph = GWTGraph.create();
 	}
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        boolean isAttached = this.isAttached();
-    }
 
     @SuppressWarnings("serial")
     @Override
@@ -447,11 +443,12 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		m_componentHolder.add(m_topologyView.asWidget());
 		
 		m_svgDragHandlerManager = new DragHandlerManager();
-		m_svgDragHandlerManager.addDragBehaviorHandler(PanHandler.DRAG_BEHAVIOR_KEY, new PanHandler(this, serviceRegistry));
+		m_svgDragHandlerManager.addDragBehaviorHandler(PanHandler.DRAG_BEHAVIOR_KEY, new PanHandler(this));
 		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY, new MarqueeSelectHandler(this, m_topologyView));
 		m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
-		D3 svgElement = D3.d3().select(m_topologyView.getSVGElement());
         setupDragBehavior(m_topologyView.getSVGElement(), m_svgDragHandlerManager);
+
+		D3 svgElement = D3.d3().select(m_topologyView.getSVGElement());
 //        svgElement.on("dblclick", new Handler<Void>() {
 //
 //            @Override
@@ -459,9 +456,44 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 //                JsArrayInteger pos = D3.getMouse(m_topologyView.getSVGElement());
 //                onBackgroundDoubleClick(m_topologyView.getPoint(pos.get(0), pos.get(1)));
 //            }
-//        
+//
 //		})
-		svgElement.on("mousewheel", new Handler<Void>() {
+		svgElement.on(D3Events.CONTEXT_MENU.event(), new Handler<Void>() {
+			@Override
+			public void call(Void aVoid, int index) {
+				NativeEvent event = D3.getEvent();
+				if(D3.eventDefaultPrevented()) {
+					return;
+				}
+				if (!isMarqueeSelected()) {
+					EventTarget target = event.getEventTarget();
+					if (target.equals(m_topologyView.getSVGElement())) {
+						onContextMenu(null, event.getClientX(), event.getClientY(), "map");
+					}
+				}
+				event.preventDefault();
+				event.stopPropagation();
+			}
+		});
+
+		svgElement.on(D3Events.CLICK.event(), new Handler<Void>() {
+			@Override
+			public void call(Void aVoid, int index) {
+				NativeEvent event = D3.getEvent();
+				if (D3.eventDefaultPrevented()) {
+					return;
+				}
+				if (!isMarqueeSelected()
+					&& event.getButton() == NativeEvent.BUTTON_LEFT
+						&& event.getEventTarget().equals(m_topologyView.getSVGElement())) {
+					onBackgroundClick();
+				}
+				event.preventDefault();
+				event.stopPropagation();
+			}
+		});
+
+		svgElement.on(D3Events.MOUSE_WHEEL.event(), new Handler<Void>() {
 
             @Override
             public void call(Void t, int index) {
@@ -631,6 +663,9 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
                         @Override
 			public void call(GWTVertex vertex, int index) {
+				if (D3.eventDefaultPrevented()) {
+					return;
+				}
 				NativeEvent event = D3.getEvent();
 				SVGGElement vertexElement = event.getCurrentEventTarget().cast();
 				vertexElement.getParentElement().appendChild(vertexElement);
@@ -882,7 +917,12 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	        m_svgDragHandlerManager.setCurrentDragHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY);
 	        m_topologyView.getSVGElement().getStyle().setCursor(Cursor.CROSSHAIR);
 	    }
+		m_activeTool = toolname;
     }
+
+	private boolean isMarqueeSelected() {
+		return "select".equals(m_activeTool);
+	}
 
     /**
 	 * Sets the graph, updates the ViewRenderer if need be and 
