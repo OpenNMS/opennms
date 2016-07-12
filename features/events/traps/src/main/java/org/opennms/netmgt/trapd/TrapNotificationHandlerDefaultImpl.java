@@ -36,7 +36,6 @@ import org.opennms.core.concurrent.ExecutorFactoryJavaImpl;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandler {
 	private static final Logger LOG = LoggerFactory.getLogger(TrapNotificationHandlerDefaultImpl.class);
@@ -53,7 +52,6 @@ public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandl
 
 	private TrapQueueProcessorFactory m_processorFactory;
 
-	@Autowired
 	private TrapdIpMgr m_trapdIpManager;
 
 	@Override
