@@ -1,6 +1,7 @@
 package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.Map;
@@ -107,6 +108,17 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
 						new IpAddress(trapAddress)));
 
 				int type = Integer.parseInt(field.getValue().findValue("type").asText());
+				String value=field.getValue().findValue("value").toString();
+				if(type==6)
+				{
+					if(value.matches("\\[[0-9,]*\\]"))
+					{
+						int[] arr = Arrays.stream(value.substring(1, value.length()-1).split(","))
+								.map(String::trim).mapToInt(Integer::parseInt).toArray();
+						OID valueOid=new OID(arr);
+						value=valueOid.toString();
+					}
+				}
 				
 			        switch (type) {
 		            case 2:  snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new Integer32(field.getValue().findValue("value").asInt())));
@@ -115,7 +127,7 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
                     		 break;
 		            case 5:  snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new Null()));
                     		 break;
-		            case 6:  snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(field.getValue().findValue("value").toString())));
+		            case 6:  snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(value)));
                     		 break;
 		            case 64: snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new IpAddress(field.getValue().findValue("inetAddress").asText())));
                     		 break;
@@ -196,6 +208,18 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
 				
 				int type = Integer.parseInt(field.getValue().findValue("type").asText());
 				
+				String value=field.getValue().findValue("value").toString();
+				if(type==6)
+				{
+					if(value.matches("\\[[0-9,]*\\]"))
+					{
+						int[] arr = Arrays.stream(value.substring(1, value.length()-1).split(","))
+								.map(String::trim).mapToInt(Integer::parseInt).toArray();
+						OID valueOid=new OID(arr);
+						value=valueOid.toString();
+					}
+				}
+				
 		        switch (type) {
 	            case 2:  snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new Integer32(field.getValue().findValue("value").asInt())));
                 		 break;
@@ -203,7 +227,7 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
                 		 break;
 	            case 5:  snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new Null()));
                 		 break;
-	            case 6:  snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(field.getValue().findValue("value").toString())));
+	            case 6:  snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(value)));
                 		 break;
 	            case 64: snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new IpAddress(field.getValue().findValue("inetAddress").asText())));
                 		 break;

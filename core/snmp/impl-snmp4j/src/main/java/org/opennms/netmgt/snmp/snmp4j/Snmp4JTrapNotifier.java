@@ -31,6 +31,7 @@ package org.opennms.netmgt.snmp.snmp4j;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Random;
+import java.util.StringTokenizer;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -118,6 +119,10 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
         protected void processVarBindAt(int i) {
             SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getOid().getValue());
             SnmpValue value = new Snmp4JValue(getVarBindAt(i).getVariable());
+            if(getVarBindAt(i).getVariable().toString().matches("[a-zA-Z:]*"))
+            {
+            	value = new Snmp4JValue(SMIConstants.SYNTAX_OCTET_STRING,getVarBindAt(i).getVariable().toString().getBytes());
+            }
             processVarBind(name, value);
         }
     }
