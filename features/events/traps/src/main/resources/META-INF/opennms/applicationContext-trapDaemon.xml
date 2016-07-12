@@ -19,69 +19,6 @@
   <context:annotation-config />
   <tx:annotation-driven/>
   
-   <!-- 
-    DataSourceFactory has been changed to return TransactionAwareDataSources so
-    legacy code can participate in transactions properly.
-  -->
-  <bean id="dataSource" class="org.opennms.core.db.DataSourceFactoryBean" />
-
-  <onmsgi:service interface="javax.sql.DataSource" ref="dataSource"/>
-
-  <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-    <property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="timeKeeper" class="org.opennms.netmgt.collection.support.DefaultTimeKeeper" />
-
-  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-    <property name="dataSource" ref="dataSource" />
-    <property name="packagesToScan">
-      <list>
-        <!-- TODO: Move into org.opennms.netmgt.model -->
-        <value>org.opennms.netmgt.bsm</value>
-        <!-- TODO: Move into org.opennms.netmgt.model -->
-        <value>org.opennms.netmgt.config.monitoringLocations</value>
-        <value>org.opennms.netmgt.dao.hibernate</value>
-        <value>org.opennms.netmgt.model</value>
-      </list>
-    </property>
-    <!--  property name="schemaUpdate" value="true">
-      </property -->
-    <property name="annotatedPackages">
-      <list>
-        <value>org.opennms.netmgt.dao.hibernate</value>
-        <value>org.opennms.netmgt.model</value>
-      </list>
-    </property>
-    <property name="hibernateProperties">
-      <value>
-        hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-        hibernate.cache.use_second_level_cache=false
-        hibernate.cache=false
-        hibernate.cache.use_query_cache=false
-        hibernate.jdbc.batch_size=0
-        <!-- hibernate.format_sql=true -->
-      </value>
-    </property>
-  </bean>
-  <bean id="sessionFactoryWrapper" class="org.opennms.netmgt.dao.hibernate.DefaultSessionFactoryWrapper">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>
-  <onmsgi:service ref="sessionFactoryWrapper" interface="org.opennms.netmgt.dao.api.SessionFactoryWrapper"/>
-
-  <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-    <property name="sessionFactory" ref="sessionFactory" />
-    <property name="nestedTransactionAllowed" value="true"/>
-  </bean>
-  
-  <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
-    <property name="transactionManager" ref="transactionManager" />
-  </bean>
-  
-    <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-  
   <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd">
     <property name="eventReader" ref="eventReader"/>
     <property name="trapReceiver" ref="trapReceiver"/>
