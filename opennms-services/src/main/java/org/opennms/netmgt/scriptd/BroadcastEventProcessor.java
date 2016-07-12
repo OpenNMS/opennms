@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.scriptd;
 
-import java.util.Queue;
-
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -41,30 +39,29 @@ import org.slf4j.LoggerFactory;
  * All events are placed on a queue, so they can be handled by the "Executor"
  * (this allows the Executor to pause and resume without losing events).
  * 
- * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:jim.doble@tavve.com">Jim Doble</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
-final class BroadcastEventProcessor implements EventListener {
+final class BroadcastEventProcessor implements AutoCloseable, EventListener {
+
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
+
     /**
      * The location where executable events are enqueued to be executed.
      */
-    private final Queue<Event> m_execQ;
+    private final Executor m_executor;
 
     /**
      * This constructor subscribes to eventd for all events
      * 
-     * @param execQ
-     *            The queue where executable events are stored.
+     * @param executor Executor that runs Scriptd tasks
      * 
      */
-    BroadcastEventProcessor(Queue<Event> execQ) {
+    BroadcastEventProcessor(Executor executor) {
         // set up the executable queue first
-
-        m_execQ = execQ;
+        m_executor = executor;
 
         // subscribe for all events
-
         EventIpcManagerFactory.init();
         EventIpcManagerFactory.getIpcManager().addEventListener(this);
     }
@@ -72,9 +69,9 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * Close the BroadcastEventProcessor
      */
+    @Override
     public synchronized void close() {
         // unsubscribe all events
-
         EventIpcManagerFactory.getIpcManager().removeEventListener(this);
     }
 
@@ -91,7 +88,7 @@ final class BroadcastEventProcessor implements EventListener {
             return;
         }
 
-        m_execQ.add(event);
+        m_executor.addTask(event);
 
         LOG.debug("Added event \'{}\' to scriptd execution queue.", event.getUei());
 
