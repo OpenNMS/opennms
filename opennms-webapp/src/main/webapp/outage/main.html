@@ -1,5 +1,5 @@
 <div ng-controller="ListCtrl">
-<div ng-controller="ScanReportListCtrl">
+<div ng-controller="OutageListCtrl">
 
 	<!-- Modal form for adding filters -->
 	<div id="filterModal" class="modal fade" tabindex="-1">
@@ -12,8 +12,14 @@
 						<div class="form-group">
 						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'id'">
 							<option value="id">ID</option>
-							<option value="timestamp">Timestamp</option>
-							<option value="location">Location</option>
+							<option value="node.foreignSource">Foreign Source</option>
+							<option value="node.id">Node ID</option>
+							<option value="node.label">Node Label</option>
+							<!-- TODO: Probably won't work because type is InetAddress -->
+							<option value="ipInterface.ipAddress">IP Address</option>
+							<option value="serviceType.name">Service</option>
+							<option value="ifLostService">Lost Service Time</option>
+							<option value="ifRegainedService">Regained Service Time</option>
 						</select>
 						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
 							<option value="EQ">=</option>
@@ -23,8 +29,8 @@
 							<option value="GT">&gt;</option>
 							<option value="GE">&gt;=</option>
 						</select>
-						<input class="form-control" type="text" ng-model="clause.value" ng-if="clause.property !== 'timestamp'" />
-						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-if="clause.property === 'timestamp'"/>
+						<input class="form-control" type="text" ng-model="clause.value" ng-if="clause.property !== 'ifLostService' &amp;&amp; clause.property !== 'ifRegainedService'" />
+						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-if="clause.property === 'ifLostService' || clause.property === 'ifRegainedService'"/>
 						</div>
 						<br/><br/>
 						<button class="btn btn-default" type="submit">Submit</button>
@@ -66,27 +72,6 @@
 		</div>
 	</div>
 
-	<!-- Modal details window -->
-	<div id="scanReportDetailsModal" class="modal fade" tabindex="-1">
-		<div class="modal-dialog modal-lg">
-			<div class="modal-content">
-				<div class="modal-body">
-					<scan-report-details report="selectedScanReport"/>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-- Modal details window -->
-	<div id="scanReportLogsModal" class="modal fade" tabindex="-1">
-		<div class="modal-dialog modal-lg">
-			<div class="modal-content">
-				<div class="modal-body">
-					<scan-report-logs report="selectedScanReport"/>
-				</div>
-			</div>
-		</div>
-	</div>
 
 	<!-- Filter list -->
 	<div class="well well-sm">
@@ -99,8 +84,13 @@
 			<a ng-click="clearSearch()"><i class="fa fa-ban fa-lg"></i></a>
 			&nbsp;
 		</span>
+		<div class="btn-group" style="margin:3px">
+			<button type="button" class="btn btn-default {{getSearchClause(currentClause) != null ? 'active' : ''}}" ng-click="replaceSearchClause(resolvedClause, currentClause)">Current</button>
+			<button type="button" class="btn btn-default {{getSearchClause(resolvedClause) != null ? 'active' : ''}}" ng-click="replaceSearchClause(currentClause, resolvedClause)">Resolved</button>
+			<button type="button" class="btn btn-default {{(getSearchClause(resolvedClause) == null &amp;&amp; getSearchClause(currentClause) == null) ? 'active' : ''}}" ng-click="removeSearchClauses([getSearchClause(resolvedClause), getSearchClause(currentClause)])">Both</button>
+		</div>
 		<span ng-hide="query.searchClauses.length == 0">
-			<span ng-repeat="clause in query.searchClauses">
+			<span ng-repeat="clause in query.searchClauses" ng-if="!clauseEquals(clause, resolvedClause) &amp;&amp; !clauseEquals(clause, currentClause)">
 				<div class="btn-group" style="margin:3px;">
 					<button class="btn btn-primary" ng-click="removeSearchClause(clause)">
 						{{clause.property | property}}
@@ -182,73 +172,83 @@
 	<br/>
 
 	<div class="panel panel-default">
-		<!-- The style is here to override a weird Chrome user agent stylesheet issue -->
-		<table class="table table-bordered severity" style="font-size:100%">
+		<table class="table table-bordered table-condensed">
 			<tbody>
 				<tr>
-					<th class="col-sm-2 text-nowrap">
+					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('id')">ID</a>
 						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2 text-nowrap">
-						<a ng-click="changeOrderBy('location')">Location</a>
-						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+					<th class="col-sm-1 text-nowrap">
+						<a ng-click="changeOrderBy('node.foreignSource')">Foreign Source</a>
+						<i ng-show="query.orderBy === 'node.foreignSource' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'node.foreignSource' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-1 text-nowrap">
+						<a ng-click="changeOrderBy('node.label')">Node</a>
+						<i ng-show="query.orderBy === 'node.label' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'node.label' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-1 text-nowrap">
+						<a ng-click="changeOrderBy('ipInterface.ipAddress')">IP Address</a>
+						<i ng-show="query.orderBy === 'ipInterface.ipAddress' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'ipInterface.ipAddress' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-1 text-nowrap">
+						<a ng-click="changeOrderBy('serviceType.name')">Service</a>
+						<i ng-show="query.orderBy === 'serviceType.name' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'serviceType.name' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-1 text-nowrap">
+						<a ng-click="changeOrderBy('ifLostService')">Down</a>
+						<i ng-show="query.orderBy === 'ifLostService' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'ifLostService' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2 text-nowrap">
-						<a ng-click="changeOrderBy('applications')">Application</a>
-						<i ng-show="query.orderBy === 'applications' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'applications' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
-					</th>
-					<th class="col-sm-4 text-nowrap">
-						<a ng-click="changeOrderBy('timestamp')">Scan Time</a>
-						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
-					</th>
-					<!--
-					<th class="col-sm-6 text-nowrap">
-						Properties
-					</th>
-					-->
-					<th class="col-sm-2 text-nowrap">
-						Logs
+						<a ng-click="changeOrderBy('ifRegainedService')">Up</a>
+						<i ng-show="query.orderBy === 'ifRegainedService' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'ifRegainedService' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 				</tr>
 
-				<tr ng-repeat="item in items track by item.id">
+				<tr ng-repeat="item in items">
 					<td class="text-nowrap" style="line-height:24px;">
-						<a ng-click="selectScanReport(item)" onClick="$('#scanReportDetailsModal').modal()"><samp>{{item.id}}</samp></a>
-						<a style="text-decoration: none;" ng-click="deleteItem(item)"><i class="fa fa-trash-o fa-lg"/></a>
+						<a href="outage/detail.htm?id={{item.id}}">{{item.id}}</a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
-						{{item.location}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o fa-lg"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o fa-lg"/></a>
+						{{item.foreignSource}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'node.foreignSource',operator:'EQ',value:item.foreignSource})"><i class="fa fa-plus-square-o fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'node.foreignSource',operator:'NE',value:item.foreignSource})"><i class="fa fa-minus-square-o fa-lg"/></a>
+					</td>
+					<td class="text-nowrap bright" style="line-height:24px;">
+						<a href="element/node.jsp?node={{item.nodeId}}" title="{{item.nodeLabel}}">{{item.nodeLabel}}</a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'node.label',operator:'EQ',value:item.nodeLabel})"><i class="fa fa-plus-square-o fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'node.label',operator:'NE',value:item.nodeLabel})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item.properties.applications !== undefined &amp;&amp; item.properties.applications !== null &amp;&amp; item.properties.applications !== ''">
-							{{item.properties.applications}}
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'applications',operator:'EQ',value:item.properties.applications})"><i class="fa fa-plus-square-o fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'applications',operator:'NE',value:item.properties.applications})"><i class="fa fa-minus-square-o fa-lg"/></a>
-						</span>
+						<a href="element/interface.jsp?node={{item.nodeId}}&amp;intf={{item.ipAddress}}">{{item.ipAddress}}</a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'ipInterface.ipAddress',operator:'EQ',value:item.ipAddress})"><i class="fa fa-plus-square-o fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'ipInterface.ipAddress',operator:'NE',value:item.ipAddress})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item.timestamp !== null">
-							{{item.timestamp | date:'MMM d, yyyy h:mm:ss a'}}
-							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'timestamp',operator:'GE',value:item.timestamp})"><i class="fa fa-toggle-left fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'timestamp',operator:'LE',value:item.timestamp})"><i class="fa fa-toggle-right fa-lg"/></a>
+						<a href="element/service.jsp?node={{item.nodeId}}&amp;intf={{item.ipAddress}}&amp;service={{item.monitoredService.serviceType.id}}">{{item.monitoredService.serviceType.name}}</a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'serviceType.name',operator:'EQ',value:item.monitoredService.serviceType.name})"><i class="fa fa-plus-square-o fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'serviceType.name',operator:'NE',value:item.monitoredService.serviceType.name})"><i class="fa fa-minus-square-o fa-lg"/></a>
+					</td>
+					<td class="text-nowrap" style="line-height:24px;">
+						{{item.ifLostService | date:'MMM d, yyyy h:mm:ss a'}}
+						<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'ifLostService',operator:'GE',value:item.ifLostService})"><i class="fa fa-toggle-left fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'ifLostService',operator:'LE',value:item.ifLostService})"><i class="fa fa-toggle-right fa-lg"/></a>
+					</td>
+					<td class="text-nowrap" style="line-height:24px;">
+						<span ng-show="item.ifRegainedService | isNotEmpty">
+							{{item.ifRegainedService | date:'MMM d, yyyy h:mm:ss a'}}
+							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'ifRegainedService',operator:'GE',value:item.ifRegainedService})"><i class="fa fa-toggle-left fa-lg"/></a>
+							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'ifRegainedService',operator:'LE',value:item.ifRegainedService})"><i class="fa fa-toggle-right fa-lg"/></a>
 						</span>
-					</td>
-					<!--
-					<td>
-						<onms-list-edit-map-in-place values="item.properties" value-type="'text'" on-edit="update(item)"/>
-					</td>
-					-->
-					<td>
-						<button class="btn btn-default" ng-click="selectScanReport(item)" onClick="$('#scanReportLogsModal').modal()">View</button>
 					</td>
 				</tr>
 			</tbody>
