@@ -32,7 +32,7 @@
 <%@page language="java" contentType="text/html" session="true" import="
   java.util.Map,
   java.util.TreeMap,
-  org.opennms.netmgt.config.monitoringLocations.LocationDef,
+  org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation,
   org.opennms.netmgt.provision.persist.requisition.Requisition,
   org.opennms.netmgt.dao.api.*,
   org.springframework.web.context.WebApplicationContext,
@@ -68,7 +68,7 @@ if (DiscoveryServletConstants.EDIT_MODE_SCAN.equals(request.getParameter("mode")
 // Map of primary key to label (which in this case are the same)
 MonitoringLocationDao locationDao = context.getBean(MonitoringLocationDao.class);
 Map<String,String> locations = new TreeMap<String,String>();
-for (LocationDef location : locationDao.findAll()) {
+for (OnmsMonitoringLocation location : locationDao.findAll()) {
 	locations.put(location.getLocationName(), location.getLocationName());
 }
 
