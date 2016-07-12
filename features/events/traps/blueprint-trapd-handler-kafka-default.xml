@@ -23,7 +23,12 @@
 		</cm:default-properties>
 	</cm:property-placeholder>
 	
-	<bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.TrapdIpManagerDaoImpl"/>
+	<bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.TrapdIpManagerDaoImpl">
+		<property name="ipInterfaceDao" ref="ipInterfaceDao" />
+	</bean>
+	
+	<!-- Get a reference to the org.opennms.netmgt.dao.api.IpInterfaceDao -->
+	<reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory"/>
 	
 	<!-- Get a reference to the org.opennms.netmgt.events.api.EventForwarder -->
 	<reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
