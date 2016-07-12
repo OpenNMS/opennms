@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.provision;
 
+import java.net.InetAddress;
+import java.util.Map;
+
 public interface ServiceDetectorFactory<T extends ServiceDetector> {
     T createDetector();
+    Map<String, String> getAgentAttributes(String location, InetAddress address);
 }

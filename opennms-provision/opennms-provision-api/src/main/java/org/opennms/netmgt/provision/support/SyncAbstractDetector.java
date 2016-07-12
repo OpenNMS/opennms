@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.provision.support;
 
-import java.net.InetAddress;
-
 import org.opennms.netmgt.provision.SyncServiceDetector;
 
 /**
@@ -60,8 +58,4 @@ public abstract class SyncAbstractDetector extends AbstractDetector implements S
     protected SyncAbstractDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    abstract public boolean isServiceDetected(final InetAddress address);
 }

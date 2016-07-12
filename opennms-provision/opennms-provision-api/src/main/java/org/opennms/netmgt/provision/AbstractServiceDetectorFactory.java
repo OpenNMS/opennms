@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,36 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.snmp;
+package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Map;
 
-import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+public abstract class AbstractServiceDetectorFactory<T extends ServiceDetector> implements ServiceDetectorFactory<T> {
 
-@Component
-public class SnmpDetectorFactory extends AbstractServiceDetectorFactory<SnmpDetector> {
-
-    @Autowired(required=false)
-    private SnmpAgentConfigFactory m_agentConfigFactory;
-
-    @Override
-    public SnmpDetector createDetector() {
-        return new SnmpDetector();
+    public Map<String, String> getAgentAttributes(InetAddress address) {
+        return getAgentAttributes(null, address);
     }
 
     @Override
     public Map<String, String> getAgentAttributes(String location, InetAddress address) {
-        if (m_agentConfigFactory == null) {
-            throw new IllegalStateException("Cannot determine agent configuration without a SnmpAgentConfigFactory.");
-        }
-        return m_agentConfigFactory.getAgentConfig(address).toMap();
-    }
-
-    public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
-        m_agentConfigFactory = agentConfigFactory;
+        return Collections.emptyMap();
     }
 }

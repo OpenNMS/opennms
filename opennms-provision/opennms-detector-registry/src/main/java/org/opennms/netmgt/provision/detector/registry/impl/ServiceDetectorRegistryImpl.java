@@ -28,12 +28,15 @@
 
 package org.opennms.netmgt.provision.detector.registry.impl;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.Set;
 
+import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetectorFactory;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
@@ -41,45 +44,80 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry {
-	private static final Logger LOG = LoggerFactory.getLogger(ServiceDetectorRegistryImpl.class);
+public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceDetectorRegistryImpl.class);
 
-	public static final String IMPLEMENTATION_KEY = "implementation";
+    public static final String IMPLEMENTATION_KEY = "implementation";
 
-    private final Map<String, ServiceDetectorFactory<? extends ServiceDetector>> m_factoriesByServiceName = new HashMap<>();
-    private final Map<String, ServiceDetectorFactory<? extends ServiceDetector>> m_factoriesByClassName = new HashMap<>();
+    @Autowired(required=false)
+    ServiceRegistry m_serviceRegistry;
 
-    public ServiceDetectorRegistryImpl() {
-        // Register all of the ServiceDetectorFactory implementations available via the ServiceLoader
-        @SuppressWarnings("rawtypes")
-        ServiceLoader<ServiceDetectorFactory> loader = ServiceLoader.load(ServiceDetectorFactory.class);
-        for (ServiceDetectorFactory<?> factory : loader) {
-            // Determine the implementation type
-            Map<String, String> props = new HashMap<>();
-            props.put(IMPLEMENTATION_KEY, factory.createDetector().getClass().getCanonicalName());
-            // Register the factory
-            onBind(factory, props);
+    @Autowired(required=false)
+    Set<ServiceDetectorFactory<?>> m_detectorFactories;
+
+    private final Map<String, String> m_classNameByServiceName = new LinkedHashMap<>();
+    private final Map<String, ServiceDetectorFactory<? extends ServiceDetector>> m_factoriesByServiceName = new LinkedHashMap<>();
+    private final Map<String, ServiceDetectorFactory<? extends ServiceDetector>> m_factoriesByClassName = new LinkedHashMap<>();
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // Register all of the @Autowired ServiceDetectorFactory implementations
+        if (m_detectorFactories != null) {
+            for (ServiceDetectorFactory<?> factory : m_detectorFactories) {
+                // Determine the implementation type
+                Map<String, String> props = new HashMap<>();
+                ServiceDetector detector = factory.createDetector();
+                props.put(IMPLEMENTATION_KEY, detector.getClass().getCanonicalName());
+                // Register the factory
+                onBind(factory, props);
+                // Add the detector to the service registry
+                addAllExtensions(Collections.singleton(detector), ServiceDetector.class);
+            }
+        }
+    }
+
+    private <T> void addAllExtensions(Collection<T> extensions, Class<?>... extensionPoints) {
+        if (extensions == null || extensions.isEmpty()) {
+            LOG.info("Found NO Extensions for ExtensionPoints {}", Arrays.toString(extensionPoints));
+            return;
+        }
+        for(T extension : extensions) {
+            LOG.info("Register Extension {} for ExtensionPoints {}", extension, Arrays.toString(extensionPoints));
+            m_serviceRegistry.register(extension, extensionPoints);
         }
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public synchronized void onBind(ServiceDetectorFactory factory, Map properties) {
         LOG.debug("bind called with {}: {}", factory, properties);
-        m_factoriesByServiceName.put(getServiceName(factory), factory);
-        m_factoriesByClassName.put(getClassName(properties), factory);
+        final String serviceName = getServiceName(factory);
+        final String className = getClassName(properties);
+        m_factoriesByServiceName.put(serviceName, factory);
+        m_factoriesByClassName.put(className, factory);
+        m_classNameByServiceName.put(serviceName, className);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public synchronized void onUnbind(ServiceDetectorFactory factory, Map properties) {
         LOG.debug("unbind called with {}: {}", factory, properties);
-        m_factoriesByServiceName.remove(getServiceName(factory), factory);
-        m_factoriesByClassName.remove(getClassName(properties), factory);
+        final String serviceName = getServiceName(factory);
+        final String className = getClassName(properties);
+        m_factoriesByServiceName.remove(serviceName, factory);
+        m_factoriesByClassName.remove(className, factory);
+        m_classNameByServiceName.remove(serviceName, className);
+    }
+
+    @Override
+    public Map<String, String> getTypes() {
+        return Collections.unmodifiableMap(m_classNameByServiceName);
     }
 
     @Override
     public Set<String> getServiceNames() {
-        return m_factoriesByServiceName.keySet();
+        return Collections.unmodifiableSet(m_factoriesByServiceName.keySet());
     }
 
     @Override
@@ -93,8 +131,13 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry {
     }
 
     @Override
+    public ServiceDetectorFactory<?> getDetectorFactoryByServiceName(String serviceName) {
+        return m_factoriesByServiceName.get(serviceName);
+    }
+
+    @Override
     public Set<String> getClassNames() {
-        return m_factoriesByClassName.keySet();
+        return Collections.unmodifiableSet(m_factoriesByClassName.keySet());
     }
 
     @Override
@@ -105,6 +148,11 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry {
     @Override
     public ServiceDetector getDetectorByClassName(String className, Map<String, String> properties) {
         return createDetector(m_factoriesByClassName.get(className), properties);
+    }
+
+    @Override
+    public ServiceDetectorFactory<?> getDetectorFactoryByClassName(String className) {
+        return m_factoriesByClassName.get(className);
     }
 
     private static ServiceDetector createDetector(ServiceDetectorFactory<? extends ServiceDetector> factory, Map<String, String> properties) {

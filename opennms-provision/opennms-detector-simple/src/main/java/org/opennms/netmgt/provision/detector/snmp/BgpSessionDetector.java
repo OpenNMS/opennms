@@ -80,8 +80,8 @@ public class BgpSessionDetector extends SnmpDetector {
     public boolean isServiceDetected(InetAddress address) {
         try {
             String bgpPeerIp = getBgpPeerIp();
-            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
-            
+            SnmpAgentConfig agentConfig = getAgentConfig();
+
             configureAgentPTR(agentConfig);
 
             configureAgentVersion(agentConfig);

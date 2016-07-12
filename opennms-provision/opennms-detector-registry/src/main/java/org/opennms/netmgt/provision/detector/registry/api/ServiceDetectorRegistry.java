@@ -32,14 +32,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.ServiceDetectorFactory;
 
 /**
- * Used to keep track of all the available {@link ServiceDetector} implementations, and
- * provides the ability to instantiate these.
+ * Used to keep track of all the available {@link ServiceDetector} implementations exposed
+ * by {@link ServiceDetectorFactory} beans and provides the ability to instantiate these.
  *
  * @author jwhite
  */
 public interface ServiceDetectorRegistry {
+
+    Map<String, String> getTypes();
 
     Set<String> getClassNames();
 
@@ -47,10 +50,14 @@ public interface ServiceDetectorRegistry {
 
     ServiceDetector getDetectorByClassName(String className, Map<String, String> properties);
 
+    ServiceDetectorFactory<?> getDetectorFactoryByClassName(String className);
+
     Set<String> getServiceNames();
 
     ServiceDetector getDetectorByServiceName(String serviceName);
 
     ServiceDetector getDetectorByServiceName(String serviceName, Map<String, String> properties);
+
+    ServiceDetectorFactory<?> getDetectorFactoryByServiceName(String serviceName);
 
 }

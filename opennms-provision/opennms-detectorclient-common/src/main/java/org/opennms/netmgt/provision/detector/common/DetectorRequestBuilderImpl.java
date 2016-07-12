@@ -35,6 +35,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.provision.DetectorRequestBuilder;
 import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.ServiceDetectorFactory;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 
 public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
@@ -105,11 +106,17 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
             throw new IllegalArgumentException("Detector class name is required.");
         }
 
+        ServiceDetectorFactory<?> factory = registry.getDetectorFactoryByClassName(className);
+        if (factory == null) {
+            throw new IllegalArgumentException("No factory found for detector with class name '" + className + "'.");
+        }
+
         final DetectorRequestDTO detectorRequestDTO = new DetectorRequestDTO();
         detectorRequestDTO.setLocation(location);
         detectorRequestDTO.setClassName(className);
         detectorRequestDTO.setAddress(address);
-        detectorRequestDTO.addAttributes(attributes);
+        detectorRequestDTO.addDetectorAttributes(attributes);
+        detectorRequestDTO.addAgentAttributes(factory.getAgentAttributes(location, address));
 
         return client.getDetectorRequestExecutor(location)
             .execute(detectorRequestDTO)

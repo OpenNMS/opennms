@@ -135,7 +135,7 @@ public class DiskUsageDetector extends SnmpDetector {
 
         try {
 
-            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
+            SnmpAgentConfig agentConfig = getAgentConfig();
             
             if (getPort() > 0) {
                 agentConfig.setPort(getPort());

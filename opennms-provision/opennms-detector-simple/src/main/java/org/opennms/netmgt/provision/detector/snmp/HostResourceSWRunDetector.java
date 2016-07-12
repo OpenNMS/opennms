@@ -99,9 +99,7 @@ public class HostResourceSWRunDetector extends SnmpDetector {
         boolean status = false;
 
         // Retrieve this interface's SNMP peer object
-        //
-        SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
-        if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + address);
+        SnmpAgentConfig agentConfig = getAgentConfig();
 
         // Get configuration parameters
         //

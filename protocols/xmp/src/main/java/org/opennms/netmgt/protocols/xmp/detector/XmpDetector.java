@@ -46,6 +46,7 @@ package org.opennms.netmgt.protocols.xmp.detector;
 
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.Map;
 
 import org.krupczak.xmp.SocketOpts;
 import org.krupczak.xmp.Xmp;
@@ -253,5 +254,15 @@ public class XmpDetector implements SyncServiceDetector {
         return true;
 
     } /* isServiceDetected */
+
+    @Override
+    public Map<String, String> getAgentAttributes() {
+        return null;
+    }
+
+    @Override
+    public void setAgentAttributes(Map<String, String> attributes) {
+        // pass
+    }
 
 } /* class XmpDetector */

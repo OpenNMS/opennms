@@ -28,15 +28,12 @@
 
 package org.opennms.netmgt.provision.detector.icmp;
 
-import org.opennms.netmgt.provision.ServiceDetectorFactory;
+import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
 
-public class IcmpDetectorFactory
-        implements ServiceDetectorFactory<IcmpDetector> {
+public class IcmpDetectorFactory extends AbstractServiceDetectorFactory<IcmpDetector> {
 
     @Override
     public IcmpDetector createDetector() {
         return new IcmpDetector();
-
     }
-
 }

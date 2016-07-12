@@ -29,6 +29,8 @@
 package org.opennms.netmgt.provision.service;
 
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.opennms.netmgt.provision.SyncServiceDetector;
 
@@ -41,6 +43,7 @@ public class MockServiceDetector implements SyncServiceDetector {
     
     private String m_serviceName;
     private String m_ipMatch;
+    private Map<String, String> m_agentAttributes = new HashMap<>();
 
     @Override
     public void init() {
@@ -92,5 +95,15 @@ public class MockServiceDetector implements SyncServiceDetector {
     @Override
     public void setIpMatch(String ipMatch) {
         m_ipMatch = ipMatch;
+    }
+
+    @Override
+    public Map<String, String> getAgentAttributes() {
+        return m_agentAttributes;
+    }
+
+    @Override
+    public void setAgentAttributes(Map<String, String> attributes) {
+        m_agentAttributes = attributes;
     }
 }

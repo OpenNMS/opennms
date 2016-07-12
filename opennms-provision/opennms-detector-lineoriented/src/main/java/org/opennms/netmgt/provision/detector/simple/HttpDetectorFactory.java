@@ -28,10 +28,9 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.opennms.netmgt.provision.ServiceDetectorFactory;
+import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
 
-public class HttpDetectorFactory
-        implements ServiceDetectorFactory<HttpDetector> {
+public class HttpDetectorFactory extends AbstractServiceDetectorFactory<HttpDetector> {
 
     @Override
     public HttpDetector createDetector() {

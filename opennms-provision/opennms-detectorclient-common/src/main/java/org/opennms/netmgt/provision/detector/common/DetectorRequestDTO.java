@@ -72,8 +72,11 @@ public class DetectorRequestDTO {
     @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     private InetAddress address;
 
-    @XmlElement(name = "attribute")
-    private List<DetectorAttributeDTO> attributes = new ArrayList<>();
+    @XmlElement(name = "detector-attribute")
+    private List<DetectorAttributeDTO> detectorAttributes = new ArrayList<>();
+
+    @XmlElement(name = "agent-attribute")
+    private List<DetectorAttributeDTO> agentAttributes = new ArrayList<>();
 
     public String getLocation() {
         return location;
@@ -83,25 +86,43 @@ public class DetectorRequestDTO {
         this.location = location;
     }
 
-    public List<DetectorAttributeDTO> getAttributes() {
-        return attributes;
+    public List<DetectorAttributeDTO> getDetectorAttributes() {
+        return detectorAttributes;
     }
 
-    public void setAttributes(List<DetectorAttributeDTO> attributes) {
-        this.attributes = attributes;
+    public void setDetectorAttributes(List<DetectorAttributeDTO> attributes) {
+        this.detectorAttributes = attributes;
     }
 
-    public void addAttribute(String key, String value) {
-        attributes.add(new DetectorAttributeDTO(key, value));
+    public void addDetectorAttribute(String key, String value) {
+        detectorAttributes.add(new DetectorAttributeDTO(key, value));
     }
 
-    public void addAttributes(Map<String, String> attributes) {
+    public void addDetectorAttributes(Map<String, String> attributes) {
         attributes.entrySet().stream()
-            .forEach(e -> this.addAttribute(e.getKey(), e.getValue()));
+            .forEach(e -> this.addDetectorAttribute(e.getKey(), e.getValue()));
     }
 
     public Map<String, String> getAttributeMap() {
-        return attributes.stream().collect(Collectors.toMap(DetectorAttributeDTO::getKey,
+        return detectorAttributes.stream().collect(Collectors.toMap(DetectorAttributeDTO::getKey,
+                DetectorAttributeDTO::getValue));
+    }
+
+    public void setAgentAttributes(List<DetectorAttributeDTO> attributes) {
+        this.agentAttributes = attributes;
+    }
+
+    public void addAgentAttribute(String key, String value) {
+        agentAttributes.add(new DetectorAttributeDTO(key, value));
+    }
+
+    public void addAgentAttributes(Map<String, String> attributes) {
+        attributes.entrySet().stream()
+            .forEach(e -> this.addAgentAttribute(e.getKey(), e.getValue()));
+    }
+
+    public Map<String, String> getAgentAttributeMap() {
+        return agentAttributes.stream().collect(Collectors.toMap(DetectorAttributeDTO::getKey,
                 DetectorAttributeDTO::getValue));
     }
 
@@ -123,7 +144,7 @@ public class DetectorRequestDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, attributes, className, address);
+        return Objects.hash(location, detectorAttributes, agentAttributes, className, address);
     }
 
     @Override
@@ -137,9 +158,9 @@ public class DetectorRequestDTO {
         final DetectorRequestDTO other = (DetectorRequestDTO) obj;
         return Objects.equals(this.location, other.location)
                 && Objects.equals(this.location, other.location)
-                && Objects.equals(this.attributes, other.attributes)
+                && Objects.equals(this.detectorAttributes, other.detectorAttributes)
+                && Objects.equals(this.agentAttributes, other.agentAttributes)
                 && Objects.equals(this.className, other.className)
                 && Objects.equals(this.address, other.address);
-
     }
 }

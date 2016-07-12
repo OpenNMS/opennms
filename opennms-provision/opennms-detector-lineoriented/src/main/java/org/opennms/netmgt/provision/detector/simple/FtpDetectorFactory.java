@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.opennms.netmgt.provision.ServiceDetectorFactory;
+import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
 
-public class FtpDetectorFactory  implements ServiceDetectorFactory<FtpDetector> {
+public class FtpDetectorFactory extends AbstractServiceDetectorFactory<FtpDetector> {
 
     @Override
     public FtpDetector createDetector() {

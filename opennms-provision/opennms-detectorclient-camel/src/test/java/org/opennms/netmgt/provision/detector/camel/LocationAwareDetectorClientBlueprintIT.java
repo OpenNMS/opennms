@@ -31,7 +31,6 @@ package org.opennms.netmgt.provision.detector.camel;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -39,7 +38,6 @@ import java.util.concurrent.ExecutionException;
 import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +46,6 @@ import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.minion.core.api.MinionIdentity;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.provision.ServiceDetectorFactory;
 import org.opennms.netmgt.provision.detector.common.DelegatingLocationAwareDetectorClientImpl;
 import org.opennms.netmgt.provision.detector.loop.LoopDetector;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
@@ -85,20 +82,6 @@ public class LocationAwareDetectorClientBlueprintIT extends CamelBlueprintTest {
 
     @Autowired
     private ServiceDetectorRegistryImpl serviceDetectorRegistry;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        ServiceDetectorFactory<ExceptionalSyncServiceDetector> factory = new ServiceDetectorFactory<ExceptionalSyncServiceDetector>() {
-            @Override
-            public ExceptionalSyncServiceDetector createDetector() {
-                return new ExceptionalSyncServiceDetector();
-            }
-        };
-        Map<String, String> props = new HashMap<>();
-        props.put(ServiceDetectorRegistryImpl.IMPLEMENTATION_KEY, factory.createDetector().getClass().getCanonicalName());
-        serviceDetectorRegistry.onBind(factory, props);
-    }
 
     @SuppressWarnings( "rawtypes" )
     @Override

@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.provision.support;
 
+import java.util.Map;
+
 import org.opennms.netmgt.provision.ServiceDetector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>AbstractDetector class.</p>
@@ -39,8 +39,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractDetector implements ServiceDetector {
     
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractDetector.class);
-    
     private static final int DEFAULT_TIMEOUT = 2000;
     private static final int DEFAULT_RETRIES = 1;
     private int m_port;
@@ -48,7 +46,8 @@ public abstract class AbstractDetector implements ServiceDetector {
     private int m_timeout;
     private String m_ipMatch;
     private String m_serviceName;
-    
+    private Map<String, String> m_agentAttributes;
+
     /**
      * <p>Constructor for AbstractDetector.</p>
      *
@@ -185,4 +184,17 @@ public abstract class AbstractDetector implements ServiceDetector {
     public void setIpMatch(final String ipMatch) {
         m_ipMatch = ipMatch;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public Map<String, String> getAgentAttributes() {
+        return m_agentAttributes;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setAgentAttributes(Map<String, String> attributes) {
+        m_agentAttributes = attributes;
+    };
+
 }

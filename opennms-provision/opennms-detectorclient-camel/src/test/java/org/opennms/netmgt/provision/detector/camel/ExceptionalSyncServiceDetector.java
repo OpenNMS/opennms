@@ -29,10 +29,16 @@
 package org.opennms.netmgt.provision.detector.camel;
 
 import java.net.InetAddress;
+import java.util.Map;
 
 import org.opennms.netmgt.provision.SyncServiceDetector;
 
 public class ExceptionalSyncServiceDetector implements SyncServiceDetector {
+
+    @Override
+    public boolean isServiceDetected(InetAddress address) {
+        throw new IllegalArgumentException("Failure on sync detection.");
+    }
 
     @Override
     public void init() {
@@ -85,7 +91,12 @@ public class ExceptionalSyncServiceDetector implements SyncServiceDetector {
     }
 
     @Override
-    public boolean isServiceDetected(InetAddress address) {
-        throw new IllegalArgumentException("Failure on sync detection.");
+    public Map<String, String> getAgentAttributes() {
+        return null;
+    }
+
+    @Override
+    public void setAgentAttributes(Map<String, String> attributes) {
+        // pass
     }
 }

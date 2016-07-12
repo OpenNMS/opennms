@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision;
 
+import java.util.Map;
+
 /**
  * ServiceDetector
  * 
@@ -95,6 +97,16 @@ public interface ServiceDetector {
      * Set the IPLIKE rule for detecting the service.
      */
     void setIpMatch(String ipMatch);
+
+    /**
+     * Get the agent specific attributes.
+     */
+    Map<String, String> getAgentAttributes();
+
+    /**
+     * Set the agent specific attributes.
+     */
+    void setAgentAttributes(Map<String, String> attributes);
 
     /**
      * The detector should clean up after itself in this method if necessary.

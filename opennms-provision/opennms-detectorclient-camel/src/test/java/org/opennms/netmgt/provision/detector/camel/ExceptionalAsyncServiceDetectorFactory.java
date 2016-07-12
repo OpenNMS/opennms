@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.provision.detector.camel;
 
-import org.opennms.netmgt.provision.ServiceDetectorFactory;
+import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
 
-public class ExceptionalAsyncServiceDetectorFactory implements ServiceDetectorFactory<ExceptionalAsyncServiceDetector> {
+public class ExceptionalAsyncServiceDetectorFactory extends AbstractServiceDetectorFactory<ExceptionalAsyncServiceDetector> {
 
     @Override
     public ExceptionalAsyncServiceDetector createDetector() {

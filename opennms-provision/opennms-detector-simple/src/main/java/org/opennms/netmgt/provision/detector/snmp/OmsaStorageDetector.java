@@ -83,7 +83,7 @@ public class OmsaStorageDetector extends SnmpDetector {
     @Override
     public boolean isServiceDetected(InetAddress address) {
         try {
-            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
+            SnmpAgentConfig agentConfig = getAgentConfig();
             configureAgentPTR(agentConfig);
             configureAgentVersion(agentConfig);
 

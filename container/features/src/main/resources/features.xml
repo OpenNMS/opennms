@@ -887,10 +887,7 @@
     </feature>
     
     <feature name="opennms-provisioning-shell" description="OpenNMS :: Provisioning :: Shell" version="${project.version}">
-      <feature>opennms-provisioning-detectors</feature>
-      <feature>opennms-core-camel</feature>
-      <bundle>mvn:org.opennms/opennms-detectorclient-common/${project.version}</bundle>
+      <!-- Dependencies should be available from the parent classloader and from the ONMSGi registry -->
       <bundle>mvn:org.opennms/opennms-provision-shell/${project.version}</bundle>
     </feature>
-
 </features>

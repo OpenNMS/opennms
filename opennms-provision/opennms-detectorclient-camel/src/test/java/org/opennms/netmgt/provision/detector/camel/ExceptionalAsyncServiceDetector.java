@@ -29,11 +29,17 @@
 package org.opennms.netmgt.provision.detector.camel;
 
 import java.net.InetAddress;
+import java.util.Map;
 
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 
 public class ExceptionalAsyncServiceDetector implements AsyncServiceDetector {
+
+    @Override
+    public DetectFuture isServiceDetected(InetAddress address) {
+        throw new IllegalArgumentException("Failure on async detection.");
+    }
 
     @Override
     public void init() {
@@ -86,7 +92,12 @@ public class ExceptionalAsyncServiceDetector implements AsyncServiceDetector {
     }
 
     @Override
-    public DetectFuture isServiceDetected(InetAddress address) {
-        throw new IllegalArgumentException("Failure on async detection.");
+    public Map<String, String> getAgentAttributes() {
+        return null;
+    }
+
+    @Override
+    public void setAgentAttributes(Map<String, String> attributes) {
+        // pass
     }
 }

@@ -28,13 +28,12 @@
 
 package org.opennms.netmgt.provision.detector.loop;
 
-import org.opennms.netmgt.provision.ServiceDetectorFactory;
+import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
 
-public class LoopDetectorFactory implements ServiceDetectorFactory<LoopDetector> {
+public class LoopDetectorFactory extends AbstractServiceDetectorFactory<LoopDetector> {
 
     @Override
     public LoopDetector createDetector() {
         return new LoopDetector();
     }
-
 }

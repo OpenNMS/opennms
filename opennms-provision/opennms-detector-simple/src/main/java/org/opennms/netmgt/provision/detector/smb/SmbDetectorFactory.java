@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.provision.detector.smb;
 
-import org.opennms.netmgt.provision.ServiceDetectorFactory;
+import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.springframework.stereotype.Component;
 
-public class SmbDetectorFactory implements ServiceDetectorFactory<SmbDetector> {
+@Component
+public class SmbDetectorFactory extends AbstractServiceDetectorFactory<SmbDetector> {
 
     @Override
     public SmbDetector createDetector() {
         return new SmbDetector();
     }
-
 }

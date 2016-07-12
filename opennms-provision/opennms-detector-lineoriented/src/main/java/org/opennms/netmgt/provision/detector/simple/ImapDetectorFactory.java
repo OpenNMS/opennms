@@ -28,10 +28,9 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.opennms.netmgt.provision.ServiceDetectorFactory;
+import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
 
-public class ImapDetectorFactory
-        implements ServiceDetectorFactory<ImapDetector> {
+public class ImapDetectorFactory extends AbstractServiceDetectorFactory<ImapDetector> {
 
     @Override
     public ImapDetector createDetector() {

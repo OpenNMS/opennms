@@ -36,7 +36,6 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -45,23 +44,16 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
 
-@Component
 /**
  * <p>SnmpDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
-public class SnmpDetector extends SyncAbstractDetector implements InitializingBean {
+public class SnmpDetector extends SyncAbstractDetector {
 
     public enum MatchType {
         // Service detected if 1 or more entries match an expected value
@@ -151,8 +143,6 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
     private String m_forceVersion;
     private String m_vbvalue;
 
-    private SnmpAgentConfigFactory m_agentConfigFactory;
-
     private MatchType matchType;
 
     /**
@@ -170,11 +160,6 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
      */
     public SnmpDetector(String serviceName, int port) {
         super(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        Assert.notNull(m_agentConfigFactory);
     }
 
     public String getIsTable() {
@@ -197,11 +182,20 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
         return m_hex;
     }
 
+    protected SnmpAgentConfig getAgentConfig() {
+        final Map<String, String> agentAttributes = getAgentAttributes();
+        if (agentAttributes != null) {
+            return SnmpAgentConfig.fromMap(getAgentAttributes());
+        } else {
+            return new SnmpAgentConfig();
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
-    public boolean isServiceDetected(InetAddress address) {
+    public boolean isServiceDetected(InetAddress addresss) {
         try {
-            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
+            SnmpAgentConfig agentConfig = getAgentConfig();
             configureAgentPTR(agentConfig);
             configureAgentVersion(agentConfig);
 
@@ -346,25 +340,6 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
      */
     public String getVbvalue() {
         return m_vbvalue;
-    }
-    
-    /**
-     * <p>setAgentConfigFactory</p>
-     *
-     * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
-     */
-    @Autowired
-    public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
-        m_agentConfigFactory = agentConfigFactory;
-    }
-    
-    /**
-     * <p>getAgentConfigFactory</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
-     */
-    public SnmpAgentConfigFactory getAgentConfigFactory() {
-        return m_agentConfigFactory;
     }
 
     /* (non-Javadoc)
