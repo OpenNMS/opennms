@@ -195,17 +195,26 @@ public class SyslogdIT implements InitializingBean {
 
     @Test
     public void testMessaging() throws UnknownHostException {
-        // More of an integrations test
-        // relies on you reading some of the logging....
 
         final SyslogClient s = new SyslogClient(null, 0, SyslogClient.LOG_DAEMON, InetAddressUtils.ONE_TWENTY_SEVEN);
         s.syslog(SyslogClient.LOG_ERR, "Hello.");
+
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(3000, 0, 0, 0, 0);
     }
 
     @Test
     public void testMyPatternsSyslogNG() throws UnknownHostException {
+        final EventBuilder expectedEventBldr = new EventBuilder("uei.opennms.org/syslogd/system/Debug", "syslogd");
+        expectedEventBldr.setInterface(InetAddressUtils.ONE_TWENTY_SEVEN);
+        expectedEventBldr.setLogDest("logndisplay");
+        expectedEventBldr.setLogMessage("A SyslogNG style message");
+
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(expectedEventBldr.getEvent());
+
         final SyslogClient s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, InetAddressUtils.ONE_TWENTY_SEVEN);
-        s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 host.domain.com A SyslogNG style message");
+        s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 127.0.0.1 A SyslogNG style message");
+
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(10000, 0, 0, 0, 0);
     }
 
     @Test
@@ -321,14 +330,32 @@ public class SyslogdIT implements InitializingBean {
 
     @Test
     public void testIPPatternsSyslogNG() throws UnknownHostException {
+        final EventBuilder expectedEventBldr = new EventBuilder("uei.opennms.org/syslogd/system/Debug", "syslogd");
+        expectedEventBldr.setInterface(InetAddressUtils.ONE_TWENTY_SEVEN);
+        expectedEventBldr.setLogDest("logndisplay");
+        expectedEventBldr.setLogMessage("A SyslogNG style message");
+
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(expectedEventBldr.getEvent());
+
         final SyslogClient s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, InetAddressUtils.ONE_TWENTY_SEVEN);
         s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 127.0.0.1 A SyslogNG style message");
+
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(10000, 0, 0, 0, 0);
     }
 
     @Test
     public void testResolvePatternsSyslogNG() throws UnknownHostException {
+        final EventBuilder expectedEventBldr = new EventBuilder("uei.opennms.org/syslogd/system/Debug", "syslogd");
+        expectedEventBldr.setInterface(InetAddressUtils.ONE_TWENTY_SEVEN);
+        expectedEventBldr.setLogDest("logndisplay");
+        expectedEventBldr.setLogMessage("A SyslogNG style message");
+
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(expectedEventBldr.getEvent());
+
         final SyslogClient s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, InetAddressUtils.ONE_TWENTY_SEVEN);
-        s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 www.opennms.org A SyslogNG style message");
+        s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 127.0.0.1 A SyslogNG style message");
+
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(10000, 0, 0, 0, 0);
     }
 
     @Test
