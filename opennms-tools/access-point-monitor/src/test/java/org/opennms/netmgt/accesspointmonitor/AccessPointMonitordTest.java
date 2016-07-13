@@ -48,7 +48,6 @@ import org.opennms.netmgt.dao.AccessPointDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -101,7 +100,6 @@ public class AccessPointMonitordTest implements InitializingBean {
     AccessPointMonitorConfigFactory m_apmdConfigFactory;
 
     private MockEventIpcManager m_eventMgr;
-    private EventAnticipator m_anticipator;
 
     private final static String AP1_MAC = "00:01:02:03:04:05";
     private final static String AP2_MAC = "07:08:09:0A:0B:0C";
@@ -120,10 +118,7 @@ public class AccessPointMonitordTest implements InitializingBean {
     @Before
     public void setUp() throws Exception {
         // Create our event manager and anticipator
-        m_anticipator = new EventAnticipator();
-
         m_eventMgr = new MockEventIpcManager();
-        m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.setSynchronous(true);
 
         // Ensure our annotations are called
@@ -165,14 +160,14 @@ public class AccessPointMonitordTest implements InitializingBean {
         if (anticipateEvents) {
             EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, m_apm.getName());
             bldr.setParam(EventConstants.PARM_DAEMON_NAME, "AccessPointMonitor");
-            m_anticipator.anticipateEvent(bldr.getEvent());
+            m_eventMgr.getEventAnticipator().anticipateEvent(bldr.getEvent());
         }
 
         // Anticipate the reload event
         EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
         bldr.setParam(EventConstants.PARM_DAEMON_NAME, "AccessPointMonitor");
         if (anticipateEvents) {
-            m_anticipator.anticipateEvent(bldr.getEvent());
+            m_eventMgr.getEventAnticipator().anticipateEvent(bldr.getEvent());
         }
 
         // Send the reload event

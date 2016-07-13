@@ -51,7 +51,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -97,8 +96,6 @@ public class TrapHandlerITCase implements InitializingBean {
     @Autowired
     private TrapQueueProcessorFactory m_processorFactory;
 
-    private EventAnticipator m_anticipator;
-
     private InetAddress m_localhost = null;
 
     @Resource(name="snmpTrapPort")
@@ -122,11 +119,8 @@ public class TrapHandlerITCase implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-        m_anticipator = new EventAnticipator();
-        m_eventMgr.setEventAnticipator(m_anticipator);
-
         m_localhost = InetAddressUtils.addr(m_ip);
-        
+
         m_trapdIpMgr.clearKnownIpsMap();
         m_trapdIpMgr.setNodeId(m_ip, m_nodeId);
 
@@ -141,8 +135,8 @@ public class TrapHandlerITCase implements InitializingBean {
             // do nothing
         }
         m_eventMgr.finishProcessingEvents();
-        m_anticipator.verifyAnticipated(1000, 0, 0, 0, 0);
-        return m_anticipator.getAnticipatedEventsRecieved();
+        m_eventMgr.getEventAnticipator().verifyAnticipated(1000, 0, 0, 0, 0);
+        return m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived();
     }
 
     @After
@@ -473,7 +467,7 @@ public class TrapHandlerITCase implements InitializingBean {
         EventBuilder bldr = new EventBuilder(uei, "TrapHandlerTestCase");
         bldr.setNodeid(nodeId);
         bldr.setInterface(addr(ip));
-        m_anticipator.anticipateEvent(bldr.getEvent());
+        m_eventMgr.getEventAnticipator().anticipateEvent(bldr.getEvent());
         return bldr.getEvent();
     }
 

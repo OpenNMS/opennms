@@ -37,8 +37,6 @@ import java.net.DatagramPacket;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
@@ -53,7 +51,6 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -200,18 +197,16 @@ public class Nms4335IT implements InitializingBean {
         expectedEventBldr.setLogDest("logndisplay");
         expectedEventBldr.setLogMessage(expectedLogMsg);
     
-        final EventAnticipator ea = new EventAnticipator();
-        m_eventIpcManager.addEventListener(ea);
-        ea.anticipateEvent(expectedEventBldr.getEvent());
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(expectedEventBldr.getEvent());
         
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr("127.0.0.1"));
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
         new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId()));
 
-        ea.verifyAnticipated(5000,0,0,0,0);
-        final Event receivedEvent = ea.getAnticipatedEventsRecieved().get(0);
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(5000,0,0,0,0);
+        final Event receivedEvent = m_eventIpcManager.getEventAnticipator().getAnticipatedEventsReceived().get(0);
         assertEquals("Log messages do not match", expectedLogMsg, receivedEvent.getLogmsg().getContent());
         
-        return ea.getAnticipatedEventsRecieved();
+        return m_eventIpcManager.getEventAnticipator().getAnticipatedEventsReceived();
     }
 }

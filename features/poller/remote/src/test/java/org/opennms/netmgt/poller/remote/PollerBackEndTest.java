@@ -816,7 +816,7 @@ public class PollerBackEndTest extends TestCase {
         m_backEnd.reportSingleScan(report);
 
         // Fetch the event that was sent
-        Event unsuccessfulScanEvent = m_eventIpcManager.getEventAnticipator().unanticipatedEvents().iterator().next();
+        Event unsuccessfulScanEvent = m_eventIpcManager.getEventAnticipator().getUnanticipatedEvents().iterator().next();
         assertTrue(
             unsuccessfulScanEvent.getParm(DefaultPollerBackEnd.PARM_SCAN_REPORT_FAILURE_MESSAGE).getValue().getContent(),
             unsuccessfulScanEvent.getParm(DefaultPollerBackEnd.PARM_SCAN_REPORT_FAILURE_MESSAGE).getValue().getContent().contains("2 out of 5 service polls failed")
