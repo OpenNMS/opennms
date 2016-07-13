@@ -54,6 +54,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
@@ -72,6 +73,7 @@ public class NodeScan implements Scan {
     private final Integer m_nodeId;
     private final String m_foreignSource;
     private final String m_foreignId;
+    private final OnmsMonitoringLocation m_location;
     private final Date m_scanStamp;
     private final ProvisionService m_provisionService;
     private final EventForwarder m_eventForwarder;
@@ -90,15 +92,17 @@ public class NodeScan implements Scan {
      * @param nodeId a {@link java.lang.Integer} object.
      * @param foreignSource a {@link java.lang.String} object.
      * @param foreignId a {@link java.lang.String} object.
+     * @param location a {@link org.opennms.netmgt.model.monitoringLocation.OnmsMonitoringLocation} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator) {
+    public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final OnmsMonitoringLocation location, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
+        m_location = location;
         m_scanStamp = new Date();
         m_provisionService = provisionService;
         m_eventForwarder = eventForwarder;
@@ -132,6 +136,10 @@ public class NodeScan implements Scan {
      */
     public Integer getNodeId() {
         return m_nodeId;
+    }
+
+    public OnmsMonitoringLocation getLocation() {
+        return m_location;
     }
 
     /**
@@ -305,7 +313,7 @@ public class NodeScan implements Scan {
                 abort(String.format("Unable to get requisitioned node (%s/%s): aborted", m_foreignSource, m_foreignId));
             } else {
                 for(final OnmsIpInterface iface : m_node.getIpInterfaces()) {
-                    loadNode.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getProvisionService()));
+                    loadNode.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getLocation(), getProvisionService()));
                 }
             }
         } else {
@@ -814,7 +822,7 @@ public class NodeScan implements Scan {
         void updateIpInterface(final BatchTask currentPhase, final OnmsIpInterface iface) {
             getProvisionService().updateIpInterfaceAttributes(getNodeId(), iface);
             if (iface.isManaged()) {
-                currentPhase.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getProvisionService()));
+                currentPhase.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getLocation(), getProvisionService()));
             }
         }
 
@@ -841,6 +849,7 @@ public class NodeScan implements Scan {
         .append("foreign source", m_foreignSource)
         .append("foreign id", m_foreignId)
         .append("node id", m_nodeId)
+        .append("location", m_location.getLocationName())
         .append("aborted", m_aborted)
         .append("provision service", m_provisionService)
         .toString();

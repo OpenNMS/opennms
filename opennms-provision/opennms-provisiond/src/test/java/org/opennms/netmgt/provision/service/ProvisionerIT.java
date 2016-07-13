@@ -1809,7 +1809,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         m_eventAnticipator.anticipateEvent(nodeScanAborted(node.getId()));
         m_eventAnticipator.setDiscardUnanticipated(true);
 
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "should_not_exist", "1");
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "should_not_exist", "1", node.getLocation());
         runScan(scan);
 
         m_eventAnticipator.verifyAnticipated();

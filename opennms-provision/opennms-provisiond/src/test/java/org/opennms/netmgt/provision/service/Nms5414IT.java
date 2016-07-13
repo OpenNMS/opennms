@@ -44,7 +44,6 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -92,9 +91,6 @@ public class Nms5414IT extends ProvisioningITCase {
     
     @Autowired
     private MockNodeDao m_nodeDao;
-
-    @Autowired
-    private MockEventIpcManager m_eventSubscriber;
     
     @Before
     public void setUp() {
@@ -126,7 +122,7 @@ public class Nms5414IT extends ProvisioningITCase {
         
         eventRecieved.await();
         
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation());
         runScan(scan);
         
         for (final OnmsIpInterface iface : getInterfaceDao().findAll()) {

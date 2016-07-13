@@ -191,7 +191,7 @@ public class DragonWaveNodeSwitchingIT extends ProvisioningITCase implements Ini
         anticipator.anticipateEvent(new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(iface).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-        final NodeScan scan2 = m_provisioner.createNodeScan(nextNodeId, onmsNode.getForeignSource(), onmsNode.getForeignId());
+        final NodeScan scan2 = m_provisioner.createNodeScan(nextNodeId, onmsNode.getForeignSource(), onmsNode.getForeignId(), onmsNode.getLocation());
         runScan(scan2);
         m_nodeDao.flush();
         anticipator.verifyAnticipated(200000, 0, 0, 0, 0);

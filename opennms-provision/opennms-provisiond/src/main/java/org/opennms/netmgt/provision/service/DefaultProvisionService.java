@@ -989,7 +989,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 }
             }
 
-            return new NodeScanSchedule(node.getId(), actualForeignSource, node.getForeignId(), initialDelay, scanInterval);
+            return new NodeScanSchedule(node.getId(), actualForeignSource, node.getForeignId(), node.getLocation(), initialDelay, scanInterval);
         } catch (final ForeignSourceRepositoryException e) {
             LOG.warn("unable to get foreign source '{}' from repository", effectiveForeignSource, e);
             return null;
