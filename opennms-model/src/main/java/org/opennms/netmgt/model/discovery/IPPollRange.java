@@ -54,6 +54,10 @@ public class IPPollRange implements Iterable<IPPollAddress>, Serializable {
      */
     private final IPAddrRange m_range;
 
+    private final String m_foreignSource;
+
+    private final String m_location;
+
     /**
      * The timeout in milliseconds (1/1000th)
      */
@@ -117,7 +121,7 @@ public class IPPollRange implements Iterable<IPPollAddress>, Serializable {
          */
         @Override
         public IPPollAddress nextElement() {
-            return new IPPollAddress((InetAddress) m_range.nextElement(), m_timeout, m_retries);
+            return new IPPollAddress(m_foreignSource, m_location, (InetAddress) m_range.nextElement(), m_timeout, m_retries);
         }
 
         /**
@@ -180,8 +184,10 @@ public class IPPollRange implements Iterable<IPPollAddress>, Serializable {
      * @see IPAddrRange
      * @throws java.net.UnknownHostException if any.
      */
-    public IPPollRange(String fromIP, String toIP, long timeout, int retries) throws java.net.UnknownHostException {
+    public IPPollRange(String foreignSource, String location, String fromIP, String toIP, long timeout, int retries) throws java.net.UnknownHostException {
         m_range = new IPAddrRange(fromIP, toIP);
+        m_foreignSource = foreignSource;
+        m_location = location;
         m_timeout = timeout;
         m_retries = retries;
     }
@@ -207,10 +213,8 @@ public class IPPollRange implements Iterable<IPPollAddress>, Serializable {
      * @see IPAddrRange
      * 
      */
-    public IPPollRange(InetAddress start, InetAddress end, long timeout, int retries) {
-        m_range = new IPAddrRange(start, end);
-        m_timeout = timeout;
-        m_retries = retries;
+    public IPPollRange(String foreignSource, String location, InetAddress start, InetAddress end, long timeout, int retries) {
+        this(foreignSource, location, new IPAddrRange(start, end), timeout, retries);
     }
 
     /**
@@ -231,10 +235,26 @@ public class IPPollRange implements Iterable<IPPollAddress>, Serializable {
      * @see IPPollAddress
      * 
      */
-    IPPollRange(IPAddrRange range, long timeout, int retries) {
+    IPPollRange(String foreignSource, String location, IPAddrRange range, long timeout, int retries) {
         m_range = range;
+        m_foreignSource = foreignSource;
+        m_location = location;
         m_timeout = timeout;
         m_retries = retries;
+    }
+
+    /**
+     * Foreign source where this address should be persisted.
+     */
+    public String getForeignSource() {
+        return m_foreignSource;
+    }
+
+    /**
+     * Network location of this address.
+     */
+    public String getLocation() {
+        return m_location;
     }
 
     /**
@@ -300,6 +320,8 @@ public class IPPollRange implements Iterable<IPPollAddress>, Serializable {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
+            .append("foreignSource", m_foreignSource)
+            .append("location", m_location)
             .append("range", m_range)
             .append("timeout", m_timeout)
             .append("retries", m_retries)
