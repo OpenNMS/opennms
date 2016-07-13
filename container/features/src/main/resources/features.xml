@@ -695,9 +695,15 @@
       <feature>org.json</feature>
 
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
-      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.joesnmp/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-snmp-commands" description="OpenNMS :: Core :: SNMP :: Commands" version="${project.version}">
+      <feature>opennms-config-api</feature>
+      <feature>opennms-snmp</feature>
+
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-syslogd" description="OpenNMS :: Syslogd" version="${project.version}">
