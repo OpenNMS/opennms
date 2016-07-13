@@ -140,6 +140,17 @@ public class NetworkBuilder {
             return this;
         }
 
+        public NodeBuilder setLocation(final String locationName) {
+            if (locationName != null) {
+                final OnmsMonitoringLocation location = new OnmsMonitoringLocation();
+                location.setLocationName(locationName);
+                m_node.setLocation(location);
+            } else {
+                m_node.setLocation(null);
+            }
+            return this;
+        }
+
         public OnmsAssetRecord getAssetRecord() {
             return m_node.getAssetRecord();
         }

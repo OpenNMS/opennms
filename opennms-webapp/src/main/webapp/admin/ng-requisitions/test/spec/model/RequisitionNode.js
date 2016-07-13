@@ -12,6 +12,7 @@ describe('Model: RequisitionsNode', function () {
   var onmsNode = {
     'foreign-id': '1001',
     'node-label': 'testing-node',
+    'location' : 'moo',
     'building' : 'Office',
     'parent-foreign-source' : 'routers',
     'parent-node-label' : 'rt001.local',
@@ -45,6 +46,7 @@ describe('Model: RequisitionsNode', function () {
     expect(reqNode.parentForeignSource).toBe('routers');
     expect(reqNode.parentForeignId).toBe(null);
     expect(reqNode.parentNodeLabel).toBe('rt001.local');
+    expect(reqNode.location).toBe('moo');
     expect(reqNode.categories.length).toBe(1);
     expect(reqNode.categories[0].name).toBe('Servers');
     expect(reqNode.interfaces.length).toBe(1);
