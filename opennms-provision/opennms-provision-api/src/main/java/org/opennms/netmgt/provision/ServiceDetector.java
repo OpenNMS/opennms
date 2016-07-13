@@ -99,14 +99,14 @@ public interface ServiceDetector {
     void setIpMatch(String ipMatch);
 
     /**
-     * Get the agent specific attributes.
+     * Get the runtime attributes.
      */
-    Map<String, String> getAgentAttributes();
+    Map<String, String> getRuntimeAttributes();
 
     /**
-     * Set the agent specific attributes.
+     * Set the runtime specific attributes.
      */
-    void setAgentAttributes(Map<String, String> attributes);
+    void setRuntimeAttributes(Map<String, String> attributes);
 
     /**
      * The detector should clean up after itself in this method if necessary.

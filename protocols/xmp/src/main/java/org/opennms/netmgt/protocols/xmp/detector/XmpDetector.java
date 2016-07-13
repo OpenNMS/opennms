@@ -256,12 +256,12 @@ public class XmpDetector implements SyncServiceDetector {
     } /* isServiceDetected */
 
     @Override
-    public Map<String, String> getAgentAttributes() {
+    public Map<String, String> getRuntimeAttributes() {
         return null;
     }
 
     @Override
-    public void setAgentAttributes(Map<String, String> attributes) {
+    public void setRuntimeAttributes(Map<String, String> attributes) {
         // pass
     }
 

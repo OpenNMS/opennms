@@ -75,8 +75,8 @@ public class DetectorRequestDTO {
     @XmlElement(name = "detector-attribute")
     private List<DetectorAttributeDTO> detectorAttributes = new ArrayList<>();
 
-    @XmlElement(name = "agent-attribute")
-    private List<DetectorAttributeDTO> agentAttributes = new ArrayList<>();
+    @XmlElement(name = "runtime-attribute")
+    private List<DetectorAttributeDTO> runtimeAttributes = new ArrayList<>();
 
     public String getLocation() {
         return location;
@@ -108,21 +108,21 @@ public class DetectorRequestDTO {
                 DetectorAttributeDTO::getValue));
     }
 
-    public void setAgentAttributes(List<DetectorAttributeDTO> attributes) {
-        this.agentAttributes = attributes;
+    public void setRuntimeAttributes(List<DetectorAttributeDTO> attributes) {
+        this.runtimeAttributes = attributes;
     }
 
-    public void addAgentAttribute(String key, String value) {
-        agentAttributes.add(new DetectorAttributeDTO(key, value));
+    public void addRuntimeAttribute(String key, String value) {
+        runtimeAttributes.add(new DetectorAttributeDTO(key, value));
     }
 
-    public void addAgentAttributes(Map<String, String> attributes) {
+    public void addRuntimeAttributes(Map<String, String> attributes) {
         attributes.entrySet().stream()
-            .forEach(e -> this.addAgentAttribute(e.getKey(), e.getValue()));
+            .forEach(e -> this.addRuntimeAttribute(e.getKey(), e.getValue()));
     }
 
-    public Map<String, String> getAgentAttributeMap() {
-        return agentAttributes.stream().collect(Collectors.toMap(DetectorAttributeDTO::getKey,
+    public Map<String, String> getRuntimeAttributeMap() {
+        return runtimeAttributes.stream().collect(Collectors.toMap(DetectorAttributeDTO::getKey,
                 DetectorAttributeDTO::getValue));
     }
 
@@ -144,7 +144,7 @@ public class DetectorRequestDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, detectorAttributes, agentAttributes, className, address);
+        return Objects.hash(location, detectorAttributes, runtimeAttributes, className, address);
     }
 
     @Override
@@ -159,7 +159,7 @@ public class DetectorRequestDTO {
         return Objects.equals(this.location, other.location)
                 && Objects.equals(this.location, other.location)
                 && Objects.equals(this.detectorAttributes, other.detectorAttributes)
-                && Objects.equals(this.agentAttributes, other.agentAttributes)
+                && Objects.equals(this.runtimeAttributes, other.runtimeAttributes)
                 && Objects.equals(this.className, other.className)
                 && Objects.equals(this.address, other.address);
     }

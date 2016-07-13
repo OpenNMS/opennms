@@ -187,13 +187,13 @@ public abstract class AbstractDetector implements ServiceDetector {
 
     /** {@inheritDoc} */
     @Override
-    public Map<String, String> getAgentAttributes() {
+    public Map<String, String> getRuntimeAttributes() {
         return m_agentAttributes;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setAgentAttributes(Map<String, String> attributes) {
+    public void setRuntimeAttributes(Map<String, String> attributes) {
         m_agentAttributes = attributes;
     };
 

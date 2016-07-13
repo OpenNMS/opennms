@@ -183,9 +183,10 @@ public class SnmpDetector extends SyncAbstractDetector {
     }
 
     protected SnmpAgentConfig getAgentConfig() {
-        final Map<String, String> agentAttributes = getAgentAttributes();
-        if (agentAttributes != null) {
-            return SnmpAgentConfig.fromMap(getAgentAttributes());
+        final Map<String, String> runtimeAttributes = getRuntimeAttributes();
+        if (runtimeAttributes != null) {
+            // All of the keys in the runtime attribute map are used to store the agent configuration
+            return SnmpAgentConfig.fromMap(getRuntimeAttributes());
         } else {
             return new SnmpAgentConfig();
         }

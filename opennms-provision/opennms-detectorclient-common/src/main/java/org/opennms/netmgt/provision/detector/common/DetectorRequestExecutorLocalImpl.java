@@ -58,10 +58,10 @@ public class DetectorRequestExecutorLocalImpl implements DetectorRequestExecutor
         if (detector == null) {
             throw new IllegalArgumentException("No detector found with class name '" + className + "'.");
         }
-        return detectService(detector, address, request.getAgentAttributeMap());
+        return detectService(detector, address, request.getRuntimeAttributeMap());
     }
 
-    private CompletableFuture<DetectorResponseDTO> detectService(ServiceDetector detector, InetAddress address, Map<String, String> agentAttributes) {
+    private CompletableFuture<DetectorResponseDTO> detectService(ServiceDetector detector, InetAddress address, Map<String, String> runtimeAttributes) {
         detector.init();
         if (detector instanceof SyncServiceDetector) {
             final SyncServiceDetector syncDetector = (SyncServiceDetector) detector;
@@ -70,7 +70,7 @@ public class DetectorRequestExecutorLocalImpl implements DetectorRequestExecutor
                 public DetectorResponseDTO get() {
                     DetectorResponseDTO responseDTO = new DetectorResponseDTO();
                     try {
-                        syncDetector.setAgentAttributes(agentAttributes);
+                        syncDetector.setRuntimeAttributes(runtimeAttributes);
                         responseDTO.setDetected(syncDetector.isServiceDetected(address));
                     } catch (Throwable t) {
                         responseDTO.setDetected(false);

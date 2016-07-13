@@ -73,7 +73,7 @@ public class BgpSessionDetectorTest implements InitializingBean {
         m_detector.setBgpPeerIp("");
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
-        m_detector.setAgentAttributes(m_detectorFactory.getAgentAttributes(null, InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        m_detector.setRuntimeAttributes(m_detectorFactory.getRuntimeAttributes(null, InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 
     @Test(timeout=20000)

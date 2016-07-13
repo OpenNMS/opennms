@@ -50,7 +50,7 @@ public class DetectorRequestDTOTest extends XmlTestNoCastor<DetectorRequestDTO> 
                 "<?xml version=\"1.0\"?>\n" +
                 "<detector-request location=\"MINION\" class-name=\"org.opennms.netmgt.provision.detector.icmp.IcmpDetector\" address=\"127.0.0.1\">\n" +
                   "<detector-attribute key=\"port\">8980</detector-attribute>\n" +
-                  "<agent-attribute key=\"password\">foo</agent-attribute>\n" +
+                  "<runtime-attribute key=\"password\">foo</runtime-attribute>\n" +
                 "</detector-request>"
             }
         });
@@ -62,7 +62,7 @@ public class DetectorRequestDTOTest extends XmlTestNoCastor<DetectorRequestDTO> 
         dto.setClassName("org.opennms.netmgt.provision.detector.icmp.IcmpDetector");
         dto.setAddress(InetAddress.getByName("127.0.0.1"));
         dto.addDetectorAttribute("port", "8980");
-        dto.addAgentAttribute("password", "foo");
+        dto.addRuntimeAttribute("password", "foo");
         return dto;
     }
 }

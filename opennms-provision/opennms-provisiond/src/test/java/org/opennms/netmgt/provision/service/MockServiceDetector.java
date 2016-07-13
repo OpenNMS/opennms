@@ -98,12 +98,12 @@ public class MockServiceDetector implements SyncServiceDetector {
     }
 
     @Override
-    public Map<String, String> getAgentAttributes() {
+    public Map<String, String> getRuntimeAttributes() {
         return m_agentAttributes;
     }
 
     @Override
-    public void setAgentAttributes(Map<String, String> attributes) {
+    public void setRuntimeAttributes(Map<String, String> attributes) {
         m_agentAttributes = attributes;
     }
 }

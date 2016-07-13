@@ -116,7 +116,7 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         detectorRequestDTO.setClassName(className);
         detectorRequestDTO.setAddress(address);
         detectorRequestDTO.addDetectorAttributes(attributes);
-        detectorRequestDTO.addAgentAttributes(factory.getAgentAttributes(location, address));
+        detectorRequestDTO.addRuntimeAttributes(factory.getRuntimeAttributes(location, address));
 
         return client.getDetectorRequestExecutor(location)
             .execute(detectorRequestDTO)
