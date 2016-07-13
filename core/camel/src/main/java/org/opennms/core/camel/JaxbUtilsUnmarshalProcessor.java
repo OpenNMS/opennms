@@ -28,6 +28,10 @@
 
 package org.opennms.core.camel;
 
+import java.io.StringReader;
+
+import javax.xml.bind.Unmarshaller;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.opennms.core.xml.JaxbUtils;
@@ -45,18 +49,43 @@ public class JaxbUtilsUnmarshalProcessor implements Processor {
 
 	private final Class<?> m_class;
 
+	/**
+	 * Store a thread-local reference to the {@link Unmarshaller} because 
+	 * Unmarshallers are not thread-safe.
+	 */
+	private final ThreadLocal<Unmarshaller> m_unmarshaller = new ThreadLocal<>();
+
 	@SuppressWarnings("rawtypes") // Because Aries Blueprint cannot handle generics
 	public JaxbUtilsUnmarshalProcessor(Class clazz) {
 		m_class = clazz;
 	}
 
 	public JaxbUtilsUnmarshalProcessor(String className) throws ClassNotFoundException {
-		m_class = Class.forName(className);
+		this(Class.forName(className));
 	}
 
+	/**
+	 * Make sure that this method is fast because it is used to deserialize
+	 * JMS messages.
+	 */
 	@Override
 	public void process(final Exchange exchange) throws Exception {
+		Unmarshaller unmarshaller = m_unmarshaller.get(); 
+		if (unmarshaller == null) {
+			unmarshaller = JaxbUtils.getUnmarshallerFor(m_class, null, false);
+			m_unmarshaller.set(unmarshaller);
+		}
+
+		// Super slow
+		//final String object = exchange.getIn().getBody(String.class);
+		//exchange.getIn().setBody(JaxbUtils.unmarshal(m_class, object), m_class);
+
+		// Faster
+		//final InputStream object = exchange.getIn().getBody(InputStream.class);
+		//exchange.getIn().setBody(unmarshaller.unmarshal(new StreamSource(object)));
+
+		// Somehow, using String is marginally faster than using InputStream ¯\_(ツ)_/¯
 		final String object = exchange.getIn().getBody(String.class);
-		exchange.getIn().setBody(JaxbUtils.unmarshal(m_class, object), m_class);
+		exchange.getIn().setBody(m_class.cast(unmarshaller.unmarshal(new StringReader(object))));
 	}
 }
