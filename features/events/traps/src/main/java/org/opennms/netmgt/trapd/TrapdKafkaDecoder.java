@@ -209,10 +209,6 @@ public class TrapdKafkaDecoder implements Decoder<Object>{
 				int type = Integer.parseInt(field.getValue().findValue("type").asText());
 				
 				String value=field.getValue().findValue("value").toString();
-				if(field.getValue().findValue("printable")!=null&&!field.getValue().findValue("printable").asBoolean())
-				{
-					break;
-				}
 				if(type==6)
 				{
 					if(value.matches("\\[[0-9,]*\\]"))

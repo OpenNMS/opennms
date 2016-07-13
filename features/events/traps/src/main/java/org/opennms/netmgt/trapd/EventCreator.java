@@ -56,7 +56,6 @@ public class EventCreator implements TrapProcessor {
     
     private final EventBuilder m_eventBuilder;
     private final TrapdIpMgr m_trapdIpMgr;
-    private String version;
 
     
     public EventCreator(TrapdIpMgr trapdIpMgr) {
@@ -86,7 +85,6 @@ public class EventCreator implements TrapProcessor {
     @Override
     public void setVersion(String version) {
         m_eventBuilder.setSnmpVersion(version);
-        this.version=version;
     }
 
     private void setGeneric(int generic) {
@@ -121,7 +119,6 @@ public class EventCreator implements TrapProcessor {
     public void setTrapAddress(InetAddress trapAddress) {
         m_eventBuilder.setSnmpHost(str(trapAddress));
         m_eventBuilder.setInterface(trapAddress);
-        m_eventBuilder.setService(version);
         long nodeId = m_trapdIpMgr.getNodeId(str(trapAddress));
         if (nodeId != -1) {
             m_eventBuilder.setNodeid(nodeId);
