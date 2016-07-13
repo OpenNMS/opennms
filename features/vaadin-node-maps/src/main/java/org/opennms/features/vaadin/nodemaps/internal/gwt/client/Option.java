@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,23 +28,41 @@
 
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.Serializable;
 
-import com.vaadin.shared.AbstractComponentState;
+public class Option implements Serializable {
 
-/**
- * @author Marcus Hellberg (marcus@vaadin.com)
- */
-public class NodeMapState extends AbstractComponentState {
-    private static final long serialVersionUID = -476104177779046228L;
-    public String searchString;
-    public List<MapNode> nodes = new LinkedList<MapNode>();
-    public List<Integer> nodeIds = new ArrayList<Integer>();
-    public int minimumSeverity;
-    public boolean groupByState = true;
-    public int maxClusterRadius = 350;
-    public List<Option> tileLayerOptions = new ArrayList<>();
-    public String tileServerUrl;
+    private String key;
+
+    private String value;
+
+    public Option() {
+    }
+
+    public Option(String key, String value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getKey() {
+
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    @Override
+    public String toString() {
+        return "Option[key=" + key + ", value=" + value + "]";
+    }
 }
