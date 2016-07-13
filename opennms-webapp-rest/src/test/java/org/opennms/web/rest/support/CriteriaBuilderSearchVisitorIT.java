@@ -102,4 +102,31 @@ public class CriteriaBuilderSearchVisitorIT {
 		System.out.println(criteria.toString());
 		m_dao.countMatching(criteria);
 	}
+
+
+	@Test
+	public void testScanReportTwoConditionsWithIsNull() {
+		CriteriaBuilder builder = new ScanReportRestService().getCriteriaBuilder();
+		CriteriaBuilderSearchVisitor<ScanReport> visitor = new CriteriaBuilderSearchVisitor<ScanReport>(builder, ScanReport.class);
+
+		visitor.visit(new PrimitiveSearchCondition<ScanReport>("applications", CriteriaBuilderSearchVisitor.NULL_VALUE, String.class, ConditionType.EQUALS, new ScanReport()));
+		visitor.visit(new PrimitiveSearchCondition<ScanReport>("timestamp", new Date(), Date.class, ConditionType.LESS_OR_EQUALS, new ScanReport()));
+
+		Criteria criteria = visitor.getQuery().toCriteria();
+		System.out.println(criteria.toString());
+		m_dao.countMatching(criteria);
+	}
+
+	@Test
+	public void testScanReportTwoConditionsWithIsNotNull() {
+		CriteriaBuilder builder = new ScanReportRestService().getCriteriaBuilder();
+		CriteriaBuilderSearchVisitor<ScanReport> visitor = new CriteriaBuilderSearchVisitor<ScanReport>(builder, ScanReport.class);
+
+		visitor.visit(new PrimitiveSearchCondition<ScanReport>("applications", CriteriaBuilderSearchVisitor.NULL_VALUE, String.class, ConditionType.NOT_EQUALS, new ScanReport()));
+		visitor.visit(new PrimitiveSearchCondition<ScanReport>("timestamp", new Date(), Date.class, ConditionType.LESS_OR_EQUALS, new ScanReport()));
+
+		Criteria criteria = visitor.getQuery().toCriteria();
+		System.out.println(criteria.toString());
+		m_dao.countMatching(criteria);
+	}
 }

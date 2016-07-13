@@ -58,7 +58,6 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -157,21 +156,20 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
     @Test
     @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
     public void testThresholds() throws Exception {
-        EventAnticipator anticipator = new EventAnticipator();
         EventBuilder bldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "LatencyStoringServiceMonitorAdaptorTest");
         bldr.setNodeid(1);
         bldr.setInterface(addr("127.0.0.1"));
         bldr.setService("ICMP");
-        anticipator.anticipateEvent(bldr.getEvent());
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(bldr.getEvent());
 
         bldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "LatencyStoringServiceMonitorAdaptorTest");
         bldr.setNodeid(1);
         bldr.setInterface(addr("127.0.0.1"));
         bldr.setService("ICMP");
-        anticipator.anticipateEvent(bldr.getEvent());
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(bldr.getEvent());
 
-        executeThresholdTest(anticipator, new Double[] {100.0, 10.0}); // This should emulate a trigger and a rearm
-        anticipator.verifyAnticipated();
+        executeThresholdTest(new Double[] {100.0, 10.0}); // This should emulate a trigger and a rearm
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated();
     }
 
     // TODO: This test will fail if you have a default locale with >3 characters for month, e.g. Locale.FRENCH
@@ -200,16 +198,15 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
         PollOutagesConfigFactory.getInstance().afterPropertiesSet();
 
-        EventAnticipator anticipator = new EventAnticipator();
-        executeThresholdTest(anticipator, new Double[] {100.0});
-        anticipator.verifyAnticipated();
+        executeThresholdTest(new Double[] {100.0});
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         // Reset the state of the PollOutagesConfigFactory for any subsequent tests
         PollOutagesConfigFactory.setInstance(oldFactory);
         file.delete();
     }
 
-    private void executeThresholdTest(EventAnticipator anticipator, Double[] rtValues) throws Exception {
+    private void executeThresholdTest(Double[] rtValues) throws Exception {
 
         Map<String,Object> parameters = new HashMap<String,Object>();
         parameters.put("rrd-repository", "/tmp");
@@ -240,8 +237,6 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
 
         expect(m_pollerConfig.getRRAList(pkg)).andReturn(rras).anyTimes();
         expect(m_pollerConfig.getStep(pkg)).andReturn(step).anyTimes();
-
-        m_eventIpcManager.setEventAnticipator(anticipator);
 
         m_mocks.replayAll();
         LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(service, m_pollerConfig, pkg, m_persisterFactory, m_resourceStorageDao);

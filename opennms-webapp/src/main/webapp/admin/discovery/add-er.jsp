@@ -29,11 +29,7 @@
 
 --%>
 <%@page language="java" contentType="text/html" session="true" import="
-  org.opennms.netmgt.config.DiscoveryConfigFactory,
-  org.opennms.netmgt.config.discovery.*,
-  org.opennms.web.admin.discovery.DiscoveryServletConstants,
-  org.opennms.web.admin.discovery.ActionDiscoveryServlet,
-  org.opennms.web.admin.discovery.DiscoveryScanServlet
+  org.opennms.web.admin.discovery.DiscoveryServletConstants
 "%>
 <% 
 	response.setDateHeader("Expires", 0);

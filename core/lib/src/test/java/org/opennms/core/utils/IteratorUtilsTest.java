@@ -1,9 +1,8 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,23 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
+package org.opennms.core.utils;
 
-<%@page language="java"
-	contentType="text/html"
-	session="true"
-%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+import static org.junit.Assert.assertEquals;
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Current Outages" />
-  <jsp:param name="headTitle" value="Outages" />
-  <jsp:param name="breadcrumb" value="<a href='outage/index.jsp'>Outages</a>" />
-  <jsp:param name="breadcrumb" value="Current By Node" />
-</jsp:include>
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-Redirecting you to <a href="outage/list.htm">the outage list</a>.
+import org.junit.Test;
 
-<% response.sendRedirect("list.htm"); %>
+public class IteratorUtilsTest {
 
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
+	@Test
+	public void testConcatIterators() {
+		List<String> list = Arrays.asList(new String[] {
+			"one",
+			"two",
+			"three"
+		});
+
+		// These elements will be alphabetized
+		Set<String> set = new TreeSet<>();
+		set.add("four");
+		set.add("five");
+		set.add("six");
+		set.add("seven");
+
+		Iterable<String> iterable = IteratorUtils.concatIterators(list.iterator(), set.iterator());
+
+		assertEquals(
+			"one,two,three,five,four,seven,six",
+			StreamSupport.stream(iterable.spliterator(), false).collect(Collectors.joining(","))
+		);
+	}
+}
