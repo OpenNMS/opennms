@@ -48,8 +48,6 @@ public class InfoPanel extends CssLayout {
     /** Defines if the info panel is expanded or not. If true it is expanded, false otherwise. */
     private boolean expanded = true;
 
-    private InlineGraphContainer graphRenderContainer;
-
     public InfoPanel(SearchBox searchBox) {
         setId(ID);
         addStyleName(ID);
@@ -74,8 +72,8 @@ public class InfoPanel extends CssLayout {
         staticComponents.add(searchBox);
         staticComponents.add(toggleButton);
 
-        graphRenderContainer = new InlineGraphContainer();
-        staticComponents.add(graphRenderContainer);
+        // Add a graph container to trigger backshift graph renderings on each update
+        staticComponents.add(new InlineGraphContainer());
     }
 
     private void refreshInfoArea() {
