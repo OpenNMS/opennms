@@ -68,7 +68,17 @@
             </dependency>
             <dependency>
                 <groupId>org.opennms</groupId>
+                <artifactId>opennms-detector-bsf</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms</groupId>
                 <artifactId>opennms-detector-datagram</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms</groupId>
+                <artifactId>opennms-detector-generic</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

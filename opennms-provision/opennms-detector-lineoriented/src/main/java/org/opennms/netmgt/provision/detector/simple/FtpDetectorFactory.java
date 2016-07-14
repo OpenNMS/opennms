@@ -29,7 +29,9 @@
 package org.opennms.netmgt.provision.detector.simple;
 
 import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FtpDetectorFactory extends AbstractServiceDetectorFactory<FtpDetector> {
 
     @Override

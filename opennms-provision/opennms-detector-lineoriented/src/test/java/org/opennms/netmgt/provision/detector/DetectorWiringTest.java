@@ -34,17 +34,29 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.detector.simple.CitrixDetector;
+import org.opennms.netmgt.provision.detector.simple.CitrixDetectorFactory;
 import org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector;
+import org.opennms.netmgt.provision.detector.simple.DominoIIOPDetectorFactory;
 import org.opennms.netmgt.provision.detector.simple.FtpDetector;
+import org.opennms.netmgt.provision.detector.simple.FtpDetectorFactory;
 import org.opennms.netmgt.provision.detector.simple.HttpDetector;
+import org.opennms.netmgt.provision.detector.simple.HttpDetectorFactory;
 import org.opennms.netmgt.provision.detector.simple.HttpsDetector;
+import org.opennms.netmgt.provision.detector.simple.HttpsDetectorFactory;
 import org.opennms.netmgt.provision.detector.simple.ImapDetector;
+import org.opennms.netmgt.provision.detector.simple.ImapDetectorFactory;
 import org.opennms.netmgt.provision.detector.simple.LdapDetector;
+import org.opennms.netmgt.provision.detector.simple.LdapDetectorFactory;
 import org.opennms.netmgt.provision.detector.simple.LdapsDetector;
+import org.opennms.netmgt.provision.detector.simple.LdapsDetectorFactory;
 import org.opennms.netmgt.provision.detector.simple.NrpeDetector;
+import org.opennms.netmgt.provision.detector.simple.NrpeDetectorFactory;
 import org.opennms.netmgt.provision.detector.simple.Pop3Detector;
+import org.opennms.netmgt.provision.detector.simple.Pop3DetectorFactory;
 import org.opennms.netmgt.provision.detector.simple.SmtpDetector;
+import org.opennms.netmgt.provision.detector.simple.SmtpDetectorFactory;
 import org.opennms.netmgt.provision.detector.simple.TcpDetector;
+import org.opennms.netmgt.provision.detector.simple.TcpDetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -61,31 +73,29 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class DetectorWiringTest implements InitializingBean {
     
     @Autowired
-    @Qualifier(value="org.opennms.netmgt.provision.detector.simple.HttpDetector")
-    private HttpDetector m_httpDetector;
+    private HttpDetectorFactory m_httpDetectorFactory;
     @Autowired 
-    private Pop3Detector m_pop3Detector;
+    private Pop3DetectorFactory m_pop3DetectorFactory;
     @Autowired 
-    private CitrixDetector m_citrixDetector;
+    private CitrixDetectorFactory m_citrixDetectorFactory;
     @Autowired 
-    private DominoIIOPDetector m_dominoIIOPDetector;
+    private DominoIIOPDetectorFactory m_dominoIIOPDetectorFactory;
     @Autowired 
-    private FtpDetector m_ftpDetector;
+    private FtpDetectorFactory m_ftpDetectorFactory;
     @Autowired 
-    private HttpsDetector m_httpsDetector;
+    private HttpsDetectorFactory m_httpsDetectorFactory;
     @Autowired 
-    private ImapDetector m_imapDetector;
+    private ImapDetectorFactory m_imapDetectorFactory;
     @Autowired 
-    @Qualifier(value="org.opennms.netmgt.provision.detector.simple.LdapDetector")
-    private LdapDetector m_ldapDetector;
+    private LdapDetectorFactory m_ldapDetectorFactory;
     @Autowired 
-    private LdapsDetector m_ldapsDetector;
+    private LdapsDetectorFactory m_ldapsDetectorFactory;
     @Autowired 
-    private NrpeDetector m_nrpeDetector;
+    private NrpeDetectorFactory m_nrpeDetectorFactory;
     @Autowired 
-    private SmtpDetector m_smtpDetector;
+    private SmtpDetectorFactory m_smtpDetectorFactory;
     @Autowired 
-    private TcpDetector m_tcpDetector;
+    private TcpDetectorFactory m_tcpDetectorFactory; 
 
     @Override
     public void afterPropertiesSet() throws Exception {

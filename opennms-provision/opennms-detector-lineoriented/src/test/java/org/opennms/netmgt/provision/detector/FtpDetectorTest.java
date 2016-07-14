@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.FtpDetector;
+import org.opennms.netmgt.provision.detector.simple.FtpDetectorFactory;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,6 +49,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class FtpDetectorTest {
 
     @Autowired
+    private FtpDetectorFactory m_detectorFactory;
+    
     private FtpDetector m_detector;
 
     private SimpleServer m_server;
@@ -55,7 +58,7 @@ public class FtpDetectorTest {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setTimeout(500);
         m_detector.init();
 

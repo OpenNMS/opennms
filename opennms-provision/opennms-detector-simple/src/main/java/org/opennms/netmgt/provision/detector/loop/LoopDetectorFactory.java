@@ -29,7 +29,9 @@
 package org.opennms.netmgt.provision.detector.loop;
 
 import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class LoopDetectorFactory extends AbstractServiceDetectorFactory<LoopDetector> {
 
     @Override

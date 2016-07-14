@@ -42,6 +42,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.snmp.OpenManageChassisDetector;
+import org.opennms.netmgt.provision.detector.snmp.OpenManageChassisDetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -55,6 +56,8 @@ public class OpenManageChassisDetectorTest implements InitializingBean {
     static final String TEST_IP_ADDRESS = "192.0.2.1";
 
     @Autowired
+    private OpenManageChassisDetectorFactory m_detectorFactory;
+    
     private OpenManageChassisDetector m_detector;
 
     @Override
@@ -65,9 +68,10 @@ public class OpenManageChassisDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws InterruptedException {
         MockLogAppender.setupLogging();
-
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setRetries(2);
         m_detector.setTimeout(5000);
+        m_detector.setRuntimeAttributes(m_detectorFactory.getRuntimeAttributes(null, InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 
     @Test(timeout=20000)

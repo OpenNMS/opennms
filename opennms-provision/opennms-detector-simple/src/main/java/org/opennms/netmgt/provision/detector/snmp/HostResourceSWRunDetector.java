@@ -40,19 +40,16 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import antlr.StringUtils;
 
-@Component
 /**
  * <p>HostResourceSWRunDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class HostResourceSWRunDetector extends SnmpDetector {
 
     private static final Logger LOG = LoggerFactory.getLogger(HostResourceSWRunDetector.class);

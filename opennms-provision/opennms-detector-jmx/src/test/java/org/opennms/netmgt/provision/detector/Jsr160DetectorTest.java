@@ -56,6 +56,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.jmx.JmxConfig;
 import org.opennms.netmgt.provision.detector.jmx.Jsr160Detector;
+import org.opennms.netmgt.provision.detector.jmx.Jsr160DetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -70,6 +71,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class Jsr160DetectorTest implements InitializingBean {
 
     @Autowired
+    public Jsr160DetectorFactory m_detectorFactory;
+    
     public Jsr160Detector m_detector;
 
     public static MBeanServer m_beanServer;
@@ -78,8 +81,6 @@ public class Jsr160DetectorTest implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
-
-        this.m_detector.setJmxConfigDao(() -> new JmxConfig());
     }
 
     @BeforeClass
@@ -91,7 +92,8 @@ public class Jsr160DetectorTest implements InitializingBean {
     @Before
     public void setUp() throws IOException {
         MockLogAppender.setupLogging();
-
+        m_detector = m_detectorFactory.createDetector();
+        this.m_detector.setJmxConfigDao(() -> new JmxConfig());
         assertNotNull(m_detector);
 
         JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9123/server");

@@ -53,6 +53,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.jmx.JmxConfig;
 import org.opennms.netmgt.provision.detector.jmx.MX4JDetector;
+import org.opennms.netmgt.provision.detector.jmx.MX4JDetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -63,6 +64,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class MX4JDetectorTest implements InitializingBean {
 
     @Autowired
+    public MX4JDetectorFactory m_detectorFactory;
+    
     public MX4JDetector m_detector;
 
     public static MBeanServer m_beanServer;
@@ -71,8 +74,6 @@ public class MX4JDetectorTest implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
-
-        this.m_detector.setJmxConfigDao(() -> new JmxConfig());
     }
 
     @BeforeClass
@@ -83,6 +84,8 @@ public class MX4JDetectorTest implements InitializingBean {
 
     @Before
     public void setUp() throws IOException {
+        m_detector = m_detectorFactory.createDetector();
+        this.m_detector.setJmxConfigDao(() -> new JmxConfig());
         assertNotNull(m_detector);
         MockLogAppender.setupLogging();
 

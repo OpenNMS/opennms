@@ -1,0 +1,35 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+
+    <bean id="jBossDetectorFactory" class="org.opennms.netmgt.provision.detector.jmx.JBossDetectorFactory" />
+	<service ref="jBossDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.jmx.JBossDetector" />
+		</service-properties>
+	</service>
+	
+	<bean id="jsr160DetectorFactory" class="org.opennms.netmgt.provision.detector.jmx.Jsr160DetectorFactory" />
+	<service ref="jsr160DetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector" />
+		</service-properties>
+	</service>
+	
+
+    <bean id="mx4jDetectorFactory" class="org.opennms.netmgt.provision.detector.jmx.MX4JDetectorFactory" />
+	<service ref="mx4jDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.jmx.MX4JDetector" />
+		</service-properties>
+	</service>
+	
+</blueprint>
