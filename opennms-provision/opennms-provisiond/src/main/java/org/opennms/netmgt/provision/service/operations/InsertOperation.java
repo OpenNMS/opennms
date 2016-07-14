@@ -38,13 +38,13 @@ public class InsertOperation extends SaveOrUpdateOperation {
      * @param foreignSource a {@link java.lang.String} object.
      * @param foreignId a {@link java.lang.String} object.
      * @param nodeLabel a {@link java.lang.String} object.
+     * @param location a {@link java.lang.String} object.
      * @param building a {@link java.lang.String} object.
      * @param city a {@link java.lang.String} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      */
-    public InsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
-        // TODO: HZN-613: Fill in location value
-        super(null, foreignSource, foreignId, nodeLabel, building, city, null, provisionService, Boolean.TRUE.toString());
+    public InsertOperation(String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService) {
+        super(null, foreignSource, foreignId, nodeLabel, location, building, city, provisionService, Boolean.TRUE.toString());
     }
 
 	/**

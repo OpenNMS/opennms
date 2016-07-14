@@ -48,11 +48,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -140,12 +137,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private MonitoringLocationDao m_monitoringLocationDao;
 
     @Autowired
-    private LocationMonitorDao m_locationMonitorDao;
-
-    @Autowired
-    private DistPollerDao m_distPollerDao;
-
-    @Autowired
     private NodeDao m_nodeDao;
 
     @Autowired
@@ -165,9 +156,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     @Autowired
     private RequisitionedCategoryAssociationDao m_categoryAssociationDao;
-
-    @Autowired
-    private DiscoveryConfigurationFactory m_discoveryFactory;
 
     @Autowired
     @Qualifier("transactionAware")
@@ -1001,7 +989,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 }
             }
 
-            return new NodeScanSchedule(node.getId(), actualForeignSource, node.getForeignId(), initialDelay, scanInterval);
+            return new NodeScanSchedule(node.getId(), actualForeignSource, node.getForeignId(), node.getLocation(), initialDelay, scanInterval);
         } catch (final ForeignSourceRepositoryException e) {
             LOG.warn("unable to get foreign source '{}' from repository", effectiveForeignSource, e);
             return null;
@@ -1111,6 +1099,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             @Override
             protected OnmsNode doUpdate(final OnmsNode dbNode) {
+                dbNode.setLocation(createLocationIfNecessary(node.getLocation() == null ? null : node.getLocation().getLocationName()));
+                LOG.debug("Associating node {}/{}/{} with location: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), dbNode.getLocation());
+
                 final EventAccumulator accumulator = new EventAccumulator(m_eventForwarder);
 
                 final boolean changed = handleCategoryChanges(dbNode);
@@ -1132,7 +1123,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             @Override
             protected OnmsNode doInsert() {
-                node.setLocation(createLocationIfNecessary(node.getLocation() == null ? null : node.getLocation().getLocationName()));
                 return saveOrUpdate(node);
             }
         }.execute();

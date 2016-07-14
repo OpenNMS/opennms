@@ -17,6 +17,10 @@
   <p ng-show="nodeForm.nodeLabel.$invalid" class="help-block">Node Label is required.</p>
 </div>
 <div class="form-group">
+  <label class="control-label" for="nodeLabel">Location</label>
+  <input class="form-control" type="text" id="location" name="location" placeholder="Location [optional]" ng-model="node.location"/>
+</div>
+<div class="form-group">
   <label class="control-label" for="building">Building</label>
   <input class="form-control" type="text" id="building" name="building" placeholder="Building [optional]" ng-model="node.building"/>
 </div>

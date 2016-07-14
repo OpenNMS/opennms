@@ -36,8 +36,8 @@ public class NullUpdateOperation extends UpdateOperation {
 
     private static final Logger LOG = LoggerFactory.getLogger(NullUpdateOperation.class);
 
-    public NullUpdateOperation(final Integer nodeId, final String foreignSource, final String foreignId, final String nodeLabel, final String building, final String city, final ProvisionService provisionService, final String rescanExisting) {
-        super(nodeId, foreignSource, foreignId, nodeLabel, building, city, provisionService, rescanExisting);
+    public NullUpdateOperation(final Integer nodeId, final String foreignSource, final String foreignId, final String nodeLabel, final String location, final String building, final String city, final ProvisionService provisionService, final String rescanExisting) {
+        super(nodeId, foreignSource, foreignId, nodeLabel, location, building, city, provisionService, rescanExisting);
     }
 
     @Override
