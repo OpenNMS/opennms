@@ -33,6 +33,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import org.opennms.features.vaadin.components.graph.InlineGraphContainer;
 
 public class InfoPanel extends CssLayout {
 
@@ -46,6 +47,8 @@ public class InfoPanel extends CssLayout {
     private final CssLayout toggleButton;
     /** Defines if the info panel is expanded or not. If true it is expanded, false otherwise. */
     private boolean expanded = true;
+
+    private InlineGraphContainer graphRenderContainer;
 
     public InfoPanel(SearchBox searchBox) {
         setId(ID);
@@ -70,6 +73,9 @@ public class InfoPanel extends CssLayout {
 
         staticComponents.add(searchBox);
         staticComponents.add(toggleButton);
+
+        graphRenderContainer = new InlineGraphContainer();
+        staticComponents.add(graphRenderContainer);
     }
 
     private void refreshInfoArea() {

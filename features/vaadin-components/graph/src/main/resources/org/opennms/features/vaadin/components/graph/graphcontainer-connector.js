@@ -44,3 +44,21 @@ org_opennms_features_vaadin_components_graph_GraphContainer = function() {
     GraphContainers.render();
   }
 }
+
+org_opennms_features_vaadin_components_graph_InlineGraphContainer = function() {
+  var e = this.getElement();
+
+  this.onStateChange = function () {
+    // Globals
+    window.onmsGraphContainers = {
+      'baseHref': this.getState().baseHref,
+      'engine': this.getState().engine
+    };
+
+    // Update the baseUrl to use an absolute path
+    requirejs.config({baseUrl: this.getState().baseHref + 'lib'});
+
+    // Render
+    GraphContainers.render();
+  }
+}
