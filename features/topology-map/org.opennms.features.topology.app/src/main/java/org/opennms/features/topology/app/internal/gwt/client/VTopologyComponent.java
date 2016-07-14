@@ -70,7 +70,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.touch.client.Point;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
@@ -144,10 +143,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		private Handler<GWTVertex> m_dblClickHandler;
         Handler<GWTEdge> m_edgeClickHandler;
         Handler<GWTVertex> m_contextMenuHandler;
-		private Handler<GWTVertex> m_vertexTooltipHandler;
 		private Handler<GWTEdge> m_edgeContextHandler;
-		private Handler<GWTEdge> m_edgeToolTipHandler;
-        
+
 
 
 		@SuppressWarnings("unchecked")
@@ -159,11 +156,9 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 			m_edgeClickHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=edgeClick)");
 			
 			m_contextMenuHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=vertexContextMenu)");
-			m_vertexTooltipHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=vertexTooltip)");
-			
+
 			m_edgeContextHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=edgeContextMenu)");
-			m_edgeToolTipHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=edgeTooltip)");
-			
+
 		}
 
 		public Handler<GWTVertex> getClickHandler() {
@@ -311,9 +306,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 				@Override
 				public D3 run(D3 selection) {
 					return selection.on(D3Events.CLICK.event(), getEdgeClickHandler())
-					        .on(D3Events.CONTEXT_MENU.event(), getEdgeContextHandler())
-							.on(D3Events.MOUSE_OVER.event(), getEdgeToolTipHandler())
-							.on(D3Events.MOUSE_OUT.event(), getEdgeToolTipHandler());
+					        .on(D3Events.CONTEXT_MENU.event(), getEdgeContextHandler());
 				}
 			};
 		}
@@ -326,16 +319,10 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
                     consoleLog(selection);
                     return selection.on(D3Events.CLICK.event(), getClickHandler())
                             .on(D3Events.CONTEXT_MENU.event(), getContextMenuHandler())
-                            .on(D3Events.MOUSE_OVER.event(), getVertexTooltipHandler())
-                            .on(D3Events.MOUSE_OUT.event(), getVertexTooltipHandler())
                             .on(D3Events.DOUBLE_CLICK.event(), getDblClickHandler())
                             .call(getDragBehavior());
                 }
             };
-		}
-
-		private Handler<GWTVertex> getVertexTooltipHandler(){
-			return m_vertexTooltipHandler;
 		}
 
 		private D3 getVertexSelection(GWTGraph graph, TopologyView<TopologyViewRenderer> topologyView) {
@@ -358,12 +345,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
                                 @Override
 				public String call(GWTEdge edge, int index) {
-                    /*
-                    TODO Figure out how to do this in the new GWT API
-				    if(m_client.getTooltipTitleInfo(VTopologyComponent.this, edge) == null) {
-				        m_client.registerTooltip(VTopologyComponent.this, edge, new TooltipInfo(edge.getTooltipText()));
-				    }
-					 */
                     return edge.getId();
                 }
 
@@ -377,14 +358,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
 		public void setEdgeContextHandler(Handler<GWTEdge> edgeClickHandler) {
 			m_edgeContextHandler = edgeClickHandler;
-		}
-
-		public Handler<GWTEdge> getEdgeToolTipHandler() {
-			return m_edgeToolTipHandler;
-		}
-
-		public void setEdgeToolTipHandler(Handler<GWTEdge> edgeToolTipHandler) {
-			m_edgeToolTipHandler = edgeToolTipHandler;
 		}
 
 	}
@@ -430,10 +403,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		serviceRegistry.register(vertexClickHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexClick"); }}, Handler.class);
 		serviceRegistry.register(vertexDblClickHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexDblClick"); }}, Handler.class);
 		serviceRegistry.register(vertexContextMenuHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexContextMenu"); }}, Handler.class);
-		serviceRegistry.register(vertexTooltipHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexTooltip"); }}, Handler.class);
-		
+
 		serviceRegistry.register(edgeContextHandler(), new HashMap<String, String>(){{ put("handlerType", "edgeContextMenu"); }}, Handler.class);
-		serviceRegistry.register(edgeTooltipHandler(), new HashMap<String, String>(){{ put("handlerType", "edgeTooltip"); }}, Handler.class);
 		serviceRegistry.register(edgeClickHandler(), new HashMap<String, String>(){{ put("handlerType", "edgeClick"); }}, Handler.class);
 		
 		
@@ -607,41 +578,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
                 D3.getEvent().stopPropagation();
 
 			}
-		};
-	}
-
-	private Handler<GWTVertex> vertexTooltipHandler() {
-		return new Handler<GWTVertex>() {
-
-                        @Override
-			public void call(GWTVertex t, int index) {
-				if(m_client != null) {
-					Event event = (Event) D3.getEvent();
-                    m_client.getVTooltip().setPopupPosition(event.getClientX() + 20, event.getClientY() + 20);
-                    m_client.getVTooltip().show();
-					event.stopPropagation();
-					event.preventDefault();
-				}
-			}
-		};
-	}
-
-	private Handler<GWTEdge> edgeTooltipHandler(){
-		return new Handler<GWTEdge>() {
-
-                        @Override
-			public void call(GWTEdge edge, int index) {
-				if(m_client != null) {
-					Event event = D3.getEvent().cast();
-					// TODO: Figure out how to do this in the new GWT
-                    m_client.getVTooltip().updatePosition(event, false);
-
-					//m_client.handleTooltipEvent(event, VTopologyComponent.this, edge);
-					event.stopPropagation();
-					event.preventDefault();
-				}
-			}
-
 		};
 	}
 	
