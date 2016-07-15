@@ -109,6 +109,11 @@ public class NodeMapConnector extends AbstractComponentConnector implements HasH
         if (stateChangeEvent.hasPropertyChanged("groupByState")) {
             getWidget().setGroupByState(getState().groupByState);
         }
+        if (!getWidget().isInitialized()
+                && stateChangeEvent.hasPropertyChanged("tileServerUrl")
+                && stateChangeEvent.hasPropertyChanged("tileLayerOptions")) {
+            getWidget().initialize(getState());
+        }
     }
 
     private void updateNodes() {
