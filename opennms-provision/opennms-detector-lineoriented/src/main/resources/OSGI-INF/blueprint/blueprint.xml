@@ -1,6 +1,5 @@
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
-	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
 	xsi:schemaLocation="
 		http://www.osgi.org/xmlns/blueprint/v1.0.0 
 		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
@@ -10,24 +9,117 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-   <bean id="ftpDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.FtpDetectorFactory" />
-    <service ref="ftpDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-        <service-properties>
-            <entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.FtpDetector" />
-        </service-properties>
-    </service>
+	<bean id="citrixDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.CitrixDetectorFactory" />
+	<service ref="citrixDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.CitrixDetector" />
+		</service-properties>
+	</service>
 
-    <bean id="httpDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.HttpDetectorFactory" />
-    <service ref="httpDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-        <service-properties>
-            <entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.HttpDetector" />
-        </service-properties>
-    </service>
+	<bean id="dominoIIOPDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.DominoIIOPDetectorFactory" />
+	<service ref="dominoIIOPDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector" />
+		</service-properties>
+	</service>
 
-    <bean id="imapDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.ImapDetectorFactory" />
-    <service ref="imapDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-        <service-properties>
-            <entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.ImapDetector" />
-        </service-properties>
-    </service>
+	<bean id="ftpDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.FtpDetectorFactory" />
+	<service ref="ftpDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.FtpDetector" />
+		</service-properties>
+	</service>
+
+	<bean id="httpDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.HttpDetectorFactory" />
+	<service ref="httpDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.HttpDetector" />
+		</service-properties>
+	</service>
+
+	<bean id="httpsDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.HttpsDetectorFactory" />
+	<service ref="httpsDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.HttpsDetector" />
+		</service-properties>
+	</service>
+
+	<bean id="imapDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.ImapDetectorFactory" />
+	<service ref="imapDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.ImapDetector" />
+		</service-properties>
+	</service>
+
+	<bean id="ldapDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.LdapDetectorFactory" />
+	<service ref="ldapDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.LdapDetector" />
+		</service-properties>
+	</service>
+
+	<bean id="ldapsDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.LdapsDetectorFactory" />
+	<service ref="ldapsDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.LdapsDetector" />
+		</service-properties>
+	</service>
+
+	<bean id="memcachedDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.MemcachedDetectorFactory" />
+	<service ref="memcachedDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.MemcachedDetector" />
+		</service-properties>
+	</service>
+
+	<bean id="nrpeDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.NrpeDetectorFactory" />
+	<service ref="nrpeDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.NrpeDetector" />
+		</service-properties>
+	</service>
+	
+	<bean id="notesHttpDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.NotesHttpDetectorFactory" />
+	<service ref="notesHttpDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.NotesHttpDetector" />
+		</service-properties>
+	</service>
+
+	<bean id="pop3DetectorFactory" class="org.opennms.netmgt.provision.detector.simple.Pop3DetectorFactory" />
+	<service ref="pop3DetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.Pop3Detector" />
+		</service-properties>
+	</service>
+
+	<bean id="smtpDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.SmtpDetectorFactory" />
+	<service ref="smtpDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.SmtpDetector" />
+		</service-properties>
+	</service>
+
+	<bean id="tcpDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.TcpDetectorFactory" />
+	<service ref="tcpDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.TcpDetector" />
+		</service-properties>
+	</service>
+
+	<bean id="trivialTimeDetectorFactory" class="org.opennms.netmgt.provision.detector.simple.TrivialTimeDetectorFactory" />
+	<service ref="trivialTimeDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.simple.TrivialTimeDetector" />
+		</service-properties>
+	</service>
+
+	<bean id="msexchangeDetectorFactory" class="org.opennms.netmgt.provision.detector.msexchange.MSExchangeDetectorFactory" />
+	<service ref="msexchangeDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<service-properties>
+			<entry key="implementation" value="org.opennms.netmgt.provision.detector.msexchange.MSExchangeDetector" />
+		</service-properties>
+	</service>
+
+
 </blueprint>

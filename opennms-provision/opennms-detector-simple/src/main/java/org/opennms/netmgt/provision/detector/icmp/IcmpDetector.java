@@ -35,8 +35,6 @@ import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>IcmpDetector class.</p>
@@ -44,8 +42,7 @@ import org.springframework.stereotype.Component;
  * @author ranger
  * @version $Id: $
  */
-@Component
-@Scope("prototype")
+
 public class IcmpDetector extends SyncAbstractDetector {
     
     private static final Logger LOG = LoggerFactory.getLogger(IcmpDetector.class);

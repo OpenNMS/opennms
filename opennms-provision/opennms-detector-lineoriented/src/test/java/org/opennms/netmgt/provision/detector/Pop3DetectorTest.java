@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
@@ -38,22 +37,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.Pop3Detector;
+import org.opennms.netmgt.provision.detector.simple.Pop3DetectorFactory;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class Pop3DetectorTest implements ApplicationContextAware {
+public class Pop3DetectorTest implements InitializingBean {
     private SimpleServer m_server;
+    
+    @Autowired
+    private Pop3DetectorFactory m_detectorFactory;
     private Pop3Detector m_detector;
-    private ApplicationContext m_applicationContext;
-
+ 
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
@@ -108,7 +108,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
     }
 
     private Pop3Detector createDetector(int port) {
-        Pop3Detector detector = getDetector(Pop3Detector.class);
+        Pop3Detector detector = m_detectorFactory.createDetector();
         detector.setServiceName("POP3");
         detector.setTimeout(500);
         detector.setPort(port);
@@ -121,18 +121,10 @@ public class Pop3DetectorTest implements ApplicationContextAware {
         return future.isServiceDetected();
     }
 
-    /* (non-Javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     */
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        m_applicationContext = applicationContext;
+    public void afterPropertiesSet() throws Exception {
+        // TODO Auto-generated method stub
+        
     }
 
-    private Pop3Detector getDetector(Class<? extends ServiceDetector> detectorClass) {
-        Object bean = m_applicationContext.getBean(detectorClass.getName());
-        assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
-        return (Pop3Detector)bean;
-    }
 }

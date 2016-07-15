@@ -42,6 +42,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.snmp.CiscoIpSlaDetector;
+import org.opennms.netmgt.provision.detector.snmp.CiscoIpSlaDetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -56,6 +57,8 @@ public class CiscoIpSlaDetectorTest implements InitializingBean {
     static final String TEST_IP_ADDRESS = "192.0.2.1";
 
     @Autowired
+    private CiscoIpSlaDetectorFactory m_detectorFactory;
+    
     private CiscoIpSlaDetector m_detector;
 
     @Override
@@ -66,10 +69,11 @@ public class CiscoIpSlaDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws InterruptedException {
         MockLogAppender.setupLogging();
-
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
         m_detector.setAdminTag("to_detect");
+        m_detector.setRuntimeAttributes(m_detectorFactory.getRuntimeAttributes(null, InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 
     @Test(timeout=20000)

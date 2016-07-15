@@ -36,9 +36,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.ServiceDetectorFactory;
 import org.opennms.netmgt.provision.detector.icmp.IcmpDetector;
+import org.opennms.netmgt.provision.detector.icmp.IcmpDetectorFactory;
 import org.opennms.netmgt.provision.detector.smb.SmbDetector;
+import org.opennms.netmgt.provision.detector.smb.SmbDetectorFactory;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
+import org.opennms.netmgt.provision.detector.snmp.SnmpDetectorFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -62,25 +66,26 @@ public class SimpleDetectorWiringTest implements ApplicationContextAware {
         MockLogAppender.setupLogging();
     }
 
-    private void testWiredDetector(Class<? extends ServiceDetector> detectorClass) {
-        Object bean = m_applicationContext.getBean(detectorClass.getName());
+    @SuppressWarnings("rawtypes")
+    private void testWiredDetector(Class<? extends ServiceDetectorFactory> detectorFactoryClass) {
+        Object bean = m_applicationContext.getBean(detectorFactoryClass.getName());
         assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
+        assertTrue(detectorFactoryClass.isInstance(bean));
     }
     
     @Test
     public void testIcmpDetectorWiring(){
-        testWiredDetector(IcmpDetector.class);
+        testWiredDetector(IcmpDetectorFactory.class);
     }
     
     @Test
     public void testSmbDetectorWiring() {
-        testWiredDetector(SmbDetector.class);
+        testWiredDetector(SmbDetectorFactory.class);
     }
     
     @Test
     public void testSnmpDetectorWiring() {
-        testWiredDetector(SnmpDetector.class);
+        testWiredDetector(SnmpDetectorFactory.class);
     }
     
     @Override

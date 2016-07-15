@@ -42,6 +42,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetector;
+import org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -56,6 +57,8 @@ public class HostResourceSWRunDetectorTest implements InitializingBean {
     static final String TEST_IP_ADDRESS = "192.0.2.205";
 
     @Autowired
+    private HostResourceSWRunDetectorFactory m_detectorFactory;
+    
     private HostResourceSWRunDetector m_detector;
 
     @Override
@@ -66,10 +69,11 @@ public class HostResourceSWRunDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws InterruptedException{
         MockLogAppender.setupLogging();
-
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setServiceToDetect(null);
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
+        m_detector.setRuntimeAttributes(m_detectorFactory.getRuntimeAttributes(null, InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 
     @Test(timeout=20000)

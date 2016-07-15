@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.detector.jmx.JBossDetector;
+import org.opennms.netmgt.provision.detector.jmx.JBossDetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -49,6 +50,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class JBossDetectorTest implements InitializingBean {
 
     @Autowired
+    public JBossDetectorFactory m_detectorFactory;
+    
     public JBossDetector m_detector;
 
     @Override
@@ -59,6 +62,7 @@ public class JBossDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws RemoteException{
         MockLogAppender.setupLogging();
+        m_detector = m_detectorFactory.createDetector();
     }
 
     @After

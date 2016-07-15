@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.detector.common;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -122,8 +123,12 @@ public class DetectorRequestDTO {
     }
 
     public Map<String, String> getRuntimeAttributeMap() {
-        return runtimeAttributes.stream().collect(Collectors.toMap(DetectorAttributeDTO::getKey,
-                DetectorAttributeDTO::getValue));
+
+        Map<String, String> runtimeAttributeMap = new HashMap<String, String>();
+        for (DetectorAttributeDTO agentAttribute : runtimeAttributes) {
+            runtimeAttributeMap.put(agentAttribute.getKey(), agentAttribute.getValue());
+        }
+        return runtimeAttributeMap;
     }
 
     public String getClassName() {

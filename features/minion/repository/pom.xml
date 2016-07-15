@@ -117,7 +117,44 @@
             <groupId>org.opennms.features.minion</groupId>
             <artifactId>provisiond-shell</artifactId>
             <version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-bsf</artifactId>
+            <version>${project.version}</version>
         </dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-detector-lineoriented</artifactId>
+			</dependency>
+	    <dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-detector-generic</artifactId>
+	    </dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-detector-simple</artifactId>
+			</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-detector-datagram</artifactId>
+			</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-detector-jmx</artifactId>
+			</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-detector-jdbc</artifactId>
+			</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-detector-ssh</artifactId>
+			</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-detector-web</artifactId>
+			</dependency>
     </dependencies>
 
     <pluginRepositories>

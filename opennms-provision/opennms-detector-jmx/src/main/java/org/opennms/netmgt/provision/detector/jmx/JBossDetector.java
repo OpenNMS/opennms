@@ -32,19 +32,16 @@ import com.google.common.collect.ImmutableMap;
 
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.provision.support.jmx.connectors.JBossConnectionFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import java.net.InetAddress;
 
-@Component
+
 /**
  * <p>JBossDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class JBossDetector extends JMXDetector {
     
     private static String DEFAULT_SERVICE_NAME = "JBoss";
