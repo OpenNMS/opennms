@@ -188,9 +188,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     private ProvisionService m_provisionService;
 
     @Autowired
-    private ImportScheduler m_importSchedule;
-
-    @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
 
     @Autowired
