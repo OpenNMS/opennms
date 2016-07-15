@@ -48,7 +48,10 @@ public class NodeMapConfiguration {
     private static final String OPTIONS_KEY_PREFIX = "gwt.openlayers.options";
 
     public static String getTileServerUrl() {
-        final String url = System.getProperty(URL_KEY);
+    	String url = System.getProperty(URL_KEY);
+        if ("http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png".equals(url) || url == null || "".equals(url)) {
+        	url = "https://tiles.opennms.org/${z}/${x}/${y}.png";
+        }
         return sanitizeForVaadin(url);
     }
 
@@ -97,6 +100,10 @@ public class NodeMapConfiguration {
      * @return the 'attribution' tile layer option.
      */
     static String getTileLayerAttribution() {
-        return System.getProperty(OPTIONS_KEY_PREFIX + ".attribution");
+        String attribution = System.getProperty(OPTIONS_KEY_PREFIX + ".attribution");
+        if (attribution == null || "".equals(attribution)) {
+        	attribution = "Map data &copy; <a tabindex=\"-1\" target=\"_blank\" href=\"http://openstreetmap.org/copyright\">OpenStreetMap</a> contributors under <a tabindex=\"-1\" target=\"_blank\" href=\"http://opendatacommons.org/licenses/odbl/\">ODbL</a>, <a tabindex=\"-1\" target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC BY-SA 2.0</a>";
+        }
+		return attribution;
     }
 }

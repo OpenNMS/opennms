@@ -34,16 +34,31 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 
 <%!
+	public static String getUrl() {
+		String url = System.getProperty("gwt.openlayers.url");
+		if ("http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png".equals(url) || !isDefined(url)) {
+			url = "https://tiles.opennms.org/${z}/${x}/${y}.png";
+		}
+	}
+
+	public static String getAttribution() {
+		String attribution = System.getProperty("gwt.openlayers.options.attribution");
+		if (!isDefined(attribution)) {
+			attribution = StringEscapeUtils.unescapeHtml("Map data &copy; &lt;a tabindex=\"-1\" target=\"_blank\" href=\"http://openstreetmap.org/copyright\"&gt;OpenStreetMap&lt;/a&gt; contributors under &lt;a tabindex=\"-1\" target=\"_blank\" href=\"http://opendatacommons.org/licenses/odbl/\"&gt;ODbL&lt;/a&gt;, &lt;a tabindex=\"-1\" target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\"&gt;CC BY-SA 2.0&lt;/a&gt;");
+		}
+		return attribution;
+	}
+
 	public static boolean isValidConfiguration() {
 		return isUrlValid() && isAttributionValid();
 	}
 
 	public static boolean isUrlValid() {
-		return isDefined(System.getProperty("gwt.openlayers.url"));
+		return isDefined(getUrl());
 	}
 
 	public static boolean isAttributionValid() {
-		return isDefined(System.getProperty("gwt.openlayers.options.attribution"));
+		return isDefined(getAttribution());
 	}
 
 	public static boolean isDefined(String input) {
@@ -53,8 +68,8 @@
 <%
 
   String mapImplementation = System.getProperty("gwt.maptype", "");
-  String openlayersUrl = System.getProperty("gwt.openlayers.url", "");
-  String openlayersAttribution = System.getProperty("gwt.openlayers.options.attribution", "");
+  String openlayersUrl = getUrl();
+  String openlayersAttribution = getAttribution();
   String apiKey = System.getProperty("gwt.apikey", "");
 
 	if (openlayersAttribution != null) {
