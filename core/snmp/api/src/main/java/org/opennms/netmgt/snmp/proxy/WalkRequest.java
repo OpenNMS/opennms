@@ -36,7 +36,7 @@ public class WalkRequest {
 
     private final SnmpObjId baseOid;
     private int maxRepetitions = 1;
-    private boolean singleInstance = false;
+    private SnmpObjId instance = null;
     private String correlationId = null;
 
     public WalkRequest(SnmpObjId baseOid) {
@@ -55,12 +55,12 @@ public class WalkRequest {
         return maxRepetitions;
     }
 
-    public void setSingleInstance(boolean singleInstance) {
-        this.singleInstance = singleInstance;
+    public void setInstance(SnmpObjId instance) {
+        this.instance = instance;
     }
 
-    public boolean isSingleInstance() {
-        return singleInstance;
+    public SnmpObjId getInstance() {
+        return instance;
     }
 
     public void setCorrelationId(String correlationId) {
@@ -73,13 +73,13 @@ public class WalkRequest {
 
     @Override
     public String toString() {
-        return String.format("WalkRequest[baseOid=%s, correlationId=%s, maxRepetitions=%d, singleInstance=%s]",
-                baseOid, correlationId, maxRepetitions, singleInstance);
+        return String.format("WalkRequest[baseOid=%s, correlationId=%s, maxRepetitions=%d, instance=%s]",
+                baseOid, correlationId, maxRepetitions, instance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(baseOid, correlationId, maxRepetitions, singleInstance);
+        return Objects.hash(baseOid, correlationId, maxRepetitions, instance);
     }
 
     @Override
@@ -94,6 +94,6 @@ public class WalkRequest {
         return Objects.equals(this.baseOid, other.baseOid)
                 && Objects.equals(this.correlationId, other.correlationId)
                 && Objects.equals(this.maxRepetitions, other.maxRepetitions)
-                && Objects.equals(this.singleInstance, other.singleInstance);
+                && Objects.equals(this.instance, other.instance);
     }
 }

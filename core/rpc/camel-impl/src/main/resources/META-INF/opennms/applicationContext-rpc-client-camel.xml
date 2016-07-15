@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+">
+
+  <context:annotation-config />
+
+  <bean id="identity" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="distPollerDao"/>
+    <property name="targetMethod" value="whoami"/>
+  </bean>
+
+  <bean id="location" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="identity"/>
+    <property name="targetMethod" value="getLocation"/>
+  </bean>
+
+  <bean id="camelRpcClientFactory" class="org.opennms.core.rpc.camel.CamelRpcClientFactory" primary="true" >
+     <property name="location" ref="location"/>
+  </bean>
+
+  <bean id="camelRpcClientPreProcessor" class="org.opennms.core.rpc.camel.CamelRpcClientPreProcessor"/>
+
+  <camelContext id="rpcClient" xmlns="http://camel.apache.org/schema/spring">
+    <route id="rpcClient">
+      <from uri="direct:executeRpc" />
+	  <bean ref="camelRpcClientPreProcessor"/>
+      <setExchangePattern pattern="InOut"/>
+      <recipientList>
+        <simple>queuingservice:${header.JmsQueueName}</simple>
+      </recipientList>
+    </route>
+  </camelContext>
+</beans>
