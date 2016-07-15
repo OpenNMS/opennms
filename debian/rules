@@ -325,11 +325,18 @@ install: build
 	## Setup the opennms-webapp-jetty package
 	##
 	install -m 644 debian/opennms-webapp-jetty.overrides debian/opennms-webapp-jetty/usr/share/lintian/overrides/opennms-webapp-jetty
-	install -d -m 755 debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/{opennms,opennms-remoting,ROOT}
+	install -d -m 755 debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/{opennms,ROOT}
 	mv debian/temp/jetty-webapps/opennms/*          debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms/
-	mv debian/temp/jetty-webapps/opennms-remoting/* debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms-remoting/
 	mv debian/temp/jetty-webapps/ROOT/*             debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/ROOT/
 	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
+
+	##
+	## Setup the opennms-webapp-remoting package
+	##
+	install -m 644 debian/opennms-webapp-remoting.overrides debian/opennms-webapp-remoting/usr/share/lintian/overrides/opennms-webapp-remoting
+	install -d -m 755 debian/opennms-webapp-remoting/usr/share/opennms/jetty-webapps/opennms-remoting
+	mv debian/temp/jetty-webapps/opennms-remoting/* debian/opennms-webapp-remoting/usr/share/opennms/jetty-webapps/opennms-remoting/
+	find debian/opennms-webapp-remoting/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
 
 	##
 	## Setup the opennms-doc package
