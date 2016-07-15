@@ -184,6 +184,7 @@ include::text/operation/newts/cassandra-newts-jmx.adoc[]
 [[ga-opennms-operation-daemon-config-files]]
 === Daemon Configuration Files
 include::text/operation/daemon-config-files/introduction.adoc[]
+include::text/operation/daemon-config-files/eventd.adoc[]
 include::text/operation/daemon-config-files/notifd.adoc[]
 include::text/operation/daemon-config-files/pollerd.adoc[]
 
