@@ -228,18 +228,6 @@ public class GWTVertex extends JavaScriptObject {
     public final native String getStyleName() /*-{
         return this.stylename;
     }-*/;
-    
-    
-
-    static Func<String, GWTVertex> selectedFill() {
-    	return new Func<String, GWTVertex>(){
-
-                    @Override
-    		public String call(GWTVertex vertex, int index) {
-    			return vertex.isSelected() ? "blue" : "black";
-    		}
-    	};
-    }
 
     protected static Func<String, GWTVertex> selectionFilter() {
         return new Func<String, GWTVertex>(){
@@ -475,38 +463,11 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
 
-    protected static Func<String, GWTVertex> makeStatusCounter() {
-        // TODO Auto-generated method stub
-        return new Func<String, GWTVertex>(){
-
-            @Override
-            public String call(GWTVertex vertex, int index) {
-                if(vertex.isGroup()){
-                    return makeChart(vertex.getIconWidth() - 10.0, 0.0, 10.0, 10.0, vertex.getSeverityArray(), vertex.getClassArray(), vertex.getTotal());
-                }
-                else{
-
-                }
-                return null;
-            }
-
-        };
-    }
-
     protected static Func<String, GWTVertex> getVertexOpacity(){
         return new Func<String, GWTVertex>() {
             @Override
             public String call(GWTVertex vertex, int index) {
                 return vertex.isIconNormalized() ? "1" : "0";
-            }
-        };
-    }
-
-    protected static Func<String, GWTVertex> getVertexVisibility(){
-        return new Func<String, GWTVertex>() {
-            @Override
-            public String call(GWTVertex vertex, int index) {
-                return vertex.isIconNormalized() ? "visible" : "hidden";
             }
         };
     }
@@ -615,85 +576,4 @@ public class GWTVertex extends JavaScriptObject {
             }
         };
     }
-    public static final native void logDocument(Object doc)/*-{
-        $wnd.console.debug(doc);
-    }-*/;
-    
-    //support for creating a node-chart
-    //segmentWidth defines how thick the donut ring will be (in pixels)
-    static final String makeChart(final double cx, final double cy, final double r, final double segmentWidth, final JsArrayNumber dataArray, final String[] classArray, final double total){
-				
-				String svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
-				
-			
-				double innerR = r - segmentWidth;
-				
-				
-				
-				double startangle = 0;
-				for (int i = 0; i < dataArray.length(); i++) {
-
-					if (dataArray.get(i) > 0) {
-
-						double endangle = startangle + (((dataArray.get(i)) / total) * Math.PI
-								* 2.0);
-
-						String path = "<path d=\"";
-
-						double x1 = cx + (r * Math.sin(startangle));
-						double y1 = cy - (r * Math.cos(startangle));
-						double X1 = cx + (innerR * Math.sin(startangle));
-						double Y1 = cy - (innerR * Math.cos(startangle));
-
-						double x2 = cx + (r * Math.sin(endangle));
-						double y2 = cy - (r * Math.cos(endangle));
-						double X2 = cx + (innerR * Math.sin(endangle));
-						double Y2 = cy - (innerR * Math.cos(endangle));
-
-						int big = 0;
-						if (endangle - startangle > Math.PI)
-							big = 1;
-
-						String d;
-						// this branch is if one data value comprises 100% of the data
-						if (dataArray.get(i) >= total) {
-
-							d = "M " + X1 + "," + Y1 + " A " + innerR + "," + innerR
-									+ " 0 " + "1" + " 0 " + X1 + ","
-									+ (Y1 + (2 * innerR)) + " A " + innerR + ","
-									+ innerR + " 0 " + big + " 0 " + X1 + "," + Y1
-									+ " M " + x1 + "," + y1 + " A " + r + "," + r
-									+ " 0 " + big + " 1 " + x1 + "," + (y1 + (2 * r))
-									+ " A " + r + "," + r + " 0 " + big + " 1 " + x1
-									+ "," + y1;
-
-						} else {
-							// path string
-							d = "M " + X1 + "," + Y1 + " A " + innerR + "," + innerR
-									+ " 0 " + big + " 1 " + X2 + "," + Y2 + " L " + x2
-									+ "," + y2 + " A " + r + "," + r + " 0 " + big
-									+ " 0 " + x1 + "," + y1 + " Z";
-						}
-						path = path.concat(d + "\"" + " class =");
-			            
-			            path = path.concat(classArray[i]);
-//			            path = path.concat(" stroke= \"black\"");
-			            path = path.concat(" stroke-width= \"0\"/>");
-			            
-			            svg = svg.concat(path);
-			            startangle = endangle;
-
-					}
-					
-					
-				}
-						
-				svg = svg.concat("</svg>");
-			    
-			    return svg;
-    		
-    }
-
-
-
 }
