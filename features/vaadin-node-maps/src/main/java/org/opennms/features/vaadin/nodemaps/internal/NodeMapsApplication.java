@@ -289,6 +289,11 @@ public class NodeMapsApplication extends UI {
         createMapPanel(searchString, maxClusterRadius);
         createRootLayout();
         addRefresher();
+
+        // Notify the user if no tileserver url or options are set
+        if (!NodeMapConfiguration.isValid()) {
+            new InvalidConfigurationWindow().open();
+        }
     }
 
     private void createMapPanel(final String searchString, final int maxClusterRadius) {
