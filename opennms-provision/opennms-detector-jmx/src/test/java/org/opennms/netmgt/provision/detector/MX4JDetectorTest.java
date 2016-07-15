@@ -38,6 +38,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.Collections;
 
 import javax.management.MBeanServer;
 import javax.management.remote.JMXConnectorServer;
@@ -60,7 +61,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml",
+                                "classpath:/test-spring-jmxconfig.xml"})
 public class MX4JDetectorTest implements InitializingBean {
 
     @Autowired
@@ -74,6 +76,7 @@ public class MX4JDetectorTest implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
+        this.m_detectorFactory.setJmxConfigDao(() -> new JmxConfig());
     }
 
     @BeforeClass
@@ -85,7 +88,6 @@ public class MX4JDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws IOException {
         m_detector = m_detectorFactory.createDetector();
-        this.m_detector.setJmxConfigDao(() -> new JmxConfig());
         assertNotNull(m_detector);
         MockLogAppender.setupLogging();
 
@@ -93,7 +95,7 @@ public class MX4JDetectorTest implements InitializingBean {
 
         m_connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(url, null, m_beanServer);
         m_connectorServer.start();
-
+        m_detector.setRuntimeAttributes(Collections.emptyMap());
         m_detector.setPort(9999);
         m_detector.setUrlPath("/server");
     }

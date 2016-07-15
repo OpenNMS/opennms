@@ -73,7 +73,7 @@ public class Win32ServiceDetectorTest implements InitializingBean {
         m_detector.setRetries(2);
         m_detector.setTimeout(5000);
         m_detector.setWin32ServiceName("VMware Tools Service");
-        m_detector.setRuntimeAttributes(m_detectorFactory.getRuntimeAttributes(null, InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        m_detector.setRuntimeAttributes(m_detectorFactory.getRuntimeAttributes(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null));
     }
     
     @Test(timeout=20000)

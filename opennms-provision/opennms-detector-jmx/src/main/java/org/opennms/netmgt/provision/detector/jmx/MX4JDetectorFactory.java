@@ -28,16 +28,35 @@
 
 package org.opennms.netmgt.provision.detector.jmx;
 
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
-import org.springframework.stereotype.Component;
+import java.net.InetAddress;
+import java.util.Map;
 
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
+import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class MX4JDetectorFactory extends AbstractServiceDetectorFactory<MX4JDetector> {
+
+    @Autowired
+    protected JmxConfigDao jmxConfigDao;
 
     @Override
     public MX4JDetector createDetector() {
         return new MX4JDetector();
     }
 
+    @Override
+    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, String port) {
+        String ipAddress = address.getHostAddress();
+        if (port == null) {
+            throw new IllegalArgumentException("Need to specify port number in the form of port=number for MX4JDetector");
+        }
+        return jmxConfigDao.getConfig().lookupMBeanServer(ipAddress, port).getParameterMap();
+    }
+
+    public void setJmxConfigDao(JmxConfigDao jmxConfigDao) {
+        this.jmxConfigDao = jmxConfigDao;
+    }
 }

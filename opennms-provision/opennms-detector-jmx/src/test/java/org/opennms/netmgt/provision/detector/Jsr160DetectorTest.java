@@ -37,6 +37,8 @@ import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.Collections;
+
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
@@ -67,7 +69,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml",
+                                 "classpath:/test-spring-jmxconfig.xml"})
 public class Jsr160DetectorTest implements InitializingBean {
 
     @Autowired
@@ -81,6 +84,7 @@ public class Jsr160DetectorTest implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
+        this.m_detectorFactory.setJmxConfigDao(() -> new JmxConfig());
     }
 
     @BeforeClass
@@ -93,7 +97,7 @@ public class Jsr160DetectorTest implements InitializingBean {
     public void setUp() throws IOException {
         MockLogAppender.setupLogging();
         m_detector = m_detectorFactory.createDetector();
-        this.m_detector.setJmxConfigDao(() -> new JmxConfig());
+        m_detector.setRuntimeAttributes(Collections.emptyMap());
         assertNotNull(m_detector);
 
         JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9123/server");

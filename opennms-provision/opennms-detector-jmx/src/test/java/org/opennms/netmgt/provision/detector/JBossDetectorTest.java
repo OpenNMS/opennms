@@ -46,7 +46,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml",
+                                 "classpath:/test-spring-jmxconfig.xml"})
 public class JBossDetectorTest implements InitializingBean {
 
     @Autowired
