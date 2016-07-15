@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Option;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
@@ -42,6 +44,7 @@ import com.google.common.base.Strings;
  * Configuration object introduced to address NMS-8597 and reduce possible merge conflicts.
  */
 public class NodeMapConfiguration {
+    private static final Logger LOG = LoggerFactory.getLogger(NodeMapConfiguration.class);
 
     private static final String URL_KEY = "gwt.openlayers.url";
 
@@ -50,6 +53,7 @@ public class NodeMapConfiguration {
     public static String getTileServerUrl() {
     	String url = System.getProperty(URL_KEY);
         if ("http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png".equals(url) || url == null || "".equals(url)) {
+			LOG.warn("Map server %s is invalid or outdated.  Using tiles.opennms.org instead.", url);
         	url = "https://tiles.opennms.org/${z}/${x}/${y}.png";
         }
         return sanitizeForVaadin(url);
@@ -102,6 +106,7 @@ public class NodeMapConfiguration {
     static String getTileLayerAttribution() {
         String attribution = System.getProperty(OPTIONS_KEY_PREFIX + ".attribution");
         if (attribution == null || "".equals(attribution)) {
+			LOG.warn("Attribution text is invalid or outdated.  Using default instead.", attribution);
         	attribution = "Map data &copy; <a tabindex=\"-1\" target=\"_blank\" href=\"http://openstreetmap.org/copyright\">OpenStreetMap</a> contributors under <a tabindex=\"-1\" target=\"_blank\" href=\"http://opendatacommons.org/licenses/odbl/\">ODbL</a>, <a tabindex=\"-1\" target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC BY-SA 2.0</a>";
         }
 		return attribution;
