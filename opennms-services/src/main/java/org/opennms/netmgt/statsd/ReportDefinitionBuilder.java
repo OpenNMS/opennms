@@ -84,6 +84,7 @@ public class ReportDefinitionBuilder implements InitializingBean {
 
                 if (!packageReport.isEnabled()) {
                     LOG.debug("skipping report '{}' in package '{}' because the report is not enabled", report.getName(), pkg.getName());
+                    continue;
                 }
                 
                 Class<? extends AttributeStatisticVisitorWithResults> clazz;
