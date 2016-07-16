@@ -12,7 +12,7 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd.handler.kafka" update-strategy="reload">
+	<cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd.handler.kafka.default" update-strategy="reload">
 		<cm:default-properties>
 			<cm:property name="kafkahost" value="127.0.0.1" />
 			<cm:property name="kafkaport" value="9092" />
@@ -47,7 +47,7 @@
 	</bean>
 
 	<bean id="trapNotificationHandlerDefault" class="org.opennms.netmgt.trapd.TrapNotificationHandlerDefaultImpl">
-		<property name="eventCreator" ref="eventCreator"/>
+		<property name="trapdIpManager" ref="trapdIpMgr"/>
 		<property name="processorFactory" ref="processorFactory"/>
 	</bean>
 

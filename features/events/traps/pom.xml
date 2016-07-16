@@ -24,9 +24,6 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-<!--             <Export-Package>org.opennms.netmgt.config.api.EventConfDao,org.opennms.netmgt.config.TrapdConfig,org.opennms.netmgt.events.api.EventForwarder,org.opennms.netmgt.trapd.*</Export-Package> -->
-            <Export-Package>org.opennms.netmgt.config.api.*,org.opennms.netmgt.config.*,org.opennms.netmgt.events.api.EventForwarder,org.opennms.netmgt.trapd.*</Export-Package>
-
           </instructions>
         </configuration>
       </plugin>
@@ -91,7 +88,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>      
+      </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -252,20 +249,20 @@
       </exclusions>
     </dependency>
     <dependency>
-	 <groupId>org.apache.curator</groupId>
-	 <artifactId>curator-test</artifactId>
-	 <version>${curatorVersion}</version>
-	 <scope>test</scope>
-	 <exclusions>
-	 	<exclusion>
-	 		<artifactId>log4j</artifactId>
-	 		<groupId>log4j</groupId>
-	 	</exclusion>
-	 	<exclusion>
-	 		<artifactId>slf4j-log4j12</artifactId>
-	 		<groupId>org.slf4j</groupId>
-	 	</exclusion>
-	 </exclusions>
+      <groupId>org.apache.curator</groupId>
+      <artifactId>curator-test</artifactId>
+      <version>${curatorVersion}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>slf4j-log4j12</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>
