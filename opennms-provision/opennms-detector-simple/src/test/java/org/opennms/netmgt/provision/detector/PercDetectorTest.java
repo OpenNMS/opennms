@@ -73,7 +73,7 @@ public class PercDetectorTest implements InitializingBean {
         m_detector.setArrayNumber("0.0"); // the default
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
-        m_detector.setRuntimeAttributes(m_detectorFactory.getRuntimeAttributes(null, InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        m_detector.setRuntimeAttributes(m_detectorFactory.getRuntimeAttributes(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null));
     }
 
     @Test(timeout=20000)

@@ -35,11 +35,11 @@ import java.util.Map;
 public abstract class AbstractServiceDetectorFactory<T extends ServiceDetector> implements ServiceDetectorFactory<T> {
 
     public Map<String, String> getRuntimeAttributes(InetAddress address) {
-        return getRuntimeAttributes(null, address);
+        return getRuntimeAttributes(null, address, null);
     }
 
     @Override
-    public Map<String, String> getRuntimeAttributes(String location, InetAddress address) {
+    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, String port) {
         return Collections.emptyMap();
     }
 }

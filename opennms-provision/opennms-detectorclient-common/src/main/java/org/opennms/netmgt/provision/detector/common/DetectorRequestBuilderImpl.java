@@ -40,6 +40,8 @@ import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistr
 
 public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
+    private static final String PORT = "port";
+
     private String location;
 
     private String className;
@@ -116,7 +118,7 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         detectorRequestDTO.setClassName(className);
         detectorRequestDTO.setAddress(address);
         detectorRequestDTO.addDetectorAttributes(attributes);
-        detectorRequestDTO.addRuntimeAttributes(factory.getRuntimeAttributes(location, address));
+        detectorRequestDTO.addRuntimeAttributes(factory.getRuntimeAttributes(location, address, attributes.get(PORT)));
 
         return client.getDetectorRequestExecutor(location)
             .execute(detectorRequestDTO)

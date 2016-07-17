@@ -48,7 +48,7 @@ public class SnmpDetectorFactory extends AbstractServiceDetectorFactory<SnmpDete
     }
 
     @Override
-    public Map<String, String> getRuntimeAttributes(String location, InetAddress address) {
+    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, String port) {
         if (m_agentConfigFactory == null) {
             throw new IllegalStateException("Cannot determine agent configuration without a SnmpAgentConfigFactory.");
         }
