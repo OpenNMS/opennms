@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutionException;
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -231,6 +232,7 @@ public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
      * This should invoke the route in the Camel context initialize in this blueprint.
      */
     @Test(timeout=60000)
+    @Ignore("flapping with NPE at org.springframework.jms.support.JmsAccessor.createSession(JmsAccessor.java:197)")
     public void canWalkIpAddressTableViaAnotherLocation() throws Exception {
         assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
 
