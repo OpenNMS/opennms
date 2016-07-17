@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.net.ServerSocket;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
@@ -45,6 +46,7 @@ import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.util.KeyValueHolder;
 import org.apache.curator.test.TestingServer;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -61,19 +63,26 @@ public class SyslogHandlerKafkaDefaultIT extends CamelBlueprintTest {
 
 	private TestingServer zkTestServer;
 
-	/**
-	 * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
-	 * 
-	 * @see https://issues.apache.org/jira/browse/ARIES-1051
-	 * @see https://access.redhat.com/site/solutions/640943
-	 */
+	private int kafkaPort;
+
+	private int zookeeperPort;
+
+	private static int getAvailablePort(int min, int max) {
+		for (int i = min; i <= max; i++) {
+			try (ServerSocket socket = new ServerSocket(i)) {
+				return socket.getLocalPort();
+			} catch (Throwable e) {}
+		}
+		throw new IllegalStateException("Can't find an available network port");
+	}
+
 	@Override
 	public void doPreSetup() throws Exception {
 		super.doPreSetup();
 
-		zkTestServer = new TestingServer(2181);
+		zkTestServer = new TestingServer(zookeeperPort);
 		Properties properties = new Properties();
-		properties.put("port", "9092");
+		properties.put("port", String.valueOf(kafkaPort));
 		properties.put("host.name", "localhost");
 		properties.put("broker.id", "5001");
 		properties.put("enable.zookeeper", "false");
@@ -86,6 +95,16 @@ public class SyslogHandlerKafkaDefaultIT extends CamelBlueprintTest {
 		catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	protected String setConfigAdminInitialConfiguration(Properties props) {
+		zookeeperPort = getAvailablePort(2181, 2281);
+		kafkaPort = getAvailablePort(9092, 9192);
+
+		props.put("zookeeperport", String.valueOf(zookeeperPort));
+		props.put("kafkaport", String.valueOf(kafkaPort));
+		return "org.opennms.netmgt.syslog.handler.kafka.default";
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -116,7 +135,7 @@ public class SyslogHandlerKafkaDefaultIT extends CamelBlueprintTest {
 						exchange.getIn().setHeader(KafkaConstants.PARTITION_KEY, 1);
 						exchange.getIn().setHeader(KafkaConstants.KEY, "1");
 					}
-				}).to("kafka:localhost:9092?topic=syslog&serializerClass=kafka.serializer.StringEncoder");
+				}).to("kafka:localhost:" + kafkaPort + "?topic=syslog&serializerClass=kafka.serializer.StringEncoder");
 			}
 		});
 
@@ -124,7 +143,7 @@ public class SyslogHandlerKafkaDefaultIT extends CamelBlueprintTest {
 			@Override
 			public void configure() throws Exception {
 
-				from("kafka:localhost:9092?topic=syslog&zookeeperHost=localhost&zookeeperPort=2181&groupId=testing")
+				from("kafka:localhost:" + kafkaPort + "?topic=syslog&zookeeperHost=localhost&zookeeperPort=" + zookeeperPort + "&groupId=testing")
 				.process(new Processor() {
 					@Override
 					public void process(Exchange exchange) throws Exception {
@@ -151,5 +170,10 @@ public class SyslogHandlerKafkaDefaultIT extends CamelBlueprintTest {
 		});
 
 		syslogd.start();
+	}
+
+	@After
+	public void shutDownKafka(){
+		kafkaServer.shutdown();
 	}
 }

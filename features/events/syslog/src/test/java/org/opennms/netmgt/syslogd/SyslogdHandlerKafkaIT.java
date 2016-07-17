@@ -29,8 +29,8 @@
 package org.opennms.netmgt.syslogd;
 
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -68,19 +68,26 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTest {
 	private KafkaServer kafkaServer;
 	private TestingServer zkTestServer;
 
-	/**
-	 * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
-	 * 
-	 * @see https://issues.apache.org/jira/browse/ARIES-1051
-	 * @see https://access.redhat.com/site/solutions/640943
-	 */
+	private int kafkaPort;
+
+	private int zookeeperPort;
+
+	private static int getAvailablePort(int min, int max) {
+		for (int i = min; i <= max; i++) {
+			try (ServerSocket socket = new ServerSocket(i)) {
+				return socket.getLocalPort();
+			} catch (Throwable e) {}
+		}
+		throw new IllegalStateException("Can't find an available network port");
+	}
+
 	@Override
 	public void doPreSetup() throws Exception {
 		super.doPreSetup();
 
-		zkTestServer = new TestingServer(2181);
+		zkTestServer = new TestingServer(zookeeperPort);
 		Properties properties = new Properties();
-		properties.put("port", "9092");
+		properties.put("port", String.valueOf(kafkaPort));
 		properties.put("host.name", "localhost");
 		properties.put("broker.id", "5001");
 		properties.put("enable.zookeeper", "false");
@@ -99,6 +106,15 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTest {
 	public static void startKafka() throws Exception {
 	}
 
+	@Override
+	protected String setConfigAdminInitialConfiguration(Properties props) {
+		zookeeperPort = getAvailablePort(2181, 2281);
+		kafkaPort = getAvailablePort(9092, 9192);
+
+		props.put("kafkaport", String.valueOf(kafkaPort));
+		return "org.opennms.netmgt.syslog.handler.kafka";
+	}
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
@@ -114,8 +130,6 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTest {
 	@Test
 	public void testSyslogd() throws Exception {
 
-		Map<String, Object> parms = new HashMap<String, Object>();
-		parms.put("port",61616);	
 		SimpleRegistry registry = new SimpleRegistry();
 		CamelContext syslogd = new DefaultCamelContext(registry);
 		syslogd.addComponent("kafka", new KafkaComponent());
@@ -131,7 +145,7 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTest {
 						exchange.getIn().setBody(connection);
 						exchange.getIn().setHeader(KafkaConstants.PARTITION_KEY,simple("${body.hostname}"));
 					}
-				}).log("address:${body.sourceAddress}").log("port: ${body.port}").transform(simple("${body.byteBuffer}")).convertBodyTo(String.class).log(body().toString()).to("kafka:localhost:9092?topic=syslog;serializerClass=kafka.serializer.StringEncoder");
+				}).log("address:${body.sourceAddress}").log("port: ${body.port}").transform(simple("${body.byteBuffer}")).convertBodyTo(String.class).log(body().toString()).to("kafka:localhost:" + kafkaPort + "?topic=syslog;serializerClass=kafka.serializer.StringEncoder");
 
 			}
 		});

@@ -13,7 +13,7 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<cm:property-placeholder id="syslogHandlerDefaultKafkaProperties" persistent-id="org.opennms.netmgt.syslog.handler.kafka" placeholder-prefix="$[" placeholder-suffix="]" update-strategy="none">
+	<cm:property-placeholder id="syslogHandlerDefaultKafkaProperties" persistent-id="org.opennms.netmgt.syslog.handler.kafka.default" placeholder-prefix="$[" placeholder-suffix="]" update-strategy="none">
 		<cm:default-properties>
 			<cm:property name="kafkahost" value="127.0.0.1" />
 			<cm:property name="kafkaport" value="9092" />
