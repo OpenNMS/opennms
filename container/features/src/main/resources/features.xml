@@ -881,6 +881,7 @@
       <bundle>wrap:mvn:org.samba.jcifs/jcifs/1.3.14</bundle>
       <bundle>wrap:mvn:com.novell.ldap/jldap/4.3</bundle>
       <feature>opennms-icmp-api</feature>
+      <feature>opennms-icmp-jni6</feature>
       <bundle>wrap:mvn:bsf/bsf/2.4.0</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.api/${project.version}</bundle>
