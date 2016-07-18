@@ -26,8 +26,7 @@
     <module>opennms-detector-generic</module>
     <module>opennms-detector-web</module>
     <module>opennms-detector-bsf</module>
-    <module>opennms-detectorclient-common</module>
-    <module>opennms-detectorclient-camel</module>
+    <module>opennms-detectorclient-rpc</module>
   </modules>
   <dependencyManagement>
     <dependencies>
@@ -103,12 +102,7 @@
             </dependency>
             <dependency>
                 <groupId>org.opennms</groupId>
-                <artifactId>opennms-detectorclient-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opennms</groupId>
-                <artifactId>opennms-detectorclient-camel</artifactId>
+                <artifactId>opennms-detectorclient-rpc</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

@@ -274,11 +274,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-detectorclient-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-detectorclient-camel</artifactId>
+      <artifactId>opennms-detectorclient-rpc</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

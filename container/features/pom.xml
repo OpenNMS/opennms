@@ -570,7 +570,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-detectorclient-camel</artifactId>
+      <artifactId>opennms-detectorclient-rpc</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

@@ -44,7 +44,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-detectorclient-common</artifactId>
+      <artifactId>opennms-provision-api</artifactId>
     </dependency>
   </dependencies>
 </project>

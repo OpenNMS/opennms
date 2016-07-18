@@ -110,7 +110,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-detectorclient-camel</artifactId>
+      <artifactId>opennms-detectorclient-rpc</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
