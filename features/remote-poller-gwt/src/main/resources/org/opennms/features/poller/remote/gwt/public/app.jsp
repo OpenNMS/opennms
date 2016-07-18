@@ -32,15 +32,11 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" %>
 <%@page import="java.net.URLEncoder"%>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
-<%@ page import="org.slf4j.*" %>
 
 <%!
-	static final Logger LOG = LoggerFactory.getLogger("RemotePollerMap");
-
 	public static String getUrl() {
 		String url = System.getProperty("gwt.openlayers.url");
 		if ("http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png".equals(url) || !isDefined(url)) {
-			LOG.warn("Map server %s is invalid or outdated.  Using tiles.opennms.org instead.", url);
 			url = "https://tiles.opennms.org/${z}/${x}/${y}.png";
 		}
 	}
@@ -48,7 +44,6 @@
 	public static String getAttribution() {
 		String attribution = System.getProperty("gwt.openlayers.options.attribution");
 		if (!isDefined(attribution)) {
-			LOG.warn("Attribution text is invalid or outdated.  Using default instead.", attribution);
 			attribution = StringEscapeUtils.unescapeHtml("Map data &copy; &lt;a tabindex=\"-1\" target=\"_blank\" href=\"http://openstreetmap.org/copyright\"&gt;OpenStreetMap&lt;/a&gt; contributors under &lt;a tabindex=\"-1\" target=\"_blank\" href=\"http://opendatacommons.org/licenses/odbl/\"&gt;ODbL&lt;/a&gt;, &lt;a tabindex=\"-1\" target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\"&gt;CC BY-SA 2.0&lt;/a&gt;");
 		}
 		return attribution;
