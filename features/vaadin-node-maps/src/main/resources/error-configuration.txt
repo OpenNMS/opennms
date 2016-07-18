@@ -1,0 +1,7 @@
+The Geographical Map is not configured correctly.<br/>
+The following problems occurred:
+<ul>
+{problems}
+</ul>
+
+Please define the above properties in opennms.properties.<br/>

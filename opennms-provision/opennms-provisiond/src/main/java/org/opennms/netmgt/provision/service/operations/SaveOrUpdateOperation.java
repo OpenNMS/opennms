@@ -108,7 +108,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         	if (addr == null) {
         		LOG.error("Unable to resolve address of snmpPrimary interface for node {} with address '{}'", m_node.getLabel(), ipAddr);
         	} else {
-        		m_scanManager = new ScanManager(addr);
+        		m_scanManager = new ScanManager(getProvisionService().getLocationAwareSnmpClient(), addr);
         	}
         }
         

@@ -96,9 +96,9 @@ public class AggregateTrackerProxyTest {
         expectedRequests.add(expectedRequest);
 
         // Single instance tracker request
-        expectedRequest = new WalkRequest(SnmpObjId.get(baseOids[3], SnmpInstId.INST_ZERO));
+        expectedRequest = new WalkRequest(baseOids[3]);
         expectedRequest.setCorrelationId("1");
-        expectedRequest.setSingleInstance(true);
+        expectedRequest.setInstance(SnmpInstId.INST_ZERO);
         expectedRequest.setMaxRepetitions(1);
         expectedRequests.add(expectedRequest);
 

@@ -46,6 +46,7 @@ import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -237,4 +238,5 @@ public interface ProvisionService {
     public HostnameResolver getHostnameResolver();
     public void setHostnameResolver(final HostnameResolver resolver);
 
+    LocationAwareSnmpClient getLocationAwareSnmpClient();
 }

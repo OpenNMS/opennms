@@ -710,6 +710,7 @@
       <feature version="[4.0,4.1)">spring</feature>
       <feature>camel-core</feature>
       <feature>camel-http</feature>
+      <feature>camel-kafka</feature>
       <feature>camel-netty</feature>
       <feature>activemq-camel</feature>
 
@@ -764,6 +765,18 @@
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-default</bundle>
     </feature>
 
+    <!-- TODO: Rename this. It's more of an Dominion-side syslog connection handler... -->
+    <feature name="opennms-syslogd-handler-kafka-default" description="OpenNMS :: Syslogd :: Handler :: Kafka :: Default" version="${project.version}">
+      <feature>camel-blueprint</feature>
+
+      <!--
+      These classes are in the system classpath inside OpenNMS
+      <feature>opennms-syslogd</feature>
+      -->
+
+      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-kafka-default</bundle>
+    </feature>
+
     <!-- TrapD feature -->
     <feature name="opennms-trapd" description="OpenNMS :: Trapd" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
@@ -809,7 +822,11 @@
     <!-- TODO: Rename this. It's more of an Dominion-side trap message handler... -->
     <feature name="opennms-trapd-handler-kafka-default" description="OpenNMS :: Trapd :: Handler :: Kafka :: Default" version="${project.version}">
       <feature>camel-blueprint</feature>
+
+      <!--
+      These classes are in the system classpath inside OpenNMS
       <feature>opennms-trapd</feature>
+      -->
 
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-kafka-default</bundle>
     </feature>
