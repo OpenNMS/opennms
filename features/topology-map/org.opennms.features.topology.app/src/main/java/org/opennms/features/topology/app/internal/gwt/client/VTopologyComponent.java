@@ -958,6 +958,14 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
         $wnd.console.log(message);
     }-*/;
 
+	public void setPhysicalWidth(int physicalWidth) {
+		m_width = physicalWidth;
+	}
+
+	public void setPhysicalHeight(int physicalHeight) {
+		m_height = physicalHeight;
+	}
+
     @Override
     public void onBackgroundDoubleClick(SVGPoint center) {
         m_serverRpc.backgroundDoubleClick(center.getX(), center.getY());
