@@ -33,6 +33,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import org.opennms.features.vaadin.components.graph.InlineGraphContainer;
 
 public class InfoPanel extends CssLayout {
 
@@ -70,6 +71,9 @@ public class InfoPanel extends CssLayout {
 
         staticComponents.add(searchBox);
         staticComponents.add(toggleButton);
+
+        // Add a graph container to trigger backshift graph renderings on each update
+        staticComponents.add(new InlineGraphContainer());
     }
 
     private void refreshInfoArea() {
