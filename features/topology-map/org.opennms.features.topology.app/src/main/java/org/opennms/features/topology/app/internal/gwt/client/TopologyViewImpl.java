@@ -40,11 +40,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.client.VTooltip;
 
 public class TopologyViewImpl extends Composite implements TopologyView<TopologyViewRenderer>, GraphUpdateListener {
 
@@ -98,7 +96,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     protected void onLoad() {
         super.onLoad();
         m_widgetContainer.setSize("100%", "100%");
-        sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
         m_svg.setId("TopologyComponent");
     }
 

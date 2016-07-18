@@ -16,8 +16,12 @@ The following table shows all supported query string parameters and their defaul
 [options="header"]
 |===
 | name               | default   | comment
-| start              | -14400000 | Timestamp in milliseconds. If < 0, the effective value will be (end + start).
-| end                | 0         | Timestamp in milliseconds. If <= 0, the effective value will be the current timestamp.
+| start              | -14400000 | Timestamp in milliseconds.
+
+                                   If > 0, the timestamp is relative to the UNIX epoch (January 1st 1970 00:00:00 AM).
+                                   
+                                   If < 0, the timestamp is relative to the `end` option (i.e.: default value is 4 hours ago).
+| end                | 0         | Timestamp in milliseconds. If \<= 0, the effective value will be the current timestamp.
 | step               | 300000    | Requested time interval between rows. Actual step may differ. Set to 1 for maximum accuracy.
 | maxrows            | 0         | When using the measurements to render a graph, this should be set to the graph's pixel width.
 | interval           | null      | Duration in milliseconds, used by strategies that implement late aggregation.

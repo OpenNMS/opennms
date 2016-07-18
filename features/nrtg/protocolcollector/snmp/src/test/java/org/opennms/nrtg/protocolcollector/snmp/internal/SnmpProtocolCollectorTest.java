@@ -57,7 +57,11 @@ import org.springframework.test.context.ContextConfiguration;
  * @author Markus Neumann
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml", "classpath:SnmpProtocolCollectorTestContext.xml"})
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:SnmpProtocolCollectorTestContext.xml"
+})
 @JUnitSnmpAgent(port = 9161, host = "127.0.0.1", resource = "classpath:SnmpSample.properties")
 public class SnmpProtocolCollectorTest implements InitializingBean {
 

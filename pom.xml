@@ -1292,7 +1292,7 @@
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <freemarkerVersion>2.3.21</freemarkerVersion>
     <groovyVersion>2.4.5</groovyVersion>
-    <guavaVersion>17.0</guavaVersion>
+    <guavaVersion>18.0</guavaVersion>
     <gwtVersion>2.6.1</gwtVersion>
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
@@ -1615,6 +1615,16 @@
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.osgid</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.rpc</groupId>
+        <artifactId>org.opennms.core.rpc.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.rpc</groupId>
+        <artifactId>org.opennms.core.rpc.xml</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

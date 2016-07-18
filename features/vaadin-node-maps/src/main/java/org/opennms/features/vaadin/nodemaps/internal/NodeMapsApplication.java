@@ -289,6 +289,11 @@ public class NodeMapsApplication extends UI {
         createRootLayout();
         addRefresher();
 
+        // Notify the user if no tileserver url or options are set
+        if (!NodeMapConfiguration.isValid()) {
+            new InvalidConfigurationWindow().open();
+        }
+
         // Schedule refresh of node data
         m_executor.scheduleWithFixedDelay(() -> m_mapWidgetComponent.refreshNodeData(), 0, 5, TimeUnit.MINUTES);
 

@@ -69,7 +69,7 @@
   </c:when>
   
   <c:otherwise>
-    <h3 class="panel-title"><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><i class="fa fa-database fa-lg icon-black" title="Toggle database IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><i class="fa fa-list-alt fa-lg icon-black" title="Toggle requisition names"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><i class="fa fa-qrcode fa-lg icon-black" title="Toggle foreign IDs"></i></a></span></h3>
+    <h3 class="panel-title"><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><i class="fa fa-database fa-lg icon-black" title="Toggle database IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><i class="fa fa-list-alt fa-lg icon-black" title="Toggle requisition names"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><i class="fa fa-qrcode fa-lg icon-black" title="Toggle foreign IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLloc', '', 'inline');"><i class="fa fa-map-marker fa-lg icon-black" title="Toggle locations"></i></a></span></h3>
   </c:otherwise>
 </c:choose>
   </div> <!-- panel-heading -->

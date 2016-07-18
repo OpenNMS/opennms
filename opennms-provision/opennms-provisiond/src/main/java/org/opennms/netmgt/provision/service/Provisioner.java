@@ -58,6 +58,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
@@ -262,11 +263,12 @@ public class Provisioner implements SpringServiceDaemon {
      * @param nodeId a {@link java.lang.Integer} object.
      * @param foreignSource a {@link java.lang.String} object.
      * @param foreignId a {@link java.lang.String} object.
+     * @param location a {@link org.opennms.netmgt.model.monitoringLocation.OnmsMonitoringLocation} object.
      * @return a {@link org.opennms.netmgt.provision.service.NodeScan} object.
      */
-    public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId) {
+    public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location) {
         LOG.info("createNodeScan called");
-        return new NodeScan(nodeId, foreignSource, foreignId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
+        return new NodeScan(nodeId, foreignSource, foreignId, location, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
     }
 
     /**
@@ -320,7 +322,7 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     private ScheduledFuture<?> scheduleNodeScan(NodeScanSchedule schedule) {
-        NodeScan nodeScan = createNodeScan(schedule.getNodeId(), schedule.getForeignSource(), schedule.getForeignId());
+        NodeScan nodeScan = createNodeScan(schedule.getNodeId(), schedule.getForeignSource(), schedule.getForeignId(), schedule.getLocation());
         LOG.warn("nodeScan = {}", nodeScan);
         return nodeScan.schedule(m_scheduledExecutor, schedule);
     }

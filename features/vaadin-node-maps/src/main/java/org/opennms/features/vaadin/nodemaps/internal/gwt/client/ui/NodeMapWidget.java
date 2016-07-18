@@ -37,7 +37,6 @@ import java.util.logging.Logger;
 import org.discotools.gwt.leaflet.client.Options;
 import org.discotools.gwt.leaflet.client.controls.zoom.Zoom;
 import org.discotools.gwt.leaflet.client.controls.zoom.ZoomOptions;
-import org.discotools.gwt.leaflet.client.crs.epsg.EPSG3857;
 import org.discotools.gwt.leaflet.client.layers.ILayer;
 import org.discotools.gwt.leaflet.client.layers.raster.TileLayer;
 import org.discotools.gwt.leaflet.client.map.MapOptions;
@@ -48,8 +47,10 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.AlarmSeverity;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ComponentTracker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Map;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMapState;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Option;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ApplicationInitializedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ApplicationInitializedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEvent;
@@ -96,6 +97,8 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
 
     private SimplePanel m_mapPanel = new SimplePanel();
 
+    private boolean initialized = false;
+
     public NodeMapWidget() {
         m_eventManager = new OpenNMSEventManager();
         m_eventManager.addHandler(FilteredMarkersUpdatedEvent.TYPE, this);
@@ -136,15 +139,6 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
 
                     m_filter = new MarkerFilterImpl("", AlarmSeverity.NORMAL, m_eventManager, m_componentTracker);
                     m_markerContainer = new MarkerContainer(m_filter, m_eventManager, m_componentTracker);
-
-                    m_filter.onLoad();
-                    m_markerContainer.onLoad();
-
-                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                        @Override public void execute() {
-                            initializeMap(m_div.getId());
-                        }
-                    });
                 } else {
                     LOG.info("NodeMapwidget.onDetach()");
                     if (m_markerContainer != null) m_markerContainer.onUnload();
@@ -153,15 +147,25 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
                 }
             }
         });
-        LOG.info("NodeMapWidget(): initialized");
     }
 
-    private void initializeMap(final String divId) {
+    public void initialize(final NodeMapState state) {
         LOG.info("NodeMapWidget.initializeMap()");
 
-        createMap(divId);
-        // createGoogleLayer();
-        addTileLayer();
+        // Defer actual initialization until after the browser
+        // event loop because otherwise Vaadin isn't done setting
+        // up yet.
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override public void execute() {
+                doInitialization(state);
+            }
+        });
+    }
+
+    private void doInitialization(final NodeMapState state) {
+        // layers
+        createMap(m_div.getId());
+        addTileLayer(state.tileServerUrl, state.tileLayerOptions);
         addMarkerLayer();
 
         // overlay controls
@@ -169,20 +173,16 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
         addAlarmControl();
         addZoomControl();
 
+        m_filter.onLoad();
+        m_markerContainer.onLoad();
         m_searchControl.focusInput();
         m_componentTracker.ready(getClass());
+        initialized = true;
         LOG.info("NodeMapWidget.initializeMap(): finished");
     }
 
-    @SuppressWarnings("unused")
-    private void createGoogleLayer() {
-        final EPSG3857 projection = new EPSG3857();
-        final Options googleOptions = new Options();
-        googleOptions.setProperty("crs", projection);
-
-        LOG.info("NodeMapWidget.createGoogleLayer(): adding Google layer");
-        m_layer = new GoogleLayer("SATELLITE", googleOptions);
-        m_map.addLayer(m_layer, true);
+    public boolean isInitialized() {
+        return initialized;
     }
 
     private void createMap(final String divId) {
@@ -194,16 +194,16 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
         m_map = new Map(divId, options);
     }
 
-    private void addTileLayer() {
-        LOG.info("NodeMapWidget.addTileLayer()");
-        final String attribution = "Map data &copy; <a tabindex=\"-1\" href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a tabindex=\"-1\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Tiles &copy; <a tabindex=\"-1\" href=\"http://www.mapquest.com/\" target=\"_blank\">MapQuest</a> <img src=\"http://developer.mapquest.com/content/osm/mq_logo.png\" />";
-        final String url = "http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png";
+    private void addTileLayer(String tileUrl, List<Option> optionsList) {
+        LOG.info("NodeMapWidget.setTileLayer(String, Option...) start");
+        LOG.info("NodeMapWidget.setTileLayer tileServerUrl: " + tileUrl + "," + optionsList);
         final Options tileOptions = new Options();
-        tileOptions.setProperty("attribution", attribution);
-        tileOptions.setProperty("subdomains", "1234");
-        tileOptions.setProperty("type", "osm");
-        m_layer = new TileLayer(url, tileOptions);
+        for (Option eachOption : optionsList) {
+            tileOptions.setProperty(eachOption.getKey(), eachOption.getValue());
+        }
+        m_layer = new TileLayer(tileUrl, tileOptions);
         m_map.addLayer(m_layer, true);
+        LOG.info("NodeMapWidget.setTileLayer(String, Option...) end");
     }
 
 
@@ -316,9 +316,13 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
 
     private void clearExistingMarkers() {
         LOG.info("NodeMapWidget.clearExistingMarkers()");
-        m_markerClusterGroup.clearLayers();
-        for (int i = 0; i < m_stateClusterGroups.length; i++) {
-            m_stateClusterGroups[i].clearLayers();
+        if (m_markerClusterGroup != null) {
+            m_markerClusterGroup.clearLayers();
+        }
+        if (m_stateClusterGroups != null) {
+            for (int i = 0; i < m_stateClusterGroups.length; i++) {
+                m_stateClusterGroups[i].clearLayers();
+            }
         }
     }
 
@@ -451,8 +455,10 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
     private final void destroyMap() {
         if (m_markerClusterGroup != null) {
             m_markerClusterGroup.clearLayers();
-            for (int i = 0; i < m_stateClusterGroups.length; i++) {
-                m_stateClusterGroups[i].clearLayers();
+            if (m_stateClusterGroups != null) {
+                for (int i = 0; i < m_stateClusterGroups.length; i++) {
+                    m_stateClusterGroups[i].clearLayers();
+                }
             }
         }
         if (m_map != null) {

@@ -49,17 +49,23 @@
       <feature>opennms-core-camel</feature>
       <bundle>blueprint:mvn:org.opennms.features.minion/core-impl/${project.version}/xml/blueprint-heartbeat</bundle>
     </feature>
-    
-    <feature name="minion-snmp-proxy" description="OpenNMS :: Minion :: SNMP Proxy" version="${project.version}">
-      <feature>javax.mail</feature>
+
+    <feature name="minion-rpc-server" description="OpenNMS :: Minion :: RPC Server" version="${project.version}">
       <feature>org.json</feature>
-      <feature>minion-core-api</feature>
+      <feature>javax.mail</feature>
       <feature>opennms-core-camel</feature>
+      <feature>minion-core-api</feature>
+      <bundle>mvn:org.opennms.core.rpc/org.opennms.core.rpc.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.rpc/org.opennms.core.rpc.xml/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.rpc/org.opennms.core.rpc.camel-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-snmp-proxy" description="OpenNMS :: Minion :: SNMP Proxy" version="${project.version}">
+      <feature>minion-rpc-server</feature>
       <feature>opennms-config-api</feature>
       <feature>opennms-model</feature>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
-      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.common/${project.version}</bundle>
-      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.camel/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.rpc-impl/${project.version}</bundle>
     </feature>
     
     <feature name="minion-provisiond-shell" description="Minion :: Provisond :: Shell" version="${project.version}">

@@ -247,8 +247,8 @@
       <bundle>wrap:mvn:org.apache.xmlgraphics/fop/1.0</bundle>
     </feature>
 
-    <feature name="guava" description="Google :: Guava" version="17.0">
-      <bundle dependency="true">mvn:com.google.guava/guava/17.0</bundle>
+    <feature name="guava" description="Google :: Guava" version="${guavaVersion}">
+      <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
     </feature>
 
     <!-- Use name hibernate36 so that we don't collide with Karaf 2.3.5+'s hibernate feature -->
@@ -699,9 +699,15 @@
       <feature>org.json</feature>
 
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
-      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.joesnmp/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-snmp-commands" description="OpenNMS :: Core :: SNMP :: Commands" version="${project.version}">
+      <feature>opennms-config-api</feature>
+      <feature>opennms-snmp</feature>
+
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-syslogd" description="OpenNMS :: Syslogd" version="${project.version}">
