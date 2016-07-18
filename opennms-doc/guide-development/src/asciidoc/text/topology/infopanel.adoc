@@ -128,6 +128,15 @@ A template showing custom information may look as following:
 
 It is also possible to show performance data.
 
+.Including resource graphs
+One can include resource graphs into the info panel by using the following HTML element:
+[source, html]
+----
+<div class="graph-container" data-resource-id="RESOURCE_ID" data-graph-name="GRAPH_NAME"></div>
+----
+
+Optional attributes `data-graph-start` and `data-graph-end` can be used to specify the displayed time range in seconds since epoch.
+
 .Measurements API template (memory usage)
 [source, html]
 ----
