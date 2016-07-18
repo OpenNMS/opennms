@@ -561,7 +561,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>
-      <artifactId>org.opennms.core.snmp.proxy.camel</artifactId>
+      <artifactId>org.opennms.core.snmp.proxy.rpc-impl</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

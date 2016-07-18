@@ -26,4 +26,6 @@
       </property>      
     </bean>
 
+    <import resource="classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml" />
+    <import resource="classpath:/META-INF/opennms/applicationContext-rpc-snmp.xml" />
 </beans>

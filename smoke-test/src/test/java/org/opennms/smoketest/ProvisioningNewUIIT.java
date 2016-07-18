@@ -52,7 +52,6 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
     private static final String NODE_IPADDR = "127.0.0.1";
     private static final String NODE_SERVICE = "HTTP-8980";
     private static final String NODE_CATEGORY = "Test";
-    private static final String NODE_LOCATION = "MOO";
 
     /**
      * Sets up the test.
@@ -149,7 +148,6 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("foreignId"))).clear();
         enterText(By.id("foreignId"), NODE_FOREIGNID);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("location"))).clear();
-        enterText(By.id("location"), NODE_LOCATION);
         saveNode();
 
         // Add an IP Interface
@@ -245,9 +243,6 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
             // Restore the implicitlyWait timeout
             m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
         }
-
-        // The name of the location should be visible on the node details page
-        findElementByXpath("//span[contains(@title, 'Location: " + NODE_LOCATION + "')]");
 
         wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));
         findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + NODE_IPADDR + "']");

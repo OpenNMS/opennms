@@ -127,8 +127,8 @@ public class SingleInstanceTracker extends CollectionTracker {
 
     @Override
     public List<WalkRequest> getWalkRequests() {
-        final WalkRequest walkRequest = new WalkRequest(m_oid);
-        walkRequest.setSingleInstance(true);
+        final WalkRequest walkRequest = new WalkRequest(m_base);
+        walkRequest.setInstance(m_inst);
         walkRequest.setMaxRepetitions(1);
         return Collections.singletonList(walkRequest);
     }
