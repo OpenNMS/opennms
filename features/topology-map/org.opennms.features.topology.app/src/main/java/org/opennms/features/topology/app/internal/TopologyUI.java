@@ -238,6 +238,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
             // we redo the layout before we save the history
             m_graphContainer.redoLayout();
+            m_topologyComponent.getState().setPhysicalWidth(0);
+            m_topologyComponent.getState().setPhysicalHeight(0);
+            m_topologyComponent.markAsDirtyRecursive();
 
             // Close all open Windows/Dialogs if it is not the "NO VERTICES IN FOCUS"-Window
             for (Window eachWindow : getWindows()) {
