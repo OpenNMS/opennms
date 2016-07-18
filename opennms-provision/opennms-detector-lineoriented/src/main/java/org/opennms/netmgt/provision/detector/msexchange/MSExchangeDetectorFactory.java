@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.provision.detector.msexchange;
 
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MSExchangeDetectorFactory extends AbstractServiceDetectorFactory<MSExchangeDetector>{
+public class MSExchangeDetectorFactory extends GenericServiceDetectorFactory<MSExchangeDetector>{
 
-    @Override
-    public MSExchangeDetector createDetector() {
-        return new MSExchangeDetector();
+    public MSExchangeDetectorFactory() {
+        super(MSExchangeDetector.class);
     }
-
 }

@@ -57,7 +57,7 @@ public class MSExchangeDetector extends BasicDetector<LineOrientedRequest, MSExc
     /**
      * <p>Constructor for MSExchangeDetector.</p>
      */
-    protected MSExchangeDetector() {
+    public MSExchangeDetector() {
         super(SERVICE_NAME, 0);
         setPop3Port(DEFAULT_POP3_PORT);
         setImapPort(DEFAULT_IMAP_PORT);

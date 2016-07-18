@@ -28,14 +28,13 @@
 
 package org.opennms.netmgt.provision.detector.icmp;
 
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class IcmpDetectorFactory extends AbstractServiceDetectorFactory<IcmpDetector> {
+public class IcmpDetectorFactory extends GenericServiceDetectorFactory<IcmpDetector> {
 
-    @Override
-    public IcmpDetector createDetector() {
-        return new IcmpDetector();
+    public IcmpDetectorFactory() {
+        super(IcmpDetector.class);
     }
 }

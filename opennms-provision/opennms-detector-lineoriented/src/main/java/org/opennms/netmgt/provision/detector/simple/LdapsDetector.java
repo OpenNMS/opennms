@@ -58,7 +58,7 @@ public class LdapsDetector extends LdapDetector {
     /**
      * Default constructor
      */
-    protected LdapsDetector() {
+    public LdapsDetector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
     }
 
@@ -68,7 +68,7 @@ public class LdapsDetector extends LdapDetector {
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    protected LdapsDetector(final String serviceName, final int port) {
+    public LdapsDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
 

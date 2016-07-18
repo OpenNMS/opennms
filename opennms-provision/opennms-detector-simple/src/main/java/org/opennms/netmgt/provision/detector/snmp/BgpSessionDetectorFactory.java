@@ -31,10 +31,9 @@ package org.opennms.netmgt.provision.detector.snmp;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BgpSessionDetectorFactory extends SnmpDetectorFactory {
+public class BgpSessionDetectorFactory extends GenericSnmpDetectorFactory<BgpSessionDetector> {
 
-    @Override
-    public BgpSessionDetector createDetector() {
-        return new BgpSessionDetector();
+    public BgpSessionDetectorFactory() {
+        super(BgpSessionDetector.class);
     }
 }

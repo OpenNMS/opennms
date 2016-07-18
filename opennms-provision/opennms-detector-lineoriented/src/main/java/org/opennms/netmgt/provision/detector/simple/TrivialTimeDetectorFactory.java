@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TrivialTimeDetectorFactory extends AbstractServiceDetectorFactory<TrivialTimeDetector> {
+public class TrivialTimeDetectorFactory extends GenericServiceDetectorFactory<TrivialTimeDetector> {
 
-    @Override
-    public TrivialTimeDetector createDetector() {
-        return new TrivialTimeDetector();
+    public TrivialTimeDetectorFactory() {
+        super(TrivialTimeDetector.class);
     }
-
 }

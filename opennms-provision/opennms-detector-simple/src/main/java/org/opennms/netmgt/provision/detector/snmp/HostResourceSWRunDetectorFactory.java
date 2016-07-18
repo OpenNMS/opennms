@@ -31,11 +31,9 @@ package org.opennms.netmgt.provision.detector.snmp;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HostResourceSWRunDetectorFactory extends SnmpDetectorFactory{
-    
+public class HostResourceSWRunDetectorFactory extends GenericSnmpDetectorFactory<HostResourceSWRunDetector> {
 
-    @Override
-    public HostResourceSWRunDetector createDetector() {
-        return new HostResourceSWRunDetector();
+    public HostResourceSWRunDetectorFactory() {
+        super(HostResourceSWRunDetector.class);
     }
 }

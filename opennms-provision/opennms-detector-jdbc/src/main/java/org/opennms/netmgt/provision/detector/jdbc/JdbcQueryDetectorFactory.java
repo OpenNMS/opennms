@@ -28,16 +28,13 @@
 
 package org.opennms.netmgt.provision.detector.jdbc;
 
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JdbcQueryDetectorFactory extends AbstractServiceDetectorFactory<JdbcQueryDetector> {
+public class JdbcQueryDetectorFactory extends GenericServiceDetectorFactory<JdbcQueryDetector> {
 
-    @Override
-    public JdbcQueryDetector createDetector() {
-
-        return new JdbcQueryDetector();
+    public JdbcQueryDetectorFactory() {
+        super(JdbcQueryDetector.class);
     }
-
 }

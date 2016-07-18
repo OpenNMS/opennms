@@ -9,26 +9,16 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<bean id="jdbcDetectorFactory" class="org.opennms.netmgt.provision.detector.jdbc.JdbcDetectorFactory" />
-	<service ref="jdbcDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<service-properties>
-			<entry key="implementation" value="org.opennms.netmgt.provision.detector.jdbc.JdbcDetector" />
-		</service-properties>
+	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<bean class="org.opennms.netmgt.provision.detector.jdbc.JdbcDetectorFactory" />
 	</service>
 
-	<bean id="jdbcQueryDetectorFactory" class="org.opennms.netmgt.provision.detector.jdbc.JdbcQueryDetectorFactory" />
-	<service ref="jdbcQueryDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<service-properties>
-			<entry key="implementation" value="org.opennms.netmgt.provision.detector.jdbc.JdbcQueryDetector" />
-		</service-properties>
+	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<bean class="org.opennms.netmgt.provision.detector.jdbc.JdbcQueryDetectorFactory" />
 	</service>
 
-	<bean id="jdbcStoredProcedureDetectorFactory" class="org.opennms.netmgt.provision.detector.jdbc.JdbcStoredProcedureDetectorFactory" />
-	<service ref="jdbcStoredProcedureDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<service-properties>
-			<entry key="implementation" value="org.opennms.netmgt.provision.detector.jdbc.JdbcStoredProcedureDetector" />
-		</service-properties>
+	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<bean class="org.opennms.netmgt.provision.detector.jdbc.JdbcStoredProcedureDetectorFactory" />
 	</service>
-
 
 </blueprint>

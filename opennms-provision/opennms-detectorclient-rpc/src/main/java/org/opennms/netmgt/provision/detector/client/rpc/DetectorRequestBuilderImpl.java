@@ -36,8 +36,12 @@ import java.util.concurrent.CompletableFuture;
 import org.opennms.netmgt.provision.DetectorRequestBuilder;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetectorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DetectorRequestBuilderImpl.class);
 
     private static final String PORT = "port";
 
@@ -109,12 +113,22 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
             throw new IllegalArgumentException("No factory found for detector with class name '" + className + "'.");
         }
 
+        Integer port = null;
+        String portString = attributes.get(PORT);
+        if (portString != null) {
+            try {
+                port = Integer.parseInt(portString);
+            } catch (NumberFormatException nfe) {
+                LOG.warn("Failed to parse port as integer from: ", portString);
+            }
+        }
+
         final DetectorRequestDTO detectorRequestDTO = new DetectorRequestDTO();
         detectorRequestDTO.setLocation(location);
         detectorRequestDTO.setClassName(className);
         detectorRequestDTO.setAddress(address);
         detectorRequestDTO.addDetectorAttributes(attributes);
-        detectorRequestDTO.addRuntimeAttributes(factory.getRuntimeAttributes(location, address, attributes.get(PORT)));
+        detectorRequestDTO.addRuntimeAttributes(factory.getRuntimeAttributes(location, address, port));
 
         return client.getDelegate().execute(detectorRequestDTO)
             .thenApply(res -> {

@@ -10,12 +10,8 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <bean id="gpDetectorFactory" class="org.opennms.netmgt.provision.detector.generic.GpDetectorFactory" />
-	<service ref="gpDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<service-properties>
-			<entry key="implementation" value="org.opennms.netmgt.provision.detector.generic.GpDetector" />
-		</service-properties>
+	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<bean class="org.opennms.netmgt.provision.detector.generic.GpDetectorFactory" />
 	</service>
-
 
 </blueprint>

@@ -26,15 +26,42 @@
  *      http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.generic;
+package org.opennms.netmgt.provision.detector.jmx;
 
+import java.net.InetAddress;
+import java.util.Map;
+
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@Component
-public class GpDetectorFactory extends GenericServiceDetectorFactory<GpDetector> {
+public class GenericJMXDetectorFactory<T extends JMXDetector> extends GenericServiceDetectorFactory<JMXDetector> {
 
-    public GpDetectorFactory() {
-        super(GpDetector.class);
+    @Autowired(required=false)
+    protected JmxConfigDao jmxConfigDao;
+
+    @SuppressWarnings("unchecked")
+    public GenericJMXDetectorFactory(Class<T> clazz) {
+        super((Class<JMXDetector>) clazz);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public T createDetector() {
+        return (T)super.createDetector();
+    }
+
+    @Override
+    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port) {
+        String ipAddress = address.getHostAddress();
+        if (port == null) {
+            throw new IllegalArgumentException("Need to specify port number in the form of port=number for Jsr160Detector");
+        }
+        return jmxConfigDao.getConfig().lookupMBeanServer(ipAddress, port).getParameterMap();
+    }
+
+    public void setJmxConfigDao(JmxConfigDao jmxConfigDao) {
+        this.jmxConfigDao = jmxConfigDao;
     }
 }
+

@@ -9,10 +9,7 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<bean id="sshDetectorFactory" class="org.opennms.netmgt.provision.detector.ssh.SshDetectorFactory" />
-	<service ref="sshDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<service-properties>
-			<entry key="implementation" value="org.opennms.netmgt.provision.detector.ssh.SshDetector" />
-		</service-properties>
+	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<bean class="org.opennms.netmgt.provision.detector.ssh.SshDetectorFactory" />
 	</service>
 </blueprint>

@@ -39,14 +39,13 @@
 
 package org.opennms.netmgt.provision.detector.ssh;
 
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SshDetectorFactory extends AbstractServiceDetectorFactory<SshDetector> {
+public class SshDetectorFactory extends GenericServiceDetectorFactory<SshDetector> {
 
-    @Override
-    public SshDetector createDetector() {
-        return new SshDetector();
+    public SshDetectorFactory() {
+        super(SshDetector.class);
     }
 }

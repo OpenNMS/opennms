@@ -75,7 +75,7 @@
 
     <feature name="minion-provisiond-detectors" description="Minion :: Provisond :: Detectors" version="${project.version}">
       <feature>opennms-provisioning-detectors</feature>
-      <feature>opennms-core-camel</feature>
+      <feature>minion-rpc-server</feature>
       <bundle>mvn:org.opennms/opennms-detectorclient-rpc/${project.version}</bundle>
     </feature>
 </features>

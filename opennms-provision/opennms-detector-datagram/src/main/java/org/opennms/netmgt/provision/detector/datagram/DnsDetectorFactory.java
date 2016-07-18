@@ -28,16 +28,13 @@
 
 package org.opennms.netmgt.provision.detector.datagram;
 
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DnsDetectorFactory extends AbstractServiceDetectorFactory<DnsDetector> {
+public class DnsDetectorFactory extends GenericServiceDetectorFactory<DnsDetector> {
 
-    @Override
-    public DnsDetector createDetector() {
-
-        return new DnsDetector();
+    public DnsDetectorFactory() {
+        super(DnsDetector.class);
     }
-
 }

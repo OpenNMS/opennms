@@ -10,26 +10,16 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <bean id="jBossDetectorFactory" class="org.opennms.netmgt.provision.detector.jmx.JBossDetectorFactory" />
-	<service ref="jBossDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<service-properties>
-			<entry key="implementation" value="org.opennms.netmgt.provision.detector.jmx.JBossDetector" />
-		</service-properties>
+	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<bean class="org.opennms.netmgt.provision.detector.jmx.JBossDetectorFactory" />
 	</service>
-	
-	<bean id="jsr160DetectorFactory" class="org.opennms.netmgt.provision.detector.jmx.Jsr160DetectorFactory" />
-	<service ref="jsr160DetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<service-properties>
-			<entry key="implementation" value="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector" />
-		</service-properties>
-	</service>
-	
 
-    <bean id="mx4jDetectorFactory" class="org.opennms.netmgt.provision.detector.jmx.MX4JDetectorFactory" />
-	<service ref="mx4jDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<service-properties>
-			<entry key="implementation" value="org.opennms.netmgt.provision.detector.jmx.MX4JDetector" />
-		</service-properties>
+	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<bean class="org.opennms.netmgt.provision.detector.jmx.Jsr160DetectorFactory" />
 	</service>
-	
+
+	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<bean class="org.opennms.netmgt.provision.detector.jmx.MX4JDetectorFactory" />
+	</service>
+
 </blueprint>

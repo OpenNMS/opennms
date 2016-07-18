@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Pop3DetectorFactory extends AbstractServiceDetectorFactory<Pop3Detector> {
+public class Pop3DetectorFactory extends GenericServiceDetectorFactory<Pop3Detector> {
 
-    @Override
-    public Pop3Detector createDetector() {
-        return new Pop3Detector();
+    public Pop3DetectorFactory() {
+        super(Pop3Detector.class);
     }
-
 }

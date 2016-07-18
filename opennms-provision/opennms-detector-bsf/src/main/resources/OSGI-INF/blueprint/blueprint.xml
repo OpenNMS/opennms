@@ -10,11 +10,8 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <bean id="bsfDetectorFactory" class="org.opennms.netmgt.provision.detector.bsf.BSFDetectorFactory" />
-	<service ref="bsfDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<service-properties>
-			<entry key="implementation" value="org.opennms.netmgt.provision.detector.bsf.BSFDetector" />
-		</service-properties>
+	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<bean class="org.opennms.netmgt.provision.detector.bsf.BSFDetectorFactory" />
 	</service>
 
 </blueprint>

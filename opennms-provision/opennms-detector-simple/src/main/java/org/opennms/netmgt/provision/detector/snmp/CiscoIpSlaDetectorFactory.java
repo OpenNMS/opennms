@@ -31,12 +31,9 @@ package org.opennms.netmgt.provision.detector.snmp;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CiscoIpSlaDetectorFactory extends SnmpDetectorFactory{
-    
+public class CiscoIpSlaDetectorFactory extends GenericSnmpDetectorFactory<CiscoIpSlaDetector> {
 
-    @Override
-    public CiscoIpSlaDetector createDetector() {
-        return new CiscoIpSlaDetector();
+    public CiscoIpSlaDetectorFactory() {
+        super(CiscoIpSlaDetector.class);
     }
-
 }

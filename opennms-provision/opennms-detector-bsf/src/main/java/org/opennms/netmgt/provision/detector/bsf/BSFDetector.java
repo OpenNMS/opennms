@@ -54,7 +54,7 @@ public class BSFDetector extends BasicDetector<BSFRequest, BSFResponse> {
     /**
      * <p>Constructor for BsfDetector.</p>
      */
-    protected BSFDetector() {
+    public BSFDetector() {
         super("BSF", 0);
     }
 

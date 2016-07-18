@@ -57,7 +57,7 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
     /**
      * <p>Constructor for GpDetector.</p>
      */
-    protected GpDetector() {
+    public GpDetector() {
         super("GP", 0);
     }
 

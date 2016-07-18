@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,34 +28,12 @@
 
 package org.opennms.netmgt.provision.detector.snmp;
 
-import java.net.InetAddress;
-import java.util.Map;
-
-import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SnmpDetectorFactory extends AbstractServiceDetectorFactory<SnmpDetector> {
+public class SnmpDetectorFactory extends GenericSnmpDetectorFactory<SnmpDetector> {
 
-    @Autowired(required=false)
-    private SnmpAgentConfigFactory m_agentConfigFactory;
-
-    @Override
-    public SnmpDetector createDetector() {
-        return new SnmpDetector();
-    }
-
-    @Override
-    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, String port) {
-        if (m_agentConfigFactory == null) {
-            throw new IllegalStateException("Cannot determine agent configuration without a SnmpAgentConfigFactory.");
-        }
-        return m_agentConfigFactory.getAgentConfig(address).toMap();
-    }
-
-    public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
-        m_agentConfigFactory = agentConfigFactory;
+    public SnmpDetectorFactory() {
+        super(SnmpDetector.class);
     }
 }

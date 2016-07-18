@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ImapDetectorFactory extends AbstractServiceDetectorFactory<ImapDetector> {
+public class ImapDetectorFactory extends GenericServiceDetectorFactory<ImapDetector> {
 
-    @Override
-    public ImapDetector createDetector() {
-        return new ImapDetector();
+    public ImapDetectorFactory() {
+        super(ImapDetector.class);
     }
-
 }

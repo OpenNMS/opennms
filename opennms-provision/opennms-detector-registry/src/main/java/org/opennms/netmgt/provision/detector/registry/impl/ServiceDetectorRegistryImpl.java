@@ -50,8 +50,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceDetectorRegistryImpl.class);
 
-    public static final String IMPLEMENTATION_KEY = "implementation";
-
     @Autowired(required=false)
     ServiceRegistry m_serviceRegistry;
 
@@ -70,7 +68,6 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
                 // Determine the implementation type
                 Map<String, String> props = new HashMap<>();
                 ServiceDetector detector = factory.createDetector();
-                props.put(IMPLEMENTATION_KEY, detector.getClass().getCanonicalName());
                 // Register the factory
                 onBind(factory, props);
                 // Add the detector to the service registry
@@ -93,21 +90,25 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public synchronized void onBind(ServiceDetectorFactory factory, Map properties) {
         LOG.debug("bind called with {}: {}", factory, properties);
-        final String serviceName = getServiceName(factory);
-        final String className = getClassName(properties);
-        m_factoriesByServiceName.put(serviceName, factory);
-        m_factoriesByClassName.put(className, factory);
-        m_classNameByServiceName.put(serviceName, className);
+        if (factory != null) {
+            final String serviceName = getServiceName(factory);
+            final String className = factory.getDetectorClass().getCanonicalName();
+            m_factoriesByServiceName.put(serviceName, factory);
+            m_factoriesByClassName.put(className, factory);
+            m_classNameByServiceName.put(serviceName, className);
+        }
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public synchronized void onUnbind(ServiceDetectorFactory factory, Map properties) {
         LOG.debug("unbind called with {}: {}", factory, properties);
-        final String serviceName = getServiceName(factory);
-        final String className = getClassName(properties);
-        m_factoriesByServiceName.remove(serviceName, factory);
-        m_factoriesByClassName.remove(className, factory);
-        m_classNameByServiceName.remove(serviceName, className);
+        if (factory != null) {
+            final String serviceName = getServiceName(factory);
+            final String className = factory.getDetectorClass().getCanonicalName();
+            m_factoriesByServiceName.remove(serviceName, factory);
+            m_factoriesByClassName.remove(className, factory);
+            m_classNameByServiceName.remove(serviceName, className);
+        }
     }
 
     @Override
@@ -167,14 +168,5 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
 
     private static String getServiceName(ServiceDetectorFactory<? extends ServiceDetector> factory) {
         return factory.createDetector().getServiceName();
-    }
-
-    private static String getClassName(Map<?,?> properties) {
-        final Object implementation = properties.get(IMPLEMENTATION_KEY);
-        if (implementation == null || !(implementation instanceof String)) {
-            LOG.error("ServiceDetectorFactory was registered without an '{}' property.", IMPLEMENTATION_KEY);
-            throw new IllegalArgumentException("ServiceDetectorFactory was registered without an '" + IMPLEMENTATION_KEY + "' property.");
-        }
-        return (String)implementation;
     }
 }

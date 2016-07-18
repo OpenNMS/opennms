@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DominoIIOPDetectorFactory extends AbstractServiceDetectorFactory<DominoIIOPDetector> {
+public class DominoIIOPDetectorFactory extends GenericServiceDetectorFactory<DominoIIOPDetector> {
 
-    @Override
-    public DominoIIOPDetector createDetector() {
-        return new DominoIIOPDetector();
+    public DominoIIOPDetectorFactory() {
+        super(DominoIIOPDetector.class);
     }
-
 }

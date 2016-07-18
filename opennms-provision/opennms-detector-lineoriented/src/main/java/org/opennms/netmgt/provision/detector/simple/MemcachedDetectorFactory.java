@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MemcachedDetectorFactory extends AbstractServiceDetectorFactory<MemcachedDetector>{
+public class MemcachedDetectorFactory extends GenericServiceDetectorFactory<MemcachedDetector>{
 
-    @Override
-    public MemcachedDetector createDetector() {
-        return new MemcachedDetector();
+    public MemcachedDetectorFactory() {
+        super(MemcachedDetector.class);
     }
-
 }

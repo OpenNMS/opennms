@@ -31,15 +31,32 @@ package org.opennms.netmgt.provision;
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
-public abstract class AbstractServiceDetectorFactory<T extends ServiceDetector> implements ServiceDetectorFactory<T> {
+public class GenericServiceDetectorFactory<T extends ServiceDetector> implements ServiceDetectorFactory<T> {
 
-    public Map<String, String> getRuntimeAttributes(InetAddress address) {
-        return getRuntimeAttributes(null, address, null);
+    private final Class<T> clazz;
+
+    public GenericServiceDetectorFactory(Class<T> clazz) {
+        this.clazz = Objects.requireNonNull(clazz);
     }
 
     @Override
-    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, String port) {
+    public T createDetector() {
+        try {
+            return clazz.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Class<T> getDetectorClass() {
+        return clazz;
+    }
+
+    @Override
+    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port) {
         return Collections.emptyMap();
     }
 }

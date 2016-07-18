@@ -31,12 +31,9 @@ package org.opennms.netmgt.provision.detector.snmp;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PercDetectorFactory extends SnmpDetectorFactory{
-    
+public class PercDetectorFactory extends GenericSnmpDetectorFactory<PercDetector> {
 
-    @Override
-    public PercDetector createDetector() {
-        return new PercDetector();
+    public PercDetectorFactory() {
+        super(PercDetector.class);
     }
-
 }

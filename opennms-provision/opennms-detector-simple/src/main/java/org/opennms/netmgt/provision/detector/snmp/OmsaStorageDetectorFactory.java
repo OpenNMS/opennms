@@ -31,12 +31,9 @@ package org.opennms.netmgt.provision.detector.snmp;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OmsaStorageDetectorFactory extends SnmpDetectorFactory{
-    
+public class OmsaStorageDetectorFactory extends GenericSnmpDetectorFactory<OmsaStorageDetector> {
 
-    @Override
-    public OmsaStorageDetector createDetector() {
-        return new OmsaStorageDetector();
+    public OmsaStorageDetectorFactory() {
+        super(OmsaStorageDetector.class);
     }
-
 }

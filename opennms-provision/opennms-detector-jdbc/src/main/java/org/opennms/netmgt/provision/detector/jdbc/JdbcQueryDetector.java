@@ -47,7 +47,7 @@ public class JdbcQueryDetector extends AbstractJdbcDetector {
     /**
      * <p>Constructor for JdbcQueryDetector.</p>
      */
-    protected JdbcQueryDetector(){
+    public JdbcQueryDetector(){
         super("JdbcQueryDetector", 3306);
     }
 

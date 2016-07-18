@@ -29,15 +29,13 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TcpDetectorFactory extends AbstractServiceDetectorFactory<TcpDetector>  {
+public class TcpDetectorFactory extends GenericServiceDetectorFactory<TcpDetector>  {
 
-    @Override
-    public TcpDetector createDetector() {
-        return new TcpDetector();
+    public TcpDetectorFactory() {
+        super(TcpDetector.class);
     }
-
 }

@@ -28,16 +28,13 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HttpsDetectorFactory extends AbstractServiceDetectorFactory<HttpsDetector> {
+public class HttpsDetectorFactory extends GenericServiceDetectorFactory<HttpsDetector> {
 
-    @Override
-    public HttpsDetector createDetector() {
-
-        return new HttpsDetector();
+    public HttpsDetectorFactory() {
+        super(HttpsDetector.class);
     }
-
 }

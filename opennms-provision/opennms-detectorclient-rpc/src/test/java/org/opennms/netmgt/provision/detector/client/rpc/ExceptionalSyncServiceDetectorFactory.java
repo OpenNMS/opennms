@@ -28,14 +28,13 @@
 
 package org.opennms.netmgt.provision.detector.client.rpc;
 
-import org.opennms.netmgt.provision.AbstractServiceDetectorFactory;
+import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExceptionalSyncServiceDetectorFactory extends AbstractServiceDetectorFactory<ExceptionalSyncServiceDetector> {
+public class ExceptionalSyncServiceDetectorFactory extends GenericServiceDetectorFactory<ExceptionalSyncServiceDetector> {
 
-    @Override
-    public ExceptionalSyncServiceDetector createDetector() {
-        return new ExceptionalSyncServiceDetector();
+    public ExceptionalSyncServiceDetectorFactory() {
+        super(ExceptionalSyncServiceDetector.class);
     }
 }

@@ -33,5 +33,6 @@ import java.util.Map;
 
 public interface ServiceDetectorFactory<T extends ServiceDetector> {
     T createDetector();
-    Map<String, String> getRuntimeAttributes(String location, InetAddress address, String port);
+    Class<T> getDetectorClass();
+    Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port);
 }

@@ -30,7 +30,6 @@ package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.netmgt.provision.detector.snmp.SnmpDetector.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -43,10 +42,9 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
+import org.opennms.netmgt.provision.detector.snmp.SnmpDetector.MatchType;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetectorFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -56,12 +54,11 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/detectors.xml"
 })
 @JUnitSnmpAgent(host=SnmpDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpDetectorTestData.properties")
-public class SnmpDetectorTest implements InitializingBean {
+public class SnmpDetectorTest {
     
     static final String TEST_IP_ADDRESS = "192.0.2.205";
     
     @Autowired
-    @Qualifier(value="org.opennms.netmgt.provision.detector.snmp.SnmpDetectorFactory")
     private SnmpDetectorFactory m_detectorFactory;
     
 	private SnmpDetector m_detector;
@@ -207,11 +204,4 @@ public class SnmpDetectorTest implements InitializingBean {
         m_detector.setVbvalue("000f662002fd");
         assertFalse( m_detector.isServiceDetected(m_testIpAddress));
     }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-        
-    }
-
 }

@@ -9,18 +9,12 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<bean id="dnsDetectorFactory" class="org.opennms.netmgt.provision.detector.datagram.DnsDetectorFactory" />
-	<service ref="dnsDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<service-properties>
-			<entry key="implementation" value="org.opennms.netmgt.provision.detector.datagram.DnsDetector" />
-		</service-properties>
+	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<bean class="org.opennms.netmgt.provision.detector.datagram.DnsDetectorFactory" />
 	</service>
 
-	<bean id="ntpDetectorFactory" class="org.opennms.netmgt.provision.detector.datagram.NtpDetectorFactory" />
-	<service ref="ntpDetectorFactory" interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<service-properties>
-			<entry key="implementation" value="org.opennms.netmgt.provision.detector.datagram.NtpDetector" />
-		</service-properties>
+	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<bean class="org.opennms.netmgt.provision.detector.datagram.NtpDetectorFactory" />
 	</service>
 
 </blueprint>

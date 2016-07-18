@@ -31,12 +31,9 @@ package org.opennms.netmgt.provision.detector.snmp;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Win32ServiceDetectorFactory extends SnmpDetectorFactory{
-    
+public class Win32ServiceDetectorFactory extends GenericSnmpDetectorFactory<Win32ServiceDetector> {
 
-    @Override
-    public Win32ServiceDetector createDetector() {
-        return new Win32ServiceDetector();
+    public Win32ServiceDetectorFactory() {
+        super(Win32ServiceDetector.class);
     }
-
 }

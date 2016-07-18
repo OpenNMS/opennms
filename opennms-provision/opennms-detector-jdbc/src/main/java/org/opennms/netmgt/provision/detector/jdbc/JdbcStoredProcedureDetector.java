@@ -51,7 +51,7 @@ public class JdbcStoredProcedureDetector extends AbstractJdbcDetector {
     /**
      * <p>Constructor for JdbcStoredProcedureDetector.</p>
      */
-    protected JdbcStoredProcedureDetector(){
+    public JdbcStoredProcedureDetector(){
         super("JdbcStoredProcedureDetector", 3306);
         setSchema(DEFAULT_SCHEMA);
         setStoredProcedure(DEFAULT_STORED_PROCEDURE);
