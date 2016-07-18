@@ -974,10 +974,4 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
     public void setComponentServerRpc(TopologyComponentServerRpc rpc) {
         m_serverRpc = rpc;
     }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-    }
-
 }
