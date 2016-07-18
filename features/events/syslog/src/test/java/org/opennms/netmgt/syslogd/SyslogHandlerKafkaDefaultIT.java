@@ -51,6 +51,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -110,7 +111,16 @@ public class SyslogHandlerKafkaDefaultIT extends CamelBlueprintTest {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		// Register any mock OSGi services here
+		// Create a mock SyslogdConfig
+		SyslogConfigBean config = new SyslogConfigBean();
+		config.setSyslogPort(10514);
+		config.setNewSuspectOnMessage(false);
+		config.setParser("org.opennms.netmgt.syslogd.CustomSyslogParser");
+		config.setForwardingRegexp("^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)");
+		config.setMatchingGroupHost(4);
+		config.setMatchingGroupMessage(7);
+		config.setDiscardUei("DISCARD-MATCHING-MESSAGES");
+		services.put(SyslogdConfig.class.getName(), new KeyValueHolder<Object, Dictionary>(config, new Properties()));
 	}
 
 	// The location of our Blueprint XML files to be used for testing

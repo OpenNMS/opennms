@@ -19,7 +19,7 @@
     <module>integration-tests</module>
     <module>commands</module>
 
-    <module>proxy-common</module>
-    <module>proxy-camel-impl</module>
+    <module>proxy-rpc-impl</module>
+    <module>proxy-rpc-tests</module>
   </modules>
 </project>

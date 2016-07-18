@@ -24,8 +24,8 @@
 	<bean id="syslogConnectionHandlerCamel" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerCamelImpl">
 		<argument value="seda:handleMessage"/>
 	</bean>
-	
-		<!-- Camel Event marshalling processor -->
+
+	<!-- Camel Event marshalling processor -->
 	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
 		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
 	</bean>
@@ -37,14 +37,15 @@
 		<route id="handleSyslogKafka">
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
-		    <setHeader headerName="kafka.PARTITION_KEY">
+			<setHeader headerName="kafka.PARTITION_KEY">
 				<!-- TODO: Partition by remote address -->
 				<!-- <simple>${body.remoteAddress}</simple> -->
 				<simple>${body.sourceAddress}</simple>
 			</setHeader>
 			
 			<bean ref="marshaller"/>
-	
+			
+			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
 			<to uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>
 	</camelContext>

@@ -176,7 +176,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
 
         XYZOptions xyzOptions = new XYZOptions();
         xyzOptions.setSphericalMercator(true);
-        xyzOptions.setAttribution("Default tiles courtesy of <a href=\"http://open.mapquest.co.uk/\">MapQuest</a>");
+        xyzOptions.setAttribution(getAttribution());
         XYZ x = new XYZ("OpenStreetMap", getLayerUrl(), xyzOptions);
         x.setIsBaseLayer(true);
         x.setIsVisible(true);
@@ -320,6 +320,10 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
 
     private native String getLayerUrl() /*-{
         return $wnd.openlayersUrl;
+    }-*/;
+
+    private native String getAttribution() /*-{
+        return $wnd.openlayersAttribution;
     }-*/;
 
     /**

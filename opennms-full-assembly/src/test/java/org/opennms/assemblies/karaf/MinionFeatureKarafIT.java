@@ -50,7 +50,7 @@ import org.ops4j.pax.exam.spi.reactors.PerMethod;
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
-@Ignore("disabling until the karaf 2.4.3 upgrade and tests can be stabilized")
+@Ignore("Disabling until the tests can be stabilized")
 public class MinionFeatureKarafIT extends KarafTestCase {
 
 	@Before
@@ -82,6 +82,12 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 	@Test
 	public void testInstallFeatureOpennmsSyslogdHandlerMinion() {
 		installFeature("opennms-syslogd-handler-minion");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureOpennmsSyslogdHandlerKafka() {
+		installFeature("opennms-syslogd-handler-kafka");
 		System.out.println(executeCommand("features:list -i"));
 	}
 

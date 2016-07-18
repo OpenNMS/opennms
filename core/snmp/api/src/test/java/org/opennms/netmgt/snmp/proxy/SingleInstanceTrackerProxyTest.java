@@ -54,8 +54,8 @@ public class SingleInstanceTrackerProxyTest {
     @Before
     public void setUp() {
         // Verify the generated request
-        WalkRequest expectedRequest = new WalkRequest(SnmpObjId.get(base, instance));
-        expectedRequest.setSingleInstance(true);
+        WalkRequest expectedRequest = new WalkRequest(base);
+        expectedRequest.setInstance(instance);
         expectedRequest.setMaxRepetitions(1);
         assertThat(tracker.getWalkRequests(), contains(expectedRequest));
 

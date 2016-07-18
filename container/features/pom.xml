@@ -220,10 +220,11 @@
             <feature>opennms-syslogd-handler-kafka-default</feature>
             <feature>opennms-syslogd-handler-minion</feature>
             <feature>opennms-trapd</feature>
-            <feature>opennms-trapd-handler-default</feature>
             <feature>opennms-trapd-listener</feature>
+            <feature>opennms-trapd-handler-default</feature>
             <feature>opennms-trapd-handler-kafka</feature>
             <feature>opennms-trapd-handler-kafka-default</feature>
+            <feature>opennms-trapd-handler-minion</feature>
             
             <!-- <feature>opennms-webapp</feature> -->
             <feature>org.json</feature>
@@ -565,7 +566,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>
-      <artifactId>org.opennms.core.snmp.proxy.camel</artifactId>
+      <artifactId>org.opennms.core.snmp.proxy.rpc-impl</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

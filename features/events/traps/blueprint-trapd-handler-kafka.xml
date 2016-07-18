@@ -37,7 +37,13 @@
 				<!-- <simple>${body.remoteAddress}</simple> -->
 				<simple>trap</simple>
 			</setHeader>
-
+ 			<log message="address:       ${body.sourceAddress}"/>
+			<log message="port:          ${body.port}"/>
+ 			<transform>
+				<simple>${body.byteBuffer}</simple>
+			</transform>
+			<convertBodyTo type="java.lang.String"/>
+			<log message="bytes:         ${body}"/>
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
 			<to uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>
