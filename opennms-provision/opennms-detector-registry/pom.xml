@@ -31,5 +31,10 @@
       <artifactId>opennms-provision-api</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.soa</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>
