@@ -50,7 +50,7 @@ import org.ops4j.pax.exam.spi.reactors.PerMethod;
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
-@Ignore("disabling until the karaf 2.4.3 upgrade and tests can be stabilized")
+@Ignore("Disabling until the tests can be stabilized")
 public class OnmsFeatureKarafIT extends KarafTestCase {
 
 	@Before
@@ -345,8 +345,46 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	
 	@Test
+	public void testInstallFeatureOpennmsSyslogd() {
+		installFeature("opennms-syslogd");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	public void testInstallFeatureOpennmsSyslogdListenerJavanet() {
+		installFeature("opennms-syslogd-listener-javanet");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	public void testInstallFeatureOpennmsSyslogdListenerCamelNetty() {
+		installFeature("opennms-syslogd-listener-camel-netty");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	@Ignore("Incomplete blueprint")
+	public void testInstallFeatureOpennmsSyslogdListenerNio() {
+		installFeature("opennms-syslogd-listener-nio");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	@Ignore("OSGi dependency problems")
+	public void testInstallFeatureOpennmsSyslogdHandlerDefault() {
+		installFeature("opennms-syslogd-handler-default");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
 	public void testInstallFeatureOpennmsTrapd() {
 		installFeature("opennms-trapd");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	public void testInstallFeatureOpennmsTrapdListener() {
+		installFeature("opennms-trapd-listener");
 		System.out.println(executeCommand("features:list -i"));
 	}
 	
@@ -358,8 +396,8 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	
 	@Test
-	public void testInstallFeatureOpennmsTrapdListener() {
-		installFeature("opennms-trapd-listener");
+	public void testInstallFeatureOpennmsTrapdHandlerKafkaDefault() {
+		installFeature("opennms-trapd-handler-kafka-default");
 		System.out.println(executeCommand("features:list -i"));
 	}
 

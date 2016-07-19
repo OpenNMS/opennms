@@ -1285,6 +1285,7 @@
     <commonsMath3Version>3.5</commonsMath3Version>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
     <c3p0Version>0.9.5.2</c3p0Version>
+    <curatorVersion>3.1.0</curatorVersion>
     <cxfVersion>3.1.5</cxfVersion>
     <dnsjavaVersion>2.1.3</dnsjavaVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
@@ -2271,13 +2272,6 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-dao</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-dao</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>

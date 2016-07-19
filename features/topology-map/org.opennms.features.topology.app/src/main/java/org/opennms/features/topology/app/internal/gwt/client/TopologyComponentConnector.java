@@ -72,6 +72,14 @@ public class TopologyComponentConnector extends AbstractComponentConnector{
            getWidget().setActiveTool(getState().getActiveTool());
        }
 
+       if (event.hasPropertyChanged("physicalWidth")) {
+           getWidget().setPhysicalWidth(getState().getPhysicalWidth());
+       }
+
+       if (event.hasPropertyChanged("physicalHeight")) {
+           getWidget().setPhysicalHeight(getState().getPhysicalHeight());
+       }
+
        getWidget().updateGraph(getConnection(), getState());
 
    }
