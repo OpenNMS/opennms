@@ -54,7 +54,7 @@ public class DetectorClientRpcModule extends AbstractXmlRpcModule<DetectorReques
     @Autowired
     private ServiceDetectorRegistry serviceDetectorRegistry;
 
-    @Autowired(required=false)
+    @Autowired
     @Qualifier("scanExecutor")
     private Executor executor;
 
