@@ -151,7 +151,7 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
             return Collections.emptyMap();
         }
 
-        return (Map<EdgeRef, Status>) serviceAccessor.getTransactionOperations().execute(transactionStatus ->
+        return serviceAccessor.getTransactionOperations().execute(transactionStatus ->
             edges.stream()
                 .filter(eachEdge -> eachEdge instanceof GraphMLEdge)
                 .map(edge -> (GraphMLEdge) edge)
