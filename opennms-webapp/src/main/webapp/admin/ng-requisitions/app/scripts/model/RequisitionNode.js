@@ -75,6 +75,15 @@ function RequisitionNode(foreignSource, node, isDeployed) {
   self.nodeLabel = node['node-label'];
 
   /**
+   * @description The location of the node
+   * @ngdoc property
+   * @name RequisitionNode#location
+   * @propertyOf RequisitionNode
+   * @returns {string} The location
+   */
+  self.location = node['location'];
+
+  /**
    * @description The city where the node is located
    * @ngdoc property
    * @name RequisitionNode#city
@@ -278,6 +287,7 @@ function RequisitionNode(foreignSource, node, isDeployed) {
     var nodeObject = {
       'foreign-id': self.foreignId,
       'node-label': self.nodeLabel,
+      'location': self.location,
       'city': self.city,
       'building': self.building,
       'interface': [],

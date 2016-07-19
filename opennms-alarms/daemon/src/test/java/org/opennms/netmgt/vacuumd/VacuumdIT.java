@@ -66,7 +66,6 @@ import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager.EmptyEventConfDao;
 import org.opennms.netmgt.eventd.EventExpander;
@@ -284,20 +283,18 @@ public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, Initiali
         m_vacuumd.start();
 
         // Setup our event anticipator
-        EventAnticipator eventAnticipator = new EventAnticipator();
-        eventAnticipator.setDiscardUnanticipated(true);
-        m_eventdIpcMgr.setEventAnticipator(eventAnticipator);
+        m_eventdIpcMgr.getEventAnticipator().setDiscardUnanticipated(true);
 
         // Build and anticipate the request reload event
         EventBuilder builder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
         builder.addParam(EventConstants.PARM_DAEMON_NAME, m_vacuumd.getName());
         Event requestReloadEvent = builder.getEvent();
-        eventAnticipator.anticipateEvent(requestReloadEvent);
+        m_eventdIpcMgr.getEventAnticipator().anticipateEvent(requestReloadEvent);
 
         // Build and anticipate the reload confirmation event
         builder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, m_vacuumd.getName());
         Event reloadSuccesfulEvent = builder.getEvent();
-        eventAnticipator.anticipateEvent(reloadSuccesfulEvent);
+        m_eventdIpcMgr.getEventAnticipator().anticipateEvent(reloadSuccesfulEvent);
 
         // Send the reload event
         m_eventdIpcMgr.sendNow(requestReloadEvent);
@@ -306,7 +303,7 @@ public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, Initiali
         // Stop the daemon and verify that the configuration reload was confirmed
         m_vacuumd.stop();
         m_eventdIpcMgr.setEventAnticipator(null);
-        eventAnticipator.verifyAnticipated();
+        m_eventdIpcMgr.getEventAnticipator().verifyAnticipated();
     }
 
     /**

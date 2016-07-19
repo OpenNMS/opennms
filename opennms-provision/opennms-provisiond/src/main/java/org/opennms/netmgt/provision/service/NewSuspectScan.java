@@ -99,9 +99,9 @@ public class NewSuspectScan implements Scan {
         if (node != null) {
 
         	phase.getBuilder().addSequence(
-        			new NodeInfoScan(node, m_ipAddress, null, createScanProgress(), m_agentConfigFactory, m_provisionService, null),
-        			new IpInterfaceScan(node.getId(), m_ipAddress, null, m_provisionService),
-				new NodeScan(node.getId(), null, null, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator),
+        			new NodeInfoScan(node, m_ipAddress, null, node.getLocation(), createScanProgress(), m_agentConfigFactory, m_provisionService, null),
+        			new IpInterfaceScan(node.getId(), m_ipAddress, null, node.getLocation(), m_provisionService),
+				new NodeScan(node.getId(), null, null, node.getLocation(), m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator),
 				new RunInBatch() {
 					@Override
 					public void run(BatchTask batch) {

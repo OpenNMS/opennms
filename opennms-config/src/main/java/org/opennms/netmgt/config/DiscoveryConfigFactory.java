@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.config;
 
+import static java.util.Spliterator.IMMUTABLE;
+import static java.util.Spliterator.ORDERED;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,9 +48,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Spliterators;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
@@ -55,9 +60,8 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.FilteringIterator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.IteratorIterator;
+import org.opennms.core.utils.IteratorUtils;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
@@ -93,7 +97,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     public static final int DEFAULT_INITIAL_SLEEP_TIME = 30000;
     public static final int DEFAULT_RESTART_SLEEP_TIME = 86400000;
     public static final int DEFAULT_RETRIES = 1;
-    public static final int DEFAULT_TIMEOUT = 2000;
+    public static final long DEFAULT_TIMEOUT = 2000;
     public static final int DEFAULT_CHUNK_SIZE = 100;
 
     /**
@@ -237,7 +241,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      *            the retries for all entries in this URL
      * @return a boolean.
      */
-    public static boolean addToSpecificsFromURL(final List<IPPollAddress> specifics, final String url, final long timeout, final int retries) {
+    public static boolean addToSpecificsFromURL(final List<IPPollAddress> specifics, final String url, final String foreignSource, final String location, final long timeout, final int retries) {
         // open the file indicated by the URL
         InputStream is = null;
         try {
@@ -249,7 +253,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 LOG.warn("URL does not exist: {}", url);
                 return true;
             } else {
-                return addToSpecificsFromURL(specifics, fileURL.openStream(), timeout, retries);
+                return addToSpecificsFromURL(specifics, fileURL.openStream(), foreignSource, location, timeout, retries);
             }
         } catch (final IOException e) {
             LOG.error("Error reading URL: {}", url);
@@ -269,7 +273,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      * @return a boolean.
      * @throws java.io.IOException if any.
      */
-    public static boolean addToSpecificsFromURL(final List<IPPollAddress> specifics, final InputStream is, final long timeout, final int retries) throws IOException {
+    public static boolean addToSpecificsFromURL(final List<IPPollAddress> specifics, final InputStream is, final String foreignSource, final String location, final long timeout, final int retries) throws IOException {
         boolean bRet = true;
 
         try {
@@ -296,7 +300,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 }
 
                 try {
-                    specifics.add(new IPPollAddress(InetAddressUtils.addr(specIP), timeout, retries));
+                    specifics.add(new IPPollAddress(foreignSource, location, InetAddressUtils.addr(specIP), timeout, retries));
                 } catch (final IllegalArgumentException e) {
                     LOG.warn("Unknown host \'{}\' inside discovery include file: address ignored", specIP);
                 }
@@ -328,21 +332,21 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
             for (final IncludeUrl url : getConfiguration().getIncludeUrlCollection()) {
 
-                long timeout = 800L;
+                long timeout = DEFAULT_TIMEOUT;
                 if (url.hasTimeout()) {
                     timeout = url.getTimeout();
                 } else if (defaultTimeout != null) {
                     timeout = getConfiguration().getTimeout();
                 }
 
-                int retries = 3;
+                int retries = DEFAULT_RETRIES;
                 if (url.hasRetries()) {
                     retries = url.getRetries();
                 } else if (defaultRetries != null) {
                     retries = defaultRetries;
                 }
 
-                addToSpecificsFromURL(specifics, url.getContent(), timeout, retries);
+                addToSpecificsFromURL(specifics, url.getContent(), url.getForeignSource(), url.getLocation(), timeout, retries);
             }
 
             return specifics;
@@ -384,14 +388,14 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                     continue;
                 }
 
-                long timeout = 800L;
+                long timeout = DEFAULT_TIMEOUT;
                 if (ir.hasTimeout()) {
                     timeout = ir.getTimeout();
                 } else if (defaultTimeout != null) {
                     timeout = defaultTimeout;
                 }
 
-                int retries = 3;
+                int retries = DEFAULT_RETRIES;
                 if (ir.hasRetries()) {
                     retries = ir.getRetries();
                 } else if (defaultRetries != null) {
@@ -399,7 +403,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 }
 
                 try {
-                    includes.add(new IPPollRange(ir.getBegin(), ir.getEnd(), timeout, retries));
+                    includes.add(new IPPollRange(ir.getForeignSource(), ir.getLocation(), ir.getBegin(), ir.getEnd(), timeout, retries));
                 } catch (final UnknownHostException uhE) {
                     LOG.warn("Failed to convert address range ({}, {})", ir.getBegin(), ir.getEnd(), uhE);
                 }
@@ -429,14 +433,14 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
             for (final Specific s : getConfiguration().getSpecificCollection()) {
 
-                long timeout = 800L;
+                long timeout = DEFAULT_TIMEOUT;
                 if (s.hasTimeout()) {
                     timeout = s.getTimeout();
                 } else if (defaultTimeout != null) {
                     timeout = defaultTimeout;
                 }
 
-                int retries = 3;
+                int retries = DEFAULT_RETRIES;
                 if (s.hasRetries()) {
                     retries = s.getRetries();
                 } else if (defaultRetries != null) {
@@ -446,7 +450,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 final String address = s.getContent();
 
                 try {
-                    specifics.add(new IPPollAddress(InetAddressUtils.addr(address), timeout, retries));
+                    specifics.add(new IPPollAddress(s.getForeignSource(), s.getLocation(), InetAddressUtils.addr(address), timeout, retries));
                 } catch (final IllegalArgumentException e) {
                     LOG.warn("Failed to convert address {}", address, e);
                 }
@@ -570,17 +574,20 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      */
     @Override
     public Iterator<IPPollAddress> getExcludingInterator(final Iterator<IPPollAddress> it) {
-        return new FilteringIterator<IPPollAddress>(it) {
-            @Override
-            protected boolean matches(final IPPollAddress item) {
-                return !isExcluded(item.getAddress());
-            }
-
-        };
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(it, ORDERED | IMMUTABLE), false
+            )
+            // Filter out excluded addresses
+            .filter(item -> !isExcluded(item.getAddress()))
+            .iterator();
     }
 
     /**
      * <p>getConfiguredAddresses</p>
+     * 
+     * TODO: This function is inefficient. It has O(n^2) complexity based on the
+     * product of the include ranges and exclude ranges. This might cause problems
+     * if users are using a large number of excluded ranges.
      *
      * @return a {@link java.lang.Iterable} object.
      */
@@ -599,7 +606,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 iters.add(getExcludingInterator(range.iterator()));
             }
 
-            return new IteratorIterator<IPPollAddress>(iters);
+            return IteratorUtils.concatIterators(iters);
         } finally {
             getReadLock().unlock();
         }

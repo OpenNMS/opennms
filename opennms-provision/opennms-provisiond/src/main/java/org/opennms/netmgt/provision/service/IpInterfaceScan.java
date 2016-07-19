@@ -46,8 +46,8 @@ import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.Callback;
 import org.opennms.core.tasks.RunInBatch;
-import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.IPLike;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.PersistsAgentInfo;
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -68,6 +68,7 @@ public class IpInterfaceScan implements RunInBatch {
     private final InetAddress m_address;
     private final Integer m_nodeId;
     private final String m_foreignSource;
+    private final OnmsMonitoringLocation m_location;
 
     /**
      * <p>Constructor for IpInterfaceScan.</p>
@@ -75,12 +76,14 @@ public class IpInterfaceScan implements RunInBatch {
      * @param nodeId a {@link java.lang.Integer} object.
      * @param address a {@link java.net.InetAddress} object.
      * @param foreignSource a {@link java.lang.String} object.
+     * @param location a {@link org.opennms.netmgt.model.monitoringLocation.OnmsMonitoringLocation} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      */
-    public IpInterfaceScan(final Integer nodeId, final InetAddress address, final String foreignSource, final ProvisionService provisionService) {
+    public IpInterfaceScan(final Integer nodeId, final InetAddress address, final String foreignSource, final OnmsMonitoringLocation location, final ProvisionService provisionService) {
         m_nodeId = nodeId;
         m_address = address;
         m_foreignSource = foreignSource;
+        m_location = location;
         m_provisionService = provisionService;
     }
 
@@ -100,6 +103,10 @@ public class IpInterfaceScan implements RunInBatch {
      */
     public Integer getNodeId() {
         return m_nodeId;
+    }
+
+    public OnmsMonitoringLocation getLocation() {
+        return m_location;
     }
 
     /**
@@ -128,10 +135,11 @@ public class IpInterfaceScan implements RunInBatch {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-        	.append("address", m_address)
-        	.append("foreign source", m_foreignSource)
-        	.append("node ID", m_nodeId)
-        	.toString();
+                .append("address", m_address)
+                .append("foreign source", m_foreignSource)
+                .append("node ID", m_nodeId)
+                .append("location", m_location.getLocationName())
+                .toString();
     }
 
     /**

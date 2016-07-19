@@ -59,6 +59,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitSnmpAgent(port=NetScalerGroupHealthMonitorTest.TEST_SNMP_PORT,host=NetScalerGroupHealthMonitorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/snmp/netscaler-health.properties")

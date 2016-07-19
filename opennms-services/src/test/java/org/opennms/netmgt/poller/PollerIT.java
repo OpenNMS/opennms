@@ -63,7 +63,6 @@ import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager.SendNowHook;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
@@ -126,8 +125,6 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
     @Autowired
     private MockEventIpcManager m_eventMgr;
-
-    private EventAnticipator m_anticipator;
 
     private OutageAnticipator m_outageAnticipator;
 
@@ -205,12 +202,11 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_pollerConfig.setDefaultPollInterval(2000L);
         m_pollerConfig.addService(m_network.getService(2, "192.168.1.3", "HTTP"));
 
-        m_anticipator = new EventAnticipator();
         m_outageAnticipator = new OutageAnticipator(m_db);
 
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
-        m_eventMgr.setEventAnticipator(m_anticipator);
+        m_eventMgr.setEventAnticipator(m_eventMgr.getEventAnticipator());
         m_eventMgr.addEventListener(m_outageAnticipator);
         m_eventMgr.setSynchronous(false);
         m_eventMgr.setNumSchedulerThreads(2);
@@ -291,7 +287,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
         // node is down at this point
         boolean foundNodeDown = false;
-        for (final Event event : m_anticipator.getAnticipatedEventsRecieved()) {
+        for (final Event event : m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived()) {
             if (EventConstants.NODE_DOWN_EVENT_UEI.equals(event.getUei())) {
                 foundNodeDown = true;
                 assertNull(event.getInterfaceAddress());
@@ -436,7 +432,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
     }
 
     private void resetAnticipated() {
-        m_anticipator.reset();
+        m_eventMgr.getEventAnticipator().reset();
         m_outageAnticipator.reset();
     }
 
@@ -769,7 +765,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
         verifyAnticipated(8000);
 
-        Collection<Event> receivedEvents = m_anticipator.getAnticipatedEventsRecieved();
+        Collection<Event> receivedEvents = m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived();
 
         assertEquals(2, receivedEvents.size());
 
@@ -1311,14 +1307,14 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         // Wait for the latch count to decrease
         waitForHookCount(hook, 1);
 
-        m_anticipator.reset();
-        m_anticipator.anticipateEvent(httpService.createUpEvent());
+        m_eventMgr.getEventAnticipator().reset();
+        m_eventMgr.getEventAnticipator().anticipateEvent(httpService.createUpEvent());
 
         // Bring the HTTP service back up even though the nodeLostService
         // event is still pending
         httpService.bringUp();
 
-        m_anticipator.waitForAnticipated(10000);
+        m_eventMgr.getEventAnticipator().waitForAnticipated(10000);
 
         // Take the HTTP service down again
         httpService.bringDown();
@@ -1326,25 +1322,25 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         // Wait for the latch count to decrease and send the queued events
         waitForHookCount(hook, 0);
 
-        m_anticipator.reset();
-        m_anticipator.anticipateEvent(httpService.createUpEvent());
+        m_eventMgr.getEventAnticipator().reset();
+        m_eventMgr.getEventAnticipator().anticipateEvent(httpService.createUpEvent());
 
         // Bring the HTTP service back online
         httpService.bringUp();
 
-        m_anticipator.waitForAnticipated(10000);
+        m_eventMgr.getEventAnticipator().waitForAnticipated(10000);
 
         // We've succeeded in altering the order of events for the
         // HTTP service. Now we make sure that outage processing
         // continues to work as expeceted on a different service
         m_eventMgr.setSendNowHook(null);
 
-        m_anticipator.reset();
-        m_anticipator.anticipateEvent(httpService.createUpEvent());
+        m_eventMgr.getEventAnticipator().reset();
+        m_eventMgr.getEventAnticipator().anticipateEvent(httpService.createUpEvent());
 
         smtpService.bringDown();
 
-        m_anticipator.waitForAnticipated(10000);
+        m_eventMgr.getEventAnticipator().waitForAnticipated(10000);
 
         // Verifies that all of the outage fields are properly
         // set for both outages affecting the HTTP service,
@@ -1521,13 +1517,13 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_outageDao.flush();
 
         // We should get another node down
-        m_anticipator.anticipateEvent(node.createDownEvent());
+        m_eventMgr.getEventAnticipator().anticipateEvent(node.createDownEvent());
 
         // (Re)start the poller
         startDaemons();
 
         // Verify
-        m_anticipator.waitForAnticipated(10000);
+        m_eventMgr.getEventAnticipator().waitForAnticipated(10000);
 
         // Wait for the outages to be populated (this happen after
         // the down event is sent)
@@ -1610,12 +1606,12 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
     private void verifyAnticipated(long millis, boolean checkUnanticipated) {
         // make sure the down events are received
-        MockEventUtil.printEvents("Events we're still waiting for: ", m_anticipator.waitForAnticipated(millis));
-        assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(0).isEmpty());
+        MockEventUtil.printEvents("Events we're still waiting for: ", m_eventMgr.getEventAnticipator().waitForAnticipated(millis));
+        assertTrue("Expected events not forthcoming", m_eventMgr.getEventAnticipator().waitForAnticipated(0).isEmpty());
         if (checkUnanticipated) {
             sleep(2000);
-            MockEventUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
-            assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
+            MockEventUtil.printEvents("Unanticipated: ", m_eventMgr.getEventAnticipator().getUnanticipatedEvents());
+            assertEquals("Received unexpected events", 0, m_eventMgr.getEventAnticipator().getUnanticipatedEvents().size());
         }
         sleep(1000);
         m_eventMgr.finishProcessingEvents();
@@ -1631,9 +1627,9 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
     private void anticipateUp(MockElement element, boolean force) {
         if (force || !element.getPollStatus().equals(PollStatus.up())) {
             Event event = element.createUpEvent();
-            m_anticipator.anticipateEvent(event);
+            m_eventMgr.getEventAnticipator().anticipateEvent(event);
             for (Event outageResovedEvent: m_outageAnticipator.anticipateOutageClosed(element, event)) {
-                m_anticipator.anticipateEvent(outageResovedEvent);
+                m_eventMgr.getEventAnticipator().anticipateEvent(outageResovedEvent);
             }
         }
     }
@@ -1645,9 +1641,9 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
     private void anticipateDown(MockElement element, boolean force) {
         if (force || !element.getPollStatus().equals(PollStatus.down())) {
             Event event = element.createDownEvent();
-            m_anticipator.anticipateEvent(event);
+            m_eventMgr.getEventAnticipator().anticipateEvent(event);
             for (Event outageCretedEvent : m_outageAnticipator.anticipateOutageOpened(element, event)){
-                m_anticipator.anticipateEvent(outageCretedEvent);
+                m_eventMgr.getEventAnticipator().anticipateEvent(outageCretedEvent);
             }
         }
     }

@@ -247,8 +247,8 @@
       <bundle>wrap:mvn:org.apache.xmlgraphics/fop/1.0</bundle>
     </feature>
 
-    <feature name="guava" description="Google :: Guava" version="17.0">
-      <bundle dependency="true">mvn:com.google.guava/guava/17.0</bundle>
+    <feature name="guava" description="Google :: Guava" version="${guavaVersion}">
+      <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
     </feature>
 
     <!-- Use name hibernate36 so that we don't collide with Karaf 2.3.5+'s hibernate feature -->
@@ -695,15 +695,22 @@
       <feature>org.json</feature>
 
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
-      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.joesnmp/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-snmp-commands" description="OpenNMS :: Core :: SNMP :: Commands" version="${project.version}">
+      <feature>opennms-config-api</feature>
+      <feature>opennms-snmp</feature>
+
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-syslogd" description="OpenNMS :: Syslogd" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
       <feature>camel-core</feature>
       <feature>camel-http</feature>
+      <feature>camel-kafka</feature>
       <feature>camel-netty</feature>
       <feature>activemq-camel</feature>
 
@@ -742,7 +749,6 @@
     </feature>
 
     <!-- TODO: Rename this. It's more of an Dominion-side syslog connection handler... -->
-    <!-- TODO: We can't use the opennms-core-camel feature here because it pulls in artifacts that conflict with the system classpath -->
     <feature name="opennms-syslogd-handler-default" description="OpenNMS :: Syslogd :: Handler :: Default" version="${project.version}">
       <feature>activemq-camel</feature>
       <feature>camel-blueprint</feature>
@@ -759,11 +765,16 @@
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-default</bundle>
     </feature>
 
-    <feature name="opennms-syslogd-handler-kafka" description="OpenNMS :: Syslogd :: Handler :: Kafka" version="${project.version}">
+    <!-- TODO: Rename this. It's more of an Dominion-side syslog connection handler... -->
+    <feature name="opennms-syslogd-handler-kafka-default" description="OpenNMS :: Syslogd :: Handler :: Kafka :: Default" version="${project.version}">
       <feature>camel-blueprint</feature>
-      <feature>opennms-syslogd</feature>
 
-      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-kafka</bundle>
+      <!--
+      These classes are in the system classpath inside OpenNMS
+      <feature>opennms-syslogd</feature>
+      -->
+
+      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-kafka-default</bundle>
     </feature>
 
     <!-- TrapD feature -->
@@ -771,6 +782,7 @@
       <feature version="[4.0,4.1)">spring</feature>
       <feature>camel-core</feature>
       <feature>camel-http</feature>
+      <feature>camel-kafka</feature>
       <feature>camel-netty</feature>
       <feature>activemq-camel</feature>
 
@@ -785,12 +797,20 @@
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-trapd-listener" description="OpenNMS :: Trapd :: Listener" version="${project.version}">
+      <feature>camel-blueprint</feature>
+      <feature>opennms-trapd</feature>
+
+      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-listener</bundle>
+    </feature>
+
     <!-- TODO: Rename this. It's more of an Dominion-side trap message handler... -->
     <feature name="opennms-trapd-handler-default" description="OpenNMS :: Trapd :: Handler :: Default" version="${project.version}">
       <feature>activemq-camel</feature>
       <feature>camel-blueprint</feature>
       <feature>camel-http</feature>
       <feature>opennms-activemq-component</feature>
+
       <!--
       These classes are in the system classpath inside OpenNMS
       <feature>opennms-trapd</feature>
@@ -799,18 +819,16 @@
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-default</bundle>
     </feature>
 
-    <feature name="opennms-trapd-handler-kafka" description="OpenNMS :: Trapd :: Handler :: Kafka" version="${project.version}">
+    <!-- TODO: Rename this. It's more of an Dominion-side trap message handler... -->
+    <feature name="opennms-trapd-handler-kafka-default" description="OpenNMS :: Trapd :: Handler :: Kafka :: Default" version="${project.version}">
       <feature>camel-blueprint</feature>
+
+      <!--
+      These classes are in the system classpath inside OpenNMS
       <feature>opennms-trapd</feature>
+      -->
 
-      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-kafka</bundle>
-    </feature>
-
-    <feature name="opennms-trapd-listener" description="OpenNMS :: Trapd :: Listener" version="${project.version}">
-      <feature>camel-blueprint</feature>
-      <feature>opennms-trapd</feature>
-
-      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-listener</bundle>
+      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-kafka-default</bundle>
     </feature>
 
     <feature name="tsrm-troubleticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: Tivoli Service Request Manager (TSRM)">

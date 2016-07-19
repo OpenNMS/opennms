@@ -122,6 +122,7 @@ public class GraphPainter extends BaseGraphVisitor {
 
     @Override
 	public void visitVertex(Vertex vertex) throws PaintException {
+		boolean selected = isSelected(m_graphContainer.getSelectionManager(), vertex);
 		Point initialLocation = m_layout.getInitialLocation(vertex);
 		Point location = m_layout.getLocation(vertex);
 		SharedVertex v = new SharedVertex();
@@ -131,13 +132,13 @@ public class GraphPainter extends BaseGraphVisitor {
 		v.setInitialY((int)initialLocation.getY());
 		v.setX((int)location.getX());
 		v.setY((int) location.getY());
-		v.setSelected(isSelected(m_graphContainer.getSelectionManager(), vertex));
+		v.setSelected(selected);
         v.setStatus(getStatus(vertex));
         v.setStatusCount(getStatusCount(vertex));
         v.setSVGIconId(getIconId(vertex));
 		v.setLabel(vertex.getLabel());
 		v.setTooltipText(getTooltipText(vertex));
-        v.setStyleName(getVertexStyle(vertex));
+		v.setStyleName(getVertexStyle(vertex, selected));
 		v.setTargets(getTargets(vertex));
 		m_vertices.add(v);
 	}
@@ -146,19 +147,17 @@ public class GraphPainter extends BaseGraphVisitor {
 		return m_iconRepoManager.getSVGIconId(vertex);
 	}
 
-    private String getVertexStyle(Vertex vertex) {
+    private String getVertexStyle(Vertex vertex, boolean selected) {
         StringBuilder style = new StringBuilder();
         style.append("vertex");
-        if(isSelected(m_graphContainer.getSelectionManager(), vertex)){
+        if(selected) {
             style.append(" selected");
         }
-
         if(m_componentState.isHighlightFocus()) {
             if(!m_focusVertices.contains(vertex)) {
                 style.append(" opacity-40");
             }
         }
-
         return style.toString();
 
     }

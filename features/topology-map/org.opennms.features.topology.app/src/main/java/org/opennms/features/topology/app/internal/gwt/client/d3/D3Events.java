@@ -36,7 +36,8 @@ public enum D3Events {
 	CONTEXT_MENU("contextmenu"),
 	DRAG_START("dragstart"),
 	DRAG("drag"),
-	DRAG_END("dragend"), 
+	DRAG_END("dragend"),
+	MOUSE_WHEEL("mousewheel"),
 	MOUSE_OVER("mouseover"), 
 	MOUSE_OUT("mouseout"),
 	DOUBLE_CLICK("dblclick");

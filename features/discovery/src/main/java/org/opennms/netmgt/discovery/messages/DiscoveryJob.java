@@ -33,10 +33,12 @@ import static java.math.MathContext.DECIMAL64;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.opennms.core.utils.IteratorIterator;
+import org.opennms.core.utils.IteratorUtils;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
@@ -54,19 +56,40 @@ public class DiscoveryJob implements Serializable {
     // TODO: Make this configurable?
     public static final BigDecimal FUDGE_FACTOR = BigDecimal.valueOf(1.5);
 
+    /**
+     * Construct a {@link DiscoveryJob}. All ranges must have the 
+     * same foreignSource and location for the message to be routed correctly.
+     * 
+     * @param ranges
+     * @param foreignSource
+     * @param location
+     * @param packetsPerSecond
+     */
     public DiscoveryJob(List<IPPollRange> ranges, String foreignSource, String location, double packetsPerSecond) {
         m_ranges = Preconditions.checkNotNull(ranges, "ranges argument");
         m_foreignSource = Preconditions.checkNotNull(foreignSource, "foreignSource argument");
         m_location = Preconditions.checkNotNull(location, "location argument");
         m_packetsPerSecond = packetsPerSecond > 0.0 ? packetsPerSecond : DiscoveryConfigFactory.DEFAULT_PACKETS_PER_SECOND;
+
+        // Verify that all ranges in this job have the same foreign source
+        Preconditions.checkState(m_ranges.stream().allMatch(range -> range.getForeignSource() == null || m_foreignSource.equals(range.getForeignSource())));
+        // Verify that all ranges in this job have the same location
+        Preconditions.checkState(m_ranges.stream().allMatch(range -> range.getLocation() == null || m_location.equals(range.getLocation())));
+    }
+
+    /**
+     * For testing.
+     */
+    public Collection<IPPollRange> getRanges() {
+        return Collections.unmodifiableCollection(m_ranges);
     }
 
     public Iterable<IPPollAddress> getAddresses() {
-        final List<Iterator<IPPollAddress>> iters = new ArrayList<Iterator<IPPollAddress>>();
+        final List<Iterator<IPPollAddress>> iters = new ArrayList<>();
         for(final IPPollRange range : m_ranges) {
             iters.add(range.iterator());
         }
-        return new IteratorIterator<IPPollAddress>(iters);
+        return IteratorUtils.concatIterators(iters);
     }
 
     public String getForeignSource() {
@@ -138,8 +161,11 @@ public class DiscoveryJob implements Serializable {
             // Add a delay for the rate limiting done with the
             // m_packetsPerSecond field
             taskTimeOut = taskTimeOut.add(
+                // Take the number of addresses
                 new BigDecimal(range.getAddressRange().size())
+                // Divide by the number of packets per second
                 .divide(BigDecimal.valueOf(m_packetsPerSecond), DECIMAL64)
+                // 1000 milliseconds
                 .multiply(BigDecimal.valueOf(1000), DECIMAL64),
                 DECIMAL64
             );

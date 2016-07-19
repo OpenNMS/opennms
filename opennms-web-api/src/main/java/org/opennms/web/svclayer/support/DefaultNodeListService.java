@@ -96,10 +96,10 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
          * All search queries can be done solely with
          * criteria, so we build a common criteria object with common
          * restrictions and sort options.  Each specific search query
-         * adds its own crtieria restrictions (if any).
+         * adds its own criteria restrictions (if any).
          * 
          * A set of booleans is maintained for aliases that might be
-         * added in muliple places to ensure we don't add the same alias
+         * added in multiple places to ensure we don't add the same alias
          * multiple times.
          */
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class, "node");

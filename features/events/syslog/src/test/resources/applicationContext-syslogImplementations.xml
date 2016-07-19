@@ -22,23 +22,28 @@
 
   <bean id="syslogReceiverNio" class="org.opennms.netmgt.syslogd.SyslogReceiverNioThreadPoolImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
+    <property name="distPollerDao" ref="distPollerDao"/>
   </bean>
 
   <bean id="syslogReceiverNioDisruptor" class="org.opennms.netmgt.syslogd.SyslogReceiverNioDisruptorImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
+    <property name="distPollerDao" ref="distPollerDao"/>
   </bean>
 
   <bean id="syslogReceiverNioDisruptorSEP" class="org.opennms.netmgt.syslogd.SyslogReceiverNioDisruptorImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
+    <property name="distPollerDao" ref="distPollerDao"/>
     <property name="executorFactory" ref="executorFactoryCassandraSEP"/>
   </bean>
 
   <bean id="syslogReceiverJavaNet" class="org.opennms.netmgt.syslogd.SyslogReceiverJavaNetImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
+    <property name="distPollerDao" ref="distPollerDao"/>
   </bean>
 
   <bean id="syslogReceiverCamelNetty" class="org.opennms.netmgt.syslogd.SyslogReceiverCamelNettyImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
+    <property name="distPollerDao" ref="distPollerDao"/>
   </bean>
 
 </beans>

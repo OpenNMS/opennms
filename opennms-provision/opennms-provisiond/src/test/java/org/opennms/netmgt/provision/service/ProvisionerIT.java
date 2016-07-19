@@ -188,9 +188,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     private ProvisionService m_provisionService;
 
     @Autowired
-    private ImportScheduler m_importSchedule;
-
-    @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
 
     @Autowired
@@ -423,10 +420,10 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
         importFromResource("classpath:/tec_dump.xml", Boolean.TRUE.toString());
 
-        for (final Event e : m_eventAnticipator.getAnticipatedEventsRecieved()) {
+        for (final Event e : m_eventAnticipator.getAnticipatedEventsReceived()) {
             System.err.println("received anticipated: " + e);
         }
-        for (final Event e : m_eventAnticipator.unanticipatedEvents()) {
+        for (final Event e : m_eventAnticipator.getUnanticipatedEvents()) {
             System.err.println("received unanticipated: " + e);
         }
 
@@ -1641,7 +1638,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", Boolean.TRUE.toString());
 
         m_eventAnticipator.verifyAnticipated();
-        assertEquals(0, m_eventAnticipator.unanticipatedEvents().size());
+        assertEquals(0, m_eventAnticipator.getUnanticipatedEvents().size());
         m_eventAnticipator.reset();
 
         m_eventAnticipator.anticipateEvent(nodeScanCompleted(nextNodeId));
@@ -1809,7 +1806,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         m_eventAnticipator.anticipateEvent(nodeScanAborted(node.getId()));
         m_eventAnticipator.setDiscardUnanticipated(true);
 
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "should_not_exist", "1");
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "should_not_exist", "1", node.getLocation());
         runScan(scan);
 
         m_eventAnticipator.verifyAnticipated();

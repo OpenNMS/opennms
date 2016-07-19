@@ -48,11 +48,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -97,6 +94,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterfaceCollection;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -140,12 +138,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private MonitoringLocationDao m_monitoringLocationDao;
 
     @Autowired
-    private LocationMonitorDao m_locationMonitorDao;
-
-    @Autowired
-    private DistPollerDao m_distPollerDao;
-
-    @Autowired
     private NodeDao m_nodeDao;
 
     @Autowired
@@ -167,9 +159,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private RequisitionedCategoryAssociationDao m_categoryAssociationDao;
 
     @Autowired
-    private DiscoveryConfigurationFactory m_discoveryFactory;
-
-    @Autowired
     @Qualifier("transactionAware")
     private EventForwarder m_eventForwarder;
 
@@ -188,6 +177,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private PlatformTransactionManager m_transactionManager;
 
     private HostnameResolver m_hostnameResolver = new DefaultHostnameResolver();
+
+    @Autowired
+    private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
     private final ThreadLocal<Map<String, OnmsServiceType>> m_typeCache = new ThreadLocal<Map<String, OnmsServiceType>>();
     private final ThreadLocal<Map<String, OnmsCategory>> m_categoryCache = new ThreadLocal<Map<String, OnmsCategory>>();
@@ -1001,7 +993,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 }
             }
 
-            return new NodeScanSchedule(node.getId(), actualForeignSource, node.getForeignId(), initialDelay, scanInterval);
+            return new NodeScanSchedule(node.getId(), actualForeignSource, node.getForeignId(), node.getLocation(), initialDelay, scanInterval);
         } catch (final ForeignSourceRepositoryException e) {
             LOG.warn("unable to get foreign source '{}' from repository", effectiveForeignSource, e);
             return null;
@@ -1111,6 +1103,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             @Override
             protected OnmsNode doUpdate(final OnmsNode dbNode) {
+                dbNode.setLocation(createLocationIfNecessary(node.getLocation() == null ? null : node.getLocation().getLocationName()));
+                LOG.debug("Associating node {}/{}/{} with location: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), dbNode.getLocation());
+
                 final EventAccumulator accumulator = new EventAccumulator(m_eventForwarder);
 
                 final boolean changed = handleCategoryChanges(dbNode);
@@ -1132,7 +1127,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             @Override
             protected OnmsNode doInsert() {
-                node.setLocation(createLocationIfNecessary(node.getLocation() == null ? null : node.getLocation().getLocationName()));
                 return saveOrUpdate(node);
             }
         }.execute();
@@ -1478,5 +1472,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     public HostnameResolver getHostnameResolver() {
         return m_hostnameResolver;
+    }
+
+    @Override
+    public LocationAwareSnmpClient getLocationAwareSnmpClient() {
+        return m_locationAwareSnmpClient;
     }
 }

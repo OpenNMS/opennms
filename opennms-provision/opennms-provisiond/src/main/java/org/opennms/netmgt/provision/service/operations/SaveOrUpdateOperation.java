@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -56,10 +56,9 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     private ScanManager m_scanManager;
     private String m_rescanExisting = Boolean.TRUE.toString();
 
-    protected SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, String location, ProvisionService provisionService, String rescanExisting) {
+    protected SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService, String rescanExisting) {
         super(provisionService);
 
-        // TODO: Is this the correct way to set OnmsMonitoringLocation?
         m_node = new OnmsNode(new OnmsMonitoringLocation(location, location), nodeLabel);
         m_node.setId(nodeId);
         m_node.setLabelSource(NodeLabelSource.USER);
@@ -100,12 +99,16 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
         m_currentInterface.setIsSnmpPrimary(primaryType);
         
+        if (System.getProperty("org.opennms.provisiond.reverseResolveRequisitionIpInterfaceHostnames", "true").equalsIgnoreCase("true")) {
+        	m_currentInterface.setIpHostName(reverseResolveHostname(ipAddr));
+        }
+        
         if (PrimaryType.PRIMARY.equals(primaryType)) {
         	final InetAddress addr = InetAddressUtils.addr(ipAddr);
         	if (addr == null) {
         		LOG.error("Unable to resolve address of snmpPrimary interface for node {} with address '{}'", m_node.getLabel(), ipAddr);
         	} else {
-        		m_scanManager = new ScanManager(addr);
+        		m_scanManager = new ScanManager(getProvisionService().getLocationAwareSnmpClient(), addr);
         	}
         }
         
@@ -184,4 +187,10 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
             LOG.warn("Could not set property on object of type {}: {}", m_node.getClass().getName(), name, e);
         }
     }
+
+	private String reverseResolveHostname(String ipAddr) {
+		InetAddress addr = InetAddressUtils.addr(ipAddr);
+		return addr.getCanonicalHostName();
+	}
+    
 }

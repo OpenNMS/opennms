@@ -34,6 +34,7 @@ import com.google.common.collect.Lists;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import org.opennms.features.vaadin.components.graph.InlineGraphContainer;
+import com.vaadin.ui.Label;
 
 public class InfoPanel extends CssLayout {
 
@@ -81,6 +82,13 @@ public class InfoPanel extends CssLayout {
         if (expanded) {
             staticComponents.forEach(sc -> addComponent(sc));
             dynamicComponents.forEach(c -> addComponent(c));
+
+            // Add an empty component with width = 350px to always force the max length
+            // This is required as otherwise the left area of the info panel would be empty, even if the info panel
+            // is not shown.
+            Label label = new Label();
+            label.setWidth(350, Unit.PIXELS);
+            addComponent(label);
         } else {
             addComponent(toggleButton);
         }

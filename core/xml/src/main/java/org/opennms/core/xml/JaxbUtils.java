@@ -310,7 +310,7 @@ public abstract class JaxbUtils {
     /**
      * Get a JAXB unmarshaller for the given object.  If no JAXBContext is provided,
      * JAXBUtils will create and cache a context for the given object.
-     * @param obj The object type to be unmarshaled.
+     * @param obj The object type to be unmarshalled.
      * @param jaxbContext An optional JAXB context to create the unmarshaller from.
      * @param validate TODO
      * @return an Unmarshaller
@@ -334,13 +334,11 @@ public abstract class JaxbUtils {
 
         if (unmarshaller == null) {
             try {
-                final JAXBContext context;
                 if (jaxbContext == null) {
-                    context = getContextFor(clazz);
+                    unmarshaller = getContextFor(clazz).createUnmarshaller();
                 } else {
-                    context = jaxbContext;
+                    unmarshaller = jaxbContext.createUnmarshaller();
                 }
-                unmarshaller = context.createUnmarshaller();
             } catch (final JAXBException e) {
                 throw EXCEPTION_TRANSLATOR.translate("creating XML marshaller", e);
             }

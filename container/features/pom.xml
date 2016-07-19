@@ -210,6 +210,7 @@
             <feature>opennms-rrd-api</feature>
             <feature>opennms-rrd-jrobin</feature>
             <feature>opennms-snmp</feature>
+            <feature>opennms-snmp-commands</feature>
             <feature>opennms-syslogd</feature>
             <feature>opennms-syslogd-listener-javanet</feature>
             <feature>opennms-syslogd-listener-camel-netty</feature>
@@ -220,6 +221,7 @@
             <feature>opennms-trapd</feature>
             <feature>opennms-trapd-handler-default</feature>
             <feature>opennms-trapd-listener</feature>
+            <feature>opennms-trapd-handler-kafka</feature>
             <!-- <feature>opennms-webapp</feature> -->
             <feature>org.json</feature>
             <feature>postgresql</feature>
@@ -560,7 +562,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>
-      <artifactId>org.opennms.core.snmp.proxy.camel</artifactId>
+      <artifactId>org.opennms.core.snmp.proxy.rpc-impl</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

@@ -30,8 +30,6 @@ package org.opennms.netmgt.scriptd;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -39,7 +37,6 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.ScriptdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.access.BeanFactoryReference;
@@ -51,8 +48,8 @@ import org.springframework.beans.factory.access.BeanFactoryReference;
  * This services uses the Bean Scripting Framework (BSF) in order to allow
  * scripts to be written in a variety of registered languages.
  *
- * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
- * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
+ * @author <a href="mailto:jim.doble@tavve.com">Jim Doble</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS.org</a>
  */
 public final class Scriptd extends AbstractServiceDaemon {
     
@@ -68,20 +65,13 @@ public final class Scriptd extends AbstractServiceDaemon {
     /**
      * The execution launcher
      */
-    private Executor m_execution;
-
-    /**
-     * The broadcast event receiver.
-     */
-    private BroadcastEventProcessor m_eventReader;
+    private Executor m_executor = null;
 
     /**
      * Constructs a new Script execution daemon.
      */
     private Scriptd() {
-    	super(NAME);
-        m_execution = null;
-        m_eventReader = null;
+        super(NAME);
     }
 
     /**
@@ -108,24 +98,11 @@ public final class Scriptd extends AbstractServiceDaemon {
             throw new UndeclaredThrowableException(ex);
         }
 
-        // A queue for execution
-
-        BlockingQueue<Event> execQ = new LinkedBlockingQueue<>();
-
-        // start the event reader
-
-        try {
-            m_eventReader = new BroadcastEventProcessor(execQ);
-        } catch (Throwable ex) {
-            LOG.error("Failed to setup event reader", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
         // get the node DAO
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
         NodeDao nodeDao = BeanUtils.getBean(bf, "nodeDao", NodeDao.class);
 
-        m_execution = new Executor(execQ, aFactory, nodeDao);
+        m_executor = new Executor(aFactory, nodeDao);
     }
 
     /**
@@ -133,49 +110,32 @@ public final class Scriptd extends AbstractServiceDaemon {
      */
     @Override
     protected void onStart() {
-		if (m_execution == null) {
-		    init();
-		}
+        if (m_executor == null) {
+            init();
+        }
 
-		m_execution.start();
-		LOG.info("Scriptd running");
-	}
+        m_executor.start();
+
+        LOG.info("Scriptd started");
+    }
 
     /**
      * <p>onStop</p>
      */
     @Override
     protected void onStop() {
-		try {
-            if (m_execution != null) {
-                m_execution.stop();
+        try {
+            if (m_executor != null) {
+                m_executor.stop();
             }
         } catch (Throwable e) {
+            LOG.warn("Unexpected throwable when stopping Scriptd", e);
         }
 
-        if (m_eventReader != null) {
-            m_eventReader.close();
-        }
+        m_executor = null;
 
-        m_eventReader = null;
-        m_execution = null;
-	}
-
-    /**
-     * <p>onPause</p>
-     */
-    @Override
-    protected void onPause() {
-		m_execution.pause();
-	}
-
-    /**
-     * <p>onResume</p>
-     */
-    @Override
-    protected void onResume() {
-		m_execution.resume();
-	}
+        LOG.info("Scriptd stopped");
+    }
 
     /**
      * Returns the singular instance of the <em>Scriptd</em> daemon. There can

@@ -48,7 +48,10 @@ import org.springframework.util.Assert;
 
 /**
  * The TrapQueueProcessor handles the conversion of V1 and V2 traps to events
- * and sending them out the JSDT channel that eventd is listening on
+ * and sending them out the JSDT channel that eventd is listening on.
+ * 
+ * @see Java Shared Data Toolkit
+ * @see http://www.drdobbs.com/collaborative-applications-and-the-java/184403999
  * 
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>

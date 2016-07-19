@@ -38,6 +38,7 @@
     <module>lib</module>
     <module>logging-api</module>
     <module>profiler</module>
+    <module>rpc</module>
     <module>runtime</module>
     <module>schema</module>
     <module>snmp</module>

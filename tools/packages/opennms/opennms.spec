@@ -66,6 +66,8 @@ Requires:		%{name}-core        = %{version}-%{release}
 Requires(pre):		postgresql-server  >= 9.1
 Requires:		postgresql-server  >= 9.1
 
+Recommends:		%{name}-source      = %{version}-%{release}
+
 # don't worry about buildrequires, the shell script will bomb quick  =)
 #BuildRequires:		%{jdk}
 
@@ -114,6 +116,17 @@ If you wish to install them to an alternate location, use the --relocate rpm
 option, like so:
 
   rpm -i --relocate %{logdir}=/mnt/netapp/%{name}-logs %{name}-core.rpm
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package source
+Summary:	Source for the %{_descr} network management platform
+Group:		Applications/System
+
+%description source
+This package contains the source tarball for %{_descr}, for AGPL compliance.
 
 %{extrainfo}
 %{extrainfo2}
@@ -170,6 +183,19 @@ Obsoletes:	opennms-webapp < 1.3.11
 %description webapp-jetty
 The web UI.  This is the Jetty version, which runs
 embedded in the main core process.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package webapp-remoting
+Summary:	Remote Poller webapp
+Group:		Applications/System
+Requires:	%{name}-webapp-jetty = %{version}-%{release}
+Conflicts:	%{name}-webapp-jetty < 19.0.0-0
+
+%description webapp-remoting
+The JNLP application that provides the Remote Poller.
 
 %{extrainfo}
 %{extrainfo2}
@@ -696,6 +722,8 @@ find $RPM_BUILD_ROOT%{instprefix}/etc $RPM_BUILD_ROOT%{instprefix}/lib $RPM_BUIL
 # jetty
 find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
+	grep -v '/opennms-remoting' | \
+	grep -v '/opennms/source/' | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
 	grep -v '/WEB-INF/jsp/alarm/ncs' | \
@@ -704,10 +732,12 @@ find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
 	sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir}/*/WEB-INF/*.xml | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config ," | \
+	grep -v '/opennms-remoting' | \
 	grep -v '/WEB-INF/ncs' | \
 	sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir} -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+	grep -v '/opennms-remoting' | \
 	sort >> %{_tmppath}/files.jetty
 
 cd -
@@ -757,10 +787,18 @@ rm -rf $RPM_BUILD_ROOT
 %{sharedir}/etc-pristine/drools-engine.d/ncs/*
 %{sharedir}/etc-pristine/ncs-northbounder-configuration.xml
 
+%files source
+%defattr(644 root root 755)
+%{jettydir}/opennms/source/*
+
 %files webapp-jetty -f %{_tmppath}/files.jetty
 %defattr(644 root root 755)
-%config %{jettydir}/opennms-remoting/WEB-INF/*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/*.properties
+
+%files webapp-remoting
+%defattr(644 root root 755)
+%config %{jettydir}/opennms-remoting/WEB-INF/*.xml
+%{jettydir}/opennms-remoting
 
 %files plugins
 

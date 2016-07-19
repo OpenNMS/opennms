@@ -443,6 +443,12 @@ div.v-table-header-wrap {
     font-weight: bold;
 }
 
+.info-panel-area {
+    height: 100%;
+    max-width: 350px; /* When changing this, also change the width of the dummy label in InfoPanel#refreshInfoArea */
+    overflow-y: auto;
+}
+
 /** Simulation Info Panel Styling */
 .info-panel-component .v-slot-simulation .v-slot-warning {
     color: orange;

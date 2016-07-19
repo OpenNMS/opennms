@@ -99,9 +99,9 @@ public class ForceRescanScan implements Scan {
                 LOG.info("The node with ID {} does not have any IP addresses", m_nodeId);
             } else {
                 phase.getBuilder().addSequence(
-                    new NodeInfoScan(node, iface.getIpAddress(), node.getForeignSource(), createScanProgress(), m_agentConfigFactory, m_provisionService, node.getId()),
-                    new IpInterfaceScan(node.getId(), iface.getIpAddress(), node.getForeignSource(), m_provisionService),
-                    new NodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator)
+                    new NodeInfoScan(node, iface.getIpAddress(), node.getForeignSource(), node.getLocation(), createScanProgress(), m_agentConfigFactory, m_provisionService, node.getId()),
+                    new IpInterfaceScan(node.getId(), iface.getIpAddress(), node.getForeignSource(), node.getLocation(), m_provisionService),
+                    new NodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation(), m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator)
                 );
             }
         } else {

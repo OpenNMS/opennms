@@ -114,12 +114,13 @@ import com.vaadin.ui.VerticalSplitPanel;
 @Theme("opennms")
 @JavaScript({
     "//maps.google.com/maps/api/js?sensor=false",
-    "gwt/public/leaflet-0.5.1/leaflet-src.js",
+    "gwt/public/leaflet/leaflet-src.js",
     "gwt/public/openlayers/OpenLayers.js",
     "gwt/public/markercluster/leaflet.markercluster-src.js"
 
 })
 @StyleSheet({
+    "gwt/public/leaflet/leaflet.css",
     "gwt/public/markercluster/MarkerCluster.css",
     "gwt/public/markercluster/MarkerCluster.Default.css",
     "gwt/public/node-maps.css"
@@ -288,6 +289,11 @@ public class NodeMapsApplication extends UI {
         createMapPanel(searchString, maxClusterRadius);
         createRootLayout();
         addRefresher();
+
+        // Notify the user if no tileserver url or options are set
+        if (!NodeMapConfiguration.isValid()) {
+            new InvalidConfigurationWindow().open();
+        }
 
         // Schedule refresh of node data
         m_executor.scheduleWithFixedDelay(() -> m_mapWidgetComponent.refreshNodeData(), 0, 5, TimeUnit.MINUTES);
