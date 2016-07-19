@@ -66,8 +66,6 @@ Requires:		%{name}-core        = %{version}-%{release}
 Requires(pre):		postgresql-server  >= 9.1
 Requires:		postgresql-server  >= 9.1
 
-Recommends:		%{name}-source      = %{version}-%{release}
-
 # don't worry about buildrequires, the shell script will bomb quick  =)
 #BuildRequires:		%{jdk}
 
