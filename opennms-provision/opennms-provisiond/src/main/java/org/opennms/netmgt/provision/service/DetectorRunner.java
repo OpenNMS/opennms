@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.Callback;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginParameter;
 import org.slf4j.Logger;
@@ -44,31 +45,37 @@ class DetectorRunner implements Async<Boolean> {
 
     private final ProvisionService m_service;
     private final PluginConfig m_detectorConfig;
-    private final InetAddress m_address;
     private final Integer m_nodeId;
+    private final InetAddress m_address;
+    private final OnmsMonitoringLocation m_location;
 
-    public DetectorRunner(ProvisionService service, PluginConfig detectorConfig, InetAddress address, Integer nodeId) {
+    public DetectorRunner(ProvisionService service, PluginConfig detectorConfig, Integer nodeId, InetAddress address, OnmsMonitoringLocation location) {
         m_service = service;
         m_detectorConfig = detectorConfig;
-        m_address = address;
         m_nodeId = nodeId;
+        m_address = address;
+        m_location = location;
     }
 
     /** {@inheritDoc} */
     @Override
     public void supplyAsyncThenAccept(final Callback<Boolean> cb) {
         try {
-            LOG.info("Attemping to detect service {} on address {}", m_detectorConfig.getName(), getHostAddress());
+            LOG.info("Attemping to detect service {} on address {} at location {}",
+                    m_detectorConfig.getName(), getHostAddress(), getLocationName());
             // Launch the detector
             m_service.getLocationAwareDetectorClient().detect()
                 .withClassName(m_detectorConfig.getPluginClass())
                 .withAddress(m_address)
                 .withNodeId(m_nodeId)
+                .withLocation(getLocationName())
                 .withAttributes(m_detectorConfig.getParameters().stream()
                         .collect(Collectors.toMap(PluginParameter::getKey, PluginParameter::getValue)))
                 .execute()
                 // After completion, run the callback
                 .whenComplete((res, ex) -> {
+                    LOG.info("Completed detector execution for service {} on address {} at location {}",
+                            m_detectorConfig.getName(), getHostAddress(), getLocationName());
                     if (ex != null) {
                         cb.handleException(ex);
                     } else {
@@ -82,6 +89,10 @@ class DetectorRunner implements Async<Boolean> {
 
 	private String getHostAddress() {
 		return InetAddressUtils.str(m_address);
+	}
+
+	private String getLocationName() {
+	    return m_location != null ? m_location.getLocationName() : null;
 	}
 
     /** {@inheritDoc} */

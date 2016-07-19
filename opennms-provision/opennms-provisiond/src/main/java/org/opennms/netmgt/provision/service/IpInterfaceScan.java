@@ -134,7 +134,7 @@ public class IpInterfaceScan implements RunInBatch {
                 .append("address", m_address)
                 .append("foreign source", m_foreignSource)
                 .append("node ID", m_nodeId)
-                .append("location", m_location.getLocationName())
+                .append("location", m_location != null ? m_location.getLocationName() : null)
                 .toString();
     }
 
@@ -190,8 +190,8 @@ public class IpInterfaceScan implements RunInBatch {
         };
     }
 
-    protected static AbstractTask createDetectorTask(final BatchTask currentPhase, final ProvisionService service, final PluginConfig detectorConfig, final int nodeId, final InetAddress address) {
-        return currentPhase.getCoordinator().createTask(currentPhase, new DetectorRunner(service, detectorConfig, address, nodeId), servicePersister(currentPhase, service, detectorConfig, nodeId, address));
+    protected static AbstractTask createDetectorTask(final BatchTask currentPhase, final ProvisionService service, final PluginConfig detectorConfig, final int nodeId, final InetAddress address, final OnmsMonitoringLocation location) {
+        return currentPhase.getCoordinator().createTask(currentPhase, new DetectorRunner(service, detectorConfig, nodeId, address, location), servicePersister(currentPhase, service, detectorConfig, nodeId, address));
     }
 
     /** {@inheritDoc} */
@@ -204,7 +204,7 @@ public class IpInterfaceScan implements RunInBatch {
 
         for (final PluginConfig detectorConfig : detectorConfigs) {
             if (shouldDetect(detectorConfig, getAddress())) {
-                currentPhase.add(createDetectorTask(currentPhase, getProvisionService(), detectorConfig, getNodeId(), getAddress()));
+                currentPhase.add(createDetectorTask(currentPhase, getProvisionService(), detectorConfig, getNodeId(), getAddress(), getLocation()));
             }
         }
     }
