@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.detector.jmx;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Map;
 
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
@@ -63,7 +64,12 @@ public class GenericJMXDetectorFactory<T extends JMXDetector> extends GenericSer
         if (port == null) {
             throw new IllegalArgumentException("Need to specify port number in the form of port=number for Jsr160Detector");
         }
-        return jmxConfigDao.getConfig().lookupMBeanServer(ipAddress, port).getParameterMap();
+
+        if (jmxConfigDao == null) {
+            return Collections.emptyMap();
+        } else {
+            return jmxConfigDao.getConfig().lookupMBeanServer(ipAddress, port).getParameterMap();
+        }
     }
 
     public void setJmxConfigDao(JmxConfigDao jmxConfigDao) {

@@ -56,11 +56,15 @@ public class DetectorResponseDTO implements DetectResults, RpcResponse {
     @XmlElement(name = "attribute")
     private List<DetectorAttributeDTO> attributes = new ArrayList<>();
 
-    public DetectorResponseDTO() { }
+    public DetectorResponseDTO() {
+        // Default constructor for JAXB
+    }
 
     public DetectorResponseDTO(DetectResults results) {
         setDetected(results.isServiceDetected());
-        addAttributes(results.getServiceAttributes());
+        if (results.getServiceAttributes() != null) {
+            addAttributes(results.getServiceAttributes());
+        }
     }
 
     public DetectorResponseDTO(Throwable t) {
