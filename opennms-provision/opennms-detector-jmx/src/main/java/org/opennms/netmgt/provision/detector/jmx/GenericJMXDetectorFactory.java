@@ -34,8 +34,8 @@ import java.util.Map;
 
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.provision.DetectRequest;
-import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.opennms.netmgt.provision.support.DetectRequestImpl;
+import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class GenericJMXDetectorFactory<T extends JMXDetector> extends GenericServiceDetectorFactory<JMXDetector> {

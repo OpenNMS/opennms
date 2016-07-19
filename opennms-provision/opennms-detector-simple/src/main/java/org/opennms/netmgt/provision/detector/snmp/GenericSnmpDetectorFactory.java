@@ -33,8 +33,8 @@ import java.util.Map;
 
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.DetectRequest;
-import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
 import org.opennms.netmgt.provision.support.DetectRequestImpl;
+import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericServiceDetectorFactory<SnmpDetector> {

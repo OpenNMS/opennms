@@ -26,12 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision;
+package org.opennms.netmgt.provision.support;
 
 import java.net.InetAddress;
 import java.util.Objects;
 
-import org.opennms.netmgt.provision.support.DetectRequestImpl;
+import org.opennms.netmgt.provision.DetectRequest;
+import org.opennms.netmgt.provision.DetectResults;
+import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.ServiceDetectorFactory;
 
 public class GenericServiceDetectorFactory<T extends ServiceDetector> implements ServiceDetectorFactory<T> {
 
