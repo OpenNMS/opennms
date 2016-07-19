@@ -889,6 +889,13 @@
       <feature>opennms-icmp-api</feature>
       <feature>opennms-icmp-jni6</feature>
       <bundle>wrap:mvn:bsf/bsf/2.4.0</bundle>
+      <bundle>wrap:mvn:org.dhcp.jdhcp/jdhcp/1.1.1</bundle>
+      <bundle>wrap:mvn:org.krupczak/xmp/1.40</bundle>
+      <feature>commons-cli</feature>
+      <bundle>wrap:mvn:net.jradius/jradius-core/1.1.4</bundle>
+      <bundle>wrap:mvn:net.jradius/jradius-dictionary/1.1.4</bundle>
+      <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
+      <bundle>mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.impl/${project.version}</bundle>
@@ -902,6 +909,10 @@
       <bundle>mvn:org.opennms/opennms-detector-ssh/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-web/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
+      <bundle>mvn:org.opennms.protocols/org.opennms.protocols.dhcp/${project.version}</bundle>
+      <bundle>mvn:org.opennms.protocols/org.opennms.protocols.nsclient/${project.version}</bundle>
+      <bundle>mvn:org.opennms.protocols/org.opennms.protocols.radius/${project.version}</bundle>
+      <bundle>mvn:org.opennms.protocols/org.opennms.protocols.xmp/${project.version}</bundle>
     </feature>
     
     <feature name="opennms-provisioning-shell" description="OpenNMS :: Provisioning :: Shell" version="${project.version}">

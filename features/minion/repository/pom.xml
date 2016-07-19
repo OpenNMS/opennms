@@ -154,7 +154,27 @@
 		<dependency>
 			<groupId>org.opennms</groupId>
 			<artifactId>opennms-detector-web</artifactId>
-			</dependency>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms.protocols</groupId>
+			<artifactId>org.opennms.protocols.dhcp</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms.protocols</groupId>
+			<artifactId>org.opennms.protocols.radius</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	    <dependency>
+			<groupId>org.opennms.protocols</groupId>
+			<artifactId>org.opennms.protocols.xmp</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	    <dependency>
+			<groupId>org.opennms.protocols</groupId>
+			<artifactId>org.opennms.protocols.nsclient</artifactId>
+			<version>${project.version}</version>
+		</dependency>
     </dependencies>
 
     <pluginRepositories>
@@ -204,5 +224,12 @@
             <name>OOSNMP Repository</name>
             <url>http://maven.opennms.org/content/repositories/oosnmp-repo</url>
         </repository>
+		<repository>
+			<snapshots><enabled>false</enabled></snapshots>
+			<releases><enabled>true</enabled></releases>
+			<id>coova</id>
+			<name>Coova Repository</name>
+			<url>http://maven.opennms.org/content/repositories/coova/</url>
+		</repository>
     </repositories>
 </project>

@@ -58,8 +58,6 @@ import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * OpenNMS XMP Detector allows for discovery of service/protocols via
@@ -74,8 +72,7 @@ import org.springframework.stereotype.Component;
  * @author rdk <rdk@krupczak.org>
  * @version $Id: $
  */
-@Component
-@Scope("prototype")
+
 public class XmpDetector implements SyncServiceDetector {
     private static final String DEFAULT_SERVICE_NAME = "XMP";
     private static final String XMP_DEFAULT_AUTH_USER = "xmpUser";
