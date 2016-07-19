@@ -42,15 +42,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.minion.core.api.MinionIdentity;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
-import org.opennms.netmgt.provision.detector.client.rpc.DetectorClientRpcModule;
 import org.opennms.netmgt.provision.detector.loop.LoopDetector;
+import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -86,6 +85,9 @@ public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
     @Autowired
     private DetectorClientRpcModule detectorClientRpcModule;
 
+    @Autowired
+    private ServiceDetectorRegistry serviceDetectorRegistry;
+
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -111,12 +113,12 @@ public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
         Properties props = new Properties();
         props.setProperty("alias", "opennms.broker");
         services.put(Component.class.getName(), new KeyValueHolder<Object, Dictionary>(queuingservice, props));
-        services.put(RpcModule.class.getName(), new KeyValueHolder<Object, Dictionary>(detectorClientRpcModule, new Properties()));
+        services.put(ServiceDetectorRegistry.class.getName(), new KeyValueHolder<Object, Dictionary>(serviceDetectorRegistry, new Properties()));
     }
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "classpath:/OSGI-INF/blueprint/blueprint-rpc-server.xml";
+        return "classpath:/OSGI-INF/blueprint/blueprint-rpc-server.xml,classpath:/OSGI-INF/blueprint/blueprint.xml";
     }
 
     /**
