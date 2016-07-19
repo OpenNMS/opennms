@@ -45,7 +45,7 @@ import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 
 @Command(scope = "provision", name = "detect", description = "Detect the service on a host at specified location")
-public class DetectCommand extends OsgiCommandSupport {
+public class Detect extends OsgiCommandSupport {
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String m_location;

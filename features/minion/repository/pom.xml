@@ -48,9 +48,9 @@
                                 <feature>opennms-trapd-listener</feature>
                                 <feature>opennms-trapd-handler-minion</feature>
                                 <!-- <feature>opennms-trapd-handler-kafka</feature> -->
+                                <feature>minion-shell</feature>
                                 <feature>minion-heartbeat</feature>
                                 <feature>minion-snmp-proxy</feature>
-                                <feature>minion-provisiond-shell</feature>
                                 <feature>minion-provisiond-detectors</feature>
                             </features>
                             <repository>target/maven-repo</repository>
@@ -114,10 +114,10 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.minion</groupId>
-            <artifactId>provisiond-shell</artifactId>
+            <groupId>org.opennms.features.minion.shell</groupId>
+            <artifactId>org.opennms.features.minion.shell.provision</artifactId>
             <version>${project.version}</version>
-	    </dependency>
+        </dependency>
 	    <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-detector-bsf</artifactId>

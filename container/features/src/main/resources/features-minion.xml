@@ -91,9 +91,13 @@
       <bundle>mvn:org.opennms/opennms-detectorclient-rpc/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-provisiond-shell" description="Minion :: Provisond :: Shell" version="${project.version}">
-      <feature>opennms-provisioning-detectors</feature>
+    <feature name="minion-shell-provision" description="Minion :: Shell :: Provision" version="${project.version}">
+      <feature>opennms-provisioning-api</feature>
       <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.minion/provisiond-shell/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.provision/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-shell" description="Minion :: Shell" version="${project.version}">
+      <feature>minion-shell-provision</feature>
     </feature>
 </features>

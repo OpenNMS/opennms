@@ -16,8 +16,8 @@
         <module>core</module>
         <module>repository</module>
         <module>dominion</module>
-        <module>provisiond-shell</module>
-  </modules>
+        <module>shell</module>
+    </modules>
 
     <build>
         <pluginManagement>

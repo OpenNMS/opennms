@@ -26,30 +26,30 @@
  *      http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.minion.provisiond.shell;
+package org.opennms.netmgt.provision.detector.command;
 
-import java.util.List;
+import java.util.Map;
 
-import org.apache.karaf.shell.api.action.lifecycle.Reference;
-import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.apache.karaf.shell.api.console.CommandLine;
-import org.apache.karaf.shell.api.console.Completer;
-import org.apache.karaf.shell.api.console.Session;
-import org.apache.karaf.shell.support.completers.StringsCompleter;
+import org.apache.felix.gogo.commands.Command;
+import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 
-@Service
-public class ServiceNameCompleter implements Completer {
+@Command(scope = "provision", name = "list-detectors", description = "Lists all of the available detectors.")
+public class ListDetectors extends OsgiCommandSupport {
 
-    @Reference
-    ServiceDetectorRegistry serviceDetectorRegistry;
+    private ServiceDetectorRegistry serviceDetectorRegistry;
 
     @Override
-    public int complete(Session session, CommandLine commandLine,
-            List<String> candidates) {
-        StringsCompleter delegate = new StringsCompleter();
-        delegate.getStrings().addAll(serviceDetectorRegistry.getServiceNames());
-        return delegate.complete(session, commandLine, candidates);
+    protected Object doExecute() {
+        serviceDetectorRegistry.getTypes().entrySet().stream()
+            .sorted(Map.Entry.<String, String>comparingByKey()) 
+            .forEachOrdered(e -> {
+                System.out.printf("%s: %s\n", e.getKey(), e.getValue());
+            });
+        return null;
     }
 
+    public void setServiceDetectorRegistry(ServiceDetectorRegistry serviceDetectorRegistry) {
+        this.serviceDetectorRegistry = serviceDetectorRegistry;
+    }
 }
