@@ -292,7 +292,10 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_weightField.setWidth(100.0f, Unit.PERCENTAGE);
         m_weightField.addValidator(value -> {
             try {
-                Integer.parseInt((String) value);
+                int intValue = Integer.parseInt((String) value);
+                if (intValue <= 0) {
+                    throw new Validator.InvalidValueException("Weight must be > 0");
+                }
             } catch (final NumberFormatException e) {
                 throw new Validator.InvalidValueException("Weight must be a number");
             }
