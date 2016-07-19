@@ -171,10 +171,9 @@ public class BusinessServiceEditWindow extends Window {
                 }
 
                 final ReductionFunction reductionFunction = getReduceFunction();
-                BusinessService theBusinessService = businessServiceManager.getBusinessServiceById(m_businessService.getId());
-                theBusinessService.setName(m_nameTextField.getValue().trim());
-                theBusinessService.setReduceFunction(reductionFunction);
-                theBusinessService.save();
+                businessService.setName(m_nameTextField.getValue().trim());
+                businessService.setReduceFunction(reductionFunction);
+                businessService.save();
                 close();
             }
 
