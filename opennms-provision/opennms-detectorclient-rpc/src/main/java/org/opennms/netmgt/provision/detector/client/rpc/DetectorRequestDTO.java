@@ -45,10 +45,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.rpc.api.RpcRequest;
+import org.opennms.netmgt.provision.DetectRequest;
 
 @XmlRootElement(name = "detector-request")
 @XmlAccessorType(XmlAccessType.NONE)
-public class DetectorRequestDTO implements RpcRequest {
+public class DetectorRequestDTO implements DetectRequest, RpcRequest {
 
     @XmlAttribute(name = "location")
     private String location;
@@ -110,8 +111,8 @@ public class DetectorRequestDTO implements RpcRequest {
             .forEach(e -> this.addRuntimeAttribute(e.getKey(), e.getValue()));
     }
 
-    public Map<String, String> getRuntimeAttributeMap() {
-
+    @Override
+    public Map<String, String> getRuntimeAttributes() {
         Map<String, String> runtimeAttributeMap = new HashMap<String, String>();
         for (DetectorAttributeDTO agentAttribute : runtimeAttributes) {
             runtimeAttributeMap.put(agentAttribute.getKey(), agentAttribute.getValue());

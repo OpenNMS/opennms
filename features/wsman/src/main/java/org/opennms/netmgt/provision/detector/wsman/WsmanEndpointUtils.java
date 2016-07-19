@@ -21,33 +21,36 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * OpenNMS(R) Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision;
+package org.opennms.netmgt.provision.detector.wsman;
 
-import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
-public interface DetectorRequestBuilder {
+import org.opennms.core.wsman.WSManEndpoint;
 
-    DetectorRequestBuilder withLocation(String location);
+public class WsmanEndpointUtils {
 
-    DetectorRequestBuilder withServiceName(String serviceName);
+    public static Map<String, String> toMap(WSManEndpoint endpoint) {
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("url", endpoint.getUrl().toString());
+        if (endpoint.isBasicAuth()) {
+            attributes.put("username", endpoint.getUsername());
+            attributes.put("password", endpoint.getPassword());
+        }
+        return attributes;
+    }
 
-    DetectorRequestBuilder withClassName(String className);
-
-    DetectorRequestBuilder withAddress(InetAddress address);
-
-    DetectorRequestBuilder withAttribute(String key, String value);
-
-    DetectorRequestBuilder withAttributes(Map<String, String> attributes);
-
-    DetectorRequestBuilder withNodeId(Integer nodeId);
-
-    CompletableFuture<Boolean> execute();
-
+    public static WSManEndpoint fromMap(Map<String, String> attributes) throws MalformedURLException {
+        WSManEndpoint.Builder builder = new WSManEndpoint.Builder(attributes.get("url"));
+        if (attributes.containsKey("username")) {
+            builder.withBasicAuth(attributes.get("username"), attributes.get("password"));
+        }
+        return builder.build();
+    }
 }

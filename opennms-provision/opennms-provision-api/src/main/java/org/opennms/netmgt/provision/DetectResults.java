@@ -26,66 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.client.rpc;
+package org.opennms.netmgt.provision;
 
-import org.opennms.netmgt.provision.DetectRequest;
-import org.opennms.netmgt.provision.DetectResults;
-import org.opennms.netmgt.provision.SyncServiceDetector;
+import java.util.Map;
 
-public class ExceptionalSyncServiceDetector implements SyncServiceDetector {
+/**
+ * Groups all of the results obtained when calling {@link SyncServiceDetector#detect}
+ * and {@link AsyncServiceDetector#detect}.
+ *
+ * @author jwhite
+ */
+public interface DetectResults {
 
-    @Override
-    public DetectResults detect(DetectRequest request) {
-        throw new IllegalArgumentException("Failure on sync detection.");
-    }
+    boolean isServiceDetected();
+    Map<String, String> getServiceAttributes();
 
-    @Override
-    public void init() {
-        // pass
-    }
-
-    @Override
-    public String getServiceName() {
-        return "EXCEPTIONAL-SYNC";
-    }
-
-    @Override
-    public void setServiceName(String serviceName) {
-        // pass
-    }
-
-    @Override
-    public int getPort() {
-        return 0;
-    }
-
-    @Override
-    public void setPort(int port) {
-        // pass
-    }
-
-    @Override
-    public int getTimeout() {
-        return 0;
-    }
-
-    @Override
-    public void setTimeout(int timeout) {
-        // pass
-    }
-
-    @Override
-    public String getIpMatch() {
-        return null;
-    }
-
-    @Override
-    public void setIpMatch(String ipMatch) {
-        // pass
-    }
-
-    @Override
-    public void dispose() {
-        // pass
-    }
 }

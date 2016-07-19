@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.detector.snmp;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -93,9 +92,8 @@ public class CiscoIpSlaDetector extends SnmpDetector {
      * added to service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address) {
+    public boolean isServiceDetected(SnmpAgentConfig agentConfig) {
         try {
-            SnmpAgentConfig agentConfig = getAgentConfig();
             configureAgentPTR(agentConfig);
             configureAgentVersion(agentConfig);
 

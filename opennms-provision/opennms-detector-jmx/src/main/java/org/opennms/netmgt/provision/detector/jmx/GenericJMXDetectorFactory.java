@@ -32,7 +32,9 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
+import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
+import org.opennms.netmgt.provision.support.DetectRequestImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class GenericJMXDetectorFactory<T extends JMXDetector> extends GenericServiceDetectorFactory<JMXDetector> {
@@ -52,6 +54,10 @@ public class GenericJMXDetectorFactory<T extends JMXDetector> extends GenericSer
     }
 
     @Override
+    public DetectRequest buildRequest(String location, InetAddress address, Integer port) {
+        return new DetectRequestImpl(address, port, getRuntimeAttributes(location, address, port));
+    }
+
     public Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port) {
         String ipAddress = address.getHostAddress();
         if (port == null) {

@@ -29,10 +29,47 @@
 package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
-import java.util.Map;
 
+/**
+ * Responsible for instantiating detectors, gathering state information or agent specific details,
+ * and optionally handling post-processing of the requests.
+ *
+ * @author jwhite
+ *
+ * @param <T> detector type
+ */
 public interface ServiceDetectorFactory<T extends ServiceDetector> {
-    T createDetector();
+    
+    /**
+     * Used by the detector registry to track and index the detector types.
+     */
     Class<T> getDetectorClass();
-    Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port);
+
+    /**
+     * Instantiates a new detector.
+     *
+     * Detectors are treated as protoypes and should only be used for a
+     * single call to "isServiceDetected".
+     *
+     */
+    T createDetector();
+
+    /**
+     * Builds the request that will be used to invoke the detector.
+     *
+     * @param location name of the location in which the detector will be invoked
+     * @param address address of the agent against which the detector will be invoked
+     * @param port port of the agent against which the detector will be invoked
+     *
+     * @return a new {@link DetectRequest}
+     */
+    DetectRequest buildRequest(String location, InetAddress address, Integer port);
+
+    /**
+     * 
+     * @param request
+     * @param results
+     * @param nodeId
+     */
+    void afterDetect(DetectRequest request, DetectResults results, Integer nodeId);
 }

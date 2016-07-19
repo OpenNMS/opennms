@@ -26,66 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.client.rpc;
+package org.opennms.netmgt.provision;
 
-import org.opennms.netmgt.provision.DetectRequest;
-import org.opennms.netmgt.provision.DetectResults;
-import org.opennms.netmgt.provision.SyncServiceDetector;
+import java.net.InetAddress;
+import java.util.Map;
 
-public class ExceptionalSyncServiceDetector implements SyncServiceDetector {
+/**
+ * Groups all of the parameters required for making calls to {@link SyncServiceDetector#isServiceDetected}
+ * and {@link AsyncServiceDetector#isServiceDetected}.
+ *
+ * The runtime attributes here differ from the properties and attributes that are configured
+ * on the detector i.e. port, ipMatch, etc... These are used to store additional attributes
+ * which pertain to the system's state, or agent specific attributes i.e. SNMP read community which
+ * are not defined the the detector's configuration.
+ *
+ * The runtime attributes are retrieved via {@link ServiceDetectorFactory#getRuntimeAttributes}
+ *
+ * @author jwhite
+ */
+public interface DetectRequest {
 
-    @Override
-    public DetectResults detect(DetectRequest request) {
-        throw new IllegalArgumentException("Failure on sync detection.");
-    }
-
-    @Override
-    public void init() {
-        // pass
-    }
-
-    @Override
-    public String getServiceName() {
-        return "EXCEPTIONAL-SYNC";
-    }
-
-    @Override
-    public void setServiceName(String serviceName) {
-        // pass
-    }
-
-    @Override
-    public int getPort() {
-        return 0;
-    }
-
-    @Override
-    public void setPort(int port) {
-        // pass
-    }
-
-    @Override
-    public int getTimeout() {
-        return 0;
-    }
-
-    @Override
-    public void setTimeout(int timeout) {
-        // pass
-    }
-
-    @Override
-    public String getIpMatch() {
-        return null;
-    }
-
-    @Override
-    public void setIpMatch(String ipMatch) {
-        // pass
-    }
-
-    @Override
-    public void dispose() {
-        // pass
-    }
+    InetAddress getAddress();
+    Map<String, String> getRuntimeAttributes();
 }

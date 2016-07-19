@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,18 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision;
+package org.opennms.netmgt.provision.support;
 
-import java.net.InetAddress;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
 
-/**
- * Optional interface that can be used by {@link ServiceDetector} implements
- * in order to persist agent information i.e. (WS-Man Identify) when successfully
- * detected. 
- *
- * @author jwhite
- */
-public interface PersistsAgentInfo {
+import org.opennms.netmgt.provision.DetectResults;
 
-    public void persistAgentInfo(Integer nodeId, InetAddress address);
+public class DetectResultsImpl implements DetectResults {
+    private final boolean detected;
+    private final Map<String, String> metaData;
+
+    public DetectResultsImpl(boolean detected) {
+        this(detected, Collections.emptyMap());
+    }
+
+    public DetectResultsImpl(boolean detected, Map<String, String> metaData) {
+        this.detected = detected;
+        this.metaData = Objects.requireNonNull(metaData);
+    }
+
+    @Override
+    public boolean isServiceDetected() {
+        return detected;
+    }
+
+    @Override
+    public Map<String, String> getServiceAttributes() {
+        return metaData;
+    }
 }

@@ -28,24 +28,45 @@
 
 package org.opennms.netmgt.provision.detector.client.rpc;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.rpc.api.RpcResponse;
+import org.opennms.netmgt.provision.DetectResults;
 
 @XmlRootElement(name = "detector-response")
 @XmlAccessorType(XmlAccessType.NONE)
-public class DetectorResponseDTO implements RpcResponse {
+public class DetectorResponseDTO implements DetectResults, RpcResponse {
 
     @XmlAttribute(name = "detected")
     private boolean detected;
 
     @XmlAttribute(name = "failure-message")
     private String failureMesage;
+
+    @XmlElement(name = "attribute")
+    private List<DetectorAttributeDTO> attributes = new ArrayList<>();
+
+    public DetectorResponseDTO() { }
+
+    public DetectorResponseDTO(DetectResults results) {
+        setDetected(results.isServiceDetected());
+        addAttributes(results.getServiceAttributes());
+    }
+
+    public DetectorResponseDTO(Throwable t) {
+        setDetected(false);
+        setFailureMesage(t.getMessage());
+    }
 
     public boolean isDetected() {
         return detected;
@@ -63,9 +84,37 @@ public class DetectorResponseDTO implements RpcResponse {
         this.failureMesage = failureMesage;
     }
 
+    public List<DetectorAttributeDTO> getAttributes() {
+        return attributes;
+    }
+
+    public void addAttribute(String key, String value) {
+        attributes.add(new DetectorAttributeDTO(key, value));
+    }
+
+    public void addAttributes(Map<String, String> attributes) {
+        attributes.entrySet().stream()
+            .forEach(e -> addAttribute(e.getKey(), e.getValue()));
+    }
+
+    public Map<String, String> getAttributesMap() {
+        return attributes.stream().collect(Collectors.toMap(DetectorAttributeDTO::getKey,
+                DetectorAttributeDTO::getValue));
+    }
+
+    @Override
+    public boolean isServiceDetected() {
+        return detected;
+    }
+
+    @Override
+    public Map<String, String> getServiceAttributes() {
+        return getAttributesMap();
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(detected, failureMesage);
+        return Objects.hash(detected, failureMesage, attributes);
     }
 
     @Override
@@ -78,7 +127,8 @@ public class DetectorResponseDTO implements RpcResponse {
             return false;
         DetectorResponseDTO other = (DetectorResponseDTO) obj;
         return Objects.equals(this.detected, other.detected) &&
-                Objects.equals(this.failureMesage, other.failureMesage);
+                Objects.equals(this.failureMesage, other.failureMesage) &&
+                Objects.equals(this.attributes, other.attributes);
     }
 
 }

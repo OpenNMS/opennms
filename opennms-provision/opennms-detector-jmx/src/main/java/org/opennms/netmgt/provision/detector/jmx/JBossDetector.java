@@ -33,6 +33,7 @@ import com.google.common.collect.ImmutableMap;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.provision.support.jmx.connectors.JBossConnectionFactory;
 import java.net.InetAddress;
+import java.util.Map;
 
 
 /**
@@ -56,7 +57,7 @@ public class JBossDetector extends JMXDetector {
 
     /** {@inheritDoc} */
     @Override
-    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) {
+    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout, final Map<String, String> runtimeAttributes) {
         return JBossConnectionFactory.getMBeanServerConnection(ImmutableMap.<String, Object>builder()
                                                                            .put("port", port)
                                                                            .put("timeout", timeout)

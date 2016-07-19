@@ -32,7 +32,9 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
+import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.GenericServiceDetectorFactory;
+import org.opennms.netmgt.provision.support.DetectRequestImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericServiceDetectorFactory<SnmpDetector> {
@@ -52,6 +54,10 @@ public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericS
     }
 
     @Override
+    public DetectRequest buildRequest(String location, InetAddress address, Integer port) {
+        return new DetectRequestImpl(address, port, getRuntimeAttributes(location, address, port));
+    }
+
     public Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port) {
         if (m_agentConfigFactory == null) {
             throw new IllegalStateException("Cannot determine agent configuration without a SnmpAgentConfigFactory.");

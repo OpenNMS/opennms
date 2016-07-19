@@ -41,6 +41,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.detector.snmp.OmsaStorageDetector;
 import org.opennms.netmgt.provision.detector.snmp.OmsaStorageDetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -61,6 +62,8 @@ public class OmsaStorageDetectorTest implements InitializingBean {
     
     private OmsaStorageDetector m_detector;
 
+    private DetectRequest m_request;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -73,19 +76,19 @@ public class OmsaStorageDetectorTest implements InitializingBean {
         m_detector.setRetries(2);
         m_detector.setTimeout(5000);
         m_detector.setVirtualDiskNumber("1");
-        m_detector.setRuntimeAttributes(m_detectorFactory.getRuntimeAttributes(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null));
+        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null);
     }
 
     @Test(timeout=20000)
     @JUnitSnmpAgent(host=OmsaStorageDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/omsaStorageDetector.properties")
     public void testDetectorSuccessful() throws UnknownHostException{
-        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        assertTrue(m_detector.detect(m_request).isServiceDetected());
     }
 
     @Test(timeout=20000)
     @JUnitSnmpAgent(host=OmsaStorageDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/omsaStorageDetector.properties")
     public void testDetectorFail() throws UnknownHostException{
         m_detector.setVirtualDiskNumber("2");
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        assertFalse(m_detector.detect(m_request).isServiceDetected());
     }
 }

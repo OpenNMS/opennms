@@ -166,16 +166,6 @@ public class IpInterfaceScan implements RunInBatch {
                                     }
                                 }
                             },
-                            /* JW: TODO: FIXME: Find a way to address this case when using the LocationAwareDetectorClient
-                            new RunInBatch() {
-                                @Override
-                                public void run(BatchTask batch) {
-                                    if (detector instanceof PersistsAgentInfo) {
-                                        ((PersistsAgentInfo)detector).persistAgentInfo(nodeId, address);
-                                    }
-                                }
-                            },
-                            */
                             new RunInBatch() {
                                 @Override
                                 public void run(final BatchTask batch) {
@@ -201,7 +191,7 @@ public class IpInterfaceScan implements RunInBatch {
     }
 
     protected static AbstractTask createDetectorTask(final BatchTask currentPhase, final ProvisionService service, final PluginConfig detectorConfig, final int nodeId, final InetAddress address) {
-        return currentPhase.getCoordinator().createTask(currentPhase, new DetectorRunner(service, detectorConfig, address), servicePersister(currentPhase, service, detectorConfig, nodeId, address));
+        return currentPhase.getCoordinator().createTask(currentPhase, new DetectorRunner(service, detectorConfig, address, nodeId), servicePersister(currentPhase, service, detectorConfig, nodeId, address));
     }
 
     /** {@inheritDoc} */

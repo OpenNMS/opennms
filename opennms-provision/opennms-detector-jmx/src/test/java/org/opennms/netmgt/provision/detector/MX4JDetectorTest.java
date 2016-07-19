@@ -38,7 +38,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.util.Collections;
 
 import javax.management.MBeanServer;
 import javax.management.remote.JMXConnectorServer;
@@ -95,7 +94,6 @@ public class MX4JDetectorTest implements InitializingBean {
 
         m_connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(url, null, m_beanServer);
         m_connectorServer.start();
-        m_detector.setRuntimeAttributes(Collections.emptyMap());
         m_detector.setPort(9999);
         m_detector.setUrlPath("/server");
     }

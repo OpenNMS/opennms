@@ -21,33 +21,30 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * OpenNMS(R) Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision;
+package org.opennms.netmgt.provision.detector.wsman;
 
-import java.net.InetAddress;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import static org.junit.Assert.assertEquals;
 
-public interface DetectorRequestBuilder {
+import java.net.MalformedURLException;
 
-    DetectorRequestBuilder withLocation(String location);
+import org.junit.Test;
+import org.opennms.core.wsman.WSManEndpoint;
 
-    DetectorRequestBuilder withServiceName(String serviceName);
+public class WsmanEndpointUtilsTest {
 
-    DetectorRequestBuilder withClassName(String className);
+    @Test
+    public void canConvertToAndFromMap() throws MalformedURLException {
+        
+        WSManEndpoint expectedEndpoint = new WSManEndpoint.Builder("https://www.opennms.org/wsman")
+            .build();
 
-    DetectorRequestBuilder withAddress(InetAddress address);
-
-    DetectorRequestBuilder withAttribute(String key, String value);
-
-    DetectorRequestBuilder withAttributes(Map<String, String> attributes);
-
-    DetectorRequestBuilder withNodeId(Integer nodeId);
-
-    CompletableFuture<Boolean> execute();
-
+        WSManEndpoint actualEndpoint = WsmanEndpointUtils.fromMap(WsmanEndpointUtils.toMap(expectedEndpoint));
+        
+        assertEquals(expectedEndpoint.getUrl(), actualEndpoint.getUrl());
+    }
 }

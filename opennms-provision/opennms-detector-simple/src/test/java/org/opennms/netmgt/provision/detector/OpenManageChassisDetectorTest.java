@@ -41,6 +41,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.detector.snmp.OpenManageChassisDetector;
 import org.opennms.netmgt.provision.detector.snmp.OpenManageChassisDetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -61,6 +62,8 @@ public class OpenManageChassisDetectorTest implements InitializingBean {
     
     private OpenManageChassisDetector m_detector;
 
+    private DetectRequest m_request;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -72,19 +75,19 @@ public class OpenManageChassisDetectorTest implements InitializingBean {
         m_detector = m_detectorFactory.createDetector();
         m_detector.setRetries(2);
         m_detector.setTimeout(5000);
-        m_detector.setRuntimeAttributes(m_detectorFactory.getRuntimeAttributes(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null));
+        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null);
     }
 
     @Test(timeout=20000)
     @JUnitSnmpAgent(host=OpenManageChassisDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/openManageChassisDetector-success.properties")
     public void testDetectorSuccessful() throws UnknownHostException{
-        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        assertTrue(m_detector.detect(m_request).isServiceDetected());
     }
 
     @Test(timeout=20000)
     @JUnitSnmpAgent(host=OpenManageChassisDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/openManageChassisDetector-fail.properties")
     public void testDetectorFail() throws UnknownHostException{
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        assertFalse(m_detector.detect(m_request).isServiceDetected());
     }
 
 }

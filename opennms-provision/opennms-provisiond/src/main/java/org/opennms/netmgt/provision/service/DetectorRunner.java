@@ -45,11 +45,13 @@ class DetectorRunner implements Async<Boolean> {
     private final ProvisionService m_service;
     private final PluginConfig m_detectorConfig;
     private final InetAddress m_address;
+    private final Integer m_nodeId;
 
-    public DetectorRunner(ProvisionService service, PluginConfig detectorConfig, InetAddress address) {
+    public DetectorRunner(ProvisionService service, PluginConfig detectorConfig, InetAddress address, Integer nodeId) {
         m_service = service;
         m_detectorConfig = detectorConfig;
         m_address = address;
+        m_nodeId = nodeId;
     }
 
     /** {@inheritDoc} */
@@ -61,6 +63,7 @@ class DetectorRunner implements Async<Boolean> {
             m_service.getLocationAwareDetectorClient().detect()
                 .withClassName(m_detectorConfig.getPluginClass())
                 .withAddress(m_address)
+                .withNodeId(m_nodeId)
                 .withAttributes(m_detectorConfig.getParameters().stream()
                         .collect(Collectors.toMap(PluginParameter::getKey, PluginParameter::getValue)))
                 .execute()

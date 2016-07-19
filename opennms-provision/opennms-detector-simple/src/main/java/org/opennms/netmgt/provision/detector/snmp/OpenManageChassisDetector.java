@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.detector.snmp;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
@@ -93,9 +92,8 @@ public class OpenManageChassisDetector extends SnmpDetector {
      * added to service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address) {
+    public boolean isServiceDetected(SnmpAgentConfig agentConfig) {
         try {
-            SnmpAgentConfig agentConfig = getAgentConfig();
             configureAgentPTR(agentConfig);
             configureAgentVersion(agentConfig);
 

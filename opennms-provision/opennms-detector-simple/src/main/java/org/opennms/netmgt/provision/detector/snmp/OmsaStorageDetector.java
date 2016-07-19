@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.detector.snmp;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -79,9 +78,8 @@ public class OmsaStorageDetector extends SnmpDetector {
      * added to service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address) {
+    public boolean isServiceDetected(SnmpAgentConfig agentConfig) {
         try {
-            SnmpAgentConfig agentConfig = getAgentConfig();
             configureAgentPTR(agentConfig);
             configureAgentVersion(agentConfig);
 
@@ -89,7 +87,7 @@ public class OmsaStorageDetector extends SnmpDetector {
             SnmpValue virtualDiskRollUpStatus = SnmpUtils.get(agentConfig, virtualDiskRollUpStatusSnmpObject);
 
             if (virtualDiskRollUpStatus == null || virtualDiskRollUpStatus.isNull()) {
-                LOG.debug("SNMP poll failed: no results, addr={} oid={}", address, virtualDiskRollUpStatusSnmpObject);
+                LOG.debug("SNMP poll failed: no results, addr={} oid={}", agentConfig.getAddress(), virtualDiskRollUpStatusSnmpObject);
                 return false;
             }
             if (virtualDiskRollUpStatus.toInt() != 3) { // 3 means Online

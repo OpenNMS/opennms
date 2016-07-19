@@ -41,6 +41,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetector;
 import org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -62,6 +63,8 @@ public class HostResourceSWRunDetectorTest implements InitializingBean {
     
     private HostResourceSWRunDetector m_detector;
 
+    private DetectRequest m_request;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -74,36 +77,36 @@ public class HostResourceSWRunDetectorTest implements InitializingBean {
         m_detector.setServiceToDetect(null);
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
-        m_detector.setRuntimeAttributes(m_detectorFactory.getRuntimeAttributes(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null));
+        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null);
     }
 
     @Test(timeout=20000)
 
     public void testDetectorFail() throws UnknownHostException{
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        assertFalse(m_detector.detect(m_request).isServiceDetected());
     }
 
     @Test(timeout=20000)
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.setServiceToDetect("WindowServer");
-        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        assertTrue(m_detector.detect(m_request).isServiceDetected());
     }
 
     @Test(timeout=20000)
     public void testLackOfCaseSensitivity() throws UnknownHostException{
         m_detector.setServiceToDetect("Omnitek XR.exe");
-        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        assertTrue(m_detector.detect(m_request).isServiceDetected());
     }
 
     @Test(timeout=20000)
     public void testDetectCronSuccess() throws UnknownHostException{
         m_detector.setServiceToDetect("cron");
-        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        assertTrue(m_detector.detect(m_request).isServiceDetected());
     }
 
     @Test(timeout=20000)
     public void testDetectRegexSuccess() throws UnknownHostException{
         m_detector.setServiceToDetect("~snmp.*");
-        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        assertTrue(m_detector.detect(m_request).isServiceDetected());
     }
 }

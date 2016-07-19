@@ -36,6 +36,9 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.provision.DetectRequest;
+import org.opennms.netmgt.provision.DetectResults;
+import org.opennms.netmgt.provision.support.DetectResultsImpl;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -182,21 +185,27 @@ public class SnmpDetector extends SyncAbstractDetector {
         return m_hex;
     }
 
-    protected SnmpAgentConfig getAgentConfig() {
-        final Map<String, String> runtimeAttributes = getRuntimeAttributes();
-        if (runtimeAttributes != null) {
+    protected SnmpAgentConfig getAgentConfig(DetectRequest request) {
+        if (request.getRuntimeAttributes() != null) {
             // All of the keys in the runtime attribute map are used to store the agent configuration
-            return SnmpAgentConfig.fromMap(getRuntimeAttributes());
+            return SnmpAgentConfig.fromMap(request.getRuntimeAttributes());
         } else {
             return new SnmpAgentConfig();
         }
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean isServiceDetected(InetAddress addresss) {
+    public DetectResults detect(DetectRequest request) {
+        return new DetectResultsImpl(isServiceDetected(getAgentConfig(request)));
+    }
+
+    @Override
+    public final boolean isServiceDetected(InetAddress addresss) {
+        return isServiceDetected(new SnmpAgentConfig());
+    }
+
+    public boolean isServiceDetected(SnmpAgentConfig agentConfig) {
         try {
-            SnmpAgentConfig agentConfig = getAgentConfig();
             configureAgentPTR(agentConfig);
             configureAgentVersion(agentConfig);
 

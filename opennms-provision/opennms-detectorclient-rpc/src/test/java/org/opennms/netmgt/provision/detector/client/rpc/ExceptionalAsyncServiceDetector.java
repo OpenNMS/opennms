@@ -28,16 +28,14 @@
 
 package org.opennms.netmgt.provision.detector.client.rpc;
 
-import java.net.InetAddress;
-import java.util.Map;
-
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
+import org.opennms.netmgt.provision.DetectRequest;
 
 public class ExceptionalAsyncServiceDetector implements AsyncServiceDetector {
 
     @Override
-    public DetectFuture isServiceDetected(InetAddress address) {
+    public DetectFuture detect(DetectRequest request) {
         throw new IllegalArgumentException("Failure on async detection.");
     }
 
@@ -88,16 +86,6 @@ public class ExceptionalAsyncServiceDetector implements AsyncServiceDetector {
 
     @Override
     public void dispose() {
-        // pass
-    }
-
-    @Override
-    public Map<String, String> getRuntimeAttributes() {
-        return null;
-    }
-
-    @Override
-    public void setRuntimeAttributes(Map<String, String> attributes) {
         // pass
     }
 }

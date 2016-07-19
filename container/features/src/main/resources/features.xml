@@ -882,6 +882,16 @@
         <bundle>mvn:org.opennms.features/opennms-integration-tsrm/${project.version}</bundle>
     </feature>
     
+    <feature name="wsman-integration" version="${project.version}" description="OpenNMS :: Features :: WS-Man Integration">
+      <feature>opennms-collection-api</feature>
+      <feature>opennms-provisioning-api</feature>
+      <feature version="${cxfVersion}">cxf-jaxws</feature>
+      <bundle dependency="true">mvn:com.google.guava/guava/${guavaOldVersion}</bundle>
+      <bundle>mvn:org.opennms.core.wsman/org.opennms.core.wsman.api/${wsmanVersion}</bundle>
+      <bundle>mvn:org.opennms.core.wsman/org.opennms.core.wsman.cxf/${wsmanVersion}</bundle>
+      <bundle>mvn:org.opennms.features/org.opennms.features.wsman/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-provisioning-detectors" description="OpenNMS :: Provisioning :: Detectors" version="${project.version}">
       <feature>opennms-provisioning-api</feature>
       <bundle>wrap:mvn:org.samba.jcifs/jcifs/1.3.14</bundle>
@@ -913,6 +923,7 @@
       <bundle>mvn:org.opennms.protocols/org.opennms.protocols.nsclient/${project.version}</bundle>
       <bundle>mvn:org.opennms.protocols/org.opennms.protocols.radius/${project.version}</bundle>
       <bundle>mvn:org.opennms.protocols/org.opennms.protocols.xmp/${project.version}</bundle>
+      <feature>wsman-integration</feature>
     </feature>
     
     <feature name="opennms-provisioning-shell" description="OpenNMS :: Provisioning :: Shell" version="${project.version}">

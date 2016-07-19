@@ -41,6 +41,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.detector.snmp.CiscoIpSlaDetector;
 import org.opennms.netmgt.provision.detector.snmp.CiscoIpSlaDetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -62,6 +63,8 @@ public class CiscoIpSlaDetectorTest implements InitializingBean {
     
     private CiscoIpSlaDetector m_detector;
 
+    private DetectRequest m_request;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -74,19 +77,19 @@ public class CiscoIpSlaDetectorTest implements InitializingBean {
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
         m_detector.setAdminTag("to_detect");
-        m_detector.setRuntimeAttributes(m_detectorFactory.getRuntimeAttributes(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null));
+        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null);
     }
 
     @Test(timeout=20000)
 
     public void testDetectorSuccessful() throws UnknownHostException{
-        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        assertTrue(m_detector.detect(m_request).isServiceDetected());
     }
 
     @Test(timeout=20000)
     public void testDetectorFail() throws UnknownHostException{
         m_detector.setAdminTag("extraneous_1");
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        assertFalse(m_detector.detect(m_request).isServiceDetected());
     }
 
 }

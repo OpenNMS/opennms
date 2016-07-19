@@ -1293,6 +1293,7 @@
     <freemarkerVersion>2.3.21</freemarkerVersion>
     <groovyVersion>2.4.5</groovyVersion>
     <guavaVersion>18.0</guavaVersion>
+    <guavaOldVersion>17.0</guavaOldVersion>
     <gwtVersion>2.6.1</gwtVersion>
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
@@ -1334,6 +1335,7 @@
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
+    <wsmanVersion>1.1.1</wsmanVersion>
 
     <springVersion>4.0.7.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->

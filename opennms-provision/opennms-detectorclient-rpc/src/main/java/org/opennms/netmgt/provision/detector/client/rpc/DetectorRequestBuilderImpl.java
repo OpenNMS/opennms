@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.DetectorRequestBuilder;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetectorFactory;
@@ -51,6 +52,8 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
     private InetAddress address;
 
+    private Integer nodeId;
+
     private Map<String, String> attributes = new HashMap<>();
 
     private final LocationAwareDetectorClientRpcImpl client;
@@ -65,7 +68,6 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         return this;
     }
 
-
     @Override
     public DetectorRequestBuilder withClassName(String className) {
         this.className = className;
@@ -74,7 +76,7 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
     @Override
     public DetectorRequestBuilder withServiceName(String serviceName) {
-        ServiceDetector detector = client.getRegistry().getDetectorByServiceName(serviceName);
+        final ServiceDetector detector = client.getRegistry().getDetectorByServiceName(serviceName);
         if (detector == null) {
             throw new IllegalArgumentException("No detector found with service name '" + serviceName + "'.");
         }
@@ -101,6 +103,12 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
     }
 
     @Override
+    public DetectorRequestBuilder withNodeId(Integer nodeId) {
+        this.nodeId = nodeId;
+        return this;
+    }
+
+    @Override
     public CompletableFuture<Boolean> execute() {
         if (address == null) {
             throw new IllegalArgumentException("Address is required.");
@@ -108,13 +116,23 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
             throw new IllegalArgumentException("Detector class name is required.");
         }
 
-        ServiceDetectorFactory<?> factory = client.getRegistry().getDetectorFactoryByClassName(className);
+        // Retrieve the factory associated with the requested detector
+        final ServiceDetectorFactory<?> factory = client.getRegistry().getDetectorFactoryByClassName(className);
         if (factory == null) {
+            // Fail immediately if no suitable factory was found
             throw new IllegalArgumentException("No factory found for detector with class name '" + className + "'.");
         }
 
+        // Store all of the request details in the DTO
+        final DetectorRequestDTO detectorRequestDTO = new DetectorRequestDTO();
+        detectorRequestDTO.setLocation(location);
+        detectorRequestDTO.setClassName(className);
+        detectorRequestDTO.setAddress(address);
+        detectorRequestDTO.addDetectorAttributes(attributes);
+
+        // Attempt to extract the port from the list of attributes
         Integer port = null;
-        String portString = attributes.get(PORT);
+        final String portString = attributes.get(PORT);
         if (portString != null) {
             try {
                 port = Integer.parseInt(portString);
@@ -123,19 +141,28 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
             }
         }
 
-        final DetectorRequestDTO detectorRequestDTO = new DetectorRequestDTO();
-        detectorRequestDTO.setLocation(location);
-        detectorRequestDTO.setClassName(className);
-        detectorRequestDTO.setAddress(address);
-        detectorRequestDTO.addDetectorAttributes(attributes);
-        detectorRequestDTO.addRuntimeAttributes(factory.getRuntimeAttributes(location, address, port));
+        // Build the DetectRequest and store the runtime attributes in the DTO
+        final DetectRequest request = factory.buildRequest(location, address, port);
+        detectorRequestDTO.addRuntimeAttributes(request.getRuntimeAttributes());
 
+        // Execute the request
         return client.getDelegate().execute(detectorRequestDTO)
-            .thenApply(res -> {
-                if (res.getFailureMesage() != null) {
-                    throw new RuntimeException(res.getFailureMesage());
+            .thenApply(results -> {
+                if (results.getFailureMesage() != null) {
+                    // Notify the factory that a request was successfully executed
+                    try {
+                        factory.afterDetect(request, results, nodeId);
+                    } catch (Throwable t) {
+                        LOG.error("Error while processing detect callback.", t);
+                    }
+                }
+                return results;
+            })
+            .thenApply(results -> {
+                if (results.getFailureMesage() != null) {
+                    throw new RuntimeException(results.getFailureMesage());
                 } else {
-                    return res.isDetected();
+                    return results.isDetected();
                 }
             });
     }

@@ -128,13 +128,11 @@ public class DiskUsageDetector extends SnmpDetector {
      * service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address) {
+    public boolean isServiceDetected(SnmpAgentConfig agentConfig) {
         int matchType = MATCH_TYPE_EXACT;
 
         try {
 
-            SnmpAgentConfig agentConfig = getAgentConfig();
-            
             if (getPort() > 0) {
                 agentConfig.setPort(getPort());
             }
@@ -187,7 +185,7 @@ public class DiskUsageDetector extends SnmpDetector {
             }
 
             for (Map.Entry<SnmpInstId, SnmpValue> e : descrResults.entrySet()) { 
-                LOG.debug("capsd: SNMPwalk succeeded, addr={} oid={} instance={} value={}", InetAddressUtils.str(address), hrStorageDescrSnmpObject, e.getKey(), e.getValue());
+                LOG.debug("capsd: SNMPwalk succeeded, addr={} oid={} instance={} value={}", InetAddressUtils.str(agentConfig.getAddress()), hrStorageDescrSnmpObject, e.getKey(), e.getValue());
               
                 if (isMatch(e.getValue().toString(), getDisk(), matchType)) {
                     LOG.debug("Found disk '{}' (matching hrStorageDescr was '{}')", getDisk(), e.getValue());

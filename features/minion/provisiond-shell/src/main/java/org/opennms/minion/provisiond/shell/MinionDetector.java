@@ -46,7 +46,6 @@ import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
-import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
@@ -109,7 +108,7 @@ public class MinionDetector implements Action {
                 @Override
                 public Boolean get() {
                     try {
-                        return syncDetector.isServiceDetected(address);
+                        return false; // TODO: FIXME: syncDetector.isServiceDetected(address);
                     } finally {
                         syncDetector.dispose();
                     }
@@ -117,11 +116,10 @@ public class MinionDetector implements Action {
             }, executor);
         } else if (detector instanceof AsyncServiceDetector) {
             final AsyncServiceDetector asyncDetector = (AsyncServiceDetector)detector;
-            // TODO: We should update the AsyncServiceDetector interface to return
-            // a CompletableFuture instead of a DetectFuture.
             return CompletableFuture.supplyAsync(new Supplier<Boolean>() {
                 @Override
                 public Boolean get() {
+                    return false; /* TODO: FIXME
                     DetectFuture future = asyncDetector.isServiceDetected(address);
                     try {
                         future.awaitFor();
@@ -131,6 +129,7 @@ public class MinionDetector implements Action {
                     } finally {
                         asyncDetector.dispose();
                     }
+                    */
                 }
             }, executor);
         } else {

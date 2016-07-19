@@ -26,66 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.detector.client.rpc;
+package org.opennms.netmgt.provision.support;
+
+import java.net.InetAddress;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
 
 import org.opennms.netmgt.provision.DetectRequest;
-import org.opennms.netmgt.provision.DetectResults;
-import org.opennms.netmgt.provision.SyncServiceDetector;
 
-public class ExceptionalSyncServiceDetector implements SyncServiceDetector {
+public class DetectRequestImpl implements DetectRequest {
 
-    @Override
-    public DetectResults detect(DetectRequest request) {
-        throw new IllegalArgumentException("Failure on sync detection.");
+    private final InetAddress address;
+    private final Integer port;
+    private final Map<String, String> runtimeAttributes;
+
+    public DetectRequestImpl(InetAddress address, Integer port) {
+        this(address, port, Collections.emptyMap());
     }
 
-    @Override
-    public void init() {
-        // pass
+    public DetectRequestImpl(InetAddress address, Integer port, Map<String, String> runtimeAttributes) {
+        this.address = Objects.requireNonNull(address);
+        this.port = port;
+        this.runtimeAttributes = Objects.requireNonNull(runtimeAttributes);
     }
 
-    @Override
-    public String getServiceName() {
-        return "EXCEPTIONAL-SYNC";
+    public InetAddress getAddress() {
+        return address;
     }
 
-    @Override
-    public void setServiceName(String serviceName) {
-        // pass
+    public Integer getPort() {
+        return port;
     }
 
-    @Override
-    public int getPort() {
-        return 0;
+    public Map<String, String> getRuntimeAttributes() {
+        return runtimeAttributes;
     }
 
-    @Override
-    public void setPort(int port) {
-        // pass
-    }
-
-    @Override
-    public int getTimeout() {
-        return 0;
-    }
-
-    @Override
-    public void setTimeout(int timeout) {
-        // pass
-    }
-
-    @Override
-    public String getIpMatch() {
-        return null;
-    }
-
-    @Override
-    public void setIpMatch(String ipMatch) {
-        // pass
-    }
-
-    @Override
-    public void dispose() {
-        // pass
-    }
 }

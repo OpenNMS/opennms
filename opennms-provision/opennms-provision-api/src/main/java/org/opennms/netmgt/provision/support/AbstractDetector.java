@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.provision.support;
 
-import java.util.Map;
-
 import org.opennms.netmgt.provision.ServiceDetector;
 
 /**
@@ -46,7 +44,6 @@ public abstract class AbstractDetector implements ServiceDetector {
     private int m_timeout;
     private String m_ipMatch;
     private String m_serviceName;
-    private Map<String, String> m_agentAttributes;
 
     /**
      * <p>Constructor for AbstractDetector.</p>
@@ -184,17 +181,5 @@ public abstract class AbstractDetector implements ServiceDetector {
     public void setIpMatch(final String ipMatch) {
         m_ipMatch = ipMatch;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public Map<String, String> getRuntimeAttributes() {
-        return m_agentAttributes;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setRuntimeAttributes(Map<String, String> attributes) {
-        m_agentAttributes = attributes;
-    };
 
 }

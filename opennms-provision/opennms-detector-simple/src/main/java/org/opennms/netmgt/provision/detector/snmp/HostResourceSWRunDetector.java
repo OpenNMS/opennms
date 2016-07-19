@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.detector.snmp;
 
-import java.net.InetAddress;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -91,12 +90,9 @@ public class HostResourceSWRunDetector extends SnmpDetector {
      * service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address) {
+    public boolean isServiceDetected(SnmpAgentConfig agentConfig) {
         
         boolean status = false;
-
-        // Retrieve this interface's SNMP peer object
-        SnmpAgentConfig agentConfig = getAgentConfig();
 
         // Get configuration parameters
         //
@@ -112,7 +108,7 @@ public class HostResourceSWRunDetector extends SnmpDetector {
 
         // Establish SNMP session with interface
         //
-        final String hostAddress = InetAddressUtils.str(address);
+        final String hostAddress = InetAddressUtils.str(agentConfig.getAddress());
 		try {
             LOG.debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
 

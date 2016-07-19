@@ -29,9 +29,9 @@
 package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
+
+import org.opennms.netmgt.provision.support.DetectRequestImpl;
 
 public class GenericServiceDetectorFactory<T extends ServiceDetector> implements ServiceDetectorFactory<T> {
 
@@ -56,7 +56,12 @@ public class GenericServiceDetectorFactory<T extends ServiceDetector> implements
     }
 
     @Override
-    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port) {
-        return Collections.emptyMap();
+    public DetectRequest buildRequest(String location, InetAddress address, Integer port) {
+        return new DetectRequestImpl(address, port);
+    }
+
+    @Override
+    public void afterDetect(DetectRequest request, DetectResults results, Integer nodeId) {
+        // pass
     }
 }

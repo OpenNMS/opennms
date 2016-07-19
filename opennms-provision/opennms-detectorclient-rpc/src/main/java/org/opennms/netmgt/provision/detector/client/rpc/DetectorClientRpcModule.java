@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.detector.client.rpc;
 
-import java.net.InetAddress;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -38,6 +37,7 @@ import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectFutureListener;
+import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
@@ -65,53 +65,43 @@ public class DetectorClientRpcModule extends AbstractXmlRpcModule<DetectorReques
     @Override
     public CompletableFuture<DetectorResponseDTO> execute(DetectorRequestDTO request) {
         String className = request.getClassName();
-        InetAddress address = request.getAddress();
         Map<String, String> attributes = request.getAttributeMap();
         ServiceDetector detector = serviceDetectorRegistry.getDetectorByClassName(className, attributes);
         if (detector == null) {
             throw new IllegalArgumentException("No detector found with class name '" + className + "'.");
         }
-        return detectService(detector, address, request.getRuntimeAttributeMap());
+        return detectService(detector, request);
     }
 
-    private CompletableFuture<DetectorResponseDTO> detectService(ServiceDetector detector, InetAddress address, Map<String, String> runtimeAttributes) {
+    private CompletableFuture<DetectorResponseDTO> detectService(ServiceDetector detector, DetectRequest detectRequest) {
         detector.init();
         if (detector instanceof SyncServiceDetector) {
             final SyncServiceDetector syncDetector = (SyncServiceDetector) detector;
             return CompletableFuture.supplyAsync(new Supplier<DetectorResponseDTO>() {
                 @Override
                 public DetectorResponseDTO get() {
-                    DetectorResponseDTO responseDTO = new DetectorResponseDTO();
                     try {
-                        syncDetector.setRuntimeAttributes(runtimeAttributes);
-                        responseDTO.setDetected(syncDetector.isServiceDetected(address));
+                        return new DetectorResponseDTO(syncDetector.detect(detectRequest));
                     } catch (Throwable t) {
-                        responseDTO.setDetected(false);
-                        responseDTO.setFailureMesage(t.getMessage());
+                        return new DetectorResponseDTO(t);
                     } finally {
                         syncDetector.dispose();
                     }
-                    return responseDTO;
                 }
             }, executor);
         } else if (detector instanceof AsyncServiceDetector) {
             final CompletableFuture<DetectorResponseDTO> future = new CompletableFuture<>();
             final AsyncServiceDetector asyncDetector = (AsyncServiceDetector) detector;
             try {
-                // TODO: HZN-839: We should update the AsyncServiceDetector interface to
-                // return a CompletableFuture instead of a DetectFuture.
-                DetectFuture detectFuture = asyncDetector.isServiceDetected(address);
+                DetectFuture detectFuture = asyncDetector.detect(detectRequest);
                 detectFuture.addListener(new DetectFutureListener<DetectFuture>() {
                     @Override
                     public void operationComplete(DetectFuture detectFuture) {
-                        DetectorResponseDTO responseDTO = new DetectorResponseDTO();
                         if (detectFuture.getException() != null) {
-                            responseDTO.setDetected(false);
-                            responseDTO.setFailureMesage(detectFuture.getException().getMessage());
+                            future.complete(new DetectorResponseDTO(detectFuture.getException()));
                         } else {
-                            responseDTO.setDetected(detectFuture.isServiceDetected());
+                            future.complete(new DetectorResponseDTO(detectFuture));
                         }
-                        future.complete(responseDTO);
                     }
                 });
             } catch (Throwable t) {

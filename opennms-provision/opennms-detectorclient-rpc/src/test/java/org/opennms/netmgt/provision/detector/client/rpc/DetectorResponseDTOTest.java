@@ -47,7 +47,9 @@ public class DetectorResponseDTOTest extends XmlTestNoCastor<DetectorResponseDTO
             {
                 getDetectorResponse(),
                 "<?xml version=\"1.0\"?>\n" +
-                "<detector-response detected=\"true\" failure-message=\"classCast exception\"/>"
+                "<detector-response detected=\"true\" failure-message=\"classCast exception\">" +
+                "<attribute key=\"vendor\">MOO</attribute>" +
+                "</detector-response>"
             }
         });
     }
@@ -56,6 +58,7 @@ public class DetectorResponseDTOTest extends XmlTestNoCastor<DetectorResponseDTO
         DetectorResponseDTO response = new DetectorResponseDTO();
         response.setDetected(true);
         response.setFailureMesage("classCast exception");
+        response.addAttribute("vendor", "MOO");
         return response;
     }
 }

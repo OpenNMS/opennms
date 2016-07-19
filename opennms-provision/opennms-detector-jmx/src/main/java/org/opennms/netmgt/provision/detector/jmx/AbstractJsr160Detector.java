@@ -78,7 +78,7 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
      * @throws IOException 
      */
     @Override
-    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) throws MalformedURLException, IOException {
+    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout, final Map<String, String> runtimeAttributes) throws MalformedURLException, IOException {
 
         Map<String, String> props = Maps.newHashMap();
         props.put("port", String.valueOf(port));
@@ -90,10 +90,8 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
         props.put("urlPath", getUrlPath());
         props.put("type", getType());
         props.put("protocol", getProtocol());
-
-
-        props.putAll(getRuntimeAttributes());
-
+        // The runtime attributes contain the agent details pull from the JmxConfigDao
+        props.putAll(runtimeAttributes);
 
         // TODO: Refactor this to use the same code as 
         // {@link org.opennms.netmgt.jmx.impl.connection.connectors.DefaultJmxConnector}
