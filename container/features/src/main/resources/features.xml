@@ -886,6 +886,7 @@
       <feature>opennms-collection-api</feature>
       <feature>opennms-provisioning-api</feature>
       <feature version="${cxfVersion}">cxf-jaxws</feature>
+      <feature version="${cxfVersion}">cxf-ws-addr</feature>
       <bundle dependency="true">mvn:com.google.guava/guava/${guavaOldVersion}</bundle>
       <bundle>mvn:org.opennms.core.wsman/org.opennms.core.wsman.api/${wsmanVersion}</bundle>
       <bundle>mvn:org.opennms.core.wsman/org.opennms.core.wsman.cxf/${wsmanVersion}</bundle>
