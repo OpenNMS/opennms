@@ -233,6 +233,12 @@
         <property name="businessServiceManager" ref="businessServiceManager"/>
     </bean>
 
+    <bean name="/trend/trend.htm" class="org.opennms.web.controller.trend.TrendController">
+    </bean>
+
+    <bean name="/trend/trend-box.htm" class="org.opennms.web.controller.trend.TrendBoxController">
+    </bean>
+
     <bean name="/application/summary-box.htm" class="org.opennms.web.controller.application.ApplicationBoxController">
         <property name="successView" value="application/summary-box"/>
         <property name="applicationDao" ref="applicationDao"/>
@@ -432,6 +438,11 @@
                                 <property name="name" value="Heatmap"/>
                                 <property name="url" value="heatmap/index.jsp"/>
                                 <property name="locationMatch" value="heatmap"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Trend"/>
+                                <property name="url" value="trend/index.jsp"/>
+                                <property name="locationMatch" value="trend"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.DistributedStatusNavBarEntry">
                                 <property name="name" value="Distributed Status"/>
