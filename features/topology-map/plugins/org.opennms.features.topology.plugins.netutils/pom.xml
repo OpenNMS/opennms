@@ -196,9 +196,14 @@
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
 			<classifier>sources</classifier>
-			<scope>${scope.type}</scope>
+			<scope>provided</scope>
 		</dependency>
-
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-icmp-api</artifactId>
+            <version>${project.version}</version>
+			<scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -209,6 +214,23 @@
 			<artifactId>easymock</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-icmp-jni</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-icmp-jna</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-icmp-jni6</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
-
 </project>
