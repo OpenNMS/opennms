@@ -908,8 +908,9 @@
       <bundle>wrap:mvn:org.dhcp.jdhcp/jdhcp/1.1.1</bundle>
       <bundle>wrap:mvn:org.krupczak/xmp/1.40</bundle>
       <feature>commons-cli</feature>
-      <bundle>wrap:mvn:net.jradius/jradius-core/1.1.4</bundle>
       <bundle>wrap:mvn:net.jradius/jradius-dictionary/1.1.4</bundle>
+      <bundle>wrap:mvn:org.gnu/gnu-crypto/2.0.1</bundle>
+      <bundle>wrap:mvn:net.jradius/jradius-core/1.1.4$Bundle-SymbolicName=jradius-core&amp;Bundle-Version=1.1.4&amp;Import-Package=gnu.crypto.hash,gnu.crypto.mac,net.jradius.dictionary,org.apache.commons.logging,org.apache.commons.pool.*</bundle>
       <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
       <bundle>mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
