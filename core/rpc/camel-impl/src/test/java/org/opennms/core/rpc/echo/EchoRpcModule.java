@@ -34,6 +34,8 @@ import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
 
 public class EchoRpcModule extends AbstractXmlRpcModule<EchoRequest, EchoResponse> {
 
+    public static final String RPC_MODULE_ID = "Echo";
+
     public EchoRpcModule() {
         super(EchoRequest.class, EchoResponse.class);
     }
@@ -45,6 +47,6 @@ public class EchoRpcModule extends AbstractXmlRpcModule<EchoRequest, EchoRespons
 
     @Override
     public String getId() {
-        return "Echo";
+        return RPC_MODULE_ID;
     }
 }

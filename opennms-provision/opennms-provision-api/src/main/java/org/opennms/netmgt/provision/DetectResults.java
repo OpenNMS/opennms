@@ -38,7 +38,14 @@ import java.util.Map;
  */
 public interface DetectResults {
 
+    /**
+     * @return true if the service was detected, false otherwise
+     */
     boolean isServiceDetected();
+
+    /**
+     * @return additional attributes from the detector invocation
+     */
     Map<String, String> getServiceAttributes();
 
 }

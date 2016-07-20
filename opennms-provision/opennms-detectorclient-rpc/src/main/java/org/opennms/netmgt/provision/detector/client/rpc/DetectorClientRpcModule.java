@@ -45,11 +45,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
- * Executes detectors.
+ * RPC module used to execute both {@link SyncServiceDetector} and {@link AsyncServiceDetector} detectors.
+ *
+ * When running on OpenNMS, detectors are executed in provisiond's scanExecutor thread pool.
+ * When running on Minion, detectors are executed in a caching thread pool created by the blueprint.
  *
  * @author jwhite
  */
 public class DetectorClientRpcModule extends AbstractXmlRpcModule<DetectorRequestDTO, DetectorResponseDTO> {
+
+    public static final String RPC_MODULE_ID = "Detect";
 
     @Autowired
     private ServiceDetectorRegistry serviceDetectorRegistry;
@@ -118,7 +123,7 @@ public class DetectorClientRpcModule extends AbstractXmlRpcModule<DetectorReques
 
     @Override
     public String getId() {
-        return "Detect";
+        return RPC_MODULE_ID;
     }
 
     public void setServiceDetectorRegistry(ServiceDetectorRegistry serviceDetectorRegistry) {

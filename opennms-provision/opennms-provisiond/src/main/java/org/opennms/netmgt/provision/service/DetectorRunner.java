@@ -49,7 +49,8 @@ class DetectorRunner implements Async<Boolean> {
     private final InetAddress m_address;
     private final OnmsMonitoringLocation m_location;
 
-    public DetectorRunner(ProvisionService service, PluginConfig detectorConfig, Integer nodeId, InetAddress address, OnmsMonitoringLocation location) {
+    public DetectorRunner(ProvisionService service, PluginConfig detectorConfig, Integer nodeId, InetAddress address,
+            OnmsMonitoringLocation location) {
         m_service = service;
         m_detectorConfig = detectorConfig;
         m_nodeId = nodeId;
@@ -61,39 +62,36 @@ class DetectorRunner implements Async<Boolean> {
     @Override
     public void supplyAsyncThenAccept(final Callback<Boolean> cb) {
         try {
-            LOG.info("Attemping to detect service {} on address {} at location {}",
-                    m_detectorConfig.getName(), getHostAddress(), getLocationName());
+            LOG.info("Attemping to detect service {} on address {} at location {}", m_detectorConfig.getName(),
+                    getHostAddress(), getLocationName());
             // Launch the detector
-            m_service.getLocationAwareDetectorClient().detect()
-                .withClassName(m_detectorConfig.getPluginClass())
-                .withAddress(m_address)
-                .withNodeId(m_nodeId)
-                .withLocation(getLocationName())
-                .withAttributes(m_detectorConfig.getParameters().stream()
-                        .collect(Collectors.toMap(PluginParameter::getKey, PluginParameter::getValue)))
-                .execute()
-                // After completion, run the callback
-                .whenComplete((res, ex) -> {
-                    LOG.info("Completed detector execution for service {} on address {} at location {}",
-                            m_detectorConfig.getName(), getHostAddress(), getLocationName());
-                    if (ex != null) {
-                        cb.handleException(ex);
-                    } else {
-                        cb.accept(res);
-                    }
-                });
+            m_service.getLocationAwareDetectorClient().detect().withClassName(m_detectorConfig.getPluginClass())
+                    .withAddress(m_address).withNodeId(m_nodeId).withLocation(getLocationName())
+                    .withAttributes(m_detectorConfig.getParameters().stream()
+                            .collect(Collectors.toMap(PluginParameter::getKey, PluginParameter::getValue)))
+                    .execute()
+                    // After completion, run the callback
+                    .whenComplete((res, ex) -> {
+                        LOG.info("Completed detector execution for service {} on address {} at location {}",
+                                m_detectorConfig.getName(), getHostAddress(), getLocationName());
+                        if (ex != null) {
+                            cb.handleException(ex);
+                        } else {
+                            cb.accept(res);
+                        }
+                    });
         } catch (Throwable e) {
             cb.handleException(e);
         }
     }
 
-	private String getHostAddress() {
-		return InetAddressUtils.str(m_address);
-	}
+    private String getHostAddress() {
+        return InetAddressUtils.str(m_address);
+    }
 
-	private String getLocationName() {
-	    return m_location != null ? m_location.getLocationName() : null;
-	}
+    private String getLocationName() {
+        return m_location != null ? m_location.getLocationName() : null;
+    }
 
     /** {@inheritDoc} */
     @Override

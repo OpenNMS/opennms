@@ -108,6 +108,10 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         return this;
     }
 
+    /**
+     * Builds the {@link DetectorRequestDTO} and executes the requested detector
+     * via the RPC client.
+     */
     @Override
     public CompletableFuture<Boolean> execute() {
         if (address == null) {

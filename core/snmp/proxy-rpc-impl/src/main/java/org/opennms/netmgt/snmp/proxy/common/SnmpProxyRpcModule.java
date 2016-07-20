@@ -29,6 +29,8 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  */
 public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, SnmpMultiResponseDTO> {
 
+    public static final String RPC_MODULE_ID = "SNMP";
+
     public SnmpProxyRpcModule() {
         super(SnmpRequestDTO.class, SnmpMultiResponseDTO.class);
     }
@@ -133,6 +135,6 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
 
     @Override
     public String getId() {
-        return "SNMP";
+        return RPC_MODULE_ID;
     }
 }

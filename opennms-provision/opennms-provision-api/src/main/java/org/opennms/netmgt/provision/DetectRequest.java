@@ -32,20 +32,28 @@ import java.net.InetAddress;
 import java.util.Map;
 
 /**
- * Groups all of the parameters required for making calls to {@link SyncServiceDetector#isServiceDetected}
- * and {@link AsyncServiceDetector#isServiceDetected}.
+ * Groups all of the parameters required for making calls to {@link SyncServiceDetector#detect}
+ * and {@link AsyncServiceDetector#detect}.
  *
  * The runtime attributes here differ from the properties and attributes that are configured
  * on the detector i.e. port, ipMatch, etc... These are used to store additional attributes
- * which pertain to the system's state, or agent specific attributes i.e. SNMP read community which
- * are not defined the the detector's configuration.
+ * which pertain to the system's state and/or agent specific attributes i.e. the SNMP read community
+ * of the agent (which is not defined the the detector's configuration).
  *
- * The runtime attributes are retrieved via {@link ServiceDetectorFactory#getRuntimeAttributes}
+ * These requests should be created by calls to {@link ServiceDetectorFactory#buildRequest}.
  *
  * @author jwhite
  */
 public interface DetectRequest {
 
+    /**
+     * @return the address of the host against with the detector should be invoked.
+     */
     InetAddress getAddress();
+
+    /**
+     * @return additional attributes stored outside of the detector's configuration that
+     * may be required when running the detector.
+     */
     Map<String, String> getRuntimeAttributes();
 }
