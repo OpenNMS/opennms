@@ -20,10 +20,6 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Import-Package>
-              org.opennms.netmgt.icmp.jni6;resolution:=optional,
-              *
-            </Import-Package>
             <Export-Package>org.opennms.netmgt.icmp.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
