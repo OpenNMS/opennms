@@ -28,13 +28,31 @@
 
 package org.opennms.netmgt.provision.detector.icmp;
 
+import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class IcmpDetectorFactory extends GenericServiceDetectorFactory<IcmpDetector> {
 
+    @Autowired(required=false)
+    private Pinger pinger;
+
     public IcmpDetectorFactory() {
         super(IcmpDetector.class);
     }
+
+    @Override
+    public IcmpDetector createDetector() {
+        final IcmpDetector detector = new IcmpDetector();
+        detector.setPinger(pinger != null ? pinger : PingerFactory.getInstance());
+        return detector;
+    }
+
+    public void setPinger(Pinger pinger) {
+        this.pinger = pinger;
+    }
+
 }

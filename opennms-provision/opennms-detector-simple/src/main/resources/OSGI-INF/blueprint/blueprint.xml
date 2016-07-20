@@ -9,12 +9,17 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
+	<!-- Pinger service -->
+	<reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
+
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.netmgt.provision.detector.snmp.BgpSessionDetectorFactory" />
 	</service>
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.icmp.IcmpDetectorFactory" />
+		<bean class="org.opennms.netmgt.provision.detector.icmp.IcmpDetectorFactory" >
+			<property name="pinger" ref="pinger"/>
+		</bean>
 	</service>
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">

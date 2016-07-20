@@ -85,6 +85,7 @@
     </feature>
 
     <feature name="minion-provisiond-detectors" description="Minion :: Provisond :: Detectors" version="${project.version}">
+      <feature>opennms-icmp-jna</feature>
       <feature>opennms-provisioning-detectors</feature>
       <feature>minion-rpc-server</feature>
       <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
