@@ -584,6 +584,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-wmi</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.plugins</groupId>
       <artifactId>vaadin-opennms-pluginmanager</artifactId>
       <version>${project.version}</version>

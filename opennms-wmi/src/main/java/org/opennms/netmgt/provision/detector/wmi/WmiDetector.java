@@ -31,23 +31,18 @@ package org.opennms.netmgt.provision.detector.wmi;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
-import org.opennms.netmgt.provision.support.SyncAbstractDetector;
+import org.opennms.netmgt.provision.DetectRequest;
+import org.opennms.netmgt.provision.support.AgentBasedSyncAbstractDetector;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
 import org.opennms.protocols.wmi.WmiParams;
 import org.opennms.protocols.wmi.WmiResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
-@Scope("prototype")
-public class WmiDetector extends SyncAbstractDetector {
-    
-    
+public class WmiDetector extends AgentBasedSyncAbstractDetector<WmiAgentConfig> {
+
     public static final Logger LOG = LoggerFactory.getLogger(WmiDetector.class);
     
     private static final String PROTOCOL_NAME = "WMI";
@@ -83,8 +78,7 @@ public class WmiDetector extends SyncAbstractDetector {
     public WmiDetector() {
         super(PROTOCOL_NAME, 0);
     }
-    
-    
+
     @Override
     protected void onInit() {
         setMatchType(getMatchType() != null ? getMatchType() : DEFAULT_WMI_MATCH_TYPE);
@@ -97,7 +91,17 @@ public class WmiDetector extends SyncAbstractDetector {
     }
 
     @Override
-    public boolean isServiceDetected(final InetAddress address) {
+    public WmiAgentConfig getAgentConfig(DetectRequest request) {
+        if (request.getRuntimeAttributes() != null) {
+            // All of the keys in the runtime attribute map are used to store the agent configuration
+            return WmiAgentConfig.fromMap(request.getRuntimeAttributes());
+        } else {
+            return new WmiAgentConfig();
+        }
+    }
+
+    @Override
+    public boolean isServiceDetected(final InetAddress address, final WmiAgentConfig agentConfig) {
         WmiParams clientParams = null;
 
         if(getWmiWqlStr().equals(DEFAULT_WMI_WQL)) {
@@ -111,7 +115,6 @@ public class WmiDetector extends SyncAbstractDetector {
         }
 
         // Use WMI credentials from configuration files, and override values with the detector parameters if they exists.
-        final WmiAgentConfig agentConfig = WmiPeerFactory.getInstance().getAgentConfig(address);
         if (getUsername() != null)
             agentConfig.setUsername(getUsername());
         if (getPassword() != null)
@@ -180,8 +183,7 @@ public class WmiDetector extends SyncAbstractDetector {
 
     @Override
     public void dispose() {
-        // TODO Auto-generated method stub
-        
+        // pass
     }
 
 

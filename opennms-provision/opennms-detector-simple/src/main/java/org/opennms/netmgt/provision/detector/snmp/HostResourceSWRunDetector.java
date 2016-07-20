@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.detector.snmp;
 
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -90,7 +91,7 @@ public class HostResourceSWRunDetector extends SnmpDetector {
      * service events if needed.
      */
     @Override
-    public boolean isServiceDetected(SnmpAgentConfig agentConfig) {
+    public boolean isServiceDetected(final InetAddress address, final SnmpAgentConfig agentConfig) {
         
         boolean status = false;
 

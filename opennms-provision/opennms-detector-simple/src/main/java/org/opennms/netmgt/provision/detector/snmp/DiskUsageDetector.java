@@ -128,7 +128,7 @@ public class DiskUsageDetector extends SnmpDetector {
      * service events if needed.
      */
     @Override
-    public boolean isServiceDetected(SnmpAgentConfig agentConfig) {
+    public boolean isServiceDetected(final InetAddress address, final SnmpAgentConfig agentConfig) {
         int matchType = MATCH_TYPE_EXACT;
 
         try {

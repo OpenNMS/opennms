@@ -37,9 +37,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.provision.DetectRequest;
-import org.opennms.netmgt.provision.DetectResults;
-import org.opennms.netmgt.provision.support.DetectResultsImpl;
-import org.opennms.netmgt.provision.support.SyncAbstractDetector;
+import org.opennms.netmgt.provision.support.AgentBasedSyncAbstractDetector;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -56,7 +54,7 @@ import com.google.common.collect.Lists;
  * @author ranger
  * @version $Id: $
  */
-public class SnmpDetector extends SyncAbstractDetector {
+public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig>  {
 
     public enum MatchType {
         // Service detected if 1 or more entries match an expected value
@@ -185,7 +183,8 @@ public class SnmpDetector extends SyncAbstractDetector {
         return m_hex;
     }
 
-    protected SnmpAgentConfig getAgentConfig(DetectRequest request) {
+    @Override
+    public SnmpAgentConfig getAgentConfig(DetectRequest request) {
         if (request.getRuntimeAttributes() != null) {
             // All of the keys in the runtime attribute map are used to store the agent configuration
             return SnmpAgentConfig.fromMap(request.getRuntimeAttributes());
@@ -195,16 +194,7 @@ public class SnmpDetector extends SyncAbstractDetector {
     }
 
     @Override
-    public DetectResults detect(DetectRequest request) {
-        return new DetectResultsImpl(isServiceDetected(getAgentConfig(request)));
-    }
-
-    @Override
-    public final boolean isServiceDetected(InetAddress addresss) {
-        return isServiceDetected(new SnmpAgentConfig());
-    }
-
-    public boolean isServiceDetected(SnmpAgentConfig agentConfig) {
+    public boolean isServiceDetected(InetAddress address, SnmpAgentConfig agentConfig) {
         try {
             configureAgentPTR(agentConfig);
             configureAgentVersion(agentConfig);

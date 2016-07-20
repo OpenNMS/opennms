@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.detector.snmp;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -78,7 +79,7 @@ public class OmsaStorageDetector extends SnmpDetector {
      * added to service events if needed.
      */
     @Override
-    public boolean isServiceDetected(SnmpAgentConfig agentConfig) {
+    public boolean isServiceDetected(final InetAddress address, final SnmpAgentConfig agentConfig) {
         try {
             configureAgentPTR(agentConfig);
             configureAgentVersion(agentConfig);

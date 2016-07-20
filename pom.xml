@@ -1306,6 +1306,7 @@
     <jettyVersion>8.1.15.v20140411</jettyVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
+    <jinteropVersion>2.0.8</jinteropVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
