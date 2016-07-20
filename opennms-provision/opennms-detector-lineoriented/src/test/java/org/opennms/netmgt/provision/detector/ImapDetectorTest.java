@@ -41,15 +41,14 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.ImapDetector;
 import org.opennms.netmgt.provision.detector.simple.ImapDetectorFactory;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class ImapDetectorTest implements InitializingBean {
-    
+public class ImapDetectorTest {
+
     @Autowired
     private ImapDetectorFactory m_detectorFactory;
     private ImapDetector m_detector = null;
@@ -165,12 +164,4 @@ public class ImapDetectorTest implements InitializingBean {
             m_server.stopServer();
         }
     }
-
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-        
-    }
-
 }

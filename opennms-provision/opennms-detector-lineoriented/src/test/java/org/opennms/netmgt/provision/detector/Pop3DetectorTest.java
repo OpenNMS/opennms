@@ -40,16 +40,15 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.Pop3Detector;
 import org.opennms.netmgt.provision.detector.simple.Pop3DetectorFactory;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class Pop3DetectorTest implements InitializingBean {
+public class Pop3DetectorTest {
     private SimpleServer m_server;
-    
+
     @Autowired
     private Pop3DetectorFactory m_detectorFactory;
     private Pop3Detector m_detector;
@@ -120,11 +119,4 @@ public class Pop3DetectorTest implements InitializingBean {
         future.awaitFor();
         return future.isServiceDetected();
     }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-        
-    }
-
 }

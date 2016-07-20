@@ -41,7 +41,6 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.simple.NrpeDetector;
 import org.opennms.netmgt.provision.detector.simple.NrpeDetectorFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -54,7 +53,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 @Ignore
-public class NrpeDetectorTest implements InitializingBean {
+public class NrpeDetectorTest {
 
     @Autowired
     private NrpeDetectorFactory m_detectorFactory;
@@ -85,12 +84,6 @@ public class NrpeDetectorTest implements InitializingBean {
     public void testDetectorFailNotUsingSSL() throws UnknownHostException {
         m_detector.setUseSsl(false);
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-        
     }
 
 }

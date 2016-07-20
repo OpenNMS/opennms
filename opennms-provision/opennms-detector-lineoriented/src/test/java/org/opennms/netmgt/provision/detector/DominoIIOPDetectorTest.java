@@ -40,7 +40,6 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector;
 import org.opennms.netmgt.provision.detector.simple.DominoIIOPDetectorFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -52,7 +51,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class DominoIIOPDetectorTest implements InitializingBean {
+public class DominoIIOPDetectorTest {
 
     @Autowired
     private  DominoIIOPDetectorFactory m_detectorFactory;
@@ -91,21 +90,5 @@ public class DominoIIOPDetectorTest implements InitializingBean {
     public void testDetectorFailNoHost() throws UnknownHostException {
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("1.1.1.1")));
-    }
-
-    @Test(timeout=20000)
-    @Ignore
-    public void testDetectorFailWrongIORPort() throws UnknownHostException {
-        //        m_detector.setIorPort(1000);
-        //        m_detector.setPort(80);
-        //        m_detector.init();
-        //        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
-    }
-
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-        
     }
 }

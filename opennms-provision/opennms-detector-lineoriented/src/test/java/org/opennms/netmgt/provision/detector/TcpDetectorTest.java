@@ -47,13 +47,12 @@ import org.opennms.netmgt.provision.DetectFutureListener;
 import org.opennms.netmgt.provision.detector.simple.TcpDetector;
 import org.opennms.netmgt.provision.detector.simple.TcpDetectorFactory;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class TcpDetectorTest implements InitializingBean {
+public class TcpDetectorTest {
     private SimpleServer m_server;
     @Autowired
     private TcpDetectorFactory m_detectorFactory;
@@ -308,11 +307,5 @@ public class TcpDetectorTest implements InitializingBean {
 
     public String getBanner() {
         return m_banner;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-        
     }
 }

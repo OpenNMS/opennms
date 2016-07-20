@@ -49,7 +49,6 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.HttpsDetector;
 import org.opennms.netmgt.provision.detector.simple.HttpsDetectorFactory;
 import org.opennms.netmgt.provision.server.SSLServer;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -60,7 +59,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class HttpsDetectorTest implements InitializingBean{
+public class HttpsDetectorTest {
     private static final int SSL_PORT = 7142;
 
     @Autowired
@@ -214,7 +213,6 @@ public class HttpsDetectorTest implements InitializingBean{
         assertTrue(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
 
-
     /**
      * @param serviceDetected
      * @return
@@ -226,11 +224,4 @@ public class HttpsDetectorTest implements InitializingBean{
 
         return future.isServiceDetected();
     }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-        
-    }
-
 }

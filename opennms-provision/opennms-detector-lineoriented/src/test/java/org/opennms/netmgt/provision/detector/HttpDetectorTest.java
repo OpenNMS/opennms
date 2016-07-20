@@ -42,14 +42,13 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.HttpDetector;
 import org.opennms.netmgt.provision.detector.simple.HttpDetectorFactory;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class HttpDetectorTest implements InitializingBean {
+public class HttpDetectorTest {
 
     
     @Autowired
@@ -207,7 +206,6 @@ public class HttpDetectorTest implements InitializingBean {
         return serverOKResponse;
     }
 
-
     private SimpleServer createServer(final String httpResponse) throws Exception {
         SimpleServer server = new SimpleServer() {
 
@@ -221,14 +219,9 @@ public class HttpDetectorTest implements InitializingBean {
 
         return server;
     }
+
     private boolean doCheck(DetectFuture future) throws InterruptedException {
         future.awaitFor();
         return future.isServiceDetected();
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-        
     }
 }

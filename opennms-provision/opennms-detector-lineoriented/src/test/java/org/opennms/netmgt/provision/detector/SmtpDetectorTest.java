@@ -42,7 +42,6 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.SmtpDetector;
 import org.opennms.netmgt.provision.detector.simple.SmtpDetectorFactory;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -54,7 +53,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class SmtpDetectorTest implements InitializingBean {
+public class SmtpDetectorTest {
 
     @Autowired
     private SmtpDetectorFactory m_detectorFactory;
@@ -190,12 +189,5 @@ public class SmtpDetectorTest implements InitializingBean {
                 addResponseHandler(matches("QUIT"), shutdownServer("221 Service closing transmission channel"));
             }
         };
-    }
-
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-        
     }
 }

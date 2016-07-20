@@ -43,7 +43,6 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.CitrixDetector;
 import org.opennms.netmgt.provision.detector.simple.CitrixDetectorFactory;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -55,7 +54,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class CitrixDetectorTest implements InitializingBean {
+public class CitrixDetectorTest {
     
     @Autowired
     private CitrixDetectorFactory m_detectorFactory;
@@ -119,11 +118,5 @@ public class CitrixDetectorTest implements InitializingBean {
                 setBanner("ICAICAICAICA");
             }
         };
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-        
     }
 }
