@@ -59,13 +59,12 @@ public class WsManDetector extends SyncAbstractDetector {
     protected static final String PRODUCT_VENDOR = "product-vendor";
     protected static final String PRODUCT_VERSION = "product-version";
 
-    private final WSManClientFactory m_factory;
+    private WSManClientFactory m_factory;
 
     private boolean m_updateAssets = true;
 
-    protected WsManDetector(WSManClientFactory factory) {
+    public WsManDetector() {
         super(PROTOCOL_NAME, 0);
-        m_factory = factory;
     }
 
     @Override
@@ -80,7 +79,7 @@ public class WsManDetector extends SyncAbstractDetector {
 
     @Override
     public boolean isServiceDetected(InetAddress address) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("WSManEndpoint is required.");
     }
 
     public DetectResults isServiceDetected(InetAddress address, WSManEndpoint endpoint) {
@@ -98,6 +97,10 @@ public class WsManDetector extends SyncAbstractDetector {
             LOG.info("Identify failed for address {} with endpoint {}.", address, endpoint, e);
         }
         return new DetectResultsImpl(identity != null, attributes);
+    }
+
+    public void setClientFactory(WSManClientFactory factory) {
+        m_factory = factory;
     }
 
     public void setUpdateAssets(boolean updateAssets) {

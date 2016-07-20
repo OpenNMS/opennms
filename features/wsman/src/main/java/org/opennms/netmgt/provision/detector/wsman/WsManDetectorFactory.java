@@ -63,7 +63,9 @@ public class WsManDetectorFactory extends GenericServiceDetectorFactory<WsManDet
 
     @Override
     public WsManDetector createDetector() {
-        return new WsManDetector(m_factory);
+        final WsManDetector detector = new WsManDetector();
+        detector.setClientFactory(m_factory);
+        return detector;
     }
 
     @Override
