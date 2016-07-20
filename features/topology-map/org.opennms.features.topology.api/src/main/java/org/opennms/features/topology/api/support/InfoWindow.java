@@ -87,14 +87,14 @@ public class InfoWindow extends Window {
     	/*Sets the browser and window sizes based on the main window*/
         int browserWidth = (int)(sizePercentage * width), browserHeight = (int)(sizePercentage * height);
         int windowWidth = browserWidth + widthCushion, windowHeight = browserHeight + heightCushion;
-        setWidth("" + windowWidth + "px");
-        setHeight("" + windowHeight + "px");
+        setWidth(windowWidth, Unit.PIXELS);
+        setHeight(windowHeight, Unit.PIXELS);
         setPositionX((width - windowWidth)/2);
 		setPositionY((height - windowHeight)/2);
         
         /*Sets the size of the browser to fit within the sub-window*/
         infoBrowser.setType(Embedded.TYPE_BROWSER);
-        infoBrowser.setWidth("" + browserWidth + "px");
-        infoBrowser.setHeight("" + browserHeight + "px");
+        infoBrowser.setWidth(browserWidth, Unit.PIXELS);
+        infoBrowser.setHeight(browserHeight, Unit.PIXELS);
     }
 }

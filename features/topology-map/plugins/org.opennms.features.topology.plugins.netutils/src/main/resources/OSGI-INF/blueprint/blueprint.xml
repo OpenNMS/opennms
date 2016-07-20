@@ -10,8 +10,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <cm:property-placeholder persistent-id="org.opennms.features.topology.netutils" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="pingURL" value="ExecCommand.map?command=ping"/>
-            <cm:property name="tracerouteURL" value="ExecCommand.map?command=traceroute"/>
             <cm:property name="eventsURL" value="event/list"/>
             <cm:property name="alarmsURL" value="alarm/list.htm"/>
         	<cm:property name="nodeListURL" value="element/nodeList.htm"/>
