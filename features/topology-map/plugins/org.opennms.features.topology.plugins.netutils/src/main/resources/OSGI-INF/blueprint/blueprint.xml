@@ -22,9 +22,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     <bean id="pingOperation" class="org.opennms.features.topology.netutils.internal.operations.PingOperation" >
         <argument ref="pinger" />
     </bean>
-    <bean id="tracerouteOperation" class="org.opennms.features.topology.netutils.internal.operations.TracerouteOperation" >
-        <property name="tracerouteURL" value="${tracerouteURL}"/>
-    </bean>
     <bean id="eventsAlarmsOperation" class="org.opennms.features.topology.netutils.internal.operations.EventsAlarmsOperation" >
         <property name="eventsURL" value="${eventsURL}"/>
         <property name="alarmsURL" value="${alarmsURL}"/>
@@ -45,14 +42,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
             <entry key="operation.contextMenuLocation" value=""/> <!-- SPC-360 -->
         </service-properties>
     </service>
-    
-<!--     <service interface="org.opennms.features.topology.api.Operation" ref="tracerouteOperation"> -->
-<!--         <service-properties> -->
-<!--             <entry key="operation.label" value="Traceroute"/> -->
-<!--             <entry key="operation.menuLocation" value="Device"/> -->
-<!--             <entry key="operation.contextMenuLocation" value=""/> -->
-<!--         </service-properties> -->
-<!--     </service> -->
     
     <service interface="org.opennms.features.topology.api.Operation" ref="eventsAlarmsOperation">
         <service-properties>
