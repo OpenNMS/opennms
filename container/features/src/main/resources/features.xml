@@ -888,12 +888,6 @@
       <bundle>mvn:org.opennms/opennms-webapp/${project.version}/war</bundle>
     </feature>
 
-    <feature name="tsrm-troubleticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: Tivoli Service Request Manager (TSRM)">
-        <feature version="${cxfVersion}">cxf-jaxws</feature>
-        <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features/opennms-integration-tsrm/${project.version}</bundle>
-    </feature>
-    
     <feature name="wsman-integration" version="${project.version}" description="OpenNMS :: Features :: WS-Man Integration">
       <feature>opennms-collection-api</feature>
       <feature>opennms-provisioning-api</feature>
