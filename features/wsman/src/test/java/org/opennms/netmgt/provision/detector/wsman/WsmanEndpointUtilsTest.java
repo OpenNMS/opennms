@@ -39,12 +39,17 @@ public class WsmanEndpointUtilsTest {
 
     @Test
     public void canConvertToAndFromMap() throws MalformedURLException {
-        
         WSManEndpoint expectedEndpoint = new WSManEndpoint.Builder("https://www.opennms.org/wsman")
-            .build();
+                .withConnectionTimeout(60)
+                .withBasicAuth("x", "y")
+                .build();
 
         WSManEndpoint actualEndpoint = WsmanEndpointUtils.fromMap(WsmanEndpointUtils.toMap(expectedEndpoint));
-        
+
         assertEquals(expectedEndpoint.getUrl(), actualEndpoint.getUrl());
+        assertEquals(expectedEndpoint.isBasicAuth(), actualEndpoint.isBasicAuth());
+        assertEquals(expectedEndpoint.getUsername(), actualEndpoint.getUsername());
+        assertEquals(expectedEndpoint.getPassword(), actualEndpoint.getPassword());
+        assertEquals(expectedEndpoint.getConnectionTimeout(), actualEndpoint.getConnectionTimeout());
     }
 }
