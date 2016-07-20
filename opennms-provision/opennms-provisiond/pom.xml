@@ -145,8 +145,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jna</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
