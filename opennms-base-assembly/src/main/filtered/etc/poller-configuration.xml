@@ -23,8 +23,9 @@
       <parameter key="timeout" value="3000"/>
       <parameter key="protocol" value="rmi"/>
       <parameter key="urlPath" value="/jmxrmi"/>
-      <parameter key="rrd-base-name" value="jmx-cassandra"/>
-      <parameter key="ds-name" value="jmx-cassandra"/>
+      <parameter key="ds-name" value="cassandra21x"/>
+      <parameter key="friendly-name" value="cassandra21x"/>
+      <parameter key="collection" value="cassandra21x"/>
       <parameter key="thresholding-enabled" value="true"/>
       <parameter key="factory" value="PASSWORD-CLEAR"/>
       <parameter key="username" value="cassandra-username"/>
@@ -56,8 +57,10 @@
       <parameter key="timeout" value="3000"/>
       <parameter key="protocol" value="rmi"/>
       <parameter key="urlPath" value="/jmxrmi"/>
-      <parameter key="rrd-base-name" value="jmx-cassandra-newts"/>
-      <parameter key="ds-name" value="jmx-cassandra-newts"/>
+      <parameter key="rrd-base-name" value="cassandra21x-newts"/>
+      <parameter key="ds-name" value="cassandra21x-newts"/>
+      <parameter key="friendly-name" value="cassandra21x-newts"/>
+      <parameter key="collection" value="cassandra21x-newts"/>
       <parameter key="thresholding-enabled" value="true"/>
       <parameter key="factory" value="PASSWORD-CLEAR"/>
       <parameter key="username" value="cassandra-username"/>
