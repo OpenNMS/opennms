@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.CamelContext;
 import org.exolab.castor.xml.MarshalException;
@@ -172,6 +173,10 @@ public class Discovery extends AbstractServiceDaemon {
             LOG.debug("onInit: initialization failed", e);
             throw new IllegalStateException("Could not initialize discovery configuration.", e);
         }
+
+        // Reduce the shutdown timeout for the Camel context
+        m_camelContext.getShutdownStrategy().setTimeout(5);
+        m_camelContext.getShutdownStrategy().setTimeUnit(TimeUnit.SECONDS);
     }
 
     /**

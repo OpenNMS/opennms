@@ -61,6 +61,7 @@ import org.opennms.netmgt.bsm.service.model.functions.reduce.ThresholdResultExpl
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 
+import com.google.common.base.Strings;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Sizeable;
@@ -295,7 +296,7 @@ public class BusinessServiceVertexInfoPanelItem extends VertexInfoPanelItem {
         }
 
         private String getLabel(GraphEdge graphEdge, ThresholdResultExplanation explanation) {
-            if (graphEdge.getFriendlyName() != null) {
+            if (!Strings.isNullOrEmpty(graphEdge.getFriendlyName())) {
                 return graphEdge.getFriendlyName();
             }
             return GraphVertexToTopologyVertexConverter.createTopologyVertex(explanation.getGraphVertex(graphEdge)).getLabel();

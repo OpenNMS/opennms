@@ -38,10 +38,29 @@
 
 package org.opennms.netmgt.collectd.vmware;
 
-import com.vmware.vim25.*;
-import com.vmware.vim25.mo.*;
-import com.vmware.vim25.mo.util.MorUtil;
-import com.vmware.vim25.ws.WSClient;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.expect;
+import static org.powermock.api.easymock.PowerMock.createMock;
+import static org.powermock.api.easymock.PowerMock.createPartialMock;
+import static org.powermock.api.easymock.PowerMock.expectNew;
+import static org.powermock.api.easymock.PowerMock.method;
+import static org.powermock.api.easymock.PowerMock.mockStatic;
+import static org.powermock.api.easymock.PowerMock.replay;
+import static org.powermock.api.easymock.PowerMock.suppress;
+import static org.powermock.api.easymock.PowerMock.verify;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.RemoteException;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.net.ssl.SSLSocketFactory;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,18 +69,41 @@ import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.sblim.wbem.cim.*;
+import org.sblim.wbem.cim.CIMDataType;
+import org.sblim.wbem.cim.CIMInstance;
+import org.sblim.wbem.cim.CIMNameSpace;
+import org.sblim.wbem.cim.CIMObject;
+import org.sblim.wbem.cim.CIMObjectPath;
+import org.sblim.wbem.cim.CIMProperty;
+import org.sblim.wbem.cim.CIMValue;
 import org.sblim.wbem.client.CIMClient;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.rmi.RemoteException;
-import java.security.Principal;
-import java.util.*;
-
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.expect;
-import static org.powermock.api.easymock.PowerMock.*;
+import com.vmware.vim25.AboutInfo;
+import com.vmware.vim25.ElementDescription;
+import com.vmware.vim25.HostIpConfig;
+import com.vmware.vim25.HostNetworkInfo;
+import com.vmware.vim25.HostServiceTicket;
+import com.vmware.vim25.HostVirtualNic;
+import com.vmware.vim25.HostVirtualNicSpec;
+import com.vmware.vim25.ManagedObjectReference;
+import com.vmware.vim25.PerfCounterInfo;
+import com.vmware.vim25.PerfEntityMetric;
+import com.vmware.vim25.PerfEntityMetricBase;
+import com.vmware.vim25.PerfMetricId;
+import com.vmware.vim25.PerfMetricIntSeries;
+import com.vmware.vim25.PerfProviderSummary;
+import com.vmware.vim25.PerfQuerySpec;
+import com.vmware.vim25.PerfSummaryType;
+import com.vmware.vim25.VimPortType;
+import com.vmware.vim25.mo.HostNetworkSystem;
+import com.vmware.vim25.mo.HostSystem;
+import com.vmware.vim25.mo.ManagedEntity;
+import com.vmware.vim25.mo.PerformanceManager;
+import com.vmware.vim25.mo.ServerConnection;
+import com.vmware.vim25.mo.ServiceInstance;
+import com.vmware.vim25.mo.VirtualMachine;
+import com.vmware.vim25.mo.util.MorUtil;
+import com.vmware.vim25.ws.WSClient;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ServiceInstance.class, PerformanceManager.class, VmwareViJavaAccess.class, MorUtil.class, PerfProviderSummary.class, HostSystem.class, HostNetworkSystem.class, CIMClient.class})
@@ -120,7 +162,12 @@ public class VmwareViJavaAccessTest {
         mockServiceInstance = createMock(ServiceInstance.class);
 
         // setup ServerConnection
-        mockServerConnection = new ServerConnection(new URL("https://hostname/sdk"), new VimPortType(new WSClient("https://hostname/sdk")), mockServiceInstance);
+        mockServerConnection = new ServerConnection(new URL("https://hostname/sdk"), new VimPortType(new WSClient("https://hostname/sdk") {
+            @Override
+            protected SSLSocketFactory getTrustAllSocketFactory(boolean ignoreCert) throws RemoteException {
+                return null;
+            }
+        }), mockServiceInstance);
 
         // setup AboutInfo
         mockAboutInfo = createMock(AboutInfo.class);

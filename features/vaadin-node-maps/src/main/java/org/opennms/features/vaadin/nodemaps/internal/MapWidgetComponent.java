@@ -33,10 +33,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
@@ -61,30 +57,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.github.wolfie.refresher.Refresher;
-
 /**
  * @author Marcus Hellberg (marcus@vaadin.com)
  */
 public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProvider {
 
-    private class DynamicUpdateRefresher implements Refresher.RefreshListener{
-        private static final long serialVersionUID = 801233170298353060L;
-
-        @Override
-        public void refresh(Refresher refresher) {
-            refreshView();
-        }
-    }
-
     private static final long serialVersionUID = -6364929103619363239L;
     private static final Logger LOG = LoggerFactory.getLogger(MapWidgetComponent.class);
-
-    private final ScheduledExecutorService m_executor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
-        @Override public Thread newThread(final Runnable runnable) {
-            return new Thread(runnable, "NodeMapUpdater-Thread");
-        }
-    });
 
     private NodeDao m_nodeDao;
     private AssetRecordDao m_assetDao;
@@ -93,7 +72,7 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
     private TransactionOperations m_transaction;
     private Boolean m_aclsEnabled = false;
 
-    private Map<Integer,NodeEntry> m_activeNodes = new HashMap<Integer,NodeEntry>();
+    private Map<Integer,NodeEntry> m_activeNodes = new HashMap<>();
 
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -131,30 +110,8 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
         m_transaction = tx;
     }
 
-    public void init() {
-        m_executor.scheduleWithFixedDelay(new Runnable() {
-            @Override public void run() {
-                refreshNodeData();
-            }
-        }, 0, 5, TimeUnit.MINUTES);
-        checkAclsEnabled();
-        setupAutoRefresher();
-    }
-
-    private void checkAclsEnabled() {
-        String aclsPropValue = System.getProperty("org.opennms.web.aclsEnabled");
-        m_aclsEnabled = aclsPropValue != null && aclsPropValue.equals("true");
-    }
-
-    public void setupAutoRefresher(){
-        Refresher refresher = new Refresher();
-        refresher.setRefreshInterval(5000); //Pull every two seconds for view updates
-        refresher.addListener(new DynamicUpdateRefresher());
-        addExtension(refresher);
-    }
-
-    public void refresh() {
-        refreshView();
+    public MapWidgetComponent() {
+        m_aclsEnabled = Boolean.valueOf(System.getProperty("org.opennms.web.aclsEnabled", "false"));
     }
 
     @Override
@@ -166,7 +123,7 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
         return nodes;
     }
 
-    private void refreshView() {
+    public void refresh() {
         if(m_aclsEnabled) {
             Map<Integer, String> nodes = getNodeDao().getAllLabelsById();
 
@@ -180,7 +137,7 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
         }
     }
 
-    private void refreshNodeData() {
+    public void refreshNodeData() {
         if (getNodeDao() == null) {
             LOG.warn("No node DAO!  Can't refresh node data.");
             return;

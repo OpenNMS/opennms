@@ -98,6 +98,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         @Override
         public void mapPhysicalBounds(int width, int height) {
+            getState().setPhysicalDimensions(width, height);
             getViewManager().setViewPort(width, height);
             getViewManager().setMapBounds(m_graph.getLayout().getBounds());
         }
@@ -249,10 +250,13 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             vertexRefsToSelect.addAll(m_graphContainer.getSelectionManager().getSelectedVertexRefs());
             vertexRefsToSelect.removeAll(vertexRefsToDeselect);
         }
-        m_graphContainer.getSelectionManager().deselectAll();
-        m_graphContainer.getSelectionManager().selectVertexRefs( m_graphContainer.getVertexRefForest(vertexRefsToSelect) );
-        m_blockSelectionEvents = false;
-        updateMenuItems();
+        Collection<VertexRef> selectedVertices = m_graphContainer.getVertexRefForest(vertexRefsToSelect);
+        if (!m_graphContainer.getSelectionManager().getSelectedVertexRefs().equals(selectedVertices)) {
+            m_graphContainer.getSelectionManager().deselectAll();
+            m_graphContainer.getSelectionManager().selectVertexRefs(selectedVertices);
+            m_blockSelectionEvents = false;
+            updateMenuItems();
+        }
     }
 
     private void selectEdge(String edgeKey) {
