@@ -3,8 +3,8 @@
 <collectd-configuration
         threads="50">
 
-    <package name="cassandra-via-jmx">
-        <filter>IPADDR != '0.0.0.0'</filter>
+    <package name="cassandra21x">
+        <filter><![CDATA[(IPADDR != '0.0.0.0') & (categoryName == 'Cassandra21x')]]></filter>
         <service name="JMX-Cassandra" interval="300000" user-defined="false" status="on">
             <parameter key="port" value="7199"/>
             <parameter key="retry" value="2"/>
@@ -18,6 +18,10 @@
             <parameter key="username" value="cassandra-username"/>
             <parameter key="password" value="cassandra-password"/>
         </service>
+    </package>
+
+    <package name="cassandra21x-newts">
+        <filter><![CDATA[(IPADDR != '0.0.0.0') & (catincCassandra21x& catincNewts)]]></filter>
         <service name="JMX-Cassandra-Newts" interval="300000" user-defined="false" status="on">
             <parameter key="port" value="7199"/>
             <parameter key="retry" value="2"/>
