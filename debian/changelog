@@ -1,6 +1,14 @@
 opennms (18.0.0-1) stable; urgency=low
 
   * New stable release.  This release contains a large number of bug fixes and
+    a few enhancements.  For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/18.0.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 21 Jul 2016 10:26:44 -0500
+
+opennms (18.0.0-1) stable; urgency=low
+
+  * New stable release.  This release contains a large number of bug fixes and
     new features.  For details on what has changed, see:
     http://docs.opennms.org/opennms/releases/18.0.0/releasenotes/releasenotes.html
 

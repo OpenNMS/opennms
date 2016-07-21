@@ -1,6 +1,113 @@
 [[release-18-changelog]]
 === Changelog
 
+[releasenotes-changelog-18.0.1]
+==== Release 18.0.1
+
+Release 18.0.1 is the latest stable release of OpenNMS.  It contains a large number of bug fixes and a few enhancements.
+For a high-level overview of what's changed in OpenNMS 18, see <<whatsnew-18.adoc#releasenotes-18,What's New in OpenNMS 18>>.
+
+The codename for 18.0.1 is _link:https://en.wikipedia.org/wiki/Platypus[Platypus]_.
+
+===== Bug
+
+* NPE in provisioning groups UI (corner case / race condition) (Issue http://issues.opennms.org/browse/NMS-3820[NMS-3820])
+* When using storeByFS a provisioning group cannot contain whitespace (Issue http://issues.opennms.org/browse/NMS-6331[NMS-6331])
+* observations related to "ping".option in topology page (Issue http://issues.opennms.org/browse/NMS-6849[NMS-6849])
+* Using ping in topology view cause strange behavior (Issue http://issues.opennms.org/browse/NMS-7204[NMS-7204])
+* Problems with "ResponseTimeSummary_Availability_Offenders" subreport (Issue http://issues.opennms.org/browse/NMS-7472[NMS-7472])
+* Problems with "NodeAvailability" report (Issue http://issues.opennms.org/browse/NMS-7475[NMS-7475])
+* Provided graph definitions are mixing aggregation function leading to wrong min / max totals (Issue http://issues.opennms.org/browse/NMS-7578[NMS-7578])
+* New Monitoring Locations Editor only allows integers in the latitude and longitude fields (Issue http://issues.opennms.org/browse/NMS-7869[NMS-7869])
+* output.log fills up with GLib-GObject-CRITICAL messages (Issue http://issues.opennms.org/browse/NMS-8016[NMS-8016])
+* Issues with data collection config for Cisco devices (Issue http://issues.opennms.org/browse/NMS-8027[NMS-8027])
+* Remotepoller shell script searching remote-poller.jar at wrong location (Issue http://issues.opennms.org/browse/NMS-8040[NMS-8040])
+* Ping from topology view does not work (results in 404 Page not found) (Issue http://issues.opennms.org/browse/NMS-8043[NMS-8043])
+* Documentation for Cassandra/Newts doesn't mention that a JDK is required (Issue http://issues.opennms.org/browse/NMS-8049[NMS-8049])
+* Node rescans possible in WebUI with ROLE_USER (Issue http://issues.opennms.org/browse/NMS-8127[NMS-8127])
+* Wrong label in send-event menu (Issue http://issues.opennms.org/browse/NMS-8154[NMS-8154])
+* Missing node/interface information in an event after sending an event with send-event ui (Issue http://issues.opennms.org/browse/NMS-8155[NMS-8155])
+* VMware-ManagedEntity does not work with VMware 6 (Issue http://issues.opennms.org/browse/NMS-8187[NMS-8187])
+* Install -dis on "SocketException:Too many open files" on centos:latest docker  (Issue http://issues.opennms.org/browse/NMS-8200[NMS-8200])
+* Editing scheduled outages overwrites collectd-configuration.xml (Issue http://issues.opennms.org/browse/NMS-8206[NMS-8206])
+* Trouble ticket link template in opennms.properties accidentally filtered (Issue http://issues.opennms.org/browse/NMS-8256[NMS-8256])
+* The filter for the foreign source in the outages view  caused an SQLGrammarException (Issue http://issues.opennms.org/browse/NMS-8275[NMS-8275])
+* enlinkd produces getReadyRunnable: queue is Empty (Issue http://issues.opennms.org/browse/NMS-8290[NMS-8290])
+* Enlinkd null pointer exception in BridgeTopologyDiscovery (Issue http://issues.opennms.org/browse/NMS-8291[NMS-8291])
+* linknode.jsp displays no data link (Issue http://issues.opennms.org/browse/NMS-8292[NMS-8292])
+* Topology elements looks off center when the panel is collapsed (Issue http://issues.opennms.org/browse/NMS-8297[NMS-8297])
+* Linkd Topology Provider shows Indeterminate Status of Vertices if no alarm is defined. (Issue http://issues.opennms.org/browse/NMS-8328[NMS-8328])
+* Multi-Selection Tool does not work anymore (Issue http://issues.opennms.org/browse/NMS-8331[NMS-8331])
+* Selection is lost when using the Topology UI (Issue http://issues.opennms.org/browse/NMS-8332[NMS-8332])
+* QuickAddNodeIT flapping during tearDown() (Issue http://issues.opennms.org/browse/NMS-8340[NMS-8340])
+* If the persistence layer is not available or unresponsive the WebUI becomes unavailable or extremely slow and key components stop working (Issue http://issues.opennms.org/browse/NMS-8360[NMS-8360])
+* nodelink.jsp shared segment without ports (Issue http://issues.opennms.org/browse/NMS-8362[NMS-8362])
+* Exceptions thrown by the Newts Conversion Tool for certain RRDs and no data on Cassandra (Issue http://issues.opennms.org/browse/NMS-8363[NMS-8363])
+* Totals based on {diffTime} on any graph templates related with octets are wrong (Issue http://issues.opennms.org/browse/NMS-8372[NMS-8372])
+* Poller threads can get locked up while waiting for outages to be created/resolved (Issue http://issues.opennms.org/browse/NMS-8376[NMS-8376])
+* storeByForeignSource breaks node[N] style resource IDs (Issue http://issues.opennms.org/browse/NMS-8404[NMS-8404])
+* ConcurrentModificationException in DefaultEventHandlerImpl (Issue http://issues.opennms.org/browse/NMS-8413[NMS-8413])
+* Karaf log level is DEBUG in stable (Issue http://issues.opennms.org/browse/NMS-8416[NMS-8416])
+* Enlinkd Topology: Nodes without any alarms have a question mark (Issue http://issues.opennms.org/browse/NMS-8417[NMS-8417])
+* IBM TSRM integration throws "requires a field Ticket class" exception (Issue http://issues.opennms.org/browse/NMS-8419[NMS-8419])
+* Enlinkd Topology: Cannot search for nodes without alarms (Issue http://issues.opennms.org/browse/NMS-8420[NMS-8420])
+* BSM Editor throws an exception if you type a 0 in weight (Issue http://issues.opennms.org/browse/NMS-8421[NMS-8421])
+* WebMonitor returns false negative poll results (Issue http://issues.opennms.org/browse/NMS-8427[NMS-8427])
+* Ring buffer entries exceed capacity (Issue http://issues.opennms.org/browse/NMS-8430[NMS-8430])
+* Newts: String properties are persisted using the "collector" thread (Issue http://issues.opennms.org/browse/NMS-8437[NMS-8437])
+* Upgrade PostgreSQL Driver and C3P0 (Issue http://issues.opennms.org/browse/NMS-8438[NMS-8438])
+* Newts: The number of sample processing threads do not match the number of writer threads (Issue http://issues.opennms.org/browse/NMS-8439[NMS-8439])
+* Topology redirects to localhost (127.0.0.1) (Issue http://issues.opennms.org/browse/NMS-8450[NMS-8450])
+* Problem in Minion syslog reception route (Issue http://issues.opennms.org/browse/NMS-8456[NMS-8456])
+* opennms stop takes  5 minutes (Issue http://issues.opennms.org/browse/NMS-8471[NMS-8471])
+* NRT graph interval should default to > 1s (Issue http://issues.opennms.org/browse/NMS-8477[NMS-8477])
+* PostgreSQL driver's OSGi bundle activator deregisters the driver (Issue http://issues.opennms.org/browse/NMS-8480[NMS-8480])
+* Isolate Smoke Tests (Issue http://issues.opennms.org/browse/NMS-8485[NMS-8485])
+* Port Minion System Tests to the Smoke Test Suite (Issue http://issues.opennms.org/browse/NMS-8486[NMS-8486])
+* JdbcCollector does not close database connections correctly (Issue http://issues.opennms.org/browse/NMS-8488[NMS-8488])
+* NPE in JMX Collector when collecting composite attributes (Issue http://issues.opennms.org/browse/NMS-8497[NMS-8497])
+* jmxremote password file not found when running `install -dis` after configuring RMI (Issue http://issues.opennms.org/browse/NMS-8499[NMS-8499])
+* JMX RMI auth configuration does not work with custom roles (Issue http://issues.opennms.org/browse/NMS-8500[NMS-8500])
+* Cancel dialog is slow and Topology Map crashes if vertex has many edges (20+) (Issue http://issues.opennms.org/browse/NMS-8501[NMS-8501])
+* log4j2.xml passes WARN level logs by default (Issue http://issues.opennms.org/browse/NMS-8502[NMS-8502])
+* Attributes set in the DroolsTicketerServiceLayer get overwritten (Issue http://issues.opennms.org/browse/NMS-8503[NMS-8503])
+* HW ENTITY_MIB plugin is not showing all information for certain devices (Issue http://issues.opennms.org/browse/NMS-8506[NMS-8506])
+* OEM graph for Storage Utilization fails due to '::' (Issue http://issues.opennms.org/browse/NMS-8519[NMS-8519])
+* The ticket change date is the same as the reported date (Issue http://issues.opennms.org/browse/NMS-8520[NMS-8520])
+* Discovery doesn't create/place node in correct requisition for range (Issue http://issues.opennms.org/browse/NMS-8537[NMS-8537])
+* blank label in "Threshold Function Details" window (Issue http://issues.opennms.org/browse/NMS-8541[NMS-8541])
+* Resizing browser window causes Topology UI to refresh itself needlessly (Issue http://issues.opennms.org/browse/NMS-8588[NMS-8588])
+* Topology Map is very very slow (Issue http://issues.opennms.org/browse/NMS-8589[NMS-8589])
+* Topology UI refreshes many times when performing various actions (Issue http://issues.opennms.org/browse/NMS-8592[NMS-8592])
+* Requisitioned IP interfaces never have ipHostName set (Issue http://issues.opennms.org/browse/NMS-8593[NMS-8593])
+* Compiler warnings about MaxPermSize support is removed in 8.0 (Issue http://issues.opennms.org/browse/NMS-8594[NMS-8594])
+* Vertex shows empty tooltip (Issue http://issues.opennms.org/browse/NMS-8595[NMS-8595])
+
+===== Configuration
+
+* Distributed/Geographical Maps do not show images anymore (Issue http://issues.opennms.org/browse/NMS-8597[NMS-8597])
+
+===== Enhancement
+
+* Change Real-time Graphing Default to 5 or 10 seconds (Issue http://issues.opennms.org/browse/NMS-5937[NMS-5937])
+* Make node aggregation 'maxClusterRadius' in Geographical Map configurable (Issue http://issues.opennms.org/browse/NMS-7638[NMS-7638])
+* Query an Application using the ReST interface (Issue http://issues.opennms.org/browse/NMS-8172[NMS-8172])
+* Add PaloAlto Firewall Datacollection (Issue http://issues.opennms.org/browse/NMS-8174[NMS-8174])
+* RESTv2 services should return HTTP 204 for DELETE (Issue http://issues.opennms.org/browse/NMS-8195[NMS-8195])
+* Expose the complete OnmsNode object in Scriptd to avoid LazyInitializationExceptions (Issue http://issues.opennms.org/browse/NMS-8294[NMS-8294])
+* Upgrade Log4j2 (there are several performance improvements) (Issue http://issues.opennms.org/browse/NMS-8392[NMS-8392])
+* Return  X-Frame-Options HTTP header to prevent x-frame scripting and clickjacking (Issue http://issues.opennms.org/browse/NMS-8393[NMS-8393])
+* BSM attributes not available in events and alarms (Issue http://issues.opennms.org/browse/NMS-8423[NMS-8423])
+* Upgrade Newts to 1.3.6 (Issue http://issues.opennms.org/browse/NMS-8428[NMS-8428])
+* Add a new control to open Backshift graphs in their own window (Issue http://issues.opennms.org/browse/NMS-8429[NMS-8429])
+* Update NRTG to use Backshift instead of rrdgraph.js (Issue http://issues.opennms.org/browse/NMS-8435[NMS-8435])
+* Provide a stress tool that can be used to stress the active persistence layer (Issue http://issues.opennms.org/browse/NMS-8436[NMS-8436])
+* Forecast metrics using Backshift (Issue http://issues.opennms.org/browse/NMS-8448[NMS-8448])
+* Implement a Datasource Factory based on Hikari CP (Issue http://issues.opennms.org/browse/NMS-8455[NMS-8455])
+* Add custom string attributes based on indirect and complex SNMP Indices (Issue http://issues.opennms.org/browse/NMS-8484[NMS-8484])
+* Improve built-in Newts graphs for easier diagnostics (Issue http://issues.opennms.org/browse/NMS-8495[NMS-8495])
+* Alphabetize nodes in surveillance category listing (Issue http://issues.opennms.org/browse/NMS-8535[NMS-8535])
+
 [[releasenotes-changelog-18.0.0]]
 ==== Release 18.0.0
 
