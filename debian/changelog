@@ -1,4 +1,4 @@
-opennms (18.0.0-1) stable; urgency=low
+opennms (18.0.1-1) stable; urgency=low
 
   * New stable release.  This release contains a large number of bug fixes and
     a few enhancements.  For details on what has changed, see:
