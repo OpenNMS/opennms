@@ -26,6 +26,10 @@ Installing _OpenNMS_ requires the following prerequisites:
 ** <<gi-rrdtool-time-series-database, RRDtool>>: A higher performance, file-based database.
 ** <<gi-install-ts-newts, Newts>>: The highest performance solution. Newts uses an Apache Cassandra database for clustered scalability.
 
+CAUTION: Please make sure your DNS settings are correct.
+         In case there is a wrong _A Resource Record_ of the hostname of the server can prevent OpenNMS from start.
+         There will be an exception cause no security manager can be initialized and a _RMI class loader disabled_ is shown.
+
 NOTE: _OpenJDK 8_ can be used, but for production and critical environments _Oracle Java SE Development Kit 8_ is recommended.
 
 [NOTE]
