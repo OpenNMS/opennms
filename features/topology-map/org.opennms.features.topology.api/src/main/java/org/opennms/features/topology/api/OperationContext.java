@@ -31,17 +31,34 @@ package org.opennms.features.topology.api;
 import com.vaadin.ui.UI;
 
 /**
- * This is an API for  of all <Operation>s
- * 
+ * Context object to allow access to the underlying UI and GraphContainer.
+ *
  * @author Donald Desloge
+ * @author Markus von Rüden
  *
  */
 public interface OperationContext {
 	
-	enum DisplayLocation { MENUBAR, CONTEXTMENU, SEARCH };
+	enum DisplayLocation { MENUBAR, CONTEXTMENU, SEARCH }
 
+    /**
+     * Returns the current UI, the operation was triggered from
+     *
+     * @return the current UI, the operation was triggered from
+     */
     UI getMainWindow();
+
+    /**
+     * Returns the current {@link GraphContainer}
+     *
+     * @return The current {@link GraphContainer}
+     */
     GraphContainer getGraphContainer();
+
+    /**
+     * Returns the {@link DisplayLocation} the operation was triggered from
+     *
+     * @return the {@link DisplayLocation} the operation was triggered from
+     */
     DisplayLocation getDisplayLocation();
-    boolean isChecked();
 }

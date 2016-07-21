@@ -76,7 +76,10 @@ public class IconSelectionOperation implements Operation {
 
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        return targets.size() == 1 && targets.get(0) instanceof AbstractVertex;
+        if (targets.size() != 1 || !(targets.get(0) instanceof AbstractVertex)) {
+            return false;
+        }
+        return operationContext.getGraphContainer().getIconManager().findRepositoryByIconKey(((AbstractVertex) targets.get(0)).getIconKey()) != null;
     }
 
     @Override

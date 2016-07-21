@@ -33,7 +33,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <reference id="cdpElementDao" interface="org.opennms.netmgt.dao.api.CdpElementDao" availability="mandatory"/>
     <reference id="ipNetToMediaDao" interface="org.opennms.netmgt.dao.api.IpNetToMediaDao" availability="mandatory"/>
 
-    <bean id="enlinkdMetaInfo" class="org.opennms.features.topology.api.topo.DefaultMetaInfo">
+    <bean id="enlinkdTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
         <property name="name" value="Enhanced Linkd Topology Provider"/>
         <property name="description" value="This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."/>
     </bean>
@@ -81,7 +81,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
         <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
         <property name="bridgeTopologyDao" ref="bridgeTopologyDao" />
-        <property name="metaInfo" ref="enlinkdMetaInfo"/>
+        <property name="topologyProviderInfo" ref="enlinkdTopologyProviderInfo"/>
         <property name="ipNetToMediaDao" ref="ipNetToMediaDao"/>
     </bean>
 
@@ -99,7 +99,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <argument ref="topologyHopProvider" />
         <argument ref="nodeDao" />
     </bean>
-    
+
     <!-- Linkd Topology Provider Services -->
     <service ref="topologyACLProvider">
     	<interfaces>
@@ -107,9 +107,16 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     		<value>org.opennms.features.topology.api.topo.EdgeProvider</value>
     		<value>org.opennms.features.topology.api.topo.GraphProvider</value>
     	</interfaces>
+    </service>
+
+    <!-- Meta topology provider -->
+    <bean id="enhancedLinkdMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+        <argument ref="topologyACLProvider" />
+    </bean>
+
+    <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="enhancedLinkdMetaTopologyProvider">
         <service-properties>
             <entry key="label" value="Enhanced Linkd" />
-            <entry key="preferredLayout" value="D3 Layout" />
         </service-properties>
     </service>
 
@@ -136,7 +143,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <!-- Icon definition -->
     <service>
         <interfaces>
-            <value>org.opennms.features.topology.api.IconRepository</value>
+            <value>org.opennms.features.topology.api.ConfigurableIconRepository</value>
             <value>org.osgi.service.cm.ManagedService</value>
         </interfaces>
         <service-properties>

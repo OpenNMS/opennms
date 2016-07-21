@@ -55,6 +55,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>graph</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.topology</groupId>
             <artifactId>org.opennms.features.topology.api</artifactId>
             <version>${project.version}</version>
@@ -123,13 +128,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.topology.plugins.topo</groupId>
-            <artifactId>org.opennms.features.topology.plugins.topo.simple</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
@@ -139,14 +137,18 @@
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-web-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.hubspot.jinjava</groupId>
+            <artifactId>jinjava</artifactId>
+            <version>2.1.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
-
     <repositories>
         <repository>
             <snapshots><enabled>false</enabled></snapshots>
@@ -156,5 +158,4 @@
             <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
         </repository>
     </repositories>
-
 </project>

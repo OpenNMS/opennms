@@ -1,0 +1,10 @@
+[[releasenotes-19]]
+== OpenNMS 19
+
+=== Important Upgrade Notes
+
+* *Simple Topology Provider*: The Simple Topology Provider has been removed. A new GraphML Topology Provider is introduced and should be used instead.
+
+
+=== New Features
+* GraphML Topology Provider: A new Topology Provider which reads GraphML formatted graphs and displays them in the the Topology UI.
