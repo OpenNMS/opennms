@@ -51,11 +51,12 @@ import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.MetaInfo;
+import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
@@ -716,8 +717,8 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     }
 
     @Override
-    public Criteria getDefaultCriteria() {
-        return m_delegate.getDefaultCriteria();
+    public Defaults getDefaults() {
+        return m_delegate.getDefaults();
     }
 
     @Override
@@ -730,8 +731,7 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
         return m_delegate.contributesTo(type);
     }
 
-    @Override
-    public MetaInfo getMetaInfo() {
-        return m_delegate.getMetaInfo();
+    public TopologyProviderInfo getTopologyProviderInfo() {
+        return m_delegate.getTopologyProviderInfo();
     }
 }

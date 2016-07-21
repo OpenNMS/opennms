@@ -271,7 +271,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
             D3.d3().zoomTransition(selection, width, height, p0, p1);
 
             D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT)
-                    .style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px")
                     .transition()
                     .delay(750)
                     .duration(500)
@@ -376,7 +375,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	private List<Element> m_selectedElements = new ArrayList<Element>();
 	private DragHandlerManager m_svgDragHandlerManager;
     private TopologyViewRenderer m_currentViewRender;
-    
+    private boolean initialized = false;
     private TopologyView<TopologyViewRenderer> m_topologyView;
     private List<GraphUpdateListener> m_graphListenerList = new ArrayList<GraphUpdateListener>();
     private TopologyComponentServerRpc m_serverRpc;
@@ -401,6 +400,15 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
     @SuppressWarnings("serial")
     @Override
 	protected void onLoad() {
+		// HACK: Somehow the onLoad method is invoked n times, causing the TopologyComponent to be added n times
+		// To prevent this, we set a property after initialization
+		if (!initialized) {
+			initialize();
+			initialized = true;
+		}
+    }
+
+	private void initialize() {
 		super.onLoad();
 		consoleLog("onLoad");
 		ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
@@ -733,6 +741,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
             vertex.setStatusCount(sharedVertex.getStatusCount());
 
+			vertex.setTargets(sharedVertex.isTargets());
+
             vertex.setTooltipText(sharedVertex.getTooltipText());
 
             vertex.setStyleName(sharedVertex.getStyleName());
@@ -755,6 +765,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
             String ttText = sharedEdge.getTooltipText();
             edge.setTooltipText(ttText);
             edge.setStatus(sharedEdge.getStatus());
+			edge.setAdditionalStyling(JavaScriptHelper.toJavaScriptObject(sharedEdge.getAdditionalStyling()));
             graph.addEdge(edge);
 		}
 		

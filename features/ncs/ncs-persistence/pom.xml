@@ -151,6 +151,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.graphml</artifactId>
+      <version>${project.version}</version>
+      <scope>rest</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-webapp-rest</artifactId>
       <version>${project.version}</version>
