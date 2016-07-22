@@ -661,4 +661,22 @@ public class NodeDaoIT implements InitializingBean {
         assertNotNull(n.getAssetRecord());
         assertEquals("category1", n.getAssetRecord().getDisplayCategory());
     }
+
+    /**
+     * Node 1 and 2 should have consecutive node IDs.
+     */
+    @Test
+    @Transactional
+    public void testGetNextNodeId() {
+        assertEquals(m_populator.getNode2().getId(), m_nodeDao.getNextNodeId(m_populator.getNode1().getId()));
+    }
+
+    /**
+     * Node 1 and 2 should have consecutive node IDs.
+     */
+    @Test
+    @Transactional
+    public void testGetPreviousNodeId() {
+        assertEquals(m_populator.getNode1().getId(), m_nodeDao.getPreviousNodeId(m_populator.getNode2().getId()));
+    }
 }

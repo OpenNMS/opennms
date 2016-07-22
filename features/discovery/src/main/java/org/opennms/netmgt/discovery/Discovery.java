@@ -29,10 +29,6 @@
 package org.opennms.netmgt.discovery;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -42,15 +38,20 @@ import java.util.concurrent.TimeUnit;
 import org.apache.camel.CamelContext;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.DBUtils;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.discovery.UnmanagedInterfaceFilter.LocationIpAddressKey;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -58,6 +59,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.util.Assert;
 
 /**
@@ -79,16 +83,17 @@ public class Discovery extends AbstractServiceDaemon {
 
     private static final String LOG4J_CATEGORY = "discovery";
 
-    /**
-     * The SQL query used to get the list of managed IP addresses from the database
-     */
-    private static final String ALL_IP_ADDRS_SQL = "SELECT DISTINCT ipAddr FROM ipInterface WHERE isManaged <> 'D'";
-
     private DiscoveryConfigFactory m_discoveryFactory;
 
     private EventForwarder m_eventForwarder;
 
     private UnmanagedInterfaceFilter m_interfaceFilter= null;
+
+    private NodeDao m_nodeDao;
+
+    private IpInterfaceDao m_ipInterfaceDao;
+
+    private TransactionOperations m_transactionOperations;
 
     @Autowired
     @Qualifier ("discoveryCamelContext")
@@ -130,11 +135,35 @@ public class Discovery extends AbstractServiceDaemon {
         return m_discoveryFactory;
     }
 
+    public TransactionOperations getTransactionOperations() {
+        return m_transactionOperations;
+    }
+
+    public void setTransactionOperations(TransactionOperations transactionOperations) {
+        m_transactionOperations = transactionOperations;
+    }
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+
+    public IpInterfaceDao getIpInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        m_ipInterfaceDao = ipInterfaceDao;
+    }
+
     /**
      * <p>setUnmanagedInterfaceFilter</p>
      */
     public void setUnmanagedInterfaceFilter(UnmanagedInterfaceFilter filter) {
-    	m_interfaceFilter = filter;
+        m_interfaceFilter = filter;
     }
 
     /**
@@ -234,36 +263,33 @@ public class Discovery extends AbstractServiceDaemon {
      * <p>syncAlreadyDiscovered</p>
      */
     protected void syncAlreadyDiscovered() {
-    	/**
-    	 * Make a new list with which we'll replace the existing one, that way
-    	 * if something goes wrong with the DB we won't lose whatever was already
-    	 * in there
-    	 */
-    	Set<String> newAlreadyDiscovered = Collections.synchronizedSet(new HashSet<String>());
-    	Connection conn = null;
-        final DBUtils d = new DBUtils(getClass());
-
-    	try {
-    		conn = DataSourceFactory.getInstance().getConnection();
-    		d.watch(conn);
-    		PreparedStatement stmt = conn.prepareStatement(ALL_IP_ADDRS_SQL);
-    		d.watch(stmt);
-    		ResultSet rs = stmt.executeQuery();
-    		d.watch(rs);
-    		if (rs != null) {
-    			while (rs.next()) {
-    				newAlreadyDiscovered.add(rs.getString(1));
-    			}
-    		} else {
-    			LOG.warn("Got null ResultSet from query for all IP addresses");
-    		}
-    		m_interfaceFilter.setManagedAddresses(newAlreadyDiscovered);
-    	} catch (SQLException sqle) {
-		LOG.warn("Caught SQLException while trying to query for all IP addresses: {}", sqle.getMessage());
-    	} finally {
-    	    d.cleanUp();
-    	}
-    	LOG.info("syncAlreadyDiscovered initialized list of managed IP addresses with {} members", m_interfaceFilter.size());
+        m_transactionOperations.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                /**
+                 * Make a new list with which we'll replace the existing one, that way
+                 * if something goes wrong with the DB we won't lose whatever was already
+                 * in there
+                 */
+                Set<LocationIpAddressKey> newAlreadyDiscovered = Collections.synchronizedSet(new HashSet<>());
+                // Fetch all non-deleted nodes
+                CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
+                builder.ne("type", String.valueOf(NodeType.DELETED.value()));
+                for (OnmsNode node : m_nodeDao.findMatching(builder.toCriteria())) {
+                    for (OnmsIpInterface iface : node.getIpInterfaces()) {
+                        // Skip deleted interfaces
+                        // TODO: Refactor the 'D' value with an enumeration
+                        if ("D".equals(iface.getIsManaged())) {
+                            continue;
+                        }
+                        // TODO: Refactor this to use {@link InetAddress}
+                        newAlreadyDiscovered.add(new LocationIpAddressKey(node.getLocation().getLocationName(), iface.getIpAddressAsString()));
+                    }
+                }
+                m_interfaceFilter.setManagedAddresses(newAlreadyDiscovered);
+                LOG.info("syncAlreadyDiscovered initialized list of managed IP addresses with {} members", m_interfaceFilter.size());
+            }
+        });
     }
 
     /**
@@ -341,10 +367,22 @@ public class Discovery extends AbstractServiceDaemon {
      */
     @EventHandler(uei=EventConstants.INTERFACE_DELETED_EVENT_UEI)
     public void handleInterfaceDeleted(final Event event) {
-        if(event.getInterface() != null) {
+        // remove from known nodes
+        Long nodeId = event.getNodeid();
+        if (nodeId == null) {
+            LOG.error(EventConstants.INTERFACE_DELETED_EVENT_UEI + ": Event with no node ID: " + event.toString());
+            return;
+        }
+        OnmsNode node = m_nodeDao.get(nodeId.intValue());
+        if (node == null) {
+            LOG.warn(EventConstants.INTERFACE_DELETED_EVENT_UEI + ": Cannot find node in DB: " + nodeId);
+            return;
+        }
+
+        final String iface = event.getInterface();
+        if (iface != null && !"".equals(iface.trim())) {
             // remove from known nodes
-            final String iface = event.getInterface();
-            m_interfaceFilter.removeManagedAddress(iface);
+            m_interfaceFilter.removeManagedAddress(node.getLocation().getLocationName(), iface);
 
             LOG.debug("Removed {} from known interface list", iface);
         }
@@ -384,8 +422,20 @@ public class Discovery extends AbstractServiceDaemon {
     @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
     public void handleNodeGainedInterface(Event event) {
         // add to known nodes
+        Long nodeId = event.getNodeid();
+        if (nodeId == null) {
+            LOG.error(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Event with no node ID: " + event.toString());
+            return;
+        }
+        OnmsNode node = m_nodeDao.get(nodeId.intValue());
+        if (node == null) {
+            LOG.warn(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Cannot find node in DB: " + nodeId);
+            return;
+        }
         final String iface = event.getInterface();
-        m_interfaceFilter.addManagedAddress(iface);
+        if (iface != null && !"".equals(iface.trim())) {
+            m_interfaceFilter.addManagedAddress(node.getLocation().getLocationName(), iface);
+        }
 
         LOG.debug("Added interface {} as discovered", iface);
     }
