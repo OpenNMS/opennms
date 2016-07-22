@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.icmp.jni;
 
+import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_PACKET_SIZE;
 import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_RETRIES;
 import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_TIMEOUT;
-import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_PACKET_SIZE;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -128,6 +128,7 @@ public class JniPinger implements Pinger {
 
     private RequestTracker<JniPingRequest, JniPingResponse> s_pingTracker;
     private Throwable m_error = null;
+    private JniIcmpMessenger m_messenger;
 
     public JniPinger() {}
 
@@ -139,9 +140,11 @@ public class JniPinger implements Pinger {
     private synchronized void initialize() throws Exception {
         if (s_pingTracker != null) return;
         try {
+            m_messenger = new JniIcmpMessenger(m_pingerId);
             s_pingTracker = Logging.withPrefix("icmp", new Callable<RequestTracker<JniPingRequest, JniPingResponse>>() {
+
                 @Override public RequestTracker<JniPingRequest, JniPingResponse> call() throws Exception {
-                    return new RequestTracker<JniPingRequest, JniPingResponse>("JNI-ICMP-"+m_pingerId, new JniIcmpMessenger(m_pingerId), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingResponse>());
+                    return new RequestTracker<JniPingRequest, JniPingResponse>("JNI-ICMP-"+m_pingerId, m_messenger, new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingResponse>());
                 }
             });
             s_pingTracker.start();
@@ -300,6 +303,18 @@ public class JniPinger implements Pinger {
 
         cb.waitFor();
         return cb.getResponseTimes();
+    }
+
+    @Override
+    public void setTrafficClass(final int tc) throws Exception {
+        initialize();
+        m_messenger.setTrafficClass(tc);
+    }
+
+    @Override
+    public void setAllowFragmentation(boolean allow) throws Exception {
+        initialize();
+        m_messenger.setAllowFragmentation(allow);
     }
 
 }

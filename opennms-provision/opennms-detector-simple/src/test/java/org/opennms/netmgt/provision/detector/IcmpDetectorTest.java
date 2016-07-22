@@ -57,6 +57,7 @@ public class IcmpDetectorTest {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
+        PingerFactory.reset();
     }
     
     @After
@@ -67,7 +68,15 @@ public class IcmpDetectorTest {
     @Test(timeout=20000)
     @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorSuccessJni() throws Exception {
-        PingerFactory.setInstance(new JniPinger());
+        PingerFactory.setInstance(0, true, new JniPinger());
+        m_icmpDetector = new IcmpDetector();
+        assertTrue("ICMP could not be detected on localhost", m_icmpDetector.isServiceDetected(InetAddress.getLocalHost()));
+    }
+
+    @Test(timeout=20000)
+    @IfProfileValue(name="runPingTests", value="true")
+    public void testDetectorSuccessJniDscp() throws Exception {
+        PingerFactory.setInstance(0x24, true, new JniPinger());
         m_icmpDetector = new IcmpDetector();
         assertTrue("ICMP could not be detected on localhost", m_icmpDetector.isServiceDetected(InetAddress.getLocalHost()));
     }
@@ -75,7 +84,7 @@ public class IcmpDetectorTest {
     @Test(timeout=20000)
     @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorFailJni() throws Exception {
-        PingerFactory.setInstance(new JniPinger());
+        PingerFactory.setInstance(0, true, new JniPinger());
         m_icmpDetector = new IcmpDetector();
         assertFalse("ICMP was incorrectly identified on " + InetAddressUtils.UNPINGABLE_ADDRESS.getHostAddress(), m_icmpDetector.isServiceDetected(InetAddressUtils.UNPINGABLE_ADDRESS));
     }
@@ -83,7 +92,15 @@ public class IcmpDetectorTest {
     @Test(timeout=20000)
     @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorSuccess() throws Exception {
-        PingerFactory.setInstance(new JnaPinger());
+        PingerFactory.setInstance(0, true, new JnaPinger());
+        m_icmpDetector = new IcmpDetector();
+        assertTrue("ICMP could not be detected on localhost", m_icmpDetector.isServiceDetected(InetAddress.getLocalHost()));
+    }
+
+    @Test(timeout=20000)
+    @IfProfileValue(name="runPingTests", value="true")
+    public void testDetectorSuccessDscp() throws Exception {
+        PingerFactory.setInstance(0x24, true, new JnaPinger());
         m_icmpDetector = new IcmpDetector();
         assertTrue("ICMP could not be detected on localhost", m_icmpDetector.isServiceDetected(InetAddress.getLocalHost()));
     }
@@ -91,7 +108,7 @@ public class IcmpDetectorTest {
     @Test(timeout=20000)
     @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorFail() throws Exception {
-        PingerFactory.setInstance(new JnaPinger());
+        PingerFactory.setInstance(0, true, new JnaPinger());
         m_icmpDetector = new IcmpDetector();
         assertFalse("ICMP was incorrectly identified on " + InetAddressUtils.UNPINGABLE_ADDRESS.getHostAddress(), m_icmpDetector.isServiceDetected(InetAddressUtils.UNPINGABLE_ADDRESS));
     }

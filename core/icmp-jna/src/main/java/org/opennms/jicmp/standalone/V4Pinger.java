@@ -35,8 +35,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.jicmp.ip.ICMPEchoPacket;
 import org.opennms.jicmp.ip.ICMPPacket;
-import org.opennms.jicmp.ip.IPPacket;
 import org.opennms.jicmp.ip.ICMPPacket.Type;
+import org.opennms.jicmp.ip.IPPacket;
 import org.opennms.jicmp.jna.NativeDatagramPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
 

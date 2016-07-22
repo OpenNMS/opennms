@@ -239,7 +239,7 @@ public class Manager implements ManagerMBean {
     }
 
     private void testPinger() {
-        final Pinger pinger = PingerFactory.getInstance();
+        final Pinger pinger = PingerFactory.getInstance(0, true);
 
         boolean hasV4 = pinger.isV4Available();
         boolean hasV6 = pinger.isV6Available();

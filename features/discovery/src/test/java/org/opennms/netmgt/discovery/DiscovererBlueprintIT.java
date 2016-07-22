@@ -48,6 +48,7 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +74,7 @@ public class DiscovererBlueprintIT extends CamelBlueprintTestSupport {
     {
         System.setProperty( "org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString() );
         System.setProperty( "de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString() );
+        PingerFactory.reset();
     }
 
     @Override

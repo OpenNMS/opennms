@@ -118,6 +118,10 @@ public interface Pinger {
 	 */
 	public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception;
 	
+	public void setAllowFragmentation(final boolean allow) throws Exception;
+
+	public void setTrafficClass(final int tc) throws Exception;
+
 	/**
 	 * Initialize IPv4 in this Pinger implementation.  If unable to do so, implementations should throw an exception.
 	 * @throws Exception

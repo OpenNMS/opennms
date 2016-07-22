@@ -149,4 +149,12 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
         return new JniPingResponse(packet.getAddress(), pkt);
     }
 
+    public void setTrafficClass(int tc) throws IOException {
+        m_socket.setTrafficClass(tc);
+    }
+
+    public void setAllowFragmentation(final boolean allow) throws IOException {
+        m_socket.allowFragmentation(allow);
+    }
+
 }

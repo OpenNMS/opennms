@@ -331,4 +331,18 @@ public class Jni6Pinger implements Pinger {
         }
     }
 
+    @Override
+    public void setTrafficClass(final int tc) throws Exception {
+        initialize4();
+        initialize6();
+        m_jniPinger.setTrafficClass(tc);
+    }
+
+    @Override
+    public void setAllowFragmentation(final boolean allow) throws Exception {
+        initialize4();
+        initialize6();
+        m_jniPinger.setAllowFragmentation(allow);
+    }
+
 }

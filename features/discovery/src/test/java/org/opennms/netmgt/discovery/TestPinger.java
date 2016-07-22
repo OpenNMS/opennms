@@ -129,4 +129,12 @@ public class TestPinger implements Pinger {
 	public boolean isV6Available() {
 		return true;
 	}
+
+    @Override
+    public void setTrafficClass(int tc) throws Exception {
+    }
+
+    @Override
+    public void setAllowFragmentation(boolean allow) throws Exception {
+    }
 }

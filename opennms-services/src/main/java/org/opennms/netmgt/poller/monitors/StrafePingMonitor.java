@@ -39,8 +39,6 @@ import java.util.Map;
 
 import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.ParameterMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.poller.Distributable;
@@ -48,6 +46,8 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -111,8 +111,10 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
             int count = ParameterMap.getKeyedInteger(parameters, "ping-count", DEFAULT_MULTI_PING_COUNT);
             long pingInterval = ParameterMap.getKeyedLong(parameters, "wait-interval", DEFAULT_PING_INTERVAL);
             int failurePingCount = ParameterMap.getKeyedInteger(parameters, "failure-ping-count", DEFAULT_FAILURE_PING_COUNT);
-            
-            responseTimes = new ArrayList<Number>(PingerFactory.getInstance().parallelPing(host, count, timeout, pingInterval));
+            final int dscp = ParameterMap.getKeyedDecodedInteger(parameters, "dscp", 0);
+            final boolean allowFragmentation = ParameterMap.getKeyedBoolean(parameters, "allow-fragmentation", true);
+
+            responseTimes = new ArrayList<Number>(PingerFactory.getInstance(dscp, allowFragmentation).parallelPing(host, count, timeout, pingInterval));
 
             if (CollectionMath.countNull(responseTimes) >= failurePingCount) {
 		LOG.debug("Service {} on interface {} is down, but continuing to gather latency data", svc.getSvcName(), svc.getIpAddr());

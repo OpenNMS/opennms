@@ -1223,7 +1223,7 @@ public class Installer {
         Pinger pinger;
         try {
        
-            pinger = PingerFactory.getInstance();
+            pinger = PingerFactory.getInstance(0, true);
         
         } catch (UnsatisfiedLinkError e) {
             System.out.println("UnsatisfiedLinkError while creating an ICMP Pinger.  Most likely failed to load "

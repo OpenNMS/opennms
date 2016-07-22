@@ -30,11 +30,9 @@ package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -451,7 +449,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         try {
             int retries = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries();
             int timeout = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout();
-            Number retval = PingerFactory.getInstance().ping(ipAddress, timeout, retries);
+            Number retval = PingerFactory.getInstance(0, true).ping(ipAddress, timeout, retries);
             if (retval != null) {
                 available = true;
             }

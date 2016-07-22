@@ -38,24 +38,51 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
  */
 public abstract class PingerFactory {
+    private static final int MAX_DSCP = (1 << 16) - 1;
+    private static final int FRAG_FALSE = 0;
+    private static final int FRAG_TRUE = 1;
+
     private static final Logger LOG = LoggerFactory.getLogger(PingerFactory.class);
-	/**
-     * The {@link Pinger} instance.
+
+    private static volatile Pinger[][] m_pingers = new Pinger[MAX_DSCP][2];
+
+    /**
+     * @deprecated Use {@link #getInstance(int, boolean)} instead.
      */
-    private static Pinger m_pinger;
+    public static Pinger getInstance() {
+        return PingerFactory.getInstance(0, true);
+    }
 
     /**
      * Returns an implementation of the default {@link Pinger} class
      *
      * @return a {@link Pinger} object.
      */
-    public static Pinger getInstance() {
-        if (m_pinger == null) {
+    public static Pinger getInstance(final int tc, final boolean allowFragmentation) {
+        final int isFrag = allowFragmentation? FRAG_TRUE : FRAG_FALSE;
+
+        // because we'll basically never set an instance that's already created
+        // we can assume it's OK to not worry about concurrency for a hit
+        if (m_pingers[tc] != null && m_pingers[tc][isFrag] != null) {
+            return m_pingers[tc][isFrag];
+        }
+
+        // OTHERWISE, we have to lock to write
+        synchronized(m_pingers) {
             final String pingerClassName = System.getProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jni6.Jni6Pinger");
             Class<? extends Pinger> clazz = null;
+
             try {
-                clazz = Class.forName(pingerClassName).asSubclass(Pinger.class);
-                m_pinger = clazz.newInstance();
+                if (m_pingers[0] != null && m_pingers[0][FRAG_TRUE] != null) {
+                    // If the default (0) DSCP pinger has already been initialized, use the
+                    // same class in case it's been manually overridden (ie, in the Remote Poller)
+                    clazz = m_pingers[0][FRAG_TRUE].getClass();
+                } else {
+                    clazz = Class.forName(pingerClassName).asSubclass(Pinger.class);
+                }
+                final Pinger pinger = clazz.newInstance();
+                pinger.setTrafficClass(tc);
+                m_pingers[tc][isFrag] = pinger;
             } catch (final ClassNotFoundException e) {
                 IllegalArgumentException ex = new IllegalArgumentException("Unable to find class named " + pingerClassName, e);
                 LOG.error(ex.getLocalizedMessage(), ex);
@@ -73,25 +100,27 @@ public abstract class PingerFactory {
                 LOG.error(ex.getLocalizedMessage(), ex);
                 throw ex;
             }
+            return m_pingers[tc][isFrag];
         }
-        return m_pinger;
     }
 
     /**
-     * <p>setIpcManager</p>
-     *
-     * @param pinger a {@link Pinger} object.
+     * @deprecated Use {@link #setInstance(int, boolean, Pinger)} instead.
+
      */
     public static void setInstance(final Pinger pinger) {
-        m_pinger = pinger;
+        setInstance(0, true, pinger);
+    }
+
+    public static void setInstance(final int tc, final boolean allowFragmentation, final Pinger pinger) {
+        synchronized(m_pingers) {
+            m_pingers[tc][allowFragmentation? FRAG_TRUE : FRAG_FALSE] = pinger;
+        }
     }
     
-    /**
-     * This is here for unit testing so we can reset this class before
-     * every test.
-     */
-    protected static void reset() {
-        m_pinger = null;
+    public static void reset() {
+        synchronized(m_pingers) {
+            m_pingers = new Pinger[MAX_DSCP][2];
+        }
     }
-    
 }

@@ -148,7 +148,7 @@ public class Main implements Runnable {
         if (m_disableIcmp) {
             LOG.info("Disabling ICMP by user request.");
             System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.NullPinger");
-            PingerFactory.setInstance(new NullPinger());
+            PingerFactory.setInstance(0, true, new NullPinger());
             return;
         }
 
@@ -159,12 +159,12 @@ public class Main implements Runnable {
         }
         LOG.info("Pinger class: {}", System.getProperty("org.opennms.netmgt.icmp.pingerClass"));
         try {
-            final Pinger pinger = PingerFactory.getInstance();
+            final Pinger pinger = PingerFactory.getInstance(0, true);
             pinger.ping(InetAddress.getLoopbackAddress());
         } catch (final Throwable t) {
             LOG.warn("Unable to get pinger instance.  Setting pingerClass to NullPinger.  For details, see: http://www.opennms.org/wiki/ICMP_could_not_be_initialized");
             System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.NullPinger");
-            PingerFactory.setInstance(new NullPinger());
+            PingerFactory.setInstance(0, true, new NullPinger());
             if (m_gui) {
                 final String message = "ICMP (ping) could not be initialized: " + t.getMessage()
                 + "\nDisabling ICMP and using the NullPinger instead."

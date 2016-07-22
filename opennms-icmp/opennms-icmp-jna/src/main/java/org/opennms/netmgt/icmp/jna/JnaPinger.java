@@ -229,4 +229,16 @@ public class JnaPinger implements Pinger {
         return cb.getResponseTimes();
     }
 
+    @Override
+    public void setAllowFragmentation(boolean allow) throws Exception {
+        initialize();
+        m_messenger.setAllowFragmentation(allow);
+    }
+
+    @Override
+    public void setTrafficClass(int tc) throws Exception {
+        initialize();
+        m_messenger.setTrafficClass(tc);
+    }
+
 }

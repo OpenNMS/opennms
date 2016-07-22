@@ -67,6 +67,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
@@ -77,7 +78,8 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
 public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryBlueprintIT.class );
+    @SuppressWarnings("unused")
+    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryBlueprintIT.class);
 
     private static final MockEventIpcManager IPC_MANAGER_INSTANCE = new MockEventIpcManager();
 
@@ -96,6 +98,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
     {
         System.setProperty( "org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString() );
         System.setProperty( "de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString() );
+        PingerFactory.reset();
     }
 
     @Override

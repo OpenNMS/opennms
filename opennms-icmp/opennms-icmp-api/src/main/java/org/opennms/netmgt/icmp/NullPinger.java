@@ -68,4 +68,14 @@ public class NullPinger implements Pinger {
         return true;
     }
 
+    @Override
+    public void setTrafficClass(final int tc) throws Exception {
+        LOG.warn("NullPinger cannot set traffic class.  Ignoring.");
+    }
+
+    @Override
+    public void setAllowFragmentation(final boolean allow) throws Exception {
+        LOG.warn("NullPinger cannot set fragmentation.  Ignoring.");
+    }
+
 }
