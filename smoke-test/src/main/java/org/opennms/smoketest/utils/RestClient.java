@@ -29,12 +29,14 @@ package org.opennms.smoketest.utils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.cxf.common.util.Base64Utility;
@@ -42,6 +44,9 @@ import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -94,6 +99,30 @@ public class RestClient {
     public void importRequisition(final String foreignSource) {
         final WebTarget target = getTarget().path("requisitions").path(foreignSource).path("import");
         getBuilder(target).put(null);
+    }
+
+    public List<RequisitionNode> getNodesForRequisition(String foreignSource) {
+        GenericType<List<RequisitionNode>> nodes = new GenericType<List<RequisitionNode>>() {
+        };
+        final WebTarget target = getTarget().path("requisitions").path(foreignSource).path("nodes");
+        return getBuilder(target).get(nodes);
+    }
+
+    public List<RequisitionInterface> getInterfacesForRequisition(String foreignSource, String foreignId) {
+        GenericType<List<RequisitionInterface>> interfaces = new GenericType<List<RequisitionInterface>>() {
+        };
+        final WebTarget target = getTarget().path("requisitions").path(foreignSource).path("nodes").path(foreignId)
+                .path("interfaces");
+        return getBuilder(target).get(interfaces);
+    }
+
+    public List<RequisitionMonitoredService> getServicesForRequisition(String foreignSource, String foreignId,
+            String ipAddress) {
+        GenericType<List<RequisitionMonitoredService>> services = new GenericType<List<RequisitionMonitoredService>>() {
+        };
+        final WebTarget target = getTarget().path("requisitions").path(foreignSource).path("nodes").path(foreignId)
+                .path("interfaces").path(ipAddress).path("services");
+        return getBuilder(target).get(services);
     }
 
     public QueryResponse getMeasurements(final QueryRequest request) {
