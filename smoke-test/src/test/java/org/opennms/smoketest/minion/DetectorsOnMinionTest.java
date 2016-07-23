@@ -25,31 +25,45 @@
 
 package org.opennms.smoketest.minion;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.greaterThan;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.utils.RestClient;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 
-public class ProvisionTest {
+public class DetectorsOnMinionTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DetectorsOnMinionTest.class);
 
     private static TestEnvironment m_testEnvironment;
+
+    private static final String LOCALHOST = "127.0.0.1";
 
     @ClassRule
     public static final TestEnvironment getTestEnvironment() {
@@ -72,7 +86,7 @@ public class ProvisionTest {
     }
 
     @Test
-    public void checkICMPServiceDetection() throws ClientProtocolException, IOException, InterruptedException {
+    public void checkServicesDetectedOnMinion() throws ClientProtocolException, IOException, InterruptedException {
 
         final InetSocketAddress opennmsHttp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8980);
 
@@ -81,7 +95,7 @@ public class ProvisionTest {
         Requisition requisition = new Requisition("foreignSource");
         List<RequisitionInterface> interfaces = new ArrayList<RequisitionInterface>();
         RequisitionInterface requisitionInterface = new RequisitionInterface();
-        requisitionInterface.setIpAddr("127.0.0.1");
+        requisitionInterface.setIpAddr(LOCALHOST);
         requisitionInterface.setManaged(true);
         requisitionInterface.setSnmpPrimary(PrimaryType.PRIMARY);
         interfaces.add(requisitionInterface);
@@ -93,20 +107,30 @@ public class ProvisionTest {
         requisition.insertNode(node);
 
         client.addOrReplaceRequisition(requisition);
-        Thread.sleep(5000);
         client.importRequisition("foreignSource");
-        Thread.sleep(90000);
 
-        List<RequisitionNode> nodes = client.getNodesForRequisition("foreignSource");
-        RequisitionNode requisitionNode = nodes.get(0);
-        System.out.printf("node label = %s", requisitionNode.getNodeLabel());
-        List<RequisitionInterface> interfacesList = client.getInterfacesForRequisition("foreignSource", "foreignId");
-        System.out.printf("Interface = %s", interfacesList.get(0).toString());
-        List<RequisitionMonitoredService> services = client.getServicesForRequisition("foreignSource", "foreignId",
-                "127.0.0.1");
-        RequisitionMonitoredService service = services.get(0);
-        System.out.printf(" service Name = %s", service.getServiceName());
-
+        await().atMost(5, MINUTES).pollDelay(3, MINUTES).pollInterval(30, SECONDS)
+                .until(getnumberOfServicesDetected(client), greaterThan(0));
     }
 
+    public static Callable<Integer> getnumberOfServicesDetected(RestClient client) {
+        return new Callable<Integer>() {
+            public Integer call() throws Exception {
+                List<OnmsNode> nodes = client.getNodes();
+                Integer number = null;
+                if (!CollectionUtils.isEmpty(nodes)) {
+                    List<OnmsMonitoredService> services = client.getServicesForANode("foreignSource:foreignId",
+                            LOCALHOST);
+                    if (!CollectionUtils.isEmpty(services)) {
+                        number = services.size();
+                        LOG.info("The services detected  are \n");
+                        for (OnmsMonitoredService service : services) {
+                            LOG.info("   {}  ", service.getServiceName());
+                        }
+                    }
+                }
+                return number;
+            }
+        };
+    }
 }
