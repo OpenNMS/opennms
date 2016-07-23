@@ -29,13 +29,13 @@
 
 	<camelContext id="trapNotificationHandler" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:trapdHandlerKafkaProperties" />
-		<route id="handle">
+		<route id="handleTrap">
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<!-- TODO: Partition by remote address -->
 				<!-- <simple>${body.remoteAddress}</simple> -->
-				<simple>${body.sourceAddress}</simple>
+				<simple>trap</simple>
 			</setHeader>
  			<log message="address:       ${body.sourceAddress}"/>
 			<log message="port:          ${body.port}"/>

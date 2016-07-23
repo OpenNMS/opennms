@@ -25,11 +25,16 @@
 		<argument value="seda:handleMessage"/>
 	</bean>
 
+	<!-- Camel Event marshalling processor -->
+	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
+		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
+	</bean>
+
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
 
 	<camelContext id="syslogConnectionHandler" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerKafkaProperties" />
-		<route id="handle">
+		<route id="handleSyslogKafka">
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
 			<setHeader headerName="kafka.PARTITION_KEY">
@@ -37,13 +42,9 @@
 				<!-- <simple>${body.remoteAddress}</simple> -->
 				<simple>${body.sourceAddress}</simple>
 			</setHeader>
- 			<log message="address:       ${body.sourceAddress}"/>
-			<log message="port:          ${body.port}"/>
- 			<transform>
-				<simple>${body.byteBuffer}</simple>
-			</transform>
-			<convertBodyTo type="java.lang.String"/>
-			<log message="bytes:         ${body}"/>
+			
+			<bean ref="marshaller"/>
+			
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
 			<to uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>

@@ -83,7 +83,9 @@ public class MinionHeartBeatTest {
 
 		Criteria criteria = new CriteriaBuilder(OnmsMinion.class).ge("lastUpdated", startOfTest).toCriteria();
 
-		await().atMost(1, MINUTES).pollInterval(5, SECONDS).until(DaoUtils.countMatchingCallable(minionDao, criteria), greaterThan(0));
+		// The heartbeat runs every minute so if we miss the first one, poll long enough
+		// to catch the next one
+		await().atMost(90, SECONDS).pollInterval(5, SECONDS).until(DaoUtils.countMatchingCallable(minionDao, criteria), greaterThan(0));
 
 	}
 }

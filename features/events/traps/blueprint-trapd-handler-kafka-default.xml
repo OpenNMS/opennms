@@ -56,7 +56,17 @@
 		
 		<route id="receiveTrapConnection">
 			<from uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}"/>
-				<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
+			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
+			<to uri="seda:trapHandler"/>
+		</route>
+
+		<route id="trapHandler">
+			<from uri="seda:trapHandler" />
+			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification" />
+			<!--
+				Pass the message to the default handler which will convert it into 
+				an event and broadcast the event.
+			-->
 			<bean ref="trapNotificationHandlerDefault"/>
 		</route>
 	</camelContext>
