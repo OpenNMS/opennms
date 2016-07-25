@@ -1,0 +1,8 @@
+bin/
+bower_components/
+generated/
+node_modules/
+plugins/
+temp/
+test/
+spec/
