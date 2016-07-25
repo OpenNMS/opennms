@@ -10,6 +10,9 @@
   <artifactId>org.opennms.core.rpc.camel-impl</artifactId>
   <name>OpenNMS :: Core :: RPC :: Camel Impl.</name>
   <packaging>bundle</packaging>
+  <properties>
+    <skipITs>true</skipITs>
+  </properties>
   <build>
     <plugins>
       <plugin>

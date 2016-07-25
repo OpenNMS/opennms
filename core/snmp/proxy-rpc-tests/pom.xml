@@ -10,6 +10,9 @@
   <artifactId>org.opennms.core.snmp.proxy.rpc-tests</artifactId>
   <name>OpenNMS :: Core :: SNMP :: Proxy :: RPC Tests</name>
   <packaging>bundle</packaging>
+  <properties>
+    <skipITs>true</skipITs>
+  </properties>
   <build>
     <plugins>
       <plugin>

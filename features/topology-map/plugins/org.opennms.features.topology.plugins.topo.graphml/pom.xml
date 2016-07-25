@@ -9,6 +9,7 @@
   <properties>
     <bundle.symbolicName>org.opennms.features.topology.plugins.topo.graphml</bundle.symbolicName>
     <bundle.namespace>org.opennms.features.topology.plugins.topo.graphml</bundle.namespace>
+    <skipITs>true</skipITs>
   </properties>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology.plugins.topo</groupId>
