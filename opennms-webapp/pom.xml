@@ -10,6 +10,9 @@
   <packaging>war</packaging>
   <name>OpenNMS Web Application</name>
   <properties>
+    <frontendPluginVersion>1.0</frontendPluginVersion>
+    <nodeVersion>v5.8.0</nodeVersion>
+    <npmVersion>3.7.1</npmVersion>
     <moduleName>org.opennms.dashboard.Dashboard</moduleName>
     <moduleHtml>index.html</moduleHtml>
     <web.port>8080</web.port>
@@ -33,6 +36,75 @@
           <sassSourceDirectory>${basedir}/src/main/scss</sassSourceDirectory>
           <destination>${project.build.directory}/${project.build.finalName}/css</destination>
         </configuration>
+      </plugin>
+      <plugin>
+        <!-- https://github.com/eirslett/frontend-maven-plugin -->
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>${frontendPluginVersion}</version>
+        <configuration>
+          <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
+          <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
+          <installDirectory>target</installDirectory>
+          <triggerfiles>
+            <triggerfile>package.json</triggerfile>
+          </triggerfiles>
+        </configuration>
+        <executions>
+          <execution>
+            <id>install node and npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <nodeVersion>${nodeVersion}</nodeVersion>
+              <npmVersion>${npmVersion}</npmVersion>
+            </configuration>
+          </execution>
+          <execution>
+            <id>install nodejs dependencies</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>install bower dependencies</id>
+            <goals>
+              <goal>bower</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+<!--
+          <execution>
+            <id>execute npm run test</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <arguments>run test</arguments>
+            </configuration>
+          </execution>
+-->
+          <execution>
+            <id>execute npm run build</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <arguments>run build</arguments>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -324,6 +396,7 @@
           <descriptors>
             <descriptor>src/assembly/meta-inf.xml</descriptor>
             <descriptor>src/assembly/xsds.xml</descriptor>
+            <descriptor>src/assembly/javascript.xml</descriptor>
           </descriptors>
           <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
