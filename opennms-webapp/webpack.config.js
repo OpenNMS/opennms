@@ -22,12 +22,6 @@ var plugins = [
 ];
 
 var vendorBundles = {
-  bootstrap: [
-    'bootstrap',
-    'bootstrap-sass-official',
-    './src/main/scss/bootstrap.scss',
-    './src/main/scss/opennms-theme.scss'
-  ],
   angular: [
     'angular',
     'angular-route',

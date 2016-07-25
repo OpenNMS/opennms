@@ -18,7 +18,7 @@ Bootstrap Theme Specific Stylesheet
  *  15.0 - Miscellaneous and Workarounds
  */
 
-@import "~bootstrap-sass-official/assets/stylesheets/bootstrap/_variables.scss";
+@import "../webapp/lib/bootstrap-sass-official/assets/stylesheets/bootstrap/_variables.scss";
 @import "properties.scss";
 @import "severities.scss";
 
@@ -72,7 +72,7 @@ a:focus {
 ----------------------------------------------- */
 
 #access {
-  background: #444 url(../webapp/images/bkg-brand-border.jpg) top center repeat-x;
+  background: #444 url(../images/bkg-brand-border.jpg) top center repeat-x;
   height:60px;
   margin-bottom:30px;
   box-shadow: 0px 3px 5px #2f2f2f;
@@ -121,7 +121,7 @@ a:focus {
 #access .navbar-inverse .navbar-nav>.active>a,
 #access .navbar-inverse .navbar-nav>.active>a:hover,
 #access .navbar-inverse .navbar-nav>.active>a:focus {
-  background:url(../webapp/images/bkg-nav-active.jpg) bottom no-repeat;
+  background:url(../images/bkg-nav-active.jpg) bottom no-repeat;
   box-shadow:none;
   cursor:default;
 }
@@ -723,29 +723,29 @@ each other when they wrap inside a div
 .o-report-deliver {
 
   a {
-    background: url(../webapp/images/reportDeliver_grey.png);
+    background: url(../images/reportDeliver_grey.png);
   }
   a:hover{
-    background: url(../webapp/images/reportDeliver.png);
+    background: url(../images/reportDeliver.png);
   }
 }
 
 .o-report-schedule {
   a {
-    background: url(../webapp/images/reportSchedule_grey.png);
+    background: url(../images/reportSchedule_grey.png);
   }
   a:hover{
-    background: url(../webapp/images/reportSchedule.png);
+    background: url(../images/reportSchedule.png);
   }
 }
 
 .o-report-online {
   a{
-    background: url(../webapp/images/reportOnline_grey.png);
+    background: url(../images/reportOnline_grey.png);
   }
 
   a:hover {
-    background: url(../webapp/images/reportOnline.png);
+    background: url(../images/reportOnline.png);
   }
 }
 
