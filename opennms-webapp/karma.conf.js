@@ -17,6 +17,7 @@ module.exports = function (config) {
     files: [
       './src/main/javascript/**/index.js',
       './node_modules/angular-mocks/angular-mocks.js',
+      './bower_components/bootstrap/disk/js/bootstrap.js',
       './src/test/javascript/**/*.js'
     ],
 
@@ -30,6 +31,8 @@ module.exports = function (config) {
     ],
 
     singleRun: true,
+
+    logLevel: config.LOG_INFO,
 
     webpack: webpackConfig
   });

@@ -47,6 +47,7 @@
     <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="../../../css/font-awesome-4.4.0/css/font-awesome.min.css" />' />
 
     <jsp:param name="script" value='<script type="text/javascript" src="basehref.jsp"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="../../../lib/bundles/angular.bundle.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="../../../lib/bundles/onms-quick-add-node.bundle.js"></script>' />
 </jsp:include>
 

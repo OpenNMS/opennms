@@ -23,7 +23,7 @@
     "flot-datatable": "https://github.com/j-white/flot-datatable.git#v1.0.3",
     "flot-navigate": "https://github.com/j-white/flot-navigate.git#v1.3-CUSTOM",
     "underscore": "^1.8.3",
-    "jquery": "^3.1.0",
+    "jquery": "^2.2.4",
     "ip-address": "^5.8.2"
   }
 }
