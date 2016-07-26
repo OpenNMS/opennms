@@ -132,9 +132,9 @@
 <c:if test="${param.usebackshift == 'true'}">
   <%-- This allows pages to explicitely use Backshift instead of relying on graph.js (which may not use Backshift) --%>
   <script type="text/javascript" src="<%= baseHref %>lib/d3/d3.min.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.min.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.time.min.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.canvas.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.time.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.canvas.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot-legend/jquery.flot.legend.min.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot-axislabels/jquery.flot.axislabels.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot.tooltip/js/jquery.flot.tooltip.min.js"></script>

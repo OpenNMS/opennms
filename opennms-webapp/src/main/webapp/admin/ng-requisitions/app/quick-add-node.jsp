@@ -42,27 +42,27 @@
     <jsp:param name="headTitle" value="Admin" />
     <jsp:param name="location" value="admin" />
 
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="/css/bootstrap.css" media="screen" />' />
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="/css/opennms-theme.css" media="screen" />' />
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="/css/font-awesome-4.4.0/css/font-awesome.min.css" />' />
+    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="/opennms/css/bootstrap.css" media="screen" />' />
+    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="/opennms/css/opennms-theme.css" media="screen" />' />
+    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="/opennms/css/font-awesome-4.4.0/css/font-awesome.min.css" />' />
 
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="/lib/angular-loading-bar/build/loading-bar.min.css" />' />
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="/lib/angular-growl-v2/build/angular-growl.min.css" />' />
+    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="/opennms/lib/angular-loading-bar/build/loading-bar.min.css" />' />
+    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="/opennms/lib/angular-growl-v2/build/angular-growl.min.css" />' />
 
     <jsp:param name="script" value='<script type="text/javascript" src="basehref.jsp"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="/lib/jquery/dist/jquery.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="/lib/bootstrap/dist/js/bootstrap.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="/lib/angular/angular.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="/lib/angular-resource/angular-resource.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="/lib/angular-cookies/angular-cookies.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="/lib/angular-sanitize/angular-sanitize.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="/lib/angular-route/angular-route.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="/lib/angular-animate/angular-animate.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="/lib/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="/lib/angular-loading-bar/build/loading-bar.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="/lib/angular-growl-v2/build/angular-growl.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="/lib/ip-address/dist/ip-address-globals.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="/lib/bootbox/bootbox.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="/opennms/lib/jquery/dist/jquery.min.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="/opennms/lib/bootstrap/dist/js/bootstrap.min.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="/opennms/lib/angular/angular.min.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="/opennms/lib/angular-resource/angular-resource.min.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="/opennms/lib/angular-cookies/angular-cookies.min.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="/opennms/lib/angular-sanitize/angular-sanitize.min.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="/opennms/lib/angular-route/angular-route.min.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="/opennms/lib/angular-animate/angular-animate.min.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="/opennms/lib/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="/opennms/lib/angular-loading-bar/build/loading-bar.min.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="/opennms/lib/angular-growl-v2/build/angular-growl.min.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="/opennms/lib/ip-address/dist/ip-address-globals.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="/opennms/lib/bootbox/bootbox.js"></script>' />
 
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/app-quickaddnode.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/model/RequisitionInterface.js"></script>' />

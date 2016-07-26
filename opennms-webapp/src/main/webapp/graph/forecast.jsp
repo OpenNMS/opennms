@@ -72,7 +72,7 @@ pageContext.setAttribute("canForecast", canForecast);
   <jsp:param name="quiet" value="true" />
   <jsp:param name="nobreadcrumbs" value="true" />
   <jsp:param name="usebackshift" value="true" />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular.min.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.min.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="lib/underscore/underscore-min.js"></script>' />
 </jsp:include>
 
