@@ -2,7 +2,7 @@
   "name": "OpenNMS",
   "devDependencies": {
     "angular-mocks": "^1.5.8",
-    "bower": "*",
+    "bower": "^1.7.9",
     "gulp": "*",
     "gulp-sass": "*",
     "gulp-util": "*",
