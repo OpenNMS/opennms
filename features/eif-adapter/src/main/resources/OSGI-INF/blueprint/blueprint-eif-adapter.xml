@@ -1,0 +1,55 @@
+<blueprint
+	xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xmlns:camel="http://camel.apache.org/schema/blueprint"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+
+		http://camel.apache.org/schema/blueprint
+		http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.2.xsd
+">
+
+  <!-- Configuration properties -->
+  <cm:property-placeholder id="eifAdapterProperties" persistent-id="org.opennms.features.eifadapter" update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="host" value="0.0.0.0"/>
+      <cm:property name="port" value="1828"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>
+
+  <bean id="eifPacketProcessor" class="org.opennms.features.eifadapter.EifPacketProcessor" />
+
+  <!--
+        Reduces the graceful shutdown time from 300 to 15 seconds.
+   -->
+  <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+    <property name="timeout" value="15"/>
+  </bean>
+
+  <bean id="stringDecoder" class="io.netty.handler.codec.string.StringDecoder"/>
+
+  <camelContext autoStartup="true" id="eifAdapterCamelContext" xmlns="http://camel.apache.org/schema/blueprint" allowUseOriginalMessage="false">
+    <propertyPlaceholder id="properties" location="blueprint:eifAdapterProperties" />
+
+    <route id="eifToEvent">
+      <!-- Receive EIF stream from TCP port -->
+      <from uri="netty4:tcp://{{host}}:{{port}}?sync=false&amp;decoder=#stringDecoder"/>
+      <!-- Transform the messages to events -->
+      <bean ref="eifPacketProcessor"/>
+      <convertBodyTo type="org.opennms.netmgt.xml.event.Event"/>
+      <!-- Send to the OpenNMS event IPC manager -->
+      <bean ref="eventIpcManager" method="send"/>
+    </route>
+  </camelContext>
+</blueprint>
