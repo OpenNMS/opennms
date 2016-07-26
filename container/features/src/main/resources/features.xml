@@ -901,6 +901,16 @@
         <bundle>mvn:org.opennms.features/opennms-integration-tsrm/${project.version}</bundle>
     </feature>
 
+    <feature name="eif-adapter" version="${project.version}" description="OpenNMS :: Features :: EIF Adapter">
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-netty4</feature>
+        <feature>opennms-core-camel</feature>
+        <feature>opennms-dao-api</feature>
+
+        <bundle>mvn:org.opennms.features/org.opennms.features.eif-adapter/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-webapp" description="OpenNMS :: Webapp" version="${project.version}">
       <feature>war</feature>
 
