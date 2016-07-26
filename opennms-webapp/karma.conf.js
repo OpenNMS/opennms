@@ -15,13 +15,13 @@ module.exports = function (config) {
     ],
 
     files: [
-      './src/main/javascript/**/*.js',
+      './src/main/javascript/**/index.js',
       './node_modules/angular-mocks/angular-mocks.js',
       './src/test/javascript/**/*.js'
     ],
 
     preprocessors: {
-      './src/main/javascript/**/*.js': ['webpack'],
+      './src/main/javascript/**/index.js': ['webpack'],
       './src/test/javascript/**/*.js': ['webpack']
     },
 

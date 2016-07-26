@@ -4,7 +4,8 @@ var path = require('path'),
     NgAnnotatePlugin = require('ng-annotate-webpack-plugin'),
     CopyWebpackPlugin = require('copy-webpack-plugin');
 
-var outputDirectory = './target/javascript-dist';
+var outputDirectory = path.join(__dirname, 'target/javascript-dist');
+var bowerModules = path.join(__dirname, 'bower_components');
 
 // Execute: export NODE_ENV=production && webpack
 //          export NODE_ENV=test && webpack
@@ -27,7 +28,7 @@ var vendorBundles = {
     'angular-route',
     'angular-cookies',
     'angular-animate',
-    'angular-bootstrap',
+    'angular-bootstrap/ui-bootstrap-tpls',
     'angular-loading-bar',
     'angular-loading-bar/build/loading-bar.css',
     'angular-growl-v2/build/angular-growl',
@@ -37,7 +38,7 @@ var vendorBundles = {
   jquery: [
     'jquery'
   ],
-  graphs: [ // TODO Backshift ? 
+  graphs: [
     'd3',
     'c3/c3',
     'c3/c3.css',
@@ -52,9 +53,6 @@ var vendorBundles = {
     'flot-saveas/jquery.flot.saveas',
     'flot-datatable/jquery.flot.datatable',
     'flot-navigate/jquery.flot.navigate'
-  ],
-  underscore: [ // FIXME Can be included as part of Jesse's app, as it is the only place where this is used.
-    'underscore'
   ]
 };
 
@@ -101,7 +99,7 @@ module.exports = {
     chunkFilename: '[id].bundle.js'
   },
   resolve: {
-    modulesDirectories: ["node_modules", "bower_components"]
+    modulesDirectories: ["node_modules", "bower_components", "./src/main/javascript"]
   },
   module: {
     noParse: /lie\.js$|\/leveldown\/|min\.js$/,

@@ -101,7 +101,7 @@
   </c:if>
 
     <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
-    <script type="text/javascript" src="<%= baseHref %>lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="<%= baseHref %>lib/jquery/dist/jquery.js"></script> <%-- FIXME webpack? --%>
     <script type="text/javascript" src="<%= baseHref %>lib/bootstrap/dist/js/bootstrap.js"></script>
 
     <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
@@ -131,16 +131,7 @@
 
 <c:if test="${param.usebackshift == 'true'}">
   <%-- This allows pages to explicitely use Backshift instead of relying on graph.js (which may not use Backshift) --%>
-  <script type="text/javascript" src="<%= baseHref %>lib/d3/d3.min.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.min.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.time.min.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.canvas.min.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot-legend/jquery.flot.legend.min.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot-axislabels/jquery.flot.axislabels.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot.tooltip/js/jquery.flot.tooltip.min.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot-saveas/jquery.flot.saveas.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot-navigate/jquery.flot.navigate.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot-datatable/jquery.flot.datatable.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/bundle/graphs.bundle.js"></script> <%-- Includes DS and Flot --%>
   <script type="text/javascript" src="<%= baseHref %>js/backshift.onms.min.js"></script>
 </c:if>
 

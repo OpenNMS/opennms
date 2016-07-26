@@ -46,46 +46,8 @@
     <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="../../../css/opennms-theme.css" media="screen" />' />
     <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="../../../css/font-awesome-4.4.0/css/font-awesome.min.css" />' />
 
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="bower_components/angular-loading-bar/build/loading-bar.min.css" />' />
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="bower_components/angular-growl-v2/build/angular-growl.min.css" />' />
-
     <jsp:param name="script" value='<script type="text/javascript" src="basehref.jsp"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular/angular.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-resource/angular-resource.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-cookies/angular-cookies.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-route/angular-route.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-animate/angular-animate.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-loading-bar/build/loading-bar.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-growl-v2/build/angular-growl.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/ip-address/dist/ip-address-globals.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/bootbox/bootbox.js"></script>' />
-
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/app.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/model/RequisitionInterface.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/model/RequisitionNode.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/model/Requisition.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/model/RequisitionsData.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/model/QuickNode.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/services/Requisitions.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/services/Synchronize.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/filters/startFrom.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/directives/requisitionConstraints.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Move.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/QuickAddNode.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/QuickAddNodeModal.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/CloneForeignSource.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Detector.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Policy.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/ForeignSource.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Asset.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Interface.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Node.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Requisition.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Requisitions.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="../../../lib/bundles/onms-requisitions.bundle.js"></script>' />
 </jsp:include>
 
 <div ng-view></div>
