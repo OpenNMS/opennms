@@ -274,6 +274,7 @@
             <feature>jira-troubleticketer</feature>
             <feature>tsrm-troubleticketer</feature>
             <feature>datachoices</feature>
+            <feature>eif-adapter</feature>
 
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service.api</feature>
@@ -606,6 +607,13 @@
           <artifactId>jsr311-api</artifactId>
         </exclusion>
       </exclusions> 
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.eif-adapter</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
