@@ -449,7 +449,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 if (!dsName.equals(newName)) {
                     Properties meta = new Properties();
                     Properties newMeta = new Properties();
-                    try (FileReader fr = new Reader(metaFile);) {
+                    try (FileReader fr = new FileReader(metaFile);) {
                         meta.load(fr);
                         for (Object k : meta.keySet()) {
                             String key = (String) k;
