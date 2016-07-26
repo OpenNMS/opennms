@@ -4,7 +4,6 @@
     "c3.css",
     "c3.js"
   ],
-  "version": "0.4.11-rc1",
   "homepage": "https://github.com/masayuki0812/c3",
   "authors": [
     "Masayuki Tanaka <masayuki0812@mac.com>"
@@ -27,15 +26,16 @@
     "Gruntfile.*"
   ],
   "dependencies": {
-    "d3": "<=3.5.0"
+    "d3": "~3.5.0"
   },
-  "_release": "0.4.11-rc1",
+  "version": "0.4.11",
+  "_release": "0.4.11",
   "_resolution": {
     "type": "version",
-    "tag": "0.4.11-rc1",
-    "commit": "4b34a1958edd686a934a193ad1d9f76fc14937bc"
+    "tag": "0.4.11",
+    "commit": "223404a79246c61d150d8a209dbdc81f6955083b"
   },
   "_source": "https://github.com/masayuki0812/c3.git",
-  "_target": "v0.4.11-rc1",
-  "_originalSource": "https://github.com/masayuki0812/c3.git"
+  "_target": "^0.4.11",
+  "_originalSource": "c3"
 }

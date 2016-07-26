@@ -1,0 +1,23 @@
+{
+  "name": "flot-legend",
+  "description": "Legend support for Flot",
+  "version": "1.0.1",
+  "homepage": "https://github.com/j-white/flot-legend",
+  "main": [
+    "jquery.flot.legend.min.js"
+  ],
+  "ignore": [],
+  "dependencies": {
+    "flot": "~0.8.3",
+    "d3": "~3.5.6"
+  },
+  "_release": "1.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.1",
+    "commit": "c5902a218aa84a5b6d10d00060908ab6a7e77f28"
+  },
+  "_source": "https://github.com/j-white/flot-legend.git",
+  "_target": "v1.0.1",
+  "_originalSource": "https://github.com/j-white/flot-legend.git"
+}

@@ -1,15 +1,31 @@
 {
   "name": "OpenNMS",
   "dependencies": {
-    "bootstrap": "~3.3.1",
-    "bootstrap-sass-official": "~3.3.1",
-    "d3": "~3.5.6",
+    "angular": "^1.5.8",
+    "angular-animate": "^1.5.8",
+    "angular-cookies": "^1.5.8",
+    "angular-growl-v2": "^0.7.9",
+    "angular-loading-bar": "^0.9.0",
+    "angular-route": "^1.5.8",
+    "angular-sanitize": "^1.5.8",
+    "angular-bootstrap": "^2.0.0",
+    "bootbox": "^4.4.0",
+    "bootstrap": "^3.3.7",
+    "bootstrap-sass-official": "^3.3.7",
+    "c3": "^0.4.11",
+    "d3": "^3.5.17",
     "flot": "~0.8.3",
     "flot-axislabels": "https://github.com/j-white/flot-axislabels.git#0d6ae9a79338",
     "flot.tooltip": "~0.8.5",
     "flot-legend": "https://github.com/j-white/flot-legend.git#v1.0.1",
     "flot-saveas": "https://github.com/j-white/flot-saveas.git#v1.0.0",
     "flot-datatable": "https://github.com/j-white/flot-datatable.git#v1.0.3",
-    "flot-navigate": "https://github.com/j-white/flot-navigate.git#v1.3-CUSTOM"
+    "flot-navigate": "https://github.com/j-white/flot-navigate.git#v1.3-CUSTOM",
+    "underscore": "^1.8.3",
+    "jquery": "^2.2.4",
+    "ip-address": "^5.8.2",
+    "angular-resource": "^1.5.8",
+    "jquery-ui": "^1.11.4",
+    "jquery-treegrid": "^0.3.0"
   }
 }

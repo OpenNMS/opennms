@@ -616,13 +616,13 @@ Could not find an outage to edit because no outage name parameter was specified 
 	<jsp:param name="breadcrumb" value="Edit" />
 </jsp:include>
 
-<link type="text/css" href="js/jquery/themes/base/jquery.ui.all.css" rel="stylesheet" />
-<script type="text/javascript" src="js/jquery/jquery.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.core.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.widget.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.button.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.position.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.autocomplete.js"></script>
+<link type="text/css" href="lib/jquery-ui/themes/base/all.css" rel="stylesheet" />
+<script type="text/javascript" src="lib/jquery/jquery.js"></script>
+<script type="text/javascript" src="lib/jquery-ui/ui/core.js"></script>
+<script type="text/javascript" src="lib/jquery-ui/ui/position.js"></script>
+<script type="text/javascript" src="lib/jquery-ui/ui/widget.js"></script>
+<script type="text/javascript" src="lib/jquery-ui/ui/widgets/button.js"></script>
+<script type="text/javascript" src="lib/jquery-ui/ui/widgets/autocomplete.js"></script>
 <style type="text/css">
 	/* TODO shouldn't be necessary */
 	.ui-button { margin-left: -1px; }

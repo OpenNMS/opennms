@@ -38,8 +38,8 @@
 	<jsp:param name="title" value="Outages" />
 	<jsp:param name="headTitle" value="Outages" />
 	<jsp:param name="breadcrumb" value="Outages" />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-1.4.8.min.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-resource-1.4.8.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.min.js"></script>' />
 
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-outage.js"></script>' />

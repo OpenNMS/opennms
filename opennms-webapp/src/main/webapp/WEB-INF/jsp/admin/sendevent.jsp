@@ -45,13 +45,13 @@
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="Send Event" />
-  <jsp:param name="link" value='<link type="text/css" href="js/jquery/themes/base/jquery.ui.all.css" rel="stylesheet" />' />
-  <jsp:param name="script" value='<script type="text/javascript" src="js/jquery/jquery.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="js/jquery/ui/jquery.ui.core.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="js/jquery/ui/jquery.ui.widget.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="js/jquery/ui/jquery.ui.button.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="js/jquery/ui/jquery.ui.position.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="js/jquery/ui/jquery.ui.autocomplete.js"></script>' />
+  <jsp:param name="link" value='<link type="text/css" href="lib/jquery-ui/themes/base/all.css" rel="stylesheet" />' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery/jquery.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/ui/core.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/ui/position.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/ui/widget.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/ui/widgets/button.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/ui/widgets/autocomplete.js"></script>' />
 </jsp:include>
 
 <style type="text/css">

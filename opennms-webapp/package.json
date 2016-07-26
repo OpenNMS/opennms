@@ -1,9 +1,19 @@
 {
-	"name": "OpenNMS",
-	"devDependencies": {
-		"bower": "*",
-		"gulp": "*",
-		"gulp-sass": "*",
-		"gulp-util": "*"
-	}
+  "name": "OpenNMS",
+  "devDependencies": {
+    "angular-mocks": "^1.5.8",
+    "bower": "*",
+    "gulp": "*",
+    "gulp-sass": "*",
+    "gulp-util": "*",
+    "jasmine-core": "^2.4.1",
+    "jshint-stylish": "~2.1.0",
+    "karma": "^0.13.22",
+    "karma-chrome-launcher": "^0.2.3",
+    "karma-jasmine": "^0.3.8",
+    "karma-ng-html2js-preprocessor": "^0.2.1",
+    "karma-ng-scenario": "^0.1.0",
+    "karma-phantomjs-launcher": "^1.0.1",
+    "phantomjs": "^2.1.7"
+  }
 }
