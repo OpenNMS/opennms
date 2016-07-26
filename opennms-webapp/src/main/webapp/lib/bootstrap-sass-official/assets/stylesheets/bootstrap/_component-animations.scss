@@ -17,8 +17,9 @@
 
 .collapse {
   display: none;
+  visibility: hidden;
 
-  &.in      { display: block; }
+  &.in      { display: block; visibility: visible; }
   // [converter] extracted tr&.in to tr.collapse.in
   // [converter] extracted tbody&.in to tbody.collapse.in
 }

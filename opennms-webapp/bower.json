@@ -11,8 +11,8 @@
     "angular-sanitize": "^1.5.8",
     "angular-bootstrap": "^2.0.0",
     "bootbox": "^4.4.0",
-    "bootstrap": "^3.3.1",
-    "bootstrap-sass-official": "^3.3.1",
+    "bootstrap": "3.3.1",
+    "bootstrap-sass-official": "3.3.1",
     "c3": "^0.4.11",
     "d3": "^3.5.17",
     "ip-address": "^5.8.2",
@@ -27,5 +27,8 @@
     "jquery": "^2.2.4",
     "jquery-ui": "^1.12.0",
     "jquery-treegrid": "^0.3.0"
+  },
+  "resolutions": {
+    "bootstrap": "3.3.1"
   }
 }
