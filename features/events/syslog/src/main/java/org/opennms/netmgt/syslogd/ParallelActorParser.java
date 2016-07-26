@@ -1,5 +1,7 @@
 package org.opennms.netmgt.syslogd;
 
+import java.io.InputStream;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,81 +12,36 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.junit.Test;
-import org.opennms.core.concurrent.cassandra.ExecutorFactoryCassandraSEPImpl;
+import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.config.SyslogdConfigFactory;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 public class ParallelActorParser {
 
-	/*
-	public final LinkedBlockingQueue<Callable<Callable<?>>> workQueue = new LinkedBlockingQueue<>();
-
-	//ExecutorService executor = new ThreadPoolExecutor(1, 1, 0, TimeUnit.SECONDS, workQueue);
-
-	public final Thread worker = new Thread() {
-		public void run() {
-			while(true) {
-				try {
-					Callable<?> work = workQueue.take();
-					Callable<Callable<?>> next = (Callable<Callable<?>>)work.call();
-					workQueue.offer(next);
-				} catch (InterruptedException e) {
-					// TODO: Do something
-				} catch (Exception e) {
-					// TODO: Do something
-				}
-			}
-		}
-	};
-	*/
-
-	//private final ExecutorService m_executor = Executors.newSingleThreadExecutor();
+	private final ExecutorService m_executor = Executors.newSingleThreadExecutor();
 
 	//private final ExecutorService m_executor = new ExecutorFactoryCassandraSEPImpl().newExecutor("StagedParser", "StageExecutor");
 
-	private final ExecutorService m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+	//private final ExecutorService m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
 	@Test
 	//public void main(final String[] args) {
-	public void main() {
+	public void main() throws Exception {
 
-		/*
-		System.out.println("1: " + CamelUtils.nanoTime());
+		MockLogAppender.setupLogging(true, "INFO");
 
-		Parser parser = new Parser(
-			new Stage[] {
-				new MatchChar('<'),
-				new MatchInteger(event::setPriority),
-				new MatchChar('>'),
-				new MatchWhitespace(),
-				new MatchAny('a'),
-				new MatchAny('b')
-			}
-		);
-		*/
-
-		// Try to use ByteBuffer directly instead of LBQ
-		//ByteBuffer incoming = new LinkedBlockingDeque<>();
-
-		String abc = "<5>aaabbb    ccc";
+		String abc = "<190>Mar 11 08:35:17 127.0.0.1 30128311: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packetZ";
 		ByteBuffer incoming = ByteBuffer.wrap(abc.getBytes());
 
 		/***
-		System.out.println("2: " + CamelUtils.nanoTime());
-
-		EventBuilder builder = new EventBuilder();
-
-		long total = 0; 
-
-		for (int i = 0; i < 100000; i++) {
-
-			AtomicLong end = new AtomicLong();
-
-			SyslogFacility facility = null;
-
 			CompletableFuture future = CompletableFuture
 				    .runAsync(new MatchChar(incoming, '<'), m_executor)
 				.thenRunAsync(new MatchInteger(incoming, v -> { facility = SyslogFacility.getFacilityForCode(v); }), m_executor)
@@ -112,46 +69,56 @@ public class ParallelActorParser {
 					end.set(System.nanoTime());
 				});
 			;
-
-			long start = System.nanoTime();
-			//System.out.println("3: " + );
-			/ *
-			try {
-				while(buffer.hasRemaining()) {
-					incoming.put((char)buffer.get());
-				}
-			} catch (InterruptedException e) {
-				// TODO: Do something
-			}
-			* /
-			//System.out.println("4: " + CamelUtils.nanoTime());
-			try {
-				future.get();
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			total += (end.get() - start);
-		}
-
-		System.out.println("TOTAL TIME: " + total);
-		//try { Thread.sleep(2000); } catch (Exception e) {}
 		***/
 
-		//EventBuilder builder = new EventBuilder();
 		AtomicReference<SyslogFacility> facility = new AtomicReference<>();
+		AtomicReference<Integer> year = new AtomicReference<>();
+		AtomicReference<Integer> month = new AtomicReference<>();
+		AtomicReference<Integer> day = new AtomicReference<>();
+		AtomicReference<Integer> hour = new AtomicReference<>();
+		AtomicReference<Integer> minute = new AtomicReference<>();
+		AtomicReference<Integer> second = new AtomicReference<>();
 
-		ParserFactory factory = new ParserFactory();
-		factory
-			.intBetweenDelimiters('<', '>', v -> { facility.set(SyslogFacility.getFacilityForCode(v)); })
-			.stringBetweenDelimiters('a', 'b', v -> { factory.getBuilder().setHost(v); })
-			.character('b')
-			.character('b')
-			.whitespace();
+		// SyslogNG format
+		ParserFactory factory = new ParserFactory()
+			.intBetweenDelimiters('<', '>', (s,v) -> { facility.set(SyslogFacility.getFacilityForCode(v)); })
+			.month((s,v) -> month.set(v))
+			.whitespace()
+			.integer((s,v) -> day.set(v))
+			.whitespace()
+			.integer((s,v) -> hour.set(v))
+			.character(':')
+			.integer((s,v) -> minute.set(v))
+			.character(':')
+			.integer((s,v) -> second.set(v))
+			.whitespace()
+			.stringUntilWhitespace((s,v) -> { s.builder.setHost(v); })
+			.whitespace()
+			.stringUntilWhitespace((s,v) -> { s.builder.addParam("processId", v); })
+			.whitespace()
+			.stringUntilWhitespace(null) // Original month
+			.whitespace()
+			.integer(null) // Original day
+			.whitespace()
+			.stringUntilWhitespace(null) // Original timestamp
+			.whitespace()
+			.stringUntilWhitespace(null) // Original time zone
+			.whitespace()
+			.character('%')
+			.stringUntilChar('-', (s,v) -> { /* TODO: Set facility */ })
+			.character('-')
+			.stringUntilChar('-', (s,v) -> { /* TODO: Set severity */ })
+			.character('-')
+			.stringUntilChar(':', (s,v) -> { /* TODO: Set mnemonic */ })
+			.whitespace()
+			.stringUntilChar('Z', (s,v) -> { s.builder.setLogMessage(v); })
+			;
+
+		int iterations = 100000;
 
 		CompletableFuture<Event> event = null;
-		for (int i = 0; i < 100; i++) {
-			//incoming.rewind();
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < iterations; i++) {
 			event = factory.parse(incoming.asReadOnlyBuffer(), m_executor);
 			event.whenComplete((e, ex) -> {
 				if (ex == null) {
@@ -161,26 +128,40 @@ public class ParallelActorParser {
 				}
 			});
 		}
+		// Wait for the last future to complete
 		try {
 			event.get();
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
-	}
+		long end = System.currentTimeMillis();
+		System.out.println("NEW: " + (end - start) + "ms");
 
-	/*
-	public interface Parser {
-		CompletableFuture<Event> parse(ByteBuffer incoming);
+		InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-syslogng-configuration.xml");
+		SyslogdConfig config = new SyslogdConfigFactory(stream);
+
+		start = System.currentTimeMillis();
+		for (int i = 0; i < iterations; i++) {
+			ConvertToEvent convertToEvent = new ConvertToEvent(
+				DistPollerDao.DEFAULT_DIST_POLLER_ID,
+				InetAddressUtils.ONE_TWENTY_SEVEN,
+				9999,
+				abc, 
+				config
+			);
+			Event event2 = convertToEvent.getEvent();
+		}
+		end = System.currentTimeMillis();
+		System.out.println("OLD: " + (end - start) + "ms");
+
 	}
-	*/
 
 	public class ParserFactory {
 		final List<Stage> m_stages = new ArrayList<>();
-		//final ExecutorService m_executor;
+
 		ThreadLocal<EventBuilder> m_builder = new ThreadLocal<EventBuilder>();
 
 		public ParserFactory() {
-			//m_executor = executor;
 		}
 
 		public ParserFactory whitespace() {
@@ -193,95 +174,80 @@ public class ParallelActorParser {
 			return this;
 		}
 
-		public ParserFactory stringBetweenDelimiters(char start, char end, Consumer<String> consumer) {
+		public ParserFactory integer(BiConsumer<SyslogParserState, Integer> consumer) {
+			m_stages.add(new MatchInteger(consumer));
+			return this;
+		}
+
+		public ParserFactory month(BiConsumer<SyslogParserState, Integer> consumer) {
+			m_stages.add(new MatchMonth(consumer));
+			return this;
+		}
+
+		public ParserFactory stringUntilWhitespace(BiConsumer<SyslogParserState,String> consumer) {
+			m_stages.add(new MatchStringUntilWhitespace(consumer));
+			return this;
+		}
+
+		public ParserFactory stringUntilChar(char end, BiConsumer<SyslogParserState,String> consumer) {
+			m_stages.add(new MatchStringUntilChar(consumer, end));
+			return this;
+		}
+
+		public ParserFactory intUntilWhitespace(BiConsumer<SyslogParserState,Integer> consumer) {
+			m_stages.add(new MatchIntegerUntilWhitespace(consumer));
+			return this;
+		}
+
+		public ParserFactory stringBetweenDelimiters(char start, char end, BiConsumer<SyslogParserState,String> consumer) {
 			m_stages.add(new MatchStringBetweenDelimiters(consumer, start, end));
 			return this;
 		}
 
-		public ParserFactory intBetweenDelimiters(char start, char end, Consumer<Integer> consumer) {
+		public ParserFactory intBetweenDelimiters(char start, char end, BiConsumer<SyslogParserState,Integer> consumer) {
 			m_stages.add(new MatchIntegerBetweenDelimiters(consumer, start, end));
 			return this;
 		}
 
-		public EventBuilder getBuilder() {
-			if (m_builder.get() == null) {
-				m_builder.set(new EventBuilder());
-			}
-			return m_builder.get();
-		}
-
 		public CompletableFuture<Event> parse(ByteBuffer incoming, ExecutorService executor) {
 
-			// Build a CompletableFuture chain out of the Stages
-			boolean first = true;
-			CompletableFuture<Void> future = null;
+			// Put all mutable parts of the parse operation into a state object
+			SyslogParserState state = new SyslogParserState();
+			state.buffer = incoming;
+			state.builder = new EventBuilder();
 
+			CompletableFuture<SyslogParserState> future = CompletableFuture.completedFuture(state);
+
+			// Apply each parse stage to the message
 			for (Stage stage : m_stages) {
-				// Reset the stage's state
-				stage.reset();
-				// Give the stage a reference to the buffer
-				stage.setBuffer(incoming);
-				if (first) {
-					future = CompletableFuture.runAsync(stage, executor);
-					first = false;
-				} else {
-					future = future.thenRun(stage);
-				}
+				future = future.thenApply(stage::apply);
 			}
 
 			future.exceptionally(e -> { /* DO SOMETHING */ return null; });
 
-			//futureRef.set(future);
-
-			return future.thenCompose(v -> {
-				return CompletableFuture.completedFuture(m_builder.get().getEvent());
+			return future.thenApply(v -> {
+				return state.builder.getEvent();
 			});
 		}
 	}
 
-	//public final Parser syslogNgParser = new ParserFactory().matchIntegerBetweenDelimiters('<', '>', Event::setPriority);
-
-	/*
-	public final Parser syslogNgParser = new ParserFactory(byteBuffer)
-		.intBetweenDelimiters('<', '>', event::setPriority)
-	;
-	*/
-
-	public interface Stage extends Runnable {
+	public interface Stage {
 		/**
-		 * Accept the next character in the stream
+		 * Process the state for this stage and return it so
+		 * that the next stage can continue processing.
 		 */
-		//void run();
-		/**
-		 * Cancel this parser
-		 */
-		//void cancel();
-		/**
-		 * Complete this parser stage and pass the
-		 * character to the next stage
-		 * @param lastChar
-		 */
-		//void complete(char lastChar);
-
-		void reset();
-		void setBuffer(ByteBuffer buffer);
+		SyslogParserState apply(SyslogParserState state);
 	}
 
-	public static abstract class AbstractStage<R> implements Runnable, Stage {
+	public static abstract class AbstractStage<R> implements Stage {
 
-		private ByteBuffer m_incoming;
-
-		private Consumer<R> m_resultConsumer;
-
-		private StringBuffer m_accumulatedValue = new StringBuffer();
-
-		AtomicInteger m_accumulatedSize = new AtomicInteger(0);
+		private BiConsumer<SyslogParserState, R> m_resultConsumer;
 
 		protected AbstractStage() {
 			this(null);
 		}
 
-		protected AbstractStage(Consumer<R> resultConsumer) {
+		protected AbstractStage(BiConsumer<SyslogParserState,R> resultConsumer) {
 			m_resultConsumer = resultConsumer;
 		}
 
@@ -292,66 +258,69 @@ public class ParallelActorParser {
 			CANCEL
 		}
 
-		public void reset() {
-			m_accumulatedSize.set(0);
-			m_accumulatedValue = new StringBuffer();
-		}
+		public abstract AcceptResult acceptChar(SyslogParserState state, char c);
 
-		public void setBuffer(ByteBuffer incoming) {
-			m_incoming = incoming;
-		}
+		public final SyslogParserState apply(SyslogParserState state) {
+			// Reset the accumulator state if necessary
+			if (m_resultConsumer != null) {
+				state.accumulatedValue = new StringBuffer();
+				state.accumulatedSize = new AtomicInteger(0);
+			}
 
-		public abstract AcceptResult acceptChar(char c);
-
-		public final void run() {
 			while(true) {
+				state.buffer.mark();
+
+				char c;
 				try {
-					m_incoming.mark();
-					char c = (char)m_incoming.get();
-					//System.err.println(c);
-					switch (acceptChar(c)) {
-						case CONTINUE:
-							continue;
-						case COMPLETE_AFTER_CONSUMING:
-							if (m_resultConsumer != null) {
-								m_resultConsumer.accept(getValue());
-							}
-							return;
-						case COMPLETE_WITHOUT_CONSUMING:
-							// Put the char back on the deque
-							//m_incoming.putFirst(c);
-							m_incoming.reset();
-							if (m_resultConsumer != null) {
-								m_resultConsumer.accept(getValue());
-							}
-							return;
-						case CANCEL:
-							throw new CancellationException(getClass().getSimpleName() + " match failed");
-					}
-					/*
-				} catch (InterruptedException e) {
-					CancellationException ex = new CancellationException("Unexpected InterruptedException while parsing: " + e.getMessage());
-					ex.initCause(e);
-					throw ex;
-					*/
-				} finally {}
+					c = (char)state.buffer.get();
+				} catch (BufferUnderflowException e) {
+					throw new CancellationException(getClass().getSimpleName() + " reached end of buffer, match failed");
+				}
+
+				switch (acceptChar(state, c)) {
+					case CONTINUE:
+						continue;
+					case COMPLETE_AFTER_CONSUMING:
+						if (m_resultConsumer != null) {
+							m_resultConsumer.accept(state, getValue(state));
+						}
+						// Reset any local state if necessary
+						reset(state);
+						return state;
+					case COMPLETE_WITHOUT_CONSUMING:
+						// Put the char back on the deque
+						//m_incoming.putFirst(c);
+						state.buffer.reset();
+						if (m_resultConsumer != null) {
+							m_resultConsumer.accept(state, getValue(state));
+						}
+						// Reset any local state if necessary
+						reset(state);
+						return state;
+					case CANCEL:
+						throw new CancellationException(getClass().getSimpleName() + " match failed");
+				}
 			}
 		}
 
-		protected void accumulate(char c) {
-			m_accumulatedValue.append(c);
-			m_accumulatedSize.incrementAndGet();
+		public void reset(SyslogParserState state) {
+			// Do nothing by default
 		}
 
-		protected int accumulatedSize() {
-			return m_accumulatedSize.get();
+		protected static void accumulate(SyslogParserState state, char c) {
+			state.accumulatedValue.append(c);
+			state.accumulatedSize.incrementAndGet();
 		}
 
-		protected String accumulatedValue() {
-			return m_accumulatedValue.toString();
+		protected static int accumulatedSize(SyslogParserState state) {
+			return state.accumulatedSize.get();
 		}
 
-		protected R getValue() {
+		protected static String accumulatedValue(SyslogParserState state) {
+			return state.accumulatedValue.toString();
+		}
+
+		protected R getValue(SyslogParserState state) {
 			return null;
 		}
 	}
@@ -360,7 +329,8 @@ public class ParallelActorParser {
 	 * Match any whitespace character.
 	 */
 	public static class MatchWhitespace extends AbstractStage<Void> {
-		public AcceptResult acceptChar(char c) {
+		@Override
+		public AcceptResult acceptChar(SyslogParserState state, char c) {
 			// TODO: Make this more efficient
 			if ("".equals(String.valueOf(c).trim())) {
 				return AcceptResult.CONTINUE;
@@ -380,7 +350,8 @@ public class ParallelActorParser {
 			m_char = c;
 		}
 
-		public AcceptResult acceptChar(char c) {
+		@Override
+		public AcceptResult acceptChar(SyslogParserState state, char c) {
 			if (c == m_char) {
 				return AcceptResult.COMPLETE_AFTER_CONSUMING;
 			} else {
@@ -390,16 +361,94 @@ public class ParallelActorParser {
 	}
 
 	/**
+	 * Match a month.
+	 * 
+	 * TODO: This only works if the initial character is unique, fix it!
+	 */
+	public static class MatchMonth extends AbstractStage<Integer> {
+		final static char[][] MONTHS = new char[][] {
+			"Jan".toCharArray(),
+			"jan".toCharArray(),
+			"Feb".toCharArray(),
+			"feb".toCharArray(),
+			"Mar".toCharArray(),
+			"mar".toCharArray(),
+			"Apr".toCharArray(),
+			"apr".toCharArray(),
+			"May".toCharArray(),
+			"may".toCharArray(),
+			"Jun".toCharArray(),
+			"jun".toCharArray(),
+			"Jul".toCharArray(),
+			"jul".toCharArray(),
+			"Aug".toCharArray(),
+			"aug".toCharArray(),
+			"Sep".toCharArray(),
+			"sep".toCharArray(),
+			"Oct".toCharArray(),
+			"oct".toCharArray(),
+			"Nov".toCharArray(),
+			"nov".toCharArray(),
+			"Dec".toCharArray(),
+			"dec".toCharArray()
+		};
+
+		public MatchMonth(BiConsumer<SyslogParserState,Integer> consumer) {
+			super(consumer);
+		}
+
+		@Override
+		public AcceptResult acceptChar(SyslogParserState state, char c) {
+			if (state.index >= 0) {
+				if (c == MONTHS[state.index][state.charIndex]) {
+					if (state.charIndex == 2) {
+						return AcceptResult.COMPLETE_AFTER_CONSUMING;
+					} else {
+						state.charIndex++;
+						return AcceptResult.CONTINUE;
+					}
+				} else {
+					return AcceptResult.CANCEL;
+				}
+			}
+			for (int i = 0; i < MONTHS.length; i++) {
+				if (c == MONTHS[i][0]) {
+					state.index = i;
+					state.charIndex = 1;
+					return AcceptResult.CONTINUE;
+				} else {
+					continue;
+				}
+			}
+			return AcceptResult.CANCEL;
+		}
+		
+		@Override
+		public Integer getValue(SyslogParserState state) {
+			return state.index;
+		}
+
+		@Override
+		public void reset(SyslogParserState state) {
+			super.reset(state);
+			state.charIndex = -1;
+			state.index = -1;
+		}
+	}
+
+	/**
 	 * Match any single character.
 	 */
 	public static class MatchAny extends AbstractStage<String> {
-		public AcceptResult acceptChar(char c) {
-			accumulate(c);
+		@Override
+		public AcceptResult acceptChar(SyslogParserState state, char c) {
+			accumulate(state, c);
 			return AcceptResult.COMPLETE_AFTER_CONSUMING;
 		}
 		
-		public String getValue() {
-			return accumulatedValue();
+		@Override
+		public String getValue(SyslogParserState state) {
+			return accumulatedValue(state);
 		}
 	}
 
@@ -409,26 +458,25 @@ public class ParallelActorParser {
 	public static abstract class MatchBetweenDelimiters<R> extends AbstractStage<R> {
 		private final char m_startDelimiter;
 		private final char m_endDelimiter;
-		boolean foundStart = false;
 
-		MatchBetweenDelimiters(Consumer<R> consumer, char startDelimiter, char endDelimiter) {
+		MatchBetweenDelimiters(BiConsumer<SyslogParserState,R> consumer, char startDelimiter, char endDelimiter) {
 			super(consumer);
 			m_startDelimiter = startDelimiter;
 			m_endDelimiter = endDelimiter;
 		}
 
 		@Override
-		public AcceptResult acceptChar(char c) {
-			if (foundStart) {
+		public AcceptResult acceptChar(SyslogParserState state, char c) {
+			if (state.flag) {
 				if (c == m_endDelimiter) {
 					return AcceptResult.COMPLETE_AFTER_CONSUMING;
 				} else {
-					accumulate(c);
+					accumulate(state, c);
 					return AcceptResult.CONTINUE;
 				}
 			} else {
 				if (c == m_startDelimiter) {
-					foundStart = true;
+					state.flag = true;
 					return AcceptResult.CONTINUE;
 				} else {
 					return AcceptResult.CANCEL;
@@ -437,50 +485,146 @@ public class ParallelActorParser {
 		}
 
 		@Override
-		public void reset() {
-			super.reset();
-			foundStart = false;
+		public void reset(SyslogParserState state) {
+			super.reset(state);
+			state.flag = false;
 		}
 	}
 
 	public static class MatchStringBetweenDelimiters extends MatchBetweenDelimiters<String> {
-		public MatchStringBetweenDelimiters(Consumer<String> consumer, char startDelimiter, char endDelimiter) {
+		public MatchStringBetweenDelimiters(BiConsumer<SyslogParserState,String> consumer, char startDelimiter, char endDelimiter) {
 			super(consumer, startDelimiter, endDelimiter);
 		}
 
 		@Override
-		public String getValue() {
-			return accumulatedValue();
+		public String getValue(SyslogParserState state) {
+			return accumulatedValue(state);
 		}
 	}
 
 	public static class MatchIntegerBetweenDelimiters extends MatchBetweenDelimiters<Integer> {
-		public MatchIntegerBetweenDelimiters(Consumer<Integer> consumer, char startDelimiter, char endDelimiter) {
+		public MatchIntegerBetweenDelimiters(BiConsumer<SyslogParserState,Integer> consumer, char startDelimiter, char endDelimiter) {
 			super(consumer, startDelimiter, endDelimiter);
 		}
 
 		@Override
-		public Integer getValue() {
-			return Integer.valueOf(accumulatedValue());
+		public Integer getValue(SyslogParserState state) {
+			return Integer.valueOf(accumulatedValue(state));
 		}
+	}
+
+	/**
+	 * Match a whitespace-terminated value.
+	 */
+	public static abstract class MatchUntilChar<R> extends AbstractStage<R> {
+		private final char m_end;
+
+		MatchUntilChar(BiConsumer<SyslogParserState,R> consumer, char end) {
+			super(consumer);
+			m_end = end;
+		}
+
+		@Override
+		public AcceptResult acceptChar(SyslogParserState state, char c) {
+			if (m_end == c) {
+				return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
+			} else {
+				accumulate(state, c);
+				return AcceptResult.CONTINUE;
+			}
+		}
+	}
+
+	public static class MatchStringUntilChar extends MatchUntilChar<String> {
+		public MatchStringUntilChar(BiConsumer<SyslogParserState,String> consumer, char end) {
+			super(consumer, end);
+		}
+
+		@Override
+		public String getValue(SyslogParserState state) {
+			return accumulatedValue(state);
+		}
+	}
+
+	public static class MatchIntegerUntilChar extends MatchUntilChar<Integer> {
+		public MatchIntegerUntilChar(BiConsumer<SyslogParserState,Integer> consumer, char end) {
+			super(consumer, end);
+		}
+
+		@Override
+		public Integer getValue(SyslogParserState state) {
+			return Integer.valueOf(accumulatedValue(state));
+		}
+	}
+
+	/**
+	 * Match a whitespace-terminated value.
+	 */
+	public static abstract class MatchUntilWhitespace<R> extends AbstractStage<R> {
+
+		MatchUntilWhitespace(BiConsumer<SyslogParserState,R> consumer) {
+			super(consumer);
+		}
+
+		@Override
+		public AcceptResult acceptChar(SyslogParserState state, char c) {
+			if ("".equals(String.valueOf(c).trim())) {
+				return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
+			} else {
+				accumulate(state, c);
+				return AcceptResult.CONTINUE;
+			}
+		}
+	}
+
+	public static class MatchStringUntilWhitespace extends MatchUntilWhitespace<String> {
+		public MatchStringUntilWhitespace(BiConsumer<SyslogParserState,String> consumer) {
+			super(consumer);
+		}
+
+		@Override
+		public String getValue(SyslogParserState state) {
+			return accumulatedValue(state);
+		}
+	}
+
+	public static class MatchIntegerUntilWhitespace extends MatchUntilWhitespace<Integer> {
+		public MatchIntegerUntilWhitespace(BiConsumer<SyslogParserState,Integer> consumer) {
+			super(consumer);
+		}
+
+		@Override
+		public Integer getValue(SyslogParserState state) {
+			return Integer.valueOf(accumulatedValue(state));
+		}
+	}
+
+	public static class SyslogParserState {
+		public ByteBuffer buffer;
+		public EventBuilder builder;
+		public StringBuffer accumulatedValue;
+		public AtomicInteger accumulatedSize;
+		public boolean flag;
+		public int index = -1;
+		public int charIndex = -1;
 	}
 
 	/**
 	 * Match an integer.
 	 */
 	public static class MatchInteger extends AbstractStage<Integer> {
-		MatchInteger(Consumer<Integer> consumer) {
+		MatchInteger(BiConsumer<SyslogParserState,Integer> consumer) {
 			super(consumer);
 		}
 
 		@Override
-		public AcceptResult acceptChar(char c) {
+		public AcceptResult acceptChar(SyslogParserState state, char c) {
 			if (c >= '0' && c <= '9') {
-				accumulate(c);
+				accumulate(state, c);
 				return AcceptResult.CONTINUE;
 			} else {
 				// If any characters were accumulated, complete
-				if (accumulatedSize() > 0) {
+				if (accumulatedSize(state) > 0) {
 					return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
 				} else {
 					return AcceptResult.CANCEL;
@@ -489,8 +633,9 @@ public class ParallelActorParser {
 		}
 
 		@Override
-		public Integer getValue() {
-			return Integer.parseInt(accumulatedValue());
+		public Integer getValue(SyslogParserState state) {
+			// TODO: Trim leading zeros from string value
+			return Integer.parseInt(accumulatedValue(state));
 		}
 	}
 }
