@@ -74,14 +74,18 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
     protected void runCollection() {
 
-	        LOG.info("run: start: node discovery operations for bridge: '{}'",getNodeId());
-		final Date now = new Date();
+        LOG.info("run: start: node discovery operations for bridge: '{}'",
+                 getNodeId());
+        final Date now = new Date();
 
-		Map<Integer,String> vlanmap = getVtpVlanMap(getPeer());
-		List<BridgeMacLink> bft = new ArrayList<BridgeMacLink>();
-		
-		String community = getPeer().getReadCommunity();
-		Map<Integer,Integer> bridgeifindex = new HashMap<Integer, Integer>();
+        Map<Integer, String> vlanmap = getVtpVlanMap(getPeer());
+        if (vlanmap.isEmpty())
+            vlanmap.put(null, null);
+
+        List<BridgeMacLink> bft = new ArrayList<BridgeMacLink>();
+        Map<Integer, Integer> bridgeifindex = new HashMap<Integer, Integer>();
+
+        String community = getPeer().getReadCommunity();
         for (Entry<Integer, String> entry : vlanmap.entrySet()) {
             LOG.debug("run: cisco vlan collection setting peer community: {} with VLAN {}",
                       community, entry.getKey());
@@ -252,9 +256,6 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         } catch (final InterruptedException e) {
             LOG.error("run: Bridge Linkd node collection interrupted, exiting",
                       e);
-        }
-        if (vlanmap.isEmpty()) {
-            vlanmap.put(null, null);
         }
         return vlanmap;
     }
