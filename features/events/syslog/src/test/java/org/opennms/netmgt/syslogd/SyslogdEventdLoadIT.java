@@ -289,6 +289,9 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         int eventCount = 10000;
         m_eventCounter.setAnticipated(eventCount);
 
+        /**
+         * Add 10000 events to the event log
+         */
         for (int i = 0; i < eventCount; i++) {
             int eventNum = Double.valueOf(Math.random() * 300).intValue();
             String expectedUei = "uei.example.org/syslog/loadTest/foo" + eventNum;
