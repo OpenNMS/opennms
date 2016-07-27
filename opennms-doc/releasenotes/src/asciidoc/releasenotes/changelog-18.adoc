@@ -116,9 +116,6 @@ For a high-level overview of what's changed in OpenNMS 18, see <<whatsnew-18.ado
 
 The codename for 18.0.0 is _link:https://en.wikipedia.org/wiki/Tardigrade[Tardigrade]_.
 
-[releasenotes-changelog-18.0.0]
-==== Release 18.0.0
-
 ===== Bug
 
 * "ADD NODE" produces "too much" config (Issue http://issues.opennms.org/browse/NMS-3489[NMS-3489])
