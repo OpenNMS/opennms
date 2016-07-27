@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -43,12 +44,171 @@ public class ParallelActorParser {
 		public int charIndex = -1;
 	}
 
+	public static enum GrokState {
+		TEXT,
+		ESCAPE_PATTERN,
+		START_PATTERN,
+		PATTERN,
+		SEMANTIC,
+		END_PATTERN
+	}
+	
+	public static enum GrokPattern {
+		STRING,
+		INTEGER,
+		MONTH
+	}
+
+	public static final ParserFactory parseGrok(String grok) {
+		GrokState state = GrokState.TEXT;
+		ParserFactory factory = new ParserFactory();
+
+		StringBuffer pattern = new StringBuffer();
+		StringBuffer semantic = new StringBuffer();
+
+		for (char c : grok.toCharArray()) {
+			switch(state) {
+			case TEXT:
+				switch(c) {
+				case '%':
+					state = GrokState.START_PATTERN;
+					continue;
+				case '\\':
+					state = GrokState.ESCAPE_PATTERN;
+					continue;
+				case ' ':
+					factory = factory.whitespace();
+					continue;
+				default:
+					factory = factory.character(c);
+					continue;
+				}
+			case ESCAPE_PATTERN:
+				switch(c) {
+				default:
+					factory = factory.character(c);
+					state = GrokState.TEXT;
+					continue;
+				}
+			case START_PATTERN:
+				switch(c) {
+				case '{':
+					state = GrokState.PATTERN;
+					continue;
+				default:
+					throw new IllegalStateException("Illegal character to start pattern");
+				}
+			case PATTERN:
+				switch(c) {
+				case ':':
+					state = GrokState.SEMANTIC;
+					continue;
+				default:
+					pattern.append(c);
+					continue;
+				}
+			case SEMANTIC:
+				switch(c) {
+				case '}':
+					state = GrokState.END_PATTERN;
+					continue;
+				default:
+					semantic.append(c);
+					continue;
+				}
+			case END_PATTERN:
+				final String patternString = pattern.toString();
+				final String semanticString = semantic.toString();
+				System.out.println(semanticString);
+				GrokPattern patternType = GrokPattern.valueOf(patternString);
+				switch(c) {
+				case ' ':
+					switch(patternType) {
+					case STRING:
+						factory.stringUntilWhitespace((s,v) -> {
+							s.builder.addParam(semanticString, v);
+						});
+						factory.whitespace();
+						break;
+					case INTEGER:
+						factory.intUntilWhitespace((s,v) -> {
+							s.builder.addParam(semanticString, v);
+						});
+						factory.whitespace();
+						break;
+					case MONTH:
+						factory.month((s,v) -> {
+							s.builder.addParam(semanticString, v);
+						});
+						factory.whitespace();
+						break;
+					}
+					break;
+				default:
+					switch(patternType) {
+					case STRING:
+						factory.stringUntil(String.valueOf(c), (s,v) -> {
+							s.builder.addParam(semanticString, v);
+						});
+						factory.character(c);
+						break;
+					case INTEGER:
+						factory.integer((s,v) -> {
+							s.builder.addParam(semanticString, v);
+						});
+						factory.character(c);
+						break;
+					case MONTH:
+						factory.month((s,v) -> {
+							s.builder.addParam(semanticString, v);
+						});
+						factory.character(c);
+						break;
+					}
+				}
+				pattern = new StringBuffer();
+				semantic = new StringBuffer();
+				state = GrokState.TEXT;
+				continue;
+			}
+		}
+
+		// If we are in the process of ending a pattern, then wrap it up with bow
+		if (state == GrokState.END_PATTERN) {
+			final String patternString = pattern.toString();
+			final String semanticString = semantic.toString();
+			System.out.println(semanticString);
+			GrokPattern patternType = GrokPattern.valueOf(patternString);
+
+			switch(patternType) {
+			case STRING:
+				factory.terminal().string((s,v) -> {
+					s.builder.addParam(semanticString, v);
+				});
+				break;
+			case INTEGER:
+				factory.terminal().integer((s,v) -> {
+					s.builder.addParam(semanticString, v);
+				});
+				break;
+			case MONTH:
+				factory.terminal().month((s,v) -> {
+					s.builder.addParam(semanticString, v);
+				});
+				break;
+			}
+		}
+
+		return factory;
+	}
+
 	@Test
 	public void testMe() throws Exception {
 
 		MockLogAppender.setupLogging(true, "INFO");
 
 		String abc = "<190>Mar 11 08:35:17 127.0.0.1 30128311[4]: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet";
+		//String abc = "<190>Mar 11 08:35:17 127.0.0.1 30128311: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet";
 		ByteBuffer incoming = ByteBuffer.wrap(abc.getBytes());
 
 		AtomicReference<SyslogFacility> facility = new AtomicReference<>();
@@ -58,6 +218,9 @@ public class ParallelActorParser {
 		AtomicReference<Integer> hour = new AtomicReference<>();
 		AtomicReference<Integer> minute = new AtomicReference<>();
 		AtomicReference<Integer> second = new AtomicReference<>();
+
+		ParserFactory grokFactory = parseGrok("<%{INTEGER:facilityPriority}> %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:month} %{INTEGER:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INTEGER:priority}-%{STRING:mnemonic}: %{STRING:message}");
+		//ParserFactory grokFactory = parseGrok("<%{INTEGER:facilityPriority}> %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}: %{STRING:month} %{INTEGER:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INTEGER:priority}-%{STRING:mnemonic}: %{STRING:message}");
 
 		// SyslogNG format
 		ParserFactory factory = new ParserFactory()
@@ -123,6 +286,26 @@ public class ParallelActorParser {
 		long end = System.currentTimeMillis();
 		System.out.println("NEW: " + (end - start) + "ms");
 
+		start = System.currentTimeMillis();
+		for (int i = 0; i < iterations; i++) {
+			event = grokFactory.parse(incoming.asReadOnlyBuffer(), m_executor);
+			event.whenComplete((e, ex) -> {
+				if (ex == null) {
+					//System.out.println(e.toString());
+				} else {
+					ex.printStackTrace();
+				}
+			});
+		}
+		// Wait for the last future to complete
+		try {
+			event.get();
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
+		end = System.currentTimeMillis();
+		System.out.println("GROK: " + (end - start) + "ms");
+
 		InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-syslogng-configuration.xml");
 		SyslogdConfig config = new SyslogdConfigFactory(stream);
 
@@ -135,14 +318,14 @@ public class ParallelActorParser {
 				abc, 
 				config
 			);
-			Event event2 = convertToEvent.getEvent();
+			Event convertedEvent = convertToEvent.getEvent();
 		}
 		end = System.currentTimeMillis();
 		System.out.println("OLD: " + (end - start) + "ms");
 
 	}
 
-	public class ParserFactory {
+	public static class ParserFactory {
 		final List<Stage> m_stages = new ArrayList<>();
 		final Stack<Boolean> m_optional = new Stack<>();
 		final Stack<Boolean> m_terminal = new Stack<>();
@@ -181,6 +364,7 @@ public class ParallelActorParser {
 		private void addStage(Stage stage) {
 			stage.setOptional(getOptional());
 			stage.setTerminal(getTerminal());
+			System.out.println(stage.toString());
 			m_stages.add(stage);
 		}
 
@@ -210,35 +394,35 @@ public class ParallelActorParser {
 		}
 
 		public ParserFactory stringUntil(String ends, BiConsumer<SyslogParserState,String> consumer) {
-			addStage(new MatchStringUntilChar(consumer, ends));
+			addStage(new MatchStringUntil(consumer, ends));
 			return this;
 		}
 
 		public ParserFactory stringUntilWhitespace(BiConsumer<SyslogParserState,String> consumer) {
-			addStage(new MatchStringUntilWhitespace(consumer));
+			addStage(new MatchStringUntil(consumer, MatchUntil.WHITESPACE));
 			return this;
 		}
 
 		public ParserFactory stringUntilChar(char end, BiConsumer<SyslogParserState,String> consumer) {
-			addStage(new MatchStringUntilChar(consumer, end));
+			addStage(new MatchStringUntil(consumer, end));
 			return this;
 		}
 
 		public ParserFactory intUntilWhitespace(BiConsumer<SyslogParserState,Integer> consumer) {
-			addStage(new MatchIntegerUntilWhitespace(consumer));
+			addStage(new MatchIntegerUntil(consumer, MatchUntil.WHITESPACE));
 			return this;
 		}
 
 		public ParserFactory stringBetweenDelimiters(char start, char end, BiConsumer<SyslogParserState,String> consumer) {
 			addStage(new MatchChar(start));
-			addStage(new MatchStringUntilChar(consumer, end));
+			addStage(new MatchStringUntil(consumer, end));
 			addStage(new MatchChar(end));
 			return this;
 		}
 
 		public ParserFactory intBetweenDelimiters(char start, char end, BiConsumer<SyslogParserState,Integer> consumer) {
 			addStage(new MatchChar(start));
-			addStage(new MatchIntegerUntilChar(consumer, end));
+			addStage(new MatchIntegerUntil(consumer, end));
 			addStage(new MatchChar(end));
 			return this;
 		}
@@ -246,7 +430,7 @@ public class ParallelActorParser {
 		public CompletableFuture<Event> parse(ByteBuffer incoming, ExecutorService executor) {
 
 			// Put all mutable parts of the parse operation into a state object
-			SyslogParserState state = new SyslogParserState();
+			final SyslogParserState state = new SyslogParserState();
 			state.buffer = incoming;
 			state.builder = new EventBuilder();
 
@@ -257,17 +441,28 @@ public class ParallelActorParser {
 				future = future.thenApply(stage::apply);
 			}
 
-			future.exceptionally(e -> { /* DO SOMETHING */ return null; });
+			//future.exceptionally(e -> { /* DO SOMETHING */ return null; });
 
-			return future.thenApply(v -> {
-				return state.builder.getEvent();
+			return future.thenApply(s -> {
+				return s.builder.getEvent();
 			});
 		}
 	}
 
 	public interface Stage {
+		/**
+		 * Mark the stage as optional.
+		 * 
+		 * @param optional
+		 */
 		void setOptional(boolean optional);
 
+		/**
+		 * Mark the stage as terminal, ie. it handles a buffer
+		 * underflow as successful completion instead of failure.
+		 * 
+		 * @param terminal
+		 */
 		void setTerminal(boolean terminal);
 
 		/**
@@ -430,6 +625,13 @@ public class ParallelActorParser {
 				return AcceptResult.CANCEL;
 			}
 		}
+
+		@Override
+		public String toString() {
+			return new ToStringBuilder(this)
+				.append("char", m_char)
+				.toString();
+		}
 	}
 
 	/**
@@ -545,24 +747,34 @@ public class ParallelActorParser {
 		public String getValue(SyslogParserState state) {
 			return accumulatedValue(state);
 		}
+
+		@Override
+		public String toString() {
+			return new ToStringBuilder(this)
+				.append("length", m_length)
+				.toString();
+		}
 	}
 
 	/**
-	 * Match a whitespace-terminated value.
+	 * Match a string terminated by a character in a list of end tokens.
 	 */
-	public static abstract class MatchUntilChar<R> extends AbstractStage<R> {
+	public static abstract class MatchUntil<R> extends AbstractStage<R> {
+		public static final String WHITESPACE = "\\s";
+
 		private final char[] m_end;
 		private boolean m_endOnwhitespace = false;
 
-		MatchUntilChar(BiConsumer<SyslogParserState,R> consumer, char end) {
+		MatchUntil(BiConsumer<SyslogParserState,R> consumer, char end) {
 			super(consumer);
 			m_end = new char[] { end };
 		}
 
-		MatchUntilChar(BiConsumer<SyslogParserState,R> consumer, String end) {
+		MatchUntil(BiConsumer<SyslogParserState,R> consumer, String end) {
 			super(consumer);
-			m_endOnwhitespace = end.contains("\\s");
-			end = end.replaceAll("\\\\s", end);
+			m_endOnwhitespace = end.contains(WHITESPACE);
+			// Erase the WHITESPACE token from the end char list
+			end = end.replaceAll("\\\\s", "");
 			m_end = end.toCharArray();
 		}
 
@@ -573,23 +785,29 @@ public class ParallelActorParser {
 					return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
 				}
 			}
-			if (m_endOnwhitespace) {
-				// TODO: Make this more efficient?
-				if ("".equals(String.valueOf(c).trim())) {
-					return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
-				}
+			// TODO: Make this more efficient?
+			if (m_endOnwhitespace && "".equals(String.valueOf(c).trim())) {
+				return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
 			}
 			accumulate(state, c);
 			return AcceptResult.CONTINUE;
 		}
+
+		@Override
+		public String toString() {
+			return new ToStringBuilder(this)
+				.append("ends", m_end)
+				.append("endOnWhitespace", m_endOnwhitespace)
+				.toString();
+		}
 	}
 
-	public static class MatchStringUntilChar extends MatchUntilChar<String> {
-		public MatchStringUntilChar(BiConsumer<SyslogParserState,String> consumer, char end) {
+	public static class MatchStringUntil extends MatchUntil<String> {
+		public MatchStringUntil(BiConsumer<SyslogParserState,String> consumer, char end) {
 			super(consumer, end);
 		}
 
-		public MatchStringUntilChar(BiConsumer<SyslogParserState,String> consumer, String ends) {
+		public MatchStringUntil(BiConsumer<SyslogParserState,String> consumer, String ends) {
 			super(consumer, ends);
 		}
 
@@ -599,61 +817,28 @@ public class ParallelActorParser {
 		}
 	}
 
-	public static class MatchIntegerUntilChar extends MatchUntilChar<Integer> {
-		public MatchIntegerUntilChar(BiConsumer<SyslogParserState,Integer> consumer, char end) {
+	public static class MatchIntegerUntil extends MatchUntil<Integer> {
+		public MatchIntegerUntil(BiConsumer<SyslogParserState,Integer> consumer, char end) {
 			super(consumer, end);
 		}
 
-		public MatchIntegerUntilChar(BiConsumer<SyslogParserState,Integer> consumer, String ends) {
+		public MatchIntegerUntil(BiConsumer<SyslogParserState,Integer> consumer, String ends) {
 			super(consumer, ends);
 		}
 
 		@Override
 		public Integer getValue(SyslogParserState state) {
-			return Integer.valueOf(accumulatedValue(state));
-		}
-	}
-
-	/**
-	 * Match a whitespace-terminated value.
-	 */
-	public static abstract class MatchUntilWhitespace<R> extends AbstractStage<R> {
-
-		MatchUntilWhitespace(BiConsumer<SyslogParserState,R> consumer) {
-			super(consumer);
-		}
-
-		@Override
-		public AcceptResult acceptChar(SyslogParserState state, char c) {
-			// TODO: Make this more efficient?
-			if ("".equals(String.valueOf(c).trim())) {
-				return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
-			} else {
-				accumulate(state, c);
-				return AcceptResult.CONTINUE;
+			// Trim the leading zeros from this value
+			String value = accumulatedValue(state);
+			while (value.startsWith("0")) {
+				value = value.substring(1);
 			}
-		}
-	}
 
-	public static class MatchStringUntilWhitespace extends MatchUntilWhitespace<String> {
-		public MatchStringUntilWhitespace(BiConsumer<SyslogParserState,String> consumer) {
-			super(consumer);
-		}
-
-		@Override
-		public String getValue(SyslogParserState state) {
-			return accumulatedValue(state);
-		}
-	}
-
-	public static class MatchIntegerUntilWhitespace extends MatchUntilWhitespace<Integer> {
-		public MatchIntegerUntilWhitespace(BiConsumer<SyslogParserState,Integer> consumer) {
-			super(consumer);
-		}
-
-		@Override
-		public Integer getValue(SyslogParserState state) {
-			return Integer.valueOf(accumulatedValue(state));
+			if ("".equals(value)) {
+				return 0;
+			} else {
+				return Integer.parseInt(value);
+			}
 		}
 	}
 
@@ -682,8 +867,17 @@ public class ParallelActorParser {
 
 		@Override
 		public Integer getValue(SyslogParserState state) {
-			// TODO: Trim leading zeros from string value
-			return Integer.parseInt(accumulatedValue(state));
+			// Trim the leading zeros from this value
+			String value = accumulatedValue(state);
+			while (value.startsWith("0")) {
+				value = value.substring(1);
+			}
+
+			if ("".equals(value)) {
+				return 0;
+			} else {
+				return Integer.parseInt(value);
+			}
 		}
 	}
 }
