@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,35 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.events.api;
+package org.opennms.netmgt.eventd;
 
-import org.apache.camel.InOnly;
-import org.opennms.netmgt.xml.event.Log;
+import java.util.Properties;
+
+import org.opennms.netmgt.config.EventdConfigManager;
 
 /**
- * <p>EventHandler interface.</p>
- *
- * @author <a href="mailto:seth@opennms.org">Seth Leger</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <A HREF="mailto:seth@opennms.org">Seth Leger</A>
  */
-@InOnly
-public interface EventHandler {
-    /**
-     * Create a Runnable to handle the passed-in event Log.
-     *
-     * @param eventLog events to be processed
-     * @return a ready-to-run Runnable that will process the events
-     */
-    void handle(Log eventLog);
+public abstract class EventdConfigManagerPropertiesConverter {
 
-    /**
-     * Create a Runnable to handle the passed-in event Log.
-     *
-     * @param eventLog events to be processed
-     * @param synchronous Whether the runnable should wait for all
-     *   processors to finish processing before returning
-     * @return a ready-to-run Runnable that will process the events
-     */
-    void handle(Log eventLog, boolean synchronous);
+	public static Properties getProperties(EventdConfigManager config) {
+		final Properties m_props = new Properties();
+		m_props.setProperty("eventIpcManagerHandlerPoolSize", String.valueOf(config.getReceivers()));
+		m_props.setProperty("eventIpcManagerHandlerQueueLength", String.valueOf(config.getQueueLength()));
+		m_props.setProperty("shouldLogEventSummaries", String.valueOf(config.shouldLogEventSummaries()));
+		m_props.setProperty("tcpIpAddress", config.getTCPIpAddress());
+		m_props.setProperty("tcpPort", String.valueOf(config.getTCPPort()));
+		m_props.setProperty("udpIpAddress", config.getUDPIpAddress());
+		m_props.setProperty("udpPort", String.valueOf(config.getUDPPort()));
+		return m_props;
+	}
+
 }

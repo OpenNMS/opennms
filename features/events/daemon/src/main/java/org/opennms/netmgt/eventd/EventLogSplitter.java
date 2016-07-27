@@ -26,35 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.events.api;
+package org.opennms.netmgt.eventd;
 
-import org.apache.camel.InOnly;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
 /**
- * <p>EventHandler interface.</p>
- *
- * @author <a href="mailto:seth@opennms.org">Seth Leger</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author Seth
  */
-@InOnly
-public interface EventHandler {
-    /**
-     * Create a Runnable to handle the passed-in event Log.
-     *
-     * @param eventLog events to be processed
-     * @return a ready-to-run Runnable that will process the events
-     */
-    void handle(Log eventLog);
+public class EventLogSplitter {
 
     /**
-     * Create a Runnable to handle the passed-in event Log.
-     *
-     * @param eventLog events to be processed
-     * @param synchronous Whether the runnable should wait for all
-     *   processors to finish processing before returning
-     * @return a ready-to-run Runnable that will process the events
+     * Split a {@link Log} containing multiple {@link Event} objects into
+     * multiple {@link Log} messages that each contain a single {@link Event}.
+     * 
+     * @param eventLog
      */
-    void handle(Log eventLog, boolean synchronous);
+    public static Collection<Log> splitEventLogs(final Log eventLog) {
+        if (eventLog.getEvents() == null || eventLog.getEvents().getEventCount() < 1) {
+            return Collections.emptyList();
+        } else if (eventLog.getEvents().getEventCount() == 1) {
+            return Collections.singleton(eventLog);
+        } else {
+            return eventLog.getEvents().getEventCollection().stream().map(e -> {
+                Log retval = new Log();
+                retval.setHeader(eventLog.getHeader());
+                retval.addEvent(e);
+                return retval;
+            }).collect(Collectors.toList());
+        }
+    }
 }
