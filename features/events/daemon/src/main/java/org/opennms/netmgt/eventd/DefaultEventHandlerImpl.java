@@ -32,17 +32,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.camel.Produce;
+import org.opennms.core.camel.DefaultDispatcher;
 import org.opennms.netmgt.events.api.EventHandler;
-import org.opennms.netmgt.events.api.EventProcessor;
-import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
 
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
@@ -59,13 +55,10 @@ import com.codahale.metrics.Timer;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public final class DefaultEventHandlerImpl implements InitializingBean, EventHandler {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultEventHandlerImpl.class);
-    
-    private List<EventProcessor> m_eventProcessors;
+public class DefaultEventHandlerImpl extends DefaultDispatcher implements EventHandler {
 
-    private boolean m_logEventSummaries;
+    @Produce(property="endpointUri")
+    EventHandler m_proxy;
 
     private final Timer processTimer;
 
@@ -74,136 +67,37 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
     /**
      * <p>Constructor for DefaultEventHandlerImpl.</p>
      */
-    public DefaultEventHandlerImpl(MetricRegistry registry) {
+    public DefaultEventHandlerImpl(final String endpointUri, final MetricRegistry registry) {
+        super(endpointUri);
         processTimer = Objects.requireNonNull(registry).timer("eventlogs.process");
         logSizes = registry.histogram("eventlogs.sizes");
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.eventd.EventHandler#createRunnable(org.opennms.netmgt.xml.event.Log)
+    /**
+     * Process the received events. For each event, use the EventExpander to
+     * look up matching eventconf entry and load info from that match, expand
+     * event parms, add event to database and send event to appropriate
+     * listeners.
      */
-    /** {@inheritDoc} */
     @Override
-    public EventHandlerRunnable createRunnable(Log eventLog) {
-        return new EventHandlerRunnable(eventLog);
-    }
-
-    public class EventHandlerRunnable implements Runnable {
-        /**
-         * log of events
-         */
-        private final Log m_eventLog;
-
-        public EventHandlerRunnable(Log eventLog) {
-            Assert.notNull(eventLog, "eventLog argument must not be null");
-            
-            m_eventLog = eventLog;
-        }
-        
-        /**
-         * Process the received events. For each event, use the EventExpander to
-         * look up matching eventconf entry and load info from that match, expand
-         * event parms, add event to database and send event to appropriate
-         * listeners.
-         */
-        @Override
-        public void run() {
-            Events events = m_eventLog.getEvents();
-            if (events == null || events.getEventCount() <= 0) {
-                // no events to process
-                return;
-            }
-
-            for (final Event event : events.getEventCollection()) {
-                if (LOG.isInfoEnabled() && getLogEventSummaries()) {
-                    LOG.info("Received event: UEI={}, src={}, iface={}, svc={}, time={}, parms={}", event.getUei(), event.getSource(), event.getInterface(), event.getService(), event.getTime(), getPrettyParms(event));
-                }
-
-                if (LOG.isDebugEnabled()) {
-                    // Log the uei, source, and other important aspects
-                    final String uuid = event.getUuid();
-                    LOG.debug("Event {");
-                    LOG.debug("  uuid  = {}", (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
-                    LOG.debug("  uei   = {}", event.getUei());
-                    LOG.debug("  src   = {}", event.getSource());
-                    LOG.debug("  iface = {}", event.getInterface());
-                    LOG.debug("  svc   = {}", event.getService());
-                    LOG.debug("  time  = {}", event.getTime());
-                    // NMS-8413: I'm seeing a ConcurrentModificationException in the logs here,
-                    // copy the parm collection to avoid this
-                    List<Parm> parms = new ArrayList<>(event.getParmCollection());
-                    if (parms.size() > 0) {
-                        LOG.debug("  parms {");
-                        for (final Parm parm : parms) {
-                            if ((parm.getParmName() != null) && (parm.getValue().getContent() != null)) {
-                                LOG.debug("    ({}, {})", parm.getParmName().trim(), parm.getValue().getContent().trim());
-                            }
-                        }
-                        LOG.debug("  }");
-                    }
-                    LOG.debug("}");
-                }
-            }
-
-            try (Timer.Context context = processTimer.time()) {
-                for (final EventProcessor eventProcessor : m_eventProcessors) {
-                    try {
-                        eventProcessor.process(m_eventLog);
-                        logSizes.update(events.getEventCount());
-                    } catch (EventProcessorException e) {
-                        LOG.warn("Unable to process event using processor {}; not processing with any later processors.", eventProcessor, e);
-                        break;
-                    } catch (Throwable t) {
-                        LOG.warn("Unknown exception processing event with processor {}; not processing with any later processors.", eventProcessor, t);
-                        break;
-                    }
-                }
-            }
+    public void handle(Log m_eventLog) {
+        Events events = m_eventLog.getEvents();
+        if (events == null || events.getEventCount() <= 0) {
+            // no events to process
+            return;
         }
 
+        logSizes.update(events.getEventCount());
+        try (Timer.Context context = processTimer.time()) {
+            m_proxy.handle(m_eventLog);
+        }
     }
 
-    private static List<String> getPrettyParms(final Event event) {
+    public static List<String> getPrettyParms(final Event event) {
         final List<String> parms = new ArrayList<>();
         for (final Parm p : event.getParmCollection()) {
             parms.add(p.getParmName() + "=" + p.getValue().getContent());
         }
         return parms;
-    }
-
-    /**
-     * <p>afterPropertiesSet</p>
-     *
-     * @throws java.lang.IllegalStateException if any.
-     */
-    @Override
-    public void afterPropertiesSet() throws IllegalStateException {
-        Assert.state(m_eventProcessors != null, "property eventPersisters must be set");
-    }
-
-    /**
-     * <p>getEventProcessors</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<EventProcessor> getEventProcessors() {
-        return m_eventProcessors;
-    }
-
-    /**
-     * <p>setEventProcessors</p>
-     *
-     * @param eventProcessors a {@link java.util.List} object.
-     */
-    public void setEventProcessors(List<EventProcessor> eventProcessors) {
-        m_eventProcessors = eventProcessors;
-    }
-    
-    public boolean getLogEventSummaries() {
-        return m_logEventSummaries;
-    }
-    
-    public void setLogEventSummaries(final boolean logEventSummaries) {
-        m_logEventSummaries = logEventSummaries;
     }
 }

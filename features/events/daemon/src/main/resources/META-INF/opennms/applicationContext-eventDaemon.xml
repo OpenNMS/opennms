@@ -5,7 +5,6 @@
   xmlns:context="http://www.springframework.org/schema/context"
   xmlns:util="http://www.springframework.org/schema/util"
   xmlns:aop="http://www.springframework.org/schema/aop"
-  xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
   xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
   xsi:schemaLocation="
   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
@@ -14,6 +13,7 @@
   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
 ">
 
   <context:annotation-config />
@@ -49,8 +49,9 @@
 
   <bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
     <constructor-arg ref="eventdMetricRegistry"/>
-    <property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize"/>
-    <property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength"/>
+    <property name="handlerQueueLength">
+      <bean factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
+    </property>
     <property name="eventHandler" ref="eventdEventHandler"/>
   </bean>
 
@@ -73,25 +74,10 @@
     </property>
   </bean>
 
-  <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
-  <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
-  <bean id="shouldLogEventSummaries" factory-bean="eventdConfigManager" factory-method="shouldLogEventSummaries"/>
-  
+  <!-- Handle events by submitting them to a Camel endpoint -->
   <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
+    <constructor-arg value="seda:submitEvent"/>
     <constructor-arg ref="eventdMetricRegistry"/>
-    <property name="eventProcessors">
-      <list>
-        <!-- 
-          This EventProcessor can be used to perform regex replacements on incoming parm values.
-          It was added in 1.11 and because of performance concerns, it is commented-out for now.
-        -->
-        <!-- <ref bean="eventParmRegexFilter"/> -->
-        <ref bean="eventExpander"/>
-        <ref bean="eventWriter"/>
-        <ref bean="eventIpcBroadcastProcessor"/>
-      </list>
-    </property>
-    <property name="logEventSummaries" ref="shouldLogEventSummaries" />
   </bean>
 
   <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">
@@ -135,6 +121,11 @@
 
   <bean id="udpPort" factory-bean="eventdConfigManager" factory-method="getUDPPort"/>
 
+  <bean id="queueNameFactory" class="org.opennms.core.camel.JmsQueueNameFactory">
+    <constructor-arg value="Eventd"/>
+    <constructor-arg value="BroadcastEvent"/>
+  </bean>
+
   <bean id="broadcastEventProcessor" class="org.opennms.netmgt.eventd.BroadcastEventProcessor" depends-on="eventIpcManagerImpl">
     <constructor-arg ref="eventIpcManagerImpl"/>
     <constructor-arg ref="eventConfDao"/>
@@ -153,5 +144,90 @@
         factory-method="build"
         init-method="start"
         destroy-method="stop" />
+
+  <!-- Create a set of Properties that can be used as propertyPlaceholders for Camel -->
+  <bean id="eventdProperties" class="org.opennms.netmgt.eventd.EventdConfigManagerPropertiesConverter" factory-method="getProperties">
+    <constructor-arg ref="eventdConfigManager"/>
+  </bean>
+
+  <!-- Create a Camel PropertiesComponent -->
+  <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
+    <property name="initialProperties" ref="eventdProperties"/>
+  </bean>
+
+  <camelContext id="eventdCamelContext" xmlns="http://camel.apache.org/schema/spring">
+
+    <onException>
+      <exception>org.opennms.netmgt.events.api.EventProcessorException</exception>
+      <handled>
+        <constant>true</constant>
+      </handled>
+      <log loggingLevel="WARN" message="Unable to process event in route ID ${routeId}; not processing with any later processors"/>
+      <log loggingLevel="WARN" message="${exception.stacktrace}"/>
+    </onException>
+
+    <onException>
+      <exception>java.lang.Throwable</exception>
+      <handled>
+        <constant>true</constant>
+      </handled>
+      <log loggingLevel="ERROR" message="Unexpected exception while processing event in route ID ${routeId}; not processing with any later processors"/>
+      <log loggingLevel="ERROR" message="${exception.stacktrace}"/>
+    </onException>
+
+    <route id="submitEvent">
+      <from uri="seda:submitEvent?size={{eventIpcManagerHandlerQueueLength}}&amp;concurrentConsumers={{eventIpcManagerHandlerPoolSize}}" />
+
+      <to uri="bean:org.opennms.netmgt.eventd.EventLogSplitter?method=splitEventLogs"/>
+
+      <split>
+        <!-- Split the event Logs -->
+        <simple>${body}</simple>
+
+        <choice>
+          <when>
+            <simple>{{shouldLogEventSummaries}}</simple>
+            <!-- TODO: Figure out how to print the parms -->
+            <!-- LOG.info("Received event: UEI={}, src={}, iface={}, svc={}, time={}, parms={}", event.getUei(), event.getSource(), event.getInterface(), event.getService(), event.getTime(), getPrettyParms(event)); -->
+            <log message="Received event: UEI=${body.events.event[0].uei}, src=${body.events.event[0].source}, iface=${body.events.event[0].interface}, svc=${body.events.event[0].service}, time=${body.events.event[0].time}, parms={}"/>
+          </when>
+        </choice>
+
+        <!--
+          Process the received events. For each event, use the EventExpander to
+          look up matching eventconf entry and load info from that match, expand
+          event parms, add event to database and send event to appropriate
+          listeners.
+        -->
+
+        <!-- 
+          This EventProcessor can be used to perform regex replacements on incoming parm values.
+          It was added in 1.11 and because of performance concerns, it is commented-out for now.
+        -->
+        <!-- <bean ref="eventParmRegexFilter"/> -->
+
+        <!-- Expand the event parms -->
+        <bean ref="eventExpander"/>
+
+        <!-- Write the event into the database -->
+        <bean ref="eventWriter"/>
+
+        <!-- Broadcast the event over the messaging channel -->
+        <bean ref="eventIpcBroadcastProcessor"/>
+
+        <!--
+          Use recipientList so that we can have a dynamic 'to:' URI.
+          Make sure that the exchange is using an InOut pattern so 
+          that the output is passed to the next endpoint.
+        -->
+        <!--
+        <setExchangePattern pattern="InOut"/>
+        <recipientList>
+          <simple>queuingservice:${bean:queueNameFactory.getName()}</simple>
+        </recipientList>
+        -->
+      </split>
+    </route>
+  </camelContext>
 
 </beans>

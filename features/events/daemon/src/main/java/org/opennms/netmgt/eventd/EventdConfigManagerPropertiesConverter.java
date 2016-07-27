@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,20 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.events.api;
+package org.opennms.netmgt.eventd;
 
-import org.opennms.netmgt.xml.event.Log;
+import java.util.Properties;
 
+import org.opennms.netmgt.config.EventdConfigManager;
 
 /**
- * Event processor interface.  Classes that want to modify or react to
- * events within eventd implement this interface and are dependency
- * injected into the eventProcessors List in EventHandler.
- * 
- * @author <a href="mailto:seth@opennms.org">Seth Leger</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <A HREF="mailto:seth@opennms.org">Seth Leger</A>
  */
-public interface EventProcessor {
+public abstract class EventdConfigManagerPropertiesConverter {
 
-    void process(final Log eventLog) throws EventProcessorException;
+	public static Properties getProperties(EventdConfigManager config) {
+		final Properties m_props = new Properties();
+		m_props.setProperty("eventIpcManagerHandlerPoolSize", String.valueOf(config.getReceivers()));
+		m_props.setProperty("eventIpcManagerHandlerQueueLength", String.valueOf(config.getQueueLength()));
+		m_props.setProperty("shouldLogEventSummaries", String.valueOf(config.shouldLogEventSummaries()));
+		m_props.setProperty("tcpIpAddress", config.getTCPIpAddress());
+		m_props.setProperty("tcpPort", String.valueOf(config.getTCPPort()));
+		m_props.setProperty("udpIpAddress", config.getUDPIpAddress());
+		m_props.setProperty("udpPort", String.valueOf(config.getUDPPort()));
+		return m_props;
+	}
+
 }

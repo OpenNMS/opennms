@@ -39,13 +39,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventHandler;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -80,7 +83,6 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     public void setUp() throws Exception {
         m_manager = new EventIpcManagerDefaultImpl(m_registry);
         m_manager.setEventHandler(m_eventHandler);
-        m_manager.setHandlerPoolSize(5);
         m_manager.afterPropertiesSet();
 
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
@@ -124,7 +126,6 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         ta.anticipate(new IllegalStateException("eventHandler not set"));
 
         EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
-        manager.setHandlerPoolSize(5);
 
         try {
             manager.afterPropertiesSet();
@@ -138,7 +139,6 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     public void testInit() throws Exception {
         EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
         manager.setEventHandler(m_eventHandler);
-        manager.setHandlerPoolSize(5);
         manager.afterPropertiesSet();
     }
     
@@ -476,26 +476,24 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
 
     private static class ThreadRecordingEventHandler implements EventHandler {
         private final AtomicReference<Long> lastThreadId = new AtomicReference<>();
-        private CountDownLatch latch;
+        private Semaphore semaphore = new Semaphore(1);
 
         @Override
-        public Runnable createRunnable(Log eventLog) {
-            latch = new CountDownLatch(1);
-            return new Runnable() {
-                @Override
-                public void run() {
-                    lastThreadId.set(Thread.currentThread().getId());
-                    latch.countDown();
-                }
-            };
+        public void handle(Log eventLog) {
+            lastThreadId.set(Thread.currentThread().getId());
+            semaphore.release();
         }
 
         public long getThreadId() {
             return lastThreadId.get();
         }
 
-        public void waitForEvent() throws InterruptedException {
-            latch.await();
+        public void acquire() throws InterruptedException {
+            semaphore.acquire();
+        }
+
+        public void release() throws InterruptedException {
+            semaphore.release();
         }
     }
 
@@ -506,14 +504,21 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testAsyncVsSyncSendNow");
         Event e = bldr.getEvent();
 
+        threadRecordingEventHandler.acquire();
         // Async: When invoking sendNow, the Runnable should be ran from thread other than the callers
         m_manager.sendNow(e);
-        threadRecordingEventHandler.waitForEvent();
+        // Wait to acquire the semaphore released by the thread
+        threadRecordingEventHandler.acquire();
+        threadRecordingEventHandler.release();
+
         assertNotEquals(Thread.currentThread().getId(), threadRecordingEventHandler.getThreadId());
 
+        threadRecordingEventHandler.acquire();
         // Sync: When invoking sendNowSync, the Runnable should be ran from the callers thread
         m_manager.sendNowSync(e);
         assertEquals(Thread.currentThread().getId(), threadRecordingEventHandler.getThreadId());
+        threadRecordingEventHandler.acquire();
+        threadRecordingEventHandler.release();
     }
 
     public void testSlowEventHandlerCausesDiscards() throws InterruptedException {
@@ -522,23 +527,17 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
 
         EventHandler handler = new EventHandler() {
             @Override
-            public Runnable createRunnable(Log eventLog) {
-                return new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(SLOW_EVENT_OPERATION_DELAY);
-                        } catch (InterruptedException e) {
-                        }
-                        counter.incrementAndGet();
-                    }
-                };
+            public void handle(Log eventLog) {
+                try {
+                    Thread.sleep(SLOW_EVENT_OPERATION_DELAY);
+                } catch (InterruptedException e) {
+                }
+                counter.incrementAndGet();
             }
         };
 
         EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
         manager.setEventHandler(handler);
-        manager.setHandlerPoolSize(1);
         manager.setHandlerQueueLength(5);
         manager.afterPropertiesSet();
 
@@ -582,9 +581,24 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         };
 
         EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
-        manager.setHandlerPoolSize(1);
         manager.setHandlerQueueLength(5);
-        DefaultEventHandlerImpl handler = new DefaultEventHandlerImpl(m_registry);
+
+        EventIpcBroadcastProcessor eventIpcBroadcastProcessor = new EventIpcBroadcastProcessor(m_registry);
+        eventIpcBroadcastProcessor.setEventIpcBroadcaster(manager);
+        eventIpcBroadcastProcessor.afterPropertiesSet();
+
+        org.opennms.netmgt.events.api.EventHandler handler = new org.opennms.netmgt.events.api.EventHandler() {
+            @Override
+            public void handle(Log eventLog) {
+                for (Log event : EventLogSplitter.splitEventLogs(eventLog)) {
+                    try {
+                        eventIpcBroadcastProcessor.process(event);
+                    } catch (EventProcessorException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
         manager.setEventHandler(handler);
         manager.afterPropertiesSet();
 
@@ -619,9 +633,23 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         CountDownLatch ulfCounter = new CountDownLatch(numberOfEvents);
 
         final EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
-        manager.setHandlerPoolSize(1);
-        //manager.setHandlerQueueLength(5);
-        DefaultEventHandlerImpl handler = new DefaultEventHandlerImpl(m_registry);
+
+        EventIpcBroadcastProcessor eventIpcBroadcastProcessor = new EventIpcBroadcastProcessor(m_registry);
+        eventIpcBroadcastProcessor.setEventIpcBroadcaster(manager);
+        eventIpcBroadcastProcessor.afterPropertiesSet();
+
+        org.opennms.netmgt.events.api.EventHandler handler = new org.opennms.netmgt.events.api.EventHandler() {
+            @Override
+            public void handle(Log eventLog) {
+                for (Log event : EventLogSplitter.splitEventLogs(eventLog)) {
+                    try {
+                        eventIpcBroadcastProcessor.process(event);
+                    } catch (EventProcessorException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
         manager.setEventHandler(handler);
         manager.afterPropertiesSet();
 
