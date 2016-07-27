@@ -30,9 +30,6 @@
 --%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="org.opennms.web.api.Util" %>
-
-<c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Remote Poller Scan Reports" />
