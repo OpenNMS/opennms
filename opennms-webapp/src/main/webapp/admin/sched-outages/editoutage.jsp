@@ -617,8 +617,11 @@ Could not find an outage to edit because no outage name parameter was specified 
 </jsp:include>
 
 <link type="text/css" href="lib/jquery-ui/themes/base/all.css" rel="stylesheet" />
-<script type="text/javascript" src="lib/jquery/dist/jquery.min.js"></script>
-<script type="text/javascript" src="lib/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript" src="lib/jquery-ui/ui/core.js"></script>
+<script type="text/javascript" src="lib/jquery-ui/ui/position.js"></script>
+<script type="text/javascript" src="lib/jquery-ui/ui/widget.js"></script>
+<script type="text/javascript" src="lib/jquery-ui/ui/button.js"></script>
+<script type="text/javascript" src="lib/jquery-ui/ui/autocomplete.js"></script>
  
 <style type="text/css">
 	/* TODO shouldn't be necessary */
