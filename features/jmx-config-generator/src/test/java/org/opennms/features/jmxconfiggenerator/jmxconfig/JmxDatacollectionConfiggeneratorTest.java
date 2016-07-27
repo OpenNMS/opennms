@@ -29,12 +29,10 @@
 package org.opennms.features.jmxconfiggenerator.jmxconfig;
 
 import com.google.common.base.Throwables;
-
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
 import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
@@ -49,7 +47,6 @@ import javax.management.ObjectName;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -63,7 +60,6 @@ import java.util.Objects;
  * @author Simon Walter <simon.walter@hp-factory.de>
  * @author Markus Neumann <markus@opennms.com>
  */
-@Ignore
 public class JmxDatacollectionConfiggeneratorTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(JmxDatacollectionConfiggeneratorTest.class);
