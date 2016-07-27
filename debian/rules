@@ -25,7 +25,8 @@ export BUILDDEFINES=\
 	-Dproduct.release=1 \
 	-Dproduct.snapshot=true \
 	-Daether.connector.basic.threads=1 \
-	-Daether.connector.resumeDownloads=false
+	-Daether.connector.resumeDownloads=false \
+	-Prun-expensive-tasks
 
 configure:
 
