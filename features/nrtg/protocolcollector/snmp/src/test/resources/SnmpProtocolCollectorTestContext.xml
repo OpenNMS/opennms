@@ -9,7 +9,6 @@
        >
 
   <bean class="org.opennms.nrtg.protocolcollector.snmp.internal.SnmpProtocolCollector" id="snmpProtocolCollector">
-    <property name="snmpStrategy" ref="snmpStrategy"/>
+    <property name="locationAwareSnmpClient" ref="locationAwareSnmpClient"/>
   </bean>
-  <bean class="org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy" id="snmpStrategy"></bean>
 </beans>
