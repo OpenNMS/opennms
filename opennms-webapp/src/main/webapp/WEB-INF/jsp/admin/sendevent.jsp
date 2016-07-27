@@ -40,6 +40,7 @@
     String hostName = InetAddressUtils.getLocalHostName();
 %>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
+  <jsp:param name="norequirejs" value="true" />
   <jsp:param name="title" value="Send Event" />
   <jsp:param name="headTitle" value="Send Event" />
   <jsp:param name="headTitle" value="Admin" />
@@ -47,10 +48,11 @@
   <jsp:param name="breadcrumb" value="Send Event" />
   <jsp:param name="link" value='<link type="text/css" href="lib/jquery-ui/themes/base/all.css" rel="stylesheet" />' />
   <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/ui/core.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/ui/position.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/ui/widget.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/ui/menu.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/ui/button.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/ui/autocomplete.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/ui/position.js"></script>' />
 </jsp:include>
 
 <style type="text/css">
