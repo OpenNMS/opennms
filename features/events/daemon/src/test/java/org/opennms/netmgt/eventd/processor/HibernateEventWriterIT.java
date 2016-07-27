@@ -48,6 +48,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -112,7 +113,9 @@ public class HibernateEventWriterIT {
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+        Log eventLog = new Log();
+        eventLog.addEvent(event);
+        m_eventWriter.process(eventLog);
         assertTrue(event.getDbid() > 0);
 
         final String parms = jdbcTemplate.queryForObject("SELECT eventParms FROM events LIMIT 1", String.class);
@@ -132,7 +135,9 @@ public class HibernateEventWriterIT {
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+        Log eventLog = new Log();
+        eventLog.addEvent(event);
+        m_eventWriter.process(eventLog);
         assertTrue(event.getDbid() > 0);
 
         final String descr = jdbcTemplate.queryForObject("SELECT eventDescr FROM events LIMIT 1", String.class);
@@ -153,7 +158,9 @@ public class HibernateEventWriterIT {
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+        Log eventLog = new Log();
+        eventLog.addEvent(event);
+        m_eventWriter.process(eventLog);
         assertTrue(event.getDbid() > 0);
 
         String minionId = jdbcTemplate.queryForObject("SELECT systemId FROM events LIMIT 1", String.class);
@@ -163,7 +170,9 @@ public class HibernateEventWriterIT {
         jdbcTemplate.execute(String.format("INSERT INTO monitoringsystems (id, location, type) VALUES ('%s', 'Hello World', '%s')", systemId, OnmsMonitoringSystem.TYPE_MINION));
 
         event = bldr.getEvent();
-        m_eventWriter.process(null, event);
+        eventLog = new Log();
+        eventLog.addEvent(event);
+        m_eventWriter.process(eventLog);
         assertTrue(event.getDbid() > 0);
 
         minionId = jdbcTemplate.queryForObject("SELECT systemId FROM events LIMIT 1", String.class);
@@ -183,7 +192,9 @@ public class HibernateEventWriterIT {
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+        Log eventLog = new Log();
+        eventLog.addEvent(event);
+        m_eventWriter.process(eventLog);
         assertTrue(event.getDbid() > 0);
 
         final String logMessage = jdbcTemplate.queryForObject("SELECT eventLogmsg FROM events LIMIT 1", String.class);
@@ -278,7 +289,9 @@ public class HibernateEventWriterIT {
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+        Log eventLog = new Log();
+        eventLog.addEvent(event);
+        m_eventWriter.process(eventLog);
         assertTrue(event.getDbid() > 0);
         
         assertEquals("event count", 1, jdbcTemplate.queryForInt("select count(*) from events"));

@@ -49,11 +49,13 @@ import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
+import org.springframework.util.Assert;
 
 /**
  * EventWriter loads the information in each 'Event' into the database.
@@ -89,7 +91,10 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      * The method that inserts the event into the database
      */
     @Override
-    public void process(final Header eventHeader, final Event event) throws EventProcessorException {
+    public void process(final Log eventLog) throws EventProcessorException {
+        Assert.state(eventLog.getEvents() != null && eventLog.getEvents().getEventCount() == 1);
+        Event event = eventLog.getEvents().getEvent(0);
+
         if (!checkEventSanityAndDoWeProcess(event, "JdbcEventWriter")) {
             return;
         }
@@ -107,7 +112,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             connection.setAutoCommit(false);
 
             try {
-                insertEvent(eventHeader, event, connection);
+                insertEvent(eventLog.getHeader(), event, connection);
 
                 connection.commit();
             } catch (final SQLException e) {

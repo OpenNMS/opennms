@@ -41,6 +41,7 @@ import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -84,7 +85,9 @@ public class MockEventWriterTest {
     public void testWrite() throws EventProcessorException {
         final EventBuilder eb = new EventBuilder("uei.opennms.org/nodes/nodeDown", "EventExpanderTest");
         final Event event = eb.getEvent();
-        m_eventWriter.process(null, event);
+        Log eventLog = new Log();
+        eventLog.addEvent(event);
+        m_eventWriter.process(eventLog);
 
         System.err.println(m_eventDao.findAll());
         assertTrue(m_eventDao.findAll().get(0).getId() > 0);

@@ -34,6 +34,7 @@ import org.opennms.netmgt.events.api.EventIpcBroadcaster;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -60,7 +61,10 @@ public class EventIpcBroadcastProcessor implements EventProcessor, InitializingB
 
     /** {@inheritDoc} */
     @Override
-    public void process(Header eventHeader, Event event) {
+    public void process(Log eventLog) {
+        Assert.state(eventLog.getEvents() != null && eventLog.getEvents().getEventCount() == 1);
+        Event event = eventLog.getEvents().getEvent(0);
+
         if (event.getLogmsg() != null && event.getLogmsg().getDest().equals("suppress")) {
             LOG.debug("process: skip sending event {} to other daemons because is marked as suppress", event.getUei());
         } else {

@@ -28,17 +28,15 @@
 
 package org.opennms.netmgt.events.api;
 
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Header;
-
+import org.opennms.netmgt.xml.event.Log;
 
 /**
  * Event processor interface.  Classes that want to modify or react to
  * events within eventd implement this interface and are dependency
  * injected into the eventProcessors List in EventHandler.
- *
- * @author ranger
- * @version $Id: $
+ * 
+ * @author <a href="mailto:seth@opennms.org">Seth Leger</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public interface EventProcessor {
     /**
@@ -48,5 +46,5 @@ public interface EventProcessor {
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      * @throws {@link EventProcessorException} if any.
      */
-    void process(Header eventHeader, Event event) throws EventProcessorException;
+    void process(Log eventLog) throws EventProcessorException;
 }

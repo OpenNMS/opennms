@@ -61,7 +61,6 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     public void setUp() throws Exception {
         m_manager = new EventIpcManagerDefaultImpl();
         m_manager.setEventHandler(m_eventHandler);
-        m_manager.setHandlerPoolSize(5);
         m_manager.afterPropertiesSet();
 
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
@@ -84,28 +83,11 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         }
     }
     
-    public void testInitWithNoHandlerPoolSize() {
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalStateException("handlerPoolSize not set"));
-
-        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl();
-        manager.setEventHandler(m_eventHandler);
-        
-        try {
-            manager.afterPropertiesSet();
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-
-        ta.verifyAnticipated();
-    }
-    
     public void testInitWithNoEventHandler() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalStateException("eventHandler not set"));
 
         EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl();
-        manager.setHandlerPoolSize(5);
 
         try {
             manager.afterPropertiesSet();
@@ -119,7 +101,6 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     public void testInit() throws Exception {
         EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl();
         manager.setEventHandler(m_eventHandler);
-        manager.setHandlerPoolSize(5);
         manager.afterPropertiesSet();
     }
     

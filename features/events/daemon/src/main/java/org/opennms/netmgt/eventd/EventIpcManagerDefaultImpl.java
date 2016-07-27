@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -109,15 +108,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      */
     private Map<String, EventListenerExecutor> m_listenerThreads = new HashMap<String, EventListenerExecutor>();
 
-    /**
-     * The thread pool handling the events
-     */
-    private ExecutorService m_eventHandlerPool;
-
     private EventHandler m_eventHandler;
 
-    private Integer m_handlerPoolSize;
-    
     private Integer m_handlerQueueLength;
 
     /**
@@ -244,14 +236,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     public void sendNow(Log eventLog) {
         Assert.notNull(eventLog, "eventLog argument cannot be null");
 
-        LOG.debug("sending: {}", eventLog);
-
-        try {
-            m_eventHandlerPool.execute(m_eventHandler.createRunnable(eventLog));
-        } catch (RejectedExecutionException e) {
-            LOG.warn("Unable to queue event log to the event handler pool queue", e);
-            throw e;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("sending: {}", eventLog);
         }
+
+        m_eventHandler.handle(eventLog);
     }
 
     /* (non-Javadoc)
@@ -493,31 +482,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      */
     @Override
     public void afterPropertiesSet() {
-        Assert.state(m_eventHandlerPool == null, "afterPropertiesSet() has already been called");
-
         Assert.state(m_eventHandler != null, "eventHandler not set");
-        Assert.state(m_handlerPoolSize != null, "handlerPoolSize not set");
-        
-        Logging.withPrefix(Eventd.LOG4J_CATEGORY, new Runnable() {
-
-            @Override
-            public void run() {
-                /**
-                 * Create a fixed-size thread pool. The number of threads can be configured by using
-                 * the "receivers" attribute in the config. The queue length for the pool can be configured
-                 * with the "queueLength" attribute in the config.
-                 */
-                m_eventHandlerPool = new ThreadPoolExecutor(
-                    m_handlerPoolSize,
-                    m_handlerPoolSize,
-                    0L,
-                    TimeUnit.MILLISECONDS,
-                    m_handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(m_handlerQueueLength),
-                    new LogPreservingThreadFactory(EventIpcManagerDefaultImpl.class.getSimpleName(), m_handlerPoolSize)
-                );
-            }
-            
-        });
     }
 
     /**
@@ -539,26 +504,6 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     }
 
     /**
-     * <p>getHandlerPoolSize</p>
-     *
-     * @return a int.
-     */
-    public int getHandlerPoolSize() {
-        return m_handlerPoolSize;
-    }
-
-    /**
-     * <p>setHandlerPoolSize</p>
-     *
-     * @param handlerPoolSize a int.
-     */
-    public void setHandlerPoolSize(int handlerPoolSize) {
-        Assert.state(m_eventHandlerPool == null, "handlerPoolSize property cannot be set after afterPropertiesSet() is called");
-        
-        m_handlerPoolSize = handlerPoolSize;
-    }
-
-    /**
      * <p>getHandlerQueueLength</p>
      *
      * @return a int.
@@ -573,7 +518,6 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * @param size a int.
      */
     public void setHandlerQueueLength(int size) {
-        Assert.state(m_eventHandlerPool == null, "handlerQueueLength property cannot be set after afterPropertiesSet() is called");
         m_handlerQueueLength = size;
     }
 }

@@ -40,7 +40,7 @@ import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.netmgt.xml.event.Parm;
@@ -784,8 +784,9 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
 
     /** {@inheritDoc} */
     @Override
-    public void process(Header eventHeader, Event event) {
-        expandEvent(event);
+    public void process(Log eventLog) {
+        Assert.state(eventLog.getEvents() != null && eventLog.getEvents().getEventCount() == 1);
+        expandEvent(eventLog.getEvents().getEvent(0));
     }
 
     /**

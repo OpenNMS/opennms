@@ -54,6 +54,7 @@ import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,7 +146,10 @@ public class HibernateEventWriter implements EventWriter {
      * The method that inserts the event into the database
      */
     @Override
-    public void process(final Header eventHeader, final Event event) throws EventProcessorException {
+    public void process(final Log eventLog) throws EventProcessorException {
+        Assert.state(eventLog.getEvents() != null && eventLog.getEvents().getEventCount() == 1);
+        Event event = eventLog.getEvents().getEvent(0);
+
         if (!checkEventSanityAndDoWeProcess(event, "HibernateEventWriter")) {
             return;
         }
@@ -153,7 +157,7 @@ public class HibernateEventWriter implements EventWriter {
         LOG.debug("HibernateEventWriter: processing {}, nodeid: {}, ipaddr: {}, serviceid: {}, time: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
 
         try {
-            insertEvent(eventHeader, event);
+            insertEvent(eventLog.getHeader(), event);
         } catch (DeadlockLoserDataAccessException e) {
             throw new EventProcessorException("Encountered deadlock when inserting event: " + event.toString(), e);
         } catch (Throwable e) {
