@@ -27,7 +27,8 @@
     "jquery": "^2.2.4",
     "jquery-treegrid": "^0.3.0",
     "jquery-ui": "jquery/jquery-ui#1.11.4",
-    "requirejs": "^2.2.0"
+    "requirejs": "^2.2.0",
+    "font-awesome": "^4.6.3"
   },
   "resolutions": {
     "bootstrap": "3.3.1"
