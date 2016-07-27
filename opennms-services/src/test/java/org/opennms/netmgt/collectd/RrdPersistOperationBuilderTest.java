@@ -37,6 +37,7 @@ import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
@@ -55,6 +56,8 @@ import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
+import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
 import org.opennms.test.FileAnticipator;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -72,6 +75,7 @@ public class RrdPersistOperationBuilderTest {
 
     private IpInterfaceDao m_ifDao;
     private RrdStrategy<?, ?> m_rrdStrategy; 
+    private LocationAwareSnmpClient m_locationAwareSnmpClient = new LocationAwareSnmpClientRpcImpl(new MockRpcClientFactory());
 
     @Before
     public void setUp() throws Exception {
@@ -114,7 +118,7 @@ public class RrdPersistOperationBuilderTest {
 
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
 
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig, m_locationAwareSnmpClient);
 
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
 
@@ -136,7 +140,7 @@ public class RrdPersistOperationBuilderTest {
 
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
 
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig, m_locationAwareSnmpClient);
 
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
 
@@ -150,7 +154,7 @@ public class RrdPersistOperationBuilderTest {
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
 
-        SnmpCollectionSet collectionSet = new SnmpCollectionSet(agent, collection);
+        SnmpCollectionSet collectionSet = new SnmpCollectionSet(agent, collection, m_locationAwareSnmpClient);
 
         SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
@@ -172,7 +176,7 @@ public class RrdPersistOperationBuilderTest {
 
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
 
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig, m_locationAwareSnmpClient);
 
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
 
@@ -186,7 +190,7 @@ public class RrdPersistOperationBuilderTest {
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
 
-        SnmpCollectionSet collectionSet = new SnmpCollectionSet(agent, collection);
+        SnmpCollectionSet collectionSet = new SnmpCollectionSet(agent, collection, m_locationAwareSnmpClient);
 
         SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
@@ -207,7 +211,7 @@ public class RrdPersistOperationBuilderTest {
 
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
 
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig, m_locationAwareSnmpClient);
 
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
 
@@ -221,7 +225,7 @@ public class RrdPersistOperationBuilderTest {
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
 
-        SnmpCollectionSet collectionSet = new SnmpCollectionSet(agent, collection);
+        SnmpCollectionSet collectionSet = new SnmpCollectionSet(agent, collection, m_locationAwareSnmpClient);
 
         SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
