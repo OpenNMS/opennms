@@ -234,9 +234,9 @@ GraphContainers = (function () {
                 },
             },
             paths: {
-               'jquery.flot'           : window.onmsGraphContainers.baseHref + 'lib/flot/jquery.flot.min',
-               'jquery.flot.time'      : window.onmsGraphContainers.baseHref + 'lib/flot/jquery.flot.time.min',
-               'jquery.flot.canvas'    : window.onmsGraphContainers.baseHref + 'lib/flot/jquery.flot.canvas.min',
+               'jquery.flot'           : window.onmsGraphContainers.baseHref + 'lib/flot/jquery.flot',
+               'jquery.flot.time'      : window.onmsGraphContainers.baseHref + 'lib/flot/jquery.flot.time',
+               'jquery.flot.canvas'    : window.onmsGraphContainers.baseHref + 'lib/flot/jquery.flot.canvas',
                'jquery.flot.legend'    : window.onmsGraphContainers.baseHref + 'lib/flot-legend/jquery.flot.legend.min',
                'jquery.flot.axislabels': window.onmsGraphContainers.baseHref + 'lib/flot-axislabels/jquery.flot.axislabels',
                'jquery.flot.tooltip'   : window.onmsGraphContainers.baseHref + 'lib/flot.tooltip/js/jquery.flot.tooltip.min',

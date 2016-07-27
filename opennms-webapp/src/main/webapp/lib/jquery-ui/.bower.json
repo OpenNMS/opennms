@@ -48,6 +48,5 @@
   },
   "_source": "git://github.com/jquery/jquery-ui.git",
   "_target": "1.11.4",
-  "_originalSource": "jquery/jquery-ui",
-  "_direct": true
+  "_originalSource": "jquery/jquery-ui"
 }
