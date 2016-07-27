@@ -157,9 +157,9 @@
             if (paramCfg.key == parameter.key) { // Checking current parameter
               if (paramCfg.required) {
                 if ($scope.isNonEmptyArray(paramCfg.options)) {
-                  return 'views/policy-param.options.html';
+                  return 'js/onms-requisitions/views/policy-param.options.html';
                 } else {
-                  return 'views/policy-param.string.html';
+                  return 'js/onms-requisitions/views/policy-param.string.html';
                 }
               }
             }
@@ -170,7 +170,7 @@
         }
       }
 
-      return parameter.key ? 'views/policy-param.fixed.html' : 'views/policy-param.editable.html';
+      return parameter.key ? 'js/onms-requisitions/views/policy-param.fixed.html' : 'js/onms-requisitions/views/policy-param.editable.html';
     };
 
     /**

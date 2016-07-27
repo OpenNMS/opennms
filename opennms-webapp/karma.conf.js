@@ -29,7 +29,9 @@ module.exports = function(config) {
       'src/main/webapp/lib/angular-animate/angular-animate.js',
       'src/main/webapp/lib/angular-growl-v2/build/angular-growl.js',
       // OpenNMS applications
-      'src/main/webapp/admin/ng-requisitions/**/*.js',
+      // TODO: Each application has to be manually included here
+      'src/main/webapp/js/onms-requisitions/**/*.js',
+      // OpenNMS tests
       'src/test/javascript/**/*.js'
     ],
 

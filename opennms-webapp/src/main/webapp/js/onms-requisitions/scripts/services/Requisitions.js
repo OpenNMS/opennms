@@ -41,11 +41,6 @@
     var requisitionsService = {};
     requisitionsService.internal = {};
 
-    // Declaring Service Variables
-
-    var baseHref = $window.ONMS_BASE_HREF === undefined ? '' : $window.ONMS_BASE_HREF;
-    $log.debug('baseHref = "' + baseHref + '"');
-
     // Cache Configuration
 
     requisitionsService.internal.cacheEnabled = true;
@@ -53,11 +48,11 @@
 
     // URLs
 
-    requisitionsService.internal.requisitionsUrl = baseHref + 'rest/requisitions';
-    requisitionsService.internal.requisitionNamesUrl = baseHref + 'rest/requisitionNames';
-    requisitionsService.internal.foreignSourcesUrl = baseHref + 'rest/foreignSources';
-    requisitionsService.internal.foreignSourcesConfigUrl = baseHref + 'rest/foreignSourcesConfig';
-    requisitionsService.internal.snmpConfigUrl = baseHref + 'rest/snmpConfig';
+    requisitionsService.internal.requisitionsUrl = 'rest/requisitions';
+    requisitionsService.internal.requisitionNamesUrl = 'rest/requisitionNames';
+    requisitionsService.internal.foreignSourcesUrl = 'rest/foreignSources';
+    requisitionsService.internal.foreignSourcesConfigUrl = 'rest/foreignSourcesConfig';
+    requisitionsService.internal.snmpConfigUrl = 'rest/snmpConfig';
     requisitionsService.internal.errorHelp = ' Check the OpenNMS logs for more details, or try again later.';
 
     // Timeouts

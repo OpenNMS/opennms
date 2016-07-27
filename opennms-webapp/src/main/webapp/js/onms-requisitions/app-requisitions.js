@@ -16,26 +16,30 @@
     'angular-loading-bar'
   ])
 
+  .constant("Configuration", {
+    'baseHref': 'admin/ng-requisitions/index.jsp'
+  })
+
   .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
     .when('/requisitions', {
-      templateUrl: 'views/requisitions.html',
+      templateUrl: 'js/onms-requisitions/views/requisitions.html',
       controller: 'RequisitionsController'
     })
     .when('/requisitions/:foreignSource', {
-      templateUrl: 'views/requisition.html',
+      templateUrl: 'js/onms-requisitions/views/requisition.html',
       controller: 'RequisitionController'
     })
     .when('/requisitions/:foreignSource/foreignSource', {
-      templateUrl: 'views/foreignsource.html',
+      templateUrl: 'js/onms-requisitions/views/foreignsource.html',
       controller: 'ForeignSourceController'
     })
     .when('/requisitions/:foreignSource/nodes/:foreignId', {
-      templateUrl: 'views/node.html',
+      templateUrl: 'js/onms-requisitions/views/node.html',
       controller: 'NodeController'
     })
     .when('/requisitions/:foreignSource/nodes/:foreignId/vertical', {
-      templateUrl: 'views/node-panels.html',
+      templateUrl: 'js/onms-requisitions/views/node-panels.html',
       controller: 'NodeController'
     })
     .otherwise({

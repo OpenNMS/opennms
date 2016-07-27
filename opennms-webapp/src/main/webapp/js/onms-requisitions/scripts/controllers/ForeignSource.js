@@ -21,12 +21,13 @@
   * @requires $window Document window
   * @requires $uibModal Angular UI modal
   * @required filterFilter the Angular filter
+  * @required Configuration The configuration object
   * @requires RequisitionsService The requisitions service
   * @requires growl The growl plugin for instant notifications
   *
   * @description The controller for manage foreign source definitions (i.e. policies and detectors)
   */
-  .controller('ForeignSourceController', ['$scope', '$routeParams', '$window', '$uibModal', 'filterFilter', 'RequisitionsService', 'growl', function($scope, $routeParams, $window, $uibModal, filterFilter, RequisitionsService, growl) {
+  .controller('ForeignSourceController', ['$scope', '$routeParams', '$window', '$uibModal', 'filterFilter', 'Configuration', 'RequisitionsService', 'growl', function($scope, $routeParams, $window, $uibModal, filterFilter, Configuration, RequisitionsService, growl) {
 
     /**
     * @description The timing status.
@@ -188,7 +189,7 @@
     */
     $scope.goTop = function() {
       var doGoTop = function() {
-        $window.location.href = '#/requisitions';
+        $window.location.href = Configuration.baseHref + '#/requisitions';
       };
       $scope.goTo(doGoTop);
     };
@@ -203,9 +204,9 @@
     $scope.goBack = function() {
       var doGoBack = function() {
         if ($scope.foreignSource == 'default') {
-          $window.location.href = '#/requisitions';
+          $window.location.href = Configuration.baseHref + '#/requisitions';
         } else {
-          $window.location.href = '#/requisitions/' + $scope.foreignSource;
+          $window.location.href = Configuration.baseHref + '#/requisitions/' + $scope.foreignSource;
         }
       };
       $scope.goTo(doGoBack);
@@ -272,7 +273,7 @@
         backdrop: 'static',
         keyboard: false,
         controller: 'PolicyController',
-        templateUrl: 'views/policy.html',
+        templateUrl: 'js/onms-requisitions/views/policy.html',
         resolve: {
           policy: function() { return angular.copy(policy); }
         }
@@ -303,7 +304,7 @@
         keyboard: false,
         size: 'sm',
         controller: 'MoveController',
-        templateUrl: 'views/move.html',
+        templateUrl: 'js/onms-requisitions/views/move.html',
         resolve: {
           label: function() { return policy.name; },
           position: function() { return pos; },
@@ -361,7 +362,7 @@
         backdrop: 'static',
         keyboard: false,
         controller: 'DetectorController',
-        templateUrl: 'views/detector.html',
+        templateUrl: 'js/onms-requisitions/views/detector.html',
         resolve: {
           detector: function() { return angular.copy(detector); }
         }
@@ -392,7 +393,7 @@
         keyboard: false,
         size: 'sm',
         controller: 'MoveController',
-        templateUrl: 'views/move.html',
+        templateUrl: 'js/onms-requisitions/views/move.html',
         resolve: {
           label: function() { return detector.name; },
           position: function() { return pos; },

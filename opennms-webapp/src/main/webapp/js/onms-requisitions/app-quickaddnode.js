@@ -18,7 +18,7 @@
   .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
     .when('/', {
-      templateUrl: 'views/quick-add-node-standalone.html',
+      templateUrl: 'js/onms-requisitions/views/quick-add-node-standalone.html',
       controller: 'QuickAddNodeController',
       resolve: {
         foreignSources: function() { return null; }

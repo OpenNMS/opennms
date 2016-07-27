@@ -22,11 +22,12 @@
   * @requires $filter Angular filter
   * @requires $window Document window
   * @requires $uibModal Angular UI modal
+  * @required Configuration The configuration object
   * @requires RequisitionsService The requisitions service
   * @requires SynchronizeService The synchronize service
   * @requires growl The growl plugin for instant notifications
   */
-  .controller('RequisitionsController', ['$scope', '$filter', '$window', '$uibModal', 'RequisitionsService', 'SynchronizeService', 'growl', function($scope, $filter, $window, $uibModal, RequisitionsService, SynchronizeService, growl) {
+  .controller('RequisitionsController', ['$scope', '$filter', '$window', '$uibModal', 'Configuration', 'RequisitionsService', 'SynchronizeService', 'growl', function($scope, $filter, $window, $uibModal, Configuration, RequisitionsService, SynchronizeService, growl) {
 
     /**
     * @description The timing status.
@@ -126,7 +127,7 @@
         backdrop: 'static',
         keyboard: false,
         controller: 'QuickAddNodeModalController',
-        templateUrl: 'views/quick-add-node.html',
+        templateUrl: 'js/onms-requisitions/views/quick-add-node.html',
         size: 'lg',
         resolve: {
           foreignSources: function() { return availableForeignSources; }
@@ -157,7 +158,7 @@
         backdrop: 'static',
         keyboard: false,
         controller: 'CloneForeignSourceController',
-        templateUrl: 'views/clone-foreignsource.html',
+        templateUrl: 'js/onms-requisitions/views/clone-foreignsource.html',
         resolve: {
           foreignSource: function() { return foreignSource; },
           availableForeignSources: function() { return availableForeignSources; }
@@ -216,7 +217,7 @@
     * @param {string} foreignSource The name of the requisition
     */
     $scope.editForeignSource = function(foreignSource) {
-      $window.location.href = '#/requisitions/' + foreignSource + '/foreignSource';
+      $window.location.href = Configuration.baseHref + '#/requisitions/' + foreignSource + '/foreignSource';
     };
 
     /**
@@ -228,7 +229,7 @@
     * @param {string} foreignSource The name of the requisition
     */
     $scope.edit = function(foreignSource) {
-      $window.location.href = '#/requisitions/' + foreignSource;
+      $window.location.href = Configuration.baseHref + '#/requisitions/' + foreignSource;
     };
 
     /**
@@ -318,7 +319,7 @@
     * @methodOf RequisitionsController
     */
     $scope.editDefaultForeignSource = function() {
-      $window.location.href = '#/requisitions/default/foreignSource';
+      $window.location.href = Configuration.baseHref + '#/requisitions/default/foreignSource';
     };
 
     /**

@@ -21,12 +21,13 @@
   * @requires $cookies Angular cookies
   * @requires $window Document window
   * @requires $uibModal Angular UI modal
+  * @required Configuration The configuration object
   * @requires RequisitionsService The requisitions service
   * @requires growl The growl plugin for instant notifications
   *
   * @description The controller for manage requisitioned nodes (add/edit the nodes on a specific requisition)
   */
-  .controller('NodeController', ['$scope', '$routeParams', '$cookies', '$window', '$uibModal', 'RequisitionsService', 'growl', function($scope, $routeParams, $cookies, $window, $uibModal, RequisitionsService, growl) {
+  .controller('NodeController', ['$scope', '$routeParams', '$cookies', '$window', '$uibModal', 'Configuration', 'RequisitionsService', 'growl', function($scope, $routeParams, $cookies, $window, $uibModal, Configuration, RequisitionsService, growl) {
 
     /**
     * @description The timing status.
@@ -145,7 +146,7 @@
     * @methodOf NodeController
     */
     $scope.goTop = function() {
-      $scope.goTo('#/requisitions');
+      $scope.goTo(Configuration.baseHref + '#/requisitions');
     };
 
     /**
@@ -156,7 +157,7 @@
     * @methodOf NodeController
     */
     $scope.goBack = function() {
-      $scope.goTo('#/requisitions/' + $scope.foreignSource);
+      $scope.goTo(Configuration.baseHref + '#/requisitions/' + $scope.foreignSource);
     };
 
     /**
@@ -168,7 +169,7 @@
     */
     $scope.goVerticalLayout = function() {
       $cookies.put('use_requisitions_node_vertical_layout', 'true');
-      $scope.goTo('#/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId + '/vertical');
+      $scope.goTo(Configuration.baseHref + '#/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId + '/vertical');
     };
 
     /**
@@ -180,7 +181,7 @@
     */
     $scope.goHorizontalLayout = function() {
       $cookies.put('use_requisitions_node_vertical_layout', 'false');
-      $scope.goTo('#/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId);
+      $scope.goTo(Configuration.baseHref + '#/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId);
     };
 
     /**
@@ -229,7 +230,7 @@
         backdrop: 'static',
         keyboard: false,
         controller: 'AssetController',
-        templateUrl: 'views/asset.html',
+        templateUrl: 'js/onms-requisitions/views/asset.html',
         resolve: {
           asset: function() { return angular.copy(assetToEdit); },
           assetsBlackList: function() { return assetsBlackList; }
@@ -293,7 +294,7 @@
         backdrop: 'static',
         keyboard: false,
         controller: 'InterfaceController',
-        templateUrl: 'views/interface.html',
+        templateUrl: 'js/onms-requisitions/views/interface.html',
         resolve: {
           foreignId: function() { return foreignId; },
           foreignSource: function() { return foreignSource; },

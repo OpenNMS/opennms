@@ -23,11 +23,12 @@
   * @requires $cookies Angular cookies
   * @requires $window Document window
   * @requires $routeParams Angular route parameters
+  * @required Configuration The configuration object
   * @requires RequisitionsService The requisitions service
   * @requires SynchronizeService The synchronize service
   * @requires growl The growl plugin for instant notifications
   */
-  .controller('RequisitionController', ['$scope', '$filter', '$cookies', '$window', '$routeParams', 'RequisitionsService', 'SynchronizeService', 'growl', function($scope, $filter, $cookies, $window, $routeParams, RequisitionsService, SynchronizeService, growl) {
+  .controller('RequisitionController', ['$scope', '$filter', '$cookies', '$window', '$routeParams', 'Configuration', 'RequisitionsService', 'SynchronizeService', 'growl', function($scope, $filter, $cookies, $window, $routeParams, Configuration, RequisitionsService, SynchronizeService, growl) {
 
     /**
     * @description The timing status.
@@ -109,7 +110,7 @@
     */
     // FIXME Should be called getTop to be consistent with the rest of the controllers
     $scope.goBack = function() {
-      $window.location.href = '#/requisitions';
+      $window.location.href = Configuration.baseHref + '#/requisitions';
     };
 
     /**
@@ -120,7 +121,7 @@
     * @methodOf RequisitionController
     */
     $scope.editForeignSource = function() {
-      $window.location.href = '#/requisitions/' + $scope.foreignSource + '/foreignSource';
+      $window.location.href = Configuration.baseHref + '#/requisitions/' + $scope.foreignSource + '/foreignSource';
     };
 
     /**
@@ -169,7 +170,7 @@
     * @methodOf RequisitionController
     */
     $scope.addNode = function() {
-      $window.location.href = '#/requisitions/' + $scope.foreignSource + '/nodes/__new__' + $scope.getVerticalLayout();
+      $window.location.href = Configuration.baseHref + '#/requisitions/' + $scope.foreignSource + '/nodes/__new__' + $scope.getVerticalLayout();
     };
 
     /**
@@ -182,7 +183,7 @@
     * @param {object} The node's object to edit
     */
     $scope.editNode = function(node) {
-      $window.location.href = '#/requisitions/' + $scope.foreignSource + '/nodes/' + node.foreignId + $scope.getVerticalLayout();
+      $window.location.href = Configuration.baseHref + '#/requisitions/' + $scope.foreignSource + '/nodes/' + node.foreignId + $scope.getVerticalLayout();
     };
 
     /**
