@@ -45,10 +45,10 @@ public class CamelRpcClientFactory implements RpcClientFactory {
 
     private String location;
 
-    @EndpointInject(uri = "direct:executeRpc")
+    @EndpointInject(uri = "direct:executeRpc", context = "rpcClient")
     private ProducerTemplate template;
 
-    @EndpointInject(uri = "direct:executeRpc")
+    @EndpointInject(uri = "direct:executeRpc", context = "rpcClient")
     private Endpoint endpoint;
 
     @Override
