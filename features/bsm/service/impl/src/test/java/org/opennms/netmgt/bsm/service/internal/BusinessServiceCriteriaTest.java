@@ -41,7 +41,7 @@ import org.opennms.netmgt.bsm.service.model.graph.internal.BusinessServiceGraphI
 
 import com.google.common.collect.ImmutableList;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class BusinessServiceCriteriaTest {
 

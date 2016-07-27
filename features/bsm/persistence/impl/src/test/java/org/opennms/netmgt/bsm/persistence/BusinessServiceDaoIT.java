@@ -74,7 +74,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {

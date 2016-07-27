@@ -50,7 +50,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
