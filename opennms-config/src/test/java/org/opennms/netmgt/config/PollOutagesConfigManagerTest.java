@@ -102,7 +102,7 @@ public class PollOutagesConfigManagerTest {
 
         m_manager = new PollOutagesConfigManager() {
             @Override
-            public void update() throws IOException {}
+            public void update() throws IOException, MarshalException, ValidationException {}
         };
 
         FileWriter w = new FileWriter(m_configFile);

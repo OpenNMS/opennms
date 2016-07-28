@@ -50,7 +50,6 @@ import org.junit.Test;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
 import org.opennms.core.network.IPAddressRangeSet;
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
@@ -65,7 +64,7 @@ import org.springframework.core.io.AbstractResource;
  *
  */
 public class SnmpEventInfoTest {
-
+    
     @Test(expected=IllegalArgumentException.class)
     public void testConfigRangeCreateOutOfOrder() {
         new IPAddressRange("192.168.1.2", "192.168.1.1");
@@ -869,10 +868,9 @@ public class SnmpEventInfoTest {
         "</snmp-config>\n" + 
         "";
 
-        SnmpPeerFactory factory = new SnmpPeerFactory(new StringResource(snmpConfigXml));
-        SnmpPeerFactory.setInstance(factory);
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, factory.getSnmpConfigAsString());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
         SnmpEventInfo info = new SnmpEventInfo();

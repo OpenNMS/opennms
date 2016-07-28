@@ -33,6 +33,22 @@
           </instructions>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <opennms.home>${project.build.testOutputDirectory}</opennms.home>
+            <java.endorsed.dirs>${basedir}/target/endorsed</java.endorsed.dirs>
+            <ssl.debug>true</ssl.debug>
+            <javax.net.debug>ssl,handshake,verbose</javax.net.debug>
+            <javax.net.ssl.keyStore>target/test-keystore.jks</javax.net.ssl.keyStore>
+            <javax.net.ssl.keyStorePassword>password</javax.net.ssl.keyStorePassword>
+            <javax.net.ssl.trustStore>target/test-keystore.jks</javax.net.ssl.trustStore>
+            <javax.net.ssl.trustStorePassword>password</javax.net.ssl.trustStorePassword>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
       <!-- We create a key for 'localhost' for test purposes -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

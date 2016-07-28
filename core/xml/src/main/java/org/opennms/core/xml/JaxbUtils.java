@@ -31,11 +31,9 @@ package org.opennms.core.xml;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -111,22 +109,6 @@ public abstract class JaxbUtils {
         final StringWriter jaxbWriter = new StringWriter();
         marshal(obj, jaxbWriter);
         return jaxbWriter.toString();
-    }
-
-    public static void marshal(final Object obj, final File file) throws IOException {
-        /*
-         * Marshal to a string first, then write the string to the file.
-         * This way the original configuration isn't lost if the XML from the
-         * marshal is hosed.
-         */
-        String xmlString = marshal(obj);
-
-        if (xmlString != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
-            fileWriter.write(xmlString);
-            fileWriter.flush();
-            fileWriter.close();
-        }
     }
 
     public static Class<?> getClassForElement(final String elementName) {

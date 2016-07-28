@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.xml;
+package org.opennms.netmgt.dao.castor;
 
 
 import org.slf4j.Logger;

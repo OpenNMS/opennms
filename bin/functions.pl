@@ -205,6 +205,7 @@ if ($MAVEN_VERSION =~ /^[12]/) {
 	warning("Your maven version ($MAVEN_VERSION) is too old.  There are known bugs building with a version less than 3.0.  Expect trouble.");
 }
 
+unshift(@ARGS, '-DfailIfNoTests=false');
 if (defined $TESTS) {
 	debug("integration tests are enabled");
 	unshift(@ARGS, '-DskipITs=false');

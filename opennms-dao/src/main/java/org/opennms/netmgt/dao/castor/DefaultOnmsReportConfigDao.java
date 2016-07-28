@@ -31,7 +31,6 @@ package org.opennms.netmgt.dao.castor;
 import java.util.Collections;
 import java.util.List;
 
-import org.opennms.core.xml.AbstractCastorConfigDao;
 import org.opennms.netmgt.config.reporting.DateParm;
 import org.opennms.netmgt.config.reporting.IntParm;
 import org.opennms.netmgt.config.reporting.Parameters;
