@@ -23,12 +23,17 @@
     <constructor-arg><ref bean="eventConfDao"/></constructor-arg>
   </bean>
 
-  <bean id="tcpIpAddress" class="java.lang.String">
-    <constructor-arg value="127.0.0.1" />
-  </bean>
-
-  <bean id="tcpPort" class="java.lang.Integer">
-    <constructor-arg value="5837" />
+  <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
+    <property name="initialProperties">
+      <props>
+        <prop key="eventIpcManagerHandlerQueueLength">2147483647</prop>
+        <prop key="eventIpcManagerHandlerPoolSize">4</prop>
+        <prop key="tcpIpAddress">127.0.0.1</prop>
+        <prop key="tcpPort">5837</prop>
+        <prop key="udpIpAddress">127.0.0.1</prop>
+        <prop key="udpPort">5837</prop>
+      </props>
+    </property>
   </bean>
 
 </beans>
