@@ -28,8 +28,6 @@
 
   <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>
 
-  <bean id="eifPacketProcessor" class="org.opennms.features.eifadapter.EifPacketProcessor" />
-
   <!--
         Reduces the graceful shutdown time from 300 to 15 seconds.
    -->
@@ -37,18 +35,16 @@
     <property name="timeout" value="15"/>
   </bean>
 
-  <bean id="stringDecoder" class="io.netty.handler.codec.string.StringDecoder"/>
+  <bean id="eifMessageDecoder" class="org.opennms.features.eifadapter.EifMessageDecoder"/>
 
   <camelContext autoStartup="true" id="eifAdapterCamelContext" xmlns="http://camel.apache.org/schema/blueprint" allowUseOriginalMessage="false">
     <propertyPlaceholder id="properties" location="blueprint:eifAdapterProperties" />
 
     <route id="eifToEvent">
-      <!-- Receive EIF stream from TCP port -->
-      <from uri="netty4:tcp://{{host}}:{{port}}?sync=false&amp;decoder=#stringDecoder"/>
-      <!-- Transform the messages to events -->
-      <bean ref="eifPacketProcessor"/>
+      <!-- Receive EIF stream from TCP port and decode the incoming bytes -->
+      <from uri="netty4:tcp://{{host}}:{{port}}?sync=false&amp;decoder=#eifMessageDecoder"/>
       <convertBodyTo type="org.opennms.netmgt.xml.event.Log"/>
-      <!-- Send to the OpenNMS event IPC manager -->
+      <!-- Send to the OpenNMS event log to the IPC manager -->
       <bean ref="eventIpcManager" method="send"/>
     </route>
   </camelContext>
