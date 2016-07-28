@@ -245,6 +245,16 @@
             <mbean name="org.opennms.newts.search.inserts" objectname="org.opennms.newts:name=search.inserts">
                 <attrib name="Count" alias="NewtsSearchInserts" type="counter"/>
             </mbean>
+            <mbean name="org.apache.camel.context" objectname="org.apache.camel:context=org.opennms.features.events.syslog,type=context,name=&quot;syslogConnectionHandler&quot;">
+                <attrib name="ExchangesCompleted" alias="3ExchangesCompleted" type="gauge"/>
+                <attrib name="ExchangesFailed" alias="3ExchangesFailed" type="gauge"/>
+                <attrib name="ExchangesTotal" alias="3ExchangesTotal" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.camel.context" objectname="org.apache.camel:context=org.opennms.features.events.traps,type=context,name=&quot;trapNotificationHandler&quot;">
+                <attrib name="ExchangesCompleted" alias="5ExchangesCompleted" type="gauge"/>
+                <attrib name="ExchangesFailed" alias="5ExchangesFailed" type="gauge"/>
+                <attrib name="ExchangesTotal" alias="5ExchangesTotal" type="gauge"/>
+            </mbean>
         </mbeans>
     </jmx-collection>
 </jmx-datacollection-config>
