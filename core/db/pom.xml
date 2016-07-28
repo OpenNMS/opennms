@@ -11,7 +11,6 @@
   <name>OpenNMS :: Core :: Database Access API</name>
   <packaging>bundle</packaging>
   <properties>
-    <skipITs>true</skipITs>
   </properties>
   <build>
     <plugins>
@@ -27,21 +26,6 @@
             <Export-Package>org.opennms.netmgt.config.opennmsDataSources.*;org.opennms.core.db.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>

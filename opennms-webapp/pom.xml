@@ -16,7 +16,6 @@
     <!-- this is used by runInPlace.sh to get the overwise provided 
          nms libs into the WEB-INF/lib for jetty -->
     <onmsLibScope>provided</onmsLibScope>
-    <skipITs>true</skipITs>
   </properties>
   <build>
     <plugins>
@@ -54,35 +53,6 @@
             </artifactItem>
           </artifactItems>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <!-- Don't specify argLine here or it will override the value from /pom.xml -->
-          <systemProperties>
-            <property>
-              <name>java.endorsed.dirs</name>
-              <value>${basedir}/target/endorsed</value>
-            </property>
-          </systemProperties>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-          <reuseForks>false</reuseForks>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

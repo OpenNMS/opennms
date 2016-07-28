@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.AbstractMergingJaxbConfigDao;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
@@ -81,7 +80,7 @@ public class JMXDataCollectionConfigDao extends AbstractMergingJaxbConfigDao<Jmx
         for (JmxCollection collection : config.getJmxCollectionList()) {
             if (collection.hasImportMbeans()) {
                 for (String importMbeans : collection.getImportGroupsList()) {
-                    final File file = Paths.get(ConfigFileConstants.getHome(), "etc", importMbeans).toFile();
+                    final File file = getOpennmsHome().resolve(Paths.get("etc", importMbeans)).toFile();
                     LOG.debug("parseJmxMbeans: parsing {}", file);
                     final Mbeans mbeans = JaxbUtils.unmarshal(Mbeans.class, new FileSystemResource(file));
                     collection.addMbeans(mbeans.getMbeanList());

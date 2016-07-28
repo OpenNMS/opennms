@@ -11,7 +11,6 @@
   <name>OpenNMS :: Core :: SNMP :: Proxy :: RPC Tests</name>
   <packaging>bundle</packaging>
   <properties>
-    <skipITs>true</skipITs>
   </properties>
   <build>
     <plugins>
@@ -26,21 +25,6 @@
             <Bundle-Version>${project.version}</Bundle-Version>
           </instructions>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
