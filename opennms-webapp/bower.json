@@ -30,6 +30,14 @@
     "requirejs": "^2.2.0",
     "font-awesome": "^4.6.3"
   },
+  "overrides": {
+    "font-awesome": {
+      "main": [
+        "css/font-awesome.css",
+        "fonts/**"
+      ]
+    }
+  },
   "resolutions": {
     "bootstrap": "3.3.1"
   }
