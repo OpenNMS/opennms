@@ -1329,7 +1329,8 @@
     <httpcoreVersion>4.3.3</httpcoreVersion>
     <httpclientVersion>4.3.6</httpclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
-    <jasperreportsVersion>6.1.1</jasperreportsVersion>
+    <jasperreportsVersion>6.3.0</jasperreportsVersion>
+    <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
     <jettyVersion>8.1.15.v20140411</jettyVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
@@ -3791,6 +3792,11 @@
         <groupId>com.zaxxer</groupId>
         <artifactId>HikariCP</artifactId>
         <version>${hikaricpVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jdt.core.compiler</groupId>
+        <artifactId>ecj</artifactId>
+        <version>${ecjVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

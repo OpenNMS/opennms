@@ -42,19 +42,6 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 
-import net.sf.jasperreports.engine.JREmptyDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.export.JRCsvExporter;
-import net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator;
-import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
@@ -68,9 +55,31 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
+import org.opennms.reporting.jasperreports.compiler.CustomJRJdtCompiler;
 import org.opennms.reporting.jasperreports.filter.ParameterFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
+import net.sf.jasperreports.engine.JRReport;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.SimpleJasperReportsContext;
+import net.sf.jasperreports.engine.design.JRCompiler;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.export.JRCsvExporter;
+import net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator;
+import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 /**
  * <p>
@@ -489,7 +498,6 @@ public class JasperReportService implements ReportService {
         JRCsvExporter exporter = new JRCsvExporter();
         exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
         exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, outputStream);
-
         exporter.exportReport();
     }
 
@@ -563,7 +571,20 @@ public class JasperReportService implements ReportService {
 
     private JasperReport getJasperReport(String reportId) throws ReportException {
         try {
-            JasperReport report = JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId));
+            JasperReport report = null;
+            JasperDesign jasperDesign = JRXmlLoader.load(m_globalReportRepository.getTemplateStream(reportId));
+
+            // If the target report is written in Java, use our custom JDT compiler
+            if (JRReport.LANGUAGE_JAVA.equals(jasperDesign.getLanguage())) {
+                JasperReportsContext reportsContext = new SimpleJasperReportsContext();
+                JRPropertiesUtil.getInstance(reportsContext).setProperty(JRCompiler.COMPILER_PREFIX + JRReport.LANGUAGE_JAVA, CustomJRJdtCompiler.class.getCanonicalName());
+                JasperCompileManager jasperCompilerManager = JasperCompileManager.getInstance(reportsContext);
+                report = jasperCompilerManager.compile(jasperDesign);
+            } else {
+                // Otherwise, use the default that Jasper providers
+                report = JasperCompileManager.compileReport(jasperDesign);
+            }
+
             for (Object eachKey : System.getProperties().keySet()) {
                 String eachStringKey = (String) eachKey;
                 if (eachStringKey.startsWith("net.sf.jasperreports")) {
