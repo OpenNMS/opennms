@@ -22,12 +22,6 @@
 
   <bean id="daemon" class="org.opennms.netmgt.eventd.Eventd">
     <property name="eventdServiceManager" ref="eventdServiceManager"/>
-    <property name="eventReceivers">
-      <list>
-        <ref bean="tcpReceiver"/>
-        <ref bean="udpReceiver"/>
-      </list>
-    </property>
     <property name="receiver" ref="broadcastEventProcessor"/>
   </bean>
 
@@ -93,34 +87,6 @@
     <property name="eventIpcManager" ref="eventIpcManagerImpl"/>
   </bean>
 
-  <bean id="tcpReceiver" class="org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver">
-    <property name="port" ref="tcpPort"/>
-    <property name="ipAddress" ref="tcpIpAddress"/>
-    <property name="eventHandlers">
-      <list>
-        <ref bean="eventHandler"/>
-      </list>
-    </property>
-  </bean>
-  
-  <bean id="udpReceiver" class="org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver">
-    <property name="port" ref="udpPort"/>
-    <property name="ipAddress" ref="udpIpAddress"/>
-    <property name="eventHandlers">
-      <list>
-        <ref bean="eventHandler"/>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="tcpIpAddress" factory-bean="eventdConfigManager" factory-method="getTCPIpAddress"/>
-
-  <bean id="tcpPort" factory-bean="eventdConfigManager" factory-method="getTCPPort"/>
-
-  <bean id="udpIpAddress" factory-bean="eventdConfigManager" factory-method="getUDPIpAddress"/>
-
-  <bean id="udpPort" factory-bean="eventdConfigManager" factory-method="getUDPPort"/>
-
   <bean id="queueNameFactory" class="org.opennms.core.camel.JmsQueueNameFactory">
     <constructor-arg value="Eventd"/>
     <constructor-arg value="BroadcastEvent"/>
@@ -145,6 +111,18 @@
         init-method="start"
         destroy-method="stop" />
 
+  <!-- Camel processor that receives XML events and sends them to an EventForwarder -->
+  <bean id="xmlEventProcessor" class="org.opennms.netmgt.eventd.XmlEventProcessor">
+    <property name="eventForwarder" ref="eventIpcManagerImpl"/>
+  </bean>
+
+  <!-- Unmarshaller for event Log objects -->
+  <!--
+  <bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
+    <constructor-arg value="org.opennms.netmgt.xml.event.Log" />
+  </bean>
+  -->
+
   <!-- Create a set of Properties that can be used as propertyPlaceholders for Camel -->
   <bean id="eventdProperties" class="org.opennms.netmgt.eventd.EventdConfigManagerPropertiesConverter" factory-method="getProperties">
     <constructor-arg ref="eventdConfigManager"/>
@@ -153,6 +131,16 @@
   <!-- Create a Camel PropertiesComponent -->
   <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
     <property name="initialProperties" ref="eventdProperties"/>
+  </bean>
+
+  <bean id="tcpXmlFrameDecoder" class="io.netty.handler.codec.xml.XmlFrameDecoder">
+    <!-- TODO: Provide a way to cap this value so we can't be DDOS'd by huge events -->
+    <constructor-arg value="2147483647"/>
+  </bean>
+
+  <bean id="udpXmlFrameDecoder" class="io.netty.handler.codec.xml.XmlFrameDecoder">
+    <!-- TODO: Provide a way to cap this value so we can't be DDOS'd by huge events -->
+    <constructor-arg value="2147483647"/>
   </bean>
 
   <camelContext id="eventdCamelContext" xmlns="http://camel.apache.org/schema/spring">
@@ -174,6 +162,18 @@
       <log loggingLevel="ERROR" message="Unexpected exception while processing event in route ID ${routeId}; not processing with any later processors"/>
       <log loggingLevel="ERROR" message="${exception.stacktrace}"/>
     </onException>
+
+    <route id="tcpEventReceiver">
+        <from uri="netty4:tcp://{{tcpIpAddress}}:{{tcpPort}}?receiveBufferSize=2147483647&amp;sync=true&amp;allowDefaultCodec=false&amp;decoders=#tcpXmlFrameDecoder"/>
+        <log message="Receiving OpenNMS event over TCP port {{tcpPort}}"/>
+        <process ref="xmlEventProcessor"/>
+    </route>
+
+    <route id="udpEventReceiver">
+        <from uri="netty4:udp://{{udpIpAddress}}:{{udpPort}}?receiveBufferSize=2147483647&amp;sync=true&amp;allowDefaultCodec=false&amp;decoders=#udpXmlFrameDecoder"/>
+        <log message="Receiving OpenNMS event over UDP port {{udpPort}}"/>
+        <process ref="xmlEventProcessor"/>
+    </route>
 
     <route id="submitEvent">
       <from uri="seda:submitEvent?size={{eventIpcManagerHandlerQueueLength}}&amp;concurrentConsumers={{eventIpcManagerHandlerPoolSize}}" />

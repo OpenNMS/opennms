@@ -285,6 +285,9 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         int eventCount = 10000;
         m_eventCounter.setAnticipated(eventCount);
 
+        /**
+         * Add 10000 events to the event log
+         */
         for (int i = 0; i < eventCount; i++) {
             int eventNum = Double.valueOf(Math.random() * 300).intValue();
             String expectedUei = "uei.example.org/syslog/loadTest/foo" + eventNum;
@@ -316,20 +319,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         /*
          * Rather than defaulting to localhost all the time, give an option in properties
          */
-        String proxyHostName = "127.0.0.1";
-        String proxyHostPort = "5817";
-        String proxyHostTimeout = String.valueOf(TcpEventProxy.DEFAULT_TIMEOUT);
-        InetAddress proxyAddr = null;
-        EventProxy proxy = null;
-
-        proxyAddr = InetAddressUtils.addr(proxyHostName);
-
-        if (proxyAddr == null) {
-        	proxy = new TcpEventProxy();
-        } else {
-            proxy = new TcpEventProxy(new InetSocketAddress(proxyAddr, Integer.parseInt(proxyHostPort)), Integer.parseInt(proxyHostTimeout));
-        }
-        return proxy;
+        return new TcpEventProxy(new InetSocketAddress(InetAddressUtils.ONE_TWENTY_SEVEN, TcpEventProxy.DEFAULT_PORT), TcpEventProxy.DEFAULT_TIMEOUT);
     }
 
     public static class EventCounter implements EventListener {
