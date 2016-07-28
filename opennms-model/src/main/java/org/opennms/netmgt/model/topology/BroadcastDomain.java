@@ -229,5 +229,10 @@ public class BroadcastDomain {
             }
         }
     }
+    
+    public void clear() {
+        m_topology.clear();
+        m_bridges.clear();
+    }
 
 }
