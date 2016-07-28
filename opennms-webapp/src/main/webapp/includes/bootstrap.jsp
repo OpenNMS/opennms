@@ -135,12 +135,12 @@
   <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.time.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.canvas.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot-legend/jquery.flot.legend.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-legend/jquery.flot.legend.min.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot-axislabels/jquery.flot.axislabels.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot.tooltip/js/jquery.flot.tooltip.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot-saveas/jquery.flot.saveas.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot-navigate/jquery.flot.navigate.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot-datatable/jquery.flot.datatable.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-datatable/jquery.flot.datatable.min.js"></script>
   <script type="text/javascript" src="<%= baseHref %>js/backshift.onms.min.js"></script>
 </c:if>
 
