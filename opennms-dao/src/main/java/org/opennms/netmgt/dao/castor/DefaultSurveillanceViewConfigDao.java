@@ -31,7 +31,6 @@ package org.opennms.netmgt.dao.castor;
 import java.util.Collections;
 import java.util.Map;
 
-import org.opennms.core.xml.AbstractCastorConfigDao;
 import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
 import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.config.surveillanceViews.Views;

@@ -29,8 +29,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -46,15 +44,15 @@ public class JMXDataCollectionConfigDaoTest {
 
     @Test(expected=MarshallingResourceFailureException.class)
     public void failsWhenNoConfigIsPresent() {
+        System.setProperty("opennms.home", tempFolder.getRoot().getAbsolutePath());
         JMXDataCollectionConfigDao dao = new JMXDataCollectionConfigDao();
-        dao.setOpennmsHome(tempFolder.getRoot().toPath());
         dao.getConfig();
     }
 
     @Test
-    public void loadsConfigFiles() throws IOException {
+    public void loadsConfigFiles() {
+        System.setProperty("opennms.home", new File("src/test/resources").getAbsolutePath());
         JMXDataCollectionConfigDao dao = new JMXDataCollectionConfigDao();
-        dao.setOpennmsHome(Paths.get(new File( "." ).getCanonicalPath(), "src/test/resources"));
         dao.getConfig();
 
         JmxDatacollectionConfig config = dao.getConfig();

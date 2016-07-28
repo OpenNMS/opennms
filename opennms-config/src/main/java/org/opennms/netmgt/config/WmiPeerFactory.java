@@ -28,7 +28,13 @@
 
 package org.opennms.netmgt.config;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -39,6 +45,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.codec.binary.Base64;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
@@ -46,13 +53,12 @@ import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.AbstractWritableCastorConfigDao;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.wmi.Definition;
 import org.opennms.netmgt.config.wmi.Range;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 
 /**
  * This class is the main repository for WMI configuration information used by
@@ -71,22 +77,22 @@ import org.springframework.core.io.Resource;
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
  * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
  */
-public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,WmiConfig> {
+public class WmiPeerFactory {
     private static final Logger LOG = LoggerFactory.getLogger(WmiPeerFactory.class);
-
     /**
      * The singleton instance of this factory
      */
     private static WmiPeerFactory m_singleton = null;
 
     /**
+     * The config class loaded from the config file
+     */
+    private static WmiConfig m_config;
+
+    /**
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
-
-    public WmiPeerFactory() {
-        super(WmiConfig.class, "WMI peer configuration");
-    }
 
     /**
      * Private constructor
@@ -97,36 +103,37 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     *
+     * @param configFile the path to the config file to load in.
      */
-    WmiPeerFactory(final String configFile) {
-        super(WmiConfig.class, "WMI peer configuration");
-        setConfigResource(new FileSystemResource(configFile));
+    private WmiPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(WmiConfig.class, new FileSystemResource(configFile));
     }
 
     /**
-     * Create a PollOutagesConfigFactory using the specified Spring resource.
+     * <p>Constructor for WmiPeerFactory.</p>
+     *
+     * @param stream a {@link java.io.InputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public WmiPeerFactory(final Resource resource) {
-        super(WmiConfig.class, "WMI peer configuration");
-        setConfigResource(resource);
+    public WmiPeerFactory(InputStream stream) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(WmiConfig.class, stream);
     }
 
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
-     * @throws java.io.IOException
-     *             if any.
-     * @throws org.exolab.castor.xml.MarshalException
-     *             if any.
-     * @throws org.exolab.castor.xml.ValidationException
-     *             if any.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -135,70 +142,63 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
             return;
         }
 
-        WmiPeerFactory factory = new WmiPeerFactory(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.WMI_CONFIG_FILE_NAME)));
-        factory.afterPropertiesSet();
-        setInstance(factory);
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.WMI_CONFIG_FILE_NAME);
+
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
+
+        m_singleton = new WmiPeerFactory(cfgFile.getPath());
+
+        m_loaded = true;
     }
 
     /**
      * Reload the config from the default config file
      *
      * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be
-     *                read/loaded
+     *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
-     * @throws java.io.IOException
-     *             if any.
-     * @throws org.exolab.castor.xml.MarshalException
-     *             if any.
-     * @throws org.exolab.castor.xml.ValidationException
-     *             if any.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static void reload() throws IOException, MarshalException, ValidationException {
+    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+        m_singleton = null;
+        m_loaded = false;
+
         init();
-        getInstance().update();
     }
 
     /**
-     * Return the singleton instance of this factory.
-     *
-     * @return The current factory instance.
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
+     * Package-private access. Should only be used for unit testing.
      */
-    public static WmiPeerFactory getInstance() {
-        if (!m_loaded) {
-            throw new IllegalStateException("The factory has not been initialized");
+    WmiConfig getConfig() {
+        return m_config;
+    }
+
+    /**
+     * Saves the current settings to disk
+     *
+     * @throws java.lang.Exception if saving settings to disk fails.
+     */
+    public static synchronized void saveCurrent() throws Exception {
+        optimize();
+
+        // Marshal to a string first, then write the string to the file. This
+        // way the original config
+        // isn't lost if the XML from the marshal is hosed.
+        StringWriter stringWriter = new StringWriter();
+        Marshaller.marshal(m_config, stringWriter);
+        if (stringWriter.toString() != null) {
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.WMI_CONFIG_FILE_NAME)), "UTF-8");
+            fileWriter.write(stringWriter.toString());
+            fileWriter.flush();
+            fileWriter.close();
         }
 
-        return m_singleton;
-    }
-
-    /**
-     * <p>
-     * setInstance
-     * </p>
-     *
-     * @param instance
-     *            a {@link org.opennms.netmgt.config.PollOutagesConfigFactory}
-     *            object.
-     */
-    public static void setInstance(final WmiPeerFactory instance) {
-        m_loaded = true;
-        m_singleton = instance;
-
-    }
-
-    @Override
-    public WmiConfig translateConfig(WmiConfig config) {
-        return config;
-    }
-
-    public WmiConfig getConfig() {
-        return super.getObject();
+        reload();
     }
 
     /**
@@ -207,12 +207,12 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
      * TODO This really should be pulled up into PeerFactory somehow, but I'm not sure how (given that "Definition" is different for both
      * SNMP and WMI.  Maybe some sort of visitor methodology would work.  The basic logic should be fine as it's all IP address manipulation
      *
-     * Calls should be preceded by a getWriteLock().lock() and wrapped in a try / finally block with getWriteLock().unlock().
      * @throws UnknownHostException
      */
-    public void optimize() throws UnknownHostException {
+    static void optimize() throws UnknownHostException {
+
         // First pass: Remove empty definition elements
-        for (Iterator<Definition> definitionsIterator = getConfig().getDefinitionCollection().iterator();
+        for (Iterator<Definition> definitionsIterator = m_config.getDefinitionCollection().iterator();
         definitionsIterator.hasNext();) {
             Definition definition = definitionsIterator.next();
             if (definition.getSpecificCount() == 0 && definition.getRangeCount() == 0) {
@@ -223,7 +223,7 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
         }
 
         // Second pass: Replace single IP range elements with specific elements
-        for (Definition definition : getConfig().getDefinitionCollection()) {
+        for (Definition definition : m_config.getDefinitionCollection()) {
             synchronized(definition) {
                 for (Iterator<Range> rangesIterator = definition.getRangeCollection().iterator(); rangesIterator.hasNext();) {
                     Range range = rangesIterator.next();
@@ -237,7 +237,7 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
 
         // Third pass: Sort specific and range elements for improved XML
         // readability and then combine them into fewer elements where possible
-        for (Iterator<Definition> defIterator = getConfig().getDefinitionCollection().iterator(); defIterator.hasNext(); ) {
+        for (Iterator<Definition> defIterator = m_config.getDefinitionCollection().iterator(); defIterator.hasNext(); ) {
             Definition definition = defIterator.next();
 
             // Sort specifics
@@ -356,6 +356,30 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
     }
 
     /**
+     * Return the singleton instance of this factory.
+     *
+     * @return The current factory instance.
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the factory has not yet been initialized.
+     */
+    public static synchronized WmiPeerFactory getInstance() {
+        if (!m_loaded)
+            throw new IllegalStateException("The WmiPeerFactory has not been initialized");
+
+        return m_singleton;
+    }
+
+    /**
+     * <p>setInstance</p>
+     *
+     * @param singleton a {@link org.opennms.netmgt.config.WmiPeerFactory} object.
+     */
+    public static synchronized void setInstance(WmiPeerFactory singleton) {
+        m_singleton = singleton;
+        m_loaded = true;
+    }
+
+    /**
      * <p>getAgentConfig</p>
      *
      * @param agentInetAddress a {@link java.net.InetAddress} object.
@@ -363,7 +387,7 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
      */
     public synchronized WmiAgentConfig getAgentConfig(InetAddress agentInetAddress) {
 
-        if (getConfig() == null) {
+        if (m_config == null) {
             return new WmiAgentConfig(agentInetAddress);
         }
 
@@ -374,7 +398,7 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
 
         // Attempt to locate the node
         //
-        Enumeration<Definition> edef = getConfig().enumerateDefinition();
+        Enumeration<Definition> edef = m_config.enumerateDefinition();
         DEFLOOP: while (edef.hasMoreElements()) {
             Definition def = edef.nextElement();
 
@@ -441,7 +465,7 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
      * @return a string containing the username. will return the default if none is set.
      */
     private String determineUsername(Definition def) {
-        return (def.getPassword() == null ? (getConfig().getUsername() == null ? WmiAgentConfig.DEFAULT_USERNAME :getConfig().getUsername()) : def.getUsername());
+        return (def.getPassword() == null ? (m_config.getUsername() == null ? WmiAgentConfig.DEFAULT_USERNAME :m_config.getUsername()) : def.getUsername());
     }
 
     /**
@@ -450,7 +474,7 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
      * @return a string containing the domain. will return the default if none is set.
      */
     private String determineDomain(Definition def) {
-        return (def.getDomain() == null ? (getConfig().getDomain() == null ? WmiAgentConfig.DEFAULT_DOMAIN :getConfig().getDomain()) : def.getDomain());
+        return (def.getDomain() == null ? (m_config.getDomain() == null ? WmiAgentConfig.DEFAULT_DOMAIN :m_config.getDomain()) : def.getDomain());
     }
 
     /**
@@ -459,7 +483,7 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
      * @return a string containing the password. will return the default if none is set.
      */
     private String determinePassword(Definition def) {
-        String literalPass = (def.getPassword() == null ? (getConfig().getPassword() == null ? WmiAgentConfig.DEFAULT_PASSWORD :getConfig().getPassword()) : def.getPassword());
+        String literalPass = (def.getPassword() == null ? (m_config.getPassword() == null ? WmiAgentConfig.DEFAULT_PASSWORD :m_config.getPassword()) : def.getPassword());
         if (literalPass.endsWith("===")) {
             return new String(Base64.decodeBase64(literalPass));
         }
@@ -473,12 +497,29 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
      */
     private long determineTimeout(Definition def) {
         long timeout = WmiAgentConfig.DEFAULT_TIMEOUT;
-        return (long)(def.getTimeout() == 0 ? (getConfig().getTimeout() == 0 ? timeout : getConfig().getTimeout()) : def.getTimeout());
+        return (long)(def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : def.getTimeout());
     }
 
     private int determineRetries(Definition def) {        
         int retries = WmiAgentConfig.DEFAULT_RETRIES;
-        return (def.getRetry() == 0 ? (getConfig().getRetry() == 0 ? retries : getConfig().getRetry()) : def.getRetry());
+        return (def.getRetry() == 0 ? (m_config.getRetry() == 0 ? retries : m_config.getRetry()) : def.getRetry());
     }
 
+    /**
+     * <p>getWmiConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.wmi.WmiConfig} object.
+     */
+    public static WmiConfig getWmiConfig() {
+        return m_config;
+    }
+
+    /**
+     * <p>setWmiConfig</p>
+     *
+     * @param m_config a {@link org.opennms.netmgt.config.wmi.WmiConfig} object.
+     */
+    public static synchronized void setWmiConfig(WmiConfig m_config) {
+        WmiPeerFactory.m_config = m_config;
+    }
 }

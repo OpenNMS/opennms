@@ -85,11 +85,7 @@ delete $ENV{'M2_HOME'};
 # maven options
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	if (defined $TESTS) {
-		$MAVEN_OPTS = "-Xmx2048m -XX:ReservedCodeCacheSize=512m";
-	} else {
-		$MAVEN_OPTS = "-Xmx1536m -XX:ReservedCodeCacheSize=512m";
-	}
+	$MAVEN_OPTS = "-Xmx2048m -XX:ReservedCodeCacheSize=512m";
 }
 
 if (not $MAVEN_OPTS =~ /TieredCompilation/) {
@@ -205,6 +201,7 @@ if ($MAVEN_VERSION =~ /^[12]/) {
 	warning("Your maven version ($MAVEN_VERSION) is too old.  There are known bugs building with a version less than 3.0.  Expect trouble.");
 }
 
+unshift(@ARGS, '-DfailIfNoTests=false');
 if (defined $TESTS) {
 	debug("integration tests are enabled");
 	unshift(@ARGS, '-DskipITs=false');

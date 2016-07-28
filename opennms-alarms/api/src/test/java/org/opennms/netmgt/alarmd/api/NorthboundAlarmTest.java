@@ -58,7 +58,7 @@ public class NorthboundAlarmTest extends XmlTestNoCastor<NorthboundAlarm> {
         SimpleDateFormat dateFormat = new SimpleDateFormat(FORMAT);
         StringBuffer b = new StringBuffer(dateFormat.format(d));
         b.insert(b.length() - 2, ':');
-        return b.toString().replaceAll("\\+00:00", "Z");
+        return b.toString();
     }
 
     @Parameters
