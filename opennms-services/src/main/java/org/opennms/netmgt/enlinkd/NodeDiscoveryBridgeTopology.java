@@ -585,7 +585,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         } else if (m_linkd.getQueryManager().getBridgeTopologyRootBFT(m_domain.getRootBridgeId()) == null){
             cleardomain = true;
             LOG.warn("run: node: {}, broadcast domain has root bridge {}, with null bft. Clearing domain", getNodeId(), m_domain.getRootBridgeId());
-        }       
+        } else {
+            m_rootBridgeBFT = m_linkd.getQueryManager().getBridgeTopologyRootBFT(m_domain.getRootBridgeId());
+        }      
 
         
         if (cleardomain) {
@@ -597,9 +599,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             m_domain = new BroadcastDomain();
             m_domain.getLock(this);
             m_linkd.getQueryManager().save(m_domain);
-        } else {
-            m_rootBridgeBFT = m_linkd.getQueryManager().getBridgeTopologyRootBFT(m_domain.getRootBridgeId());
-        }
+        } 
         LOG.info("run: node: {}, getting broadcast domain. End", getNodeId());
         
         for (Integer curNode: nodeswithupdatedbftonbroadcastdomain)
