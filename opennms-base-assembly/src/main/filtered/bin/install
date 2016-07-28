@@ -9,7 +9,7 @@ RUNAS="root"
 ulimit -a >/dev/null 2>&1
 if [ $? -eq 0 ]; then
 	for SIZE in 1024 2048 4096 8192 16384 20480; do
-		let CURRENT=`ulimit -n`
+		CURRENT=`ulimit -n`
 		if [ $CURRENT = "unlimited" ]; then
 			break
 		fi
