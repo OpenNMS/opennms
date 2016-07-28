@@ -88,7 +88,7 @@
   <c:if test="${param.nostyles != 'true' }">
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/bootstrap.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>lib/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="<%= baseHref %>lib/font-awesome/css/font-awesome.css" />
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" />
   </c:if>
   <link rel="shortcut icon" href="<%= baseHref %>favicon.ico" />
@@ -131,16 +131,16 @@
 
 <c:if test="${param.usebackshift == 'true'}">
   <%-- This allows pages to explicitely use Backshift instead of relying on graph.js (which may not use Backshift) --%>
-  <script type="text/javascript" src="<%= baseHref %>lib/d3/d3.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/d3/d3.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.time.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.canvas.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot-legend/jquery.flot.legend.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-legend/jquery.flot.legend.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot-axislabels/jquery.flot.axislabels.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot.tooltip/js/jquery.flot.tooltip.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot.tooltip/js/jquery.flot.tooltip.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot-saveas/jquery.flot.saveas.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot-navigate/jquery.flot.navigate.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot-datatable/jquery.flot.datatable.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-datatable/jquery.flot.datatable.js"></script>
   <script type="text/javascript" src="<%= baseHref %>js/backshift.onms.min.js"></script>
 </c:if>
 

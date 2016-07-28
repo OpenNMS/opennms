@@ -39,18 +39,18 @@
     <jsp:param name="headTitle" value="Admin" />
     <jsp:param name="location" value="admin" />
 
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-loading-bar/build/loading-bar.min.css" />' />
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.min.css" />' />
+    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-loading-bar/build/loading-bar.css" />' />
+    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' />
 
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-cookies/angular-cookies.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-sanitize/angular-sanitize.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-route/angular-route.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-animate/angular-animate.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-loading-bar/build/loading-bar.min.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.min.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-cookies/angular-cookies.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-sanitize/angular-sanitize.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-route/angular-route.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-animate/angular-animate.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-loading-bar/build/loading-bar.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/ip-address/dist/ip-address-globals.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/bootbox/bootbox.js"></script>' />
 

@@ -36,6 +36,34 @@
         "css/font-awesome.css",
         "fonts/**"
       ]
+    },
+    "flot-axislabels": {
+      "main": [
+        "*.js"
+      ]
+    },
+    "flot-navigate": {
+      "main": [
+        "*.js"
+      ]
+    },
+    "flot-saveas": {
+      "main": [
+        "*.js"
+      ]
+    },
+    "jquery-treegrid": {
+      "main": [
+        "js/jquery.treegrid.js",
+        "css/**",
+        "img/**"
+      ]
+    },
+    "jquery-ui": {
+      "main": [
+        "jquery-ui.js",
+        "themes/base/**"
+      ]
     }
   },
   "resolutions": {

@@ -49,7 +49,7 @@ import java.util.Date;
 @JavaScript({
     "require.js",
     "global.js",
-    "jquery.min.js",
+    "jquery.js",
     "graph.js",
     "graphcontainer-connector.js"
 })

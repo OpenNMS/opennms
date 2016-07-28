@@ -115,8 +115,7 @@
         </a></h3>
     </div>
 
-    <script type="text/javascript" src="lib/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="lib/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="lib/jquery-ui/jquery-ui.js"></script>
     <script type="text/javascript" src="js/jquery.ui.treemap.js"></script>
 
     <div id="treemap"></div>

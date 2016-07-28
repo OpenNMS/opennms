@@ -48,7 +48,7 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
 @JavaScript({
     "require.js",
     "global.js",
-    "jquery.min.js",
+    "jquery.js",
     "graph.js",
     "graphcontainer-connector.js"
 })

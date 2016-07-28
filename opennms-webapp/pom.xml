@@ -68,6 +68,16 @@
             </configuration>
           </execution>
           <execution>
+            <id>copy third-party dependencies</id>
+            <goals>
+              <goal>gulp</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <arguments>vendor</arguments>
+            </configuration>
+          </execution>
+          <execution>
             <id>execute karma tests</id>
             <goals>
               <goal>karma</goal>
