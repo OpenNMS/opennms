@@ -42,6 +42,16 @@
         "fonts/**"
       ]
     },
+    "d3": {
+      "main": [
+        "d3.*.js"
+      ]
+    },
+    "flot": {
+      "main": [
+        "jquery.flot.*.js"
+      ]
+    },
     "flot-axislabels": {
       "main": [
         "*.js"
