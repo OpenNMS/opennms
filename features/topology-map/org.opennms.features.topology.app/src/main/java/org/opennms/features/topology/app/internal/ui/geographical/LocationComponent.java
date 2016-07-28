@@ -26,43 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.internal;
+package org.opennms.features.topology.app.internal.ui.geographical;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.opennms.features.topology.api.geo.GeocoderConfig;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Option;
-
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.vaadin.annotations.JavaScript;
+import com.vaadin.annotations.StyleSheet;
+import com.vaadin.ui.AbstractJavaScriptComponent;
 
-/**
- * Configuration object introduced to address NMS-8597 and reduce possible merge conflicts.
- */
-public class NodeMapConfiguration {
+@JavaScript({
+        "theme://leaflet/leaflet.js",
+        "theme://js/location-component_connector.js"
+})
+@StyleSheet(
+        "theme://leaflet/leaflet.css"
+)
+public class LocationComponent extends AbstractJavaScriptComponent {
 
-    public static boolean isValid() {
-        return !Strings.isNullOrEmpty(getTileServerUrl()) && !Strings.isNullOrEmpty(getTileLayerAttribution());
+    public LocationComponent(LocationConfiguration configuration, String uniqueId) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(uniqueId), "The uniqueId must not be null or empty");
+        configuration.validate();
+
+        getState().tileLayer = configuration.getTileLayer();
+        getState().mapId = uniqueId;
+        getState().markers = configuration.getMarker();
+        getState().layerOptions = configuration.getLayerOptions();
+        getState().initialZoom = configuration.getInitialZoom();
     }
 
-    /**
-     * Returns the 'attribution' tile layer option.
-     * See http://leafletjs.com/reference.html#tilelayer-options for more details.
-     *
-     * @return the 'attribution' tile layer option.
-     */
-    static String getTileLayerAttribution() {
-        return System.getProperty(GeocoderConfig.OPTIONS_KEY_PREFIX + "attribution");
+    @Override
+    public LocationState getState() {
+        return (LocationState) super.getState();
     }
 
-
-    public static String getTileServerUrl() {
-        return GeocoderConfig.getTileServerUrl();
-    }
-
-    public static List<Option> getTileLayerOptions() {
-        return GeocoderConfig.getOptions().entrySet()
-                .stream().map(e -> new Option(e.getKey(), e.getValue()))
-                .collect(Collectors.toList());
-    }
 }
