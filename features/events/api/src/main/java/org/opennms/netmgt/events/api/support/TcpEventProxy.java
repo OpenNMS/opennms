@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -133,9 +134,7 @@ public final class TcpEventProxy implements EventProxy {
      */
     @Override
     public void send(Log eventLog) throws EventProxyException {
-        Connection connection = null;
-        try {
-            connection = new Connection();
+        try (Connection connection = new Connection(m_address, m_timeout)) {
             final Writer writer = connection.getWriter();
             JaxbUtils.marshal(eventLog, writer);
             writer.flush();
@@ -143,14 +142,10 @@ public final class TcpEventProxy implements EventProxy {
             throw new EventProxyException("Could not connect to event daemon " + m_address + " to send event: " + e.getMessage(), e);
         } catch (Throwable e) {
             throw new EventProxyException("Unknown exception while sending event: " + e, e);
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
         }
     }
 
-    private class Connection {
+    private static class Connection implements AutoCloseable {
         private Socket m_sock;
 
         private Writer m_writer;
@@ -159,9 +154,9 @@ public final class TcpEventProxy implements EventProxy {
 
         private Thread m_rdrThread;
 
-        public Connection() throws IOException {
+        public Connection(InetSocketAddress address, int timeout) throws IOException {
             m_sock = new Socket();
-            m_sock.connect(m_address, m_timeout);
+            m_sock.connect(address, timeout);
             m_sock.setSoTimeout(500);
             LOG.debug("Default Charset: {}", Charset.defaultCharset().displayName());
             LOG.debug("Setting Charset: UTF-8");
@@ -190,9 +185,11 @@ public final class TcpEventProxy implements EventProxy {
             return m_writer;
         }
 
+        @Override
         public void close() {
             if (m_sock != null) {
                 try {
+                    LOG.debug("Closing socket {}", m_sock);
                     m_sock.close();
                 } catch (IOException e) {
                     LOG.warn("Error closing socket {}", m_sock, e);
@@ -205,7 +202,7 @@ public final class TcpEventProxy implements EventProxy {
                 m_rdrThread.interrupt();
             }
         }
-        
+
         @Override
         protected void finalize() throws Throwable {
             close();
