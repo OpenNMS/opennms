@@ -47,7 +47,7 @@
       <from uri="netty4:tcp://{{host}}:{{port}}?sync=false&amp;decoder=#stringDecoder"/>
       <!-- Transform the messages to events -->
       <bean ref="eifPacketProcessor"/>
-      <convertBodyTo type="org.opennms.netmgt.xml.event.Event"/>
+      <convertBodyTo type="org.opennms.netmgt.xml.event.Log"/>
       <!-- Send to the OpenNMS event IPC manager -->
       <bean ref="eventIpcManager" method="send"/>
     </route>

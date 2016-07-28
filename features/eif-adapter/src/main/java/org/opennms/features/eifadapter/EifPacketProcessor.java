@@ -30,20 +30,37 @@ package org.opennms.features.eifadapter;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
+
+import java.util.List;
 
 public class EifPacketProcessor implements Processor {
+
+    StringBuilder m_buff = new StringBuilder();
 
     @Override
     public void process(Exchange exchange) throws Exception {
         final String bytes = exchange.getIn().getBody(String.class);
-        
-        EventBuilder bldr = new EventBuilder(bytes, "eif-adapter");
-        bldr.setNodeid(1);
-        bldr.addParam("some-parm", "hello");
-
-        exchange.getIn().setBody(bldr.getEvent(), Event.class);
+        System.err.println("Packet processor called with "+bytes);
+        m_buff.append(bytes);
+        if ( m_buff.toString().contains("<START>>") && m_buff.toString().contains(";END") ) {
+            int eifStart = m_buff.indexOf("<START>>");
+            int eifEnd = m_buff.lastIndexOf(";END");
+            StringBuilder eif = new StringBuilder(m_buff.substring(eifStart,eifEnd+4));
+            m_buff.delete(eifStart,eifEnd+4);
+            List<Event> e = EifParser.translateEifToOpenNMS(eif);
+            if(e == null) {
+                exchange.setProperty(Exchange.ROUTE_STOP, Boolean.TRUE);
+            } else {
+                Log eifEvents = new Log();
+                e.forEach(event -> eifEvents.addEvent(event));
+                exchange.getIn().setBody(eifEvents, Log.class);
+            }
+        } else {
+            // message is incomplete, wait for more
+            exchange.setProperty(Exchange.ROUTE_STOP, Boolean.TRUE);
+        }
 
         /*
         boolean close = false;
