@@ -1,9 +1,14 @@
 {
   "name": "OpenNMS",
+  "private": true,
+  "scripts": {
+    "postinstall": "./node_modules/bower/bin/bower install"
+  },
   "devDependencies": {
     "angular-mocks": "^1.5.8",
     "bower": "^1.7.9",
     "gulp": "*",
+    "gulp-rename": "^1.2.2",
     "gulp-sass": "*",
     "gulp-util": "*",
     "jasmine-core": "^2.4.1",
@@ -14,6 +19,7 @@
     "karma-ng-html2js-preprocessor": "^1.0.0",
     "karma-ng-scenario": "^1.0.0",
     "karma-phantomjs-launcher": "^1.0.1",
+    "main-bower-files": "^2.13.1",
     "phantomjs": "^2.1.7"
   }
 }
