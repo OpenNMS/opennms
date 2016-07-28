@@ -41,7 +41,7 @@ public abstract class EventdConfigManagerPropertiesConverter {
 		final Properties m_props = new Properties();
 		m_props.setProperty("eventIpcManagerHandlerPoolSize", String.valueOf(config.getReceivers()));
 		m_props.setProperty("eventIpcManagerHandlerQueueLength", String.valueOf(config.getQueueLength()));
-		m_props.setProperty("shouldLogEventSummaries", String.valueOf(config.shouldLogEventSummaries()));
+		m_props.setProperty("shouldLogEventSummaries", Boolean.toString(config.shouldLogEventSummaries()));
 		m_props.setProperty("tcpIpAddress", config.getTCPIpAddress());
 		m_props.setProperty("tcpPort", String.valueOf(config.getTCPPort()));
 		m_props.setProperty("udpIpAddress", config.getUDPIpAddress());
