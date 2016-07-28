@@ -47,7 +47,7 @@ import java.util.Date;
 // Only resources required to bootstrap graph.js should be included here - others should
 // be loaded dynamically.
 @JavaScript({
-    "require.min.js",
+    "require.js",
     "global.js",
     "jquery.min.js",
     "graph.js",

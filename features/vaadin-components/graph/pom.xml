@@ -52,7 +52,7 @@
                   <resource>
                     <directory>../../../opennms-webapp/src/main/webapp/lib/requirejs</directory>
                     <includes>
-                      <include>require.min.js</include>
+                      <include>require.js</include>
                     </includes>
                   </resource>
                 </resources>
