@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.linkd.internal;
+package org.opennms.features.topology.plugins.topo.linkd.internal.providers;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -36,12 +36,15 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Defaults;
@@ -55,6 +58,7 @@ import org.opennms.features.topology.api.topo.WrappedGraph;
 import org.opennms.features.topology.api.topo.WrappedGroup;
 import org.opennms.features.topology.api.topo.WrappedLeafVertex;
 import org.opennms.features.topology.api.topo.WrappedVertex;
+import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdHopCriteriaFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -117,8 +121,8 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
     protected boolean m_addNodeWithoutLink = false;
     protected LinkdHopCriteriaFactory m_criteriaHopFactory;
 
-    protected AbstractLinkdTopologyProvider() {
-        super(TOPOLOGY_NAMESPACE_LINKD);
+    protected AbstractLinkdTopologyProvider(String namespace) {
+        super(Objects.requireNonNull(namespace));
         String aclsProp = System.getProperty("org.opennms.web.aclsEnabled");
         m_aclEnabled = aclsProp != null ? aclsProp.equals("true") : false;
     }
@@ -382,7 +386,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
     }
 
     protected AbstractVertex getVertex(Integer nodeId, String ip, String sysobjectId, String nodeLabel, String tooltipText) {
-        AbstractVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_LINKD, nodeId.toString(), 0, 0);
+        AbstractVertex vertex = new SimpleLeafVertex(getVertexNamespace(), nodeId.toString(), 0, 0);
         vertex.setIconKey(getIconName(sysobjectId));
         vertex.setLabel(nodeLabel);
         vertex.setIpAddress(ip);
@@ -400,16 +404,19 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
                 .withSemanticZoomLevel(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL)
                 .withPreferredLayout("D3 Layout") // D3 Layout
                 .withCriteria(() -> {
-                    final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
-
-                    if (node != null) {
-                        final Vertex defaultVertex = createVertexFor(node, getAddress(node.getId()));
-                        if (defaultVertex != null) {
-                            return Lists.newArrayList(new LinkdHopCriteria(node.getNodeId(), node.getLabel(), m_nodeDao));
-                        }
-                    }
-
-                    return Lists.newArrayList();
+                    return getVertices().stream()
+                            .map(v -> new VertexHopGraphProvider.DefaultVertexHopCriteria(v))
+                            .collect(Collectors.toList());
+//                    final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
+//
+//                    if (node != null) {
+//                        final Vertex defaultVertex = createVertexFor(node, getAddress(node.getId()));
+//                        if (defaultVertex != null) {
+//                            return Lists.newArrayList(new LinkdHopCriteria(node.getNodeId(), node.getLabel(), m_nodeDao));
+//                        }
+//                    }
+//
+//                    return Lists.newArrayList();
                 });
     }
 

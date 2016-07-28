@@ -44,16 +44,22 @@ import com.google.common.collect.Lists;
  */
 public class SimpleMetaTopologyProvider implements MetaTopologyProvider {
 
-    private final GraphProvider graphProvider;
+    private final List<GraphProvider> graphProviders = Lists.newArrayList();
+    private final GraphProvider defaultProvider;
     private String preferredLayout;
 
     public SimpleMetaTopologyProvider(GraphProvider graphProvider) {
-        this.graphProvider = Objects.requireNonNull(graphProvider);
+        this(Lists.newArrayList(Objects.requireNonNull(graphProvider)), graphProvider);
+    }
+
+    public SimpleMetaTopologyProvider(List<GraphProvider> graphProviders, GraphProvider defaultProvider) {
+        this.graphProviders.addAll(Objects.requireNonNull(graphProviders));
+        this.defaultProvider = Objects.requireNonNull(defaultProvider);
     }
 
     @Override
     public GraphProvider getDefaultGraphProvider() {
-        return graphProvider;
+        return defaultProvider;
     }
 
     @Override
@@ -63,7 +69,7 @@ public class SimpleMetaTopologyProvider implements MetaTopologyProvider {
 
     @Override
     public List<GraphProvider> getGraphProviders() {
-        return Lists.newArrayList(graphProvider);
+        return Lists.newArrayList(graphProviders);
     }
 
     @Override
