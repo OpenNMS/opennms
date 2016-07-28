@@ -10,7 +10,6 @@
   <packaging>bundle</packaging>
   <name>OpenNMS :: Features :: NCS :: Persistence</name>
   <properties>
-    <skipITs>true</skipITs>
   </properties>
 
   <build>
@@ -27,21 +26,6 @@
             <Export-Package>org.opennms.netmgt.ncs.persistence.*;org.opennms.netmgt.ncs.rest.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
