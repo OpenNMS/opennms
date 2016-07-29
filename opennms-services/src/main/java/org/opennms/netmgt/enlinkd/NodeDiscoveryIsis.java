@@ -68,70 +68,72 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
     	final Date now = new Date(); 
         LOG.debug("run: collecting : {}", getPeer());
 
+        final IsisSysObjectGroupTracker isisSysObject = new IsisSysObjectGroupTracker();
+
         try {
-            final IsisSysObjectGroupTracker isisSysObject = new IsisSysObjectGroupTracker();
-
-            try {
-                m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
-                                                          isisSysObject).withDescription("isisSysObjectCollection").atLocation(getLocation()).execute().get();
-            } catch (ExecutionException e) {
-                // pass
-            }
-
-            if (isisSysObject.getIsisSysId() == null) {
-                LOG.info("Is-Is mib not supported on: {}",
-                         str(getPeer().getAddress()));
-                return;
-            }
-
-            m_linkd.getQueryManager().store(getNodeId(),
-                                            isisSysObject.getIsisElement());
+            m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
+                                                      isisSysObject).withDescription("isisSysObjectCollection").atLocation(getLocation()).execute().get();
+        } catch (ExecutionException e) {
+            LOG.info("run: Agent error while scanning the isisSysObjectCollection table", e);
+            return;
         } catch (final InterruptedException e) {
             LOG.error("run: Is-Is Linkd node collection interrupted, exiting", e);
             return;
         }
-        
+
+        if (isisSysObject.getIsisSysId() == null) {
+            LOG.info("Is-Is mib not supported on: {}",
+                     str(getPeer().getAddress()));
+            return;
+        }
+
+        m_linkd.getQueryManager().store(getNodeId(),
+                                        isisSysObject.getIsisElement());
+    
         
         final List<IsIsLink> links = new ArrayList<IsIsLink>();
+        final IsisISAdjTableTracker isisISAdjTableTracker = new IsisISAdjTableTracker() {
+    	   @Override
+    	   public void processIsisAdjRow(IsIsAdjRow row) {
+    		links.add(row.getIsisLink());
+    	   }
+        };
         try {
-            final IsisISAdjTableTracker isisISAdjTableTracker = new IsisISAdjTableTracker() {
-            	@Override
-            	public void processIsisAdjRow(IsIsAdjRow row) {
-            		links.add(row.getIsisLink());
-            	}
-            };
-            try {
-                m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
-                                                          isisISAdjTableTracker).withDescription("isisISAdjTable").atLocation(getLocation()).execute().get();
-            } catch (ExecutionException e) {
-                // pass
-            }
-
-        } catch (final InterruptedException e) {
+            m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
+                      isisISAdjTableTracker)
+                      .withDescription("isisISAdjTable")
+                      .atLocation(getLocation())
+                      .execute()
+                      .get();
+        } catch (ExecutionException e) {
+            LOG.error("run: collection execution failed, exiting",e);
+            return;
+       } catch (final InterruptedException e) {
             LOG.error("run: Is-Is Linkd node collection interrupted, exiting", e);
             return;
         }
         
+        final IsisCircTableTracker isisCircTableTracker = new IsisCircTableTracker() {
+    	@Override
+    	public void processIsisCircRow(IsIsCircRow row) {
+    		IsIsLink link = row.getIsisLink();
+    		for (IsIsLink adjlink:links) {
+    			if (link.getIsisCircIndex().intValue() == adjlink.getIsisCircIndex().intValue()) {
+    				adjlink.setIsisCircIfIndex(link.getIsisCircIfIndex());
+    				adjlink.setIsisCircAdminState(link.getIsisCircAdminState());
+    			}
+    		}
+    	}
+        };
         try {
-            final IsisCircTableTracker isisCircTableTracker = new IsisCircTableTracker() {
-        	@Override
-        	public void processIsisCircRow(IsIsCircRow row) {
-        		IsIsLink link = row.getIsisLink();
-        		for (IsIsLink adjlink:links) {
-        			if (link.getIsisCircIndex().intValue() == adjlink.getIsisCircIndex().intValue()) {
-        				adjlink.setIsisCircIfIndex(link.getIsisCircIfIndex());
-        				adjlink.setIsisCircAdminState(link.getIsisCircAdminState());
-        			}
-        		}
-        	}
-            };
-            try {
-                m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
-                                                          isisCircTableTracker).withDescription("isisCircTable").atLocation(getLocation()).execute().get();
-            } catch (ExecutionException e) {
-                // pass
-            }
-		
+            m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
+                              isisCircTableTracker)
+                              .withDescription("isisCircTable")
+                              .atLocation(getLocation())
+                              .execute().get();
+        } catch (ExecutionException e) {
+            LOG.error("run: collection execution failed, exiting",e);
+            return;
         } catch (final InterruptedException e) {
             LOG.error("run: Is-Is Linkd node collection interrupted, exiting", e);
             return;

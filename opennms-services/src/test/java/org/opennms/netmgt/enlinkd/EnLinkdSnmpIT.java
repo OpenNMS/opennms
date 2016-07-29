@@ -30,6 +30,7 @@ package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -38,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 import java.util.Properties;
 
 import org.junit.Before;
@@ -94,8 +96,6 @@ import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.nb.NmsNetworkBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
@@ -177,17 +177,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         String trackerName = "cdpGlobalGroup";
 
         final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();
-        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, cdpGlobalGroup);
-
-        walker.start();
 
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-                LOG.info("run:Aborting Cdp Linkd node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-                LOG.info("run:Aborting Cdp Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,cdpGlobalGroup)
+            .withDescription(trackerName)
+            .atLocation(null)
+            .execute()
+            .get();
         } catch (final InterruptedException e) {
             LOG.error("run: Cdp Linkd collection interrupted, exiting",e);
             return;
@@ -209,17 +205,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         String trackerName = "cdpGlobalGroup";
 
         final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();
-        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, cdpGlobalGroup);
-
-        walker.start();
 
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-                LOG.info("run:Aborting Cdp Linkd node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-                LOG.info("run:Aborting Cdp Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,cdpGlobalGroup)
+            .withDescription(trackerName)
+            .atLocation(null)
+            .execute()
+            .get();
         } catch (final InterruptedException e) {
             LOG.error("run: Cdp Linkd collection interrupted, exiting",e);
             return;
@@ -253,17 +245,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         };
 
         String trackerName = "cdpCacheTable";
-        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, cdpCacheTableTracker);
-
-        walker.start();
 
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-                LOG.info("run:Aborting Cdp Linkd node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-                LOG.info("run:Aborting Cdp Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,cdpCacheTableTracker)
+            .withDescription(trackerName)
+            .atLocation(null)
+            .execute()
+            .get();
         } catch (final InterruptedException e) {
             LOG.error("run: Cdp Linkd collection interrupted, exiting",e);
             return;
@@ -283,19 +271,12 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         final OspfGeneralGroupTracker ospfGeneralGroup = new OspfGeneralGroupTracker();
 
-    	SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, ospfGeneralGroup);
-
-        walker.start();
-
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,ospfGeneralGroup)
+            .withDescription(trackerName)
+            .atLocation(null)
+            .execute()
+            .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;
@@ -344,19 +325,12 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         	}
         };
 
-    	SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, ospfNbrTableTracker);
-
-        walker.start();
-
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,ospfNbrTableTracker)
+            .withDescription(trackerName)
+            .atLocation(null)
+            .execute()
+            .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;
@@ -371,33 +345,27 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
         String trackerName = "ospfIfTable";
         final List<OspfLink> links = new ArrayList<OspfLink>();
-        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(config,m_client,null);
         OspfIfTableTracker ospfIfTableTracker = new OspfIfTableTracker() {
 
         	public void processOspfIfRow(final OspfIfRow row) {
-        		links.add(row.getOspfLink(ipAddrTableGetter));
+        		links.add(row.getOspfLink());
          	}
         };
 
-    	SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, ospfIfTableTracker);
-
-        walker.start();
-
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,ospfIfTableTracker)
+            .withDescription(trackerName)
+            .atLocation(null)
+            .execute()
+            .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;
         }
         
+        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(config,m_client,null);
         for (OspfLink link: links) {
+                link = ipAddrTableGetter.get(link);
 			assertEquals(0, link.getOspfAddressLessIndex().intValue());
 			if (link.getOspfIpAddr().equals(InetAddress.getByName("192.168.100.246"))) {
 				assertEquals(10101, link.getOspfIfIndex().intValue());
@@ -438,19 +406,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         String trackerName = "lldpLocalGroup";
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DW_IP));
                 LldpLocalGroupTracker lldpLocalGroup = new LldpLocalGroupTracker();
-        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, lldpLocalGroup);
-
-        walker.start();
 
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-                LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-                LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,lldpLocalGroup)
+            .withDescription(trackerName)
+            .atLocation(null)
+            .execute()
+            .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;
@@ -483,7 +445,10 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DW_IP));
                 
         final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null);
-                LldpLink link = lldpLocPort.get(1);
+        
+                LldpLink link = new LldpLink();
+                link.setLldpLocalPortNum(1);
+                link = lldpLocPort.getLldpLink(link);
                 assertEquals(1, link.getLldpLocalPortNum().intValue());
                 assertEquals("cf", link.getLldpPortId());
                 assertEquals("NuDesign", link.getLldpPortDescr());
@@ -494,8 +459,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     @JUnitSnmpAgent(host=DW_IP, port=161, resource=DW_SNMP_RESOURCE)
     public void testLldpDragonWaveRemTableWalk() throws Exception {
 
-        final SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DW_IP));
-        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(snmpAgent,m_client,null);
+        final SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DW_IP));
         LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
 
             public void processLldpRemRow(final LldpRemRow row) {
@@ -505,7 +469,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                         + row.getColumnCount());
 
                 assertEquals(6, row.getColumnCount());
-                LldpLink link = row.getLldpLink(lldpLocPort);
+                LldpLink link = row.getLldpLink();
 
                 assertEquals(1, row.getLldpRemLocalPortNum().intValue());
                 System.err.println("local port number: "
@@ -542,12 +506,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             }
         };
         String trackerName = "lldpRemTable";
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, trackerName,
-                                                   lldpRemTable);
-        walker.start();
 
         try {
-            walker.waitFor();
+            m_client.walk(config,lldpRemTable)
+            .withDescription(trackerName)
+            .atLocation(null)
+            .execute()
+            .get();
         } catch (final InterruptedException e) {
             assertEquals(false, true);
         }
@@ -563,19 +528,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     	String trackerName = "lldpLocalGroup";
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
     	        LldpLocalGroupTracker lldpLocalGroup = new LldpLocalGroupTracker();
-        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, lldpLocalGroup);
-
-        walker.start();
 
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,lldpLocalGroup)
+            .withDescription(trackerName)
+            .atLocation(null)
+            .execute()
+            .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;
@@ -601,11 +560,97 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
 		
     	final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null);
-		LldpLink link = lldpLocPort.get(9);
+		LldpLink link = new LldpLink();
+		link.setLldpLocalPortNum(9);
+		link = lldpLocPort.getLldpLink(link);
 		assertEquals(9, link.getLldpLocalPortNum().intValue());
 		assertEquals("Gi0/9", link.getLldpPortId());
 		assertEquals("GigabitEthernet0/9", link.getLldpPortDescr());
 		assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpPortIdSubType());
+		
+                link = new LldpLink();
+                link.setLldpLocalPortNum(10);
+	        link = lldpLocPort.getLldpLink(link);
+                assertEquals(10, link.getLldpLocalPortNum().intValue());
+                assertEquals("Gi0/10", link.getLldpPortId());
+                assertEquals("GigabitEthernet0/10", link.getLldpPortDescr());
+                assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpPortIdSubType());
+
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt")
+    })
+    public void test2LldpLocGetter() throws Exception {
+
+        SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH2_IP));
+                
+        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null);
+        LldpLink link = new LldpLink();
+        link.setLldpLocalPortNum(1);
+        link = lldpLocPort.getLldpLink(link);
+                assertEquals(1, link.getLldpLocalPortNum().intValue());
+                assertEquals("Gi0/1", link.getLldpPortId());
+                assertEquals("GigabitEthernet0/1", link.getLldpPortDescr());
+                assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpPortIdSubType());
+                
+                link = new LldpLink();
+                link.setLldpLocalPortNum(2);
+                link = lldpLocPort.getLldpLink(link);
+                assertEquals(2, link.getLldpLocalPortNum().intValue());
+                assertEquals("Gi0/2", link.getLldpPortId());
+                assertEquals("GigabitEthernet0/2", link.getLldpPortDescr());
+                assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpPortIdSubType());
+
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt")
+    })
+    public void test3LldpRemoteTableWalk() throws Exception {
+
+        SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH2_IP));
+        final List<LldpLink> links = new ArrayList<LldpLink>();
+                
+        LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+                    links.add(row.getLldpLink());
+            }
+        };
+        try {
+            m_client.walk(config,
+                          lldpRemTable)
+                          .withDescription("lldpRemTable")
+                          .atLocation(null)
+                          .execute()
+                          .get();
+        } catch (ExecutionException e) {
+            // pass
+            LOG.error("run: collection failed, exiting",e);
+            return;
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,
+                                                                    m_client,
+                                                                    null);
+
+        for (LldpLink link : links) {
+            assertNotNull(link);
+            assertNotNull(link.getLldpLocalPortNum());
+            assertNull(link.getLldpPortId());
+            assertNull(link.getLldpPortIdSubType());
+            assertNull(link.getLldpPortDescr());
+            
+            LldpLink updated = lldpLocPort.getLldpLink(link);
+            assertNotNull(updated.getLldpPortId());
+            assertEquals(5, updated.getLldpPortIdSubType().getValue().intValue());
+            assertNotNull(updated.getLldpPortDescr());
+        }
     }
 
     @Test
@@ -614,8 +659,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     })
     public void testLldpRemTableWalk() throws Exception {
 		
-        final SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
-        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(snmpAgent,m_client,null);
+        final SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
         LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
             
         	public void processLldpRemRow(final LldpRemRow row) {
@@ -625,7 +669,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         		System.err.println("columns number in the row: " + row.getColumnCount());
 
         		assertEquals(6, row.getColumnCount());
-        		LldpLink link = row.getLldpLink(lldpLocPort);
+        		LldpLink link = row.getLldpLink();
 
         		System.err.println("local port number: " + row.getLldpRemLocalPortNum());
         		System.err.println("remote chassis: " + link.getLldpRemChassisId());
@@ -637,12 +681,14 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         		assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpRemPortIdSubType());
             }
         };
-        String trackerName = "lldpRemTable";
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, trackerName, lldpRemTable);
-        walker.start();
 
         try {
-                walker.waitFor();
+            m_client.walk(config,
+                          lldpRemTable)
+                          .withDescription("lldpRemTable")
+                          .atLocation(null)
+                          .execute()
+                          .get();
         } catch (final InterruptedException e) {
             assertEquals(false, true);
         }
@@ -658,19 +704,14 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     	String trackerName = "isisSysObject";
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SIEGFRIE_IP));
         IsisSysObjectGroupTracker tracker = new IsisSysObjectGroupTracker();
-        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
-
-        walker.start();
 
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,
+                          tracker)
+                          .withDescription(trackerName)
+                          .atLocation(null)
+                          .execute()
+                          .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;
@@ -701,19 +742,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             }
         };
 
-        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
-
-        walker.start();
-
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,
+                          tracker)
+                          .withDescription(trackerName)
+                          .atLocation(null)
+                          .execute()
+                          .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;
@@ -755,19 +790,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             }
         };
 
-        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
-
-        walker.start();
-
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,
+                          tracker)
+                          .withDescription(trackerName)
+                          .atLocation(null)
+                          .execute()
+                          .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;
@@ -834,19 +863,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             }
         };
 
-        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
-
-        walker.start();
-
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,
+                          tracker)
+                          .withDescription(trackerName)
+                          .atLocation(null)
+                          .execute()
+                          .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;
@@ -891,19 +914,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
         Dot1dBaseTracker tracker = new Dot1dBaseTracker();
 
-        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
-
-        walker.start();
-
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,
+                          tracker)
+                          .withDescription(trackerName)
+                          .atLocation(null)
+                          .execute()
+                          .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;
@@ -936,19 +953,14 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             }
         };
 
-        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
-
-        walker.start();
 
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,
+                          tracker)
+                          .withDescription(trackerName)
+                          .atLocation(null)
+                          .execute()
+                          .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;
@@ -976,19 +988,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             }
         };
 
-        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
-
-        walker.start();
-
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,
+                          tracker)
+                          .withDescription(trackerName)
+                          .atLocation(null)
+                          .execute()
+                          .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;
@@ -1028,19 +1034,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             }
         };
 
-        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
-
-        walker.start();
-
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config,
+                          tracker)
+                          .withDescription(trackerName)
+                          .atLocation(null)
+                          .execute()
+                          .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;
@@ -1110,19 +1110,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             }
         };
 
-        SnmpWalker walker =  SnmpUtils.createWalker(config1, trackerName, tracker1);
-
-        walker.start();
-
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config1,
+                          tracker1)
+                          .withDescription(trackerName)
+                          .atLocation(null)
+                          .execute()
+                          .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;
@@ -1136,19 +1130,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             }
         };
 
-        walker =  SnmpUtils.createWalker(config2, trackerName, tracker2);
-
-        walker.start();
-
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_client.walk(config2,
+                          tracker2)
+                          .withDescription(trackerName)
+                          .atLocation(null)
+                          .execute()
+                          .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;

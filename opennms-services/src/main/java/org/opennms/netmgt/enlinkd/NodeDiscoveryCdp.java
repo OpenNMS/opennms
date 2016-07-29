@@ -30,11 +30,13 @@ package org.opennms.netmgt.enlinkd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 
 
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
@@ -43,6 +45,7 @@ import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.CdpInterfacePortNameGetter;
 import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
 
 /**
@@ -72,62 +75,61 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
     	final Date now = new Date(); 
         LOG.debug("run: collecting : {}", getPeer());
 
-        try {
+        final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();
 
-            final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();
-
-
-            try {
-                m_linkd.getLocationAwareSnmpClient().walk(getPeer(), cdpGlobalGroup).
-                withDescription("cdpGlobalGroup").
-                atLocation(getLocation()).
-                execute().
-                get();
-           } catch (ExecutionException e) {
-                    // pass
-           }                
-           if (cdpGlobalGroup.getCdpDeviceId() == null ) {
-                LOG.info("run: cdp mib not supported on: {}", str(getPeer().getAddress()));
-                return;
-           } 
-           CdpElement cdpElement = cdpGlobalGroup.getCdpElement();
-           m_linkd.getQueryManager().store(getNodeId(), cdpElement);
-           if (cdpElement.getCdpGlobalRun() == TruthValue.FALSE) {
-               LOG.info("run: cdp disabled on: {}", str(getPeer().getAddress()));
-               return;
-           }
-
-        } catch (final InterruptedException e) {
-            LOG.info("run: Cdp Linkd collection interrupted, exiting",e);
-            return;
-        }
-        
 
         try {
-            final CdpInterfacePortNameGetter cdpInterfacePortNameGetter = new CdpInterfacePortNameGetter(getPeer(), 
-                                                                              m_linkd.getLocationAwareSnmpClient(),
-                                                                              getLocation());
-            CdpCacheTableTracker cdpCacheTable = new CdpCacheTableTracker() {
+            m_linkd.getLocationAwareSnmpClient().walk(getPeer(), cdpGlobalGroup).
+            withDescription("cdpGlobalGroup").
+            atLocation(getLocation()).
+            execute().
+            get();
+       } catch (ExecutionException e) {
+           LOG.info("run: Agent error while scanning the cdpGlobalGroup table", e);
+           return;
+       } catch (final InterruptedException e) {
+           LOG.info("run: Cdp cdpGlobalGroup collection interrupted, exiting",e);
+           return;
+       }
+       if (cdpGlobalGroup.getCdpDeviceId() == null ) {
+            LOG.info("run: cdp mib not supported on: {}", str(getPeer().getAddress()));
+            return;
+       } 
+       CdpElement cdpElement = cdpGlobalGroup.getCdpElement();
+       m_linkd.getQueryManager().store(getNodeId(), cdpElement);
+       if (cdpElement.getCdpGlobalRun() == TruthValue.FALSE) {
+           LOG.info("run: cdp disabled on: {}", str(getPeer().getAddress()));
+           return;
+       }
 
-        	public void processCdpCacheRow(final CdpCacheRow row) {
-	    		m_linkd.getQueryManager().store(getNodeId(),row.getLink(cdpInterfacePortNameGetter));
-        	}
-            };
-
-            try {
-                m_linkd.getLocationAwareSnmpClient().walk(getPeer(), cdpCacheTable).
-                withDescription("cdpCacheTable").
-                atLocation(getLocation()).
-                execute().
-                get();
-            } catch (ExecutionException e) {
-                // pass
-            }                
         
+       List<CdpLink> links = new ArrayList<CdpLink>();
+        CdpCacheTableTracker cdpCacheTable = new CdpCacheTableTracker() {
+
+            public void processCdpCacheRow(final CdpCacheRow row) {
+                links.add(row.getLink());
+            }
+       };
+
+        try {
+            m_linkd.getLocationAwareSnmpClient().walk(getPeer(), cdpCacheTable).
+            withDescription("cdpCacheTable").
+            atLocation(getLocation()).
+            execute().
+            get();
+        } catch (ExecutionException e) {
+            LOG.error("run: collection execution failed, exiting",e);
+            return;
         } catch (final InterruptedException e) {
-            LOG.info("run: Cdp Linkd collection interrupted, exiting",e);
+            LOG.error("run: Cdp Linkd collection interrupted, exiting",e);
             return;
         }
+        final CdpInterfacePortNameGetter cdpInterfacePortNameGetter = new CdpInterfacePortNameGetter(getPeer(), 
+                                                                                                     m_linkd.getLocationAwareSnmpClient(),
+                                                                                                     getLocation());
+        for (CdpLink link: links)
+            m_linkd.getQueryManager().store(getNodeId(),cdpInterfacePortNameGetter.get(link));
+        
         m_linkd.getQueryManager().reconcileCdp(getNodeId(),now);
     }
 

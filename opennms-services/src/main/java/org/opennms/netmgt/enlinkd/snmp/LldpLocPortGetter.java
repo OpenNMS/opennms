@@ -52,19 +52,22 @@ public class LldpLocPortGetter extends SnmpGetter {
 	    super(peer, client, location);
 	}
 
-    public LldpLink get(Integer lldpRemLocalPortNum) {
+	
+    public List<SnmpValue> get(Integer lldpRemLocalPortNum) {
         List<SnmpObjId> oids = new ArrayList<SnmpObjId>(3);
-                oids.add(SnmpObjId.get(LLDP_LOC_PORTID_SUBTYPE));
-                oids.add(SnmpObjId.get(LLDP_LOC_PORTID));
-                oids.add(SnmpObjId.get(LLDP_LOC_DESCR)) ;
+        oids.add(SnmpObjId.get(LLDP_LOC_PORTID_SUBTYPE));
+        oids.add(SnmpObjId.get(LLDP_LOC_PORTID));
+        oids.add(SnmpObjId.get(LLDP_LOC_DESCR)) ;
+        return get(oids,lldpRemLocalPortNum);
+    }
 
-        List<SnmpValue> val = get(oids,lldpRemLocalPortNum);
+    public LldpLink getLldpLink(LldpLink lldplink) {
 
-        LldpLink lldplink = new LldpLink();
-        lldplink.setLldpLocalPortNum(lldpRemLocalPortNum);
+        List<SnmpValue> val = get(lldplink.getLldpLocalPortNum());
+
         if (val == null ) {
             LOG.warn("get: cannot find local instance for lldp local port number {}",
-                     lldpRemLocalPortNum);
+                     lldplink.getLldpLocalPortNum());
             LOG.warn("get: setting default not found Values: portidtype \"InterfaceAlias\", portid=\"Not Found On lldpLocPortTable\"");
             lldplink.setLldpPortIdSubType(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
             lldplink.setLldpPortId("\"Not Found On lldpLocPortTable\"");
@@ -74,7 +77,7 @@ public class LldpLocPortGetter extends SnmpGetter {
 
         if (val.get(0) == null || val.get(0).isError() || !val.get(0).isNumeric()) {
             LOG.warn("get: port id subtype is null or invalid for lldp local port number {}",
-                     lldpRemLocalPortNum);
+                     lldplink.getLldpLocalPortNum());
             LOG.warn("get: setting default not found Values: portidtype \"InterfaceAlias\"");
             lldplink.setLldpPortIdSubType(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
         } else {
@@ -82,7 +85,7 @@ public class LldpLocPortGetter extends SnmpGetter {
         }
         if (val.get(1) == null || val.get(1).isError()) {
             LOG.warn("get: port id is null for lldp local port number {}",
-                     lldpRemLocalPortNum);
+                     lldplink.getLldpLocalPortNum());
             LOG.warn("get: setting default not found Values: portid=\"Not Found On lldpLocPortTable\"");
             lldplink.setLldpPortId("\"Not Found On lldpLocPortTable\"");
         } else {

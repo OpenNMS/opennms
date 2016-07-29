@@ -59,16 +59,9 @@ public class SnmpGetter extends TableTracker {
     
    public SnmpValue get(SnmpObjId entryoid,Integer index) {
        SnmpObjId instance = SnmpObjId.get(new int[] {index});
-       SnmpObjId[] oids = new SnmpObjId[]{SnmpObjId.get(entryoid, instance)};
-       List<SnmpValue> val= null;
-        try {
-            val = m_client.get(m_agentConfig, oids).atLocation(m_location).execute().get();
-        } catch (InterruptedException e) {
-            return null;
-        } catch (ExecutionException e) {
-            return null;
-        }
-       LOG.info("get: oid '{}' found value '{}'", oids[0], val);
+       List<SnmpObjId> oids = new ArrayList<SnmpObjId>(1);
+           oids.add(SnmpObjId.get(entryoid, instance));
+       List<SnmpValue> val= get(oids);
        if (val == null || val.size() != 1 || val.get(0) == null || val.get(0).isError()) 
            return null;
        return val.get(0);
@@ -79,27 +72,19 @@ public class SnmpGetter extends TableTracker {
        List<SnmpObjId> oids = new ArrayList<SnmpObjId>(entryoids.size());
        for (SnmpObjId entryoid: entryoids)
            oids.add(SnmpObjId.get(entryoid, instance));
-       List<SnmpValue> val= null;
-       try {
-           val = m_client.get(m_agentConfig, oids).atLocation(m_location).execute().get();
-       } catch (InterruptedException e) {
-           return null;
-       } catch (ExecutionException e) {
-           return null;
-       }
-      LOG.info("get: oid '{}' found value '{}'", oids, val);
-      if (val == null || val.size() != entryoids.size()) 
-          return null;
-      return val;
+       return get(oids);
    }
    
    public List<SnmpValue> get(List<SnmpObjId> oids) {
        List<SnmpValue> val= null;
+       LOG.debug("get: oids '{}'", oids);
        try {
            val = m_client.get(m_agentConfig, oids).atLocation(m_location).execute().get();
        } catch (InterruptedException e) {
+           LOG.error("Exception while snmp get", e);
            return null;
        } catch (ExecutionException e) {
+           LOG.error("Exception while snmp get", e);
            return null;
        }
       LOG.info("get: oid '{}' found value '{}'", oids, val);

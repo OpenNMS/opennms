@@ -73,28 +73,23 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
     	final Date now = new Date(); 
 
 	LOG.debug( "run: collecting : {}", getPeer());
-		
-	try {
-	        IpNetToMediaTableTracker ipNetToMediaTableTracker = new IpNetToMediaTableTracker() {
-	            public void processIpNetToMediaRow(final IpNetToMediaRow row) {
-	                IpNetToMedia macep = row.getIpNetToMedia();
-	                if (macep.getPhysAddress() != null
-	                        && (macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC 
-	                        || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_STATIC))
-	                    m_linkd.getQueryManager().store(getNodeId(), macep);
-	            }
-	        };
 
-		try {
-		    m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ipNetToMediaTableTracker).
-		    withDescription("ipNetToMedia").
-		    atLocation(getLocation()).
-		    execute().
-		    get();
-	       } catch (ExecutionException e) {
-	                // pass
-	       }		
-        
+        IpNetToMediaTableTracker ipNetToMediaTableTracker = new IpNetToMediaTableTracker() {
+            public void processIpNetToMediaRow(final IpNetToMediaRow row) {
+                IpNetToMedia macep = row.getIpNetToMedia();
+                if (macep.getPhysAddress() != null
+                        && (macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC 
+                        || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_STATIC))
+                    m_linkd.getQueryManager().store(getNodeId(), macep);
+            }
+        };
+
+        try {
+            m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
+                                                      ipNetToMediaTableTracker).withDescription("ipNetToMedia").atLocation(getLocation()).execute().get();
+        } catch (ExecutionException e) {
+            LOG.info("run: Agent error while scanning the ipNetToMedia table", e);
+            return;
         } catch (final InterruptedException e) {
             LOG.info("run: collection interrupted, exiting",e);
             return;       
