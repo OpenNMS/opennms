@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,25 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
+package org.opennms.netmgt.provision;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import com.vaadin.shared.AbstractComponentState;
+import org.junit.Test;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author Marcus Hellberg (marcus@vaadin.com)
+ * The Test Class for Jira issue <a href="http://issues.opennms.org/browse/NMS-8506">NMS-8506</a>
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class NodeMapState extends AbstractComponentState {
-    private static final long serialVersionUID = 7166424509065088284L;
-    public String searchString;
-    public List<MapNode> nodes = new LinkedList<MapNode>();
-    public List<Integer> nodeIds = new ArrayList<Integer>();
-    public int minimumSeverity;
-    public boolean groupByState = true;
-    public int maxClusterRadius = 350;
-    public List<Option> tileLayerOptions = new ArrayList<>();
-    public String tileServerUrl;
+public class NMS8506_2_Test extends AbstractSingleHardwareAdapterTest {
+
+    /**
+     * Test adapter.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    @Override
+    @Transactional
+    @JUnitSnmpAgent(host="192.168.0.1", resource="NMS-8506-huawei.properties")
+    public void testAdapter() throws Exception {
+        performTest(21);
+    }
+
 }

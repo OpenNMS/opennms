@@ -29,61 +29,59 @@
 package org.opennms.features.topology.netutils.internal.operations;
 
 import java.util.List;
+import java.util.Objects;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.AbstractOperation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.OperationContext.DisplayLocation;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.netutils.internal.Node;
 import org.opennms.features.topology.netutils.internal.PingWindow;
+import org.opennms.features.topology.netutils.internal.service.PingService;
+import org.opennms.netmgt.icmp.Pinger;
+
+import com.google.common.base.Strings;
 
 public class PingOperation extends AbstractOperation {
 
-    private String pingURL;
+    private Pinger pinger;
+
+    public PingOperation(Pinger pinger) {
+        this.pinger = Objects.requireNonNull(pinger);
+    }
 
     @Override
     public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
-        if (targets != null) {
-            for (final VertexRef target : targets) {
-                final String addrValue = getIpAddrValue(operationContext, target);
-                final String labelValue = getLabelValue(operationContext, target);
-                final Integer nodeValue = getNodeIdValue(operationContext, target);
-
-                if (addrValue != null && nodeValue != null && nodeValue > 0) {
-                    final Node node = new Node(nodeValue.intValue(), addrValue, labelValue == null? "" : labelValue);
-                    final String url = getPingURL();
-                    final String fullUrl = url.startsWith("/")? url : getFullUrl(url);
-                    operationContext.getMainWindow().addWindow(new PingWindow(node, fullUrl));
-                    return null;
-                }
-            }
-        }
+        final VertexRef target = targets.get(0);
+        final Vertex vertex = getVertexItem(operationContext, target);
+        new PingWindow(vertex, new PingService(pinger)).open();
         return null;
     }
 
     @Override
-    public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
-        if (operationContext.getDisplayLocation() == DisplayLocation.MENUBAR) {
-            return true;
-        } else if(targets != null && targets.size() > 0 && targets.get(0) != null) {
-            return true;
-        }else {
-            return false;
+    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
+        if (targets.size() == 1) {
+            // Only enable if we actually have something to ping
+            String ipAddress = getVertexItem(operationContext, targets.get(0)).getIpAddress();
+            if (!Strings.isNullOrEmpty(ipAddress)) {
+                try {
+                    InetAddressUtils.getInetAddress(ipAddress);
+                    return true;
+                } catch (IllegalArgumentException ex) {
+                    return false;
+                }
+            }
         }
+        return false;
+    }
 
+    @Override
+    public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
+        return targets != null && targets.size() > 0;
     }
 
     @Override
     public String getId() {
         return "ping";
     }
-
-    public void setPingURL(final String url) {
-        pingURL = url;
-    }
-
-    public String getPingURL() {
-        return pingURL;
-    }
-
 }

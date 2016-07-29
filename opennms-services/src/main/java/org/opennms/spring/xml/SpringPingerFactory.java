@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
+package org.opennms.spring.xml;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
+import org.springframework.context.annotation.Bean;
 
-import com.vaadin.shared.AbstractComponentState;
+public class SpringPingerFactory {
 
-/**
- * @author Marcus Hellberg (marcus@vaadin.com)
- */
-public class NodeMapState extends AbstractComponentState {
-    private static final long serialVersionUID = 7166424509065088284L;
-    public String searchString;
-    public List<MapNode> nodes = new LinkedList<MapNode>();
-    public List<Integer> nodeIds = new ArrayList<Integer>();
-    public int minimumSeverity;
-    public boolean groupByState = true;
-    public int maxClusterRadius = 350;
-    public List<Option> tileLayerOptions = new ArrayList<>();
-    public String tileServerUrl;
+    @Bean(name="pingerService")
+    public Pinger createPinger() {
+        return PingerFactory.getInstance();
+    }
 }

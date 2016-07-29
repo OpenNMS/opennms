@@ -36,6 +36,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.VerticesUpdateManager;
@@ -58,6 +62,8 @@ import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.Page;
+import com.vaadin.server.SessionDestroyEvent;
+import com.vaadin.server.SessionDestroyListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -124,8 +130,7 @@ import com.vaadin.ui.VerticalSplitPanel;
 })
 public class NodeMapsApplication extends UI {
     private static final Logger LOG = LoggerFactory.getLogger(NodeMapsApplication.class);
-    // private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
-    private static final int REFRESH_INTERVAL = 10 * 1000;
+    private static final int REFRESH_INTERVAL = 5 * 1000;
     private VerticalLayout m_rootLayout;
     private VerticalLayout m_layout;
 
@@ -135,6 +140,12 @@ public class NodeMapsApplication extends UI {
     private VaadinRequest m_request;
     private AlarmTable m_alarmTable;
     private NodeTable m_nodeTable;
+
+    private final ScheduledExecutorService m_executor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+        @Override public Thread newThread(final Runnable runnable) {
+            return new Thread(runnable, "NodeMapUpdater-Thread");
+        }
+    });
 
     public void setHeaderProvider(final OnmsHeaderProvider headerProvider) {
         m_headerProvider = headerProvider;
@@ -157,23 +168,15 @@ public class NodeMapsApplication extends UI {
     }
 
     private void updateWidgetView() {
-        if (m_layout != null) {
-            synchronized (m_layout) {
-                m_layout.removeAllComponents();
+        final VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
+        bottomLayoutBar.setFirstComponent(m_mapWidgetComponent);
 
-                final VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
-                bottomLayoutBar.setFirstComponent(m_mapWidgetComponent);
-
-                // Split the screen 70% top, 30% bottom
-                bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
-                bottomLayoutBar.setSizeFull();
-                bottomLayoutBar.setSecondComponent(getTabSheet());
-                m_layout.addComponent(bottomLayoutBar);
-                m_layout.markAsDirty();
-            }
-        } else {
-            LOG.warn("updateWidgetView() called, but there's no layout yet!");
-        }
+        // Split the screen 70% top, 30% bottom
+        bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
+        bottomLayoutBar.setSizeFull();
+        bottomLayoutBar.setSecondComponent(getTabSheet());
+        m_layout.addComponent(bottomLayoutBar);
+        m_layout.markAsDirty();
     }
 
     /**
@@ -289,6 +292,22 @@ public class NodeMapsApplication extends UI {
         createMapPanel(searchString, maxClusterRadius);
         createRootLayout();
         addRefresher();
+
+        // Notify the user if no tileserver url or options are set
+        if (!NodeMapConfiguration.isValid()) {
+            new InvalidConfigurationWindow().open();
+        }
+        // Schedule refresh of node data
+        m_executor.scheduleWithFixedDelay(() -> m_mapWidgetComponent.refreshNodeData(), 0, 5, TimeUnit.MINUTES);
+
+        // If we do not shutdown the executor, the scheduler keeps refreshing the node data, even if the
+        // UI may already been detached, resulting at one point in a OutOfMemory. See NMS-8589.
+        vaadinRequest.getService().addSessionDestroyListener(new SessionDestroyListener() {
+            @Override
+            public void sessionDestroy(SessionDestroyEvent event) {
+                m_executor.shutdown();
+            }
+        });
     }
 
     private void createMapPanel(final String searchString, final int maxClusterRadius) {
@@ -353,6 +372,7 @@ public class NodeMapsApplication extends UI {
     private void addRefresher() {
         final Refresher refresher = new Refresher();
         refresher.setRefreshInterval(REFRESH_INTERVAL);
+        refresher.addListener((theRefresher) -> m_mapWidgetComponent.refresh());
         addExtension(refresher);
     }
 
