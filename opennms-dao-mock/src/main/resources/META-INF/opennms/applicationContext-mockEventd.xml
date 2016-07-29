@@ -16,7 +16,7 @@
     <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
     <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
 
-    <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
+    <bean id="eventdEventHandler" class="org.opennms.netmgt.dao.mock.BasicEventHandler">
 		<property name="eventProcessors">
 			<list>
 				<!-- This EventProcessor can be used to perform regex replacements on 
@@ -31,7 +31,6 @@
 	</bean>
 
 	<bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
-		<property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize" />
 		<property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength" />
 		<property name="eventHandler" ref="eventdEventHandler" />
 	</bean>
