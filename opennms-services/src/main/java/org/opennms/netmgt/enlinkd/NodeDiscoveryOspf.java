@@ -37,6 +37,8 @@ import java.util.List;
 
 
 
+import java.util.concurrent.ExecutionException;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
@@ -44,8 +46,6 @@ import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfLink;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,110 +74,100 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
     protected void runCollection() {
 
     	final Date now = new Date(); 
+        LOG.debug("run: collecting : {}", getPeer());
 
-    	String trackerName = "ospfGeneralGroup";
-        final OspfGeneralGroupTracker ospfGeneralGroup = new OspfGeneralGroupTracker();
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
-        SnmpWalker walker =  SnmpUtils.createWalker(getPeer(), trackerName, ospfGeneralGroup);
-
-        walker.start();
-
+        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(getPeer());
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting Ospf Linkd node scan : Agent timed out while scanning the {} table", trackerName);
-            	return;
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting Ospf Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            	return;
+            final OspfGeneralGroupTracker ospfGeneralGroup = new OspfGeneralGroupTracker();
+            
+            try {
+                m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ospfGeneralGroup).
+                withDescription("ospfGeneralGroup").
+                atLocation(getLocation()).
+                execute().
+                get();
+           } catch (ExecutionException e) {
+                    // pass
+           }                
+
+            if (ospfGeneralGroup.getOspfRouterId() == null) {
+                LOG.info("ospf mib not supported on: {}",
+                         str(getPeer().getAddress()));
+                return;
             }
+
+            if (ospfGeneralGroup.getOspfRouterId().equals(InetAddressUtils.addr("0.0.0.0"))) {
+                LOG.info("ospf not supported, ospf identifier 0.0.0.0 is not valid on: {}",
+                         str(getPeer().getAddress()));
+                return;
+            }
+
+            if (Status.get(ospfGeneralGroup.getOspfAdminStat()) == Status.disabled) {
+                LOG.info("ospf status disabled on: {}",
+                         str(getPeer().getAddress()));
+                return;
+            }
+
+            m_linkd.getQueryManager().store(getNodeId(), ipAddrTableGetter.get(ospfGeneralGroup.getOspfElement()));
+
         } catch (final InterruptedException e) {
             LOG.error( "run: Ospf Linkd node collection interrupted, exiting",e);
             return;
         }
         
-        if (ospfGeneralGroup.getOspfRouterId() == null ) {
-            LOG.info( "ospf mib not supported on: {}", str(getPeer().getAddress()));
-            return;
-        } 
-
-        if (ospfGeneralGroup.getOspfRouterId().equals(InetAddressUtils.addr("0.0.0.0"))) {
-            LOG.info( "ospf not supported, ospf identifier 0.0.0.0 is not valid on: {}", str(getPeer().getAddress()));
-            return;
-        } 
-
-        if (Status.get(ospfGeneralGroup.getOspfAdminStat()) == Status.disabled) {
-            LOG.info( "ospf status disabled on: {}", str(getPeer().getAddress()));
-            return;
-        }
         
-        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(getPeer());
 
-        m_linkd.getQueryManager().store(getNodeId(), ipAddrTableGetter.get(ospfGeneralGroup.getOspfElement()));
-
-        trackerName = "ospfNbrTable";
         final List<OspfLink> links = new ArrayList<OspfLink>();
-        OspfNbrTableTracker ospfNbrTableTracker = new OspfNbrTableTracker() {
-
-        	public void processOspfNbrRow(final OspfNbrRow row) {
-        		links.add(row.getOspfLink());
-        	}
-        };
-
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
-        walker = SnmpUtils.createWalker(getPeer(), trackerName, ospfNbrTableTracker);
-        walker.start();
-        
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting Ospf Linkd node scan : Agent timed out while scanning the {} table", trackerName);
-            	return;
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting Ospf Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            	return;
-            }
+            OspfNbrTableTracker ospfNbrTableTracker = new OspfNbrTableTracker() {
+    
+            	public void processOspfNbrRow(final OspfNbrRow row) {
+            		links.add(row.getOspfLink());
+            	}
+            };
+
+            try {
+                m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ospfNbrTableTracker).
+                withDescription("ospfNbrTable").
+                atLocation(getLocation()).
+                execute().
+                get();
+           } catch (ExecutionException e) {
+                    // pass
+           }                
+
         } catch (final InterruptedException e) {
             LOG.error( "run: collection interrupted, exiting",e);
             return;
         }
 
-        trackerName = "ospfIfTable";
-        OspfIfTableTracker ospfIfTableTracker = new OspfIfTableTracker() {
-
-        	public void processOspfIfRow(final OspfIfRow row) {
-        		OspfLink link = row.getOspfLink(ipAddrTableGetter);
-    			for (OspfLink nbrlink : links) {
-    				if (InetAddressUtils.inSameNetwork(link.getOspfIpAddr(),nbrlink.getOspfRemIpAddr(),link.getOspfIpMask())) {
-    					nbrlink.setOspfIpAddr(link.getOspfIpAddr());
-    					nbrlink.setOspfAddressLessIndex(link.getOspfAddressLessIndex());
-    					nbrlink.setOspfIpMask(link.getOspfIpMask());
-    					nbrlink.setOspfIfIndex(link.getOspfIfIndex());
-    				}
-    			}
-        	}
-
-        };
-
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
-        walker = SnmpUtils.createWalker(getPeer(), trackerName, ospfIfTableTracker);
-        walker.start();
-        
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting Ospf Linkd node scan : Agent timed out while scanning the {} table", trackerName);
-            	return;
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting Ospf Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            	return;
-            }
+            OspfIfTableTracker ospfIfTableTracker = new OspfIfTableTracker() {
+    
+            	public void processOspfIfRow(final OspfIfRow row) {
+            		OspfLink link = row.getOspfLink(ipAddrTableGetter);
+        			for (OspfLink nbrlink : links) {
+        				if (InetAddressUtils.inSameNetwork(link.getOspfIpAddr(),nbrlink.getOspfRemIpAddr(),link.getOspfIpMask())) {
+        					nbrlink.setOspfIpAddr(link.getOspfIpAddr());
+        					nbrlink.setOspfAddressLessIndex(link.getOspfAddressLessIndex());
+        					nbrlink.setOspfIpMask(link.getOspfIpMask());
+        					nbrlink.setOspfIfIndex(link.getOspfIfIndex());
+        				}
+        			}
+            	}
+    
+            };
+
+            try {
+                m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ospfIfTableTracker).
+                withDescription("ospfIfTable").
+                atLocation(getLocation()).
+                execute().
+                get();
+           } catch (ExecutionException e) {
+                    // pass
+           }                
+
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
             return;

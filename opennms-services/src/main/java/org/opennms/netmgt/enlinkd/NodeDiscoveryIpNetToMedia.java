@@ -36,11 +36,12 @@ import java.util.Date;
 
 
 
+
+import java.util.concurrent.ExecutionException;
+
 import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IpNetToMedia.IpNetToMediaType;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,7 @@ import org.slf4j.LoggerFactory;
 public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
     
 	private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIpNetToMedia.class);
-
+	
 	/**
 	 * Constructs a new SNMP collector for IpNetToMedia Node Discovery. 
 	 * The collection does not occur until the
@@ -71,36 +72,32 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
 
     	final Date now = new Date(); 
 
-		LOG.debug( "run: collecting : {}", getPeer());
-
-
-		IpNetToMediaTableTracker ipNetToMediaTableTracker = new IpNetToMediaTableTracker() {
-		    public void processIpNetToMediaRow(final IpNetToMediaRow row) {
-		    	IpNetToMedia macep = row.getIpNetToMedia();
-		    	if (macep.getPhysAddress() != null && 
-		    	        (macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_STATIC))
-		    		m_linkd.getQueryManager().store(getNodeId(),macep);
-		    }
-		};
+	LOG.debug( "run: collecting : {}", getPeer());
 		
-		String trackerName = "ipNetToMedia";
-		SnmpWalker walker = SnmpUtils.createWalker(getPeer(), trackerName, ipNetToMediaTableTracker );
-        walker.start();
+	try {
+	        IpNetToMediaTableTracker ipNetToMediaTableTracker = new IpNetToMediaTableTracker() {
+	            public void processIpNetToMediaRow(final IpNetToMediaRow row) {
+	                IpNetToMedia macep = row.getIpNetToMedia();
+	                if (macep.getPhysAddress() != null
+	                        && (macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC 
+	                        || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_STATIC))
+	                    m_linkd.getQueryManager().store(getNodeId(), macep);
+	            }
+	        };
+
+		try {
+		    m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ipNetToMediaTableTracker).
+		    withDescription("ipNetToMedia").
+		    atLocation(getLocation()).
+		    execute().
+		    get();
+	       } catch (ExecutionException e) {
+	                // pass
+	       }		
         
-        try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting IpNetToMedia Linkd node scan : Agent timed out while scanning the {} table", trackerName);
-            	return;
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting IpNetToMedia Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            	return;
-            }
         } catch (final InterruptedException e) {
-            LOG.error("run: collection interrupted, exiting",e);
-            return;
+            LOG.info("run: collection interrupted, exiting",e);
+            return;       
         }
 
         m_linkd.getQueryManager().reconcileIpNetToMedia(getNodeId(), now);
