@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-[[ga-opennms-operation-daemon-config-files-pollerd]]
+[[ga-opennms-operation-daemon-config-files-notifd]]
 ==== Notifd
 
 [options="header, autowidth"]
