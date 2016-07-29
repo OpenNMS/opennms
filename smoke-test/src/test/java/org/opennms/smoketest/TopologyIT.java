@@ -324,7 +324,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 menuElement.click();
                 // we should wait, otherwise the menu has not yet updated
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     throw Throwables.propagate(e);
                 }
