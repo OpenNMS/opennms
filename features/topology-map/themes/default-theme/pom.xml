@@ -40,6 +40,30 @@
         
         <plugins>
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/javascript/VAADIN/themes/topo_default/js</outputDirectory>
+                             <resources>
+                                 <resource>
+                                     <directory>../../../../opennms-webapp/src/main/webapp/lib/d3</directory>
+                                     <includes>
+                                        <include>d3.js</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
@@ -49,6 +73,11 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Fragment-Host>com.vaadin.themes;bundle-version=${vaadinVersion}</Fragment-Host>
+                        <Include-Resource>
+                          {maven-resources},
+                          {maven-dependencies},
+                          target/javascript
+                        </Include-Resource>
                     </instructions>
                 </configuration>
             </plugin>
