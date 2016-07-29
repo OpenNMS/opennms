@@ -16,10 +16,7 @@
     <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
     <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
 
-    <bean id="eventdMetricRegistry" class="com.codahale.metrics.MetricRegistry" />
-
-    <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
-		<constructor-arg ref="eventdMetricRegistry"/>
+    <bean id="eventdEventHandler" class="org.opennms.netmgt.dao.mock.BasicEventHandler">
 		<property name="eventProcessors">
 			<list>
 				<!-- This EventProcessor can be used to perform regex replacements on 
@@ -35,7 +32,6 @@
 
 	<bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
 		<constructor-arg ref="eventdMetricRegistry"/>
-		<property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize" />
 		<property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength" />
 		<property name="eventHandler" ref="eventdEventHandler" />
 	</bean>
