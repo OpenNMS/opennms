@@ -115,7 +115,9 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
         }
         
         try {
-            final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(getPeer());
+            final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(getPeer(),
+                                                                        m_linkd.getLocationAwareSnmpClient(),
+                                                                        getLocation());
             LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
     
             	public void processLldpRemRow(final LldpRemRow row) {

@@ -76,7 +76,9 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
     	final Date now = new Date(); 
         LOG.debug("run: collecting : {}", getPeer());
 
-        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(getPeer());
+        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(getPeer(),
+                                                                                  m_linkd.getLocationAwareSnmpClient(),
+                                                                                  getLocation());
         try {
             final OspfGeneralGroupTracker ospfGeneralGroup = new OspfGeneralGroupTracker();
             

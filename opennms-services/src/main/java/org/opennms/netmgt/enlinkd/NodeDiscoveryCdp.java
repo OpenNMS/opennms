@@ -104,7 +104,9 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
         
 
         try {
-            final CdpInterfacePortNameGetter cdpInterfacePortNameGetter = new CdpInterfacePortNameGetter(getPeer());
+            final CdpInterfacePortNameGetter cdpInterfacePortNameGetter = new CdpInterfacePortNameGetter(getPeer(), 
+                                                                              m_linkd.getLocationAwareSnmpClient(),
+                                                                              getLocation());
             CdpCacheTableTracker cdpCacheTable = new CdpCacheTableTracker() {
 
         	public void processCdpCacheRow(final CdpCacheRow row) {
