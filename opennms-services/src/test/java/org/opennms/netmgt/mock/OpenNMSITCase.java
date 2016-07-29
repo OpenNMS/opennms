@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.After;
@@ -44,12 +45,12 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.dao.mock.BasicEventHandler;
 import org.opennms.netmgt.dao.mock.JdbcEventdServiceManager;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.eventd.BroadcastEventProcessor;
 import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
-import org.opennms.netmgt.eventd.EventLogSplitter;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy;
@@ -59,12 +60,9 @@ import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
 import org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
-import org.opennms.netmgt.events.api.EventProcessor;
-import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
@@ -188,19 +186,11 @@ public class OpenNMSITCase {
                 eventIpcBroadcastProcessor.setEventIpcBroadcaster(m_eventdIpcMgr);
                 eventIpcBroadcastProcessor.afterPropertiesSet();
 
-                org.opennms.netmgt.events.api.EventHandler eventHandler = new org.opennms.netmgt.events.api.EventHandler() {
-                    @Override
-                    public void handle(Log eventLog) {
-                        for (Log event : EventLogSplitter.splitEventLogs(eventLog)) {
-                            try {
-                                eventExpander.process(event);
-                                eventIpcBroadcastProcessor.process(event);
-                            } catch (EventProcessorException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                };
+                BasicEventHandler eventHandler = new BasicEventHandler();
+                eventHandler.setEventProcessors(Arrays.asList(
+                    eventExpander,
+                    eventIpcBroadcastProcessor
+                ));
 
                 m_eventdIpcMgr.setEventHandler(eventHandler);
                 
