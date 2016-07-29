@@ -71,23 +71,25 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     public MockDatabase() throws Exception {
         this(true);
     }
-    
+
+    public MockDatabase(boolean createNow) throws Exception {
+        this(null, createNow);
+    }
+
     public MockDatabase(String name, boolean createNow) throws Exception {
         super(name);
+
         setPopulateSchema(true);
+
+        setClassName(MockDatabase.class.getName());
+        setMethodName("MockDatabase constructor");
+        setTestDetails("I do not know who called me.... which is sad. Will you be my friend?");
+
         if (createNow) {
             create();
         }
     }
-    
-    public MockDatabase(boolean createNow) throws Exception {
-        super();
-        setPopulateSchema(true);
-        if (createNow) {
-            create();
-        }
-    }
-    
+
     public void populate(MockNetwork network) {
 
         MockVisitor dbCreater = new MockVisitorAdapter() {
