@@ -178,7 +178,7 @@
     <route id="submitEvent">
       <from uri="seda:submitEvent?size={{eventIpcManagerHandlerQueueLength}}&amp;concurrentConsumers={{eventIpcManagerHandlerPoolSize}}" />
 
-      <to uri="bean:org.opennms.netmgt.eventd.EventLogSplitter?method=splitEventLogs"/>
+      <to uri="bean:org.opennms.netmgt.events.api.support.EventLogSplitter?method=splitEventLogs"/>
 
       <split>
         <!-- Split the event Logs -->
