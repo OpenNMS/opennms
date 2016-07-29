@@ -1349,6 +1349,7 @@
     <newtsVersion>1.4.1</newtsVersion>
     <paxExamVersion>4.8.0</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
+    <protobufVersion>2.6.1</protobufVersion>
     <postgresqlVersion>9.4.1208</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
     <oroVersion>2.0.8</oroVersion>
@@ -3712,6 +3713,11 @@
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>${postgresqlVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>${protobufVersion}</version>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
