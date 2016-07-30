@@ -122,7 +122,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         for (final OnmsNode node : m_nodeDao.findMatching(criteria)) {
             nodes.add(new Node(node.getId(),
                                node.getPrimaryInterface().getIpAddress(),
-                               node.getSysObjectId(), node.getSysName()));
+                               node.getSysObjectId(), node.getSysName(),node.getLocation() == null ? null : node.getLocation().getLocationName()));
         }
         return nodes;
     }
@@ -144,7 +144,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             final OnmsNode node = nodes.get(0);
             return new Node(node.getId(),
                             node.getPrimaryInterface().getIpAddress(),
-                            node.getSysObjectId(), node.getSysName());
+                            node.getSysObjectId(), node.getSysName(),node.getLocation() == null ? null : node.getLocation().getLocationName());
         } else {
             return null;
         }
