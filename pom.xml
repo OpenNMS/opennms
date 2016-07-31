@@ -1370,6 +1370,7 @@
     <log4j2Version>2.5</log4j2Version>
     <minaVersion>2.0.13</minaVersion>
     <minionKarafVersion>4.0.5</minionKarafVersion>
+    <netty4Version>4.1.4.Final</netty4Version>
     <newtsVersion>1.4.2</newtsVersion>
     <paxExamVersion>4.8.0</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
@@ -3676,32 +3677,32 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-all</artifactId>
-        <version>4.1.4.Final</version>
+        <version>${netty4Version}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec</artifactId>
-        <version>4.1.4.Final</version>
+        <version>${netty4Version}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-transport</artifactId>
-        <version>4.1.4.Final</version>
+        <version>${netty4Version}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-handler</artifactId>
-        <version>4.1.4.Final</version>
+        <version>${netty4Version}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-buffer</artifactId>
-        <version>4.1.4.Final</version>
+        <version>${netty4Version}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-common</artifactId>
-        <version>4.1.4.Final</version>
+        <version>${netty4Version}</version>
       </dependency>
       <dependency>
         <groupId>com.novell.ldap</groupId>

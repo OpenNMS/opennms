@@ -652,6 +652,7 @@
     <feature name="opennms-events-api" description="OpenNMS :: Events :: API" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
 
+      <feature>camel-core</feature>
       <feature>castor</feature>
       <feature>commons-lang</feature>
       <feature>jaxb</feature>
@@ -677,6 +678,15 @@
       <feature>opennms-core-daemon</feature>
       <feature>opennms-dao-api</feature>
       <feature>opennms-events-api</feature>
+
+      <!-- This is basically a duplicate of the camel-netty4 feature with Netty upgraded to 4.1.X -->
+      <bundle dependency="true">mvn:io.netty/netty-common/${netty4Version}</bundle>
+      <bundle dependency="true">mvn:io.netty/netty-transport/${netty4Version}</bundle>
+      <bundle dependency="true">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+      <bundle dependency="true">mvn:io.netty/netty-handler/${netty4Version}</bundle>
+      <bundle dependency="true">mvn:io.netty/netty-codec/${netty4Version}</bundle>
+      <bundle dependency="true">mvn:commons-pool/commons-pool/1.6</bundle>
+      <bundle dependency="true">mvn:org.apache.camel/camel-netty4/${camelVersion}</bundle>
 
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
     </feature>
