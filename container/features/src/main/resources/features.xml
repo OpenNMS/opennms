@@ -624,6 +624,7 @@
     <feature name="opennms-events-api" description="OpenNMS :: Events :: API" version="${project.version}">
       <feature version="[4.2,4.3)">spring</feature>
 
+      <feature>camel-core</feature>
       <feature>commons-lang3</feature>
       <feature>jaxb</feature>
 
@@ -651,6 +652,7 @@
     </feature>
 
     <feature name="opennms-events-daemon" description="OpenNMS :: Events :: Daemon" version="${project.version}">
+      <feature>camel-netty4</feature>
       <feature>commons-beanutils</feature>
       <feature version="${guavaVersion}">guava</feature>
       <feature>spring-dm</feature>
