@@ -84,9 +84,12 @@ public abstract class SimpleSearchProvider extends AbstractSearchProvider {
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("SimpleSearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
 
-        final DefaultVertexHopCriteria criterion = new DefaultVertexHopCriteria(new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel()));
+        final DefaultVertexHopCriteria criterion = new DefaultVertexHopCriteria(
+                new DefaultVertexRef(
+                        searchResult.getNamespace(),
+                        searchResult.getId(),
+                        searchResult.getLabel()));
         container.addCriteria(criterion);
-
         LOG.debug("SimpleSearchProvider->addVertexHop: adding hop criteria {}.", criterion);
         LOG.debug("SimpleSearchProvider->addVertexHop: current criteria {}.", Arrays.toString(container.getCriteria()));
     }
@@ -95,7 +98,11 @@ public abstract class SimpleSearchProvider extends AbstractSearchProvider {
     public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("SimpleSearchProvider->removeVertexHopCriteria: called with search result: '{}'", searchResult);
 
-        final DefaultVertexHopCriteria criterion = new DefaultVertexHopCriteria(new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel()));
+        final DefaultVertexHopCriteria criterion = new DefaultVertexHopCriteria(
+                new DefaultVertexRef(
+                        searchResult.getNamespace(),
+                        searchResult.getId(),
+                        searchResult.getLabel()));
         container.removeCriteria(criterion);
 
         LOG.debug("SimpleSearchProvider->removeVertexHopCriteria: current criteria {}.", Arrays.toString(container.getCriteria()));
