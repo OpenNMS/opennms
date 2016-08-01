@@ -10,8 +10,6 @@
   <name>OpenNMS :: Provisioning :: JDBC Detector</name>
   <url>http://www.opennms.org</url>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

@@ -10,8 +10,6 @@
   <artifactId>org.opennms.features.bsm</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: BSM</name>
-  <properties>
-  </properties>
   <modules>
     <module>daemon</module>
     <module>persistence</module>

@@ -9,8 +9,6 @@
   <artifactId>opennms-ackd</artifactId>
   <name>OpenNMS :: Acknowledgements :: Daemon</name>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

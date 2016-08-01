@@ -9,8 +9,6 @@
   <artifactId>org.opennms.assemblies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Assemblies</name>
-  <properties>
-  </properties>
 
   <build>
     <plugins>

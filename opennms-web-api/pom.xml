@@ -9,8 +9,6 @@
   <artifactId>opennms-web-api</artifactId>
   <name>OpenNMS Web APIs</name>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

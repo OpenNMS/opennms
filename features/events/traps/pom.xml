@@ -10,8 +10,6 @@
   <artifactId>org.opennms.features.events.traps</artifactId>
   <name>OpenNMS :: Features :: Events :: Trap Daemon</name>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

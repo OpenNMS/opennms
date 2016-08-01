@@ -9,8 +9,6 @@
   <artifactId>opennms-integrations</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: Integrations</name>
-  <properties>
-  </properties>
   <modules>
     <module>opennms-dns-provisioning-adapter</module>
     <module>opennms-reverse-dns-provisioning-adapter</module>

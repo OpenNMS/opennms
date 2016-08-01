@@ -10,8 +10,6 @@
   <artifactId>org.opennms.core.test-api.db</artifactId>
   <name>OpenNMS :: Core :: Test API :: Database</name>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

@@ -9,8 +9,6 @@
   <artifactId>org.opennms.integration-tests.config</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS :: Integration Tests :: Config</name>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

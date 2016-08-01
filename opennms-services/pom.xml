@@ -9,8 +9,6 @@
   <artifactId>opennms-services</artifactId>
   <name>OpenNMS Services</name>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

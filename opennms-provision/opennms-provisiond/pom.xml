@@ -9,8 +9,6 @@
   <artifactId>opennms-provisiond</artifactId>
   <name>OpenNMS :: Provisioning :: Daemon</name>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

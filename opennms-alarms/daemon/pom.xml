@@ -9,8 +9,6 @@
   <artifactId>opennms-alarmd</artifactId>
   <name>OpenNMS :: Alarms :: Daemon</name>
   <packaging>jar</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
 <!--

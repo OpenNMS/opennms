@@ -10,8 +10,6 @@
   <artifactId>org.opennms.core.test-api.karaf</artifactId>
   <name>OpenNMS :: Core :: Test API :: Karaf</name>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

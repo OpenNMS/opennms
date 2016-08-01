@@ -14,8 +14,6 @@
   <name>OpenNMS :: Features :: Vaadin :: Components</name>
 
   <packaging>pom</packaging>
-  <properties>
-  </properties>
   <modules>
     <module>core</module>
     <module>graph</module>

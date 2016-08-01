@@ -13,8 +13,6 @@
   <description>
   The OpenNMS Daemon launches and acts as a container for OpenNMS Services such as the poller or collector.
   </description>
-  <properties>
-  </properties>
   <profiles>
     <profile>
       <id>default-tools.jar</id>

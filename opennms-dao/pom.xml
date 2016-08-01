@@ -9,8 +9,6 @@
   <artifactId>opennms-dao</artifactId>
   <name>OpenNMS :: Model :: DAO :: Impl</name>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

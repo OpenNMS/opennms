@@ -10,8 +10,6 @@
   <artifactId>org.opennms.core.icmp-jna</artifactId>
   <name>OpenNMS :: Core :: ICMP JNA</name>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

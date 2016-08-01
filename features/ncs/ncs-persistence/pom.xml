@@ -9,8 +9,6 @@
   <artifactId>org.opennms.features.ncs.ncs-persistence</artifactId>
   <packaging>bundle</packaging>
   <name>OpenNMS :: Features :: NCS :: Persistence</name>
-  <properties>
-  </properties>
 
   <build>
     <plugins>

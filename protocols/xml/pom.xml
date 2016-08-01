@@ -10,8 +10,6 @@
   <artifactId>org.opennms.protocols.xml</artifactId>
   <name>OpenNMS :: Protocols :: XML Collector</name>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

@@ -9,8 +9,6 @@
   <artifactId>opennms-dao-minion</artifactId>
   <name>OpenNMS :: Model :: DAO :: Minion</name>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

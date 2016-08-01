@@ -10,8 +10,6 @@
   <name>OpenNMS :: RRD :: ORM</name>
   <description>Object-relational mapping for RRD data.</description>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

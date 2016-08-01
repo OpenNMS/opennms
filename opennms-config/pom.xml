@@ -9,8 +9,6 @@
   <artifactId>opennms-config</artifactId>
   <name>OpenNMS :: Model :: Config DAO :: Impl</name>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

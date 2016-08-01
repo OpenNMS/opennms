@@ -41,8 +41,6 @@
   <name>OpenNMS :: Correlation :: Drools Engine</name>
   <url>http://maven.apache.org</url>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

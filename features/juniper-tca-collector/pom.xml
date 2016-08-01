@@ -10,8 +10,6 @@
   <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
   <name>OpenNMS :: Features :: Juniper TCA Collector</name>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>

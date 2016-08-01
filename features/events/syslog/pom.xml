@@ -10,8 +10,6 @@
   <artifactId>org.opennms.features.events.syslog</artifactId>
   <name>OpenNMS :: Features :: Events :: Syslog Daemon</name>
   <packaging>bundle</packaging>
-  <properties>
-  </properties>
   <build>
     <plugins>
       <plugin>
