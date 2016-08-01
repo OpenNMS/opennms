@@ -52,7 +52,6 @@
   <onmsgi:service ref="eventIpcManagerImpl">
     <onmsgi:interfaces>
       <value>org.opennms.netmgt.events.api.EventForwarder</value>
-      <value>org.opennms.netmgt.events.api.EventIpcBroadcaster</value>
       <value>org.opennms.netmgt.events.api.EventIpcManager</value>
       <value>org.opennms.netmgt.events.api.EventProxy</value>
       <value>org.opennms.netmgt.events.api.EventSubscriptionService</value>
@@ -74,13 +73,20 @@
     <constructor-arg ref="eventdMetricRegistry"/>
   </bean>
 
-  <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">
+  <!-- Handle event broadcasts by submitting them to a Camel endpoint -->
+  <bean id="eventIpcBroadcasterImpl" class="org.opennms.netmgt.eventd.EventIpcBroadcasterDefaultImpl">
+    <constructor-arg value="seda:broadcastEvent"/>
     <constructor-arg ref="eventdMetricRegistry"/>
   </bean>
 
-  <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
+  <onmsgi:service ref="eventIpcBroadcasterImpl">
+    <onmsgi:interfaces>
+      <value>org.opennms.netmgt.events.api.EventIpcBroadcaster</value>
+    </onmsgi:interfaces>
+  </onmsgi:service>
+
+  <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">
     <constructor-arg ref="eventdMetricRegistry"/>
-    <property name="eventIpcBroadcaster" ref="eventIpcManagerImpl"/>
   </bean>
 
   <bean id="eventHandler" class="org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy" depends-on="eventIpcManagerImpl">
@@ -189,7 +195,7 @@
             <simple>{{shouldLogEventSummaries}}</simple>
             <!-- TODO: Figure out how to print the parms -->
             <!-- LOG.info("Received event: UEI={}, src={}, iface={}, svc={}, time={}, parms={}", event.getUei(), event.getSource(), event.getInterface(), event.getService(), event.getTime(), getPrettyParms(event)); -->
-            <log message="Received event: UEI=${body.events.event[0].uei}, src=${body.events.event[0].source}, iface=${body.events.event[0].interface}, svc=${body.events.event[0].service}, time=${body.events.event[0].time}, parms={}"/>
+            <log message="Received event: UEI=${body.getEvents().getEvent(0).getUei()}, src=${body.getEvents().getEvent(0).getSource()}, iface=${body.getEvents().getEvent(0).getInterface()}, svc=${body.getEvents().getEvent(0).getService()}, time=${body.getEvents().getEvent(0).getTime()}, parms={}"/>
           </when>
         </choice>
 
@@ -213,20 +219,32 @@
         <bean ref="eventWriter"/>
 
         <!-- Broadcast the event over the messaging channel -->
-        <bean ref="eventIpcBroadcastProcessor"/>
-
-        <!--
-          Use recipientList so that we can have a dynamic 'to:' URI.
-          Make sure that the exchange is using an InOut pattern so 
-          that the output is passed to the next endpoint.
-        -->
-        <!--
-        <setExchangePattern pattern="InOut"/>
-        <recipientList>
-          <simple>queuingservice:${bean:queueNameFactory.getName()}</simple>
-        </recipientList>
-        -->
+        <split>
+          <!-- Split the event Log, should only have a single event -->
+          <simple>${body.getEvents().getEvent()}</simple>
+          <!-- TODO: Change this to go directly to seda:broadcastEvent -->
+          <bean ref="eventIpcBroadcasterImpl"/>
+        </split>
       </split>
+    </route>
+
+    <route id="broadcastEvent">
+      <from uri="seda:broadcastEvent?concurrentConsumers=4"/>
+      <convertBodyTo type="org.opennms.netmgt.xml.event.Event"/>
+      <!--
+        Set the UEI as a message header so that we can
+        filter messages by using a JMS Message Selector
+      -->
+      <setHeader headerName="uei">
+        <simple>"${body.uei}"</simple>
+      </setHeader>
+      <!--
+        Use recipientList so that we can have a dynamic 'to:' URI.
+        recipientList is InOnly by default.
+      -->
+      <recipientList>
+        <simple>queuingservice:${bean:queueNameFactory.getName()}?deliveryPersistent=false</simple>
+      </recipientList>
     </route>
   </camelContext>
 

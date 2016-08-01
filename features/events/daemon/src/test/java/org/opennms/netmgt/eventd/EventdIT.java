@@ -60,6 +60,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
@@ -74,6 +75,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml"
 })
 @JUnitConfigurationEnvironment
@@ -82,6 +84,7 @@ public class EventdIT implements InitializingBean {
     private static final long SLEEP_TIME = 50;
 
     @Autowired
+    @Qualifier("eventIpcManager")
     private EventIpcManager m_eventdIpcMgr;
 
     @Autowired

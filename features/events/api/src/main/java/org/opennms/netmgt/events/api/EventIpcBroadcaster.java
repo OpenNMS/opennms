@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.events.api;
 
+import org.apache.camel.InOnly;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Back-end interface for the EventIpcManager.  Used by eventd to send events
  * to interested listeners.
  */
+@InOnly
 public interface EventIpcBroadcaster {
     /**
      * Called by eventd to send an event to all interested listeners.

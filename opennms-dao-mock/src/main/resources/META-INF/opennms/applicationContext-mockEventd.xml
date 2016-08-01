@@ -25,7 +25,13 @@
 				<!-- <ref bean="eventParmRegexFilter"/> -->
 				<ref bean="eventExpander" />
 				<ref bean="eventWriter" />
+				<!--
+					There is no {@link org.opennms.netmgt.events.api.EventIpcBroadcaster} 
+					handler here to transmit events to EventListeners. If you need one,
+					you'll have to write a mock EventIpcBroadcaster.
+
 				<ref bean="eventIpcBroadcastProcessor" />
+				-->
 			</list>
 		</property>
 	</bean>
@@ -39,17 +45,11 @@
 	<onmsgi:service ref="eventIpcManagerImpl">
 		<onmsgi:interfaces>
 			<value>org.opennms.netmgt.events.api.EventForwarder</value>
-			<value>org.opennms.netmgt.events.api.EventIpcBroadcaster</value>
 			<value>org.opennms.netmgt.events.api.EventIpcManager</value>
 			<value>org.opennms.netmgt.events.api.EventProxy</value>
 			<value>org.opennms.netmgt.events.api.EventSubscriptionService</value>
 		</onmsgi:interfaces>
 	</onmsgi:service>
-
-	<bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
-		<constructor-arg ref="eventdMetricRegistry"/>
-		<property name="eventIpcBroadcaster" ref="eventIpcManagerImpl" />
-	</bean>
 
 	<bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
 		<constructor-arg ref="eventdMetricRegistry"/>
