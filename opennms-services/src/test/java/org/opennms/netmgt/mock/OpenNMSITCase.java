@@ -57,7 +57,6 @@ import org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
 import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
-import org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -182,14 +181,11 @@ public class OpenNMSITCase {
                 eventExpander.setEventUtil(eventUtil);
                 eventExpander.afterPropertiesSet();
 
-                EventIpcBroadcastProcessor eventIpcBroadcastProcessor = new EventIpcBroadcastProcessor(m_registry);
-                eventIpcBroadcastProcessor.setEventIpcBroadcaster(m_eventdIpcMgr);
-                eventIpcBroadcastProcessor.afterPropertiesSet();
-
                 BasicEventHandler eventHandler = new BasicEventHandler();
                 eventHandler.setEventProcessors(Arrays.asList(
-                    eventExpander,
-                    eventIpcBroadcastProcessor
+                    eventExpander
+                    // There is no {@link org.opennms.netmgt.events.api.EventIpcBroadcaster} 
+                    // handler here transmit events to EventListeners.
                 ));
 
                 m_eventdIpcMgr.setEventHandler(eventHandler);

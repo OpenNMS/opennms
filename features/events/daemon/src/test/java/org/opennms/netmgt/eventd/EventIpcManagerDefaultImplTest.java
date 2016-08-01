@@ -44,11 +44,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor;
+import org.opennms.netmgt.dao.mock.BasicEventHandler;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventHandler;
 import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -583,22 +582,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
         manager.setHandlerQueueLength(5);
 
-        EventIpcBroadcastProcessor eventIpcBroadcastProcessor = new EventIpcBroadcastProcessor(m_registry);
-        eventIpcBroadcastProcessor.setEventIpcBroadcaster(manager);
-        eventIpcBroadcastProcessor.afterPropertiesSet();
+        org.opennms.netmgt.events.api.EventHandler handler = new BasicEventHandler();
 
-        org.opennms.netmgt.events.api.EventHandler handler = new org.opennms.netmgt.events.api.EventHandler() {
-            @Override
-            public void handle(Log eventLog) {
-                for (Log event : EventLogSplitter.splitEventLogs(eventLog)) {
-                    try {
-                        eventIpcBroadcastProcessor.process(event);
-                    } catch (EventProcessorException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
         manager.setEventHandler(handler);
         manager.afterPropertiesSet();
 
@@ -634,22 +619,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
 
         final EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
 
-        EventIpcBroadcastProcessor eventIpcBroadcastProcessor = new EventIpcBroadcastProcessor(m_registry);
-        eventIpcBroadcastProcessor.setEventIpcBroadcaster(manager);
-        eventIpcBroadcastProcessor.afterPropertiesSet();
+        org.opennms.netmgt.events.api.EventHandler handler = new BasicEventHandler();
 
-        org.opennms.netmgt.events.api.EventHandler handler = new org.opennms.netmgt.events.api.EventHandler() {
-            @Override
-            public void handle(Log eventLog) {
-                for (Log event : EventLogSplitter.splitEventLogs(eventLog)) {
-                    try {
-                        eventIpcBroadcastProcessor.process(event);
-                    } catch (EventProcessorException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
         manager.setEventHandler(handler);
         manager.afterPropertiesSet();
 

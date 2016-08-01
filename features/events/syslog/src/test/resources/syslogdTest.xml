@@ -8,12 +8,7 @@
   <bean id="eventConfResourceLocation" class="java.lang.String">
     <constructor-arg value="classpath:/etc/eventconf.xml" />
   </bean>
-
-  <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
-    <constructor-arg ref="eventdMetricRegistry"/>
-    <property name="eventIpcBroadcaster" ref="mockEventIpcManager"/>
-  </bean>
-
+  
   <bean id="eventHandler" class="org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy" depends-on="mockEventIpcManager">
     <property name="eventIpcManager" ref="mockEventIpcManager" />
   </bean>
@@ -28,6 +23,7 @@
       <props>
         <prop key="eventIpcManagerHandlerQueueLength">2147483647</prop>
         <prop key="eventIpcManagerHandlerPoolSize">4</prop>
+        <prop key="shouldLogEventSummaries">false</prop>
         <prop key="tcpIpAddress">127.0.0.1</prop>
         <prop key="tcpPort">5837</prop>
         <prop key="udpIpAddress">127.0.0.1</prop>
