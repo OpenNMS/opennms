@@ -125,7 +125,6 @@
         -->
         <setExchangePattern pattern="InOut"/>
         <recipientList>
-          <!-- TODO: NMS-8217: Use a more sophisticated naming convention for this queue -->
           <simple>queuingservice:${bean:queueNameFactory.getNameWithLocation(body.location)}</simple>
         </recipientList>
         <!-- Send the DiscoveryResults to the eventWriter -->

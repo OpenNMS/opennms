@@ -57,11 +57,9 @@ import org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
 import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
-import org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor;
 import org.opennms.netmgt.eventd.processor.JdbcEventWriter;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
-import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -184,21 +182,13 @@ public class OpenNMSITCase {
                 jdbcEventWriter.setDataSource(m_db);
                 jdbcEventWriter.setGetNextIdString("select nextVal('eventsNxtId')"); // for HSQL: "SELECT max(eventId)+1 from events"
                 jdbcEventWriter.afterPropertiesSet();
-                
-                EventIpcBroadcastProcessor eventIpcBroadcastProcessor = new EventIpcBroadcastProcessor();
-                eventIpcBroadcastProcessor.setEventIpcBroadcaster(m_eventdIpcMgr);
-                eventIpcBroadcastProcessor.afterPropertiesSet();
 
-                List<EventProcessor> eventProcessors = new ArrayList<EventProcessor>(3);
-                eventProcessors.add(eventExpander);
-                eventProcessors.add(jdbcEventWriter);
-                eventProcessors.add(eventIpcBroadcastProcessor);
-                
                 BasicEventHandler eventHandler = new BasicEventHandler();
                 eventHandler.setEventProcessors(Arrays.asList(
                     eventExpander,
-                    jdbcEventWriter,
-                    eventIpcBroadcastProcessor
+                    jdbcEventWriter
+                    // There is no {@link org.opennms.netmgt.events.api.EventIpcBroadcaster} 
+                    // handler here transmit events to EventListeners.
                 ));
 
                 m_eventdIpcMgr.setEventHandler(eventHandler);

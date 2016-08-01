@@ -42,10 +42,10 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.camel.Consume;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.events.api.EventHandler;
-import org.opennms.netmgt.events.api.EventIpcBroadcaster;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventProxyException;
@@ -65,9 +65,8 @@ import org.springframework.util.StringUtils;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroadcaster, InitializingBean {
-    
-    
+public class EventIpcManagerDefaultImpl implements EventIpcManager, InitializingBean {
+
     private static final Logger LOG = LoggerFactory.getLogger(EventIpcManagerDefaultImpl.class);
 
     public static class DiscardTrapsAndSyslogEvents implements RejectedExecutionHandler {
@@ -243,11 +242,15 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         m_eventHandler.handle(eventLog);
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.eventd.EventIpcBroadcaster#broadcastNow(org.opennms.netmgt.xml.event.Event)
+    /**
+     * This is the default event handler method. It receives messages from JMS
+     * and relays them to the configured {@link EventListener} objects.
+     * 
+     * TODO: Figure out how to set concurrentConsumers to {{eventIpcManagerHandlerPoolSize}}
+     * 
+     * @param event
      */
-    /** {@inheritDoc} */
-    @Override
+    @Consume(uri="queuingservice:OpenNMS.Eventd.BroadcastEvent?concurrentConsumers=10")
     public void broadcastNow(Event event) {
         LOG.debug("Event ID {} to be broadcasted: {}", event.getDbid(), event.getUei());
 
