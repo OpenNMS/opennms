@@ -40,7 +40,11 @@ import junit.framework.AssertionFailedError;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -57,20 +61,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * @author djgregor
  */
 public class TemporaryDatabaseITCase {
-    
-    protected JdbcTemplate jdbcTemplate;
-
-    private static final String TEST_DB_NAME_PREFIX = "opennms_test_";
-    
     private static final String LEAVE_PROPERTY = "mock.leaveDatabase";
-    private static final String LEAVE_ON_FAILURE_PROPERTY =
-        "mock.leaveDatabaseOnFailure";
-    
+    private static final String LEAVE_ON_FAILURE_PROPERTY = "mock.leaveDatabaseOnFailure";
+
     private static final String DRIVER_PROPERTY = "mock.db.driver";
     private static final String URL_PROPERTY = "mock.db.url";
     private static final String ADMIN_USER_PROPERTY = "mock.db.adminUser";
     private static final String ADMIN_PASSWORD_PROPERTY = "mock.db.adminPassword";
-    
+
     private static final String DEFAULT_DRIVER = "org.postgresql.Driver";
     private static final String DEFAULT_URL = "jdbc:postgresql://localhost:5432/";
     private static final String DEFAULT_ADMIN_USER = "postgres";
@@ -83,9 +81,11 @@ public class TemporaryDatabaseITCase {
     private boolean m_leaveDatabase = false;
     private boolean m_leaveDatabaseOnFailure = false;
     private Throwable m_throwable = null;
-    
+
+    private boolean m_initialized = false;
+
     private boolean m_destroyed = false;
-    
+
     private String m_driver;
     private String m_url;
     private String m_adminUser;
@@ -93,6 +93,10 @@ public class TemporaryDatabaseITCase {
     
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
+
+    private Description m_testDescription;
+
+    protected JdbcTemplate jdbcTemplate; // this does not have a m_ per our naming conventions to make it similar to Spring.
 
     public TemporaryDatabaseITCase() {
         this(System.getProperty(DRIVER_PROPERTY, DEFAULT_DRIVER),
@@ -109,27 +113,46 @@ public class TemporaryDatabaseITCase {
         m_adminPassword = adminPassword;
     }
 
+    @Rule
+    public TestRule watcher = new TestWatcher() {
+        protected void starting(Description description) {
+            m_testDescription = description;
+        }
+    };
+
     @Before
     public void setUp() throws Exception {
         // Reset any previous test failures
         setTestFailureThrowable(null);
+
+        TemporaryDatabasePostgreSQL.failIfUnitTest();
         
         m_leaveDatabase = "true".equals(System.getProperty(LEAVE_PROPERTY));
-        m_leaveDatabaseOnFailure =
-            "true".equals(System.getProperty(LEAVE_ON_FAILURE_PROPERTY));
+        m_leaveDatabaseOnFailure = "true".equals(System.getProperty(LEAVE_ON_FAILURE_PROPERTY));
 
         setTestDatabase(getTestDatabaseName());
         
-        setDataSource(new SimpleDataSource(m_driver, m_url + getTestDatabase(),
-                                           m_adminUser, m_adminPassword));
-        setAdminDataSource(new SimpleDataSource(m_driver, m_url + "template1",
-                                           m_adminUser, m_adminPassword));
+        setDataSource(new SimpleDataSource(m_driver, m_url + getTestDatabase(), m_adminUser, m_adminPassword));
+        setAdminDataSource(new SimpleDataSource(m_driver, m_url + "template1", m_adminUser, m_adminPassword));
 
         createTestDatabase();
 
+        generateBlame();
+
         // Test connecting to test database.
-        Connection connection = getConnection();
-        connection.close();
+        getConnection().close();
+
+        m_initialized = true;
+    }
+
+    private void generateBlame() {
+        String className = (m_testDescription != null) ? m_testDescription.getClassName() : "?";
+        String methodName = (m_testDescription != null) ? m_testDescription.getMethodName() : "?";
+
+        String blame = className + "." + methodName + ": leaveDatabase " + m_leaveDatabase + " leaveDatabaseOnFailure " + m_leaveDatabaseOnFailure;
+        //System.err.println("created test database " + m_testDatabase + " with blame details: " + blame);
+
+        TemporaryDatabasePostgreSQL.setupBlame(getJdbcTemplate(), blame);
     }
 
     private void setTestDatabase(String testDatabase) {
@@ -138,6 +161,10 @@ public class TemporaryDatabaseITCase {
 
     @After
     public void tearDown() throws Exception {
+        if (!m_initialized) {
+            return;
+        }
+
         try {
             destroyTestDatabase();
         } catch (Throwable t) {
@@ -166,7 +193,7 @@ public class TemporaryDatabaseITCase {
     }
 
     protected String getTestDatabaseName() {
-        return TEST_DB_NAME_PREFIX + System.currentTimeMillis();
+        return TemporaryDatabasePostgreSQL.getDatabaseName(this);
     }
 
     public String getTestDatabase() {
@@ -416,5 +443,4 @@ public class TemporaryDatabaseITCase {
     public JdbcTemplate getJdbcTemplate() {
     	return jdbcTemplate;
     }
-    
 }

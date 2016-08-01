@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opennms.core.xml.AbstractCastorConfigDao;
 import org.opennms.netmgt.config.databaseReports.DatabaseReports;
 import org.opennms.netmgt.config.databaseReports.Report;
 import org.opennms.netmgt.dao.api.DatabaseReportConfigDao;

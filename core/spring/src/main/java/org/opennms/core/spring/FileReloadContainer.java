@@ -88,7 +88,7 @@ import org.springframework.util.Assert;
  */
 public class FileReloadContainer<T> {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(FileReloadContainer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FileReloadContainer.class);
 	
     private static final long DEFAULT_RELOAD_CHECK_INTERVAL = 1000;
     

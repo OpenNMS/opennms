@@ -55,7 +55,7 @@ import org.springframework.test.context.ContextConfiguration;
         //"classpath:/META-INF/opennms/applicationContext-mockEventd.xml"
 })
 @JUnitConfigurationEnvironment
-public class MockEventWriterTest {
+public class MockEventWriterIT {
     private MockEventWriter m_eventWriter;
 
     @Autowired
