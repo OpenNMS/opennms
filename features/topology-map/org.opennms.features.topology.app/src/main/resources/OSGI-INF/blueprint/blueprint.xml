@@ -18,6 +18,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </cm:property-placeholder>
 
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+    <reference id="geocoderService" interface="org.opennms.features.geocoder.GeocoderService" availability="mandatory" />
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
         <argument ref="menuManager"/>
@@ -49,6 +50,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
+    <reference id="assetRecordDao" interface="org.opennms.netmgt.dao.api.AssetRecordDao" availability="mandatory" />
 
     <reference id="measurementsService" interface="org.opennms.netmgt.measurements.api.MeasurementsService" availability="mandatory"/>
 
@@ -434,6 +436,12 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <bean class="org.opennms.features.topology.app.internal.info.GenericInfoPanelItemProvider">
             <argument ref="nodeDao" />
             <argument ref="measurementsService"/>
+        </bean>
+    </service>
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.info.LocationInfoPanelItemProvider">
+            <argument ref="nodeDao" />
+            <argument ref="geocoderService" />
         </bean>
     </service>
 </blueprint>

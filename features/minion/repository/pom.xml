@@ -111,6 +111,11 @@
             <artifactId>core-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.core.rpc</groupId>
+            <artifactId>org.opennms.core.rpc.camel-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <pluginRepositories>

@@ -346,7 +346,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             // Only contribute if no selection
             return (container.getSelectionManager().getSelectedEdgeRefs().isEmpty() &&
                     container.getSelectionManager().getSelectedVertexRefs().isEmpty())
-                   ? Collections.singleton(new InfoPanelItem() {
+                   ? Collections.<InfoPanelItem>singleton(new InfoPanelItem() {
                             @Override
                             public Component getComponent() {
                                 synchronized (m_currentHudDisplayLock) {
@@ -374,7 +374,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
                             @Override
                             public int getOrder() {
-                                return 1;
+                                return 2;
                             }
                         })
                    : Collections.emptySet();

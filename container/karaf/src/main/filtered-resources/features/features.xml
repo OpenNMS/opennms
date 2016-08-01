@@ -278,7 +278,7 @@
         </config>
         <feature>shell</feature>
         <feature>jaas</feature>
-        <bundle start-level="30" dependency='true'>mvn:org.apache.mina/mina-core/2.0.7</bundle>
+        <bundle start-level="30" dependency='true'>mvn:org.apache.mina/mina-core/${minaVersion}</bundle>
         <bundle start-level="30" dependency='true'>mvn:org.apache.sshd/sshd-core/0.14.0</bundle>
         <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/2.4.3</bundle>
     </feature>

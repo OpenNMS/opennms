@@ -30,18 +30,19 @@ business_service
 reduction_key
 
 # vmware_icons
-vmware-cluster
-vmware-datastore
-vmware-hostsystem-unknown
-vmware-virtualmachine-off
-vmware-virtualmachine-on
-vmware-hostsystem-off
-vmware-virtualmachine-suspended
-vmware-hostsystem-standby
-vmware-hostsystem-on
-vmware-virtualmachine-unknown
 vmware-datacenter
+vmware-cluster
+vmware-hostsystem-on
+vmware-hostsystem-off
+vmware-hostsystem-standby
+vmware-hostsystem-unknown
 vmware-network
+vmware-datastore
+vmware-virtualmachine-on
+vmware-virtualmachine-off
+vmware-virtualmachine-suspended
+vmware-virtualmachine-unknown
+
 
 # default_icons (legacy, before 18.0.0)
 legacy_linux_file_server
