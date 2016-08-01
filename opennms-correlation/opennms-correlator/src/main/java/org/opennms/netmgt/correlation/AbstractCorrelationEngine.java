@@ -101,7 +101,7 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
      *
      * @param timerId a {@link java.lang.Integer} object.
      */
-    protected void cancelTimer(final Integer timerId) {
+    public void cancelTimer(final Integer timerId) {
         final ScheduledFuture<?> task = m_pendingTasks.remove(timerId);
         if (task != null) {
             task.cancel(true);
