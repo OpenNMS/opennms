@@ -73,18 +73,6 @@
     <constructor-arg ref="eventdMetricRegistry"/>
   </bean>
 
-  <!-- Handle event broadcasts by submitting them to a Camel endpoint -->
-  <bean id="eventIpcBroadcasterImpl" class="org.opennms.netmgt.eventd.EventIpcBroadcasterDefaultImpl">
-    <constructor-arg value="seda:broadcastEvent"/>
-    <constructor-arg ref="eventdMetricRegistry"/>
-  </bean>
-
-  <onmsgi:service ref="eventIpcBroadcasterImpl">
-    <onmsgi:interfaces>
-      <value>org.opennms.netmgt.events.api.EventIpcBroadcaster</value>
-    </onmsgi:interfaces>
-  </onmsgi:service>
-
   <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">
     <constructor-arg ref="eventdMetricRegistry"/>
   </bean>
@@ -222,8 +210,16 @@
         <split>
           <!-- Split the event Log, should only have a single event -->
           <simple>${body.getEvents().getEvent()}</simple>
-          <!-- TODO: Change this to go directly to seda:broadcastEvent -->
-          <bean ref="eventIpcBroadcasterImpl"/>
+          <choice>
+            <when>
+              <simple>${body?.getLogmsg()?.getDest()} == 'suppress'</simple>
+              <log loggingLevel="DEBUG" message="Skip sending event ${body.getDbid()} with UEI ${body.getUei()} to other daemons because is marked as suppress"/>
+            </when>
+            <otherwise>
+              <log loggingLevel="DEBUG" message="Event ID ${body.getDbid()} to be broadcasted: ${body.getUei()}"/>
+              <to uri="seda:broadcastEvent"/>
+            </otherwise>
+          </choice>
         </split>
       </split>
     </route>
@@ -241,9 +237,11 @@
       <!--
         Use recipientList so that we can have a dynamic 'to:' URI.
         recipientList is InOnly by default.
+
+        Turn on deliveryPersistent to make sure we have durable delivery.
       -->
       <recipientList>
-        <simple>queuingservice:${bean:queueNameFactory.getName()}?deliveryPersistent=false</simple>
+        <simple>queuingservice:topic:${bean:queueNameFactory.getName()}?deliveryPersistent=true</simple>
       </recipientList>
     </route>
   </camelContext>

@@ -283,14 +283,14 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
      * 
      * @param event
      */
-    @Consume(uri="queuingservice:OpenNMS.Eventd.BroadcastEvent?concurrentConsumers=10")
+    @Consume(context="eventdCamelContext",uri="queuingservice:topic:OpenNMS.Eventd.BroadcastEvent?concurrentConsumers=1")
     public void broadcastNow(Event event) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Event ID {} to be broadcasted: {}", event.getDbid(), event.getUei());
         }
 
-        if (LOG.isDebugEnabled() && m_listeners.isEmpty()) {
-            LOG.debug("No listeners interested in all events");
+        if (LOG.isTraceEnabled() && m_listeners.isEmpty()) {
+            LOG.trace("No listeners interested in all events");
         }
 
         // Send to listeners interested in receiving all events
