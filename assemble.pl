@@ -11,7 +11,8 @@ use vars qw(
 $PREFIX = abs_path(dirname($0));
 require(File::Spec->catfile($PREFIX, 'bin', 'functions.pl'));
 
-@profiles = ('default', 'full', 'dir');
+# profiles are dynamically loaded from opennms-full-assembly/pom.xml file
+@profiles = ();
 my $assembly = File::Spec->catdir($PREFIX, 'opennms-full-assembly');
 my $pomfile = File::Spec->catfile($assembly, 'pom.xml');
 if (-f $pomfile) {
