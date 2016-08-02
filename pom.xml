@@ -486,6 +486,19 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <!--
+          CAUTION: Do not upgrade to 2.18.1, 2.19, or 2.19.1 because the
+          org.opennms.core.test.karaf.KarafTestCase classes are experiencing
+          the following bug in those versions (even thought it is claimed to
+          have been fixed in 2.19.1):
+
+          https://issues.apache.org/jira/browse/SUREFIRE-1193
+        -->
+        <version>2.18</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <version>2.6</version>
         <configuration>
@@ -938,6 +951,8 @@
         <configuration>
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
+            <!-- Turn off queuing in the RRD output -->
+            <org.opennms.rrd.usequeue>false</org.opennms.rrd.usequeue>
             <java.awt.headless>true</java.awt.headless>
             <mock.logLevel>${mock.logLevel}</mock.logLevel>
             <mock.debug>${mock.debug}</mock.debug>
@@ -960,6 +975,7 @@
             <runPingTests>${runPingTests}</runPingTests>
             <proxy.port>${proxy.port}</proxy.port>
             <opennms.version>${project.version}</opennms.version>
+            <!-- <opennms.unit.test>true</opennms.unit.test> -->
           </systemPropertyVariables>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
@@ -970,25 +986,19 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.12.3</version>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <!-- 
-          CAUTION: Do not upgrade to 2.18.1, 2.19, or 2.19.1 because the 
-          org.opennms.core.test.karaf.KarafTestCase classes are experiencing
-          the following bug in those versions (even thought it is claimed to
-          have been fixed in 2.19.1):
-
-          https://issues.apache.org/jira/browse/SUREFIRE-1193
-        -->
-        <version>2.18</version>
         <configuration>
           <!-- Don't specify argLine here or it will override the argLine property value -->
-          <systemPropertyVariables />
+          <systemPropertyVariables>
+            <!-- The javax.net.ssl ones are used by integrations/opennms-jasper-extensions -->
+            <javax.net.ssl.keyStore>target/test-keystore.jks</javax.net.ssl.keyStore>
+            <javax.net.ssl.keyStorePassword>password</javax.net.ssl.keyStorePassword>
+            <javax.net.ssl.trustStore>target/test-keystore.jks</javax.net.ssl.trustStore>
+            <javax.net.ssl.trustStorePassword>password</javax.net.ssl.trustStorePassword>
+            <!-- <ssl.debug>true</ssl.debug> -->
+            <!-- <javax.net.debug>ssl,handshake,verbose</javax.net.debug> -->
+          </systemPropertyVariables>
           <!--
             Configure failsafe to put reports in the surefire unit test directory so that 
             Bamboo and Sonar tally the test results properly.
@@ -996,8 +1006,19 @@
             https://jira.atlassian.com/browse/BAM-15446
           -->
           <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+          <forkCount>1</forkCount>
+          <reuseForks>false</reuseForks>
           <rerunFailingTestsCount>1</rerunFailingTestsCount>
+          <skipITs>${skipITs}</skipITs>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1059,6 +1080,11 @@
         </executions>
       </plugin>
       -->
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.12.3</version>
+      </plugin>
     </plugins>
   </build>
 
@@ -1160,6 +1186,7 @@
       Add target/endorsed as an endorsed API directory in case projects require it.
     -->
     <argLine>-Xmx1g -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+    <skipITs>true</skipITs>
 
     <build.skip.tarball>false</build.skip.tarball>
 
