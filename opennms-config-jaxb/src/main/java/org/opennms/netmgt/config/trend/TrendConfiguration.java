@@ -37,7 +37,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+
 @XmlRootElement(name="trend-configuration")
+@ValidateUsing("trend-configuration.xsd")
 @XmlAccessorType(XmlAccessType.NONE)
 public class TrendConfiguration implements Serializable {
     private static final long serialVersionUID = 3402898044699865749L;
@@ -61,5 +64,20 @@ public class TrendConfiguration implements Serializable {
         }
 
         return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TrendConfiguration that = (TrendConfiguration) o;
+
+        return trendDefinitions != null ? trendDefinitions.equals(that.trendDefinitions) : that.trendDefinitions == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return trendDefinitions != null ? trendDefinitions.hashCode() : 0;
     }
 }

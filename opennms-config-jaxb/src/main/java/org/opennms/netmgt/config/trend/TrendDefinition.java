@@ -47,30 +47,30 @@ public class TrendDefinition implements Serializable {
     @XmlAttribute(name="name")
     private String name;
 
-    @XmlElement(name="icon")
-    private String icon;
-
     @XmlElement(name="title")
     private String title;
 
     @XmlElement(name="subtitle")
     private String subtitle;
 
-    @XmlElement(name="query")
-    private String query;
-
-    @XmlElement(name="description")
-    private String description;
-
-    @XmlElement(name="descriptionLink")
-    private String descriptionLink;
-
     @XmlElement(name="visible")
     private boolean visible;
+
+    @XmlElement(name="icon")
+    private String icon;
 
     @XmlElementWrapper(name="trend-attributes")
     @XmlElement(name="trend-attribute")
     private List<TrendAttribute> trendAttributes = new ArrayList<TrendAttribute>();
+
+    @XmlElement(name="descriptionLink")
+    private String descriptionLink;
+
+    @XmlElement(name="description")
+    private String description;
+
+    @XmlElement(name="query")
+    private String query;
 
     public String getName() {
         return name;
@@ -142,5 +142,39 @@ public class TrendDefinition implements Serializable {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TrendDefinition that = (TrendDefinition) o;
+
+        if (visible != that.visible) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (title != null ? !title.equals(that.title) : that.title != null) return false;
+        if (subtitle != null ? !subtitle.equals(that.subtitle) : that.subtitle != null) return false;
+        if (icon != null ? !icon.equals(that.icon) : that.icon != null) return false;
+        if (trendAttributes != null ? !trendAttributes.equals(that.trendAttributes) : that.trendAttributes != null)
+            return false;
+        if (descriptionLink != null ? !descriptionLink.equals(that.descriptionLink) : that.descriptionLink != null)
+            return false;
+        if (description != null ? !description.equals(that.description) : that.description != null) return false;
+        return query != null ? query.equals(that.query) : that.query == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (subtitle != null ? subtitle.hashCode() : 0);
+        result = 31 * result + (visible ? 1 : 0);
+        result = 31 * result + (icon != null ? icon.hashCode() : 0);
+        result = 31 * result + (trendAttributes != null ? trendAttributes.hashCode() : 0);
+        result = 31 * result + (descriptionLink != null ? descriptionLink.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (query != null ? query.hashCode() : 0);
+        return result;
     }
 }

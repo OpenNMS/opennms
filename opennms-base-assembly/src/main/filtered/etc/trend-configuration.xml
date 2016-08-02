@@ -1,4 +1,5 @@
-<trend-configuration>
+<?xml version="1.0"?>
+<trend-configuration xmlns="http://xmlns.opennms.org/xsd/config/trend">
 
     <trend-definition name="nodes">
         <title>Nodes</title>
@@ -58,8 +59,8 @@
     <trend-definition name="alarms-new">
         <title>Alarms</title>
         <subtitle>Occurence</subtitle>
-        <icon>glyphicon-bell</icon>
         <visible>true</visible>
+        <icon>glyphicon-bell</icon>
         <trend-attributes>
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkType" value="bar"/>
@@ -84,8 +85,8 @@
     <trend-definition name="alarms-total">
         <title>Alarms</title>
         <subtitle>UnACKed</subtitle>
-        <icon>glyphicon-bell</icon>
         <visible>true</visible>
+        <icon>glyphicon-bell</icon>
         <trend-attributes>
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkHeight" value="35"/>
