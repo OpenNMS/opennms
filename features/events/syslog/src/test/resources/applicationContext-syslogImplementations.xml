@@ -18,12 +18,10 @@
 
   <bean id="syslogReceiverJavaNet" class="org.opennms.netmgt.syslogd.SyslogReceiverJavaNetImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
-    <property name="distPollerDao" ref="distPollerDao"/>
   </bean>
 
   <bean id="syslogReceiverCamelNetty" class="org.opennms.netmgt.syslogd.SyslogReceiverCamelNettyImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
-    <property name="distPollerDao" ref="distPollerDao"/>
   </bean>
 
 </beans>

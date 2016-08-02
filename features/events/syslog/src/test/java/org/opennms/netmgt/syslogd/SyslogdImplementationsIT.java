@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.syslogd;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -36,7 +38,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
@@ -51,17 +52,16 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
-import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
 import org.opennms.netmgt.syslogd.api.SyslogMessageLogDTO;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,19 +77,22 @@ import com.codahale.metrics.MetricRegistry;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml",
-        "classpath:/applicationContext-syslogImplementations.xml"
+        "classpath:/applicationContext-syslogImplementations.xml",
+        "classpath:/applicationContext-eventCounter.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties = { "io.netty.leakDetectionLevel=PARANOID" })
 @JUnitTemporaryDatabase
+@DirtiesContext // This is necessary to completely reset the Camel context in between tests
 public class SyslogdImplementationsIT implements InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogdImplementationsIT.class);
+    static final Logger LOG = LoggerFactory.getLogger(SyslogdImplementationsIT.class);
 
+    @Autowired
     private EventCounter m_eventCounter;
 
     @Autowired
-    private MockEventIpcManager m_eventIpcManager;
+    @Qualifier("eventForwarder")
+    private EventForwarder m_eventForwarder;
 
     @Autowired
     private MockMessageDispatcherFactory<SyslogConnection, SyslogMessageLogDTO> m_messageDispatcherFactory;
@@ -116,13 +119,12 @@ public class SyslogdImplementationsIT implements InitializingBean {
 
         loadSyslogConfiguration("/etc/syslogd-loadtest-configuration.xml");
 
-        m_eventCounter = new EventCounter();
-        this.m_eventIpcManager.addEventListener(m_eventCounter);
-
         SyslogSinkConsumer consumer = new SyslogSinkConsumer(new MetricRegistry());
         consumer.setSyslogdConfig(m_config);
-        consumer.setEventForwarder(m_eventIpcManager);
+        consumer.setEventForwarder(m_eventForwarder);
         m_messageDispatcherFactory.setConsumer(consumer);
+
+        m_eventCounter.reset();
     }
 
     @After
@@ -168,7 +170,7 @@ public class SyslogdImplementationsIT implements InitializingBean {
             foos.add(eventNum);
         }
 
-        m_eventCounter.setAnticipated(eventCount);
+        m_eventCounter.setAnticipatedEventCount(eventCount);
 
         String testPduFormat = "2010-08-19 localhost foo%d: load test %d on tty1";
         /*
@@ -213,63 +215,17 @@ public class SyslogdImplementationsIT implements InitializingBean {
         long mid = System.currentTimeMillis();
         System.err.println(String.format("Sent %d packets in %d milliseconds", eventCount, mid - start));
 
-        m_eventCounter.waitForFinish(120000);
+        m_eventCounter.waitForFinish(30000);
         long end = System.currentTimeMillis();
 
-        System.err.println(String.format("Events expected: %d, events received: %d", eventCount, m_eventCounter.getCount()));
+        System.err.println(String.format("Events expected: %d, events received: %d", eventCount, m_eventCounter.getEventCount()));
+
+        assertEquals(eventCount, m_eventCounter.getEventCount());
         final long total = (end - start);
         final double eventsPerSecond = (eventCount * 1000.0 / total);
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
 
         listener.interrupt();
         listener.join();
-    }
-
-    public static class EventCounter implements EventListener {
-        private AtomicInteger m_eventCount = new AtomicInteger(0);
-        private int m_expectedCount = 0;
-
-        @Override
-        public String getName() {
-            return "eventCounter";
-        }
-
-        // Me love you, long time.
-        public void waitForFinish(final long time) {
-            final long start = System.currentTimeMillis();
-            while (this.getCount() < m_expectedCount) {
-                if (System.currentTimeMillis() - start > time) {
-                    LOG.warn("waitForFinish timeout ({}) reached", time);
-                    break;
-                }
-                try {
-                    Thread.sleep(50);
-                } catch (final InterruptedException e) {
-                    LOG.warn("thread was interrupted while sleeping", e);
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }
-
-        public void setAnticipated(final int eventCount) {
-            m_expectedCount = eventCount;
-        }
-
-        public int getCount() {
-            return m_eventCount.get();
-        }
-
-        public void anticipate() {
-            m_expectedCount++;
-        }
-
-        @Override
-        public void onEvent(final Event e) {
-            final int current = m_eventCount.incrementAndGet();
-            if (current % 100 == 0) {
-                System.err.println(current + " out of " + m_expectedCount + " expected events received");
-            }
-        }
-
     }
 }
