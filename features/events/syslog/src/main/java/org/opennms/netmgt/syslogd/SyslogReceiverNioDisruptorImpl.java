@@ -107,7 +107,7 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
      * 
      * TODO: Make this configurable
      */
-    public static final int SOCKET_BYTE_BUFFER_QUEUE_SIZE = 65536;
+    public static final int SOCKET_BYTE_BUFFER_QUEUE_SIZE = 8192;
 
     /**
      * This is the size of the LMAX Disruptor queue that contains {@link SyslogConnection}
@@ -115,7 +115,7 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
      * 
      * TODO: Make this configurable
      */
-    public static final int EVENT_CONVERSION_TASK_QUEUE_SIZE = 65536;
+    public static final int EVENT_CONVERSION_TASK_QUEUE_SIZE = 8192;
 
     /**
      * {@link ExecutorFactory} that is used to construct the thread pools that execute

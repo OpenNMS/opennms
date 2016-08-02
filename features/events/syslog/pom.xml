@@ -231,7 +231,7 @@
       <artifactId>org.opennms.core.test-api.camel</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <!-- HZN-742 -->
     <dependency>
 	 <groupId>org.apache.curator</groupId>

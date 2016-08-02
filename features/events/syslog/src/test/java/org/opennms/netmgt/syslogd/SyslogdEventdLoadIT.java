@@ -40,7 +40,6 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
@@ -59,7 +58,6 @@ import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.events.api.EventIpcManager;
-import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.support.TcpEventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -84,13 +82,15 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml"
+        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
+        "classpath:/applicationContext-eventCounter.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class SyslogdEventdLoadIT implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogdEventdLoadIT.class);
 
+    @Autowired
     private EventCounter m_eventCounter;
 
     @Autowired
@@ -99,7 +99,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
 
     @Autowired
     private Eventd m_eventd;
-    
+
     private Syslogd m_syslogd;
 
     private SyslogdConfigFactory m_config;
@@ -114,9 +114,6 @@ public class SyslogdEventdLoadIT implements InitializingBean {
     	MockLogAppender.setupLogging(true, "DEBUG");
 
         loadSyslogConfiguration("/etc/syslogd-loadtest-configuration.xml");
-
-        m_eventCounter = new EventCounter();
-        this.m_eventIpcManager.addEventListener(m_eventCounter);
     }
 
     @After
@@ -125,6 +122,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
             m_syslogd.stop();
         }
         MockLogAppender.assertNoErrorOrGreater();
+        m_eventCounter.reset();
     }
 
     private void loadSyslogConfiguration(final String configuration) throws IOException, MarshalException, ValidationException {
@@ -152,7 +150,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         startSyslogdGracefully();
 
         int eventCount = 100;
-        
+
         List<Integer> foos = new ArrayList<Integer>();
 
         for (int i = 0; i < eventCount; i++) {
@@ -160,7 +158,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
             foos.add(eventNum);
         }
 
-        m_eventCounter.setAnticipated(eventCount);
+        m_eventCounter.setAnticipatedEventCount(eventCount);
 
         long start = System.currentTimeMillis();
         String testPduFormat = "2010-08-19 localhost foo%d: load test %d on tty1";
@@ -187,7 +185,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
 
         startSyslogdGracefully();
 
-        m_eventCounter.anticipate();
+        m_eventCounter.anticipateEvent();
 
         InetAddress address = InetAddress.getLocalHost();
 
@@ -203,7 +201,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
 
         m_eventCounter.waitForFinish(120000);
         
-        assertEquals(1, m_eventCounter.getCount());
+        assertEquals(1, m_eventCounter.getEventCount());
     }
 
     @Test(timeout=120000)
@@ -213,7 +211,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
 
         startSyslogdGracefully();
 
-        m_eventCounter.anticipate();
+        m_eventCounter.anticipateEvent();
 
         InetAddress address = InetAddress.getLocalHost();
 
@@ -229,7 +227,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
 
         m_eventCounter.waitForFinish(120000);
         
-        assertEquals(1, m_eventCounter.getCount());
+        assertEquals(1, m_eventCounter.getEventCount());
     }
 
     @Test(timeout=120000)
@@ -244,10 +242,10 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         eventLog.setEvents(events);
         
         int eventCount = 10000;
-        m_eventCounter.setAnticipated(eventCount);
+        m_eventCounter.setAnticipatedEventCount(eventCount);
 
         /**
-         * Add 10000 events to the event log
+         * Add ${eventCount} events to the event log
          */
         for (int i = 0; i < eventCount; i++) {
             int eventNum = Double.valueOf(Math.random() * 300).intValue();
@@ -283,52 +281,4 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         return new TcpEventProxy(new InetSocketAddress(InetAddressUtils.ONE_TWENTY_SEVEN, TcpEventProxy.DEFAULT_PORT), TcpEventProxy.DEFAULT_TIMEOUT);
     }
 
-    public static class EventCounter implements EventListener {
-        private AtomicInteger m_eventCount = new AtomicInteger(0);
-        private int m_expectedCount = 0;
-
-        @Override
-        public String getName() {
-            return "eventCounter";
-        }
-
-        // Me love you, long time.
-        public void waitForFinish(final long time) {
-            final long start = System.currentTimeMillis();
-            while (this.getCount() < m_expectedCount) {
-                if (System.currentTimeMillis() - start > time) {
-                    LOG.warn("waitForFinish timeout ({}) reached", time);
-                    break;
-                }
-                try {
-                    Thread.sleep(50);
-                } catch (final InterruptedException e) {
-                    LOG.warn("thread was interrupted while sleeping", e);
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
-        }
-
-        public void setAnticipated(final int eventCount) {
-            m_expectedCount = eventCount;
-        }
-
-        public int getCount() {
-            return m_eventCount.get();
-        }
-
-        public void anticipate() {
-            m_expectedCount++;
-        }
-
-        @Override
-        public void onEvent(final Event e) {
-            final int current = m_eventCount.incrementAndGet();
-            if (current % 100 == 0) {
-                System.err.println(current + " < " + m_expectedCount);
-            }
-        }
-
-    }
 }

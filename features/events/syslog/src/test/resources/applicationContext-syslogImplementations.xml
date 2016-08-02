@@ -20,9 +20,14 @@
 
   <bean id="executorFactoryCassandraSEP" class="org.opennms.core.concurrent.cassandra.ExecutorFactoryCassandraSEPImpl"/>
 
+  <bean id="syslogConnectionHandler" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerDefaultImpl">
+    <!-- TODO: Inject executorFactory and use it to construct Executors -->
+  </bean>
+
   <bean id="syslogReceiverNio" class="org.opennms.netmgt.syslogd.SyslogReceiverNioThreadPoolImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
     <property name="distPollerDao" ref="distPollerDao"/>
+    <property name="syslogConnectionHandlers" ref="syslogConnectionHandler"/>
   </bean>
 
   <bean id="syslogReceiverNioDisruptor" class="org.opennms.netmgt.syslogd.SyslogReceiverNioDisruptorImpl">
@@ -39,11 +44,13 @@
   <bean id="syslogReceiverJavaNet" class="org.opennms.netmgt.syslogd.SyslogReceiverJavaNetImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
     <property name="distPollerDao" ref="distPollerDao"/>
+    <property name="syslogConnectionHandlers" ref="syslogConnectionHandler"/>
   </bean>
 
   <bean id="syslogReceiverCamelNetty" class="org.opennms.netmgt.syslogd.SyslogReceiverCamelNettyImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
     <property name="distPollerDao" ref="distPollerDao"/>
+    <property name="syslogConnectionHandlers" ref="syslogConnectionHandler"/>
   </bean>
 
 </beans>
