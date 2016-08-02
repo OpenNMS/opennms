@@ -1,4 +1,5 @@
 
+[[poller-imap-monitor]]
 ==== ImapMonitor
 
 This monitor checks if an IMAP server is functional.
