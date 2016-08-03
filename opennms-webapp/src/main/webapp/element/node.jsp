@@ -220,14 +220,6 @@
     nodeModel.put("sysContact", WebSecurityUtils.sanitizeString(node_db.getSysContact(), true));
     nodeModel.put("sysDescription", WebSecurityUtils.sanitizeString(node_db.getSysDescription()));
     
-    if(!(node_db.getForeignSource() == null) && !(node_db.getForeignId() == null)) {
-        nodeModel.put("parentRes", node_db.getForeignSource() + ":" + node_db.getForeignId());
-        nodeModel.put("parentResType", "nodeSource");
-    } else {
-        nodeModel.put("parentRes", Integer.toString(nodeId));
-        nodeModel.put("parentResType", "node");
-    }
-
     pageContext.setAttribute("model", nodeModel);
 
 	final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
@@ -375,10 +367,8 @@ function confirmAssetEdit() {
     <%-- TODO In order to show the following link only when there are metrics, an
               inexpensive method has to be implemented on either ResourceService
               or ResourceDao --%>
-    <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
-      <c:param name="parentResourceType" value="${model.parentResType}"/>
-      <c:param name="parentResource" value="${model.parentRes}"/>
-      <c:param name="reports" value="all"/>
+    <c:url var="resourceGraphsUrl" value="graph/chooseresource.jsp">
+      <c:param name="node" value="${model.id}"/>
     </c:url>
     <li>
       <a href="<c:out value="${resourceGraphsUrl}"/>">Resource Graphs</a>
