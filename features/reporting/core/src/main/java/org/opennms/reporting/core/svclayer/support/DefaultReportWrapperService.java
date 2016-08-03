@@ -183,7 +183,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                         catalogEntry.setLocation(outputPath);
                         catalogEntry.setDate(new Date());
                         m_reportStoreService.save(catalogEntry);
-                        if (deliveryOptions.getMailTo().length() != 0) {
+                        if (deliveryOptions.getSendMail() && deliveryOptions.getMailTo().length() != 0) {
                             getReportService(reportId).render(reportId, outputPath, deliveryOptions.getFormat(), bout);
                             mailReport(deliveryOptions, out);
                         }
@@ -198,11 +198,11 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         });
     }
 
-    private void logError(String reportId, Exception exception) {
+    private static void logError(final String reportId, final Exception exception) {
         LOG.error("failed to run or render report: {}", reportId, exception);
     }
 
-    private void mailReport(final DeliveryOptions deliveryOptions, final ByteArrayOutputStream outputStream) {
+    private static void mailReport(final DeliveryOptions deliveryOptions, final ByteArrayOutputStream outputStream) {
         ByteArrayInputStream inputStream = null;
         try {
             inputStream = new ByteArrayInputStream(outputStream.toByteArray());
