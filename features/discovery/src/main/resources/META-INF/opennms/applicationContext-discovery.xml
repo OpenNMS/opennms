@@ -74,12 +74,6 @@
     <constructor-arg ref="eventForwarder" />
   </bean>
 
-  <!-- Process the EventListener annotations on Discovery -->
-  <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
-    <property name="annotatedListener" ref="daemon" />
-    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
-  </bean>
-
   <!-- Discovery daemon -->
   <bean id="daemon" class="org.opennms.netmgt.discovery.Discovery">
     <property name="discoveryFactory" ref="discoveryFactory" />

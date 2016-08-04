@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.Consume;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -47,8 +48,6 @@ import org.opennms.netmgt.discovery.UnmanagedInterfaceFilter.LocationIpAddressKe
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
-import org.opennms.netmgt.events.api.annotations.EventHandler;
-import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
@@ -71,7 +70,6 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  */
-@EventListener(name="OpenNMS.Discovery", logPrefix="discovery")
 public class Discovery extends AbstractServiceDaemon {
     
     private static final Logger LOG = LoggerFactory.getLogger(Discovery.class);
@@ -297,7 +295,7 @@ public class Discovery extends AbstractServiceDaemon {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    @EventHandler(uei=EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)
+    @Consume(uri=EventConstants.DISCOVERYCONFIG_CHANGED_JMS_URI)
     public void handleDiscoveryConfigurationChanged(Event event) {
         LOG.info("handleDiscoveryConfigurationChanged: handling message that a change to configuration happened...");
         reloadAndReStart();
@@ -335,7 +333,7 @@ public class Discovery extends AbstractServiceDaemon {
      *
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    @Consume(uri=EventConstants.RELOAD_DAEMON_CONFIG_JMS_URI)
     public void reloadDaemonConfig(Event e) {
         LOG.info("reloadDaemonConfig: processing reload daemon event...");
         if (isReloadConfigEventTarget(e)) {
@@ -365,7 +363,7 @@ public class Discovery extends AbstractServiceDaemon {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    @EventHandler(uei=EventConstants.INTERFACE_DELETED_EVENT_UEI)
+    @Consume(uri=EventConstants.INTERFACE_DELETED_JMS_URI)
     public void handleInterfaceDeleted(final Event event) {
         // remove from known nodes
         Long nodeId = event.getNodeid();
@@ -393,7 +391,7 @@ public class Discovery extends AbstractServiceDaemon {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    @EventHandler(uei=EventConstants.DISC_RESUME_EVENT_UEI)
+    @Consume(uri=EventConstants.DISC_RESUME_JMS_URI)
     public void handleDiscoveryResume(Event event) {
         try {
             resume();
@@ -406,7 +404,7 @@ public class Discovery extends AbstractServiceDaemon {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    @EventHandler(uei=EventConstants.DISC_PAUSE_EVENT_UEI)
+    @Consume(uri=EventConstants.DISC_PAUSE_JMS_URI)
     public void handleDiscoveryPause(Event event) {
         try {
             pause();
@@ -419,7 +417,7 @@ public class Discovery extends AbstractServiceDaemon {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
+    @Consume(uri=EventConstants.NODE_GAINED_INTERFACE_JMS_URI)
     public void handleNodeGainedInterface(Event event) {
         // add to known nodes
         Long nodeId = event.getNodeid();
