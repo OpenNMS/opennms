@@ -1343,7 +1343,7 @@
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.5</log4j2Version>
     <minaVersion>2.0.13</minaVersion>
-    <minionKarafVersion>4.0.4</minionKarafVersion>
+    <minionKarafVersion>4.0.5</minionKarafVersion>
     <newtsVersion>1.4.1</newtsVersion>
     <paxExamVersion>4.8.0</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
