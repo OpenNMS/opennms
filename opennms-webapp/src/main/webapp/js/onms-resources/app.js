@@ -41,7 +41,7 @@ angular.module('onms-resources', [
 
   $scope.checkAll = function(check) {
     for (var key in $scope.resources) {
-      _.each($scope.resources[key], function(r) {
+      _.each($scope.filteredResources[key], function(r) {
         r.selected = check;
       });
     }
@@ -50,7 +50,7 @@ angular.module('onms-resources', [
   $scope.graphSelected = function() {
     var selected = [];
     for (var key in $scope.resources) {
-      _.each($scope.resources[key], function(r) {
+      _.each($scope.filteredResources[key], function(r) {
         if (r.selected) {
           selected.push('resourceId=' + r.id);
         }
@@ -61,8 +61,8 @@ angular.module('onms-resources', [
 
   $scope.graphAll = function() {
     var selected = [];
-    for (var key in $scope.resources) {
-      selected.concat(_.map($scope.resources[key], function(r) {
+    for (var key in $scope.filteredResources) {
+      selected.concat(_.map($scope.filteredResources[key], function(r) {
         return 'resourceId=' + r.id;
       }));
     }
