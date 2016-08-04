@@ -22,7 +22,7 @@
 	</cm:property-placeholder>
 
 	<bean id="syslogConnectionHandlerCamel" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerCamelImpl">
-		<argument value="seda:handleMessage"/>
+		<argument value="seda:handleMessageBlueprint"/>
 	</bean>
 	
 		<!-- Camel Event marshalling processor -->
@@ -35,7 +35,7 @@
 	<camelContext id="syslogConnectionHandler" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerKafkaProperties" />
 		<route id="sendSyslogViaKafka">
-			<from uri="seda:handleMessage" />
+			<from uri="seda:handleMessageBlueprint" />
 			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
 		    <setHeader headerName="kafka.PARTITION_KEY">
 				<!-- TODO: Partition by remote address -->
