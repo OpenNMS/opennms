@@ -52,6 +52,16 @@ public abstract class EventConstants {
      */
     public static final String POSTGRES_DATE_FORMAT = "\'Dy Mon DD HH24:MI:SS Tz YYYY\'";
 
+    /**
+     * This value is prepended to the UEI to form a Camel JMS endpoint URI.
+     */
+    public static final String JMS_URI_PREFIX = "queuingservice:topic:OpenNMS.Eventd.BroadcastEvent?concurrentConsumers=1&selector=uei='";
+
+    /**
+     * This value is appended to the UEI to form a Camel JMS endpoint URI.
+     */
+    public static final String JMS_URI_SUFFIX = "'";
+
     //
     // The eventUEIs used by OpenNMS
     //
@@ -60,489 +70,582 @@ public abstract class EventConstants {
      * The status query control event.
      */
     public static final String STATUS_QUERY_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/status";
+    public static final String STATUS_QUERY_CONTROL_JMS_URI = JMS_URI_PREFIX + STATUS_QUERY_CONTROL_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The start event.
      */
     public static final String START_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/start";
+    public static final String START_CONTROL_JMS_URI = JMS_URI_PREFIX + START_CONTROL_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The pause event.
      */
     public static final String PAUSE_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/pause";
+    public static final String PAUSE_CONTROL_JMS_URI = JMS_URI_PREFIX + PAUSE_CONTROL_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The resume event.
      */
     public static final String RESUME_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/resume";
+    public static final String RESUME_CONTROL_JMS_URI = JMS_URI_PREFIX + RESUME_CONTROL_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The stop event.
      */
     public static final String STOP_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/stop";
+    public static final String STOP_CONTROL_JMS_URI = JMS_URI_PREFIX + STOP_CONTROL_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The 'start pending' response event.
      */
     public static final String CONTROL_START_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/startPending";
+    public static final String CONTROL_START_PENDING_JMS_URI = JMS_URI_PREFIX + CONTROL_START_PENDING_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The 'starting' response event.
      */
     public static final String CONTROL_STARTING_EVENT_UEI = "uei.opennms.org/internal/control/starting";
+    public static final String CONTROL_STARTING_JMS_URI = JMS_URI_PREFIX + CONTROL_STARTING_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The 'pause pending' response event.
      */
     public static final String CONTROL_PAUSE_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/pausePending";
+    public static final String CONTROL_PAUSE_PENDING_JMS_URI = JMS_URI_PREFIX + CONTROL_PAUSE_PENDING_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The 'paused' response event.
      */
     public static final String CONTROL_PAUSED_EVENT_UEI = "uei.opennms.org/internal/control/paused";
+    public static final String CONTROL_PAUSED_JMS_URI = JMS_URI_PREFIX + CONTROL_PAUSED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The 'resume pending' response event.
      */
     public static final String CONTROL_RESUME_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/resumePending";
+    public static final String CONTROL_RESUME_PENDING_JMS_URI = JMS_URI_PREFIX + CONTROL_RESUME_PENDING_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The 'running' response event.
      */
     public static final String CONTROL_RUNNING_EVENT_UEI = "uei.opennms.org/internal/control/running";
+    public static final String CONTROL_RUNNING_JMS_URI = JMS_URI_PREFIX + CONTROL_RUNNING_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The 'stop pending' response event.
      */
     public static final String CONTROL_STOP_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/stopPending";
+    public static final String CONTROL_STOP_PENDING_JMS_URI = JMS_URI_PREFIX + CONTROL_STOP_PENDING_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The 'stopped' response event.
      */
     public static final String CONTROL_STOPPED_EVENT_UEI = "uei.opennms.org/internal/control/stopped";
+    public static final String CONTROL_STOPPED_JMS_URI = JMS_URI_PREFIX + CONTROL_STOPPED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The control error reponse event.
      */
     public static final String CONTROL_ERROR_EVENT_UEI = "uei.opennms.org/internal/control/error";
+    public static final String CONTROL_ERROR_JMS_URI = JMS_URI_PREFIX + CONTROL_ERROR_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The new suspect event UEI.
      */
     public static final String NEW_SUSPECT_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/discovery/newSuspect";
+    public static final String NEW_SUSPECT_INTERFACE_JMS_URI = JMS_URI_PREFIX + NEW_SUSPECT_INTERFACE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The discovery pause event UEI.
      */
     public static final String DISC_PAUSE_EVENT_UEI = "uei.opennms.org/internal/capsd/discPause";
+    public static final String DISC_PAUSE_JMS_URI = JMS_URI_PREFIX + DISC_PAUSE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The discovery resume event UEI.
      */
     public static final String DISC_RESUME_EVENT_UEI = "uei.opennms.org/internal/capsd/discResume";
+    public static final String DISC_RESUME_JMS_URI = JMS_URI_PREFIX + DISC_RESUME_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The discovery configuration changed event UEI.
      */
     public static final String DISCOVERYCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/discoveryConfigChange";
+    public static final String DISCOVERYCONFIG_CHANGED_JMS_URI = JMS_URI_PREFIX + DISCOVERYCONFIG_CHANGED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The update server event UEI.
      */
     public static final String UPDATE_SERVER_EVENT_UEI = "uei.opennms.org/internal/capsd/updateServer";
+    public static final String UPDATE_SERVER_JMS_URI = JMS_URI_PREFIX + UPDATE_SERVER_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The update service event UEI.
      */
     public static final String UPDATE_SERVICE_EVENT_UEI = "uei.opennms.org/internal/capsd/updateService";
+    public static final String UPDATE_SERVICE_JMS_URI = JMS_URI_PREFIX + UPDATE_SERVICE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The add node event UEI.
      */
     public static final String ADD_NODE_EVENT_UEI = "uei.opennms.org/internal/capsd/addNode";
+    public static final String ADD_NODE_JMS_URI = JMS_URI_PREFIX + ADD_NODE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The delete node event UEI.
      */
     public static final String DELETE_NODE_EVENT_UEI = "uei.opennms.org/internal/capsd/deleteNode";
+    public static final String DELETE_NODE_JMS_URI = JMS_URI_PREFIX + DELETE_NODE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The add interface event UEI.
      */
     public static final String ADD_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/addInterface";
+    public static final String ADD_INTERFACE_JMS_URI = JMS_URI_PREFIX + ADD_INTERFACE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The delete interface event UEI.
      */
     public static final String DELETE_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/deleteInterface";
+    public static final String DELETE_INTERFACE_JMS_URI = JMS_URI_PREFIX + DELETE_INTERFACE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The change service event UEI.
      */
     public static final String CHANGE_SERVICE_EVENT_UEI = "uei.opennms.org/internal/capsd/changeService";
+    public static final String CHANGE_SERVICE_JMS_URI = JMS_URI_PREFIX + CHANGE_SERVICE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The outage created event UEI.
      */
     public static final String OUTAGE_CREATED_EVENT_UEI = "uei.opennms.org/internal/poller/outageCreated";
+    public static final String OUTAGE_CREATED_JMS_URI = JMS_URI_PREFIX + OUTAGE_CREATED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The outage Resolved event UEI.
      */
     public static final String OUTAGE_RESOLVED_EVENT_UEI = "uei.opennms.org/internal/poller/outageResolved";
+    public static final String OUTAGE_RESOLVED_JMS_URI = JMS_URI_PREFIX + OUTAGE_RESOLVED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The restart polling node event UEI.
      */
     public static final String RESTART_POLLING_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/restartPollingInterface";
+    public static final String RESTART_POLLING_INTERFACE_JMS_URI = JMS_URI_PREFIX + RESTART_POLLING_INTERFACE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The node added event UEI.
      */
     public static final String NODE_ADDED_EVENT_UEI = "uei.opennms.org/nodes/nodeAdded";
-    
+    public static final String NODE_ADDED_JMS_URI = JMS_URI_PREFIX + NODE_ADDED_EVENT_UEI + JMS_URI_SUFFIX;
+
     /**
      * The node updated event UEI (added for the ProvisioningAdapter integration).
      */
     public static final String NODE_UPDATED_EVENT_UEI = "uei.opennms.org/nodes/nodeUpdated";
-    
-	/**
-	 * The node category membership changed UEI.
-	 */
+    public static final String NODE_UPDATED_JMS_URI = JMS_URI_PREFIX + NODE_UPDATED_EVENT_UEI + JMS_URI_SUFFIX;
+
+    /**
+     * The node category membership changed UEI.
+     */
     public static final String NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeCategoryMembershipChanged";
+    public static final String NODE_CATEGORY_MEMBERSHIP_CHANGED_JMS_URI = JMS_URI_PREFIX + NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The node gained interface event UEI.
      */
     public static final String NODE_GAINED_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/nodeGainedInterface";
+    public static final String NODE_GAINED_INTERFACE_JMS_URI = JMS_URI_PREFIX + NODE_GAINED_INTERFACE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The node gained service event UEI.
      */
     public static final String NODE_GAINED_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/nodeGainedService";
+    public static final String NODE_GAINED_SERVICE_JMS_URI = JMS_URI_PREFIX + NODE_GAINED_SERVICE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The node lost service event UEI.
      */
     public static final String NODE_LOST_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/nodeLostService";
+    public static final String NODE_LOST_SERVICE_JMS_URI = JMS_URI_PREFIX + NODE_LOST_SERVICE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The service responsive event UEI.
      */
     public static final String SERVICE_RESPONSIVE_EVENT_UEI = "uei.opennms.org/nodes/serviceResponsive";
+    public static final String SERVICE_RESPONSIVE_JMS_URI = JMS_URI_PREFIX + SERVICE_RESPONSIVE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The service unresponsive event UEI.
      */
     public static final String SERVICE_UNRESPONSIVE_EVENT_UEI = "uei.opennms.org/nodes/serviceUnresponsive";
+    public static final String SERVICE_UNRESPONSIVE_JMS_URI = JMS_URI_PREFIX + SERVICE_UNRESPONSIVE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The service unmanaged event UEI.
      */
     public static final String SERVICE_UNMANAGED_EVENT_UEI = "uei.opennms.org/nodes/serviceUnmanaged";
+    public static final String SERVICE_UNMANAGED_JMS_URI = JMS_URI_PREFIX + SERVICE_UNMANAGED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The interface down event UEI.
      */
     public static final String INTERFACE_DOWN_EVENT_UEI = "uei.opennms.org/nodes/interfaceDown";
+    public static final String INTERFACE_DOWN_JMS_URI = JMS_URI_PREFIX + INTERFACE_DOWN_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The SNMP interface operStatus down event UEI.
      */
     public static final String SNMP_INTERFACE_OPER_DOWN_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperDown";
+    public static final String SNMP_INTERFACE_OPER_DOWN_JMS_URI = JMS_URI_PREFIX + SNMP_INTERFACE_OPER_DOWN_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The SNMP interface admin down event UEI.
      */
     public static final String SNMP_INTERFACE_ADMIN_DOWN_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceAdminDown";
-    
+    public static final String SNMP_INTERFACE_ADMIN_DOWN_JMS_URI = JMS_URI_PREFIX + SNMP_INTERFACE_ADMIN_DOWN_EVENT_UEI + JMS_URI_SUFFIX;
+
     /**
      * The node down event UEI.
      */
     public static final String NODE_DOWN_EVENT_UEI = "uei.opennms.org/nodes/nodeDown";
+    public static final String NODE_DOWN_JMS_URI = JMS_URI_PREFIX + NODE_DOWN_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The path outage event UEI.
      */
     public static final String PATH_OUTAGE_EVENT_UEI = "uei.opennms.org/nodes/pathOutage";
+    public static final String PATH_OUTAGE_JMS_URI = JMS_URI_PREFIX + PATH_OUTAGE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The node up event UEI.
      */
     public static final String NODE_UP_EVENT_UEI = "uei.opennms.org/nodes/nodeUp";
+    public static final String NODE_UP_JMS_URI = JMS_URI_PREFIX + NODE_UP_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The interface up event UEI.
      */
     public static final String INTERFACE_UP_EVENT_UEI = "uei.opennms.org/nodes/interfaceUp";
+    public static final String INTERFACE_UP_JMS_URI = JMS_URI_PREFIX + INTERFACE_UP_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The SNMP interface operStatus up event UEI.
      */
     public static final String SNMP_INTERFACE_OPER_UP_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperUp";
+    public static final String SNMP_INTERFACE_OPER_UP_JMS_URI = JMS_URI_PREFIX + SNMP_INTERFACE_OPER_UP_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The SNMP interface admin up event UEI.
      */
     public static final String SNMP_INTERFACE_ADMIN_UP_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceAdminUp";
+    public static final String SNMP_INTERFACE_ADMIN_UP_JMS_URI = JMS_URI_PREFIX + SNMP_INTERFACE_ADMIN_UP_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The node regained service event UEI.
      */
     public static final String NODE_REGAINED_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/nodeRegainedService";
+    public static final String NODE_REGAINED_SERVICE_JMS_URI = JMS_URI_PREFIX + NODE_REGAINED_SERVICE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The delete service event UEI.
      */
     public static final String DELETE_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/deleteService";
+    public static final String DELETE_SERVICE_JMS_URI = JMS_URI_PREFIX + DELETE_SERVICE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The service deleted event UEI.
      */
     public static final String SERVICE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/serviceDeleted";
+    public static final String SERVICE_DELETED_JMS_URI = JMS_URI_PREFIX + SERVICE_DELETED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The interface deleted event UEI.
      */
     public static final String INTERFACE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/interfaceDeleted";
+    public static final String INTERFACE_DELETED_JMS_URI = JMS_URI_PREFIX + INTERFACE_DELETED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The node deleted event UEI.
      */
     public static final String NODE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/nodeDeleted";
+    public static final String NODE_DELETED_JMS_URI = JMS_URI_PREFIX + NODE_DELETED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The low threshold exceeded event UEI.
      */
     public static final String LOW_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/lowThresholdExceeded";
+    public static final String LOW_THRESHOLD_JMS_URI = JMS_URI_PREFIX + LOW_THRESHOLD_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The high threshold exceeded event UEI.
      */
     public static final String HIGH_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/highThresholdExceeded";
+    public static final String HIGH_THRESHOLD_JMS_URI = JMS_URI_PREFIX + HIGH_THRESHOLD_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The high threshold rearm event UEI.
      */
     public static final String HIGH_THRESHOLD_REARM_EVENT_UEI = "uei.opennms.org/threshold/highThresholdRearmed";
+    public static final String HIGH_THRESHOLD_REARM_JMS_URI = JMS_URI_PREFIX + HIGH_THRESHOLD_REARM_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The low threshold rearm event UEI.
      */
     public static final String LOW_THRESHOLD_REARM_EVENT_UEI = "uei.opennms.org/threshold/lowThresholdRearmed";
+    public static final String LOW_THRESHOLD_REARM_JMS_URI = JMS_URI_PREFIX + LOW_THRESHOLD_REARM_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The relative change event UEI.
      */
     public static final String RELATIVE_CHANGE_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/relativeChangeExceeded";
+    public static final String RELATIVE_CHANGE_THRESHOLD_JMS_URI = JMS_URI_PREFIX + RELATIVE_CHANGE_THRESHOLD_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The relative change event UEI.
      */
     public static final String ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/absoluteChangeExceeded";
+    public static final String ABSOLUTE_CHANGE_THRESHOLD_JMS_URI = JMS_URI_PREFIX + ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * ThresholdEvaluatorRearmingAbsoluteChange exceeded UEI.
      */
     public static final String REARMING_ABSOLUTE_CHANGE_EXCEEDED_EVENT_UEI = "uei.opennms.org/threshold/rearmingAbsoluteChangeExceeded";
-    
+    public static final String REARMING_ABSOLUTE_CHANGE_EXCEEDED_JMS_URI = JMS_URI_PREFIX + REARMING_ABSOLUTE_CHANGE_EXCEEDED_EVENT_UEI + JMS_URI_SUFFIX;
+
     /**
      * ThresholdEvaluatorRearmingAbsoluteChange exceeded UEI.
      */
     public static final String REARMING_ABSOLUTE_CHANGE_REARM_EVENT_UEI = "uei.opennms.org/threshold/rearmingAbsoluteChangeRearmed";
-    
+    public static final String REARMING_ABSOLUTE_CHANGE_REARM_JMS_URI = JMS_URI_PREFIX + REARMING_ABSOLUTE_CHANGE_REARM_EVENT_UEI + JMS_URI_SUFFIX;
+
     /**
      * The interface index changed event.
      */
     public static final String INTERFACE_INDEX_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIndexChanged";
+    public static final String INTERFACE_INDEX_CHANGED_JMS_URI = JMS_URI_PREFIX + INTERFACE_INDEX_CHANGED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The interface supports SNMP event...generated during capability rescan
      * when an already managed interface gains SNMP support for the first time.
      */
     public static final String INTERFACE_SUPPORTS_SNMP_EVENT_UEI = "uei.opennms.org/internal/capsd/interfaceSupportsSNMP";
+    public static final String INTERFACE_SUPPORTS_SNMP_JMS_URI = JMS_URI_PREFIX + INTERFACE_SUPPORTS_SNMP_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * A service scan has discovered a duplicate IP address.
      */
     public static final String DUPLICATE_IPINTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/duplicateIPAddress";
+    public static final String DUPLICATE_IPINTERFACE_JMS_URI = JMS_URI_PREFIX + DUPLICATE_IPINTERFACE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The interface reparented event.
      */
     public static final String INTERFACE_REPARENTED_EVENT_UEI = "uei.opennms.org/nodes/interfaceReparented";
+    public static final String INTERFACE_REPARENTED_JMS_URI = JMS_URI_PREFIX + INTERFACE_REPARENTED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The node info changed event.
      */
     public static final String NODE_INFO_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeInfoChanged";
+    public static final String NODE_INFO_CHANGED_JMS_URI = JMS_URI_PREFIX + NODE_INFO_CHANGED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The interface IP host name changed event.
      */
     public static final String INTERFACE_IP_HOSTNAME_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIPHostNameChanged";
+    public static final String INTERFACE_IP_HOSTNAME_CHANGED_JMS_URI = JMS_URI_PREFIX + INTERFACE_IP_HOSTNAME_CHANGED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The node label changed event.
      */
     public static final String NODE_LABEL_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLabelChanged";
+    public static final String NODE_LABEL_CHANGED_JMS_URI = JMS_URI_PREFIX + NODE_LABEL_CHANGED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The node label source changed event.
      */
     public static final String NODE_LABEL_SOURCE_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLabelSourceChanged";
+    public static final String NODE_LABEL_SOURCE_CHANGED_JMS_URI = JMS_URI_PREFIX + NODE_LABEL_SOURCE_CHANGED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The node deleted event UEI.
      */
     public static final String DUP_NODE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/duplicateNodeDeleted";
+    public static final String DUP_NODE_DELETED_JMS_URI = JMS_URI_PREFIX + DUP_NODE_DELETED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The primary SNMP interface changed event.
      */
     public static final String PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/primarySnmpInterfaceChanged";
+    public static final String PRIMARY_SNMP_INTERFACE_CHANGED_JMS_URI = JMS_URI_PREFIX + PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The reinitialize primary SNMP interface event.
      */
     public static final String REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/reinitializePrimarySnmpInterface";
+    public static final String REINITIALIZE_PRIMARY_SNMP_INTERFACE_JMS_URI = JMS_URI_PREFIX + REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The configure SNMP event.
      */
     public static final String CONFIGURE_SNMP_EVENT_UEI = "uei.opennms.org/internal/configureSNMP";
+    public static final String CONFIGURE_SNMP_JMS_URI = JMS_URI_PREFIX + CONFIGURE_SNMP_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * Collection failed.
      */
     public static final String DATA_COLLECTION_FAILED_EVENT_UEI = "uei.opennms.org/nodes/dataCollectionFailed";
+    public static final String DATA_COLLECTION_FAILED_JMS_URI = JMS_URI_PREFIX + DATA_COLLECTION_FAILED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * Collection succeeded.
      */
     public static final String DATA_COLLECTION_SUCCEEDED_EVENT_UEI = "uei.opennms.org/nodes/dataCollectionSucceeded";
+    public static final String DATA_COLLECTION_SUCCEEDED_JMS_URI = JMS_URI_PREFIX + DATA_COLLECTION_SUCCEEDED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * Thresholding failed.
      */
     public static final String THRESHOLDING_FAILED_EVENT_UEI = "uei.opennms.org/nodes/thresholdingFailed";
+    public static final String THRESHOLDING_FAILED_JMS_URI = JMS_URI_PREFIX + THRESHOLDING_FAILED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * Thresholding succeeded.
      */
     public static final String THRESHOLDING_SUCCEEDED_EVENT_UEI = "uei.opennms.org/nodes/thresholdingSucceeded";
+    public static final String THRESHOLDING_SUCCEEDED_JMS_URI = JMS_URI_PREFIX + THRESHOLDING_SUCCEEDED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The force interface rescan event UEI
      */
     public static final String FORCE_RESCAN_EVENT_UEI = "uei.opennms.org/internal/capsd/forceRescan";
+    public static final String FORCE_RESCAN_JMS_URI = JMS_URI_PREFIX + FORCE_RESCAN_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The suspend polling service event UEI
      */
     public static final String SUSPEND_POLLING_SERVICE_EVENT_UEI = "uei.opennms.org/internal/poller/suspendPollingService";
+    public static final String SUSPEND_POLLING_SERVICE_JMS_URI = JMS_URI_PREFIX + SUSPEND_POLLING_SERVICE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The resume polling service event UEI.
      */
-
     public static final String RESUME_POLLING_SERVICE_EVENT_UEI = "uei.opennms.org/internal/poller/resumePollingService";
+    public static final String RESUME_POLLING_SERVICE_JMS_URI = JMS_URI_PREFIX + RESUME_POLLING_SERVICE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The SNMP conflicts with db UEI.
      */
-
     public static final String SNMP_CONFLICTS_WITH_DB_EVENT_UEI = "uei.opennms.org/internal/capsd/snmpConflictsWithDb";
+    public static final String SNMP_CONFLICTS_WITH_DB_JMS_URI = JMS_URI_PREFIX + SNMP_CONFLICTS_WITH_DB_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The rescan completed UEI.
      */
-
     public static final String RESCAN_COMPLETED_EVENT_UEI = "uei.opennms.org/internal/capsd/rescanCompleted";
-    
+    public static final String RESCAN_COMPLETED_JMS_URI = JMS_URI_PREFIX + RESCAN_COMPLETED_EVENT_UEI + JMS_URI_SUFFIX;
+
     /**
      * The suspect scan completed UEI.
      */
     public static final String SUSPECT_SCAN_COMPLETED_EVENT_UEI = "uei.opennms.org/internal/capsd/suspectScanCompleted";
+    public static final String SUSPECT_SCAN_COMPLETED_JMS_URI = JMS_URI_PREFIX + SUSPECT_SCAN_COMPLETED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The RTC subscribe event.
      */
     public static final String RTC_SUBSCRIBE_EVENT_UEI = "uei.opennms.org/internal/rtc/subscribe";
+    public static final String RTC_SUBSCRIBE_JMS_URI = JMS_URI_PREFIX + RTC_SUBSCRIBE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * The RTC unsubscribe event.
      */
     public static final String RTC_UNSUBSCRIBE_EVENT_UEI = "uei.opennms.org/internal/rtc/unsubscribe";
+    public static final String RTC_UNSUBSCRIBE_JMS_URI = JMS_URI_PREFIX + RTC_UNSUBSCRIBE_EVENT_UEI + JMS_URI_SUFFIX;
 
     
     /**
      * An event used by queued to indicate that data for certain rrds should be immediately flushed to the disk.
      */
     public static final String PROMOTE_QUEUE_DATA_UEI = "uei.opennms.org/internal/promoteQueueData";
-
+    public static final String PROMOTE_QUEUE_DATA_JMS_URI = JMS_URI_PREFIX + PROMOTE_QUEUE_DATA_UEI + JMS_URI_SUFFIX;
 
     /**
      * A service poll returned an unknown status (due to a problem getting poll
      * information).
      */
     public static final String SERVICE_STATUS_UNKNOWN = "uei.opennms.org/internal/unknownServiceStatus";
+    public static final String SERVICE_STATUS_UNKNOWN_JMS_URI = JMS_URI_PREFIX + SERVICE_STATUS_UNKNOWN + JMS_URI_SUFFIX;
 
     /**
      * Notification without users event.
      */
     public static final String NOTIFICATION_WITHOUT_USERS = "uei.opennms.org/internal/notificationWithoutUsers";
+    public static final String NOTIFICATION_WITHOUT_USERS_JMS_URI = JMS_URI_PREFIX + NOTIFICATION_WITHOUT_USERS + JMS_URI_SUFFIX;
 
     /**
      * A vulnerability scan on a specific interface was initiated by the user
      * via the web UI.
      */
     public static final String SPECIFIC_VULN_SCAN_EVENT_UEI = "uei.opennms.org/vulnscand/specificVulnerabilityScan";
+    public static final String SPECIFIC_VULN_SCAN_JMS_URI = JMS_URI_PREFIX + SPECIFIC_VULN_SCAN_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * Demand poll service event ui.
      */
-	public static final String DEMAND_POLL_SERVICE_EVENT_UEI = "uei.opennms.org/internal/demandPollService";
+    public static final String DEMAND_POLL_SERVICE_EVENT_UEI = "uei.opennms.org/internal/demandPollService";
+    public static final String DEMAND_POLL_SERVICE_JMS_URI = JMS_URI_PREFIX + DEMAND_POLL_SERVICE_EVENT_UEI + JMS_URI_SUFFIX;
 
     /**
      * An event to signal that a user has changed asset information via the web
      * UI.
      */
     public static final String ASSET_INFO_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/assetInfoChanged";
+    public static final String ASSET_INFO_CHANGED_JMS_URI = JMS_URI_PREFIX + ASSET_INFO_CHANGED_EVENT_UEI + JMS_URI_SUFFIX;
 
-	/**
-        * The scheduled-outages configuration was changed by the user via the web UI (or manually, for that matter).
-        */
+    /**
+     * The scheduled-outages configuration was changed by the user via the web UI (or manually, for that matter).
+     */
     public static final String SCHEDOUTAGES_CHANGED_EVENT_UEI = "uei.opennms.org/internal/schedOutagesChanged";
-    
+    public static final String SCHEDOUTAGES_CHANGED_JMS_URI = JMS_URI_PREFIX + SCHEDOUTAGES_CHANGED_EVENT_UEI + JMS_URI_SUFFIX;
+
     /**
      * The threshold config was changed by the user via the web UI, or manually.
      */
     public static final String THRESHOLDCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/thresholdConfigChange";
-       
+    public static final String THRESHOLDCONFIG_CHANGED_JMS_URI = JMS_URI_PREFIX + THRESHOLDCONFIG_CHANGED_EVENT_UEI + JMS_URI_SUFFIX;
+
     /**
      * The event config was changed by the user via the web UI, or manually, and should be reloaded.
      */
     public static final String EVENTSCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/eventsConfigChange";
-    
+    public static final String EVENTSCONFIG_CHANGED_JMS_URI = JMS_URI_PREFIX + EVENTSCONFIG_CHANGED_EVENT_UEI + JMS_URI_SUFFIX;
+
     /**
      * The Snmp Poller config was changed by the user via the web UI, or manually, and should be reloaded.
      */
     public static final String SNMPPOLLERCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/reloadSnmpPollerConfig";
-    
+    public static final String SNMPPOLLERCONFIG_CHANGED_JMS_URI = JMS_URI_PREFIX + SNMPPOLLERCONFIG_CHANGED_EVENT_UEI + JMS_URI_SUFFIX;
+
     /**
      * Reload Vacuumd configuration UEI.
      */
     public static final String RELOAD_VACUUMD_CONFIG_UEI = "uei.opennms.org/internal/reloadVacuumdConfig";
+    public static final String RELOAD_VACUUMD_CONFIG_JMS_URI = JMS_URI_PREFIX + RELOAD_VACUUMD_CONFIG_UEI + JMS_URI_SUFFIX;
 
     /**
      * Reload Daemon configuration UEI.
      */
     public static final String RELOAD_DAEMON_CONFIG_UEI = "uei.opennms.org/internal/reloadDaemonConfig";
+    public static final String RELOAD_DAEMON_CONFIG_JMS_URI = JMS_URI_PREFIX + RELOAD_DAEMON_CONFIG_UEI + JMS_URI_SUFFIX;
     /** Constant <code>RELOAD_DAEMON_CONFIG_FAILED_UEI="uei.opennms.org/internal/reloadDaemonCo"{trunked}</code> */
     public static final String RELOAD_DAEMON_CONFIG_FAILED_UEI = "uei.opennms.org/internal/reloadDaemonConfigFailed";
+    public static final String RELOAD_DAEMON_CONFIG_FAILED_JMS_URI = JMS_URI_PREFIX + RELOAD_DAEMON_CONFIG_FAILED_UEI + JMS_URI_SUFFIX;
     /** Constant <code>RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI="uei.opennms.org/internal/reloadDaemonCo"{trunked}</code> */
     public static final String RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI = "uei.opennms.org/internal/reloadDaemonConfigSuccessful";
+    public static final String RELOAD_DAEMON_CONFIG_SUCCESSFUL_JMS_URI = JMS_URI_PREFIX + RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI + JMS_URI_SUFFIX;
     /** Constant <code>PARM_DAEMON_NAME="daemonName"</code> */
     public static final String PARM_DAEMON_NAME = "daemonName";
     /** Constant <code>PARM_CONFIG_FILE_NAME="configFile"</code> */
@@ -553,49 +656,71 @@ public abstract class EventConstants {
      */
     
     public static final String REPORTD_RUN_REPORT = "uei.opennms.org/reportd/runReport";
+    public static final String REPORTD_RUN_REPORT_JMS_URI = JMS_URI_PREFIX + REPORTD_RUN_REPORT + JMS_URI_SUFFIX;
     /** Constant <code>PARM_REPORT_NAME="reportName"</code> */
     public static final String PARM_REPORT_NAME = "reportName";
     public static final String REPORT_RUN_FAILED_UEI = "uei.opennms.org/reportd/reportRunFailed";
+    public static final String REPORT_RUN_FAILED_JMS_URI = JMS_URI_PREFIX + REPORT_RUN_FAILED_UEI + JMS_URI_SUFFIX;
     public static final String REPORT_DELIVERY_FAILED_UEI = "uei.opennms.org/reportd/reportDeliveryFailed";
+    public static final String REPORT_DELIVERY_FAILED_JMS_URI = JMS_URI_PREFIX + REPORT_DELIVERY_FAILED_UEI + JMS_URI_SUFFIX;
     
     /** Constant <code>REMOTE_NODE_LOST_SERVICE_UEI="uei.opennms.org/remote/nodes/nodeLostSe"{trunked}</code> */
     public static final String REMOTE_NODE_LOST_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeLostService";
+    public static final String REMOTE_NODE_LOST_SERVICE_JMS_URI = JMS_URI_PREFIX + REMOTE_NODE_LOST_SERVICE_UEI + JMS_URI_SUFFIX;
     /** Constant <code>REMOTE_NODE_REGAINED_SERVICE_UEI="uei.opennms.org/remote/nodes/nodeRegain"{trunked}</code> */
     public static final String REMOTE_NODE_REGAINED_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeRegainedService";
+    public static final String REMOTE_NODE_REGAINED_SERVICE_JMS_URI = JMS_URI_PREFIX + REMOTE_NODE_REGAINED_SERVICE_UEI + JMS_URI_SUFFIX;
     /** Constant <code>LOCATION_MONITOR_REGISTERED_UEI="uei.opennms.org/remote/locationMonitorR"{trunked}</code> */
     public static final String LOCATION_MONITOR_REGISTERED_UEI="uei.opennms.org/remote/locationMonitorRegistered";
+    public static final String LOCATION_MONITOR_REGISTERED_JMS_URI = JMS_URI_PREFIX + LOCATION_MONITOR_REGISTERED_UEI + JMS_URI_SUFFIX;
     /** Constant <code>LOCATION_MONITOR_STARTED_UEI="uei.opennms.org/remote/locationMonitorS"{trunked}</code> */
     public static final String LOCATION_MONITOR_STARTED_UEI="uei.opennms.org/remote/locationMonitorStarted";
+    public static final String LOCATION_MONITOR_STARTED_JMS_URI = JMS_URI_PREFIX + LOCATION_MONITOR_STARTED_UEI + JMS_URI_SUFFIX;
     /** Constant <code>LOCATION_MONITOR_STOPPED_UEI="uei.opennms.org/remote/locationMonitorS"{trunked}</code> */
     public static final String LOCATION_MONITOR_STOPPED_UEI="uei.opennms.org/remote/locationMonitorStopped";
+    public static final String LOCATION_MONITOR_STOPPED_JMS_URI = JMS_URI_PREFIX + LOCATION_MONITOR_STOPPED_UEI + JMS_URI_SUFFIX;
     /** Constant <code>LOCATION_MONITOR_PAUSED_UEI="uei.opennms.org/remote/locationMonitorP"{trunked}</code> */
     public static final String LOCATION_MONITOR_PAUSED_UEI="uei.opennms.org/remote/locationMonitorPaused";
+    public static final String LOCATION_MONITOR_PAUSED_JMS_URI = JMS_URI_PREFIX + LOCATION_MONITOR_PAUSED_UEI + JMS_URI_SUFFIX;
     /** Constant <code>LOCATION_MONITOR_DISCONNECTED_UEI="uei.opennms.org/remote/locationMonitorD"{trunked}</code> */
     public static final String LOCATION_MONITOR_DISCONNECTED_UEI="uei.opennms.org/remote/locationMonitorDisconnected";
+    public static final String LOCATION_MONITOR_DISCONNECTED_JMS_URI = JMS_URI_PREFIX + LOCATION_MONITOR_DISCONNECTED_UEI + JMS_URI_SUFFIX;
     /** Constant <code>LOCATION_MONITOR_RECONNECTED_UEI="uei.opennms.org/remote/locationMonitorR"{trunked}</code> */
     public static final String LOCATION_MONITOR_RECONNECTED_UEI="uei.opennms.org/remote/locationMonitorReconnected";
+    public static final String LOCATION_MONITOR_RECONNECTED_JMS_URI = JMS_URI_PREFIX + LOCATION_MONITOR_RECONNECTED_UEI + JMS_URI_SUFFIX;
     /** Constant <code>LOCATION_MONITOR_CONFIG_CHANGE_DETECTED_UEI="uei.opennms.org/remote/configurationCha"{trunked}</code> */
     public static final String LOCATION_MONITOR_CONFIG_CHANGE_DETECTED_UEI="uei.opennms.org/remote/configurationChangeDetected";
+    public static final String LOCATION_MONITOR_CONFIG_CHANGE_DETECTED_JMS_URI = JMS_URI_PREFIX + LOCATION_MONITOR_CONFIG_CHANGE_DETECTED_UEI + JMS_URI_SUFFIX;
     public static final String LOCATION_MONITOR_CONNECTION_ADDRESS_CHANGED_UEI="uei.opennms.org/remote/locationMonitorConnectionAddressChanged";
+    public static final String LOCATION_MONITOR_CONNECTION_ADDRESS_CHANGED_JMS_URI = JMS_URI_PREFIX + LOCATION_MONITOR_CONNECTION_ADDRESS_CHANGED_UEI + JMS_URI_SUFFIX;
 
     public static final String REMOTE_SUCCESSFUL_SCAN_REPORT_UEI="uei.opennms.org/remote/successfulScanReport";
+    public static final String REMOTE_SUCCESSFUL_SCAN_REPORT_JMS_URI = JMS_URI_PREFIX + REMOTE_SUCCESSFUL_SCAN_REPORT_UEI + JMS_URI_SUFFIX;
     public static final String REMOTE_UNSUCCESSFUL_SCAN_REPORT_UEI="uei.opennms.org/remote/unsuccessfulScanReport";
+    public static final String REMOTE_UNSUCCESSFUL_SCAN_REPORT_JMS_URI = JMS_URI_PREFIX + REMOTE_UNSUCCESSFUL_SCAN_REPORT_UEI + JMS_URI_SUFFIX;
 
     /** Constant <code>RELOAD_IMPORT_UEI="uei.opennms.org/internal/importer/reloa"{trunked}</code> */
     public static final String RELOAD_IMPORT_UEI = "uei.opennms.org/internal/importer/reloadImport";
+    public static final String RELOAD_IMPORT_JMS_URI = JMS_URI_PREFIX + RELOAD_IMPORT_UEI + JMS_URI_SUFFIX;
     /** Constant <code>IMPORT_STARTED_UEI="uei.opennms.org/internal/importer/impor"{trunked}</code> */
     public static final String IMPORT_STARTED_UEI = "uei.opennms.org/internal/importer/importStarted";
+    public static final String IMPORT_STARTED_JMS_URI = JMS_URI_PREFIX + IMPORT_STARTED_UEI + JMS_URI_SUFFIX;
     /** Constant <code>IMPORT_SUCCESSFUL_UEI="uei.opennms.org/internal/importer/impor"{trunked}</code> */
     public static final String IMPORT_SUCCESSFUL_UEI = "uei.opennms.org/internal/importer/importSuccessful";
+    public static final String IMPORT_SUCCESSFUL_JMS_URI = JMS_URI_PREFIX + IMPORT_SUCCESSFUL_UEI + JMS_URI_SUFFIX;
     /** Constant <code>IMPORT_FAILED_UEI="uei.opennms.org/internal/importer/impor"{trunked}</code> */
     public static final String IMPORT_FAILED_UEI = "uei.opennms.org/internal/importer/importFailed";
+    public static final String IMPORT_FAILED_JMS_URI = JMS_URI_PREFIX + IMPORT_FAILED_UEI + JMS_URI_SUFFIX;
     /** Constant <code>PROVISIONING_ADAPTER_FAILED="uei.opennms.org/provisioner/provisionin"{trunked}</code> */
     public static final String PROVISIONING_ADAPTER_FAILED = "uei.opennms.org/provisioner/provisioningAdapterFailed";
+    public static final String JMS_URI = JMS_URI_PREFIX + PROVISIONING_ADAPTER_FAILED + JMS_URI_SUFFIX;
 
     /** Constant <code>PROVISION_SCAN_COMPLETE_UEI="uei.opennms.org/internal/provisiond/nod"{trunked}</code> */
     public static final String PROVISION_SCAN_COMPLETE_UEI="uei.opennms.org/internal/provisiond/nodeScanCompleted";
+    public static final String PROVISION_SCAN_COMPLETE_JMS_URI = JMS_URI_PREFIX + PROVISION_SCAN_COMPLETE_UEI + JMS_URI_SUFFIX;
     /** Constant <code>PROVISION_SCAN_ABORTED_UEI="uei.opennms.org/internal/provisiond/nod"{trunked}</code> */
     public static final String PROVISION_SCAN_ABORTED_UEI="uei.opennms.org/internal/provisiond/nodeScanAborted";
+    public static final String PROVISION_SCAN_ABORTED_JMS_URI = JMS_URI_PREFIX + PROVISION_SCAN_ABORTED_UEI + JMS_URI_SUFFIX;
     
     /** Constant <code>PARM_FAILURE_MESSAGE="failureMessage"</code> */
     public static final String PARM_FAILURE_MESSAGE = "failureMessage";
@@ -617,39 +742,55 @@ public abstract class EventConstants {
 
     /** Constant <code>TROUBLETICKET_CREATE_UEI="uei.opennms.org/troubleTicket/create"</code> */
     public static final String TROUBLETICKET_CREATE_UEI = "uei.opennms.org/troubleTicket/create";
+    public static final String TROUBLETICKET_CREATE_JMS_URI = JMS_URI_PREFIX + TROUBLETICKET_CREATE_UEI + JMS_URI_SUFFIX;
     /** Constant <code>TROUBLETICKET_UPDATE_UEI="uei.opennms.org/troubleTicket/update"</code> */
     public static final String TROUBLETICKET_UPDATE_UEI = "uei.opennms.org/troubleTicket/update";
+    public static final String TROUBLETICKET_UPDATE_JMS_URI = JMS_URI_PREFIX + TROUBLETICKET_UPDATE_UEI + JMS_URI_SUFFIX;
     /** Constant <code>TROUBLETICKET_CLOSE_UEI="uei.opennms.org/troubleTicket/close"</code> */
     public static final String TROUBLETICKET_CLOSE_UEI = "uei.opennms.org/troubleTicket/close";
+    public static final String TROUBLETICKET_CLOSE_JMS_URI = JMS_URI_PREFIX + TROUBLETICKET_CLOSE_UEI + JMS_URI_SUFFIX;
     /** Constant <code>TROUBLETICKET_CANCEL_UEI="uei.opennms.org/troubleTicket/cancel"</code> */
     public static final String TROUBLETICKET_CANCEL_UEI = "uei.opennms.org/troubleTicket/cancel";
+    public static final String TROUBLETICKET_CANCEL_JMS_URI = JMS_URI_PREFIX + TROUBLETICKET_CANCEL_UEI + JMS_URI_SUFFIX;
     
     /** Constant <code>TL1_AUTONOMOUS_MESSAGE_UEI="uei.opennms.org/api/tl1d/message/autono"{trunked}</code> */
     public static final String TL1_AUTONOMOUS_MESSAGE_UEI = "uei.opennms.org/api/tl1d/message/autonomous";
+    public static final String TL1_AUTONOMOUS_MESSAGE_JMS_URI = JMS_URI_PREFIX + TL1_AUTONOMOUS_MESSAGE_UEI + JMS_URI_SUFFIX;
 
     /** Constant <code>RANCID_DOWNLOAD_SUCCESS_UEI="uei.opennms.org/standard/rancid/traps/r"{trunked}</code> */
     public static final String RANCID_DOWNLOAD_SUCCESS_UEI="uei.opennms.org/standard/rancid/traps/rancidTrapDownloadSuccess";
+    public static final String RANCID_DOWNLOAD_SUCCESS_JMS_URI = JMS_URI_PREFIX + RANCID_DOWNLOAD_SUCCESS_UEI + JMS_URI_SUFFIX;
     /** Constant <code>RANCID_DOWNLOAD_FAILURE_UEI="uei.opennms.org/standard/rancid/traps/r"{trunked}</code> */
     public static final String RANCID_DOWNLOAD_FAILURE_UEI="uei.opennms.org/standard/rancid/traps/rancidTrapDownloadFailure";
+    public static final String RANCID_DOWNLOAD_FAILURE_JMS_URI = JMS_URI_PREFIX + RANCID_DOWNLOAD_FAILURE_UEI + JMS_URI_SUFFIX;
     /** Constant <code>RANCID_GROUP_PROCESSING_COMPLETED_UEI="uei.opennms.org/standard/rancid/traps/r"{trunked}</code> */
     public static final String RANCID_GROUP_PROCESSING_COMPLETED_UEI="uei.opennms.org/standard/rancid/traps/rancidTrapGroupProcessingCompleted";
+    public static final String RANCID_GROUP_PROCESSING_COMPLETED_JMS_URI = JMS_URI_PREFIX + RANCID_GROUP_PROCESSING_COMPLETED_UEI + JMS_URI_SUFFIX;
 
     /** Constant <code>DATA_LINK_FAILED_EVENT_UEI="uei.opennms.org/internal/linkd/dataLink"{trunked}</code> */
     public static final String DATA_LINK_FAILED_EVENT_UEI = "uei.opennms.org/internal/linkd/dataLinkFailed";
+    public static final String DATA_LINK_FAILED_JMS_URI = JMS_URI_PREFIX + DATA_LINK_FAILED_EVENT_UEI + JMS_URI_SUFFIX;
     /** Constant <code>DATA_LINK_RESTORED_EVENT_UEI="uei.opennms.org/internal/linkd/dataLink"{trunked}</code> */
     public static final String DATA_LINK_RESTORED_EVENT_UEI = "uei.opennms.org/internal/linkd/dataLinkRestored";
+    public static final String DATA_LINK_RESTORED_JMS_URI = JMS_URI_PREFIX + DATA_LINK_RESTORED_EVENT_UEI + JMS_URI_SUFFIX;
     /** Constant <code>DATA_LINK_UNMANAGED_EVENT_UEI="uei.opennms.org/internal/linkd/dataLink"{trunked}</code> */
     public static final String DATA_LINK_UNMANAGED_EVENT_UEI = "uei.opennms.org/internal/linkd/dataLinkUnmanaged";
+    public static final String DATA_LINK_UNMANAGED_JMS_URI = JMS_URI_PREFIX + DATA_LINK_UNMANAGED_EVENT_UEI + JMS_URI_SUFFIX;
 
     /** Constant <code>TOPOLOGY_LINK_DOWN_EVENT_UEI="uei.opennms.org/internal/topology/linkDown"{trunked}</code> */
     public static final String TOPOLOGY_LINK_DOWN_EVENT_UEI = "uei.opennms.org/internal/topology/linkDown";
+    public static final String TOPOLOGY_LINK_DOWN_JMS_URI = JMS_URI_PREFIX + TOPOLOGY_LINK_DOWN_EVENT_UEI + JMS_URI_SUFFIX;
     /** Constant <code>TOPOLOGY_LINK_UP_EVENT_UEI="uei.opennms.org/internal/topology/linkUp"{trunked}</code> */
     public static final String TOPOLOGY_LINK_UP_EVENT_UEI = "uei.opennms.org/internal/topology/linkUp";
+    public static final String TOPOLOGY_LINK_UP_JMS_URI = JMS_URI_PREFIX + TOPOLOGY_LINK_UP_EVENT_UEI + JMS_URI_SUFFIX;
 
     public static final String HARDWARE_INVENTORY_FAILED_UEI = "uei.opennms.org/internal/discovery/hardwareInventoryFailed";
+    public static final String HARDWARE_INVENTORY_FAILED_JMS_URI = JMS_URI_PREFIX + HARDWARE_INVENTORY_FAILED_UEI + JMS_URI_SUFFIX;
     public static final String HARDWARE_INVENTORY_SUCCESSFUL_UEI = "uei.opennms.org/internal/discovery/hardwareInventorySuccessful";
+    public static final String HARDWARE_INVENTORY_SUCCESSFUL_JMS_URI = JMS_URI_PREFIX + HARDWARE_INVENTORY_SUCCESSFUL_UEI + JMS_URI_SUFFIX;
 
     public static final String KSC_REPORT_UPDATED_UEI = "uei.opennms.org/internal/kscReportUpdated";
+    public static final String KSC_REPORT_UPDATED_JMS_URI = JMS_URI_PREFIX + KSC_REPORT_UPDATED_UEI + JMS_URI_SUFFIX;
     public static final String PARAM_REPORT_TITLE = "reportTitle";
     public static final String PARAM_REPORT_GRAPH_COUNT = "graphCount";
 

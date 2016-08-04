@@ -30,9 +30,7 @@
 
   <bean id="daemon" class="org.opennms.netmgt.discovery.Discovery" />
 
-  <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
-    <property name="annotatedListener" ref="daemon" />
-    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
-  </bean>
+  <!-- Camel context that processes Camel annotations -->
+  <camelContext id="discoveryCamelContext" xmlns="http://camel.apache.org/schema/spring"/>
 
 </beans>

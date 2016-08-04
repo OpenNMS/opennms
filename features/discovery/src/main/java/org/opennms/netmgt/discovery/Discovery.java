@@ -34,14 +34,13 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.camel.Consume;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.events.api.annotations.EventHandler;
-import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -57,7 +56,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  */
-@EventListener(name=Discovery.DAEMON_NAME, logPrefix=Discovery.LOG4J_CATEGORY)
 public class Discovery extends AbstractServiceDaemon {
 
     private static final Logger LOG = LoggerFactory.getLogger(Discovery.class);
@@ -166,7 +164,7 @@ public class Discovery extends AbstractServiceDaemon {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    @EventHandler(uei=EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)
+    @Consume(uri=EventConstants.DISCOVERYCONFIG_CHANGED_JMS_URI)
     public void handleDiscoveryConfigurationChanged(Event event) {
         LOG.info("handleDiscoveryConfigurationChanged: handling message that a change to configuration happened...");
         reloadAndReStart();
@@ -204,7 +202,7 @@ public class Discovery extends AbstractServiceDaemon {
      *
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    @Consume(uri=EventConstants.RELOAD_DAEMON_CONFIG_JMS_URI)
     public void reloadDaemonConfig(Event e) {
         LOG.info("reloadDaemonConfig: processing reload daemon event...");
         if (isReloadConfigEventTarget(e)) {
@@ -234,7 +232,7 @@ public class Discovery extends AbstractServiceDaemon {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    @EventHandler(uei=EventConstants.DISC_RESUME_EVENT_UEI)
+    @Consume(uri=EventConstants.DISC_RESUME_JMS_URI)
     public void handleDiscoveryResume(Event event) {
         resume();
     }
@@ -244,7 +242,7 @@ public class Discovery extends AbstractServiceDaemon {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    @EventHandler(uei=EventConstants.DISC_PAUSE_EVENT_UEI)
+    @Consume(uri=EventConstants.DISC_PAUSE_JMS_URI)
     public void handleDiscoveryPause(Event event) {
         pause();
     }
