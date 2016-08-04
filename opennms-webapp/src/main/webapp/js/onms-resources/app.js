@@ -24,10 +24,10 @@ angular.module('onms-resources', [
   $scope.isCollapsed = {};
   $scope.nodeLink = undefined;
   $scope.nodeLabel = undefined;
-  $scope.url = '/opennms/graph/results.htm?reports=all';
+  $scope.url = 'graph/results.htm?reports=all';
 
   $scope.init = function(criteria) {
-    $http.get('/opennms/rest/resources/fornode/'+criteria).success(function(data) {
+    $http.get('rest/resources/fornode/'+criteria).success(function(data) {
       $scope.nodeLink = data.link;
       $scope.nodeLabel = data.label;
       $scope.hasResources = data.children.resource.length > 0;
