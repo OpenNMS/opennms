@@ -145,7 +145,7 @@ final class NodeInfoScan implements RunInBatch {
             try {
                 m_provisionService.getLocationAwareSnmpClient().walk(agentConfig, systemGroup)
                     .withDescription("systemGroup")
-                    .atLocation(getLocationName())
+                    .withLocation(getLocationName())
                     .execute()
                     .get();
                 systemGroup.updateSnmpDataForNode(getNode());

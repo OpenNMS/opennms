@@ -34,15 +34,12 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.util.Map;
 
-import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.jmx.MBeanServer;
-import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.jmx.connection.JmxServerConnector;
 import org.opennms.netmgt.jmx.impl.connection.connectors.Jsr160ConnectionFactory;
 import org.opennms.netmgt.jmx.impl.connection.connectors.PlatformMBeanServerConnector;
+
 
 import com.google.common.collect.Maps;
 
@@ -65,7 +62,6 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
     private String m_username = "opennms";
     private String m_password = "OPENNMS";
 
-    protected JmxConfigDao m_jmxConfigDao = null;
     
     /**
      * <p>Constructor for AbstractJsr160Detector.</p>
@@ -82,10 +78,7 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
      * @throws IOException 
      */
     @Override
-    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) throws MalformedURLException, IOException {
-        if (m_jmxConfigDao == null) {
-            m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
-        }
+    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout, final Map<String, String> runtimeAttributes) throws MalformedURLException, IOException {
 
         Map<String, String> props = Maps.newHashMap();
         props.put("port", String.valueOf(port));
@@ -97,11 +90,8 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
         props.put("urlPath", getUrlPath());
         props.put("type", getType());
         props.put("protocol", getProtocol());
-
-        final MBeanServer server = m_jmxConfigDao.getConfig().lookupMBeanServer(InetAddressUtils.str(address), port);
-        if (server != null) {
-            props.putAll(server.getParameterMap());
-        }
+        // The runtime attributes contain the agent details pull from the JmxConfigDao
+        props.putAll(runtimeAttributes);
 
         // TODO: Refactor this to use the same code as 
         // {@link org.opennms.netmgt.jmx.impl.connection.connectors.DefaultJmxConnector}
@@ -257,13 +247,5 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
      */
     public String getPassword() {
         return m_password;
-    }
-
-    public JmxConfigDao getJmxConfigDao() {
-        return m_jmxConfigDao;
-    }
-
-    public void setJmxConfigDao(final JmxConfigDao jmxConfigDao) {
-        this.m_jmxConfigDao = jmxConfigDao;
     }
 }

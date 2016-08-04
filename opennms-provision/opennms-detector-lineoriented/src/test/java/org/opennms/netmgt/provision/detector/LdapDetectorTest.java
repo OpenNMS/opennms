@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
@@ -40,11 +39,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.LdapDetector;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.opennms.netmgt.provision.detector.simple.LdapDetectorFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -56,8 +53,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 @Ignore
-public class LdapDetectorTest implements ApplicationContextAware{
+public class LdapDetectorTest {
 
+    @Autowired
+    private LdapDetectorFactory m_detectorFactory;
     private LdapDetector m_detector;
     private static String DEFAULT_LOCAL_SERVER_IP = "192.168.1.103";
     /*
@@ -67,11 +66,10 @@ public class LdapDetectorTest implements ApplicationContextAware{
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        m_detector = getDetector(LdapDetector.class);
+        m_detector = m_detectorFactory.createDetector();
         m_detector.init();
     }
 
-    private ApplicationContext m_applicationContext;
 
     @Test(timeout=20000)
     public void testMyDetector() throws UnknownHostException {
@@ -87,20 +85,5 @@ public class LdapDetectorTest implements ApplicationContextAware{
     @Test(timeout=20000)
     public void testDetectorFailNotALdapServer() throws UnknownHostException {
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.101")));
-    }
-
-    /* (non-Javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     */
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        m_applicationContext = applicationContext;
-    }
-
-    private LdapDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
-        Object bean = m_applicationContext.getBean(detectorClass.getName());
-        assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
-        return (LdapDetector)bean;
     }
 }

@@ -82,7 +82,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
                           lldpLocalGroup)
                           .withDescription("lldpLocalGroup")
-                          .atLocation(getLocation())
+                          .withLocation(getLocation())
                           .execute()
                           .get();
         } catch (ExecutionException e) {
@@ -130,7 +130,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
                                       lldpRemTable)
                                   .withDescription("lldpRemTable")
-                                  .atLocation(getLocation())
+                                  .withLocation(getLocation())
                                   .execute()
                                   .get();
         } catch (ExecutionException e) {

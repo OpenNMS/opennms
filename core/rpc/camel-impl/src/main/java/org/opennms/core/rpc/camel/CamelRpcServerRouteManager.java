@@ -40,6 +40,8 @@ import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.minion.core.api.MinionIdentity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Dynamically creates and deletes Camel routes to process RPC requests
@@ -48,6 +50,8 @@ import org.opennms.minion.core.api.MinionIdentity;
  * @author jwhite
  */
 public class CamelRpcServerRouteManager {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CamelRpcServerRouteManager.class);
 
     private final CamelContext context;
 
@@ -89,6 +93,10 @@ public class CamelRpcServerRouteManager {
     public void bind(RpcModule module) throws Exception {
         if (module != null) {
             final RpcModule<RpcRequest,RpcResponse> rpcModule = (RpcModule<RpcRequest,RpcResponse>)module;
+            if (routeIdsByModule.containsKey(rpcModule)) {
+                LOG.warn("RPC module {} was already registered.", rpcModule.getId());
+                return;
+            }
             final DynamicRpcRouteBuilder routeBuilder = new DynamicRpcRouteBuilder(context, identity, rpcModule);
             context.addRoutes(routeBuilder);
             routeIdsByModule.put(rpcModule, routeBuilder.getRouteId());

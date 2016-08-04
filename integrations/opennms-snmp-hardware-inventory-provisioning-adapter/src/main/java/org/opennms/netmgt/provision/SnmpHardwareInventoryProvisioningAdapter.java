@@ -32,6 +32,8 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.netmgt.config.SnmpHwInventoryAdapterConfigDao;
@@ -54,8 +56,7 @@ import org.opennms.netmgt.provision.snmp.EntityPhysicalTableRow;
 import org.opennms.netmgt.provision.snmp.EntityPhysicalTableTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
@@ -98,6 +99,9 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
     /** The hardware inventory adapter configuration DAO. */
     private SnmpHwInventoryAdapterConfigDao m_hwInventoryAdapterConfigDao;
 
+    /** The location-aware SNMP client. */
+    private LocationAwareSnmpClient m_locationAwareSnmpClient;
+
     /** The vendor attributes. */
     private Map<SnmpObjId, HwEntityAttributeType> m_vendorAttributes = new HashMap<SnmpObjId, HwEntityAttributeType>();
 
@@ -119,6 +123,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
         Assert.notNull(m_snmpConfigDao, "SNMP Configuration DAO cannot be null");
         Assert.notNull(m_hwInventoryAdapterConfigDao, "Hardware Inventory Configuration DAO cannot be null");
         Assert.notNull(m_eventForwarder, "Event Forwarder cannot be null");
+        Assert.notNull(m_locationAwareSnmpClient, "Location-Aware SNMP client cannot be null");
         initializeVendorAttributes();
     }
 
@@ -236,16 +241,16 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
         final EntityPhysicalTableTracker tracker = new EntityPhysicalTableTracker(m_vendorAttributes, allOids, replacementMap);
         final String trackerName = tracker.getClass().getSimpleName() + '_' + node.getLabel();
 
-        final SnmpWalker walker = SnmpUtils.createWalker(agentConfig, trackerName, tracker);
-        walker.start();
+        final CompletableFuture<EntityPhysicalTableTracker> future = m_locationAwareSnmpClient.walk(agentConfig, tracker)
+            .withDescription(trackerName)
+            .withLocation(node.getLocation() != null ? node.getLocation().getLocationName() : null)
+            .execute();
+
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-                throw new SnmpHardwareInventoryException("Aborting entities scan: Agent timed out while scanning the " + trackerName + " table");
-            }  else if (walker.failed()) {
-                LOG.error("Aborting entities scan for " + agentConfig, walker.getErrorThrowable());
-                throw new SnmpHardwareInventoryException("Aborting entities scan: Agent failed while scanning the " + trackerName + " table: " + walker.getErrorMessage());
-            }
+            future.get();
+        } catch (ExecutionException e) {
+            LOG.error("Aborting entities scan for " + agentConfig, e);
+            throw new SnmpHardwareInventoryException("Aborting entities scan: Agent failed while scanning the " + trackerName + " table: " + e.getMessage());
         } catch (final InterruptedException e) {
             throw new SnmpHardwareInventoryException("ENTITY-MIB node collection interrupted, exiting");
         }
@@ -372,6 +377,14 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
      */
     public void setHwInventoryAdapterConfigDao(SnmpHwInventoryAdapterConfigDao hwInventoryAdapterConfigDao) {
         this.m_hwInventoryAdapterConfigDao = hwInventoryAdapterConfigDao;
+    }
+
+    public void setLocationAwareSnmpClient(final LocationAwareSnmpClient locationAwareSnmpClient) {
+        m_locationAwareSnmpClient = locationAwareSnmpClient;
+    }
+
+    public LocationAwareSnmpClient getLocationAwareSnmpClient() {
+        return m_locationAwareSnmpClient;
     }
 
     /* (non-Javadoc)

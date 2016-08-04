@@ -29,31 +29,21 @@
 package org.opennms.netmgt.provision.detector.wsman;
 
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.opennms.core.wsman.Identity;
 import org.opennms.core.wsman.WSManClient;
 import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.core.wsman.WSManEndpoint;
-import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
 import org.opennms.core.wsman.exceptions.WSManException;
-import org.opennms.netmgt.dao.WSManConfigDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.provision.PersistsAgentInfo;
+import org.opennms.netmgt.provision.DetectRequest;
+import org.opennms.netmgt.provision.DetectResults;
+import org.opennms.netmgt.provision.support.DetectResultsImpl;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Maps;
 
 /**
  * Detects the presence of the WS-Man service by verifying that the
@@ -61,93 +51,64 @@ import com.google.common.collect.Maps;
  *
  * @author jwhite
  */
-@Component
-@Scope("prototype")
-public class WsManDetector extends SyncAbstractDetector implements InitializingBean, PersistsAgentInfo {
+public class WsManDetector extends SyncAbstractDetector {
     public static final Logger LOG = LoggerFactory.getLogger(WsManDetector.class);
 
     private static final String PROTOCOL_NAME = "WS-Man";
+    protected static final String UPDATE_ASSETS = "update-assests";
+    protected static final String PRODUCT_VENDOR = "product-vendor";
+    protected static final String PRODUCT_VERSION = "product-version";
 
-    private final WSManClientFactory m_factory = new CXFWSManClientFactory();
-
-    private final ReadWriteLock m_lock = new ReentrantReadWriteLock();
-
-    private final Map<InetAddress, Identity> m_identifyByInetAddress = Maps.newHashMap();
-
-    @Autowired
-    private WSManConfigDao m_wsmanConfigDao;
-
-    @Autowired
-    private NodeDao m_nodeDao;
+    private WSManClientFactory m_factory;
 
     private boolean m_updateAssets = true;
 
-    protected WsManDetector() {
+    public WsManDetector() {
         super(PROTOCOL_NAME, 0);
     }
 
     @Override
-    public synchronized boolean isServiceDetected(InetAddress address) {
+    public DetectResults detect(DetectRequest request) {
+        try {
+            final WSManEndpoint endpoint = WsmanEndpointUtils.fromMap(request.getRuntimeAttributes());
+            return isServiceDetected(request.getAddress(), endpoint);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean isServiceDetected(InetAddress address) {
+        throw new UnsupportedOperationException("WSManEndpoint is required.");
+    }
+
+    public DetectResults isServiceDetected(InetAddress address, WSManEndpoint endpoint) {
         // Issue the "Identify" request
-        final WSManEndpoint endpoint = m_wsmanConfigDao.getEndpoint(address);
         final WSManClient client = m_factory.getClient(endpoint);
         Identity identity = null;
+        final Map<String, String> attributes = new HashMap<>();
         try {
             identity = client.identify();
             LOG.info("Identify succeeded for address {} with product vendor '{}' and product version '{}'.", address, identity.getProductVendor(), identity.getProductVersion());
+            attributes.put(UPDATE_ASSETS, Boolean.toString(m_updateAssets));
+            attributes.put(PRODUCT_VENDOR, identity.getProductVendor());
+            attributes.put(PRODUCT_VERSION, identity.getProductVersion());
         } catch (WSManException e) {
             LOG.info("Identify failed for address {} with endpoint {}.", address, endpoint, e);
         }
-
-        // Cache the result
-        m_lock.writeLock().lock();
-        try {
-            m_identifyByInetAddress.put(address, identity);
-        } finally {
-            m_lock.writeLock().unlock();
-        }
-
-        return identity != null;
+        return new DetectResultsImpl(identity != null, attributes);
     }
 
-    @Override
-    @Transactional
-    public void persistAgentInfo(Integer nodeId, InetAddress address) {
-        if (!m_updateAssets) {
-            LOG.debug("Asset updates disabled.");
-            return;
-        }
-
-        Identity identity = null;
-        m_lock.readLock().lock();
-        try {
-            identity = m_identifyByInetAddress.get(address);
-        } finally {
-            m_lock.readLock().unlock();
-        }
-
-        if (identity == null) {
-            // Nothing to persist
-            return;
-        }
-
-        final OnmsNode node = m_nodeDao.get(nodeId);
-        if (node == null) {
-            LOG.warn("No node was found with id: {}", nodeId);
-            return;
-        }
-
-        LOG.debug("Updating vendor and modelNumber assets on node[{}] with '{}' and '{}'",
-                nodeId, identity.getProductVendor(), identity.getProductVersion());
-        node.getAssetRecord().setVendor(identity.getProductVendor());
-        node.getAssetRecord().setModelNumber(identity.getProductVersion());
-        m_nodeDao.update(node);
+    public void setClientFactory(WSManClientFactory factory) {
+        m_factory = factory;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        Objects.requireNonNull(m_wsmanConfigDao, "wsmanConfigDao attribute");
-        Objects.requireNonNull(m_nodeDao, "nodeDao attribute");
+    public void setUpdateAssets(boolean updateAssets) {
+        m_updateAssets = updateAssets;
+    }
+
+    public boolean getUpdateAssets() {
+        return m_updateAssets;
     }
 
     @Override
@@ -158,13 +119,5 @@ public class WsManDetector extends SyncAbstractDetector implements InitializingB
     @Override
     public void dispose() {
         // pass
-    }
-
-    public void setUpdateAssets(boolean updateAssets) {
-        m_updateAssets = updateAssets;
-    }
-
-    public boolean getUpdateAssets() {
-        return m_updateAssets;
     }
 }
