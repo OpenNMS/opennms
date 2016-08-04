@@ -85,7 +85,7 @@ angular.module('onms-interfaces', [
 
   $scope.loadIpInterfaces = function() {
     $http({
-      url: '/opennms/rest/nodes/' + $scope.nodeId + '/ipinterfaces',
+      url: 'rest/nodes/' + $scope.nodeId + '/ipinterfaces',
       method: 'GET',
       params: { limit: 0 }
     }).success(function(data) {
@@ -115,7 +115,7 @@ angular.module('onms-interfaces', [
   };
 
   $scope.openIpPage = function(intf) {
-    $window.location.href = "/opennms/element/interface.jsp?ipinterfaceid=" + intf.id;
+    $window.location.href = "element/interface.jsp?ipinterfaceid=" + intf.id;
   };
 
   $scope.$watch('filters.ipInterface', function() {
@@ -127,7 +127,7 @@ angular.module('onms-interfaces', [
 
   $scope.loadSnmpInterfaces = function() {
     $http({
-      url: '/opennms/rest/nodes/' + $scope.nodeId + '/snmpinterfaces',
+      url: 'rest/nodes/' + $scope.nodeId + '/snmpinterfaces',
       method: 'GET',
       params: { limit: 0 }
     }).success(function(data) {
@@ -161,7 +161,7 @@ angular.module('onms-interfaces', [
   };
 
   $scope.openSnmpPage = function(intf) {
-    $window.location.href = "/opennms/element/snmpinterface.jsp?node=" + $scope.nodeId + "&ifindex=" + intf.ifIndex;
+    $window.location.href = "element/snmpinterface.jsp?node=" + $scope.nodeId + "&ifindex=" + intf.ifIndex;
   };
 
   $scope.$watch('filters.snmpInterface', function() {
