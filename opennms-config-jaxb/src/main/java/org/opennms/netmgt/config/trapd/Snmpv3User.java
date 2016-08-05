@@ -25,49 +25,43 @@ public class Snmpv3User implements java.io.Serializable {
 	/**
      * SNMPv3 Application Engine ID
      */
-	@XmlAttribute(name="engine-id")
+	@XmlAttribute(name="engine-id",required=false)
     private java.lang.String _engineId;
 
     /**
      * SNMPv3 Security Name (User Name)
      */
-	@XmlAttribute(name="security-name")
+	@XmlAttribute(name="security-name",required=false)
     private java.lang.String _securityName;
 
     /**
      * SNMPv3 Security Level (noAuthNoPriv, authNoPriv, authPriv)
      */
-	@XmlAttribute(name="security-level")
-    private int _securityLevel;
-
-    /**
-     * keeps track of state for field: _securityLevel
-     */
-	@XmlTransient
-    private boolean _has_securityLevel;
+	@XmlAttribute(name="security-level",required=false)
+    private Integer _securityLevel;
 
     /**
      * SNMPv3 Authentication Protocol
      */
-	@XmlAttribute(name="auth-protocol")
+	@XmlAttribute(name="auth-protocol",required=false)
     private java.lang.String _authProtocol;
 
     /**
      * SNMPv3 Authentication Password Phrase
      */
-	@XmlAttribute(name="auth-passphrase")
+	@XmlAttribute(name="auth-passphrase",required=false)
     private java.lang.String _authPassphrase;
 
     /**
      * SNMPv3 Privacy Protocol
      */
-	@XmlAttribute(name="privacy-protocol")
+	@XmlAttribute(name="privacy-protocol",required=false)
     private java.lang.String _privacyProtocol;
 
     /**
      * SNMPv3 Privacy Password Phrase
      */
-	@XmlAttribute(name="privacy-passphrase")
+	@XmlAttribute(name="privacy-passphrase",required=false)
     private java.lang.String _privacyPassphrase;
 
 
@@ -83,13 +77,6 @@ public class Snmpv3User implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-     */
-    public void deleteSecurityLevel(
-    ) {
-        this._has_securityLevel= false;
-    }
 
     /**
      * Overrides the java.lang.Object.equals method.
@@ -121,8 +108,6 @@ public class Snmpv3User implements java.io.Serializable {
             else if (temp._securityName != null)
                 return false;
             if (this._securityLevel != temp._securityLevel)
-                return false;
-            if (this._has_securityLevel != temp._has_securityLevel)
                 return false;
             if (this._authProtocol != null) {
                 if (temp._authProtocol == null) return false;
@@ -223,9 +208,11 @@ public class Snmpv3User implements java.io.Serializable {
      * 
      * @return the value of field 'SecurityLevel'.
      */
-    public int getSecurityLevel(
+    public Integer getSecurityLevel(
     ) {
         return this._securityLevel;
+
+        //return this._securityLevel == null ? 0 : this._securityLevel;
     }
 
     /**
@@ -238,16 +225,6 @@ public class Snmpv3User implements java.io.Serializable {
     public java.lang.String getSecurityName(
     ) {
         return this._securityName;
-    }
-
-    /**
-     * Method hasSecurityLevel.
-     * 
-     * @return true if at least one SecurityLevel has been added
-     */
-    public boolean hasSecurityLevel(
-    ) {
-        return this._has_securityLevel;
     }
 
     /**
@@ -269,7 +246,7 @@ public class Snmpv3User implements java.io.Serializable {
         if (_securityName != null) {
            result = 37 * result + _securityName.hashCode();
         }
-        result = 37 * result + _securityLevel;
+        result = 37 * result + (_securityLevel == null ? 0 : _securityLevel);
         if (_authProtocol != null) {
            result = 37 * result + _authProtocol.hashCode();
         }
@@ -353,10 +330,8 @@ public class Snmpv3User implements java.io.Serializable {
      * 
      * @param securityLevel the value of field 'securityLevel'.
      */
-    public void setSecurityLevel(
-            final int securityLevel) {
+    public void setSecurityLevel(final Integer securityLevel) {
         this._securityLevel = securityLevel;
-        this._has_securityLevel = true;
     }
 
     /**
