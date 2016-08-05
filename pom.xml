@@ -486,6 +486,19 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <!--
+          CAUTION: Do not upgrade to 2.18.1, 2.19, or 2.19.1 because the
+          org.opennms.core.test.karaf.KarafTestCase classes are experiencing
+          the following bug in those versions (even thought it is claimed to
+          have been fixed in 2.19.1):
+
+          https://issues.apache.org/jira/browse/SUREFIRE-1193
+        -->
+        <version>2.18</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <version>2.6</version>
         <configuration>
@@ -938,6 +951,8 @@
         <configuration>
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
+            <!-- Turn off queuing in the RRD output -->
+            <org.opennms.rrd.usequeue>false</org.opennms.rrd.usequeue>
             <java.awt.headless>true</java.awt.headless>
             <mock.logLevel>${mock.logLevel}</mock.logLevel>
             <mock.debug>${mock.debug}</mock.debug>
@@ -960,6 +975,7 @@
             <runPingTests>${runPingTests}</runPingTests>
             <proxy.port>${proxy.port}</proxy.port>
             <opennms.version>${project.version}</opennms.version>
+            <!-- <opennms.unit.test>true</opennms.unit.test> -->
           </systemPropertyVariables>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
@@ -970,25 +986,19 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.12.3</version>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <!-- 
-          CAUTION: Do not upgrade to 2.18.1, 2.19, or 2.19.1 because the 
-          org.opennms.core.test.karaf.KarafTestCase classes are experiencing
-          the following bug in those versions (even thought it is claimed to
-          have been fixed in 2.19.1):
-
-          https://issues.apache.org/jira/browse/SUREFIRE-1193
-        -->
-        <version>2.18</version>
         <configuration>
           <!-- Don't specify argLine here or it will override the argLine property value -->
-          <systemPropertyVariables />
+          <systemPropertyVariables>
+            <!-- The javax.net.ssl ones are used by integrations/opennms-jasper-extensions -->
+            <javax.net.ssl.keyStore>target/test-keystore.jks</javax.net.ssl.keyStore>
+            <javax.net.ssl.keyStorePassword>password</javax.net.ssl.keyStorePassword>
+            <javax.net.ssl.trustStore>target/test-keystore.jks</javax.net.ssl.trustStore>
+            <javax.net.ssl.trustStorePassword>password</javax.net.ssl.trustStorePassword>
+            <!-- <ssl.debug>true</ssl.debug> -->
+            <!-- <javax.net.debug>ssl,handshake,verbose</javax.net.debug> -->
+          </systemPropertyVariables>
           <!--
             Configure failsafe to put reports in the surefire unit test directory so that 
             Bamboo and Sonar tally the test results properly.
@@ -996,8 +1006,19 @@
             https://jira.atlassian.com/browse/BAM-15446
           -->
           <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+          <forkCount>1</forkCount>
+          <reuseForks>false</reuseForks>
           <rerunFailingTestsCount>1</rerunFailingTestsCount>
+          <skipITs>${skipITs}</skipITs>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1059,6 +1080,11 @@
         </executions>
       </plugin>
       -->
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.12.3</version>
+      </plugin>
     </plugins>
   </build>
 
@@ -1160,6 +1186,7 @@
       Add target/endorsed as an endorsed API directory in case projects require it.
     -->
     <argLine>-Xmx1g -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+    <skipITs>true</skipITs>
 
     <build.skip.tarball>false</build.skip.tarball>
 
@@ -1315,7 +1342,7 @@
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.5</log4j2Version>
-    <minaVersion>2.0.7</minaVersion>
+    <minaVersion>2.0.13</minaVersion>
     <minionKarafVersion>4.0.4</minionKarafVersion>
     <newtsVersion>1.4.1</newtsVersion>
     <paxExamVersion>4.8.0</paxExamVersion>
@@ -1352,10 +1379,11 @@
     <vaadinAddonContextMenuVersion>4.2.1</vaadinAddonContextMenuVersion>
     <vaadinAddonRefresherVersion>1.2.3.7</vaadinAddonRefresherVersion>
     <vaadinAddonConfirmDialogVersion>2.0.4</vaadinAddonConfirmDialogVersion>
+    <skipPdfGeneration>true</skipPdfGeneration>
+    <skipSignJar>true</skipSignJar>
   </properties>
 
   <profiles>
-
     <profile>
       <id>enable.snapshots</id>
       <activation>
@@ -1371,55 +1399,28 @@
         </repository>
       </repositories>
     </profile>
-
-    <profile>
-      <id>build.all</id>
-      <activation>
-        <property><name>build</name><value>all</value></property>
-      </activation>
-      <modules>
-        <module>extensions</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>build.extensions</id>
-      <activation>
-        <property><name>build</name><value>extensions</value></property>
-      </activation>
-      <modules>
-        <module>extensions</module>
-      </modules>
-    </profile>
-
     <profile>
       <id>opt-local-rrdtool</id>
-      
       <activation>
         <file>
           <exists>/opt/local/bin/rrdtool</exists>
         </file>
       </activation>
-  
       <properties>
         <install.rrdtool.bin>/opt/local/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>fink-rrdtool</id>
-
       <activation>
         <file>
           <exists>/sw/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/sw/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>usr-bin-rrdtool</id>
       <activation>
@@ -1427,12 +1428,10 @@
           <exists>/usr/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>usr-local-bin-rrdtool</id>
       <activation>
@@ -1440,12 +1439,10 @@
           <exists>/usr/local/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/usr/local/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>usr-local-rrdtool-bin-rrdtool</id>
       <activation>
@@ -1453,12 +1450,10 @@
           <exists>/usr/local/rrdtool/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/usr/local/rrdtool/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <!--
          This is for the rrdtool package from Blastwave.org.
          See this for more information:
@@ -1472,32 +1467,23 @@
         <exists>/opt/csw/bin/rrdtool</exists>
       </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/opt/csw/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
-    <profile>
-      <id>build-tools</id>
-      <activation>
-        <property>
-          <name>tagging</name>
-        </property>
-      </activation>
-      <modules>
-        <module>extensions</module>
-        <module>opennms-tools</module>
-      </modules>
-    </profile>
-
     <profile>
       <id>build-bamboo</id>
       <modules>
         <module>opennms-full-assembly</module>
       </modules>
     </profile>
-
+    <profile>
+      <id>run-expensive-tasks</id>
+      <properties>
+        <skipPdfGeneration>false</skipPdfGeneration>
+        <skipSignJar>false</skipSignJar>
+      </properties>
+    </profile>
     <profile>
       <id>smoke</id>
       <activation>
@@ -1512,7 +1498,6 @@
         <module>smoke-test</module>
       </modules>
     </profile>
-
     <profile>
       <id>jdk7+</id>
       <activation>
@@ -1538,7 +1523,6 @@
       </build>
     </profile>
   </profiles>
-
   <dependencyManagement>
     <dependencies>
       <!--  opennms dependencies that are outside of the opennms/trunk project -->
@@ -2270,13 +2254,6 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-dao</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-dao</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>

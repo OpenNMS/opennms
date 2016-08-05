@@ -73,7 +73,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-mockEventd.xml",
         "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
         "classpath:/mockForeignSourceContext.xml",
-        "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml",
         "classpath:/testSiteStatusServiceContext.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"

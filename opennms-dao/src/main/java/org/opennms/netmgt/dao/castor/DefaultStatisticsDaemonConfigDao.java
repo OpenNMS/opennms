@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao.castor;
 
 import java.util.List;
 
+import org.opennms.core.xml.AbstractCastorConfigDao;
 import org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration;
 import org.opennms.netmgt.config.statsd.model.Report;
 import org.opennms.netmgt.config.statsd.model.StatsdConfig;

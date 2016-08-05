@@ -32,7 +32,7 @@ import java.net.InetAddress;
 
 public interface IpAddressFilter {
 
-	boolean matches(InetAddress address);
+	boolean matches(String location, InetAddress address);
 
-	boolean matches(String address);
+	boolean matches(String location, String address);
 }

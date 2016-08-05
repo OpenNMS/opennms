@@ -126,7 +126,7 @@ public class RangeChunker {
         return StreamSupport.stream(configFactory.getConfiguredAddresses().spliterator(), false)
             .filter(address -> {
                 // If there is no IP address filter set or the filter matches
-                return m_ipAddressFilter == null || m_ipAddressFilter.matches(address.getAddress());
+                return m_ipAddressFilter == null || m_ipAddressFilter.matches(address.getLocation(), address.getAddress());
             })
             // TODO: We could optimize this further by not unrolling IPPollRanges into individual
             // IPPollAddresses during the mapping.

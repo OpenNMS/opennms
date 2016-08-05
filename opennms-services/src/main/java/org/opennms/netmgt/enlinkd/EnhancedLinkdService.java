@@ -93,8 +93,6 @@ public interface EnhancedLinkdService {
 
     void reconcileBridge(int nodeId, Date now);
     
-    void reconcileBridgeTopology(int nodeId, Date now);
-
     void store(int nodeId, LldpLink link);
 
     void store(int nodeId, LldpElement element);
@@ -119,7 +117,7 @@ public interface EnhancedLinkdService {
 
     void store(int nodeId, List<BridgeMacLink> link);
     
-    void store(BroadcastDomain domain);
+    void store(BroadcastDomain domain, Date now);
     
     void save(BroadcastDomain domain);
 

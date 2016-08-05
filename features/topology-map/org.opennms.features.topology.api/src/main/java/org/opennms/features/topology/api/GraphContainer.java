@@ -34,6 +34,7 @@ import java.util.Set;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
@@ -44,6 +45,25 @@ public interface GraphContainer extends DisplayState {
     interface ChangeListener {
         void graphChanged(GraphContainer graphContainer);
     }
+
+    /**
+     * Callback which is invoked after the {@link GraphProvider} has been changed.
+     *
+     * @see #selectTopologyProvider(GraphProvider, Callback...)
+     */
+    interface Callback {
+        /**
+         * is invoked after the {@link GraphProvider} has changed.
+         *
+         * @param graphContainer The container
+         * @param graphProvider The new graph provider
+         */
+        void callback(GraphContainer graphContainer, GraphProvider graphProvider);
+    }
+
+    MetaTopologyProvider getMetaTopologyProvider();
+
+    void setMetaTopologyProvider(MetaTopologyProvider metaGraphProvider);
 
     GraphProvider getBaseTopology();
 
@@ -57,6 +77,14 @@ public interface GraphContainer extends DisplayState {
 
     // clears all criteria which are currently sets
     void clearCriteria();
+
+    /**
+     * Selects the specified {@link GraphProvider}.
+     *
+     * @param graphProvider the provider to select.
+     * @param callbacks callbacks to invoke after the provider has been selected (e.g. apply semantic zoom level, etc)
+     */
+    void selectTopologyProvider(GraphProvider graphProvider, Callback... callbacks);
 
     void addChangeListener(ChangeListener listener);
 

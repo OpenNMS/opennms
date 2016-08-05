@@ -9,9 +9,6 @@
   <artifactId>org.opennms.features.ncs.ncs-persistence</artifactId>
   <packaging>bundle</packaging>
   <name>OpenNMS :: Features :: NCS :: Persistence</name>
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
 
   <build>
     <plugins>
@@ -27,21 +24,6 @@
             <Export-Package>org.opennms.netmgt.ncs.persistence.*;org.opennms.netmgt.ncs.rest.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
@@ -149,6 +131,12 @@
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.graphml</artifactId>
+      <version>${project.version}</version>
+      <scope>rest</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

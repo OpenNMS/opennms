@@ -40,7 +40,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.springframework.core.io.FileSystemResource;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * The Test Class for SnmpTrapNorthbounder.

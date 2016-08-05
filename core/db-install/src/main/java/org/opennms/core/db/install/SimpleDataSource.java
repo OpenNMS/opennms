@@ -75,10 +75,10 @@ public class SimpleDataSource implements DataSource {
         // (due to tests using the OSGi lifecycle) then reregister it
         if (org.postgresql.Driver.class.getName().equals(m_driver)) {
             try {
-                boolean isRegistered = (boolean)driverClass.getMethod("isRegistered").invoke(null, null);
+                boolean isRegistered = (boolean)driverClass.getMethod("isRegistered").invoke(null, (Object[])null);
                 if (!isRegistered) {
                     LOG.info(org.postgresql.Driver.class.getName() + " is not registered, reregistering...");
-                    driverClass.getMethod("register").invoke(null, null);
+                    driverClass.getMethod("register").invoke(null, (Object[])null);
                     LOG.info(org.postgresql.Driver.class.getName() + " is registered");
                 }
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {

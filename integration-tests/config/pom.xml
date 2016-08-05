@@ -9,9 +9,6 @@
   <artifactId>org.opennms.integration-tests.config</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS :: Integration Tests :: Config</name>
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
   <build>
     <plugins>
       <plugin>
@@ -47,21 +44,6 @@
             <id>generate-depends-file</id>
             <goals>
               <goal>generate-depends-file</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
             </goals>
           </execution>
         </executions>

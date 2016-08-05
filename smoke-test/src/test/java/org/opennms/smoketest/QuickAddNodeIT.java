@@ -82,7 +82,7 @@ public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testQuickAddNode() throws Exception {
         adminPage();
-        clickMenuItem("name=nav-admin-top", "Quick-Add Node", "admin/ng-requisitions/app/quick-add-node.jsp");
+        clickMenuItem("name=nav-admin-top", "Quick-Add Node", "admin/ng-requisitions/quick-add-node.jsp");
 
         Thread.sleep(5000);
 

@@ -13,24 +13,36 @@ linux_file_server
 opennms_server
 cloud
 
+# atlas icons (since 19.0.0)
+microwave_backhaul_1
+microwave_backhaul_2
+region_1
+region_2
+market_1
+market_2
+site_1
+site_2
+site_3
+
 # BSM Icons
 IP_service
 business_service
 reduction_key
 
 # vmware_icons
-vmware-cluster
-vmware-datastore
-vmware-hostsystem-unknown
-vmware-virtualmachine-off
-vmware-virtualmachine-on
-vmware-hostsystem-off
-vmware-virtualmachine-suspended
-vmware-hostsystem-standby
-vmware-hostsystem-on
-vmware-virtualmachine-unknown
 vmware-datacenter
+vmware-cluster
+vmware-hostsystem-on
+vmware-hostsystem-off
+vmware-hostsystem-standby
+vmware-hostsystem-unknown
 vmware-network
+vmware-datastore
+vmware-virtualmachine-on
+vmware-virtualmachine-off
+vmware-virtualmachine-suspended
+vmware-virtualmachine-unknown
+
 
 # default_icons (legacy, before 18.0.0)
 legacy_linux_file_server

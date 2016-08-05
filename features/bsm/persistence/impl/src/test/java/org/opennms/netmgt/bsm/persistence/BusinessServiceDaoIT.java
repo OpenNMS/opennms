@@ -74,7 +74,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -84,7 +84,6 @@ import junit.framework.Assert;
     "classpath:/META-INF/opennms/applicationContext-dao.xml",
     "classpath*:/META-INF/opennms/component-dao.xml",
     "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-    "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false, tempDbClass = MockDatabase.class)

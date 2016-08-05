@@ -29,6 +29,10 @@
 package org.opennms.features.topology.app.internal.gwt.client;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 public class SharedEdge implements Serializable {
 
@@ -36,10 +40,11 @@ public class SharedEdge implements Serializable {
     private String m_sourceKey;
     private String m_targetKey;
     private boolean m_selected;
-    private String m_styleName;
+    private String cssClass;
     private String m_tooltipText;
 
     private String m_status;
+    private Map<String, String> additionalStyling = new HashMap<>();
 
     public void setKey(String key) {
         m_key = key;
@@ -58,23 +63,15 @@ public class SharedEdge implements Serializable {
     }
 
     public void setCssClass(String styleName) {
-        m_styleName = styleName;
+        this.cssClass = styleName;
     }
 
     public String getCssClass() {
-        return m_styleName;
+        return cssClass;
     }
 
     public void setTooltipText(String tooltipText) {
         m_tooltipText = tooltipText;
-    }
-
-    public String getStyleName() {
-        return m_styleName;
-    }
-
-    public void setStyleName(String styleName) {
-        m_styleName = styleName;
     }
 
     public String getKey() {
@@ -105,4 +102,11 @@ public class SharedEdge implements Serializable {
 
     public void setStatus(String status) { m_status = status; }
 
+    public void setAdditionalStyling(Map<String, String> additionalStyling) {
+        this.additionalStyling = additionalStyling;
+    }
+
+    public Map<String, String> getAdditionalStyling() {
+        return additionalStyling;
+    }
 }

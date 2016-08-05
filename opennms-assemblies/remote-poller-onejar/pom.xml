@@ -116,6 +116,7 @@
           </execution>
         </executions>
         <configuration>
+          <skip>${skipSignJar}</skip>
           <archive>${project.build.directory}/${project.build.FinalName}.one-jar.${project.packaging}</archive>
           <verbose>true</verbose>
         </configuration>

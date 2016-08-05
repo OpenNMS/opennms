@@ -242,7 +242,6 @@ public class DataCollectionConfigParserTest {
         File home = new File("src/test/resources/NMS8030");
         Assert.assertTrue(home.exists());
         File configFile = new File(home, "etc/datacollection-config.xml");
-        System.setProperty("opennms.home", home.getAbsolutePath());
         DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
         dao.setConfigResource(new FileSystemResource(configFile));
         dao.setConfigDirectory(new File(home, "etc/datacollection").getAbsolutePath());

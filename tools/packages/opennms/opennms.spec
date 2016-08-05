@@ -66,8 +66,6 @@ Requires:		%{name}-core        = %{version}-%{release}
 Requires(pre):		postgresql-server  >= 9.1
 Requires:		postgresql-server  >= 9.1
 
-Recommends:		%{name}-source      = %{version}-%{release}
-
 # don't worry about buildrequires, the shell script will bomb quick  =)
 #BuildRequires:		%{jdk}
 
@@ -545,13 +543,13 @@ else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-		-Dopennms.home="%{instprefix}" install
+		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks install
 fi
 
 echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
+	-Dopennms.home="%{instprefix}" -Prun-expensive-tasks -Dbuild.profile=full install
 
 cd opennms-tools
 	../compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \

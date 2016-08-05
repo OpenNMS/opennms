@@ -30,6 +30,9 @@ package org.opennms.features.topology.api.topo;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
+import com.google.common.collect.Maps;
 
 public class DefaultStatus implements Status {
 
@@ -55,7 +58,29 @@ public class DefaultStatus implements Status {
     }
 
     @Override
+    public Map<String, String> getStyleProperties() {
+        return Maps.newHashMap();
+    }
+
+    @Override
     public String toString() {
         return String.format("[%s: %d]", m_label, m_alarmCount);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null) return false;
+        if (obj instanceof DefaultStatus) {
+            DefaultStatus other = (DefaultStatus) obj;
+            return Objects.equals(computeStatus(), other.computeStatus())
+                    && Objects.equals(getStatusProperties(), other.getStatusProperties());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(computeStatus(), getStatusProperties());
     }
 }

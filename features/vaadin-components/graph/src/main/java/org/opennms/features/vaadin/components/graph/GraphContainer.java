@@ -46,9 +46,9 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
 // Only resources required to bootstrap graph.js should be included here - others should
 // be loaded dynamically.
 @JavaScript({
-    "require.min.js",
+    "require.js",
     "global.js",
-    "jquery.min.js",
+    "jquery.js",
     "graph.js",
     "graphcontainer-connector.js"
 })

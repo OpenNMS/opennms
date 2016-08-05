@@ -122,7 +122,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         for (final OnmsNode node : m_nodeDao.findMatching(criteria)) {
             nodes.add(new Node(node.getId(),
                                node.getPrimaryInterface().getIpAddress(),
-                               node.getSysObjectId(), node.getSysName()));
+                               node.getSysObjectId(), node.getSysName(),node.getLocation() == null ? null : node.getLocation().getLocationName()));
         }
         return nodes;
     }
@@ -144,7 +144,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             final OnmsNode node = nodes.get(0);
             return new Node(node.getId(),
                             node.getPrimaryInterface().getIpAddress(),
-                            node.getSysObjectId(), node.getSysName());
+                            node.getSysObjectId(), node.getSysName(),node.getLocation() == null ? null : node.getLocation().getLocationName());
         } else {
             return null;
         }
@@ -662,7 +662,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         m_broadcastDomainToRootBFTMap.put(rootid, rootBFT);
     }
     @Override
-    public void store(BroadcastDomain domain) {
+    public void store(BroadcastDomain domain, Date now) {
         for (SharedSegment segment : domain.getTopology()) {
             for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
                 link.setBridgeBridgeLinkLastPollTime(new Date());
@@ -673,15 +673,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
                 saveBridgeMacLink(link);
             }
         }
-    }
-
-    @Override
-    public void reconcileBridgeTopology(int nodeid, Date now) {
-        m_bridgeMacLinkDao.deleteByNodeIdOlderThen(nodeid, now);
-        m_bridgeMacLinkDao.flush();
-        m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(nodeid, now);
-        m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(nodeid, now);
-        m_bridgeBridgeLinkDao.flush();
+        
+        for (Integer nodeid: domain.getBridgeNodesOnDomain()) {
+            m_bridgeMacLinkDao.deleteByNodeIdOlderThen(nodeid, now);
+            m_bridgeMacLinkDao.flush();
+            m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(nodeid, now);
+            m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(nodeid, now);
+            m_bridgeBridgeLinkDao.flush();
+        }
     }
 
     @Transactional
