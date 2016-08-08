@@ -52,26 +52,25 @@
 		<property name="processorFactory" ref="processorFactory"/>
 	</bean>
 
-    <bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
+	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
 		<argument value="org.opennms.netmgt.snmp.TrapNotification" />
 	</bean>
-	
+
 	<camelContext id="trapNotificationHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:trapHandlerDefaultProperties" />
-		
+
 		<route id="receiveTrapConnectionViaKafka">
 			<from uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}&amp;consumerStreams={{consumerstreams}}"/>
-            
-            <bean ref="kafkaDecoder" method="fromBytes"/>
-            
-            
+
+			<!-- TODO: Implement this unmarshaller -->
+			<bean ref="kafkaDecoder" method="fromBytes"/>
+
 			<!-- <convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/> -->
 			<to uri="seda:trapHandler"/>
 		</route>
 
 		<route id="trapHandler">
 			<from uri="seda:trapHandler" />
-<!-- 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification" /> -->
 			<!--
 				Pass the message to the default handler which will convert it into 
 				an event and broadcast the event.

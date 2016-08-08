@@ -92,7 +92,7 @@ JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
 RUNAS="root"
 
 # Maximum file Descriptors + 1to be setted by ulimit -n
-MAXIMUM_FILE_DESCRIPTORS=150000
+MAXIMUM_FILE_DESCRIPTORS=20480
 
 # maximum size of stack segment (in kbytes) to be setted by ulimit -s
 MAXIMUM_SIZE_STACK_SEGMENT=8192

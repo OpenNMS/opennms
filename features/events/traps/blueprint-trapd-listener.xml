@@ -18,25 +18,22 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
-	<!-- Camel Event for unmarshalling processor -->
-	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
-		<argument value="org.opennms.netmgt.config.trapd.TrapdConfiguration" />
-	</bean>
+    <!-- Camel Event for unmarshalling processor -->
+    <bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
+        <argument value="org.opennms.netmgt.config.trapd.TrapdConfiguration" />
+    </bean>
 
+    <camelContext id="trapConnectionHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
+        <propertyPlaceholder id="minionproperties" location="blueprint:minionProperties" />
+        <route id="restClientToTrapdConfig">
+            <from uri="timer://restTrapConfigurationTimer?fixedRate=true&amp;period=60000"/>
+            <to uri="{{http-url}}/rest/config/trapd?authMethod=Basic&amp;authUsername={{username}}&amp;authPassword={{password}}" />
+            <bean ref="unmarshaller" />
+            <to uri="bean:trapdConfig?method=onUpdate" />
+            <bean ref="trapReceiver" method="setTrapdConfig" />
+        </route>
+    </camelContext>
 
-	<camelContext id="trapConnectionHandlerDefaultContext"
-		xmlns="http://camel.apache.org/schema/blueprint">
-			<propertyPlaceholder id="minionproperties"
-			location="blueprint:minionProperties" />
-		<route id="restClientToTrapdConfig">
-			<from uri="timer://restTrapConfigurationTimer?fixedRate=true&amp;period=60000"/>
-			<to uri="{{http-url}}/rest/config/trapd?authMethod=Basic&amp;authUsername={{username}}&amp;authPassword={{password}}" />
-			<bean ref="unmarshaller" />
-			<to uri="bean:trapdConfig?method=onUpdate" />
-			<bean ref="trapReceiver" method="setTrapdConfig" />
-		</route>
-	</camelContext>
-	
     <cm:property-placeholder id="minionProperties" persistent-id="org.opennms.minion.controller" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="none">
         <cm:default-properties>
             <cm:property name="location" value="MINION"/>
@@ -49,7 +46,7 @@
 
     <bean id="trapdConfig" class="org.opennms.netmgt.trapd.TrapdConfigBean">
         <property name="snmpTrapPort" value="${trapd.listen.port}"/>
-	    <property name="snmpTrapAddress" value="${trapd.listen.interface}"/>
+        <property name="snmpTrapAddress" value="${trapd.listen.interface}"/>
     </bean>
 
     <reference id="trapNotificationHandlers" interface="org.opennms.netmgt.trapd.TrapNotificationHandler"/>

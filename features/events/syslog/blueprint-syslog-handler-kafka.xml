@@ -36,13 +36,12 @@
 		<route id="sendSyslogViaKafka">
 			<from uri="seda:handleMessageBlueprint" />
 			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
-		    <setHeader headerName="kafka.PARTITION_KEY">
+			<setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${body.getPartionKey}</simple>
 			</setHeader>
 			<bean ref="marshaller"/>
 			
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
-	
 			<to uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>
 	</camelContext>

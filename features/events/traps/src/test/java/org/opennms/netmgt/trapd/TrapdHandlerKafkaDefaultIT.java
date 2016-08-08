@@ -171,56 +171,49 @@ public class TrapdHandlerKafkaDefaultIT extends CamelBlueprintTest {
 		CamelContext syslogd = new DefaultCamelContext(registry);
 		
 		syslogd.addRoutes(new RouteBuilder(){
-		  @Override
-		  public void configure() throws Exception {
-			  from("direct:start").process(new Processor() {
-                  @Override
-                  public void process(Exchange exchange) throws Exception {
-                      exchange.getIn().setBody("Test Message from Camel Kafka Component Final",String.class);
-                      exchange.getIn().setHeader(KafkaConstants.PARTITION_KEY, 1);
-                      exchange.getIn().setHeader(KafkaConstants.KEY, "1");
-                  }
-              }).to("kafka:localhost:9092?topic=trapd&serializerClass=kafka.serializer.StringEncoder");
-		  }
-		  
-				
+			@Override
+			public void configure() throws Exception {
+				from("direct:start").process(new Processor() {
+					@Override
+					public void process(Exchange exchange) throws Exception {
+						exchange.getIn().setBody("Test Message from Camel Kafka Component Final",String.class);
+						exchange.getIn().setHeader(KafkaConstants.PARTITION_KEY, 1);
+						exchange.getIn().setHeader(KafkaConstants.KEY, "1");
+					}
+				}).to("kafka:localhost:9092?topic=trapd&serializerClass=kafka.serializer.StringEncoder");
+			}
 		});
-		
-		
-		
+
 		syslogd.addRoutes(new RouteBuilder() {
 			@Override
 			public void configure() throws Exception {
 
 				from("kafka:localhost:9092?topic=trapd&zookeeperHost=localhost&zookeeperPort=2181&groupId=testing")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange)
-                            throws Exception {
-                        String messageKey = "";
-                        if (exchange.getIn() != null) {
-                            Message message = exchange.getIn();
-                            Integer partitionId = (Integer) message
-                                    .getHeader(KafkaConstants.PARTITION);
-                            String topicName = (String) message
-                                    .getHeader(KafkaConstants.TOPIC);
-                            if (message.getHeader(KafkaConstants.KEY) != null)
-                                messageKey = (String) message
-                                        .getHeader(KafkaConstants.KEY);
-                            Object data = message.getBody();
+				.process(new Processor() {
+					@Override
+					public void process(Exchange exchange) throws Exception {
+						String messageKey = "";
+						if (exchange.getIn() != null) {
+							Message message = exchange.getIn();
+							Integer partitionId = (Integer)message.getHeader(KafkaConstants.PARTITION);
+							String topicName = (String)message.getHeader(KafkaConstants.TOPIC);
+							if (message.getHeader(KafkaConstants.KEY) != null) {
+								messageKey = (String)message.getHeader(KafkaConstants.KEY);
+							}
 
-                            System.out.println("topicName :: "
-                                    + topicName + " partitionId :: "
-                                    + partitionId + " messageKey :: "
-                                    + messageKey + " message :: "
-                                    + data + "\n");
-                        }
-                    }
-                }).to("log:input");
+							Object data = message.getBody();
+
+							System.out.println("topicName :: "
+									+ topicName + " partitionId :: "
+									+ partitionId + " messageKey :: "
+									+ messageKey + " message :: "
+									+ data + "\n");
+						}
+					}
+				}).to("log:input");
 
 			}
 		});
-		
 
 		syslogd.start();
 	}

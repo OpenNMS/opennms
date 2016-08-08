@@ -39,6 +39,7 @@
 		    <setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${body.getPartionKey}</simple>
 			</setHeader>
+			<!-- TODO: Implement this marshaller -->
 			<bean ref="kafkaEncoder" method="toBytes"/>
 			<to uri="seda:trapHandler"/>
 		</route>

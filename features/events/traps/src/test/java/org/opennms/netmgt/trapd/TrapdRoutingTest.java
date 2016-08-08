@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
@@ -20,14 +48,14 @@ import org.springframework.test.context.ContextConfiguration;
 public class TrapdRoutingTest extends CamelTestSupport {
 
 	@Override
-    protected JndiRegistry createRegistry() throws Exception
-    {
-        JndiRegistry registry = super.createRegistry();
+	protected JndiRegistry createRegistry() throws Exception
+	{
+		JndiRegistry registry = super.createRegistry();
 
-        registry.bind( "trapd", new TrapdConfigBean() );
+		registry.bind( "trapd", new TrapdConfigBean() );
 
-        return registry;
-    }
+		return registry;
+	}
 
 	/**
 	 * Delay calling context.start() so that you can attach an
@@ -48,49 +76,46 @@ public class TrapdRoutingTest extends CamelTestSupport {
 			@Override
 			public void configure() throws Exception {
 				// Add exception handlers
-				onException(IOException.class).handled(true)
-						.logStackTrace(true).stop();
+				onException(IOException.class)
+					.handled(true)
+					.logStackTrace(true)
+					.stop();
 
 				from("netty-http:http://localhost:8980/opennms/rest/config/trapd")
-						.process(
-								new JaxbUtilsUnmarshalProcessor(
-										TrapdConfigBean.class))
-						.to("bean:trapd?method=onUpdate").to("mock:result")
-						.bean(TrapReceiverImpl.class, "setTrapdConfig");
-
+					.process(new JaxbUtilsUnmarshalProcessor(TrapdConfigBean.class))
+					.to("bean:trapd?method=onUpdate")
+					.to("mock:result")
+					.bean(TrapReceiverImpl.class, "setTrapdConfig");
 			}
 		};
 	}
-	
+
 
 	@Test
 	public void testTrapRouting() throws Exception {
-			for (RouteDefinition route : new ArrayList<RouteDefinition>(
-					context.getRouteDefinitions())) {
-				route.adviceWith(context, new AdviceWithRouteBuilder() {
-					@Override
-					public void configure() throws Exception {
-						mockEndpoints();
-					}
-				});
-			}
-			context.start();
+		for (RouteDefinition route : new ArrayList<RouteDefinition>(context.getRouteDefinitions())) {
+			route.adviceWith(context, new AdviceWithRouteBuilder() {
+				@Override
+				public void configure() throws Exception {
+					mockEndpoints();
+				}
+			});
+		}
+		context.start();
 
-			MockEndpoint endpoint = getMockEndpoint( "mock:result", false );
-			endpoint.setExpectedMessageCount( 1 );
+		MockEndpoint endpoint = getMockEndpoint( "mock:result", false );
+		endpoint.setExpectedMessageCount( 1 );
 
-			TrapdConfigBean config = new TrapdConfigBean();
-			config.setSnmpTrapPort(10514);
-			config.setSnmpTrapAddress("127.0.0.1");
-			config.setNewSuspectOnTrap(false);
+		TrapdConfigBean config = new TrapdConfigBean();
+		config.setSnmpTrapPort(10514);
+		config.setSnmpTrapAddress("127.0.0.1");
+		config.setNewSuspectOnTrap(false);
 
-			template.requestBody( endpoint, config);
-			
-			assertNotNull(context.hasEndpoint("mock:result"));
-			
-			assertMockEndpointsSatisfied();
+		template.requestBody( endpoint, config);
+
+		assertNotNull(context.hasEndpoint("mock:result"));
+
+		assertMockEndpointsSatisfied();
 	}
 
 }
-
-

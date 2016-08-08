@@ -163,11 +163,11 @@ public class SyslogConnection implements Callable<Callable<?>> {
             LOG.debug("Converting syslog message into event ({} bytes)", m_bytes.remaining());
 
             try {
-				SyslogdIPMgrJDBCImpl.getInstance().dataSourceSync();
-			} catch (SQLException e) {
-				 LOG.debug("Database Sync failed");
-			}
-            
+                SyslogdIPMgrJDBCImpl.getInstance().dataSourceSync();
+            } catch (SQLException e) {
+                LOG.debug("Database Sync failed");
+            }
+
             // TODO: Change to a static call?
             ConvertToEvent re = new ConvertToEvent(
                 m_systemId,
@@ -233,8 +233,8 @@ public class SyslogConnection implements Callable<Callable<?>> {
         );
         return retPacket;
     }
-    
-	public int getPartionKey() {
-		return new Random().nextInt(10000);
-	}
+
+    public int getPartionKey() {
+        return new Random().nextInt(10000);
+    }
 }

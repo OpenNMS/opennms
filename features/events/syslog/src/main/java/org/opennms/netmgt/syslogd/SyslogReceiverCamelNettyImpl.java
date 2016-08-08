@@ -197,16 +197,17 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             
                             SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), byteBuffer, m_config, m_distPollerDao.whoami().getId());
                             exchange.getIn().setBody(connection, SyslogConnection.class);
-          
-                            /*try {
+
+                            /*
+                            try {
                                 for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {
                                     connectionMeter.mark();
                                     handler.handleSyslogConnection(connection);
                                 }
                             } catch (Throwable e) {
                                 LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
-                            }*/
-
+                            }
+                            */
                         }
                     }).to("bean:syslogDispatcher?method=dispatch");
                 }
@@ -218,11 +219,11 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         }
     }
 
-	public DispatcherWhiteboard getSyslogDispatcher() {
-		return syslogDispatcher;
-	}
+    public DispatcherWhiteboard getSyslogDispatcher() {
+        return syslogDispatcher;
+    }
 
-	public void setSyslogDispatcher(DispatcherWhiteboard syslogDispatcher) {
-		this.syslogDispatcher = syslogDispatcher;
-	}
+    public void setSyslogDispatcher(DispatcherWhiteboard syslogDispatcher) {
+        this.syslogDispatcher = syslogDispatcher;
+    }
 }

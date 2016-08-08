@@ -300,14 +300,14 @@
                 <attrib name="Count" alias="CasCluster1ReqCnt" type="counter"/>
             </mbean>
             <mbean name="org.apache.camel.context" objectname="org.apache.camel:context=org.opennms.features.events.syslog,type=context,name=&quot;syslogConnectionHandler&quot;">
-                <attrib name="ExchangesCompleted" alias="3ExchangesCompleted" type="gauge"/>
-                <attrib name="ExchangesFailed" alias="3ExchangesFailed" type="gauge"/>
-                <attrib name="ExchangesTotal" alias="3ExchangesTotal" type="gauge"/>
+                <attrib name="ExchangesCompleted" alias="SyslogsCompleted" type="counter"/>
+                <attrib name="ExchangesFailed" alias="SyslogsFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="SyslogsTotal" type="counter"/>
             </mbean>
             <mbean name="org.apache.camel.context" objectname="org.apache.camel:context=org.opennms.features.events.traps,type=context,name=&quot;trapNotificationHandler&quot;">
-                <attrib name="ExchangesCompleted" alias="5ExchangesCompleted" type="gauge"/>
-                <attrib name="ExchangesFailed" alias="5ExchangesFailed" type="gauge"/>
-                <attrib name="ExchangesTotal" alias="5ExchangesTotal" type="gauge"/>
+                <attrib name="ExchangesCompleted" alias="TrapsCompleted" type="counter"/>
+                <attrib name="ExchangesFailed" alias="TrapsFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="TrapsTotal" type="counter"/>
             </mbean>
         </mbeans>
     </jmx-collection>
