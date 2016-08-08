@@ -64,7 +64,7 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <arguments>install</arguments>
+              <arguments>install --allow-root</arguments>
             </configuration>
           </execution>
           <execution>
