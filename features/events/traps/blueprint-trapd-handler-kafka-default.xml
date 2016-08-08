@@ -14,12 +14,11 @@
 
 	<cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd.handler.kafka.default" update-strategy="reload">
 		<cm:default-properties>
-			<cm:property name="kafkahost" value="127.0.0.1" />
-			<cm:property name="kafkaport" value="9092" />
+			<cm:property name="kafkahostport" value="127.0.0.1:9092" />
 			<cm:property name="kafkatopic" value="trapd" />
-			<cm:property name="zookeeperhost" value="127.0.0.1"/> 
+			<cm:property name="zookeeperhost" value="127.0.0.1"/>
 			<cm:property name="zookeeperport" value="2181"/>
-			<cm:property name="groupId" value="trapdconsumer"/>	
+			<cm:property name="groupId" value="trapdconsumer"/>
 		</cm:default-properties>
 	</cm:property-placeholder>
 	
@@ -55,7 +54,7 @@
 		<propertyPlaceholder id="properties" location="blueprint:trapHandlerDefaultProperties" />
 		
 		<route id="receiveTrapConnection">
-			<from uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}"/>
+			<from uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}"/>
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
 			<to uri="seda:trapHandler"/>
 		</route>

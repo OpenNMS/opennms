@@ -66,10 +66,24 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
     private List<SnmpV3User> m_snmpV3Users;
 
     private boolean m_registeredForTraps;
+    
+	private List<TrapNotificationHandler> m_trapNotificationHandlers = Collections.emptyList();
+	
+	private TrapdConfig m_trapdConfig;
 
-    private List<TrapNotificationHandler> m_trapNotificationHandlers = Collections.emptyList();
+	public void setTrapdConfig(TrapdConfig m_trapdConfig) {
+		this.m_trapdConfig = m_trapdConfig;
+	}
+	
+	/**
+	 * Default constructor
+	 */
+	 public TrapReceiverImpl()
+	 {
+		 
+	 }
 
-    /**
+	/**
      * construct a new receiver
      *
      * @param sock
@@ -77,11 +91,14 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
      * @param hostGroup
      * @param messageGroup
      */
-    public TrapReceiverImpl(final TrapdConfig config) throws SocketException {
+    public TrapReceiverImpl(TrapdConfig config) throws SocketException {
         if (config == null) {
             throw new IllegalArgumentException("Config cannot be null");
         }
-
+        
+		if (m_trapdConfig != null) {
+			config = m_trapdConfig;
+		}
         m_snmpTrapPort = config.getSnmpTrapPort();
         m_snmpTrapAddress = config.getSnmpTrapAddress();
         m_snmpV3Users = config.getSnmpV3Users();

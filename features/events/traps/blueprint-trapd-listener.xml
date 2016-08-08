@@ -11,16 +11,33 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <cm:property-placeholder id="trapdProperties" persistent-id="org.opennms.netmgt.trapd" update-strategy="reload">
+    <cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd" update-strategy="none">
         <cm:default-properties>
             <cm:property name="trapd.listen.interface" value="127.0.0.1" />
             <cm:property name="trapd.listen.port" value="162" />
         </cm:default-properties>
     </cm:property-placeholder>
 
+	<!-- Camel Event for unmarshalling processor -->
+	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
+		<argument value="org.opennms.netmgt.config.trapd.TrapdConfiguration" />
+	</bean>
+
+	<camelContext id="trapConnectionHandlerDefaultContext"
+		xmlns="http://camel.apache.org/schema/blueprint">
+		<propertyPlaceholder id="properties"
+			location="blueprint:trapHandlerDefaultProperties" />
+		<route id="unmarshal">
+			<from uri="http://localhost:8980/opennms/rest/config/trapd" />
+			<bean ref="unmarshaller" />
+			<to uri="bean:trapdConfig?method=onUpdate" />
+			<bean ref="trapReceiver" method="setTrapdConfig" />
+		</route>
+	</camelContext>
+     
     <bean id="trapdConfig" class="org.opennms.netmgt.trapd.TrapdConfigBean">
         <property name="snmpTrapPort" value="${trapd.listen.port}"/>
-        <property name="snmpTrapAddress" value="${trapd.listen.interface}"/>
+	    <property name="snmpTrapAddress" value="${trapd.listen.interface}"/>
     </bean>
 
     <reference id="trapNotificationHandlers" interface="org.opennms.netmgt.trapd.TrapNotificationHandler"/>

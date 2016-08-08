@@ -15,8 +15,7 @@
 
 	<cm:property-placeholder id="trapdHandlerKafkaProperties" persistent-id="org.opennms.netmgt.trapd.handler.kafka" placeholder-prefix="$[" placeholder-suffix="]" update-strategy="none">
 		<cm:default-properties>
-			<cm:property name="kafkahost" value="127.0.0.1" />
-			<cm:property name="kafkaport" value="9092" />
+			<cm:property name="kafkahostport" value="127.0.0.1:9092" />
 			<cm:property name="kafkatopic" value="trapd" />
 		</cm:default-properties>
 	</cm:property-placeholder>
@@ -45,7 +44,7 @@
 			<convertBodyTo type="java.lang.String"/>
 			<log message="bytes:         ${body}"/>
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
-			<to uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
+			<to uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>
 	</camelContext>
 </blueprint>
