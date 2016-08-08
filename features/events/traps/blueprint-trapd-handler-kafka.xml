@@ -33,14 +33,14 @@
 
 	<camelContext id="trapNotificationHandler" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:trapdHandlerKafkaProperties" />
-		<route id="sendTrapViaKafka">
+		<route id="handleTrap">
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
-		    <setHeader headerName="kafka.PARTITION_KEY">
+			<setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${body.getPartionKey}</simple>
 			</setHeader>
 			<!-- TODO: Implement this marshaller -->
-			<bean ref="kafkaEncoder" method="toBytes"/>
+			<!-- <bean ref="kafkaEncoder" method="toBytes"/> -->
 			<to uri="seda:trapHandler"/>
 		</route>
 		

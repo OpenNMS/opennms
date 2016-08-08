@@ -34,8 +34,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.List;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -78,11 +76,11 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
 
     private DistPollerDao m_distPollerDao = null;
     
-    //Adding dispacterWhiteboard for broadcasting syslogs to multiple channles such as AMQ and kafka
+    /**
+     * {@link DispatcherWhiteboard} for broadcasting {@link SyslogConnection}
+     * objects to multiple channels such as AMQ and Kafka.
+     */
     private DispatcherWhiteboard syslogDispatcher;
-
-    //used only for junit
-    private List<SyslogConnectionHandler> m_syslogConnectionHandlers = Collections.emptyList();
 
     /**
      * Construct a new receiver
@@ -130,15 +128,6 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
 
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         m_distPollerDao = distPollerDao;
-    }
-
-    //Getter and setter for syslog handler
-    public SyslogConnectionHandler getSyslogConnectionHandlers() {
-        return m_syslogConnectionHandlers.get(0);
-    }
-
-    public void setSyslogConnectionHandlers(SyslogConnectionHandler handler) {
-        m_syslogConnectionHandlers = Collections.singletonList(handler);
     }
 
     /**

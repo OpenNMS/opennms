@@ -63,7 +63,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
+@ContextConfiguration(locations = {
+	"classpath:/META-INF/opennms/applicationContext-soa.xml",
+	"classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+})
 public class TrapdHandlerKafkaDefaultIT extends CamelBlueprintTest {
 
 	private boolean mockInitialized = false;
@@ -216,6 +219,8 @@ public class TrapdHandlerKafkaDefaultIT extends CamelBlueprintTest {
 		});
 
 		syslogd.start();
+
+		// TODO: Send messages and assert that they are processed correctly
 	}
 
 	@After

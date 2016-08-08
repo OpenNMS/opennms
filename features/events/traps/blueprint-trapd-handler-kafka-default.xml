@@ -63,7 +63,7 @@
 			<from uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}&amp;consumerStreams={{consumerstreams}}"/>
 
 			<!-- TODO: Implement this unmarshaller -->
-			<bean ref="kafkaDecoder" method="fromBytes"/>
+			<!-- <bean ref="kafkaDecoder" method="fromBytes"/> -->
 
 			<!-- <convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/> -->
 			<to uri="seda:trapHandler"/>
