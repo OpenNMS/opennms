@@ -141,9 +141,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="graphDao" ref="graphDao"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
-  <bean id="chooseResourceService" class="org.opennms.web.svclayer.support.DefaultChooseResourceService">
-    <property name="resourceDao" ref="resourceDao"/>
-  </bean>
   <bean id="graphResultsService" class="org.opennms.web.svclayer.support.DefaultGraphResultsService">
     <property name="resourceDao" ref="resourceDao"/>
     <property name="graphDao" ref="graphDao"/>
