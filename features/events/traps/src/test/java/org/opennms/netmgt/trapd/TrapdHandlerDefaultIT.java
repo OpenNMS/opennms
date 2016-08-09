@@ -67,7 +67,10 @@ import org.snmp4j.smi.VariableBinding;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
+@ContextConfiguration(locations = {
+	"classpath:/META-INF/opennms/applicationContext-soa.xml",
+	"classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+})
 public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 
 	private boolean mockInitialized = false;
