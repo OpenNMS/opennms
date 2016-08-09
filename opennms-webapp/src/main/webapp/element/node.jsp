@@ -527,13 +527,11 @@ function confirmAssetEdit() {
     </jsp:include>
   </c:if>
 
-  <div id="interface-panel" class="panel panel-default">
+  <div id="onms-interfaces" class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">Node Interfaces</h3>
     </div>
-    <div ng-app="onms-interfaces" ng-controller="NodeInterfacesCtrl" ng-init="init(${model.id})">
-      <ng-include src="'js/onms-interfaces/template.html'"/>
-    </div>
+    <onms-interfaces node="${model.id}"/>
   </div>
 
   <!-- Vlan box if available -->

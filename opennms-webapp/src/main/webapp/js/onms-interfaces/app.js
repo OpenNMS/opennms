@@ -19,15 +19,22 @@ angular.module('onms-interfaces', [
   };
 })
 
+.directive('onmsInterfaces', function() {
+  return {
+    restrict: 'E',
+    scope: {
+      nodeId: '=node'
+    },
+    templateUrl: 'js/onms-interfaces/template.main.html',
+    controller: 'NodeInterfacesCtrl'
+  };
+})
+
 .directive('sort', function() {
   return {
     restrict: 'A',
     transclude: true,
-    template: 
-      '<span ng-click="onClick()">'+
-        '<span ng-transclude></span>&nbsp;&nbsp;'+ 
-        '<i class="glyphicon" ng-class="{\'glyphicon-sort-by-alphabet\' : order === by && !reverse,  \'glyphicon-sort-by-alphabet-alt\' : order===by && reverse}"></i>'+
-      '</span>',
+    templateUrl: 'js/onms-interfaces/template.sort.html',
     scope: {
       order: '=',
       by: '=',
@@ -43,7 +50,7 @@ angular.module('onms-interfaces', [
         }
       }
     }
-  }
+  };
 })
 
 .controller('NodeInterfacesCtrl', ['$scope', '$http', '$filter', '$window', function($scope, $http, $filter, $window) {
@@ -51,7 +58,6 @@ angular.module('onms-interfaces', [
   // Common Variables
 
   $scope.filters = { ipInterface: null, snmpInterface: null };
-  $scope.nodeId = null;
 
   // IP Interfaces Variables
 
@@ -72,14 +78,6 @@ angular.module('onms-interfaces', [
   $scope.snmpInterfacesTotalItems = 0;
   $scope.snmpOrder = 'ifIndex';
   $scope.snmpReverse = false;
-
-  // Common Methods
-
-  $scope.init = function(nodeId) {
-    $scope.nodeId = nodeId;
-    $scope.loadIpInterfaces();
-    $scope.loadSnmpInterfaces();
-  };
 
   // IP Interfaces
 
@@ -169,4 +167,15 @@ angular.module('onms-interfaces', [
     $scope.updateFilteredSnmpInterfaces();
   });
 
+  // Initialize content
+  $scope.loadIpInterfaces();
+  $scope.loadSnmpInterfaces();
+
 }]);
+
+// Bootstrap to a an element with ID 'onms-interfaces'
+
+angular.element(document).ready(function () {
+  var el = document.getElementById('onms-interfaces');
+  angular.bootstrap(angular.element(el), ['onms-interfaces']);
+});
