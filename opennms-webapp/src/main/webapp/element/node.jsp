@@ -274,6 +274,7 @@
 <%@page import="org.opennms.core.resource.Vault"%>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="norequirejs" value="true" />
+  <jsp:param name="disableCoreWeb" value="true" />
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
   <jsp:param name="headTitle" value="ID ${model.id}" />
