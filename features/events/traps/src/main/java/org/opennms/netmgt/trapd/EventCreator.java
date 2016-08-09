@@ -61,11 +61,9 @@ public class EventCreator implements TrapProcessor {
     public EventCreator(TrapdIpMgr trapdIpMgr) {
         m_trapdIpMgr = trapdIpMgr;
         m_eventBuilder = new EventBuilder(null, "trapd");
-        if(!TrapdIpManagerDaoImpl.isDataBaseSync())
-        {
-        	m_trapdIpMgr.dataSourceSync();
-        	TrapdIpManagerDaoImpl.setDataBaseSync(true);
-        	
+        if (!TrapdIpManagerDaoImpl.isDataBaseSync()) {
+            m_trapdIpMgr.dataSourceSync();
+            TrapdIpManagerDaoImpl.setDataBaseSync(true);
         }
     }
     

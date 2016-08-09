@@ -100,7 +100,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
                 }
             };
             
-            m_keyTimer.schedule(1500);
+            m_keyTimer.schedule(500);
             
         }
     }

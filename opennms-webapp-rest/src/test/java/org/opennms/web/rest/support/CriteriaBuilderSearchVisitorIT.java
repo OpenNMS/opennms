@@ -50,13 +50,6 @@ import org.opennms.web.rest.v2.ScanReportRestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-/*
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
-        "classpath:META-INF/opennms/applicationContext-soa.xml",
-        "classpath:META-INF/opennms/applicationContext-mockDao.xml"
-})
- */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -96,6 +89,33 @@ public class CriteriaBuilderSearchVisitorIT {
 		CriteriaBuilderSearchVisitor<ScanReport> visitor = new CriteriaBuilderSearchVisitor<ScanReport>(builder, ScanReport.class);
 
 		visitor.visit(new PrimitiveSearchCondition<ScanReport>("applications", "blah", String.class, ConditionType.EQUALS, new ScanReport()));
+		visitor.visit(new PrimitiveSearchCondition<ScanReport>("timestamp", new Date(), Date.class, ConditionType.LESS_OR_EQUALS, new ScanReport()));
+
+		Criteria criteria = visitor.getQuery().toCriteria();
+		System.out.println(criteria.toString());
+		m_dao.countMatching(criteria);
+	}
+
+
+	@Test
+	public void testScanReportTwoConditionsWithIsNull() {
+		CriteriaBuilder builder = new ScanReportRestService().getCriteriaBuilder();
+		CriteriaBuilderSearchVisitor<ScanReport> visitor = new CriteriaBuilderSearchVisitor<ScanReport>(builder, ScanReport.class);
+
+		visitor.visit(new PrimitiveSearchCondition<ScanReport>("applications", CriteriaBuilderSearchVisitor.NULL_VALUE, String.class, ConditionType.EQUALS, new ScanReport()));
+		visitor.visit(new PrimitiveSearchCondition<ScanReport>("timestamp", new Date(), Date.class, ConditionType.LESS_OR_EQUALS, new ScanReport()));
+
+		Criteria criteria = visitor.getQuery().toCriteria();
+		System.out.println(criteria.toString());
+		m_dao.countMatching(criteria);
+	}
+
+	@Test
+	public void testScanReportTwoConditionsWithIsNotNull() {
+		CriteriaBuilder builder = new ScanReportRestService().getCriteriaBuilder();
+		CriteriaBuilderSearchVisitor<ScanReport> visitor = new CriteriaBuilderSearchVisitor<ScanReport>(builder, ScanReport.class);
+
+		visitor.visit(new PrimitiveSearchCondition<ScanReport>("applications", CriteriaBuilderSearchVisitor.NULL_VALUE, String.class, ConditionType.NOT_EQUALS, new ScanReport()));
 		visitor.visit(new PrimitiveSearchCondition<ScanReport>("timestamp", new Date(), Date.class, ConditionType.LESS_OR_EQUALS, new ScanReport()));
 
 		Criteria criteria = visitor.getQuery().toCriteria();

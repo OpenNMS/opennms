@@ -72,122 +72,97 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
     private List<SnmpV3User> m_snmpV3Users;
     
     private boolean m_registeredForTraps;
-    
-	private List<TrapNotificationHandler> m_trapNotificationHandlers = new ArrayList<TrapNotificationHandler>();
-	
-	private Map<String,SnmpV3User> m_updatedSnmpV3Users=new TreeMap<String, SnmpV3User>();
-	
-	private Map<String,SnmpV3User> m_SnmpV3UsersMap=new TreeMap<String, SnmpV3User>();
-	
-	
-	public void setTrapdConfig(TrapdConfiguration m_trapdConfig) {
-		m_updatedSnmpV3Users=addToSnmpV3Users(m_trapdConfig);
-		if (checkForTrapdConfigurationChange(m_trapdConfig)) {
-			stop();
-			LOG.info("TrapReceiver service has been stopped.");
-			m_snmpTrapPort = m_trapdConfig.getSnmpTrapPort();
-			m_snmpTrapAddress = m_trapdConfig.getSnmpTrapAddress();
-			m_snmpV3Users = new ArrayList<SnmpV3User>(m_updatedSnmpV3Users.values());
-			clearValues();
-			LOG.info("Starting the TrapReceiver service.");
-			start();
-			LOG.info("TrapReceiver service has been restarted successfully.");
-		}
-	}
-	
-	private void clearValues() {
-		 m_updatedSnmpV3Users=Collections.emptyMap();
-		 m_SnmpV3UsersMap=Collections.emptyMap();
-	}
 
-	public boolean compareSnmpV3UsersMap(Map<String, SnmpV3User> existingSnmpV3UserMap,
-			Map<String, SnmpV3User> updatedSnmpV3Usermap) {
+    private List<TrapNotificationHandler> m_trapNotificationHandlers = new ArrayList<TrapNotificationHandler>();
 
-		if (existingSnmpV3UserMap.isEmpty() || updatedSnmpV3Usermap.isEmpty())
-			return true;
+    private Map<String,SnmpV3User> m_updatedSnmpV3Users = new TreeMap<String, SnmpV3User>();
 
-		for (String securityName : existingSnmpV3UserMap.keySet()) {
-			if (compareSnmpV3UsersAttributes(
-					existingSnmpV3UserMap.get(securityName).getAuthPassPhrase(),
-					updatedSnmpV3Usermap.get(securityName).getAuthPassPhrase())
-					|| compareSnmpV3UsersAttributes(
-							existingSnmpV3UserMap.get(securityName)
-									.getAuthProtocol(), updatedSnmpV3Usermap
-									.get(securityName).getAuthProtocol())
-					|| compareSnmpV3UsersAttributes(
-							existingSnmpV3UserMap.get(securityName)
-									.getEngineId(),
-							updatedSnmpV3Usermap.get(securityName)
-									.getEngineId())
-					|| compareSnmpV3UsersAttributes(
-							existingSnmpV3UserMap.get(securityName)
-									.getPrivPassPhrase(), updatedSnmpV3Usermap
-									.get(securityName).getPrivPassPhrase())
-					|| compareSnmpV3UsersAttributes(
-							existingSnmpV3UserMap.get(securityName)
-									.getPrivProtocol(), updatedSnmpV3Usermap
-									.get(securityName).getPrivProtocol())) {
+    private Map<String,SnmpV3User> m_SnmpV3UsersMap = new TreeMap<String, SnmpV3User>();
 
-				return true;
-			}
 
-		}
-		return false;
-	}
+    public void setTrapdConfig(TrapdConfiguration m_trapdConfig) {
+        m_updatedSnmpV3Users = addToSnmpV3Users(m_trapdConfig);
+        if (checkForTrapdConfigurationChange(m_trapdConfig)) {
+            stop();
+            LOG.info("TrapReceiver service has been stopped.");
+            m_snmpTrapPort = m_trapdConfig.getSnmpTrapPort();
+            m_snmpTrapAddress = m_trapdConfig.getSnmpTrapAddress();
+            m_snmpV3Users = new ArrayList<SnmpV3User>(m_updatedSnmpV3Users.values());
+            clearValues();
+            LOG.info("Starting the TrapReceiver service.");
+            start();
+            LOG.info("TrapReceiver service has been restarted successfully.");
+        }
+    }
 
-	private boolean compareSnmpV3UsersAttributes(String currentValue,
-			String updatedValue) {
-		if (currentValue != null && updatedValue != null) {
-			if (!currentValue.equalsIgnoreCase(updatedValue)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private Map<String, SnmpV3User> listToMapConversion(
-			List<SnmpV3User> m_snmpV3Users) {
-		Map<String, SnmpV3User> snmpV3UserMap = Collections
-				.synchronizedMap(new ConcurrentHashMap<String, SnmpV3User>());
-		for (SnmpV3User snmpv3User : m_snmpV3Users) {
-			snmpV3UserMap.put(snmpv3User.getSecurityName(), snmpv3User);
+    private void clearValues() {
+        m_updatedSnmpV3Users = Collections.emptyMap();
+        m_SnmpV3UsersMap = Collections.emptyMap();
+    }
 
-		}
-		return snmpV3UserMap;
-	}
-	
-	private boolean checkForTrapdConfigurationChange(
-			TrapdConfiguration m_trapdConfig) {
-		m_SnmpV3UsersMap=listToMapConversion(m_snmpV3Users);
-		if (m_trapdConfig.getSnmpTrapPort() != m_snmpTrapPort) {
-			LOG.info("SNMPV3 trap port has been updated from trapd-confguration.xml.");
-			return true;
-		} else if (m_trapdConfig.getSnmpTrapAddress() != null
-				&& !m_trapdConfig.getSnmpTrapAddress().equalsIgnoreCase(
-						m_snmpTrapAddress)) {
-			LOG.info("SNMPV3 trap address has been updated from trapd-confguration.xml.");
-			return true;
-		} else if (compareSnmpV3UsersMap(m_SnmpV3UsersMap,
-				m_updatedSnmpV3Users)
-				|| compareSnmpV3UsersMap(m_updatedSnmpV3Users,
-						m_SnmpV3UsersMap)) {
-			LOG.info("SNMPV3 Users has been updated from trapd-confguration.xml.");
-			return true;
-		}
+    public static boolean compareSnmpV3UsersMap(Map<String, SnmpV3User> existingSnmpV3UserMap, Map<String, SnmpV3User> updatedSnmpV3Usermap) {
 
-		return false;
-	}
-	
+        if (existingSnmpV3UserMap.isEmpty() || updatedSnmpV3Usermap.isEmpty()) {
+            return true;
+        }
 
-	/**
-	 * Default constructor
-	 */
-	 public TrapReceiverImpl()
-	 {
-		 
-	 }
+        for (String securityName : existingSnmpV3UserMap.keySet()) {
+            if (
+                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getAuthPassPhrase(), updatedSnmpV3Usermap.get(securityName).getAuthPassPhrase()) ||
+                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getAuthProtocol(), updatedSnmpV3Usermap.get(securityName).getAuthProtocol()) ||
+                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getEngineId(), updatedSnmpV3Usermap.get(securityName).getEngineId()) ||
+                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getPrivPassPhrase(), updatedSnmpV3Usermap.get(securityName).getPrivPassPhrase()) ||
+                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getPrivProtocol(), updatedSnmpV3Usermap.get(securityName).getPrivProtocol())
+            ) {
+                return true;
+            }
+        }
 
-	/**
+        return false;
+    }
+
+    private static boolean compareSnmpV3UsersAttributes(String currentValue, String updatedValue) {
+        if (currentValue != null && updatedValue != null) {
+            if (!currentValue.equalsIgnoreCase(updatedValue)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Map<String, SnmpV3User> listToMapConversion(List<SnmpV3User> m_snmpV3Users) {
+        Map<String, SnmpV3User> snmpV3UserMap = Collections.synchronizedMap(new ConcurrentHashMap<String, SnmpV3User>());
+        for (SnmpV3User snmpv3User : m_snmpV3Users) {
+            snmpV3UserMap.put(snmpv3User.getSecurityName(), snmpv3User);
+        }
+        return snmpV3UserMap;
+    }
+
+    private boolean checkForTrapdConfigurationChange(TrapdConfiguration m_trapdConfig) {
+        m_SnmpV3UsersMap = listToMapConversion(m_snmpV3Users);
+
+        if (m_trapdConfig.getSnmpTrapPort() != m_snmpTrapPort) {
+            LOG.info("SNMPV3 trap port has been updated from trapd-confguration.xml.");
+            return true;
+        } else if (m_trapdConfig.getSnmpTrapAddress() != null && !m_trapdConfig.getSnmpTrapAddress().equalsIgnoreCase(m_snmpTrapAddress)) {
+            LOG.info("SNMPV3 trap address has been updated from trapd-confguration.xml.");
+            return true;
+        } else if (compareSnmpV3UsersMap(m_SnmpV3UsersMap, m_updatedSnmpV3Users) || compareSnmpV3UsersMap(m_updatedSnmpV3Users, m_SnmpV3UsersMap)) {
+            LOG.info("SNMPV3 Users has been updated from trapd-confguration.xml.");
+            return true;
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Default constructor
+     */
+    public TrapReceiverImpl() {
+    }
+
+    /**
      * construct a new receiver
      *
      * @param sock
@@ -195,13 +170,13 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
      * @param hostGroup
      * @param messageGroup
      */
-    public TrapReceiverImpl(TrapdConfig config) throws SocketException {
-    	if (config == null) {
-    		throw new IllegalArgumentException("Config cannot be null");
-    	}
-    	m_snmpTrapPort = config.getSnmpTrapPort();
-    	m_snmpTrapAddress = config.getSnmpTrapAddress();
-    	m_snmpV3Users = config.getSnmpV3Users();
+    public TrapReceiverImpl(final TrapdConfig config) throws SocketException {
+        if (config == null) {
+            throw new IllegalArgumentException("Config cannot be null");
+        }
+        m_snmpTrapPort = config.getSnmpTrapPort();
+        m_snmpTrapAddress = config.getSnmpTrapAddress();
+        m_snmpV3Users = config.getSnmpV3Users();
     }
 
     public TrapNotificationHandler getTrapNotificationHandlers() {
@@ -278,27 +253,24 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
         }
         return InetAddressUtils.addr(m_snmpTrapAddress);
     }
-    
-    public static Map<String, SnmpV3User> addToSnmpV3Users(TrapdConfiguration config) {
-		Map<String,SnmpV3User> snmpV3UserMap=Collections.synchronizedMap(new ConcurrentHashMap<String,SnmpV3User>());
-		if(config.getSnmpv3UserCollection()!=null)
-		{
-			List<Snmpv3User> snmpv3UserCollection = config.getSnmpv3UserCollection();
-			synchronized(snmpV3UserMap)
-			{
-				for (Snmpv3User snmpv3User : snmpv3UserCollection) {
-					SnmpV3User snmpV3User = new SnmpV3User();
-					snmpV3User.setAuthPassPhrase(snmpv3User.getAuthPassphrase());
-					snmpV3User.setAuthProtocol(snmpv3User.getAuthProtocol());
-					snmpV3User.setEngineId(snmpv3User.getEngineId());
-					snmpV3User.setPrivPassPhrase(snmpv3User.getPrivacyPassphrase());
-					snmpV3User.setPrivProtocol(snmpv3User.getPrivacyProtocol());
-					snmpV3User.setSecurityName(snmpv3User.getSecurityName());
-					snmpV3UserMap.put(snmpv3User.getSecurityName(),snmpV3User);
-				}
-			}
-		}
-		return snmpV3UserMap;
-	}
 
+    public static Map<String, SnmpV3User> addToSnmpV3Users(TrapdConfiguration config) {
+        Map<String,SnmpV3User> snmpV3UserMap = Collections.synchronizedMap(new ConcurrentHashMap<String,SnmpV3User>());
+        if(config.getSnmpv3UserCollection() != null) {
+            List<Snmpv3User> snmpv3UserCollection = config.getSnmpv3UserCollection();
+            synchronized(snmpV3UserMap) {
+                for (Snmpv3User snmpv3User : snmpv3UserCollection) {
+                    SnmpV3User snmpV3User = new SnmpV3User();
+                    snmpV3User.setAuthPassPhrase(snmpv3User.getAuthPassphrase());
+                    snmpV3User.setAuthProtocol(snmpv3User.getAuthProtocol());
+                    snmpV3User.setEngineId(snmpv3User.getEngineId());
+                    snmpV3User.setPrivPassPhrase(snmpv3User.getPrivacyPassphrase());
+                    snmpV3User.setPrivProtocol(snmpv3User.getPrivacyProtocol());
+                    snmpV3User.setSecurityName(snmpv3User.getSecurityName());
+                    snmpV3UserMap.put(snmpv3User.getSecurityName(),snmpV3User);
+                }
+            }
+        }
+        return snmpV3UserMap;
+    }
 }

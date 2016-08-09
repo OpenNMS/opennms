@@ -43,7 +43,7 @@ import org.ops4j.pax.exam.options.MavenUrlReference;
  * @deprecated This test base class doesn't work because our Karaf 
  * container artifact:
  * 
- * mvn:org.opennms.container/karaf/${version}/tar.gz
+ * mvn:org.opennms.container/org.opennms.container.karaf/${version}/tar.gz
  * 
  * isn't packaged with a top-level product directory like the Apache Karaf
  * tar.gz artifacts are.
@@ -57,7 +57,7 @@ public class OnmsKarafTestCase extends KarafTestCase {
 	protected MavenUrlReference getFrameworkUrl() {
 		return maven()
 				.groupId("org.opennms.container")
-				.artifactId("karaf")
+				.artifactId("org.opennms.container.karaf")
 				.type("tar.gz")
 				.version("19.0.0-SNAPSHOT");
 	}

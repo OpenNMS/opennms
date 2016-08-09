@@ -34,20 +34,23 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.opennms.features.topology.api.ConfigurableIconRepository;
 import org.opennms.features.topology.api.IconManager;
 import org.opennms.features.topology.api.IconRepository;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.vaadin.server.Page;
 
 public class IconRepositoryManager implements IconManager {
 
-    private List<IconRepository> m_iconRepositories = new ArrayList<IconRepository>();
+    private Set<IconRepository> m_iconRepositories = Sets.newHashSet();
 
     public synchronized void onBind(IconRepository iconRepo) {
         try {
@@ -58,6 +61,22 @@ public class IconRepositoryManager implements IconManager {
     }
 
     public synchronized void onUnbind(IconRepository iconRepo) {
+        try {
+            m_iconRepositories.remove(iconRepo);
+        } catch (Throwable e) {
+            LoggerFactory.getLogger(this.getClass()).warn("Exception during onUnbind()", e);
+        }
+    }
+
+    public synchronized void onBind(ConfigurableIconRepository iconRepo) {
+        try {
+            m_iconRepositories.add(iconRepo);
+        } catch (Throwable e) {
+            LoggerFactory.getLogger(this.getClass()).warn("Exception during onBind()", e);
+        }
+    }
+
+    public synchronized void onUnbind(ConfigurableIconRepository iconRepo) {
         try {
             m_iconRepositories.remove(iconRepo);
         } catch (Throwable e) {
@@ -81,7 +100,7 @@ public class IconRepositoryManager implements IconManager {
     @Override
     public String setIconMapping(Vertex vertex, String newIconId) {
         // We look for a IconRepository with the old icon key as mapping
-        final IconRepository iconRepository = findRepositoryByIconKey(vertex.getIconKey());
+        final ConfigurableIconRepository iconRepository = findRepositoryByIconKey(vertex.getIconKey());
         final String oldIconId = getSVGIconId(vertex.getIconKey());
         if (iconRepository != null && !oldIconId.equals(newIconId)) {
             String iconKey = createIconKey(vertex);
@@ -97,7 +116,7 @@ public class IconRepositoryManager implements IconManager {
     public boolean removeIconMapping(Vertex vertex) {
         // We look for a IconRepository with the old icon key as mapping
         final String iconKey = createIconKey(vertex);
-        final IconRepository iconRepository = findRepositoryByIconKey(iconKey);
+        final ConfigurableIconRepository iconRepository = findRepositoryByIconKey(iconKey);
         if (iconRepository != null) { // we may not have a icon repository due to no custom mapping
             iconRepository.removeIconMapping(iconKey);
             iconRepository.save();
@@ -162,15 +181,20 @@ public class IconRepositoryManager implements IconManager {
     }
 
     @Override
-    public IconRepository findRepositoryByIconKey(String iconKey) {
+    public ConfigurableIconRepository findRepositoryByIconKey(String iconKey) {
+        // only consider configurable Repositories
+        final List<ConfigurableIconRepository> configurableIconRepositories = m_iconRepositories.stream()
+                .filter(e -> e instanceof ConfigurableIconRepository)
+                .map(e -> (ConfigurableIconRepository) e)
+                .collect(Collectors.toList());
         // look up the key in each repository
-        for (IconRepository eachRepository : m_iconRepositories) {
+        for (ConfigurableIconRepository eachRepository : configurableIconRepositories) {
             if (eachRepository.contains(iconKey)) {
                 return eachRepository;
             }
         }
         // Key not found, yet. If reducible, reduce key and try again
-        if (iconKey.lastIndexOf('.') > 0) {
+        if (iconKey != null && iconKey.lastIndexOf('.') > 0) {
             return findRepositoryByIconKey(iconKey.substring(0, iconKey.lastIndexOf('.')));
         }
         // No Repository with the iconKey exists

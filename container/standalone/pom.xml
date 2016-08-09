@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opennms</groupId>
-    <artifactId>container</artifactId>
+    <artifactId>org.opennms.container</artifactId>
     <version>19.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.container</groupId>
-  <artifactId>standalone</artifactId>
+  <artifactId>org.opennms.container.standalone</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: OSGi Container :: Standalone</name>
 
@@ -63,7 +63,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
-      <artifactId>branding</artifactId>
+      <artifactId>org.opennms.container.branding</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
@@ -143,7 +143,7 @@
                <artifactItems>
                  <artifactItem>
                     <groupId>org.opennms.container</groupId>
-                    <artifactId>branding</artifactId>
+                    <artifactId>org.opennms.container.branding</artifactId>
                     <version>${project.version}</version>
                     <outputDirectory>target/dependencies</outputDirectory>
                     <destFileName>opennms-branding.jar</destFileName>

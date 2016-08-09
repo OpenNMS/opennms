@@ -15,7 +15,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology.plugins</groupId>
-  <artifactId>layout</artifactId>
+  <artifactId>org.opennms.features.topology.plugins.layout</artifactId>
 
   <name>OpenNMS :: Features :: Topology :: Plugins :: Layout</name>
 

@@ -13,38 +13,37 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<cm:property-placeholder id="syslogHandlerDefaultKafkaProperties" persistent-id="org.opennms.netmgt.syslog.handler.kafka" placeholder-prefix="$[" placeholder-suffix="]" update-strategy="none">
+	<cm:property-placeholder id="syslogHandlerDefaultKafkaProperties" persistent-id="org.opennms.netmgt.syslog.handler.kafka.default" placeholder-prefix="$[" placeholder-suffix="]" update-strategy="none">
 		<cm:default-properties>
 			<cm:property name="kafkahostport" value="127.0.0.1:9092" />
 			<cm:property name="kafkatopic" value="syslog" />
-		    <cm:property name="zookeeperhost" value="127.0.0.1"/>
+			<cm:property name="zookeeperhost" value="127.0.0.1"/>
 			<cm:property name="zookeeperport" value="2181"/>
 			<cm:property name="groupId" value="syslogconsumer"/>
-			<cm:property name="consumerstreams" value="10"/>
+			<cm:property name="consumerstreams" value="1"/>
 		</cm:default-properties>
 	</cm:property-placeholder>
-	
+
 	<bean id="syslogConnectionHandlerDefault" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerDefaultImpl"/>
-	
-     <bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
+
+	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
 		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
 	</bean>
 
 	<reference id="syslogdConfig" interface="org.opennms.netmgt.config.SyslogdConfig" />
-	
+
 	<bean id="syslogdConfigProcessor" class="org.opennms.netmgt.syslogd.SyslogdConfigProcessor">
 		<argument ref="syslogdConfig"/>
 	</bean>
-	
+
 	<camelContext id="syslogConnectionHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerDefaultKafkaProperties" />
 
 		<route id="receiveSyslogConnectionViaKafka">
 			<from uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}&amp;consumerStreams={{consumerstreams}}"/>
 			<process ref="unmarshaller"/>
-		    <!-- Update the SyslogdConfig on the message to the local config value -->
+			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>
-			
 			<to uri="seda:syslogkafkaHandler"/>
 		</route>
 

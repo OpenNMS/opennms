@@ -38,16 +38,16 @@
 	</bean>	
 
 	<service interface="org.opennms.netmgt.syslogd.SyslogReceiver" ref="syslogReceiverCamelNetty" />
-	
-	  <!-- Register a whiteboard of sample repositories where samples will be saved -->
-	  <!-- This whiteboard is injected into the listener instead of being classpath scanned. -->
-  <bean id="syslogDispatcher" class="org.opennms.core.camel.DispatcherWhiteboard">
-    <argument value="seda:handleMessageBlueprint"/>
 
-    <property name="context" ref="blueprintBundleContext"/>
-    <property name="messageClass" value="org.opennms.netmgt.syslogd.SyslogConnection"/>
-    <property name="serviceClass" value="org.opennms.netmgt.syslogd.SyslogConnectionHandler"/>
-    <property name="methodName" value="handleSyslogConnection"/>
-  </bean>
+	<!-- Register a whiteboard of SyslogConnectionHandlers. -->
+	<!-- This whiteboard is injected into the listener instead of being classpath-scanned. -->
+	<bean id="syslogDispatcher" class="org.opennms.core.camel.DispatcherWhiteboard">
+		<argument value="seda:handleMessageBlueprint"/>
+		
+		<property name="context" ref="blueprintBundleContext"/>
+		<property name="messageClass" value="org.opennms.netmgt.syslogd.SyslogConnection"/>
+		<property name="serviceClass" value="org.opennms.netmgt.syslogd.SyslogConnectionHandler"/>
+		<property name="methodName" value="handleSyslogConnection"/>
+	</bean>
 
 </blueprint>

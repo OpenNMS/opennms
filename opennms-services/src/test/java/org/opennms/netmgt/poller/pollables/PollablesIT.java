@@ -60,7 +60,6 @@ import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -98,7 +97,6 @@ public class PollablesIT {
     private MockPollContext m_pollContext;
     private MockNetwork m_mockNetwork;
     private MockDatabase m_db;
-    private EventAnticipator m_anticipator;
     private MockEventIpcManager m_eventMgr;
     private MockNode mNode1;
     private MockInterface mDot1;
@@ -176,13 +174,11 @@ public class PollablesIT {
         m_db.populate(m_mockNetwork);
 
 
-        m_anticipator = new EventAnticipator();
         m_outageAnticipator = new OutageAnticipator(m_db);
 
 
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
-        m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.addEventListener(m_outageAnticipator);
 
         m_pollContext = new MockPollContext();
@@ -584,7 +580,7 @@ public class PollablesIT {
         assertTime(4500);
         assertNotDeleted(pDot3Http);
 
-        m_anticipator.anticipateEvent(MockEventUtil.createServiceEvent("Test", EventConstants.DELETE_SERVICE_EVENT_UEI, mDot3Http, null));
+        m_eventMgr.getEventAnticipator().anticipateEvent(MockEventUtil.createServiceEvent("Test", EventConstants.DELETE_SERVICE_EVENT_UEI, mDot3Http, null));
 
         m_scheduler.next();
 
@@ -2438,10 +2434,10 @@ public class PollablesIT {
      */
     private void verifyAnticipated() {
         m_eventMgr.finishProcessingEvents();
-        MockEventUtil.printEvents("Missing Anticipated Events: ", m_anticipator.getAnticipatedEvents());
-        assertTrue("Expected events not forthcoming", m_anticipator.getAnticipatedEvents().isEmpty());
-        MockEventUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
-        assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
+        MockEventUtil.printEvents("Missing Anticipated Events: ", m_eventMgr.getEventAnticipator().getAnticipatedEvents());
+        assertTrue("Expected events not forthcoming", m_eventMgr.getEventAnticipator().getAnticipatedEvents().isEmpty());
+        MockEventUtil.printEvents("Unanticipated: ", m_eventMgr.getEventAnticipator().getUnanticipatedEvents());
+        assertEquals("Received unexpected events", 0, m_eventMgr.getEventAnticipator().getUnanticipatedEvents().size());
 
         m_outageAnticipator.checkAnticipated();
         assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
@@ -2455,7 +2451,7 @@ public class PollablesIT {
      * 
      */
     private void resetAnticipated() {
-        m_anticipator.reset();
+        m_eventMgr.getEventAnticipator().reset();
         m_outageAnticipator.reset();
     }
 
@@ -2464,7 +2460,7 @@ public class PollablesIT {
      */
     private void anticipateUp(MockElement element) {
         Event event = element.createUpEvent();
-        m_anticipator.anticipateEvent(event);
+        m_eventMgr.getEventAnticipator().anticipateEvent(event);
         m_outageAnticipator.anticipateOutageClosed(element, event);
     }
 
@@ -2473,7 +2469,7 @@ public class PollablesIT {
      */
     private void anticipateDown(MockElement element) {
         Event event = element.createDownEvent();
-        m_anticipator.anticipateEvent(event);
+        m_eventMgr.getEventAnticipator().anticipateEvent(event);
         m_outageAnticipator.anticipateOutageOpened(element, event);
     }
 
@@ -2481,7 +2477,7 @@ public class PollablesIT {
         MockVisitor visitor = new MockVisitorAdapter() {
             @Override
             public void visitService(MockService svc) {
-                m_anticipator.anticipateEvent(svc.createUnresponsiveEvent());
+                m_eventMgr.getEventAnticipator().anticipateEvent(svc.createUnresponsiveEvent());
             }
         };
         element.visit(visitor);
@@ -2491,7 +2487,7 @@ public class PollablesIT {
         MockVisitor visitor = new MockVisitorAdapter() {
             @Override
             public void visitService(MockService svc) {
-                m_anticipator.anticipateEvent(svc.createResponsiveEvent());
+                m_eventMgr.getEventAnticipator().anticipateEvent(svc.createResponsiveEvent());
             }
         };
         element.visit(visitor);

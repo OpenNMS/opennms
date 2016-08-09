@@ -28,8 +28,8 @@
 
 package org.opennms.features.amqp.alarmnorthbounder;
 
-import java.util.Dictionary;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.camel.BeanInject;
 import org.junit.Ignore;
@@ -59,9 +59,8 @@ public class AMQPAlarmNorthbounderBlueprintTest extends CamelBlueprintTest {
         return "OSGI-INF/blueprint/blueprint-alarm-northbounder.xml";
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    protected String useOverridePropertiesWithConfigAdmin(Dictionary props) {
+    protected String setConfigAdminInitialConfiguration(Properties props) {
         props.put("destination", "mock:destination");
 
         // Return the PID

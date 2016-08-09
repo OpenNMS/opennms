@@ -64,7 +64,7 @@ public class WrappedVertex implements VertexRef {
 	public boolean selected;
 	@XmlIDREF
 	public WrappedVertex parent;
-	
+
 	public static WrappedVertex create(Vertex vertex) {
 		return (vertex.isGroup() ? new WrappedGroup(vertex) : new WrappedLeafVertex(vertex));
 	}
@@ -183,5 +183,5 @@ public class WrappedVertex implements VertexRef {
 	}
 
 	@Override
-	public String toString() { return "WrappedVertex:"+namespace+":"+id+ "[label="+label+", styleName="+styleName+"]"; } 
+	public String toString() { return "WrappedVertex:"+namespace+":"+id+ "[label="+label+", styleName="+styleName+"]"; }
 }

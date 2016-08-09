@@ -33,9 +33,9 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -61,7 +61,7 @@ public interface PollerBackEnd {
      * @returns the set of monitoring locations
      * @return a {@link java.util.Collection} object.
      */
-    Collection<LocationDef> getMonitoringLocations();
+    Collection<OnmsMonitoringLocation> getMonitoringLocations();
 
     /**
      * Register a new location monitor

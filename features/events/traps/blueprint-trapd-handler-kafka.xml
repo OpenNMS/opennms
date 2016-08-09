@@ -23,21 +23,24 @@
 	<bean id="trapNotificationHandlerCamel" class="org.opennms.netmgt.trapd.TrapNotificationHandlerCamelImpl">
 		<argument value="seda:handleMessage"/>
 	</bean>
-	
-	<bean id="kafkaEncoder" class="org.opennms.netmgt.trapd.TrapdKafkaEncoder">
+
+		<!-- Camel Event marshalling processor -->
+	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
+		<argument value="org.opennms.netmgt.snmp.TrapNotification" />
 	</bean>
 	
 	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapNotificationHandlerCamel"/>
 
 	<camelContext id="trapNotificationHandler" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:trapdHandlerKafkaProperties" />
-		<route id="recieveTraps">
+		<route id="handleTrap">
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
-		    <setHeader headerName="kafka.PARTITION_KEY">
+			<setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${body.getPartionKey}</simple>
 			</setHeader>
-			<bean ref="kafkaEncoder" method="toBytes"/>
+			<!-- TODO: Implement this marshaller -->
+			<!-- <bean ref="kafkaEncoder" method="toBytes"/> -->
 			<to uri="seda:trapHandler"/>
 		</route>
 		

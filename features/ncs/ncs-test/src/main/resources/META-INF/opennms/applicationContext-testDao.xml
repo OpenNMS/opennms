@@ -56,6 +56,10 @@
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
   
+  <bean id="locationDao" class="org.opennms.netmgt.dao.hibernate.MonitoringLocationDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
   <bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>

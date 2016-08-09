@@ -50,6 +50,7 @@ import org.opennms.netmgt.alarmd.northbounder.jms.JmsDestination;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounder;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfigDao;
+import org.opennms.netmgt.dao.mock.MockMonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -86,6 +87,10 @@ public class JmsNorthBounderTest {
     /** The JMS northbounder connection factory. */
     @Autowired
     private ConnectionFactory m_jmsNorthbounderConnectionFactory;
+    
+    /** The Node DAO. */
+    @Autowired
+    private MockMonitoringLocationDao m_locationDao;
     
     /** The Node DAO. */
     @Autowired
@@ -145,7 +150,7 @@ public class JmsNorthBounderTest {
         int j = 7;
         List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
 
-        OnmsNode node = new OnmsNode(NODE_LABEL);
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), NODE_LABEL);
         node.setForeignSource("TestGroup");
         node.setForeignId("1");
         node.setId(m_nodeDao.getNextNodeId());

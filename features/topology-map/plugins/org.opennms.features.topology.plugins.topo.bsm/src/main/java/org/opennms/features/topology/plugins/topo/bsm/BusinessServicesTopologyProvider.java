@@ -42,7 +42,7 @@ import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
@@ -136,16 +136,20 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     }
 
     @Override
-    public Criteria getDefaultCriteria() {
-        // Grab the business service with the smallest id
-        List<BusinessService> businessServices = businessServiceManager.findMatching(new CriteriaBuilder(BusinessService.class).orderBy("id", true).limit(1).toCriteria());
-        // If one was found, use it for the default focus
-        if (!businessServices.isEmpty()) {
-            BusinessService businessService = businessServices.iterator().next();
-            BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(businessService, 0);
-            return new VertexHopGraphProvider.DefaultVertexHopCriteria(businessServiceVertex);
-        }
-        return null;
+    public Defaults getDefaults() {
+        return new Defaults()
+                .withPreferredLayout("Hierarchy Layout")
+                .withCriteria(() -> {
+                    // Grab the business service with the smallest id
+                    List<BusinessService> businessServices = businessServiceManager.findMatching(new CriteriaBuilder(BusinessService.class).orderBy("id", true).limit(1).toCriteria());
+                    // If one was found, use it for the default focus
+                    if (!businessServices.isEmpty()) {
+                        BusinessService businessService = businessServices.iterator().next();
+                        BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(businessService, 0);
+                        return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(businessServiceVertex));
+                    }
+                    return null;
+                });
     }
 
     @Override

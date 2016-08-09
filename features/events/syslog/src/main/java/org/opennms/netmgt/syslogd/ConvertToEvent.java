@@ -138,8 +138,9 @@ public class ConvertToEvent {
             syslogString = data;
         }
 
-
-        LOG.debug("Converting to event: {}", this);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Converting to event: {}", this);
+        }
 
         SyslogParser parser = SyslogParser.getParserInstance(config, syslogString);
         if (!parser.find()) {
@@ -153,7 +154,9 @@ public class ConvertToEvent {
             throw new MessageDiscardedException(ex);
         }
 
-        LOG.debug("got syslog message {}", message);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("got syslog message {}", message);
+        }
         if (message == null) {
             throw new MessageDiscardedException(String.format("Unable to parse '%s'", syslogString));
         }
@@ -212,7 +215,9 @@ public class ConvertToEvent {
 
         final List<UeiMatch> ueiMatch = ueiList == null? null : ueiList.getUeiMatchCollection();
         if (ueiMatch == null) {
-            LOG.warn("No ueiList configured.");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("No ueiList configured.");
+            }
         } else {
             for (final UeiMatch uei : ueiMatch) {
                 final boolean otherStuffMatches = containsIgnoreCase(uei.getFacilityCollection(), facilityTxt) &&
@@ -241,7 +246,9 @@ public class ConvertToEvent {
         boolean doHide = false;
         final List<HideMatch> hideMatch = hideMessage == null? null : hideMessage.getHideMatchCollection();
         if (hideMatch == null) {
-            LOG.warn("No hideMessage configured.");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("No hideMessage configured.");
+            }
         } else {
             for (final HideMatch hide : hideMatch) {
                 if (hide.getMatch().getType().equals("substr")) {

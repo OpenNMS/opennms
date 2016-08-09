@@ -31,12 +31,12 @@ package org.opennms.netmgt.provision.service.operations;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -49,12 +49,16 @@ import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 public class ScanManager {
     private static final Logger LOG = LoggerFactory.getLogger(ScanManager.class);
     
+    private final LocationAwareSnmpClient m_locationAwareSnmpClient;
     private final InetAddress m_address;
     private SystemGroup m_systemGroup;
     private IfTable m_ifTable;
@@ -62,10 +66,11 @@ public class ScanManager {
     private IpAddressTable m_ipAddressTable;
     private IfXTable m_ifXTable;
 
-    ScanManager(InetAddress address) {
+    ScanManager(LocationAwareSnmpClient locationAwareSnmpClient, InetAddress address) {
+        m_locationAwareSnmpClient = Objects.requireNonNull(locationAwareSnmpClient);
         m_address = address;
     }
-    
+
     /**
      * <p>getSystemGroup</p>
      *
@@ -145,11 +150,17 @@ public class ScanManager {
             m_ipAddrTable = new IpAddrTable(m_address, ipAddrs);
             m_ipAddressTable = IpAddressTable.createTable(m_address, ipAddresses);
 
+            AggregateTracker tracker = new AggregateTracker(Lists.newArrayList(m_systemGroup, m_ipAddrTable, m_ipAddressTable));
             final SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_address);
-            SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "system/ipAddrTable/ipAddressTable", m_systemGroup, m_ipAddrTable, m_ipAddressTable);
-
-            walker.start();
-            walker.waitFor();
+            try {
+                m_locationAwareSnmpClient.walk(agentConfig, tracker)
+                    .withDescription("system/ipAddrTable/ipAddressTable")
+                    .atLocation(node.getLocation() == null ? null : node.getLocation().getLocationName())
+                    .execute()
+                    .get();
+            } catch (ExecutionException e) {
+                // pass
+            }
 
             final Set<SnmpInstId> ifIndices = new TreeSet<SnmpInstId>();
 
@@ -159,11 +170,16 @@ public class ScanManager {
 
             m_ifTable = new IfTable(m_address, ifIndices);
             m_ifXTable = new IfXTable(m_address, ifIndices);
-
-            walker = SnmpUtils.createWalker(agentConfig, "ifTable/ifXTable", m_ifTable, m_ifXTable);
-            walker.start();
-
-            walker.waitFor();
+            tracker = new AggregateTracker(Lists.newArrayList(m_systemGroup, m_ifTable, m_ifXTable));
+            try {
+                m_locationAwareSnmpClient.walk(agentConfig, tracker)
+                    .withDescription("ifTable/ifXTable")
+                    .atLocation(node.getLocation() == null ? null : node.getLocation().getLocationName())
+                    .execute()
+                    .get();
+            } catch (ExecutionException e) {
+                // pass
+            }
 
             m_systemGroup.updateSnmpDataForNode(node);
         

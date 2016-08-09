@@ -10,9 +10,6 @@
   <artifactId>org.opennms.features.events.traps</artifactId>
   <name>OpenNMS :: Features :: Events :: Trap Daemon</name>
   <packaging>bundle</packaging>
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
   <build>
     <plugins>
       <plugin>
@@ -34,26 +31,6 @@
             
           </instructions>
         </configuration> 
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
-          <systemPropertyVariables>
-            <opennms.home>${project.build.testOutputDirectory}</opennms.home>
-            <java.endorsed.dirs>${basedir}/target/endorsed</java.endorsed.dirs>
-          </systemPropertyVariables>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -101,6 +78,34 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-kafka</artifactId>
+      <version>${camelVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+        <!-- snappy-java has OSGi loading problems because of JNI bits -->
+        <exclusion>
+          <groupId>org.xerial.snappy</groupId>
+          <artifactId>snappy-java</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>  
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>camel-dependencies</artifactId>
       <type>pom</type>
@@ -129,11 +134,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -228,11 +228,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-	<dependency>
-		<groupId>org.apache.camel</groupId>
-		<artifactId>camel-netty-http</artifactId>
-		<version>${camelVersion}</version>
-	</dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-kafka</artifactId>
@@ -262,20 +257,25 @@
       </exclusions>
     </dependency>
     <dependency>
-	 <groupId>org.apache.curator</groupId>
-	 <artifactId>curator-test</artifactId>
-	 <version>${curatorVersion}</version>
-	 <scope>test</scope>
-	 <exclusions>
-	 	<exclusion>
-	 		<artifactId>log4j</artifactId>
-	 		<groupId>log4j</groupId>
-	 	</exclusion>
-	 	<exclusion>
-	 		<artifactId>slf4j-log4j12</artifactId>
-	 		<groupId>org.slf4j</groupId>
-	 	</exclusion>
-	 </exclusions>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-netty-http</artifactId>
+      <version>${camelVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.curator</groupId>
+      <artifactId>curator-test</artifactId>
+      <version>${curatorVersion}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>slf4j-log4j12</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>

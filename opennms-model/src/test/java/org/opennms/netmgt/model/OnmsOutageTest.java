@@ -35,6 +35,8 @@ public class OnmsOutageTest {
                 "         <name>Webservices</name>\n" +
                 "      </serviceType>\n" +
                 "   </monitoredService>\n" +
+                "   <nodeId>1</nodeId>\n" +
+                "   <nodeLabel>Dummy Node 1</nodeLabel>\n" +
                 "</outage>", outageString);
     }
 
@@ -73,6 +75,7 @@ public class OnmsOutageTest {
                 "  \"suppressTime\" : null,\n" +
                 "  \"suppressedBy\" : null,\n" +
                 "  \"nodeId\" : 1,\n" +
+                "  \"nodeLabel\" : \"Dummy Node 1\",\n" +
                 "  \"ipAddress\" : \"127.0.0.1\",\n" +
                 "  \"serviceId\" : 1\n" +
                 "}\n", outageString);

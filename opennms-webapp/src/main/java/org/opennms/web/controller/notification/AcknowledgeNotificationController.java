@@ -98,16 +98,16 @@ public class AcknowledgeNotificationController extends AbstractController implem
      */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String[] required = { "notices", "curUser" };
+        String[] required = { "notices" };
 
         String[] noticeIdStrings = request.getParameterValues("notices");
-        String currentUser = request.getParameter("curUser");
-
         if (noticeIdStrings == null) {
             throw new MissingParameterException("notices", required);
         }
+
+        String currentUser = request.getParameter("curUser");
         if (currentUser == null) {
-            throw new MissingParameterException("curUser", required);
+            currentUser = request.getRemoteUser();
         }
 
         List<Integer> noticeIds = new ArrayList<Integer>();

@@ -31,7 +31,7 @@ package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 import com.vaadin.data.Validator;
 import org.junit.Test;
 
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.fail;
 
 /**
  *

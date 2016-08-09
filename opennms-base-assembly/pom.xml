@@ -562,6 +562,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.graphml</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.gwt-ksc-add</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -671,8 +676,13 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.rpc</groupId>
+      <artifactId>org.opennms.core.rpc.camel-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.snmp</groupId>
-      <artifactId>org.opennms.core.snmp.proxy.camel</artifactId>
+      <artifactId>org.opennms.core.snmp.proxy.rpc-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

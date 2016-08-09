@@ -44,6 +44,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Criteria;
@@ -53,6 +55,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -65,8 +68,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.transaction.AfterTransaction;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -80,8 +81,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
@@ -89,6 +89,9 @@ public class NodeDaoIT implements InitializingBean {
 
     @Autowired
     DistPollerDao m_distPollerDao;
+
+    @Autowired
+    MonitoringLocationDao m_locationDao;
 
     @Autowired
     NodeDao m_nodeDao;
@@ -107,12 +110,12 @@ public class NodeDaoIT implements InitializingBean {
         org.opennms.core.spring.BeanUtils.assertAutowiring(this);
     }
 
-    @BeforeTransaction
+    @Before
     public void setUp() {
         m_populator.populateDatabase();
     }
 
-    @AfterTransaction
+    @After
     public void tearDown() {
         m_populator.resetDatabase();
     }
@@ -137,7 +140,7 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testSave() {
 
-        OnmsNode node = new OnmsNode("MyFirstNode");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstNode");
         getNodeDao().save(node);
 
         getNodeDao().flush();
@@ -147,7 +150,7 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testSaveWithPathElement() {
 
-        OnmsNode node = new OnmsNode("MyFirstNode");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstNode");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
         getNodeDao().save(node);
@@ -158,7 +161,7 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testSaveWithNullPathElement() {
-        OnmsNode node = new OnmsNode("MyFirstNode");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstNode");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
         getNodeDao().save(node);
@@ -174,7 +177,7 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testLldpSaveAndUpdate() throws InterruptedException {
-        OnmsNode node = new OnmsNode("MyFirstLldpNode");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstLldpNode");
         getNodeDao().save(node);
         getNodeDao().flush();
         
@@ -252,7 +255,7 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testCreate() throws InterruptedException {
 
-        OnmsNode node = new OnmsNode("MyFirstNode");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstNode");
         node.getAssetRecord().setDisplayCategory("MyCategory");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
@@ -433,7 +436,6 @@ public class NodeDaoIT implements InitializingBean {
     @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
     public void testDeleteObsoleteInterfaces() {
         try {
-            m_populator.populateDatabase();
 
             final Date timestamp = new Date(1234);
 
@@ -500,6 +502,7 @@ public class NodeDaoIT implements InitializingBean {
 
     private void validateNode(OnmsNode n) throws Exception {
         assertNotNull("Expected node to be non-null", n);
+        assertNotNull("Expected location to be non-null", n.getLocation());
         assertNotNull("Expected node "+n.getId()+" to have interfaces", n.getIpInterfaces());
         assertEquals("Unexpected number of interfaces for node "+n.getId(), 4, n.getIpInterfaces().size());
         for (Object o : n.getIpInterfaces()) {
@@ -657,5 +660,23 @@ public class NodeDaoIT implements InitializingBean {
         assertEquals(3, n.getIpInterfaces().size());
         assertNotNull(n.getAssetRecord());
         assertEquals("category1", n.getAssetRecord().getDisplayCategory());
+    }
+
+    /**
+     * Node 1 and 2 should have consecutive node IDs.
+     */
+    @Test
+    @Transactional
+    public void testGetNextNodeId() {
+        assertEquals(m_populator.getNode2().getId(), m_nodeDao.getNextNodeId(m_populator.getNode1().getId()));
+    }
+
+    /**
+     * Node 1 and 2 should have consecutive node IDs.
+     */
+    @Test
+    @Transactional
+    public void testGetPreviousNodeId() {
+        assertEquals(m_populator.getNode1().getId(), m_nodeDao.getPreviousNodeId(m_populator.getNode2().getId()));
     }
 }

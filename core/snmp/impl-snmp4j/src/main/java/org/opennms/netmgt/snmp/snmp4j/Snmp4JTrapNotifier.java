@@ -31,7 +31,6 @@ package org.opennms.netmgt.snmp.snmp4j;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Random;
-import java.util.StringTokenizer;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;

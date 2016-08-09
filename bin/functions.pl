@@ -29,7 +29,9 @@ use vars qw(
 	$PREFIX
 	$SKIP_OPENJDK
 	$TESTS
+	$SINGLE_TEST
 	$VERBOSE
+	@DEFAULT_GOALS
 	@ARGS
 );
 @ARGS          = ();
@@ -40,6 +42,7 @@ $LOGLEVEL      = 'debug' unless (defined $LOGLEVEL);
 $PATHSEP       = $Config{'path_sep'};
 $SKIP_OPENJDK  = $ENV{'SKIP_OPENJDK'};
 $VERBOSE       = undef;
+@DEFAULT_GOALS = ( "install" );
 
 @JAVA_SEARCH_DIRS = qw(
 	/usr/lib/jvm
@@ -85,11 +88,7 @@ delete $ENV{'M2_HOME'};
 # maven options
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	if (defined $TESTS) {
-		$MAVEN_OPTS = "-Xmx2048m -XX:ReservedCodeCacheSize=512m";
-	} else {
-		$MAVEN_OPTS = "-Xmx1536m -XX:ReservedCodeCacheSize=512m";
-	}
+	$MAVEN_OPTS = "-Xmx2048m -XX:ReservedCodeCacheSize=512m";
 }
 
 if (not $MAVEN_OPTS =~ /TieredCompilation/) {
@@ -117,6 +116,7 @@ if (not $MAVEN_OPTS =~ /UseParallelGC/) {
 my $result = GetOptions(
 	"help|h"                    => \$HELP,
 	"enable-tests|tests|test|t" => \$TESTS,
+	"single-test|T=s"            => \$SINGLE_TEST,
 	"maven-opts|m=s"            => \$MAVEN_OPTS,
 	"profile|p=s"               => \$BUILD_PROFILE,
 	"java-home|java|j=s"        => \$JAVA_HOME,
@@ -145,7 +145,9 @@ usage: $0 [-h] [-j \$JAVA_HOME] [-t] [-v]
 	                       (default: $MAVEN_OPTS)
 	-p/--profile PROFILE   default, dir, full, or fulldir
 	-t/--enable-tests      enable integration tests when building
-	-l/--log-level         log level (error/warning/info/debug)
+	-T/--single-test CLASS run a single unit/integration test
+	-l/--log-level LEVEL   log level (error/warning/info/debug)
+	-v/--verbose           verbose mode (shorthand for "--log-level debug")
 END
 	exit 1;
 }
@@ -205,7 +207,17 @@ if ($MAVEN_VERSION =~ /^[12]/) {
 	warning("Your maven version ($MAVEN_VERSION) is too old.  There are known bugs building with a version less than 3.0.  Expect trouble.");
 }
 
-unshift(@ARGS, '-DfailIfNoTests=false');
+if (defined $SINGLE_TEST) {
+        if ($SINGLE_TEST =~ m/IT$/) {
+		$TESTS = 1;
+		@DEFAULT_GOALS = ( "failsafe:integration-test", "failsafe:verify" );
+		debug("running single integration test");
+		unshift(@ARGS, '-Dit.test=' . $SINGLE_TEST);
+	} else {
+		debug("running single unit test");
+		unshift(@ARGS, '-Dtest=' . $SINGLE_TEST);
+	}
+}
 if (defined $TESTS) {
 	debug("integration tests are enabled");
 	unshift(@ARGS, '-DskipITs=false');

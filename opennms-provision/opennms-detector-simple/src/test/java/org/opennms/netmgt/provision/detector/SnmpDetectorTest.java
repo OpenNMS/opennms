@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.provision.detector;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.provision.detector.snmp.SnmpDetector.*;
@@ -52,6 +52,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-soa.xml",
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
 		"classpath:/META-INF/opennms/detectors.xml"
 })

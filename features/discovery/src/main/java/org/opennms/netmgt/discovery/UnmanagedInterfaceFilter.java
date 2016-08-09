@@ -33,27 +33,75 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Given a list of managed IP addresses, this filter will match IP addresses not in that
  * list, hence it is an unmanaged IP address filter.
  */
 public class UnmanagedInterfaceFilter implements IpAddressFilter {
-    /**
-     * a set of addresses to skip discovery on
-     */
-    private Set<String> m_managedAddresses = Collections.synchronizedSet(new HashSet<String>());
 
-    public void addManagedAddress(String address) {
-        synchronized(m_managedAddresses) {
-            m_managedAddresses.add(address);
+    public static class LocationIpAddressKey {
+        private final String m_location;
+        /**
+         * TODO: Refactor this to {@link InetAddress} when the type is
+         * changed inside the {@link Event} object.
+         */
+        private final String m_ipAddress;
+
+        public LocationIpAddressKey(String location, String ipAddress) {
+            m_location = location;
+            m_ipAddress = ipAddress;
+        }
+
+        public String getIpAddress() {
+            return m_ipAddress;
+        }
+
+        public String getLocation() {
+            return m_location;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) { return false; }
+            if (obj == this) { return true; }
+            if (obj.getClass() != getClass()) {
+                return false;
+            }
+            LocationIpAddressKey key = (LocationIpAddressKey)obj;
+            return new EqualsBuilder()
+                .append(m_ipAddress, key.getIpAddress())
+                .append(m_location, key.getLocation())
+                .isEquals();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder()
+                .append(m_ipAddress)
+                .append(m_location)
+                .toHashCode();
         }
     }
 
-    public void removeManagedAddress(String address) {
+    /**
+     * a set of addresses to skip discovery on
+     */
+    private Set<LocationIpAddressKey> m_managedAddresses = Collections.synchronizedSet(new HashSet<>());
+
+    public void addManagedAddress(String location, String address) {
         synchronized(m_managedAddresses) {
-            m_managedAddresses.remove(address);
+            m_managedAddresses.add(new LocationIpAddressKey(location, address));
+        }
+    }
+
+    public void removeManagedAddress(String location, String address) {
+        synchronized(m_managedAddresses) {
+            m_managedAddresses.remove(new LocationIpAddressKey(location, address));
         }
     }
 
@@ -63,7 +111,7 @@ public class UnmanagedInterfaceFilter implements IpAddressFilter {
         }
     }
 
-    public void setManagedAddresses(Set<String> addresses) {
+    public void setManagedAddresses(Set<LocationIpAddressKey> addresses) {
         synchronized(m_managedAddresses) {
             m_managedAddresses.clear();
             m_managedAddresses.addAll(addresses);
@@ -71,14 +119,14 @@ public class UnmanagedInterfaceFilter implements IpAddressFilter {
     }
 
     @Override
-    public boolean matches(InetAddress address) {
-        return matches(InetAddressUtils.str(address));
+    public boolean matches(String location, InetAddress address) {
+        return matches(location, InetAddressUtils.str(address));
     }
 
     @Override
-    public boolean matches(String address) {
+    public boolean matches(String location, String address) {
         synchronized(m_managedAddresses) {
-            return !m_managedAddresses.contains(address);
+            return !m_managedAddresses.contains(new LocationIpAddressKey(location, address));
         }
     }
 }

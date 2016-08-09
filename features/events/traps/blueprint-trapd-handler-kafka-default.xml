@@ -12,14 +12,14 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd.handler.kafka" update-strategy="reload">
+	<cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd.handler.kafka.default" update-strategy="reload">
 		<cm:default-properties>
 			<cm:property name="kafkahostport" value="127.0.0.1:9092" />
 			<cm:property name="kafkatopic" value="trapd" />
-		    <cm:property name="zookeeperhost" value="127.0.0.1"/>
+			<cm:property name="zookeeperhost" value="127.0.0.1"/>
 			<cm:property name="zookeeperport" value="2181"/>
 			<cm:property name="groupId" value="trapdconsumer"/>
-			<cm:property name="consumerstreams" value="10"/>	
+			<cm:property name="consumerstreams" value="1"/>	
 		</cm:default-properties>
 	</cm:property-placeholder>
 	
@@ -52,18 +52,19 @@
 		<property name="processorFactory" ref="processorFactory"/>
 	</bean>
 
-    <bean id="kafkaDecoder" class="org.opennms.netmgt.trapd.TrapdKafkaDecoder">
+	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
+		<argument value="org.opennms.netmgt.snmp.TrapNotification" />
 	</bean>
-	
+
 	<camelContext id="trapNotificationHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:trapHandlerDefaultProperties" />
-		
+
 		<route id="receiveTrapConnectionViaKafka">
 			<from uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}&amp;consumerStreams={{consumerstreams}}"/>
-            
-            <bean ref="kafkaDecoder" method="fromBytes"/>
-            
-            
+
+			<!-- TODO: Implement this unmarshaller -->
+			<!-- <bean ref="kafkaDecoder" method="fromBytes"/> -->
+
 			<!-- <convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/> -->
 			<to uri="seda:trapHandler"/>
 		</route>
@@ -74,7 +75,7 @@
 				Pass the message to the default handler which will convert it into 
 				an event and broadcast the event.
 			-->
-			<bean ref="trapNotificationHandlerDefault" />
+			<bean ref="trapNotificationHandlerDefault"/>
 		</route>
 	</camelContext>
 

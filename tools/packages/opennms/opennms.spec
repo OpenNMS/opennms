@@ -119,6 +119,17 @@ option, like so:
 %{extrainfo2}
 
 
+%package source
+Summary:	Source for the %{_descr} network management platform
+Group:		Applications/System
+
+%description source
+This package contains the source tarball for %{_descr}, for AGPL compliance.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %package docs
 Summary:	Documentation for the %{_descr} network management platform
 Group:		Applications/System
@@ -170,6 +181,19 @@ Obsoletes:	opennms-webapp < 1.3.11
 %description webapp-jetty
 The web UI.  This is the Jetty version, which runs
 embedded in the main core process.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package webapp-remoting
+Summary:	Remote Poller webapp
+Group:		Applications/System
+Requires:	%{name}-webapp-jetty = %{version}-%{release}
+Conflicts:	%{name}-webapp-jetty < 19.0.0-0
+
+%description webapp-remoting
+The JNLP application that provides the Remote Poller.
 
 %{extrainfo}
 %{extrainfo2}
@@ -519,13 +543,13 @@ else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-		-Dopennms.home="%{instprefix}" install
+		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks install
 fi
 
 echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
+	-Dopennms.home="%{instprefix}" -Prun-expensive-tasks -Dbuild.profile=full install
 
 cd opennms-tools
 	../compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
@@ -667,7 +691,7 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'gnu-crypto' | \
 	grep -v 'jdhcp' | \
 	grep -v 'jradius' | \
-	grep -v 'ncs-' | \
+	grep -v 'org.opennms.features.ncs.ncs-' | \
 	grep -v 'opennms-alarm-northbounder-jms' | \
 	grep -v 'opennms-integration-otrs' | \
 	grep -v 'opennms-integration-rt' | \
@@ -696,18 +720,22 @@ find $RPM_BUILD_ROOT%{instprefix}/etc $RPM_BUILD_ROOT%{instprefix}/lib $RPM_BUIL
 # jetty
 find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
+	grep -v '/opennms-remoting' | \
+	grep -v '/opennms/source/' | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
 	grep -v '/WEB-INF/jsp/alarm/ncs' | \
 	grep -v '/WEB-INF/jsp/ncs/' | \
-	grep -v '/WEB-INF/lib/ncs' | \
+	grep -v '/WEB-INF/lib/org.opennms.features.ncs.ncs' | \
 	sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir}/*/WEB-INF/*.xml | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config ," | \
+	grep -v '/opennms-remoting' | \
 	grep -v '/WEB-INF/ncs' | \
 	sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir} -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+	grep -v '/opennms-remoting' | \
 	sort >> %{_tmppath}/files.jetty
 
 cd -
@@ -745,8 +773,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files ncs
 %defattr(644 root root 755)
-%{instprefix}/lib/ncs-*.jar
-%{jettydir}/%{servletdir}/WEB-INF/lib/ncs-*
+%{instprefix}/lib/org.opennms.features.ncs.ncs-*.jar
+%{jettydir}/%{servletdir}/WEB-INF/lib/org.opennms.features.ncs.ncs-*.jar
 %config(noreplace) %{instprefix}/etc/drools-engine.d/ncs/*
 %config(noreplace) %{instprefix}/etc/ncs-northbounder-configuration.xml
 %{sharedir}/xsds/ncs-*.xsd
@@ -757,10 +785,18 @@ rm -rf $RPM_BUILD_ROOT
 %{sharedir}/etc-pristine/drools-engine.d/ncs/*
 %{sharedir}/etc-pristine/ncs-northbounder-configuration.xml
 
+%files source
+%defattr(644 root root 755)
+%{jettydir}/opennms/source/*
+
 %files webapp-jetty -f %{_tmppath}/files.jetty
 %defattr(644 root root 755)
-%config %{jettydir}/opennms-remoting/WEB-INF/*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/*.properties
+
+%files webapp-remoting
+%defattr(644 root root 755)
+%config %{jettydir}/opennms-remoting/WEB-INF/*.xml
+%{jettydir}/opennms-remoting
 
 %files plugins
 

@@ -115,9 +115,8 @@
         </a></h3>
     </div>
 
-    <script type="text/javascript" src="/opennms/js/jquery/jquery-1.8.2.min.js"></script>
-    <script type="text/javascript" src="/opennms/js/jquery/ui/jquery-ui-1.8.2.custom.js"></script>
-    <script type="text/javascript" src="/opennms/js/jquery.ui.treemap.js"></script>
+    <script type="text/javascript" src="lib/jquery-ui/jquery-ui.js"></script>
+    <script type="text/javascript" src="js/jquery.ui.treemap.js"></script>
 
     <div id="treemap"></div>
 

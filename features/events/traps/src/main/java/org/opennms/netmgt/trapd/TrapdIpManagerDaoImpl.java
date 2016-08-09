@@ -59,27 +59,27 @@ public class TrapdIpManagerDaoImpl implements TrapdIpMgr {
     private IpInterfaceDao m_ipInterfaceDao;
 
     public IpInterfaceDao getIpInterfaceDao() {
-		return m_ipInterfaceDao;
-	}
+        return m_ipInterfaceDao;
+    }
 
-	public void setIpInterfaceDao(IpInterfaceDao m_ipInterfaceDao) {
-		this.m_ipInterfaceDao = m_ipInterfaceDao;
-	}
+    public void setIpInterfaceDao(IpInterfaceDao m_ipInterfaceDao) {
+        this.m_ipInterfaceDao = m_ipInterfaceDao;
+    }
 
-	/**
+    /**
      * A Map of IP addresses and node IDs
      */
     protected Map<InetAddress, Integer> m_knownips = new ConcurrentHashMap<InetAddress, Integer>();
-    
-    private static boolean m_dataBaseSync;
-    
-    public static void setDataBaseSync(boolean dataBaseSync) {
-		m_dataBaseSync = dataBaseSync;
-	}
 
-	public static boolean isDataBaseSync() {
-		return m_dataBaseSync;
-	}
+    private static boolean m_dataBaseSync;
+
+    public static void setDataBaseSync(boolean dataBaseSync) {
+        m_dataBaseSync = dataBaseSync;
+    }
+
+    public static boolean isDataBaseSync() {
+        return m_dataBaseSync;
+    }
 
     /**
      * Clears and synchronizes the internal known IP address cache with the

@@ -37,6 +37,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
@@ -49,6 +50,8 @@ import org.springframework.beans.PropertyAccessorFactory;
 public class NetworkBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(NetworkBuilder.class);
+
+    private final OnmsMonitoringLocation m_location;
 
     private final OnmsDistPoller m_distPoller;
 
@@ -72,6 +75,8 @@ public class NetworkBuilder {
      * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
      */
     public NetworkBuilder(final OnmsDistPoller distPoller) {
+        m_location = new OnmsMonitoringLocation("localhost", "localhost");
+
         m_distPoller = distPoller;
     }
 
@@ -81,10 +86,16 @@ public class NetworkBuilder {
      * @param distPollerId a {@link java.lang.String} object.
      */
     public NetworkBuilder() {
+        m_location = new OnmsMonitoringLocation("localhost", "localhost");
+
         m_distPoller = new OnmsDistPoller("00000000-0000-0000-0000-000000000000");
         m_distPoller.setLabel("localhost");
         m_distPoller.setLocation("localhost");
         m_distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
+    }
+
+    public OnmsMonitoringLocation getLocation() {
+        return m_location;
     }
 
     public OnmsDistPoller getDistPoller() {
@@ -98,7 +109,7 @@ public class NetworkBuilder {
      * @return a {@link org.opennms.netmgt.model.NetworkBuilder.NodeBuilder} object.
      */
     public NodeBuilder addNode(String label) {
-        m_currentNode = new OnmsNode(label);
+        m_currentNode = new OnmsNode(m_location, label);
         m_assetBean = PropertyAccessorFactory.forBeanPropertyAccess(m_currentNode.getAssetRecord());
         return new NodeBuilder(m_currentNode);
     }
@@ -126,6 +137,17 @@ public class NetworkBuilder {
 
         public NodeBuilder setForeignId(final String foreignId) {
             m_node.setForeignId(foreignId);
+            return this;
+        }
+
+        public NodeBuilder setLocation(final String locationName) {
+            if (locationName != null) {
+                final OnmsMonitoringLocation location = new OnmsMonitoringLocation();
+                location.setLocationName(locationName);
+                m_node.setLocation(location);
+            } else {
+                m_node.setLocation(null);
+            }
             return this;
         }
 

@@ -45,6 +45,7 @@ public class SharedVertex implements Serializable {
     private String m_tooltipText;
     private String m_statusCount = "0";
     private String m_styleName = "vertex";
+    private boolean m_targets;
 
     /**
      * @return the statusCount
@@ -154,5 +155,13 @@ public class SharedVertex implements Serializable {
 
     public String getStyleName() {
         return m_styleName;
+    }
+
+    public boolean isTargets() {
+        return m_targets;
+    }
+
+    public void setTargets(boolean targets) {
+        m_targets = targets;
     }
 }

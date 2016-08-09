@@ -62,7 +62,6 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Filter;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
@@ -88,6 +87,7 @@ import org.opennms.netmgt.model.ScanReportPollResult;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
@@ -180,7 +180,7 @@ public class PollerBackEndTest extends TestCase {
 
     private MockEventIpcManager m_eventIpcManager;
     // helper objects used to respond from the mock objects
-    private LocationDef m_locationDefinition;
+    private OnmsMonitoringLocation m_locationDefinition;
     private Package m_package;
     private ServiceSelector m_serviceSelector;
 
@@ -376,7 +376,7 @@ public class PollerBackEndTest extends TestCase {
         // set up some objects that can be used to mock up the tests
 
         // the location definition
-        m_locationDefinition = new LocationDef();
+        m_locationDefinition = new OnmsMonitoringLocation();
         m_locationDefinition.setMonitoringArea("Oakland");
         m_locationDefinition.setLocationName("OAK");
         m_locationDefinition.setPollingPackageNames(Collections.singletonList("OAKPackage"));
@@ -427,13 +427,13 @@ public class PollerBackEndTest extends TestCase {
 
     public void testGetMonitoringLocations() {
 
-        List<LocationDef> locations = Collections.singletonList(m_locationDefinition);
+        List<OnmsMonitoringLocation> locations = Collections.singletonList(m_locationDefinition);
 
         expect(m_monitoringLocationDao.findAll()).andReturn(locations);
 
         m_mocks.replayAll();
 
-        Collection<LocationDef> returned = m_backEnd.getMonitoringLocations();
+        Collection<OnmsMonitoringLocation> returned = m_backEnd.getMonitoringLocations();
 
         assertEquals(locations, returned);
 
@@ -816,7 +816,7 @@ public class PollerBackEndTest extends TestCase {
         m_backEnd.reportSingleScan(report);
 
         // Fetch the event that was sent
-        Event unsuccessfulScanEvent = m_eventIpcManager.getEventAnticipator().unanticipatedEvents().iterator().next();
+        Event unsuccessfulScanEvent = m_eventIpcManager.getEventAnticipator().getUnanticipatedEvents().iterator().next();
         assertTrue(
             unsuccessfulScanEvent.getParm(DefaultPollerBackEnd.PARM_SCAN_REPORT_FAILURE_MESSAGE).getValue().getContent(),
             unsuccessfulScanEvent.getParm(DefaultPollerBackEnd.PARM_SCAN_REPORT_FAILURE_MESSAGE).getValue().getContent().contains("2 out of 5 service polls failed")

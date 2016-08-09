@@ -39,6 +39,7 @@ import org.apache.camel.util.KeyValueHolder;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
@@ -77,14 +78,6 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 	public static ActiveMQBroker s_broker = new ActiveMQBroker();
 
 	private EventIpcManager m_eventIpcManager = new MockEventIpcManager();
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	protected String useOverridePropertiesWithConfigAdmin(Dictionary props) {
-		props.put("brokerUri", "vm:localhost?create=false");
-		// Return the PID
-		return "org.opennms.netmgt.trapd.handler.default";
-	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -135,7 +128,8 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 	@Test
 	public void testTrapd() throws Exception {
 		// Expect one TrapNotification message to be broadcast on the messaging channel
-		MockEndpoint broadcastTrapd = getMockEndpoint("mock:queuingservice:broadcastTrap", false);
+		JmsQueueNameFactory factory = new JmsQueueNameFactory("Trapd", "BroadcastTrap");
+		MockEndpoint broadcastTrapd = getMockEndpoint("mock:queuingservice:" + factory.getName(), false);
 		broadcastTrapd.setExpectedMessageCount(1);
 
 		MockEndpoint trapHandler = getMockEndpoint("mock:seda:trapHandler", false);
@@ -165,14 +159,14 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 				snmp4JV2cTrapPdu, new BasicTrapProcessor());
 
 		// Send the TrapNotification
-		template.sendBody("queuingservice:broadcastTrap?disableReplyTo=true", snmp4JV2cTrap);
+		template.sendBody("queuingservice:" + factory.getName() + "?disableReplyTo=true", snmp4JV2cTrap);
 
 		assertMockEndpointsSatisfied();
 
 		// Check that the input for the seda:trapHandler endpoint matches
 		// the TrapQProcessor that we simulated via ActiveMQ
 		TrapNotification result = trapHandler.getReceivedExchanges().get(0).getIn().getBody(TrapNotification.class);
-		LOG.info("Result:  " + result);
+		LOG.info("Result: " + result);
 
 		// Assert that the trap's content is correct
 		BasicTrapProcessor processor = (BasicTrapProcessor)result.getTrapProcessor();

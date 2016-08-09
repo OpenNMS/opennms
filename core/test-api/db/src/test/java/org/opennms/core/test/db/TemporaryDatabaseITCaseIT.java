@@ -28,6 +28,8 @@
 
 package org.opennms.core.test.db;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
 import org.junit.Test;
 
@@ -51,6 +53,12 @@ public class TemporaryDatabaseITCaseIT extends TemporaryDatabaseITCase {
     @Test
     public void testExecuteSQLFromGetJdbcTemplate() {
         getJdbcTemplate().queryForObject("SELECT now()", Date.class);
+    }
+
+    @Test
+    public void testGetBlame() {
+        String methodName = new Object(){}.getClass().getEnclosingMethod().getName();
+        assertEquals("blame string", getClass().getName() + "." + methodName + ": leaveDatabase false leaveDatabaseOnFailure false", getJdbcTemplate().queryForObject("SELECT blame FROM blame", String.class));
     }
 
 }

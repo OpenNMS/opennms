@@ -57,8 +57,17 @@ public class GWTVertex extends JavaScriptObject {
     	return {"id":id, "x":x, "y":y, "initialX":-1000, "initialY":-1000, "selected":false,
     	        "iconUrl":"", "svgIconId":"", "semanticZoomLevel":0, "group":null,
     	        "status":"", "statusCount":"", "iconHeight":48, "iconWidth":48, "tooltipText":"", 
-    	        "severityArray":[], "total": 0, "isGroup": true, "stylename":"vertex", "isIconNormalized": false};
+    	        "severityArray":[], "total": 0, "isGroup": true, "stylename":"vertex", "isIconNormalized": false,
+                "targets": false};
 	}-*/;
+
+    public final native boolean hasTargets()/*-{
+        return this.targets;
+    }-*/;
+
+    public final native void setTargets(boolean hasTargets)/*-{
+        this.targets = hasTargets;
+    }-*/;
 
     public final native String getId()/*-{
         return this.id;
@@ -228,18 +237,6 @@ public class GWTVertex extends JavaScriptObject {
     public final native String getStyleName() /*-{
         return this.stylename;
     }-*/;
-    
-    
-
-    static Func<String, GWTVertex> selectedFill() {
-    	return new Func<String, GWTVertex>(){
-
-                    @Override
-    		public String call(GWTVertex vertex, int index) {
-    			return vertex.isSelected() ? "blue" : "black";
-    		}
-    	};
-    }
 
     protected static Func<String, GWTVertex> selectionFilter() {
         return new Func<String, GWTVertex>(){
@@ -298,6 +295,16 @@ public class GWTVertex extends JavaScriptObject {
                     }
                 }
                 return ""; // no icon
+            }
+        };
+    }
+
+    protected static Func<String, GWTVertex> showNavigateToIndicator(){
+        return new Func<String, GWTVertex>() {
+
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                return vertex.hasTargets() ? "1" : "0";
             }
         };
     }
@@ -475,38 +482,11 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
 
-    protected static Func<String, GWTVertex> makeStatusCounter() {
-        // TODO Auto-generated method stub
-        return new Func<String, GWTVertex>(){
-
-            @Override
-            public String call(GWTVertex vertex, int index) {
-                if(vertex.isGroup()){
-                    return makeChart(vertex.getIconWidth() - 10.0, 0.0, 10.0, 10.0, vertex.getSeverityArray(), vertex.getClassArray(), vertex.getTotal());
-                }
-                else{
-
-                }
-                return null;
-            }
-
-        };
-    }
-
     protected static Func<String, GWTVertex> getVertexOpacity(){
         return new Func<String, GWTVertex>() {
             @Override
             public String call(GWTVertex vertex, int index) {
                 return vertex.isIconNormalized() ? "1" : "0";
-            }
-        };
-    }
-
-    protected static Func<String, GWTVertex> getVertexVisibility(){
-        return new Func<String, GWTVertex>() {
-            @Override
-            public String call(GWTVertex vertex, int index) {
-                return vertex.isIconNormalized() ? "visible" : "hidden";
             }
         };
     }
@@ -536,6 +516,9 @@ public class GWTVertex extends JavaScriptObject {
                         .attr("class", getStatusClass("status-badge-container"))
                         .select(".status-badge").text(getBadgeStatusText());
 
+                selection.select(".navigate-to .text")
+                        .style("opacity", showNavigateToIndicator());
+
                 return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).select("text.vertex-label").text(label()).attr("y", textLabelPlacement());
             }
         };
@@ -560,6 +543,7 @@ public class GWTVertex extends JavaScriptObject {
                 D3 statusCounter            = vertex.append("g");
                 D3 statusBadge              = vertex.append("g");
                 D3 textSelection            = vertex.append("text");
+                D3 navigateTo               = vertex.append("g").attr("class", "navigate-to");
 
                 vertex.append("svg:rect").attr("class", "svgIconOverlay").attr("width", 100).attr("height", 100).attr("opacity", 0).call(new D3Behavior() {
                     @Override
@@ -603,6 +587,13 @@ public class GWTVertex extends JavaScriptObject {
                 statusBadge.append("text").attr("x", "0px").attr("y", "0px")
                         .attr("class", "status-badge");
 
+                // Navigate To indicator
+                navigateTo.append("text")
+                        .attr("class", "text")
+                        .attr("opacity", 1)
+                        .attr("x", -23)
+                        .attr("y", 23)
+                        .text("\uf21b"); // ion-record
                 textSelection.text(label())
                     .attr("class", "vertex-label")
                     .attr("x", "0px")
@@ -615,85 +606,4 @@ public class GWTVertex extends JavaScriptObject {
             }
         };
     }
-    public static final native void logDocument(Object doc)/*-{
-        $wnd.console.debug(doc);
-    }-*/;
-    
-    //support for creating a node-chart
-    //segmentWidth defines how thick the donut ring will be (in pixels)
-    static final String makeChart(final double cx, final double cy, final double r, final double segmentWidth, final JsArrayNumber dataArray, final String[] classArray, final double total){
-				
-				String svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
-				
-			
-				double innerR = r - segmentWidth;
-				
-				
-				
-				double startangle = 0;
-				for (int i = 0; i < dataArray.length(); i++) {
-
-					if (dataArray.get(i) > 0) {
-
-						double endangle = startangle + (((dataArray.get(i)) / total) * Math.PI
-								* 2.0);
-
-						String path = "<path d=\"";
-
-						double x1 = cx + (r * Math.sin(startangle));
-						double y1 = cy - (r * Math.cos(startangle));
-						double X1 = cx + (innerR * Math.sin(startangle));
-						double Y1 = cy - (innerR * Math.cos(startangle));
-
-						double x2 = cx + (r * Math.sin(endangle));
-						double y2 = cy - (r * Math.cos(endangle));
-						double X2 = cx + (innerR * Math.sin(endangle));
-						double Y2 = cy - (innerR * Math.cos(endangle));
-
-						int big = 0;
-						if (endangle - startangle > Math.PI)
-							big = 1;
-
-						String d;
-						// this branch is if one data value comprises 100% of the data
-						if (dataArray.get(i) >= total) {
-
-							d = "M " + X1 + "," + Y1 + " A " + innerR + "," + innerR
-									+ " 0 " + "1" + " 0 " + X1 + ","
-									+ (Y1 + (2 * innerR)) + " A " + innerR + ","
-									+ innerR + " 0 " + big + " 0 " + X1 + "," + Y1
-									+ " M " + x1 + "," + y1 + " A " + r + "," + r
-									+ " 0 " + big + " 1 " + x1 + "," + (y1 + (2 * r))
-									+ " A " + r + "," + r + " 0 " + big + " 1 " + x1
-									+ "," + y1;
-
-						} else {
-							// path string
-							d = "M " + X1 + "," + Y1 + " A " + innerR + "," + innerR
-									+ " 0 " + big + " 1 " + X2 + "," + Y2 + " L " + x2
-									+ "," + y2 + " A " + r + "," + r + " 0 " + big
-									+ " 0 " + x1 + "," + y1 + " Z";
-						}
-						path = path.concat(d + "\"" + " class =");
-			            
-			            path = path.concat(classArray[i]);
-//			            path = path.concat(" stroke= \"black\"");
-			            path = path.concat(" stroke-width= \"0\"/>");
-			            
-			            svg = svg.concat(path);
-			            startangle = endangle;
-
-					}
-					
-					
-				}
-						
-				svg = svg.concat("</svg>");
-			    
-			    return svg;
-    		
-    }
-
-
-
 }

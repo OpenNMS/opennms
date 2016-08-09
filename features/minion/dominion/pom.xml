@@ -8,10 +8,6 @@
     <artifactId>org.opennms.features.minion.dominion</artifactId>
     <packaging>jar</packaging>
     <name>OpenNMS :: Features :: Minion :: Dominion</name>
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
- 
     <dependencies>    
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -97,12 +93,6 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.db</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -34,7 +34,7 @@ import java.util.List;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -73,8 +73,8 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
     }
 
     @Override
-    public Criteria getDefaultCriteria() {
-        return null;
+    public Defaults getDefaults() {
+        return new Defaults();
     }
 
     @Override
