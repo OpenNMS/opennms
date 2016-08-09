@@ -21,8 +21,16 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            
+            <Import-Package>
+            	org.opennms.netmgt.snmp.snmp4j.*;resolution:=optional,
+            	org.opennms.core.camel.DefaultDispatcher.*;resolution:=optional,
+            	org.snmp4j.*;resolution:=optional,
+            	*
+            </Import-Package>
+            
           </instructions>
-        </configuration>
+        </configuration> 
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -247,6 +255,11 @@
           <artifactId>snappy-java</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-netty-http</artifactId>
+      <version>${camelVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.curator</groupId>

@@ -34,6 +34,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
+import java.util.Random;
 import java.util.concurrent.Callable;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -160,6 +162,15 @@ public class SyslogConnection implements Callable<Callable<?>> {
         try {
             LOG.debug("Converting syslog message into event ({} bytes)", m_bytes.remaining());
 
+            if (!SyslogdIPMgrJDBCImpl.isDataBaseSync()) {
+                try {
+                    SyslogdIPMgrJDBCImpl.getInstance().dataSourceSync();
+                    SyslogdIPMgrJDBCImpl.setDataBaseSync(true);
+                } catch (SQLException e) {
+                    LOG.debug("Database Sync failed");
+                }
+            }
+
             // TODO: Change to a static call?
             ConvertToEvent re = new ConvertToEvent(
                 m_systemId,
@@ -224,5 +235,9 @@ public class SyslogConnection implements Callable<Callable<?>> {
             sourcePort
         );
         return retPacket;
+    }
+
+    public int getPartionKey() {
+        return new Random().nextInt(10000);
     }
 }

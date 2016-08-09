@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,47 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
-
-import java.util.List;
-
-import org.opennms.netmgt.config.trapd.TrapdConfiguration;
-import org.opennms.netmgt.snmp.SnmpV3User;
-
-/**
- * <p>TrapdConfig interface.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public interface TrapdConfig {
-	public abstract String getSnmpTrapAddress();
-	
-    /**
-     * <p>getSnmpTrapPort</p>
-     *
-     * @return a int.
-     */
-    public abstract int getSnmpTrapPort();
-
-    /**
-     * <p>getNewSuspectOnTrap</p>
-     *
-     * @return a boolean.
-     */
-    public abstract boolean getNewSuspectOnTrap();
-
-    /**
-     * <p>getSnmpV3Users</p>
-     *
-     * @return a java.util.List.
-     */
-    public abstract List<SnmpV3User> getSnmpV3Users();
-    
-    
-    /**
-     * @param config
-     * Updates the SNMP Address,Port and Users information
-     */
-    public abstract void onUpdate(TrapdConfiguration config);
-}
+@XmlSchema(
+    namespace="http://xmlns.opennms.org/xsd/config/trapd",
+    elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/trapd")
+    }
+)
+package org.opennms.netmgt.config.trapd;
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlSchema;

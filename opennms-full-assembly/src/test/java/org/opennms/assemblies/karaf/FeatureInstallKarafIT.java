@@ -139,6 +139,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         //installFeature("opennms-syslogd-listener-camel-netty");
         //installFeature("opennms-syslogd-listener-nio");
         installFeature("opennms-syslogd-handler-default");
+        installFeature("opennms-syslogd-handler-kafka-default");
 
         installFeature("opennms-trapd");
         installFeature("opennms-trapd-listener");
