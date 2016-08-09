@@ -34,6 +34,7 @@
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="norequirejs" value="true" />
+  <jsp:param name="disableCoreWeb" value="true" />
   <jsp:param name="title" value="Choose Resource" />
   <jsp:param name="headTitle" value="Choose" />
   <jsp:param name="headTitle" value="Resource Graphs" />
@@ -54,7 +55,7 @@
   <div growl></div>
 
   <h4>
-    <div class="NPnode">Node: <strong><a href="{{ nodeLink }}">{{ nodeLabel }}</a></strong></div>
+    Node: <strong><a href="{{ nodeLink }}">{{ nodeLabel }}</a></strong>
   </h4>
 
   <div class="jumbotron" ng-show="!hasResources">
