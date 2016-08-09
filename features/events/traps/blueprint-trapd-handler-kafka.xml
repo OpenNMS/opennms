@@ -15,7 +15,7 @@
 
 	<cm:property-placeholder id="trapdHandlerKafkaProperties" persistent-id="org.opennms.netmgt.trapd.handler.kafka" placeholder-prefix="$[" placeholder-suffix="]" update-strategy="none">
 		<cm:default-properties>
-			<cm:property name="kafkahostport" value="127.0.0.1:9092" />
+			<cm:property name="kafkaAddress" value="127.0.0.1:9092" />
 			<cm:property name="kafkatopic" value="trapd" />
 		</cm:default-properties>
 	</cm:property-placeholder>
@@ -47,7 +47,7 @@
 		<route id="sendTrapViaKafka">
 			<from uri="seda:trapHandler"/>
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
-			<to uri="kafka:{{kafkahostport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
+			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>
 	</camelContext>
 </blueprint>
