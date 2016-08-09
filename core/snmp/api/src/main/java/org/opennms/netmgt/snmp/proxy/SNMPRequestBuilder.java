@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
  */
 public interface SNMPRequestBuilder<T> {
 
-    SNMPRequestBuilder<T> atLocation(String location);
+    SNMPRequestBuilder<T> withLocation(String location);
 
     SNMPRequestBuilder<T> withDescription(String string);
 

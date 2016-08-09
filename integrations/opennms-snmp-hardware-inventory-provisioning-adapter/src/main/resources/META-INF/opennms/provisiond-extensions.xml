@@ -13,6 +13,7 @@
 		<property name="hwEntityAttributeTypeDao" ref="hwEntityAttributeTypeDao" />
 		<property name="snmpPeerFactory" ref="snmpPeerFactory" />
 		<property name="hwInventoryAdapterConfigDao" ref="snmpHwInventoryAdapterConfigDao" />
+		<property name="locationAwareSnmpClient" ref="locationAwareSnmpClient" />
 		<property name="template" ref="transactionTemplate" />
 	</bean>
 

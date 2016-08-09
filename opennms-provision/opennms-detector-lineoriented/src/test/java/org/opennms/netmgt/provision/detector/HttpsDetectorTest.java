@@ -34,7 +34,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -47,12 +46,10 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.HttpsDetector;
+import org.opennms.netmgt.provision.detector.simple.HttpsDetectorFactory;
 import org.opennms.netmgt.provision.server.SSLServer;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -62,9 +59,12 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class HttpsDetectorTest implements ApplicationContextAware{
+public class HttpsDetectorTest {
     private static final int SSL_PORT = 7142;
 
+    @Autowired
+    private HttpsDetectorFactory m_detectorFactory;
+    
     private HttpsDetector m_detector;
     private SSLServer m_server;
 
@@ -89,12 +89,11 @@ public class HttpsDetectorTest implements ApplicationContextAware{
                 .withBody("<html>\r\n<body>\r\n<!-- default -->\r\n</body>\r\n</html>");
     }
 
-    private ApplicationContext m_applicationContext;
 
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-        m_detector = getDetector(HttpsDetector.class);
+        m_detector = m_detectorFactory.createDetector();
 
         /* make sure defaults are initialized */
         m_detector.setPort(SSL_PORT);
@@ -214,7 +213,6 @@ public class HttpsDetectorTest implements ApplicationContextAware{
         assertTrue(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
 
-
     /**
      * @param serviceDetected
      * @return
@@ -225,21 +223,5 @@ public class HttpsDetectorTest implements ApplicationContextAware{
         future.awaitFor();
 
         return future.isServiceDetected();
-    }
-
-    /* (non-Javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     */
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        m_applicationContext = applicationContext;
-
-    }
-
-    private HttpsDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
-        Object bean = m_applicationContext.getBean(detectorClass.getName());
-        assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
-        return (HttpsDetector)bean;
     }
 }

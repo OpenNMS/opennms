@@ -36,8 +36,6 @@ import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.codec.HttpProtocolCodecFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>HttpDetector class.</p>
@@ -45,8 +43,7 @@ import org.springframework.stereotype.Component;
  * @author ranger
  * @version $Id: $
  */
-@Component
-@Scope("prototype")
+
 public class HttpDetector extends AsyncBasicDetectorMinaImpl<LineOrientedRequest, HttpStatusResponse> {
     
     private static final Logger LOG = LoggerFactory.getLogger(HttpDetector.class);

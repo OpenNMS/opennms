@@ -72,7 +72,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
 
         try {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
-                                                      isisSysObject).withDescription("isisSysObjectCollection").atLocation(getLocation()).execute().get();
+                                                      isisSysObject).withDescription("isisSysObjectCollection").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.info("run: Agent error while scanning the isisSysObjectCollection table", e);
             return;
@@ -102,7 +102,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
                       isisISAdjTableTracker)
                       .withDescription("isisISAdjTable")
-                      .atLocation(getLocation())
+                      .withLocation(getLocation())
                       .execute()
                       .get();
         } catch (ExecutionException e) {
@@ -129,7 +129,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
                               isisCircTableTracker)
                               .withDescription("isisCircTable")
-                              .atLocation(getLocation())
+                              .withLocation(getLocation())
                               .execute().get();
         } catch (ExecutionException e) {
             LOG.error("run: collection execution failed, exiting",e);

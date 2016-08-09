@@ -29,17 +29,20 @@ package org.opennms.smoketest.utils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.cxf.common.util.Base64Utility;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
@@ -94,6 +97,21 @@ public class RestClient {
     public void importRequisition(final String foreignSource) {
         final WebTarget target = getTarget().path("requisitions").path(foreignSource).path("import");
         getBuilder(target).put(null);
+    }
+
+    public List<OnmsNode> getNodes() {
+        GenericType<List<OnmsNode>> nodes = new GenericType<List<OnmsNode>>() {
+        };
+        final WebTarget target = getTarget().path("nodes");
+        return getBuilder(target).get(nodes);
+    }
+
+    public List<OnmsMonitoredService> getServicesForANode(String nodeCriteria, String ipAddress) {
+        GenericType<List<OnmsMonitoredService>> services = new GenericType<List<OnmsMonitoredService>>() {
+        };
+        final WebTarget target = getTarget().path("nodes").path(nodeCriteria).path("ipinterfaces").path(ipAddress)
+                .path("services");
+        return getBuilder(target).get(services);
     }
 
     public QueryResponse getMeasurements(final QueryRequest request) {

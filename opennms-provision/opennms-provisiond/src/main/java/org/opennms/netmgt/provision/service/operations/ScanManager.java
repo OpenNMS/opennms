@@ -155,7 +155,7 @@ public class ScanManager {
             try {
                 m_locationAwareSnmpClient.walk(agentConfig, tracker)
                     .withDescription("system/ipAddrTable/ipAddressTable")
-                    .atLocation(node.getLocation() == null ? null : node.getLocation().getLocationName())
+                    .withLocation(node.getLocation() == null ? null : node.getLocation().getLocationName())
                     .execute()
                     .get();
             } catch (ExecutionException e) {
@@ -174,7 +174,7 @@ public class ScanManager {
             try {
                 m_locationAwareSnmpClient.walk(agentConfig, tracker)
                     .withDescription("ifTable/ifXTable")
-                    .atLocation(node.getLocation() == null ? null : node.getLocation().getLocationName())
+                    .withLocation(node.getLocation() == null ? null : node.getLocation().getLocationName())
                     .execute()
                     .get();
             } catch (ExecutionException e) {

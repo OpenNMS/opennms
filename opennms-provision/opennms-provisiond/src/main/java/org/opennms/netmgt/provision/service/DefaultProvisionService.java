@@ -80,8 +80,8 @@ import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
+import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.provision.NodePolicy;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
@@ -177,6 +177,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private PlatformTransactionManager m_transactionManager;
 
     private HostnameResolver m_hostnameResolver = new DefaultHostnameResolver();
+
+    @Autowired
+    private LocationAwareDetectorClient m_locationAwareDetectorClient;
 
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
@@ -1180,33 +1183,14 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_ipInterfaceDao.flush();
 
         return iface;
-
     }
 
     /** {@inheritDoc} */
     @Override
-    public List<ServiceDetector> getDetectorsForForeignSource(final String foreignSourceName) {
+    public List<PluginConfig> getDetectorsForForeignSource(final String foreignSourceName) {
         final ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
-
-        final List<PluginConfig> detectorConfigs = foreignSource.getDetectors();
-        if (detectorConfigs == null) {
-            return new ArrayList<ServiceDetector>(m_pluginRegistry.getAllPlugins(ServiceDetector.class));
-        }
-
-        final List<ServiceDetector> detectors = new ArrayList<ServiceDetector>(detectorConfigs.size());
-        for(final PluginConfig detectorConfig : detectorConfigs) {
-            final ServiceDetector detector = m_pluginRegistry.getPluginInstance(ServiceDetector.class, detectorConfig);
-            if (detector == null) {
-                LOG.error("Configured plugin does not exist: {}", detectorConfig);
-            } else {
-                detector.setServiceName(detectorConfig.getName());
-                detector.init();
-                detectors.add(detector);
-            }
-        }
-
-        return detectors;
+        return foreignSource.getDetectors();
     }
 
     /** {@inheritDoc} */
@@ -1474,6 +1458,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         return m_hostnameResolver;
     }
 
+    @Override
+    public LocationAwareDetectorClient getLocationAwareDetectorClient() {
+        return m_locationAwareDetectorClient;
+    }
+    
     @Override
     public LocationAwareSnmpClient getLocationAwareSnmpClient() {
         return m_locationAwareSnmpClient;

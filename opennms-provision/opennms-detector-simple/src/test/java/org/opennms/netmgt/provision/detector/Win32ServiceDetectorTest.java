@@ -41,7 +41,9 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.detector.snmp.Win32ServiceDetector;
+import org.opennms.netmgt.provision.detector.snmp.Win32ServiceDetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -56,8 +58,12 @@ import org.springframework.test.context.ContextConfiguration;
 public class Win32ServiceDetectorTest implements InitializingBean {
     static final String TEST_IP_ADDRESS = "192.0.2.1";
 
-    @Autowired
     private Win32ServiceDetector m_detector;
+    
+    @Autowired
+    private Win32ServiceDetectorFactory m_detectorFactory;
+
+    private DetectRequest m_request;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -67,20 +73,21 @@ public class Win32ServiceDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws InterruptedException {
         MockLogAppender.setupLogging();
-
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setRetries(2);
         m_detector.setTimeout(5000);
         m_detector.setWin32ServiceName("VMware Tools Service");
+        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null);
     }
-    
+
     @Test(timeout=20000)
     public void testDetectorSuccessful() throws UnknownHostException{
-        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        assertTrue(m_detector.detect(m_request).isServiceDetected());
     }
 
     @Test(timeout=20000)
     public void testDetectorFail() throws UnknownHostException{
         m_detector.setWin32ServiceName("This service does not exist");
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
+        assertFalse(m_detector.detect(m_request).isServiceDetected());
     }
 }
