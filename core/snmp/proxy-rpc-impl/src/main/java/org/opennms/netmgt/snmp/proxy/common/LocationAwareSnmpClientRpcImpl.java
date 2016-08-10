@@ -30,6 +30,7 @@ package org.opennms.netmgt.snmp.proxy.common;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -57,6 +58,13 @@ public class LocationAwareSnmpClientRpcImpl implements LocationAwareSnmpClient, 
     private RpcClientFactory rpcClientFactory;
 
     private RpcClient<SnmpRequestDTO, SnmpMultiResponseDTO> delegate;
+
+    public LocationAwareSnmpClientRpcImpl() { }
+
+    public LocationAwareSnmpClientRpcImpl(RpcClientFactory rpcClientFactory) {
+        this.rpcClientFactory = Objects.requireNonNull(rpcClientFactory);
+        afterPropertiesSet();
+    }
 
     @Override
     public void afterPropertiesSet() {

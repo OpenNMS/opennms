@@ -29,7 +29,11 @@
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.api</artifactId>
-      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <!-- Logging -->
@@ -61,10 +65,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.0.4</version>
-      <scope>test</scope>
+       <groupId>org.opennms</groupId>
+       <artifactId>opennms-dao-mock</artifactId>
+       <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

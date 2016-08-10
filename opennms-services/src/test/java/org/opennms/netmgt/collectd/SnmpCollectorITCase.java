@@ -39,6 +39,7 @@ import java.util.List;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
+import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
@@ -60,6 +61,8 @@ import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
+import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 
@@ -101,7 +104,9 @@ public abstract class SnmpCollectorITCase extends OpenNMSITCase {
     protected MockSnmpAgent m_mockAgent;
     protected IpInterfaceDao m_ifaceDao;
     protected EasyMockUtils m_easyMockUtils;
-    
+
+    protected LocationAwareSnmpClient m_locationAwareSnmpClient = new LocationAwareSnmpClientRpcImpl(new MockRpcClientFactory());
+
     @Override
     public void setVersion(int version) {
         super.setVersion(version);
@@ -296,7 +301,7 @@ public abstract class SnmpCollectorITCase extends OpenNMSITCase {
     
     protected void initializeAgent() throws CollectionInitializationException {
         ServiceParameters params = new ServiceParameters(new HashMap<String, Object>());
-        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(m_agent, params, m_config);
+        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(m_agent, params, m_config, m_locationAwareSnmpClient);
         m_collectionSet = snmpCollection.createCollectionSet(m_agent);
         m_agent.validateAgent();
     }
