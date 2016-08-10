@@ -53,7 +53,7 @@
     <c:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
     <c:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
     <c:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
-    <c:param name="script" value='<script type="text/javascript" src="js/onms-ksc/app-add-to-ksc.js"></script>' />
+    <c:param name="script" value='<script type="text/javascript" src="js/onms-ksc/add-to-ksc.js"></script>' />
 </c:import>
 
 <div id="graph-results">
@@ -231,7 +231,7 @@
 		                    <c:if test="${fn:length(resultSet.graphs) > 1}">
 		                        <a href="${specificGraphUrl}" style="padding-right: 3px" title="Open ${graph.title}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-binoculars" aria-hidden="true"></i></span></button></a>
 		                    </c:if>
-                            <a href="${forecastGraphUrl}" style="padding-right: 3px" title="Forecast ${graph.title}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-line-chart" aria-hidden="true"></i></span></button></a>
+                                    <a href="${forecastGraphUrl}" style="padding-right: 3px" title="Forecast ${graph.title}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-line-chart" aria-hidden="true"></i></span></button></a>
 		                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
 		                        <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
 		                            <a href="javascript:nrtgPopUp('${resultSet.resource.id}','${graph.name}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a><br/>

@@ -69,7 +69,7 @@ angular.module('onms-ksc', [
   $scope.open = function(resourceId, resourceLabel, graphName, graphTitle) {
     $uibModal.open({
       animation: $scope.animationsEnabled,
-      templateUrl: 'js/onms-ksc/template.html',
+      templateUrl: 'js/onms-ksc/add-to-ksc.html',
       controller: 'AddToKscModalInstanceCtrl',
       resolve: {
         resourceLabel: function() { return resourceLabel; },
