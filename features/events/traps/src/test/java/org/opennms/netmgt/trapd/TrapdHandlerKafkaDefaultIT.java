@@ -58,6 +58,7 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager.EmptyEventConfDao;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
@@ -67,6 +68,7 @@ import org.springframework.test.context.ContextConfiguration;
 	"classpath:/META-INF/opennms/applicationContext-soa.xml",
 	"classpath:/META-INF/opennms/applicationContext-mockDao.xml"
 })
+@JUnitConfigurationEnvironment
 public class TrapdHandlerKafkaDefaultIT extends CamelBlueprintTest {
 
 	private boolean mockInitialized = false;
