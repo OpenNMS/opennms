@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NewSuspectScan implements Scan {
     private static final Logger LOG = LoggerFactory.getLogger(NewSuspectScan.class);
+    private String m_location;
     private InetAddress m_ipAddress;
     private ProvisionService m_provisionService;
     private EventForwarder m_eventForwarder;
@@ -66,13 +67,14 @@ public class NewSuspectScan implements Scan {
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    public NewSuspectScan(final InetAddress ipAddress, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator, String foreignSource) {
+    public NewSuspectScan(final InetAddress ipAddress, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator, String foreignSource, final String location) {
         m_ipAddress = ipAddress;
         m_provisionService = provisionService;
         m_eventForwarder = eventForwarder;
         m_agentConfigFactory = agentConfigFactory;
         m_taskCoordinator = taskCoordinator;
         m_foreignSource = foreignSource;
+        m_location = location;
     }
     
     @Override
@@ -95,7 +97,7 @@ public class NewSuspectScan implements Scan {
     	final String addrString = str(m_ipAddress);
 		LOG.info("Attempting to scan new suspect address {} for foreign source {}", addrString, m_foreignSource);
 		
-        final OnmsNode node = m_provisionService.createUndiscoveredNode(addrString, m_foreignSource);
+        final OnmsNode node = m_provisionService.createUndiscoveredNode(addrString, m_foreignSource, m_location);
         if (node != null) {
 
         	phase.getBuilder().addSequence(
