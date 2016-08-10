@@ -35,7 +35,7 @@
 
 [options="header", cols="5,10"]
 |===
-| Resource                                                                           | Description
+| Resource                                | Description
 | `/categories/{category}`                | Delete the specified category
 | `/categories/{category}/nodes/{node}`   | Remove the given category from the given node (similar to `/nodes/{node}/categories/{category}`)
 | `/categories/{category}/groups/{group}` | Remove the given category from the given user group (similar to `/groups/{group}/categories/{category}`)
