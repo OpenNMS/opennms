@@ -1321,6 +1321,7 @@
     <freemarkerVersion>2.3.21</freemarkerVersion>
     <groovyVersion>2.4.5</groovyVersion>
     <guavaVersion>18.0</guavaVersion>
+    <guavaOldVersion>17.0</guavaOldVersion>
     <gwtVersion>2.6.1</gwtVersion>
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
@@ -1332,6 +1333,7 @@
     <jettyVersion>8.1.15.v20140411</jettyVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
+    <jinteropVersion>2.0.8</jinteropVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
@@ -1343,7 +1345,7 @@
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.5</log4j2Version>
     <minaVersion>2.0.13</minaVersion>
-    <minionKarafVersion>4.0.4</minionKarafVersion>
+    <minionKarafVersion>4.0.5</minionKarafVersion>
     <newtsVersion>1.4.1</newtsVersion>
     <paxExamVersion>4.8.0</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
@@ -1362,6 +1364,7 @@
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
+    <wsmanVersion>1.1.1</wsmanVersion>
 
     <springVersion>4.0.7.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
@@ -2319,6 +2322,16 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-web</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detectorclient-rpc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-provision-command</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

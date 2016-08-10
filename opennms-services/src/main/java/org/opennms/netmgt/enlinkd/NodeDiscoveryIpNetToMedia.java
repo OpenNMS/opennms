@@ -86,7 +86,7 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
 
         try {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
-                                                      ipNetToMediaTableTracker).withDescription("ipNetToMedia").atLocation(getLocation()).execute().get();
+                                                      ipNetToMediaTableTracker).withDescription("ipNetToMedia").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.info("run: Agent error while scanning the ipNetToMedia table", e);
             return;

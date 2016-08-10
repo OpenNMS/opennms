@@ -81,7 +81,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
         try {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(), cdpGlobalGroup).
             withDescription("cdpGlobalGroup").
-            atLocation(getLocation()).
+            withLocation(getLocation()).
             execute().
             get();
        } catch (ExecutionException e) {
@@ -114,7 +114,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
         try {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(), cdpCacheTable).
             withDescription("cdpCacheTable").
-            atLocation(getLocation()).
+            withLocation(getLocation()).
             execute().
             get();
         } catch (ExecutionException e) {

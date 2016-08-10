@@ -28,9 +28,10 @@
 
 package org.opennms.netmgt.provision.service;
 
-import java.net.InetAddress;
-
+import org.opennms.netmgt.provision.DetectRequest;
+import org.opennms.netmgt.provision.DetectResults;
 import org.opennms.netmgt.provision.SyncServiceDetector;
+import org.opennms.netmgt.provision.support.DetectResultsImpl;
 
 /**
  * MockServiceDetector
@@ -56,10 +57,9 @@ public class MockServiceDetector implements SyncServiceDetector {
         m_serviceName = serviceName;
     }
 
-
     @Override
-    public boolean isServiceDetected(InetAddress address) {
-        return true;
+    public DetectResults detect(DetectRequest request) {
+        return new DetectResultsImpl(true);
     }
 
     @Override

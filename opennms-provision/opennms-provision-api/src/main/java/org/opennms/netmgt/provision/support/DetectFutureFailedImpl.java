@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.support;
 
+import java.util.Map;
+
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectFutureListener;
@@ -61,6 +63,16 @@ public class DetectFutureFailedImpl implements DetectFuture {
     @Override
     public boolean isServiceDetected() {
         return false;
+    }
+
+    /**
+     * <p>getServiceAttributes</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
+    @Override
+    public Map<String, String> getServiceAttributes() {
+        return null;
     }
 
     /**

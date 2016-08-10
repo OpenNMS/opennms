@@ -72,6 +72,13 @@ public interface CollectionAgentService {
     public abstract String getForeignId();
 
     /**
+     * <p>getLocationName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public abstract String getLocationName();
+
+    /**
      * <p>getStorageDir</p>
      *
      * @return a {@link java.io.File} object.

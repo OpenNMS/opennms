@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
@@ -40,25 +39,25 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.loop.LoopDetector;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.opennms.netmgt.provision.detector.loop.LoopDetectorFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {"classpath:/META-INF/opennms/detectors.xml"})
-public class LoopDetectorTest implements ApplicationContextAware {
+public class LoopDetectorTest implements InitializingBean {
     
-    private ApplicationContext m_applicationContext;
+    @Autowired
+    private LoopDetectorFactory m_detectorFactory;
     private LoopDetector m_detector;
     
     @Before
     public void setUp(){
         MockLogAppender.setupLogging();
-        m_detector = getDetector(LoopDetector.class);
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setSupported(true);
     }
     
@@ -74,17 +73,10 @@ public class LoopDetectorTest implements ApplicationContextAware {
         m_detector.init();
         assertFalse("Service detection was supposed to be false but was true:", m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
-    
-    private LoopDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
-        Object bean = m_applicationContext.getBean(detectorClass.getName());
-        assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
-        return (LoopDetector) bean;
-    }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        m_applicationContext = applicationContext;
+    public void afterPropertiesSet() throws Exception {
+        // TODO Auto-generated method stub
         
     }
 }

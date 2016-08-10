@@ -34,6 +34,9 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -50,6 +53,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,6 +86,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     private final SnmpCollectionAgent m_agent;
     private final OnmsSnmpCollection m_snmpCollection;
+    private final LocationAwareSnmpClient m_client;
     private SnmpIfCollector m_ifCollector;
     private IfNumberTracker m_ifNumber;
     private SysUpTimeTracker m_sysUpTime;
@@ -132,9 +137,10 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
      * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
      */
-    public SnmpCollectionSet(SnmpCollectionAgent agent, OnmsSnmpCollection snmpCollection) {
+    public SnmpCollectionSet(SnmpCollectionAgent agent, OnmsSnmpCollection snmpCollection, LocationAwareSnmpClient client) {
         m_agent = agent;
         m_snmpCollection = snmpCollection;
+        m_client = Objects.requireNonNull(client);
     }
 
     /**
@@ -342,51 +348,33 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
     private void logStartedWalker() {
-        LOG.debug("collect: successfully instantiated SnmpNodeCollector() for {}", getCollectionAgent().getHostAddress());
+        LOG.debug("collect: successfully instantiated SnmpNodeCollector() for {} at location {}",
+                getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName());
     }
 
     private void logFinishedWalker() {
-        LOG.info("collect: node SNMP query for address {} complete.", getCollectionAgent().getHostAddress());
-    }
-
-    /**
-     * Log error and return COLLECTION_FAILED is there is a failure.
-     * 
-     * @param walker
-     * @throws CollectionWarning
-     */
-    void verifySuccessfulWalk(SnmpWalker walker) throws CollectionException {
-        if (!walker.failed()) {
-            return;
-        }
-
-        if (walker.timedOut()) {
-            throw new CollectionTimedOut(walker.getErrorMessage());
-        }
-
-        String message = "collection failed for "
-            + getCollectionAgent().getHostAddress() 
-            + " due to: " + walker.getErrorMessage();
-        // Note: getErrorThrowable() return value can be null
-        throw new CollectionWarning(message, walker.getErrorThrowable());
+        LOG.info("collect: node SNMP query for address {} at location {} complete.",
+                getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName());
     }
 
     void collect() throws CollectionException {
         // XXX Should we have a call to hasDataToCollect here?
         try {
             // now collect the data
-            SnmpWalker walker = createWalker();
-            walker.start();
-
+            CollectionAgent agent = getCollectionAgent();
             logStartedWalker();
 
+            CompletableFuture<CollectionTracker> future = m_client.walk(getAgentConfig(), getTracker())
+                .withDescription("SnmpCollectors for " + agent.getHostAddress())
+                .withLocation(getCollectionAgent().getLocationName())
+                .execute();
+
             // wait for collection to finish
-            walker.waitFor();
-
-            logFinishedWalker();
-
-            // Was the collection successful?
-            verifySuccessfulWalk(walker);
+            try {
+                future.get();
+            } finally {
+                logFinishedWalker();
+            }
 
             // Execute POST Updates (add custom parameters)
             SnmpPropertyExtenderProcessor processor = new SnmpPropertyExtenderProcessor();
@@ -398,6 +386,8 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
             throw new CollectionWarning("collect: Collection of node SNMP "
                     + "data for interface " + getCollectionAgent().getHostAddress()
                     + " interrupted: " + e, e);
+        } catch (ExecutionException e) {
+            throw new CollectionWarning(e.getMessage(), e.getCause());
         }
     }
 
