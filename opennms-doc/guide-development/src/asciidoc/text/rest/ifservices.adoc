@@ -1,7 +1,7 @@
 
 ==== Categories
 
-Obtain or modify the status of a set of monitored services based on a given search criteria, based on nodes, IP interfaces, Categories, or monitred services itself.
+Obtain or modify the status of a set of monitored services based on a given search criteria, based on nodes, IP interfaces, Categories, or monitored services itself.
 
 Examples:
 
@@ -20,9 +20,12 @@ Examples:
 
 Example:
 
-Get the forced unmanaged services for the nodes that belong to the requisition named Servers:
+Get the forced unmanaged services for the nodes that belong to the requisition named _Servers_:
 
-`curl -u admin:admin "http://localhost:8980/opennms/rest/ifservices?status=F&node.foreignSource=Servers"`
+[source, bash]
+----
+curl -u admin:admin "http://localhost:8980/opennms/rest/ifservices?status=F&node.foreignSource=Servers"
+----
 
 ===== PUTs (Modifying Data)
 
@@ -34,6 +37,9 @@ Get the forced unmanaged services for the nodes that belong to the requisition n
 
 Example:
 
-Mark the ICMP and HTTP services to be forced unmanaged for the nodes that belong to the category Production:
+Mark the _ICMP_ and _HTTP_ services to be forced unmanaged for the nodes that belong to the category _Production_:
 
-`curl -X PUT "status=F&services=ICMP,HTTP" -u admin:admin "http://localhost:8980/opennms/rest/ifservices?category.name=Production"`
+[source, bash]
+----
+curl -u admin:admin -X PUT "status=F&services=ICMP,HTTP" "http://localhost:8980/opennms/rest/ifservices?category.name=Production"
+----
