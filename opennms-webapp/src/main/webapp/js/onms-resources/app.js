@@ -34,7 +34,10 @@ angular.module('onms-resources', [
       var reduced = _.map(data.children.resource, function(obj) {
         return { id: obj.id, label: obj.label, typeLabel: obj.typeLabel, checked: false };
       });
-      $scope.resources = _.groupBy(_.sortBy(reduced, 'typeLabel'), 'typeLabel');
+      $scope.resources = _.groupBy(_.sortBy(reduced, function(r) {
+        var type = r['typeLabel'];
+        return (type === 'SNMP Node Data' || type === 'SNMP Interface Data') ? Infinity : type; 
+      }), 'typeLabel');
       angular.copy($scope.resources, $scope.filteredResources);
     });
   };
