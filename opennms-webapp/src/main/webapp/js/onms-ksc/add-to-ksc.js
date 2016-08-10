@@ -11,7 +11,7 @@ angular.module('onms-ksc', [
 ])
 
 .config(['growlProvider', function(growlProvider) {
-  growlProvider.globalTimeToLive(3000);
+  growlProvider.globalTimeToLive(5000);
   growlProvider.globalPosition('bottom-center');
 }])
 
