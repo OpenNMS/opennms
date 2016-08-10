@@ -9,7 +9,23 @@ angular.module('onms-search', [
   'ui.bootstrap'
 ])
 
-.controller('SearchCtrl', ['$scope', '$window', '$http', function($scope, $window, $http) {
+.directive('onmsSearchNodes', function() {
+  return {
+    restrict: 'E',
+    templateUrl: 'js/onms-search/template.nodes.html',
+    controller: 'NodeSearchCtrl'
+  };
+})
+
+.directive('onmsSearchKsc', function() {
+  return {
+    restrict: 'E',
+    templateUrl: 'js/onms-search/template.ksc.html',
+    controller: 'KscSearchCtrl'
+  };
+})
+
+.controller('NodeSearchCtrl', ['$scope', '$window', '$http', function($scope, $window, $http) {
 
   $scope.getNodes = function(criteria) {
     return $http({
@@ -21,6 +37,14 @@ angular.module('onms-search', [
     });
   };
 
+  $scope.goToChooseResources = function(node) {
+    $window.location.href = 'graph/chooseresource.jsp?node=' + node.id;
+  }
+
+}])
+
+.controller('KscSearchCtrl', ['$scope', '$window', '$http', function($scope, $window, $http) {
+
   $scope.getKscReports = function(criteria) {
     return $http({
       url: 'rest/ksc',
@@ -31,12 +55,15 @@ angular.module('onms-search', [
     });
   };
 
-  $scope.goToChooseResources = function(node) {
-    $window.location.href = 'graph/chooseresource.jsp?node=' + node.id;
-  }
-
   $scope.goToKscReport = function(ksc) {
     $window.location.href = 'KSC/customView.htm?type=custom&report=' + ksc.id;
   }
 
 }]);
+
+// Bootstrap to a an element with ID 'onms-search'
+
+angular.element(document).ready(function () {
+  var el = document.getElementById('onms-search');
+  angular.bootstrap(angular.element(el), ['onms-search']);
+});
