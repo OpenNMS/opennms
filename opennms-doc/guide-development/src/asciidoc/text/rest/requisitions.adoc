@@ -37,7 +37,9 @@ You may write requisition data if the authenticated user is in the _provision_, 
 | `/requisitions/{name}/nodes/{foreignId}/assets/{assetName}`                        | Get the value of the asset for the given assetName for the node with the given foreign _ID_ and foreign source name.
 |===
 
-===== POSTs (Adding Data)
+===== POSTs (Adding Data or Updating existing Data)
+
+NOTE: Expects JSON/XML
 
 [options="header", cols="5,10"]
 |===
@@ -51,6 +53,8 @@ You may write requisition data if the authenticated user is in the _provision_, 
 |===
 
 ===== PUTs (Modifying Data)
+
+NOTE: Expects form-urlencoded
 
 [options="header", cols="5,10"]
 |===
