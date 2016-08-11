@@ -591,11 +591,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-snmpselect-list</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>
       <version>${project.version}</version>
     </dependency>

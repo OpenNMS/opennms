@@ -7,7 +7,6 @@
 	<inherits name="org.opennms.features.gwt.ksc.combobox.KSCResourceCombobox"/>
 	<inherits name="org.opennms.features.gwt.ksc.add.KSCResourceAddGraph"/>
 	<inherits name="org.opennms.features.gwt.graph.resource.list.GraphResourceList"/>
-	<inherits name="org.opennms.features.gwt.snmpselect.list.SnmpSelectList"/>
 	
 	<!-- Theme -->
 	<inherits name='org.opennms.features.gwt.theme.OpennmsTheme'/>
