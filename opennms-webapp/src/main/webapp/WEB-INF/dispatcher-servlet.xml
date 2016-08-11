@@ -563,10 +563,6 @@
         <property name="resourceService" ref="resourceService"/>
     </bean>
 
-    <bean name="/KSC/include-box.htm" class="org.opennms.web.controller.ksc.IncludeBoxController">
-        <property name="kscReportService" ref="kscReportService"/>
-    </bean>
-
     <bean name="/KSC/formProcMain.htm" class="org.opennms.web.controller.ksc.FormProcMainController">
         <property name="kscReportFactory" ref="kscReportFactory"/>
     </bean>
