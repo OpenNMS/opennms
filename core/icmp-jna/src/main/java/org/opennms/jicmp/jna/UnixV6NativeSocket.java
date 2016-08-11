@@ -52,8 +52,10 @@ public class UnixV6NativeSocket extends NativeDatagramSocket {
     private static final int IPV6_TCLASS = 67;
     private final int m_sock;
     
-    public UnixV6NativeSocket(int family, int type, int protocol) throws Exception {
+    public UnixV6NativeSocket(int family, int type, int protocol, final int listenPort) throws Exception {
         m_sock = socket(family, type, protocol);
+        final sockaddr_in6 addr_in = new sockaddr_in6(listenPort);
+        bind(m_sock, addr_in, addr_in.size());
     }
 
     public native int bind(int socket, sockaddr_in6 address, int address_len) throws LastErrorException;
@@ -106,8 +108,8 @@ public class UnixV6NativeSocket extends NativeDatagramSocket {
     }
 
     @Override
-    public int close() {
-        return close(getSock());
+    public void close() {
+        close(getSock());
     }
 
     public int getSock() {

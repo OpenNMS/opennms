@@ -51,8 +51,10 @@ public class BSDV4NativeSocket extends NativeDatagramSocket {
 	private static final int IP_TOS = 3;
 	private int m_sock;
 
-	public BSDV4NativeSocket(final int family, final int type, final int protocol) throws Exception {
+	public BSDV4NativeSocket(final int family, final int type, final int protocol, final int listenPort) throws Exception {
 		m_sock = socket(family, type, protocol);
+                final bsd_sockaddr_in in_addr = new bsd_sockaddr_in(listenPort);
+                bind(m_sock, in_addr, in_addr.size());
 	}
 
 	public native int bind(int socket, bsd_sockaddr_in address, int address_len) throws LastErrorException;
@@ -103,10 +105,9 @@ public class BSDV4NativeSocket extends NativeDatagramSocket {
 	}
 
 	@Override
-	public int close() {
-		final int ret = close(m_sock);
+	public void close() {
+		close(m_sock);
 		m_sock = -1;
-		return ret;
 	}
 
 	@Override

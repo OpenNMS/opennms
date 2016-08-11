@@ -49,8 +49,8 @@ import com.sun.jna.Platform;
  */
 public class V4Pinger extends AbstractPinger<Inet4Address> {
 
-    public V4Pinger() throws Exception {
-        super(NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, getSocketType(), NativeDatagramSocket.IPPROTO_ICMP));
+    public V4Pinger(final int id) throws Exception {
+        super(NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, getSocketType(), NativeDatagramSocket.IPPROTO_ICMP, id));
         
         // Windows requires at least one packet sent before a receive call can be made without error
         // so we send a packet here to make sure...  This one should not match the normal ping requests

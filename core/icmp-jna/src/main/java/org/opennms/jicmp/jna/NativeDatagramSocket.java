@@ -44,7 +44,7 @@ import com.sun.jna.ptr.IntByReference;
  *
  * @author brozow
  */
-public abstract class NativeDatagramSocket {
+public abstract class NativeDatagramSocket implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(NativeDatagramSocket.class);
 
     public static final int AF_INET = 2;
@@ -80,11 +80,11 @@ public abstract class NativeDatagramSocket {
         }
     }
     
-    public static NativeDatagramSocket create(final int family, final int type, final int protocol) throws Exception {
+    public static NativeDatagramSocket create(final int family, final int type, final int protocol, final int listenPort) throws Exception {
         final String implClassName = NativeDatagramSocket.getImplementationClassName(family);
-        LOG.debug("{}({}, {}, {})", implClassName, family, type, protocol);
+        LOG.debug("{}({}, {}, {}, {})", implClassName, family, type, protocol, listenPort);
         final Class<? extends NativeDatagramSocket> implementationClass = Class.forName(implClassName).asSubclass(NativeDatagramSocket.class);
-        return implementationClass.getDeclaredConstructor(Integer.TYPE, Integer.TYPE, Integer.TYPE).newInstance(family, type, protocol);
+        return implementationClass.getDeclaredConstructor(Integer.TYPE, Integer.TYPE, Integer.TYPE, Integer.TYPE).newInstance(family, type, protocol, listenPort);
     }
 
     private static String getClassPackage() {
@@ -137,6 +137,5 @@ public abstract class NativeDatagramSocket {
     public abstract void setTrafficClass(int tc) throws IOException;
     public abstract int receive(NativeDatagramPacket p) throws UnknownHostException;
     public abstract int send(NativeDatagramPacket p);
-    public abstract int close();
-    
+    public abstract void close();
 }

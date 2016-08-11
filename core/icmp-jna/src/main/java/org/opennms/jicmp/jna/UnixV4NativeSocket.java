@@ -51,8 +51,10 @@ public class UnixV4NativeSocket extends NativeDatagramSocket {
 
     private final int m_sock;
     
-    public UnixV4NativeSocket(int family, int type, int protocol) throws Exception {
+    public UnixV4NativeSocket(int family, int type, int protocol, final int listenPort) throws Exception {
         m_sock = socket(family, type, protocol);
+        final sockaddr_in addr_in = new sockaddr_in(listenPort);
+        bind(m_sock, addr_in, addr_in.size());
     }
 
     public native int bind(int socket, sockaddr_in address, int address_len) throws LastErrorException;
@@ -110,8 +112,8 @@ public class UnixV4NativeSocket extends NativeDatagramSocket {
     }
 
     @Override
-    public int close() {
-        return close(getSock());
+    public void close() {
+        close(getSock());
     }
 
 }

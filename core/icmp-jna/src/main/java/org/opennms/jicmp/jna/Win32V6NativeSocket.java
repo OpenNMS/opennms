@@ -49,8 +49,10 @@ public class Win32V6NativeSocket extends NativeDatagramSocket {
 
     private final int m_sock;
 
-    public Win32V6NativeSocket(int family, int type, int protocol) throws Exception {
+    public Win32V6NativeSocket(int family, int type, int protocol, final int listenPort) throws Exception {
         m_sock = socket(family, type, protocol);
+        final sockaddr_in6 addr_in = new sockaddr_in6(listenPort);
+        bind(m_sock, addr_in, addr_in.size());
     }
 
     public native int bind(int socket, sockaddr_in6 address, int address_len) throws LastErrorException;
@@ -96,8 +98,8 @@ public class Win32V6NativeSocket extends NativeDatagramSocket {
     }
 
     @Override
-    public int close() {
-        return closesocket(getSock());
+    public void close() {
+        closesocket(getSock());
     }
 
     @Override

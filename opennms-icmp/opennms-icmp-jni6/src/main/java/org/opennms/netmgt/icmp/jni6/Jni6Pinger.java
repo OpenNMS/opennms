@@ -131,6 +131,7 @@ public class Jni6Pinger implements Pinger {
 
     private JniPinger m_jniPinger;
     private RequestTracker<Jni6PingRequest, Jni6PingResponse> s_pingTracker;
+    private Jni6IcmpMessenger m_jni6messenger;
 
     private Throwable m_v4Error = null;
     private Throwable m_v6Error = null;
@@ -157,9 +158,10 @@ public class Jni6Pinger implements Pinger {
         final IDBasedRequestLocator<Jni6PingRequestId, Jni6PingRequest, Jni6PingResponse> requestLocator = new IDBasedRequestLocator<Jni6PingRequestId, Jni6PingRequest, Jni6PingResponse>();
 
         try {
+            m_jni6messenger = new Jni6IcmpMessenger(m_pingerId);
             s_pingTracker = Logging.withPrefix("icmp", new Callable<RequestTracker<Jni6PingRequest, Jni6PingResponse>>() {
                 @Override public RequestTracker<Jni6PingRequest, Jni6PingResponse> call() throws Exception {
-                    return new RequestTracker<Jni6PingRequest, Jni6PingResponse>(name, new Jni6IcmpMessenger(m_pingerId), requestLocator);
+                    return new RequestTracker<Jni6PingRequest, Jni6PingResponse>(name, m_jni6messenger, requestLocator);
                 }
             });
             s_pingTracker.start();
@@ -336,6 +338,7 @@ public class Jni6Pinger implements Pinger {
         initialize4();
         initialize6();
         m_jniPinger.setTrafficClass(tc);
+        m_jni6messenger.setTrafficClass(tc);
     }
 
     @Override
@@ -343,6 +346,7 @@ public class Jni6Pinger implements Pinger {
         initialize4();
         initialize6();
         m_jniPinger.setAllowFragmentation(allow);
+        m_jni6messenger.setAllowFragmentation(allow);
     }
 
 }
