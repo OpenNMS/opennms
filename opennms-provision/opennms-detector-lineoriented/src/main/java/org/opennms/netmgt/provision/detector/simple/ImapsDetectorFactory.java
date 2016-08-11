@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -21,42 +21,20 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * OpenNMS(R) Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.netmgt.provision.detector.simple;
 
+import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-/**
- * <p>ImapsDetector class.</p>
- *
- * @version $Id: $
- */
-public class ImapsDetector extends ImapDetector {
+public class ImapsDetectorFactory extends GenericServiceDetectorFactory<ImapsDetector> {
 
-    private static final String DEFAULT_SERVICE_NAME = "IMAPS";
-    private static final int DEFAULT_PORT = 993;
-
-    /**
-     * <p>Constructor for ImapsDetector.</p>
-     */
-    public ImapsDetector() {
-        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
-        setUseSSLFilter(true);
+    public ImapsDetectorFactory() {
+        super(ImapsDetector.class);
     }
-    
-    /**
-     * Constructor for creating a non-default service based on this protocol
-     *
-     * @param serviceName a {@link java.lang.String} object.
-     * @param port a int.
-     */
-    public ImapsDetector(final String serviceName, final int port) {
-        super(serviceName, port);
-    }
-    
 }
