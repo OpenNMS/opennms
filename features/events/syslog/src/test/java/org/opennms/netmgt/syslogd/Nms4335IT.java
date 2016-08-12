@@ -51,6 +51,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -84,6 +85,9 @@ public class Nms4335IT implements InitializingBean {
 
     @Autowired
     private DistPollerDao m_distPollerDao;
+
+    @Autowired
+    private NodeDao m_nodeDao;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -142,8 +146,13 @@ public class Nms4335IT implements InitializingBean {
             stream = new ByteArrayInputStream(config.getBytes());
             m_config = new SyslogdConfigFactory(stream);
 
+            SyslogdIPMgrDaoImpl syslogdIpManager = new SyslogdIPMgrDaoImpl();
+            syslogdIpManager.setNodeDao(m_nodeDao);
+            SyslogdIPMgrDaoImpl.setInstance(syslogdIpManager);
+
             m_syslogd = new Syslogd();
             m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
+            m_syslogd.setSyslogdIpManager(syslogdIpManager);
             m_syslogd.init();
 
         } finally {
@@ -200,7 +209,7 @@ public class Nms4335IT implements InitializingBean {
         
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr("127.0.0.1"));
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId()));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation()));
 
         m_eventIpcManager.getEventAnticipator().verifyAnticipated(5000,0,0,0,0);
         final Event receivedEvent = m_eventIpcManager.getEventAnticipator().getAnticipatedEventsReceived().get(0);

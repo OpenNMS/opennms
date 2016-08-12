@@ -28,18 +28,21 @@
 
 package org.opennms.netmgt.syslogd;
 
-//import java.sql.ResultSet;
-import java.sql.SQLException;
-//import java.sql.Statement;
-import java.util.List;
+import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
-//import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.syslogd.ManagedInterfaceToNodeMap.LocationIpAddressKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This class represents a singular instance that is used to map trap IP
@@ -50,18 +53,34 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class SyslogdIPMgrDaoImpl implements SyslogdIPMgr{
-        
+public class SyslogdIPMgrDaoImpl implements SyslogdIPMgr {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogdIPMgrDaoImpl.class);
+
     @Autowired
-    private IpInterfaceDao ipInt;
+    private NodeDao m_nodeDao;
+
+    private final ManagedInterfaceToNodeMap m_knownips = new ManagedInterfaceToNodeMap();
+
+    private static final AtomicReference<SyslogdIPMgr> s_instance = new AtomicReference<>();
+
+    public static void setInstance(SyslogdIPMgr syslogIpManager) {
+        s_instance.set(syslogIpManager);
+    }
 
     /**
-     * A Map of IP addresses and node IDs
+     * @deprecated Inject this value instead of using singleton access.
      */
-    private static Map<String,Long> m_knownips = new ConcurrentHashMap<String,Long>();
-    
     public static SyslogdIPMgr getInstance() {
-    	return new SyslogdIPMgrDaoImpl();
+        return s_instance.get(); 
+    }
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
     }
 
     /**
@@ -75,18 +94,29 @@ final class SyslogdIPMgrDaoImpl implements SyslogdIPMgr{
      *             error occurs.
      */
     @Override
-    public synchronized void dataSourceSync() throws SQLException {
-    	
-    	List<OnmsIpInterface> list = ipInt.findAll();
-    	
-    	m_knownips.clear();
-    	for (OnmsIpInterface one: list) {
-    		if (one != null) {
-    			m_knownips.put(InetAddressUtils.str(one.getIpAddress()), (long) one.getId());
-    		}
-    		
-    	}
-    	
+    @Transactional
+    public void dataSourceSync() {
+        /*
+         * Make a new list with which we'll replace the existing one, that way
+         * if something goes wrong with the DB we won't lose whatever was already
+         * in there
+         */
+        Map<LocationIpAddressKey,Integer> newAlreadyDiscovered = new HashMap<>();
+        // Fetch all non-deleted nodes
+        CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
+        builder.ne("type", String.valueOf(NodeType.DELETED.value()));
+        for (OnmsNode node : m_nodeDao.findMatching(builder.toCriteria())) {
+            for (OnmsIpInterface iface : node.getIpInterfaces()) {
+                // Skip deleted interfaces
+                // TODO: Refactor the 'D' value with an enumeration
+                if ("D".equals(iface.getIsManaged())) {
+                    continue;
+                }
+                newAlreadyDiscovered.put(new LocationIpAddressKey(node.getLocation().getLocationName(), iface.getIpAddress()), node.getId());
+            }
+        }
+        m_knownips.setManagedAddresses(newAlreadyDiscovered);
+        LOG.info("dataSourceSync: initialized list of managed IP addresses with {} members", m_knownips.size());
     }
 
     /**
@@ -96,11 +126,11 @@ final class SyslogdIPMgrDaoImpl implements SyslogdIPMgr{
      * @return The node ID of the IP Address if known.
      */
     @Override
-    public synchronized long getNodeId(final String addr) {
+    public synchronized int getNodeId(final String location, final InetAddress addr) {
         if (addr == null) {
             return -1;
         }
-        return longValue(m_knownips.get(addr));
+        return m_knownips.getNodeId(location, addr);
     }
 
     /**
@@ -111,11 +141,11 @@ final class SyslogdIPMgrDaoImpl implements SyslogdIPMgr{
      * @return The nodeid if it existed in the map.
      */
     @Override
-    public long setNodeId(final String addr, final long nodeid) {
-        if (addr == null || nodeid == -1)
+    public int setNodeId(final String location, final InetAddress addr, final int nodeid) {
+        if (addr == null || nodeid == -1) {
             return -1;
-
-        return longValue(m_knownips.put(addr, nodeid));
+        }
+        return m_knownips.addManagedAddress(location, addr, nodeid);
     }
 
     /**
@@ -125,15 +155,11 @@ final class SyslogdIPMgrDaoImpl implements SyslogdIPMgr{
      * @return The nodeid that was in the map.
      */
     @Override
-    public long removeNodeId(final String addr) {
-        if (addr == null)
+    public int removeNodeId(final String location, final InetAddress addr) {
+        if (addr == null) {
             return -1;
-        return longValue(m_knownips.remove(addr));
-    }
-
-    @Override
-    public long longValue(final Long result) {
-        return (result == null ? -1 : result);
+        }
+        return m_knownips.removeManagedAddress(location, addr);
     }
 
 } // end SyslodIPMgr

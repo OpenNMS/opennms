@@ -57,6 +57,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.events.api.EventListener;
@@ -101,6 +102,9 @@ public class SyslogdLoadIT implements InitializingBean {
     private DistPollerDao m_distPollerDao;
 
     @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
     private Eventd m_eventd;
 
     @Autowired
@@ -115,7 +119,7 @@ public class SyslogdLoadIT implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-    	MockLogAppender.setupLogging(true, "WARN");
+        MockLogAppender.setupLogging(true, "WARN");
 
         loadSyslogConfiguration("/etc/syslogd-loadtest-configuration.xml");
 
@@ -143,41 +147,69 @@ public class SyslogdLoadIT implements InitializingBean {
     }
 
     private void startSyslogdJavaNet() throws Exception {
-        m_syslogd = new Syslogd();
         SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(m_config);
         receiver.setDistPollerDao(m_distPollerDao);
         receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
+
+        SyslogdIPMgrDaoImpl ipManager = new SyslogdIPMgrDaoImpl();
+        ipManager.setNodeDao(m_nodeDao);
+        SyslogdIPMgrDaoImpl.setInstance(ipManager);
+
+        m_syslogd = new Syslogd();
         m_syslogd.setSyslogReceiver(receiver);
+        m_syslogd.setSyslogdIpManager(ipManager);
         m_syslogd.init();
+
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
 
     private void startSyslogdNio() throws Exception {
-        m_syslogd = new Syslogd();
         SyslogReceiverNioThreadPoolImpl receiver = new SyslogReceiverNioThreadPoolImpl(m_config);
         receiver.setDistPollerDao(m_distPollerDao);
         receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
+
+        SyslogdIPMgrDaoImpl ipManager = new SyslogdIPMgrDaoImpl();
+        ipManager.setNodeDao(m_nodeDao);
+        SyslogdIPMgrDaoImpl.setInstance(ipManager);
+
+        m_syslogd = new Syslogd();
         m_syslogd.setSyslogReceiver(receiver);
+        m_syslogd.setSyslogdIpManager(ipManager);
         m_syslogd.init();
+
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
 
     private void startSyslogdNioDisruptor() throws Exception {
-        m_syslogd = new Syslogd();
         SyslogReceiverNioDisruptorImpl receiver = new SyslogReceiverNioDisruptorImpl(m_config);
         receiver.setDistPollerDao(m_distPollerDao);
+
+        SyslogdIPMgrDaoImpl ipManager = new SyslogdIPMgrDaoImpl();
+        ipManager.setNodeDao(m_nodeDao);
+        SyslogdIPMgrDaoImpl.setInstance(ipManager);
+
+        m_syslogd = new Syslogd();
         m_syslogd.setSyslogReceiver(receiver);
+        m_syslogd.setSyslogdIpManager(ipManager);
         m_syslogd.init();
+
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
 
     private void startSyslogdCamelNetty() throws Exception {
-        m_syslogd = new Syslogd();
         SyslogReceiverCamelNettyImpl receiver = new SyslogReceiverCamelNettyImpl(m_config);
         receiver.setDistPollerDao(m_distPollerDao);
         receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
+
+        SyslogdIPMgrDaoImpl ipManager = new SyslogdIPMgrDaoImpl();
+        ipManager.setNodeDao(m_nodeDao);
+        SyslogdIPMgrDaoImpl.setInstance(ipManager);
+
+        m_syslogd = new Syslogd();
         m_syslogd.setSyslogReceiver(receiver);
+        m_syslogd.setSyslogdIpManager(ipManager);
         m_syslogd.init();
+
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
 
@@ -206,7 +238,7 @@ public class SyslogdLoadIT implements InitializingBean {
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
-            handler.handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId()));
+            handler.handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation()));
         }
 
         long mid = System.currentTimeMillis();
@@ -323,12 +355,12 @@ public class SyslogdLoadIT implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - BOMfoo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId()));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation()));
 
         // handle a valid packet
         bytes = "<34>1 2003-10-11T22:14:15.000Z plonk -ev/pts/8\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId()));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation()));
 
         m_eventCounter.waitForFinish(120000);
         
@@ -349,12 +381,12 @@ public class SyslogdLoadIT implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId()));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation()));
 
         // handle a valid packet
         bytes = "<34>monkeysatemybrain!\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId()));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation()));
 
         m_eventCounter.waitForFinish(120000);
         

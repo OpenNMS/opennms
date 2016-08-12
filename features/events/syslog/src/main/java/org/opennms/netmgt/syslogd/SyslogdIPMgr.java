@@ -28,17 +28,16 @@
 
 package org.opennms.netmgt.syslogd;
 
-import java.sql.SQLException;
+import java.net.InetAddress;
 
-public abstract interface SyslogdIPMgr {
+public interface SyslogdIPMgr {
 
-	void dataSourceSync() throws SQLException;
-	
-	long getNodeId(String ipAddr);
-	
-	long setNodeId(String ipAddr, long nodeId);
-	
-	long removeNodeId(String ipAddr);
-	
-	long longValue(Long result);
+	void dataSourceSync();
+
+	int getNodeId(String location, InetAddress ipAddr);
+
+	int setNodeId(String location, InetAddress ipAddr, int nodeId);
+
+	int removeNodeId(String location, InetAddress ipAddr);
+
 }

@@ -16,7 +16,22 @@
   <context:annotation-config />
   <tx:annotation-driven/>
 
-  <bean id="executorFactory" class="org.opennms.core.concurrent.ExecutorFactoryJavaImpl"/>
+  <bean id="syslogdExecutorFactory" class="org.opennms.core.concurrent.ExecutorFactoryJavaImpl"/>
+
+  <bean id="syslogdBroadcastEventProcessor" class="org.opennms.netmgt.syslogd.BroadcastEventProcessor"/>
+
+  <bean id="syslogdIpManager" class="org.opennms.netmgt.syslogd.SyslogdIPMgrDaoImpl"/>
+
+  <bean id="syslogdIpManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod">
+      <value>org.opennms.netmgt.syslogd.SyslogdIPMgrDaoImpl.setInstance</value>
+    </property>
+    <property name="arguments">
+      <list>
+        <ref bean="syslogdIpManager" />
+      </list>
+    </property>
+  </bean>
 
   <bean id="syslogConnectionHandler" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerDefaultImpl">
     <!-- TODO: Inject executorFactory and use it to construct Executors -->
