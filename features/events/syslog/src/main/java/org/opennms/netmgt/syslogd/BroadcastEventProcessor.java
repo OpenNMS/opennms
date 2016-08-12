@@ -28,13 +28,10 @@
 
 package org.opennms.netmgt.syslogd;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventIpcManagerFactory;
-import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -43,11 +40,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
+ * @author Seth
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public class BroadcastEventProcessor implements EventListener {
+@EventListener(name="OpenNMS.Syslogd", logPrefix="syslogd")
+public class BroadcastEventProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
 
     @Autowired
@@ -56,76 +55,60 @@ public class BroadcastEventProcessor implements EventListener {
     @Autowired
     private NodeDao m_nodeDao;
 
-    /**
-     * Create message selector to set to the subscription
-     */
-    BroadcastEventProcessor() {
-        // Create the selector for the ueis this service is interested in
-        //
-        List<String> ueiList = new ArrayList<String>();
-
-        // nodeGainedInterface
-        ueiList.add(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
-
-        // interfaceDeleted
-        ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
-
-        EventIpcManagerFactory.init();
-        EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
-    }
-
-    /**
-     * Unsubscribe from eventd
-     */
-    public void close() {
-        EventIpcManagerFactory.getIpcManager().removeEventListener(this);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * This method is invoked by the EventIpcManager when a new event is
-     * available for processing. Each message is examined for its Universal
-     * Event Identifier and the appropriate action is taking based on each
-     * UEI.
-     */
-    @Override
+    @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
     @Transactional
-    public void onEvent(Event event) {
-
-        String eventUei = event.getUei();
-
-        if (EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI.equals(eventUei)) {
-            LOG.debug("Received event: {}", eventUei);
-            int nodeId = event.getNodeid().intValue();
-            OnmsNode node = m_nodeDao.get(nodeId);
-            // add to known nodes
-            m_syslogdIPMgr.setNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress(), nodeId);
-            LOG.debug("Added {} to known node list", event.getInterface());
-        } else if (EventConstants.INTERFACE_DELETED_EVENT_UEI.equals(eventUei)) {
-            LOG.debug("Received event: {}", eventUei);
-            int nodeId = event.getNodeid().intValue();
-            OnmsNode node = m_nodeDao.get(nodeId);
-            // remove from known nodes
-            m_syslogdIPMgr.removeNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress());
-            LOG.debug("Removed {} from known node list", event.getInterface());
-        } else if (EventConstants.INTERFACE_REPARENTED_EVENT_UEI.equals(eventUei)) {
-            LOG.debug("Received event: {}", eventUei);
-            int nodeId = event.getNodeid().intValue();
-            OnmsNode node = m_nodeDao.get(nodeId);
-            // add to known nodes
-            m_syslogdIPMgr.setNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress(), nodeId);
-            LOG.debug("Reparented {} to known node list", event.getInterface());
+    public void handleNodeGainedInterface(Event event) {
+        LOG.debug("Received event: {}", event.getUei());
+        Long nodeId = event.getNodeid();
+        if (nodeId == null) {
+            LOG.error(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Event with no node ID: " + event.toString());
+            return;
         }
+        OnmsNode node = m_nodeDao.get(nodeId.intValue());
+        if (node == null) {
+            LOG.warn(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Cannot find node in DB: " + nodeId);
+            return;
+        }
+        // add to known nodes
+        m_syslogdIPMgr.setNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress(), nodeId.intValue());
+        LOG.debug("Added {} to known node list", event.getInterface());
     }
 
-    /**
-     * Return an id for this event listener
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getName() {
-        return "Syslogd:BroadcastEventProcessor";
+    @EventHandler(uei=EventConstants.INTERFACE_DELETED_EVENT_UEI)
+    @Transactional
+    public void handleInterfaceDeleted(Event event) {
+        LOG.debug("Received event: {}", event.getUei());
+        Long nodeId = event.getNodeid();
+        if (nodeId == null) {
+            LOG.error(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Event with no node ID: " + event.toString());
+            return;
+        }
+        OnmsNode node = m_nodeDao.get(nodeId.intValue());
+        if (node == null) {
+            LOG.warn(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Cannot find node in DB: " + nodeId);
+            return;
+        }
+        // remove from known nodes
+        m_syslogdIPMgr.removeNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress());
+        LOG.debug("Removed {} from known node list", event.getInterface());
+    }
+
+    @EventHandler(uei=EventConstants.INTERFACE_REPARENTED_EVENT_UEI)
+    @Transactional
+    public void handleInterfaceReparented(Event event) {
+        LOG.debug("Received event: {}", event.getUei());
+        Long nodeId = event.getNodeid();
+        if (nodeId == null) {
+            LOG.error(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Event with no node ID: " + event.toString());
+            return;
+        }
+        OnmsNode node = m_nodeDao.get(nodeId.intValue());
+        if (node == null) {
+            LOG.warn(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Cannot find node in DB: " + nodeId);
+            return;
+        }
+        // add to known nodes
+        m_syslogdIPMgr.setNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress(), nodeId.intValue());
+        LOG.debug("Reparented {} to known node list", event.getInterface());
     }
 }

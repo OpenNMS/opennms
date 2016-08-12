@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -145,6 +146,21 @@ public class SyslogdIPMgrDaoImpl implements SyslogdIPMgr {
         if (addr == null || nodeid == -1) {
             return -1;
         }
+        /*
+        // Only add the address if it doesn't exist on the map. If it exists, only replace
+        // the current one if the new address is primary.
+        if (m_knownips.containsKey(InetAddressUtils.getInetAddress(addr))) {
+            OnmsIpInterface intf = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeid, addr);
+            if (intf != null && intf.isPrimary()) {
+                LOG.info("setNodeId: adding SNMP primary IP address {} to known IP list", intf);
+                return intValue(m_knownips.put(InetAddressUtils.getInetAddress(addr), nodeid));
+            } else {
+                return -1;
+            }
+        } else {
+            return intValue(m_knownips.put(InetAddressUtils.getInetAddress(addr), nodeid));
+        }
+        */
         return m_knownips.addManagedAddress(location, addr, nodeid);
     }
 

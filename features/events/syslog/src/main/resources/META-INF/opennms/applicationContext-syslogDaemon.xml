@@ -20,6 +20,12 @@
 
   <bean id="syslogdBroadcastEventProcessor" class="org.opennms.netmgt.syslogd.BroadcastEventProcessor"/>
 
+  <!-- Process the EventListener annotations on BroadcastEventProcessor -->
+  <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="syslogdBroadcastEventProcessor" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+
   <bean id="syslogdIpManager" class="org.opennms.netmgt.syslogd.SyslogdIPMgrDaoImpl"/>
 
   <bean id="syslogdIpManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
