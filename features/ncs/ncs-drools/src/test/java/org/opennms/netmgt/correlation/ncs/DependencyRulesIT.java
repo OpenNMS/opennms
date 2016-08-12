@@ -282,7 +282,7 @@ public class DependencyRulesIT extends CorrelationRulesITCase {
         getAnticipator().verifyAnticipated();
 
         // Memory should be clean!
-        assertEquals( 0, engine.getMemorySize() );
+        assertEquals( 0, engine.getKieSessionObjects().size() );
 
     }
 
@@ -335,7 +335,7 @@ public class DependencyRulesIT extends CorrelationRulesITCase {
         getAnticipator().verifyAnticipated();
         
         // Memory should be clean!
-        assertEquals( 0, engine.getMemorySize() );
+        assertEquals( 0, engine.getKieSessionObjects().size() );
 
     }
     
@@ -422,7 +422,7 @@ public class DependencyRulesIT extends CorrelationRulesITCase {
 
 
         // Memory should be clean!
-        assertEquals( 0, engine.getMemorySize() );
+        assertEquals( 0, engine.getKieSessionObjects().size() );
 
 
     }
@@ -468,7 +468,7 @@ public class DependencyRulesIT extends CorrelationRulesITCase {
         getAnticipator().verifyAnticipated();
 
         // Memory should be clean!
-        assertEquals( "Unexpected objects in memory" + engine.getMemoryObjects(), 0, engine.getMemorySize() );
+        assertEquals( "Unexpected objects in memory" + engine.getKieSessionObjects(), 0, engine.getKieSessionObjects().size() );
 
     }
 
@@ -580,7 +580,7 @@ public class DependencyRulesIT extends CorrelationRulesITCase {
 
         
         // Memory should be clean!
-        assertEquals( 0, engine.getMemorySize() );
+        assertEquals( 0, engine.getKieSessionObjects().size() );
 
     }
 
@@ -880,18 +880,7 @@ public class DependencyRulesIT extends CorrelationRulesITCase {
             
         };
     }
-    
-    private Transform<NCSComponent, String> foreignIdentifiers() {
-        return new Transform<NCSComponent, String>() {
 
-            @Override
-            public String transform(NCSComponent a) {
-                return a.getForeignSource()+":"+a.getForeignId();
-            }
-            
-        };
-    }
-    
     private Transform<NCSComponent, Event> toComponentEvent(final String uei, final int cause) {
         return new Transform<NCSComponent, Event>() {
 
@@ -922,12 +911,7 @@ public class DependencyRulesIT extends CorrelationRulesITCase {
             return retVal;
         }
     }
-    
-    private Event[] ofEvents() {
-        return new Event[0];
-    }
-    
-    
+
     private static Set<NCSComponent> uniq(Set<NCSComponent> components) {
         Set<NCSComponent> results = new LinkedHashSet<NCSComponent>();
         Set<String> ids = new HashSet<String>();
