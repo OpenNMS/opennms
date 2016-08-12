@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
@@ -50,7 +51,7 @@ public class BroadcastEventProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
 
     @Autowired
-    private SyslogdIPMgr m_syslogdIPMgr;
+    private InterfaceToNodeCache m_cache;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -70,7 +71,7 @@ public class BroadcastEventProcessor {
             return;
         }
         // add to known nodes
-        m_syslogdIPMgr.setNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress(), nodeId.intValue());
+        m_cache.setNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress(), nodeId.intValue());
         LOG.debug("Added {} to known node list", event.getInterface());
     }
 
@@ -89,7 +90,7 @@ public class BroadcastEventProcessor {
             return;
         }
         // remove from known nodes
-        m_syslogdIPMgr.removeNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress());
+        m_cache.removeNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress());
         LOG.debug("Removed {} from known node list", event.getInterface());
     }
 
@@ -108,7 +109,7 @@ public class BroadcastEventProcessor {
             return;
         }
         // add to known nodes
-        m_syslogdIPMgr.setNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress(), nodeId.intValue());
+        m_cache.setNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress(), nodeId.intValue());
         LOG.debug("Reparented {} to known node list", event.getInterface());
     }
 }

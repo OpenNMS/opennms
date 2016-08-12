@@ -58,6 +58,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.events.api.EventListener;
@@ -151,13 +152,13 @@ public class SyslogdLoadIT implements InitializingBean {
         receiver.setDistPollerDao(m_distPollerDao);
         receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
 
-        SyslogdIPMgrDaoImpl ipManager = new SyslogdIPMgrDaoImpl();
+        InterfaceToNodeCacheDaoImpl ipManager = new InterfaceToNodeCacheDaoImpl();
         ipManager.setNodeDao(m_nodeDao);
-        SyslogdIPMgrDaoImpl.setInstance(ipManager);
+        InterfaceToNodeCacheDaoImpl.setInstance(ipManager);
 
         m_syslogd = new Syslogd();
         m_syslogd.setSyslogReceiver(receiver);
-        m_syslogd.setSyslogdIpManager(ipManager);
+        m_syslogd.setInterfaceToNodeCache(ipManager);
         m_syslogd.init();
 
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
@@ -168,13 +169,13 @@ public class SyslogdLoadIT implements InitializingBean {
         receiver.setDistPollerDao(m_distPollerDao);
         receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
 
-        SyslogdIPMgrDaoImpl ipManager = new SyslogdIPMgrDaoImpl();
+        InterfaceToNodeCacheDaoImpl ipManager = new InterfaceToNodeCacheDaoImpl();
         ipManager.setNodeDao(m_nodeDao);
-        SyslogdIPMgrDaoImpl.setInstance(ipManager);
+        InterfaceToNodeCacheDaoImpl.setInstance(ipManager);
 
         m_syslogd = new Syslogd();
         m_syslogd.setSyslogReceiver(receiver);
-        m_syslogd.setSyslogdIpManager(ipManager);
+        m_syslogd.setInterfaceToNodeCache(ipManager);
         m_syslogd.init();
 
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
@@ -184,13 +185,13 @@ public class SyslogdLoadIT implements InitializingBean {
         SyslogReceiverNioDisruptorImpl receiver = new SyslogReceiverNioDisruptorImpl(m_config);
         receiver.setDistPollerDao(m_distPollerDao);
 
-        SyslogdIPMgrDaoImpl ipManager = new SyslogdIPMgrDaoImpl();
+        InterfaceToNodeCacheDaoImpl ipManager = new InterfaceToNodeCacheDaoImpl();
         ipManager.setNodeDao(m_nodeDao);
-        SyslogdIPMgrDaoImpl.setInstance(ipManager);
+        InterfaceToNodeCacheDaoImpl.setInstance(ipManager);
 
         m_syslogd = new Syslogd();
         m_syslogd.setSyslogReceiver(receiver);
-        m_syslogd.setSyslogdIpManager(ipManager);
+        m_syslogd.setInterfaceToNodeCache(ipManager);
         m_syslogd.init();
 
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
@@ -201,13 +202,13 @@ public class SyslogdLoadIT implements InitializingBean {
         receiver.setDistPollerDao(m_distPollerDao);
         receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
 
-        SyslogdIPMgrDaoImpl ipManager = new SyslogdIPMgrDaoImpl();
+        InterfaceToNodeCacheDaoImpl ipManager = new InterfaceToNodeCacheDaoImpl();
         ipManager.setNodeDao(m_nodeDao);
-        SyslogdIPMgrDaoImpl.setInstance(ipManager);
+        InterfaceToNodeCacheDaoImpl.setInstance(ipManager);
 
         m_syslogd = new Syslogd();
         m_syslogd.setSyslogReceiver(receiver);
-        m_syslogd.setSyslogdIpManager(ipManager);
+        m_syslogd.setInterfaceToNodeCache(ipManager);
         m_syslogd.init();
 
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);

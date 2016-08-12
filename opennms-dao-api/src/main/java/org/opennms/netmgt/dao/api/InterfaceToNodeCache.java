@@ -26,11 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.syslogd;
+package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
 
-public interface SyslogdIPMgr {
+public interface InterfaceToNodeCache {
 
 	void dataSourceSync();
 

@@ -31,6 +31,7 @@ package org.opennms.netmgt.syslogd;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class Syslogd extends AbstractServiceDaemon {
     private SyslogReceiver m_udpEventReceiver;
 
     @Autowired
-    private SyslogdIPMgr m_syslogIpManager;
+    private InterfaceToNodeCache m_cache;
 
     /**
      * <p>Constructor for Syslogd.</p>
@@ -80,12 +81,12 @@ public class Syslogd extends AbstractServiceDaemon {
         m_udpEventReceiver = receiver;
     }
 
-    public SyslogdIPMgr getSyslogdIpManager() {
-        return m_syslogIpManager;
+    public InterfaceToNodeCache getInterfaceToNodeCache() {
+        return m_cache;
     }
 
-    public void setSyslogdIpManager(SyslogdIPMgr syslogIpManager) {
-        m_syslogIpManager = syslogIpManager;
+    public void setInterfaceToNodeCache(InterfaceToNodeCache cache) {
+        m_cache = cache;
     }
 
     /**
@@ -94,7 +95,7 @@ public class Syslogd extends AbstractServiceDaemon {
     @Override
     protected void onInit() {
         // clear out the known nodes
-        m_syslogIpManager.dataSourceSync();
+        m_cache.dataSourceSync();
     }
 
     /**

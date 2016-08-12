@@ -17,7 +17,9 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +41,7 @@ public class ConvertToEventTest {
     @Test
     public void testConvertToEvent() throws MarshalException, ValidationException, IOException {
 
-        SyslogdIPMgrDaoImpl.setInstance(new SyslogdIPMgr() {
+        InterfaceToNodeCacheDaoImpl.setInstance(new InterfaceToNodeCache() {
 
             @Override
             public int setNodeId(String location, InetAddress ipAddr, int nodeId) {
@@ -89,7 +91,8 @@ public class ConvertToEventTest {
                 MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
                 pkt.getAddress(),
                 pkt.getPort(),
-                data, config
+                data,
+                config
             );
             LOG.info("Generated event: {}", convertToEvent.getEvent().toString());
         } catch (MessageDiscardedException e) {

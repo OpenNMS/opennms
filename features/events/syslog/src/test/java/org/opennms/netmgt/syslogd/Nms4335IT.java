@@ -52,6 +52,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -146,13 +147,13 @@ public class Nms4335IT implements InitializingBean {
             stream = new ByteArrayInputStream(config.getBytes());
             m_config = new SyslogdConfigFactory(stream);
 
-            SyslogdIPMgrDaoImpl syslogdIpManager = new SyslogdIPMgrDaoImpl();
+            InterfaceToNodeCacheDaoImpl syslogdIpManager = new InterfaceToNodeCacheDaoImpl();
             syslogdIpManager.setNodeDao(m_nodeDao);
-            SyslogdIPMgrDaoImpl.setInstance(syslogdIpManager);
+            InterfaceToNodeCacheDaoImpl.setInstance(syslogdIpManager);
 
             m_syslogd = new Syslogd();
             m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
-            m_syslogd.setSyslogdIpManager(syslogdIpManager);
+            m_syslogd.setInterfaceToNodeCache(syslogdIpManager);
             m_syslogd.init();
 
         } finally {

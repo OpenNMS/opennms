@@ -26,20 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.syslogd;
+package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.InterfaceToNodeMap;
+import org.opennms.netmgt.dao.api.InterfaceToNodeMap.LocationIpAddressKey;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
-import org.opennms.netmgt.syslogd.ManagedInterfaceToNodeMap.LocationIpAddressKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,27 +55,14 @@ import org.springframework.transaction.annotation.Transactional;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public class SyslogdIPMgrDaoImpl implements SyslogdIPMgr {
+public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache implements InterfaceToNodeCache {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogdIPMgrDaoImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InterfaceToNodeCacheDaoImpl.class);
 
     @Autowired
     private NodeDao m_nodeDao;
 
-    private final ManagedInterfaceToNodeMap m_knownips = new ManagedInterfaceToNodeMap();
-
-    private static final AtomicReference<SyslogdIPMgr> s_instance = new AtomicReference<>();
-
-    public static void setInstance(SyslogdIPMgr syslogIpManager) {
-        s_instance.set(syslogIpManager);
-    }
-
-    /**
-     * @deprecated Inject this value instead of using singleton access.
-     */
-    public static SyslogdIPMgr getInstance() {
-        return s_instance.get(); 
-    }
+    private final InterfaceToNodeMap m_knownips = new InterfaceToNodeMap();
 
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -178,4 +166,4 @@ public class SyslogdIPMgrDaoImpl implements SyslogdIPMgr {
         return m_knownips.removeManagedAddress(location, addr);
     }
 
-} // end SyslodIPMgr
+}

@@ -264,6 +264,21 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.IfLabel" ref="ifLabel" />
 
+  <bean id="interfaceToNodeCache" class="org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl"/>
+
+  <bean id="interfaceToNodeCache-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod">
+      <value>org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl.setInstance</value>
+    </property>
+    <property name="arguments">
+      <list>
+        <ref bean="interfaceToNodeCache" />
+      </list>
+    </property>
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" ref="interfaceToNodeCache" />
+
   <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.syslogd;
+package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -38,7 +38,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  */
-public class ManagedInterfaceToNodeMap {
+public class InterfaceToNodeMap {
 
     public static class LocationIpAddressKey {
         private final String m_location;

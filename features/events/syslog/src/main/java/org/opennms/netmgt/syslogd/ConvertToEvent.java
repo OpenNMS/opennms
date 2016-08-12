@@ -52,6 +52,7 @@ import org.opennms.netmgt.config.syslogd.ParameterAssignment;
 import org.opennms.netmgt.config.syslogd.ProcessMatch;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
+import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -178,7 +179,7 @@ public class ConvertToEvent {
         final InetAddress hostAddress = message.getHostAddress();
         if (hostAddress != null) {
             // Set nodeId
-            int nodeId = SyslogdIPMgrDaoImpl.getInstance().getNodeId(location, hostAddress);
+            int nodeId = AbstractInterfaceToNodeCache.getInstance().getNodeId(location, hostAddress);
             if (nodeId != -1) {
                 bldr.setNodeid(nodeId);
             }

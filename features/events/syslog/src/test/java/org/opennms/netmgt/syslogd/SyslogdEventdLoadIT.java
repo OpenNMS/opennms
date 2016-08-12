@@ -59,6 +59,7 @@ import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
@@ -145,13 +146,13 @@ public class SyslogdEventdLoadIT implements InitializingBean {
     }
 
     private void startSyslogdGracefully() throws SocketException {
-        SyslogdIPMgrDaoImpl ipManager = new SyslogdIPMgrDaoImpl();
+        InterfaceToNodeCacheDaoImpl ipManager = new InterfaceToNodeCacheDaoImpl();
         ipManager.setNodeDao(m_nodeDao);
-        SyslogdIPMgrDaoImpl.setInstance(ipManager);
+        InterfaceToNodeCacheDaoImpl.setInstance(ipManager);
 
         m_syslogd = new Syslogd();
         m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
-        m_syslogd.setSyslogdIpManager(ipManager);
+        m_syslogd.setInterfaceToNodeCache(ipManager);
         m_syslogd.init();
 
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
