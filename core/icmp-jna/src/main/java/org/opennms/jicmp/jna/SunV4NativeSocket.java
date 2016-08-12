@@ -78,7 +78,7 @@ public class SunV4NativeSocket extends NativeDatagramSocket {
     public void setTrafficClass(final int tc) throws IOException {
         final IntByReference tc_ptr = new IntByReference(tc);
         try {
-            setsockopt(getSock(), IPPROTO_IPV6, IP_TOS, tc_ptr.getPointer(), Pointer.SIZE);
+            setsockopt(getSock(), IPPROTO_IP, IP_TOS, tc_ptr.getPointer(), Pointer.SIZE);
         } catch (final LastErrorException e) {
             throw new IOException("setsockopt: " + strerror(e.getErrorCode()));
         }
