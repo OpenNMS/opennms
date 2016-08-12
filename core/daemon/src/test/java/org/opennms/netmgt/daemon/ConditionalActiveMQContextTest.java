@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,6 @@
 
 package org.opennms.netmgt.daemon;
 
-import javax.jms.QueueConnection;
-import javax.jms.QueueSender;
-import javax.jms.QueueSession;
-import javax.jms.TextMessage;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,29 +39,23 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:/META-INF/opennms/applicationContext-soa.xml",
-		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-		"classpath:/META-INF/opennms/applicationContext-daemon.xml"
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties=ConditionalActiveMQContext.DISABLE_BROKER_SYS_PROP + "=true")
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class DaemonContextIT {
+public class ConditionalActiveMQContextTest {
 
     @Autowired
     ActiveMQConnectionFactory activeMQConnectionFactory;
 
-	/**
-	* Verifies that the embedded ActiveMQ broker bootstraps successfully
-	* and is accessible using the provided connection factory.
-	*/
-	@Test
-	public void canUseEmbeddedActiveMQBroker() throws Throwable {
-	    QueueConnection connection = activeMQConnectionFactory.createQueueConnection();
-	    QueueSession session = connection.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE );
-	    TextMessage message = session.createTextMessage();
-	    message.setText("ping");
-	    QueueSender sender = session.createSender(session.createQueue("pong"));
-	    sender.send(message);
-	}
+    /**
+     * Verifies that the embedded ActiveMQ broker is not accessible when disabled.
+     */
+    @Test(expected=javax.jms.JMSException.class)
+    public void cantUseEmbeddedActiveMQBroker() throws Throwable {
+        activeMQConnectionFactory.createQueueConnection();
+    }
 
 }
