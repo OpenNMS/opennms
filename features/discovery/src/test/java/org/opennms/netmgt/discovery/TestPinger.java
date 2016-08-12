@@ -107,10 +107,15 @@ public class TestPinger implements Pinger {
 		return 1;
 	}
 
-	@Override
-	public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception {
-		return null;
-	}
+        @Override
+        public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval, int size) throws Exception {
+                return null;
+        }
+
+        @Override
+        public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception {
+                return null;
+        }
 
 	@Override
 	public void initialize4() throws Exception {

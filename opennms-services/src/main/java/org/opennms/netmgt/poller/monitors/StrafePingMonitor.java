@@ -99,7 +99,7 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
         if (iface.getType() != NetworkInterface.TYPE_INET)
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
 
-        PollStatus serviceStatus = PollStatus.unavailable();
+        PollStatus serviceStatus = PollStatus.unavailable(null);
         InetAddress host = (InetAddress) iface.getAddress();
         List<Number> responseTimes = null;
 
@@ -111,10 +111,11 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
             int count = ParameterMap.getKeyedInteger(parameters, "ping-count", DEFAULT_MULTI_PING_COUNT);
             long pingInterval = ParameterMap.getKeyedLong(parameters, "wait-interval", DEFAULT_PING_INTERVAL);
             int failurePingCount = ParameterMap.getKeyedInteger(parameters, "failure-ping-count", DEFAULT_FAILURE_PING_COUNT);
+            final int packetSize = ParameterMap.getKeyedInteger(parameters, "packet-size", PingConstants.DEFAULT_PACKET_SIZE);
             final int dscp = ParameterMap.getKeyedDecodedInteger(parameters, "dscp", 0);
             final boolean allowFragmentation = ParameterMap.getKeyedBoolean(parameters, "allow-fragmentation", true);
 
-            responseTimes = new ArrayList<Number>(PingerFactory.getInstance(dscp, allowFragmentation).parallelPing(host, count, timeout, pingInterval));
+            responseTimes = new ArrayList<Number>(PingerFactory.getInstance(dscp, allowFragmentation).parallelPing(host, count, timeout, pingInterval, packetSize));
 
             if (CollectionMath.countNull(responseTimes) >= failurePingCount) {
 		LOG.debug("Service {} on interface {} is down, but continuing to gather latency data", svc.getSvcName(), svc.getIpAddr());

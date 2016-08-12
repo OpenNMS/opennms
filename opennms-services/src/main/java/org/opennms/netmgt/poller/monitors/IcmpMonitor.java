@@ -105,13 +105,14 @@ final public class IcmpMonitor extends AbstractServiceMonitor {
             rtt = PingerFactory.getInstance(dscp, allowFragmentation).ping(host, timeout, retries,packetSize);
         } catch (Throwable e) {
             LOG.debug("failed to ping {}", host, e);
+            return PollStatus.unavailable(e.getMessage());
         }
         
         if (rtt != null) {
             return PollStatus.available(rtt.doubleValue());
         } else {
             // TODO add a reason code for unavailability
-            return PollStatus.unavailable();
+            return PollStatus.unavailable(null);
         }
 
     }

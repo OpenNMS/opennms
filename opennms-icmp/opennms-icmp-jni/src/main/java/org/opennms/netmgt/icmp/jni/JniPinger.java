@@ -280,29 +280,49 @@ public class JniPinger implements Pinger {
     }
 
     /**
-     * <p>parallelPing</p>
+     * Ping a remote host, sending 1 or more packets at the given interval, and then
+     * return the response times as a list.
      *
-     * @param host a {@link java.net.InetAddress} object.
-     * @param count a int.
-     * @param timeout a long.
-     * @param pingInterval a long.
-     * @return a {@link java.util.List} object.
-     * @throws java.lang.Exception if any.
+     * @param host The {@link java.net.InetAddress} address to poll.
+     * @param count The number of packets to send.
+     * @param timeout The time to wait between each retry.
+     * @param pingInterval The interval at which packets will be sent.
+     * @param size The size of the packet to send.
+     * @return a {@link java.util.List} of response times in microseconds.
+     *     If, for a given ping request, the host is reachable and has responded with an
+     *     echo reply, it will contain a number, otherwise a null value.
      */
     @Override
-    public List<Number> parallelPing(final InetAddress host, final int count, final long timeout, final long pingInterval) throws Exception {
+    public List<Number> parallelPing(final InetAddress host, final int count, final long timeout, final long pingInterval, final int size) throws Exception {
         initialize();
         final ParallelPingResponseCallback cb = new ParallelPingResponseCallback(count);
 
         final long threadId = JniPingRequest.getNextTID();
         for (int seqNum = 0; seqNum < count; seqNum++) {
-            final JniPingRequest request = new JniPingRequest(host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout, 0, DEFAULT_PACKET_SIZE, cb);
+            final JniPingRequest request = new JniPingRequest(host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout, 0, size, cb);
             s_pingTracker.sendRequest(request);
             Thread.sleep(pingInterval);
         }
 
         cb.waitFor();
         return cb.getResponseTimes();
+    }
+
+    /**
+     * Ping a remote host, sending 1 or more packets at the given interval, and then
+     * return the response times as a list.
+     *
+     * @param host The {@link java.net.InetAddress} address to poll.
+     * @param count The number of packets to send.
+     * @param timeout The time to wait between each retry.
+     * @param pingInterval The interval at which packets will be sent.
+     * @return a {@link java.util.List} of response times in microseconds.
+     *     If, for a given ping request, the host is reachable and has responded with an
+     *     echo reply, it will contain a number, otherwise a null value.
+     */
+    @Override
+    public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception {
+        return parallelPing(host, count, timeout, pingInterval, DEFAULT_PACKET_SIZE);
     }
 
     @Override
