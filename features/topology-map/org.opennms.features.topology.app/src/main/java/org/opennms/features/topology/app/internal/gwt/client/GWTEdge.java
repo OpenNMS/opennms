@@ -41,7 +41,7 @@ public final class GWTEdge extends JavaScriptObject {
     protected GWTEdge() {};
     
     public static final native GWTEdge create(String id, GWTVertex source, GWTVertex target) /*-{
-    	return {"id":id, "source":source, "target":target, "cssClass": "path", "linkNum":1, "tooltipText": "", "status":""};
+    	return {"id":id, "source":source, "target":target, "cssClass": "path", "linkNum":0, "tooltipText": "", "status":"", "linkCount":1};
 	}-*/;
 
     public static final native void consoleLog(Object obj)/*-{
@@ -104,6 +104,14 @@ public final class GWTEdge extends JavaScriptObject {
         this.additionalStyling = additionalStyling;
     }-*/;
 
+    public final native void setLinkCount(int linkCount) /*-{
+        this.linkCount = linkCount;
+    }-*/;
+
+    public final native int getLinkCount() /*-{
+        return this.linkCount;
+    }-*/;
+
     /**
      * Applies the style defined in additionalStyling to the created SVG path element.
      * This is a hack as with pure GWT the "this" context did not match the correct DOM element.
@@ -132,20 +140,38 @@ public final class GWTEdge extends JavaScriptObject {
         };
     }
 
-    protected static Func<String, GWTEdge> createPath(){
+    protected static Func<String, GWTEdge> createPath() {
         return new Func<String, GWTEdge>(){
 
             @Override
             public String call(GWTEdge edge, int index) {
-                GWTVertex source = edge.getSource();
-				GWTVertex target = edge.getTarget();
-				int dx = Math.abs(target.getX() - source.getX());
-                int dy = Math.abs(target.getY() - source.getY());
-                int dr = edge.getLinkNum() > 1 ? (Math.max(dx, dy) * 10) / edge.getLinkNum() : 0;
+                final GWTVertex source = edge.getSource();
+				final GWTVertex target = edge.getTarget();
+				final int dx = Math.abs(target.getX() - source.getX());
+                final int dy = Math.abs(target.getY() - source.getY());
+                // The distance of two points is a^2 + b^2 = c^2 -> c = SQRT(dx^2 + dy^2)
+                final double distance =  Math.sqrt(dx * dx + dy * dy);
+                // The minimal radius therefore is distance / 2
+                final double minRadius = distance / 2;
+                final double step = Math.max((int) distance, 300); // Minimal Step size is 300
+                // A guessed maxRadius
+                final double maxRadius = distance * 4;
                 int direction = edge.getLinkNum() % 2 == 0  ? 0 : 1;
 
+                // By default we draw an arc
+                int rx = (int) Math.max(maxRadius - (edge.getLinkNum() / 2 * step), minRadius);
+                if (edge.getLinkCount() % 2 == 1 && edge.getLinkNum() == edge.getLinkCount() -1 ) {
+                    rx = 0; // if uneven link count, the last edge is always straight
+                }
+                consoleLog(edge.getId() + " Distance: " + distance);
+                consoleLog(edge.getId() + " MaxRadius: " + maxRadius);
+                consoleLog(edge.getId() + " MinRadius: " + minRadius);
+                consoleLog(edge.getId() + " Step: " + step);
+                consoleLog(edge.getId() + " rx: " + rx);
+                consoleLog("-----");
+
                 return "M" + source.getX() + "," + source.getY() +
-                       " A" + dr + "," + dr + " 0 0, " + direction + " " + target.getX() + "," + target.getY();
+                       " A" + rx + "," + rx + " 0 0, " + direction + " " + target.getX() + "," + target.getY();
             }
 
         };
