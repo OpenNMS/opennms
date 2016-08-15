@@ -17,9 +17,9 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
+import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,26 +41,7 @@ public class ConvertToEventTest {
     @Test
     public void testConvertToEvent() throws MarshalException, ValidationException, IOException {
 
-        InterfaceToNodeCacheDaoImpl.setInstance(new InterfaceToNodeCache() {
-
-            @Override
-            public int setNodeId(String location, InetAddress ipAddr, int nodeId) {
-                return 0;
-            }
-
-            @Override
-            public int removeNodeId(String location, InetAddress ipAddr) {
-                return 0;
-            }
-
-            @Override
-            public int getNodeId(String location, InetAddress ipAddr) {
-                return 0;
-            }
-
-            @Override
-            public void dataSourceSync() {}
-        });
+        InterfaceToNodeCacheDaoImpl.setInstance(new MockInterfaceToNodeCache());
 
         // 10000 sample syslogmessages from xml file are taken and passed as
         // Inputstream to create syslogdconfiguration

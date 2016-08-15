@@ -45,6 +45,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.util.KeyValueHolder;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,8 +61,10 @@ import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.dao.DistPollerDaoMinion;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.discovery.helper.LocationAwareTestRouteBuilder;
 import org.opennms.netmgt.discovery.messages.DiscoveryJob;
 import org.opennms.netmgt.discovery.messages.DiscoveryResults;
@@ -137,6 +140,13 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
     @Override
     protected String getBlueprintDescriptor() {
         return "file:blueprint-discovery.xml";
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+
+        InterfaceToNodeCacheDaoImpl.setInstance(new MockInterfaceToNodeCache());
     }
 
     @Test(timeout=60000)

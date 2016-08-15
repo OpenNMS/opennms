@@ -46,7 +46,9 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager.EmptyEventConfDao;
+import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -128,6 +130,11 @@ public class TrapdHandlerKafkaDefaultIT extends CamelBlueprintTest {
 		services.put(
 			TrapdConfig.class.getName(),
 			new KeyValueHolder<Object, Dictionary>(config, new Properties())
+		);
+
+		services.put(
+			InterfaceToNodeCache.class.getName(),
+			new KeyValueHolder<Object, Dictionary>(new MockInterfaceToNodeCache(), new Properties())
 		);
 
 		services.put(

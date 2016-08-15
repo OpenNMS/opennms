@@ -44,6 +44,7 @@ public class BasicTrapProcessor implements TrapProcessor, Serializable {
 
     private static final long serialVersionUID = 2984468105508032607L;
 
+    private String m_location;
     private String m_community;
     private long m_timeStamp;
     private String m_version;
@@ -51,6 +52,15 @@ public class BasicTrapProcessor implements TrapProcessor, Serializable {
     private Map<SnmpObjId,SnmpValue> m_varBinds = new ConcurrentHashMap<>();
     private InetAddress m_trapAddress;
     private TrapIdentity m_trapIdentity;
+
+    public String getLocation() {
+        return m_location;
+    }
+
+    @Override
+    public void setLocation(String location) {
+        m_location = location;
+    }
 
     public String getCommunity() {
         return m_community;

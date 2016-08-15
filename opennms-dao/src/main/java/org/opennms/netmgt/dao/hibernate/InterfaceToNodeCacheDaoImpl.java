@@ -166,4 +166,8 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         return m_knownips.removeManagedAddress(location, addr);
     }
 
+    @Override
+    public void clear() {
+        m_knownips.setManagedAddresses(new HashMap<>());
+    }
 }

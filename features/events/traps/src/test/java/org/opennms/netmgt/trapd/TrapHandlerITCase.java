@@ -51,6 +51,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -91,7 +93,7 @@ public class TrapHandlerITCase implements InitializingBean {
     private MockEventIpcManager m_eventMgr;
 
     @Autowired
-    private MockTrapdIpMgr m_trapdIpMgr;
+    private InterfaceToNodeCache m_cache;
 
     @Autowired
     private TrapQueueProcessorFactory m_processorFactory;
@@ -121,8 +123,8 @@ public class TrapHandlerITCase implements InitializingBean {
     public void setUp() throws Exception {
         m_localhost = InetAddressUtils.addr(m_ip);
 
-        m_trapdIpMgr.clearKnownIpsMap();
-        m_trapdIpMgr.setNodeId(m_ip, m_nodeId);
+        m_cache.clear();
+        m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, m_localhost, m_nodeId);
 
         m_trapd.start();
         m_doStop = true;
@@ -151,7 +153,7 @@ public class TrapHandlerITCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testV1TrapNoNewSuspect() throws Exception {
-        m_trapdIpMgr.clearKnownIpsMap();
+        m_cache.clear();
         anticipateAndSend(false, false, "uei.opennms.org/default/trap", "v1",
                 null, 6, 1);
     }
@@ -159,7 +161,7 @@ public class TrapHandlerITCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testV2TrapNoNewSuspect() throws Exception {
-        m_trapdIpMgr.clearKnownIpsMap();
+        m_cache.clear();
         anticipateAndSend(false, false, "uei.opennms.org/default/trap",
                 "v2c", null, 6, 1);
     }
@@ -167,7 +169,7 @@ public class TrapHandlerITCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testV1TrapNewSuspect() throws Exception {
-        m_trapdIpMgr.clearKnownIpsMap();
+        m_cache.clear();
         anticipateAndSend(true, false, "uei.opennms.org/default/trap",
                 "v1", null, 6, 1);
     }
@@ -175,7 +177,7 @@ public class TrapHandlerITCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testV2TrapNewSuspect() throws Exception {
-        m_trapdIpMgr.clearKnownIpsMap();
+        m_cache.clear();
         anticipateAndSend(true, false, "uei.opennms.org/default/trap",
                 "v2c", null, 6, 1);
     }
