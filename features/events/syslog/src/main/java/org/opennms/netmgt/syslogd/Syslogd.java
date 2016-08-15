@@ -63,9 +63,6 @@ public class Syslogd extends AbstractServiceDaemon {
     @Autowired
     private SyslogReceiver m_udpEventReceiver;
 
-    @Autowired
-    private InterfaceToNodeCache m_cache;
-
     /**
      * <p>Constructor for Syslogd.</p>
      */
@@ -81,21 +78,12 @@ public class Syslogd extends AbstractServiceDaemon {
         m_udpEventReceiver = receiver;
     }
 
-    public InterfaceToNodeCache getInterfaceToNodeCache() {
-        return m_cache;
-    }
-
-    public void setInterfaceToNodeCache(InterfaceToNodeCache cache) {
-        m_cache = cache;
-    }
-
     /**
      * <p>onInit</p>
      */
     @Override
     protected void onInit() {
-        // clear out the known nodes
-        m_cache.dataSourceSync();
+        // Nothing to do
     }
 
     /**

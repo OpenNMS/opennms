@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +39,7 @@ import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.InterfaceToNodeMap;
 import org.opennms.netmgt.dao.api.InterfaceToNodeMap.LocationIpAddressKey;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -47,9 +50,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * This class represents a singular instance that is used to map trap IP
+ * This class represents a singular instance that is used to map IP
  * addresses to known nodes.
  *
+ * @author Seth
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
@@ -62,6 +66,9 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
     @Autowired
     private NodeDao m_nodeDao;
 
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
+
     private final InterfaceToNodeMap m_knownips = new InterfaceToNodeMap();
 
     public NodeDao getNodeDao() {
@@ -70,6 +77,14 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
+    }
+
+    public IpInterfaceDao getIpInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        m_ipInterfaceDao = ipInterfaceDao;
     }
 
     /**
@@ -130,26 +145,27 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
      * @return The nodeid if it existed in the map.
      */
     @Override
+    @Transactional
     public int setNodeId(final String location, final InetAddress addr, final int nodeid) {
         if (addr == null || nodeid == -1) {
             return -1;
         }
-        /*
+
         // Only add the address if it doesn't exist on the map. If it exists, only replace
         // the current one if the new address is primary.
-        if (m_knownips.containsKey(InetAddressUtils.getInetAddress(addr))) {
-            OnmsIpInterface intf = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeid, addr);
+        if (m_knownips.getNodeId(location, addr) < 1) {
+            LOG.debug("setNodeId: adding IP address to cache: {}:{} -> {}", location, str(addr), nodeid);
+            return m_knownips.addManagedAddress(location, addr, nodeid);
+        } else {
+            final OnmsIpInterface intf = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeid, str(addr));
             if (intf != null && intf.isPrimary()) {
-                LOG.info("setNodeId: adding SNMP primary IP address {} to known IP list", intf);
-                return intValue(m_knownips.put(InetAddressUtils.getInetAddress(addr), nodeid));
+                LOG.info("setNodeId: updating SNMP primary IP address in cache: {}:{} -> {}", location, str(addr), nodeid);
+                return m_knownips.addManagedAddress(location, addr, nodeid);
             } else {
+                LOG.debug("setNodeId: IP address {}:{} is not primary, avoiding cache update", location, str(addr));
                 return -1;
             }
-        } else {
-            return intValue(m_knownips.put(InetAddressUtils.getInetAddress(addr), nodeid));
         }
-        */
-        return m_knownips.addManagedAddress(location, addr, nodeid);
     }
 
     /**
@@ -161,8 +177,10 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
     @Override
     public int removeNodeId(final String location, final InetAddress addr) {
         if (addr == null) {
+            LOG.warn("removeNodeId: null IP address");
             return -1;
         }
+        LOG.debug("removeNodeId: removing IP address from cache: {}:{}", location, str(addr));
         return m_knownips.removeManagedAddress(location, addr);
     }
 

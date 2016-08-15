@@ -57,8 +57,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.events.api.EventListener;
@@ -83,7 +81,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -101,9 +98,6 @@ public class SyslogdLoadIT implements InitializingBean {
 
     @Autowired
     private DistPollerDao m_distPollerDao;
-
-    @Autowired
-    private NodeDao m_nodeDao;
 
     @Autowired
     private Eventd m_eventd;
@@ -148,69 +142,41 @@ public class SyslogdLoadIT implements InitializingBean {
     }
 
     private void startSyslogdJavaNet() throws Exception {
+        m_syslogd = new Syslogd();
         SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(m_config);
         receiver.setDistPollerDao(m_distPollerDao);
         receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
-
-        InterfaceToNodeCacheDaoImpl ipManager = new InterfaceToNodeCacheDaoImpl();
-        ipManager.setNodeDao(m_nodeDao);
-        InterfaceToNodeCacheDaoImpl.setInstance(ipManager);
-
-        m_syslogd = new Syslogd();
         m_syslogd.setSyslogReceiver(receiver);
-        m_syslogd.setInterfaceToNodeCache(ipManager);
         m_syslogd.init();
-
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
 
     private void startSyslogdNio() throws Exception {
+        m_syslogd = new Syslogd();
         SyslogReceiverNioThreadPoolImpl receiver = new SyslogReceiverNioThreadPoolImpl(m_config);
         receiver.setDistPollerDao(m_distPollerDao);
         receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
-
-        InterfaceToNodeCacheDaoImpl ipManager = new InterfaceToNodeCacheDaoImpl();
-        ipManager.setNodeDao(m_nodeDao);
-        InterfaceToNodeCacheDaoImpl.setInstance(ipManager);
-
-        m_syslogd = new Syslogd();
         m_syslogd.setSyslogReceiver(receiver);
-        m_syslogd.setInterfaceToNodeCache(ipManager);
         m_syslogd.init();
-
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
 
     private void startSyslogdNioDisruptor() throws Exception {
+        m_syslogd = new Syslogd();
         SyslogReceiverNioDisruptorImpl receiver = new SyslogReceiverNioDisruptorImpl(m_config);
         receiver.setDistPollerDao(m_distPollerDao);
-
-        InterfaceToNodeCacheDaoImpl ipManager = new InterfaceToNodeCacheDaoImpl();
-        ipManager.setNodeDao(m_nodeDao);
-        InterfaceToNodeCacheDaoImpl.setInstance(ipManager);
-
-        m_syslogd = new Syslogd();
         m_syslogd.setSyslogReceiver(receiver);
-        m_syslogd.setInterfaceToNodeCache(ipManager);
         m_syslogd.init();
-
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
 
     private void startSyslogdCamelNetty() throws Exception {
+        m_syslogd = new Syslogd();
         SyslogReceiverCamelNettyImpl receiver = new SyslogReceiverCamelNettyImpl(m_config);
         receiver.setDistPollerDao(m_distPollerDao);
         receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
-
-        InterfaceToNodeCacheDaoImpl ipManager = new InterfaceToNodeCacheDaoImpl();
-        ipManager.setNodeDao(m_nodeDao);
-        InterfaceToNodeCacheDaoImpl.setInstance(ipManager);
-
-        m_syslogd = new Syslogd();
         m_syslogd.setSyslogReceiver(receiver);
-        m_syslogd.setInterfaceToNodeCache(ipManager);
         m_syslogd.init();
-
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
 

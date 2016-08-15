@@ -17,6 +17,4 @@
     <property name="configResource"><value>classpath:/org/opennms/netmgt/trapd/eventconf.xml</value></property>
   </bean>
 
-  <!--  Make the tx:annotation-driven element in applicationContext-trapDaemon happy -->
-  <bean id="transactionManager" class="org.opennms.core.test.MockPlatformTransactionManager"/>
 </beans>

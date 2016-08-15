@@ -51,8 +51,6 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -69,7 +67,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"
 })
 @JUnitConfigurationEnvironment
@@ -86,9 +83,6 @@ public class Nms4335IT implements InitializingBean {
 
     @Autowired
     private DistPollerDao m_distPollerDao;
-
-    @Autowired
-    private NodeDao m_nodeDao;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -147,13 +141,8 @@ public class Nms4335IT implements InitializingBean {
             stream = new ByteArrayInputStream(config.getBytes());
             m_config = new SyslogdConfigFactory(stream);
 
-            InterfaceToNodeCacheDaoImpl syslogdIpManager = new InterfaceToNodeCacheDaoImpl();
-            syslogdIpManager.setNodeDao(m_nodeDao);
-            InterfaceToNodeCacheDaoImpl.setInstance(syslogdIpManager);
-
             m_syslogd = new Syslogd();
             m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
-            m_syslogd.setInterfaceToNodeCache(syslogdIpManager);
             m_syslogd.init();
 
         } finally {

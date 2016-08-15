@@ -18,14 +18,6 @@
 
   <bean id="syslogdExecutorFactory" class="org.opennms.core.concurrent.ExecutorFactoryJavaImpl"/>
 
-  <bean id="syslogdBroadcastEventProcessor" class="org.opennms.netmgt.syslogd.BroadcastEventProcessor"/>
-
-  <!-- Process the EventListener annotations on BroadcastEventProcessor -->
-  <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
-    <property name="annotatedListener" ref="syslogdBroadcastEventProcessor" />
-    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
-  </bean>
-
   <bean id="syslogConnectionHandler" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerDefaultImpl">
     <!-- TODO: Inject executorFactory and use it to construct Executors -->
   </bean>

@@ -37,7 +37,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
@@ -157,7 +156,6 @@ public class Discovery extends AbstractServiceDaemon {
      */
     @Override
     protected void onStart() {
-        syncAlreadyDiscovered();
         try {
             m_camelContext.start();
         } catch (Exception e) {
@@ -199,13 +197,6 @@ public class Discovery extends AbstractServiceDaemon {
         } catch (Exception e) {
             LOG.error("Discovery resume failed: " + e.getMessage(), e);
         }
-    }
-
-    /**
-     * <p>syncAlreadyDiscovered</p>
-     */
-    protected void syncAlreadyDiscovered() {
-        AbstractInterfaceToNodeCache.getInstance().dataSourceSync();
     }
 
     /**

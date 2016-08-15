@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.syslogd;
+package org.opennms.netmgt.dao.support;
 
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -37,6 +37,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,15 +47,25 @@ import org.springframework.transaction.annotation.Transactional;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-@EventListener(name="OpenNMS.Syslogd", logPrefix="syslogd")
-public class BroadcastEventProcessor {
-    private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
+@EventListener(name="OpenNMS.InterfaceToNodeCache", logPrefix="eventd")
+public class InterfaceToNodeCacheEventProcessor implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(InterfaceToNodeCacheEventProcessor.class);
 
     @Autowired
     private InterfaceToNodeCache m_cache;
 
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // Initialize the cache when this listener is created
+        //
+        // TODO: Should we periodically rebuild the cache from
+        // scratch?
+        //
+        m_cache.dataSourceSync();
+    }
 
     @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
     @Transactional
@@ -72,7 +83,6 @@ public class BroadcastEventProcessor {
         }
         // add to known nodes
         m_cache.setNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress(), nodeId.intValue());
-        LOG.debug("Added {} to known node list", event.getInterface());
     }
 
     @EventHandler(uei=EventConstants.INTERFACE_DELETED_EVENT_UEI)
@@ -81,17 +91,16 @@ public class BroadcastEventProcessor {
         LOG.debug("Received event: {}", event.getUei());
         Long nodeId = event.getNodeid();
         if (nodeId == null) {
-            LOG.error(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Event with no node ID: " + event.toString());
+            LOG.error(EventConstants.INTERFACE_DELETED_EVENT_UEI + ": Event with no node ID: " + event.toString());
             return;
         }
         OnmsNode node = m_nodeDao.get(nodeId.intValue());
         if (node == null) {
-            LOG.warn(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Cannot find node in DB: " + nodeId);
+            LOG.warn(EventConstants.INTERFACE_DELETED_EVENT_UEI + ": Cannot find node in DB: " + nodeId);
             return;
         }
         // remove from known nodes
         m_cache.removeNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress());
-        LOG.debug("Removed {} from known node list", event.getInterface());
     }
 
     @EventHandler(uei=EventConstants.INTERFACE_REPARENTED_EVENT_UEI)
@@ -100,16 +109,15 @@ public class BroadcastEventProcessor {
         LOG.debug("Received event: {}", event.getUei());
         Long nodeId = event.getNodeid();
         if (nodeId == null) {
-            LOG.error(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Event with no node ID: " + event.toString());
+            LOG.error(EventConstants.INTERFACE_REPARENTED_EVENT_UEI + ": Event with no node ID: " + event.toString());
             return;
         }
         OnmsNode node = m_nodeDao.get(nodeId.intValue());
         if (node == null) {
-            LOG.warn(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Cannot find node in DB: " + nodeId);
+            LOG.warn(EventConstants.INTERFACE_REPARENTED_EVENT_UEI + ": Cannot find node in DB: " + nodeId);
             return;
         }
         // add to known nodes
         m_cache.setNodeId(node.getLocation().getLocationName(), event.getInterfaceAddress(), nodeId.intValue());
-        LOG.debug("Reparented {} to known node list", event.getInterface());
     }
 }

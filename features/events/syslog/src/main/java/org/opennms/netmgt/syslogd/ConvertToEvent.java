@@ -180,7 +180,7 @@ public class ConvertToEvent {
         if (hostAddress != null) {
             // Set nodeId
             int nodeId = AbstractInterfaceToNodeCache.getInstance().getNodeId(location, hostAddress);
-            if (nodeId != -1) {
+            if (nodeId > 0) {
                 bldr.setNodeid(nodeId);
             }
 

@@ -58,8 +58,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
@@ -85,7 +83,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml"
 })
@@ -106,9 +103,6 @@ public class SyslogdEventdLoadIT implements InitializingBean {
     private Syslogd m_syslogd;
 
     private SyslogdConfigFactory m_config;
-
-    @Autowired
-    private NodeDao m_nodeDao;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -146,13 +140,8 @@ public class SyslogdEventdLoadIT implements InitializingBean {
     }
 
     private void startSyslogdGracefully() throws SocketException {
-        InterfaceToNodeCacheDaoImpl ipManager = new InterfaceToNodeCacheDaoImpl();
-        ipManager.setNodeDao(m_nodeDao);
-        InterfaceToNodeCacheDaoImpl.setInstance(ipManager);
-
         m_syslogd = new Syslogd();
         m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
-        m_syslogd.setInterfaceToNodeCache(ipManager);
         m_syslogd.init();
 
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
