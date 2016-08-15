@@ -69,7 +69,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
-import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.icmp.PingerFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
@@ -1223,7 +1223,7 @@ public class Installer {
         Pinger pinger;
         try {
        
-            pinger = PingerFactory.getInstance();
+            pinger = new PingerFactoryImpl().getInstance();
         
         } catch (UnsatisfiedLinkError e) {
             System.out.println("UnsatisfiedLinkError while creating an ICMP Pinger.  Most likely failed to load "
@@ -1238,7 +1238,7 @@ public class Installer {
             		"or libjicmp6.so.");
             throw e;
         } catch (Exception e) {
-            System.out.println("Exception while creating an Pinger.");
+            System.out.println("Exception while creating Pinger.");
             throw e;
         }
         

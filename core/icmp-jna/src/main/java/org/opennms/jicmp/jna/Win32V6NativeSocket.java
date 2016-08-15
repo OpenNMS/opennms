@@ -28,6 +28,7 @@
 
 package org.opennms.jicmp.jna;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -48,8 +49,10 @@ public class Win32V6NativeSocket extends NativeDatagramSocket {
 
     private final int m_sock;
 
-    public Win32V6NativeSocket(int family, int type, int protocol) throws Exception {
+    public Win32V6NativeSocket(int family, int type, int protocol, final int listenPort) throws Exception {
         m_sock = socket(family, type, protocol);
+        final sockaddr_in6 addr_in = new sockaddr_in6(listenPort);
+        bind(m_sock, addr_in, addr_in.size());
     }
 
     public native int bind(int socket, sockaddr_in6 address, int address_len) throws LastErrorException;
@@ -61,6 +64,16 @@ public class Win32V6NativeSocket extends NativeDatagramSocket {
     public native int recvfrom(int socket, Buffer buffer, int buflen, int flags, sockaddr_in6 in_addr, int[] in_addr_len) throws LastErrorException;
 
     public native int closesocket(int socket) throws LastErrorException;
+
+    @Override
+    public void setTrafficClass(final int tc) throws LastErrorException {
+        // it appears that IP_TOS and IPV6_TCLASS do not exist in Win32 anymore
+    }
+
+    @Override
+    public void allowFragmentation(final boolean frag) throws IOException {
+        allowFragmentation(IPPROTO_IPV6, IPV6_DONTFRAG, frag);
+    }
 
     @Override
     public int receive(NativeDatagramPacket p) throws UnknownHostException {
@@ -85,11 +98,12 @@ public class Win32V6NativeSocket extends NativeDatagramSocket {
     }
 
     @Override
-    public int close() {
-        return closesocket(getSock());
+    public void close() {
+        closesocket(getSock());
     }
 
-    protected int getSock() {
+    @Override
+    public int getSock() {
         return m_sock;
     }
 

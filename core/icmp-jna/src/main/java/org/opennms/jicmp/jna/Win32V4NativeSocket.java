@@ -28,6 +28,7 @@
 
 package org.opennms.jicmp.jna;
 
+import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
@@ -47,8 +48,10 @@ public class Win32V4NativeSocket extends NativeDatagramSocket {
 
     private final int m_sock;
 
-    public Win32V4NativeSocket(int family, int type, int protocol) throws Exception {
+    public Win32V4NativeSocket(int family, int type, int protocol, final int listenPort) throws Exception {
         m_sock = socket(family, type, protocol);
+        final sockaddr_in addr_in = new sockaddr_in(listenPort);
+        bind(m_sock, addr_in, addr_in.size());
     }
 
     public native int bind(int socket, sockaddr_in address, int address_len) throws LastErrorException;
@@ -65,8 +68,19 @@ public class Win32V4NativeSocket extends NativeDatagramSocket {
         return closesocket(socket);
     }
 
-    private int getSock() {
+    @Override
+    public int getSock() {
         return m_sock;
+    }
+
+    @Override
+    public void setTrafficClass(final int tc) throws LastErrorException {
+        // it appears that IP_TOS and IPV6_TCLASS do not exist in Win32 anymore
+    }
+
+    @Override
+    public void allowFragmentation(final boolean frag) throws IOException {
+        // can't find proper documentation about whether this is supported properly
     }
 
     @Override
@@ -92,8 +106,8 @@ public class Win32V4NativeSocket extends NativeDatagramSocket {
     }
 
     @Override
-    public int close() {
-        return close(getSock());
+    public void close() {
+        close(getSock());
     }
 
 }

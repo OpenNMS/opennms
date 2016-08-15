@@ -132,7 +132,7 @@ public class NativeSocketTest {
         NativeDatagramSocket socket = null;
 
         try {
-            socket = NativeDatagramSocket.create(family, NativeDatagramSocket.SOCK_DGRAM, NativeDatagramSocket.IPPROTO_UDP);
+            socket = NativeDatagramSocket.create(family, NativeDatagramSocket.SOCK_DGRAM, NativeDatagramSocket.IPPROTO_UDP, 1234);
 
             for(final String cmd : cmds) {
                 final NativeDatagramSocket sock = socket;
@@ -171,20 +171,16 @@ public class NativeSocketTest {
     @Test(timeout=10000)
     @Ignore("This is ignored since I haven't found a way to interrupt a socket blocked on recvfrom in linux")
     public void testCloseInReceive() throws Exception {
-        NativeDatagramSocket socket = null;
-        try {
-            socket = NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, NativeDatagramSocket.SOCK_DGRAM, NativeDatagramSocket.IPPROTO_UDP);
-
-            final NativeDatagramSocket sock = socket;
+        try(final NativeDatagramSocket socket = NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, NativeDatagramSocket.SOCK_DGRAM, NativeDatagramSocket.IPPROTO_UDP, 1234)) {
             final FutureTask<NativeDatagramPacket> task = new FutureTask<NativeDatagramPacket>(new Callable<NativeDatagramPacket>() {
                 @Override public NativeDatagramPacket call() throws Exception {
                     final ByteBuffer buf = UTF_8.encode("msg1");
                     final NativeDatagramPacket p = new NativeDatagramPacket(buf, InetAddress.getLocalHost(), 7777); 
-                    sock.send(p);
+                    socket.send(p);
 
                     final NativeDatagramPacket r = new NativeDatagramPacket(128);
                     printf("Receiving...\n");
-                    sock.receive(r);
+                    socket.receive(r);
                     printf("Received\n");
                     return r;
                 }
@@ -196,8 +192,6 @@ public class NativeSocketTest {
 
             final String response = UTF_8.decode(r.getContent()).toString();
             printf("Received Response: %s from %s:%d\n", response, r.getAddress().getHostAddress(), r.getPort());
-        } finally {
-            if (socket != null) socket.close();
         }
     }
 
