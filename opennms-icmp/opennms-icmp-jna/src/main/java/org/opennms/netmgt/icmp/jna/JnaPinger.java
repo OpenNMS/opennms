@@ -68,13 +68,21 @@ public class JnaPinger implements Pinger {
      */
     private synchronized void initialize() throws Exception {
         if (m_pingTracker != null) return;
-        m_messenger = new JnaIcmpMessenger(m_pingerId);
-        m_pingTracker = Logging.withPrefix("icmp", new Callable<RequestTracker<JnaPingRequest,JnaPingReply>>() {
-            @Override public RequestTracker<JnaPingRequest, JnaPingReply> call() throws Exception {
-                return new RequestTracker<JnaPingRequest, JnaPingReply>("JNA-ICMP-"+m_pingerId, m_messenger, new IDBasedRequestLocator<JnaPingRequestId, JnaPingRequest, JnaPingReply>());
+        try {
+            m_messenger = new JnaIcmpMessenger(m_pingerId);
+            m_pingTracker = Logging.withPrefix("icmp", new Callable<RequestTracker<JnaPingRequest,JnaPingReply>>() {
+                @Override public RequestTracker<JnaPingRequest, JnaPingReply> call() throws Exception {
+                    return new RequestTracker<JnaPingRequest, JnaPingReply>("JNA-ICMP-"+m_pingerId, m_messenger, new IDBasedRequestLocator<JnaPingRequestId, JnaPingRequest, JnaPingReply>());
+                }
+            });
+            m_pingTracker.start();
+        } catch (final IOException e) {
+            final String errorMessage = e.getMessage().toLowerCase();
+            if (errorMessage.contains("permission denied") || errorMessage.contains("operation not permitted")) {
+                LOG.error("Permission error received while attempting to open ICMP socket. See https://wiki.opennms.org/wiki/ICMP for information on configuring ICMP for non-root.");
             }
-        });
-        m_pingTracker.start();
+            throw e;
+        }
     }
 
     @Override

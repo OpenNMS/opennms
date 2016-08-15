@@ -167,6 +167,10 @@ public class Jni6Pinger implements Pinger {
             s_pingTracker.start();
         } catch (final IOException ioe) {
             m_v6Error = ioe;
+            final String errorMessage = m_v6Error.getMessage().toLowerCase();
+            if (errorMessage.contains("permission denied") || errorMessage.contains("operation not permitted")) {
+                LOG.error("Permission error received while attempting to open ICMP socket. See https://wiki.opennms.org/wiki/ICMP for information on configuring ICMP for non-root.");
+            }
             throw ioe;
         } catch (final RuntimeException rte) {
             m_v6Error = rte;
