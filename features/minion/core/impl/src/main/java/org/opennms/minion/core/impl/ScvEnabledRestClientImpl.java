@@ -68,7 +68,13 @@ public class ScvEnabledRestClientImpl implements RestClient {
             password = amqCredentials.getPassword();
         }
     }
-
+    
+	public String getSnmpV3RestLink() throws MalformedURLException {
+		HttpGet httpget = new HttpGet(url.toExternalForm()
+				+ "/rest/config/trapd");
+		return httpget.getURI().toString();
+	}
+    
     @Override
     public void ping() throws Exception {
         // Setup a client with pre-emptive authentication
