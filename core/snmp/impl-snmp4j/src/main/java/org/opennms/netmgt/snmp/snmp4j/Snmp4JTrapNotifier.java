@@ -30,7 +30,6 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.util.Random;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -80,10 +79,6 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
             super(agent, community, trapProcessor);
             m_pdu = pdu;
         }
-        
-        public int getPartionKey() {
-    		return new Random().nextInt(10000);
-    	}
 
         @Override
         protected InetAddress getTrapAddress() {
@@ -188,10 +183,6 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
         private PDU getPdu() {
             return m_pdu;
         }
-        
-        public int getPartionKey() {
-    		return new Random().nextInt(10000);
-    	}
         
         @Override
         protected int getPduLength() {

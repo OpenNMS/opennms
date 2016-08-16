@@ -20,6 +20,8 @@
 		</cm:default-properties>
 	</cm:property-placeholder>
 
+	<bean id="partitionKeyGenerator" class="org.opennms.core.camel.RandomPartitionKeyGenerator"/>
+
 	<bean id="trapNotificationHandlerCamel" class="org.opennms.netmgt.trapd.TrapNotificationHandlerCamelImpl">
 		<argument value="seda:handleMessage"/>
 	</bean>
@@ -37,7 +39,7 @@
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
 			<setHeader headerName="kafka.PARTITION_KEY">
-				<simple>${body.getPartionKey}</simple>
+				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
 			</setHeader>
 			<!-- TODO: Implement this marshaller -->
 			<!-- <bean ref="kafkaEncoder" method="toBytes"/> -->

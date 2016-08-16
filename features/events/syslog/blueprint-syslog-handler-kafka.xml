@@ -20,6 +20,8 @@
 		</cm:default-properties>
 	</cm:property-placeholder>
 
+	<bean id="partitionKeyGenerator" class="org.opennms.core.camel.RandomPartitionKeyGenerator"/>
+
 	<bean id="syslogConnectionHandlerCamel" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerCamelImpl">
 		<argument value="seda:handleMessageBlueprint"/>
 	</bean>
@@ -37,7 +39,7 @@
 			<from uri="seda:handleMessageBlueprint" />
 			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
 			<setHeader headerName="kafka.PARTITION_KEY">
-				<simple>${body.getPartionKey}</simple>
+				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
 			</setHeader>
 			<bean ref="marshaller"/>
 			
