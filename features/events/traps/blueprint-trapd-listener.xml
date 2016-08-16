@@ -27,7 +27,7 @@
         <propertyPlaceholder id="minionproperties" location="blueprint:minionProperties" />
         <route id="restClientToTrapdConfig">
             <from uri="timer://restTrapConfigurationTimer?fixedRate=true&amp;period=60000"/>
-            <to uri="{{http-url}}/rest/config/trapd?authMethod=Basic&amp;authUsername={{username}}&amp;authPassword={{password}}" />
+             <bean ref="restClient" method="getSnmpV3RestLink"/>
             <bean ref="unmarshaller" />
             <to uri="bean:trapdConfig?method=onUpdate" />
             <bean ref="trapReceiver" method="setTrapdConfig" />
@@ -43,6 +43,23 @@
             <cm:property name="password" value="admin"/>
         </cm:default-properties>
     </cm:property-placeholder>
+    
+    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" />
+
+    <!-- A canonical source for this Minion's identity -->
+    <bean id="minionIdentity" class="org.opennms.minion.core.impl.MinionIdentityImpl">
+       <argument value="[[location]]"/>
+       <argument value="[[id]]"/>
+    </bean>
+    <service ref="minionIdentity" interface="org.opennms.minion.core.api.MinionIdentity"/>
+
+    <!-- REST Client used to communicate with the OpenNMS controller -->
+    <bean id="restClient" class="org.opennms.minion.core.impl.ScvEnabledRestClientImpl">
+        <argument value="[[http-url]]"/>
+        <argument ref="secureCredentialsVault"/>
+        <argument value="opennms.http"/>
+    </bean>
+    <service ref="restClient" interface="org.opennms.minion.core.api.RestClient"/>
 
     <bean id="trapdConfig" class="org.opennms.netmgt.trapd.TrapdConfigBean">
         <property name="snmpTrapPort" value="${trapd.listen.port}"/>
