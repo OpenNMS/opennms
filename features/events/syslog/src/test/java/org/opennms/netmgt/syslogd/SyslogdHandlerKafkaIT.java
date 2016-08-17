@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.syslogd;
 
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.Dictionary;
 import java.util.Map;
@@ -114,7 +113,7 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTest {
 		zookeeperPort = getAvailablePort(2181, 2281);
 		kafkaPort = getAvailablePort(9092, 9192);
 
-		props.put("kafkahostport", String.valueOf("localhost:" + kafkaPort));
+		props.put("kafkaAddress", String.valueOf("localhost:" + kafkaPort));
 		return "org.opennms.netmgt.syslog.handler.kafka";
 	}
 
