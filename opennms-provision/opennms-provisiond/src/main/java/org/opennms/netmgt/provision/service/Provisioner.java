@@ -73,6 +73,8 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
+import com.google.common.collect.Maps;
+
 /**
  * Massively Parallel Java Provisioning <code>ServiceDaemon</code> for OpenNMS.
  *
@@ -277,9 +279,9 @@ public class Provisioner implements SpringServiceDaemon {
      * @param ipAddress a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.provision.service.NewSuspectScan} object.
      */
-    public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource) {
+    public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource, String location) {
         LOG.info("createNewSuspectScan called with IP: "+ipAddress+ "and foreignSource"+foreignSource == null ? "null" : foreignSource);
-        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource);
+        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource, location);
     }
 
     /**
@@ -583,27 +585,12 @@ public class Provisioner implements SpringServiceDaemon {
         m_scheduledExecutor.execute(r);
     }
     
-    /**
-     * <p>handleNewSuspectEvent</p>
-     * 
-     * TODO: HZN-613: Associate location with new nodes
-     *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     @EventHandler(uei = EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
     public void handleNewSuspectEvent(Event e) {
-        
         final String uei = e.getUei();
         final String ip = e.getInterface();
-        
-        String foreignSource = null;
-        List<Parm> parmCollection = e.getParmCollection();
-        for (Parm parm : parmCollection) {
-			if ("foreignSource".equals(parm.getParmName())) {
-				foreignSource = parm.getValue().getContent();
-				break;
-			}
-		}
+        final Map<String, String> paramMap = Maps.newHashMap();
+        e.getParmCollection().forEach(eachParam -> paramMap.put(eachParam.getParmName(), eachParam.getValue().getContent()));
 
         if (ip == null) {
             LOG.error("Received a {} event with a null ipAddress", uei);
@@ -615,7 +602,6 @@ public class Provisioner implements SpringServiceDaemon {
             return;
         }
 
-        final String fs = foreignSource;
         Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -625,7 +611,7 @@ public class Provisioner implements SpringServiceDaemon {
                     	LOG.error("Unable to convert {} to an InetAddress.", ip);
                     	return;
                     }
-                    NewSuspectScan scan = createNewSuspectScan(addr, fs);
+                    NewSuspectScan scan = createNewSuspectScan(addr, paramMap.get("foreignSource"), paramMap.get("location"));
                     Task t = scan.createTask();
                     t.schedule();
                     t.waitFor();
@@ -780,8 +766,6 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     /**
-     * TODO: HZN-613: Associate location with new nodes
-     * 
      * @param ipAddr
      * @param nodeLabel
      */
@@ -789,13 +773,13 @@ public class Provisioner implements SpringServiceDaemon {
 
         OnmsNode node = new OnmsNode();
         node.setLabel(nodeLabel);
-        
+
         OnmsIpInterface iface = new OnmsIpInterface(addr(ipAddr), node);
         iface.setIsManaged("M");
         iface.setPrimaryString("N");
-        
+
         m_provisionService.insertNode(node);
-        
+
     }
 
     /**

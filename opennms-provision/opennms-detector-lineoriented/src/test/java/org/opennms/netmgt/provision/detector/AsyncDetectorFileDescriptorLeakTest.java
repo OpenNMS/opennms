@@ -44,10 +44,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.TcpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
+import org.opennms.netmgt.provision.support.AsyncAbstractDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.Repeat;
@@ -69,7 +69,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
         MockLogAppender.setupLogging(true, "INFO");
     }
 
-    private static AsyncServiceDetector getNewDetector(int port, String bannerRegex) {
+    private static AsyncAbstractDetector getNewDetector(int port, String bannerRegex) {
         TcpDetector detector = new TcpDetector();
         detector.setServiceName("TCP");
         detector.setPort(port);
@@ -128,7 +128,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
         final int port = m_socket.getLocalPort();
         final InetAddress address = m_socket.getInetAddress();
 
-        AsyncServiceDetector detector = getNewDetector(port, "Hello");
+        AsyncAbstractDetector detector = getNewDetector(port, "Hello");
 
         assertNotNull(detector);
 
@@ -155,7 +155,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
         final int port = m_server.getLocalPort();
         final InetAddress address = m_server.getInetAddress();
 
-        AsyncServiceDetector detector = getNewDetector(port, "Banner");
+        AsyncAbstractDetector detector = getNewDetector(port, "Banner");
 
         assertNotNull(detector);
 
@@ -181,7 +181,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
         while (i < 30000) {
             LOG.info("current loop: {}", i);
 
-            AsyncServiceDetector detector = getNewDetector(port, ".*");
+            AsyncAbstractDetector detector = getNewDetector(port, ".*");
 
             assertNotNull(detector);
 
@@ -211,7 +211,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
         while (i < 30000) {
             LOG.info("current loop: {}", i);
 
-            AsyncServiceDetector detector = getNewDetector(port, null);
+            AsyncAbstractDetector detector = getNewDetector(port, null);
 
             assertNotNull(detector);
 
@@ -233,15 +233,15 @@ public class AsyncDetectorFileDescriptorLeakTest {
     @Test
     @Repeat(10000)
     public void testNoServerPresent() throws Exception {
-        AsyncServiceDetector detector = getNewDetector(1999, ".*");
+        AsyncAbstractDetector detector = getNewDetector(1999, ".*");
         LOG.info("Starting testNoServerPresent with detector: {}\n", detector);
-        
+
         final DetectFuture future = detector.isServiceDetected(InetAddressUtils.getLocalHostAddress());
         assertNotNull(future);
         future.awaitFor();
         assertFalse("False positive during detection!!", future.isServiceDetected());
         assertNull(future.getException());
-        
+
         LOG.info("Finished testNoServerPresent with detector: {}\n", detector);
     }
 }

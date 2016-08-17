@@ -41,10 +41,11 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
+import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.provision.NodePolicy;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.springframework.core.io.Resource;
@@ -55,8 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author brozow
  */
 public interface ProvisionService {
-    
-	
+
     boolean isRequisitionedEntityDeletionEnabled();
 
     boolean isDiscoveryEnabled();
@@ -136,7 +136,6 @@ public interface ProvisionService {
     @Transactional
     void deleteService(Integer nodeId, InetAddress addr, String service);
 
-
     /**
      * Insert the provided node into the database
      */
@@ -209,8 +208,8 @@ public interface ProvisionService {
 
     Requisition loadRequisition(Resource resource);
 
-    List<ServiceDetector> getDetectorsForForeignSource(String foreignSource);
-    
+    List<PluginConfig> getDetectorsForForeignSource(String foreignSource);
+
     List<NodePolicy> getNodePoliciesForForeignSource(String foreignSourceName);
     
     List<IpInterfacePolicy> getIpInterfacePoliciesForForeignSource(String foreignSourceName);
@@ -230,13 +229,15 @@ public interface ProvisionService {
     OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node);
 
     @Transactional
-    OnmsNode createUndiscoveredNode(String ipAddress, String foreignSource);
+    OnmsNode createUndiscoveredNode(String ipAddress, String foreignSource, String location);
 
     @Transactional
     OnmsNode getNode(Integer nodeId);
 
     public HostnameResolver getHostnameResolver();
     public void setHostnameResolver(final HostnameResolver resolver);
+
+    LocationAwareDetectorClient getLocationAwareDetectorClient();
 
     LocationAwareSnmpClient getLocationAwareSnmpClient();
 }

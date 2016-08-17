@@ -84,10 +84,6 @@
   <bean id="daemon" class="org.opennms.netmgt.discovery.Discovery">
     <property name="discoveryFactory" ref="discoveryFactory" />
     <property name="eventForwarder" ref="eventForwarder" />
-    <property name="transactionOperations" ref="transactionTemplate" />
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
-    <property name="unmanagedInterfaceFilter" ref="unmanagedInterfaceFilter" />
   </bean>
 
   <!-- Create a Camel dispatcher that consumes DiscoveryConfiguration tasks -->

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.support;
 
+import java.util.Map;
+
 import org.apache.mina.core.future.DefaultIoFuture;
 import org.apache.mina.core.future.IoFutureListener;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
@@ -63,7 +65,17 @@ public class DetectFutureMinaImpl extends DefaultIoFuture implements DetectFutur
     public boolean isServiceDetected() {
         return Boolean.TRUE.equals(getValue());
     }
-    
+
+    /**
+     * <p>getServiceAttributes</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
+    @Override
+    public Map<String, String> getServiceAttributes() {
+        return null;
+    }
+
     /**
      * <p>getException</p>
      *

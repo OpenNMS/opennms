@@ -48,6 +48,7 @@ import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -82,10 +83,7 @@ import org.springframework.test.context.ContextConfiguration;
 public class UnmanagedInterfaceFilterIT implements InitializingBean {
 
 	@Autowired
-	private Discovery m_discovery;
-
-	@Autowired
-	private DiscoveryConfigFactory m_discoveryConfig;
+	private InterfaceToNodeCache m_cache;
 
 	@Autowired
 	private UnmanagedInterfaceFilter m_filter;
@@ -106,8 +104,8 @@ public class UnmanagedInterfaceFilterIT implements InitializingBean {
 
 	@Test
 	public void testUnmanagedInterfaceFilter() throws Exception {
-		// Start Discovery to sync the database state with the UnmanagedInterfaceFilter
-		m_discovery.start();
+		// Sync the cache's database state
+		m_cache.dataSourceSync();
 
 		assertFalse(m_filter.matches(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, "192.168.1.1"));
 		assertFalse(m_filter.matches(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, "192.168.1.2"));

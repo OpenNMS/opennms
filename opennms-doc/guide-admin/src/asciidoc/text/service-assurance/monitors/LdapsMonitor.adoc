@@ -35,8 +35,8 @@ All LdapMonitor parameters apply, so please refer to <<poller-ldap-monitor,LdapM
   <parameter key="retry" value="2"/>
   <parameter key="timeout" value="3000"/>
   <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
-  <parameter key="rrd-base-name" value="ldap"/>
-  <parameter key="ds-name" value="ldap"/>
+  <parameter key="rrd-base-name" value="ldaps"/>
+  <parameter key="ds-name" value="ldaps"/>
 </service>
 
 <monitor service="LDAPS" class-name="org.opennms.netmgt.poller.monitors.LdapsMonitor" />

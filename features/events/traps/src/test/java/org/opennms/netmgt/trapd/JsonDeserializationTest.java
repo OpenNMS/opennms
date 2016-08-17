@@ -33,6 +33,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager.EmptyEventConfDao;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
@@ -40,8 +42,6 @@ import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.xml.event.Log;
 
 public class JsonDeserializationTest {
-
-	TrapdIpMgr m_trapdIpManager;
 
 	@Test
 	@Ignore
@@ -58,12 +58,12 @@ public class JsonDeserializationTest {
 			// TODO: Parse the json string
 			TrapNotification not = null;
 
-			m_trapdIpManager=new TrapdIpManagerDaoImpl();
+			InterfaceToNodeCache cache = new InterfaceToNodeCacheDaoImpl();
 
 			TrapQueueProcessor trapQueu=new TrapQueueProcessor();
 			//System.out.println(((EventCreator)not.getTrapProcessor()).getEvent());
 			BasicTrapProcessor process=(BasicTrapProcessor) not.getTrapProcessor();
-			EventCreator event=new EventCreator(m_trapdIpManager);
+			EventCreator event=new EventCreator(cache);
 			event.setAgentAddress(process.getAgentAddress());
 			event.setCommunity(process.getCommunity());
 			event.setTimeStamp(process.getTimeStamp());

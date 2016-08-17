@@ -84,6 +84,11 @@
       <artifactId>jasper-reports-filter</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.jasper-reports-compiler</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <repositories>

@@ -31,27 +31,42 @@ package org.opennms.netmgt.discovery;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.net.InetAddress;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.stream.StreamSupport;
 
+import org.apache.activemq.camel.component.ActiveMQComponent;
+import org.apache.camel.CamelContext;
+import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.impl.SimpleRegistry;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.network.IPAddress;
+import org.opennms.core.network.IPAddressRange;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.discovery.helper.LocationAwareTestRouteBuilder;
+import org.opennms.netmgt.discovery.messages.DiscoveryResults;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.collect.Maps;
 
 /**
  * A simple Spring context unit test for Discovery.
@@ -76,6 +91,8 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class DiscoveryIntegrationIT implements InitializingBean {
+
+    private static final String CUSTOM_LOCATION = "my-custom-location";
 
     @Autowired
     private Discovery m_discovery;
@@ -107,6 +124,7 @@ public class DiscoveryIntegrationIT implements InitializingBean {
         range.setEnd("127.0.5.254");
         range.setTimeout(5000);
         range.setRetries(0);
+        range.setLocation(CUSTOM_LOCATION);
 
         DiscoveryConfiguration config = m_discoveryConfig.getConfiguration();
         // Start immediately
@@ -141,13 +159,17 @@ public class DiscoveryIntegrationIT implements InitializingBean {
         // DiscoveryConfigFactory and erase our changes to 
         // the config
         //m_discovery.init();
-
+        addMockCamelRouteForLocation(CUSTOM_LOCATION, range);
         m_discovery.start();
 
         // TODO: We need to wait more than 30 seconds to account for the discovery
         // startup delay
         anticipator.waitForAnticipated(120000);
         anticipator.verifyAnticipated();
+        anticipator.getAnticipatedEventsReceived().stream().forEach(eachEvent -> {
+            Assert.assertNotNull(eachEvent.getParm("location"));
+            Assert.assertEquals(CUSTOM_LOCATION, eachEvent.getParm("location").getValue().getContent());
+        });
 
         m_discovery.stop();
     }
@@ -197,5 +219,27 @@ public class DiscoveryIntegrationIT implements InitializingBean {
         anticipator.verifyAnticipated();
 
         m_discovery.stop();
+    }
+
+    private static void addMockCamelRouteForLocation(final String location, final IncludeRange range) throws Exception {
+        SimpleRegistry registry = new SimpleRegistry();
+        CamelContext mockDiscoverer = new DefaultCamelContext(registry);
+        mockDiscoverer.addComponent("queuingservice", ActiveMQComponent.activeMQComponent("vm://localhost?create=false"));
+
+        final IPAddressRange ipAddressRange = new IPAddressRange(
+                new IPAddress(InetAddressUtils.addr(range.getBegin())),
+                new IPAddress(InetAddressUtils.addr(range.getEnd())));
+        final Iterator<IPAddress> iterator = ipAddressRange.iterator();
+        final Map<InetAddress, Long> discoveryResultMap = Maps.newHashMap();
+        while(iterator.hasNext()) {
+            IPAddress next = iterator.next();
+            discoveryResultMap.put(next.toInetAddress(), 1000L);
+        }
+        mockDiscoverer.addRoutes(new LocationAwareTestRouteBuilder(location, job -> new DiscoveryResults(
+                discoveryResultMap,
+                job.getForeignSource(),
+                job.getLocation()
+        )));
+        mockDiscoverer.start();
     }
 }

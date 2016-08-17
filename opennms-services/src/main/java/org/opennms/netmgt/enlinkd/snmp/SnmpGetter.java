@@ -79,7 +79,7 @@ public class SnmpGetter extends TableTracker {
        List<SnmpValue> val= null;
        LOG.debug("get: oids '{}'", oids);
        try {
-           val = m_client.get(m_agentConfig, oids).atLocation(m_location).execute().get();
+           val = m_client.get(m_agentConfig, oids).withLocation(m_location).execute().get();
        } catch (InterruptedException e) {
            LOG.error("Exception while snmp get", e);
            return null;

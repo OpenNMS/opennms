@@ -32,17 +32,14 @@ import org.opennms.netmgt.provision.detector.jdbc.request.JDBCRequest;
 import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
 import org.opennms.netmgt.provision.support.RequestBuilder;
 import org.opennms.netmgt.provision.support.ResponseValidator;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>JdbcQueryDetector class.</p>
  *
  * @author agalue
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class JdbcQueryDetector extends AbstractJdbcDetector {
 
     private String m_sqlQuery;
@@ -50,7 +47,7 @@ public class JdbcQueryDetector extends AbstractJdbcDetector {
     /**
      * <p>Constructor for JdbcQueryDetector.</p>
      */
-    protected JdbcQueryDetector(){
+    public JdbcQueryDetector(){
         super("JdbcQueryDetector", 3306);
     }
 

@@ -28,17 +28,14 @@
 
 package org.opennms.netmgt.provision.detector.jdbc;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>JdbcDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class JdbcDetector extends AbstractJdbcDetector{
     
     private static final String DEFAULT_SERVICE_NAME = "JDBC";

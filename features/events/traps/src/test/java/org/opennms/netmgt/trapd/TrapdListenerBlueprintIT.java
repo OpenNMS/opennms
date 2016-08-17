@@ -149,6 +149,11 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTest {
 		notification.setTrapProcessor(new TrapProcessor() {
 
 			@Override
+			public void setLocation(String location) {
+				// TODO: Assert something?
+			}
+
+			@Override
 			public void setCommunity(String community) {
 				LOG.info("Comparing community");
 				assertEquals("public", community);

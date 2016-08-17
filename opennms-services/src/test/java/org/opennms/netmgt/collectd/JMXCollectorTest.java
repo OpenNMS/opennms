@@ -107,6 +107,11 @@ public class JMXCollectorTest {
         }
 
         @Override
+        public String getLocationName() {
+            return null;
+        }
+
+        @Override
         public java.io.File getStorageDir() {
             return new java.io.File("");
         }

@@ -276,7 +276,7 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
                 // Create a metric for the syslog packet size
                 packetSizeHistogram.update(length);
 
-                SyslogConnection connection = new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId());
+                SyslogConnection connection = new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
 
                 try {
                     for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {

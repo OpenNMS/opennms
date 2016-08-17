@@ -96,7 +96,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jasperreports-maven-plugin</artifactId>
-        <version>1.0-beta-3-OPENNMS-20150402-1</version>
+        <version>${jasperreportsMavenPluginVersion}</version>
         <executions>
           <execution>
             <phase>compile</phase>
@@ -271,6 +271,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-detector-bsf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-detectorclient-rpc</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
