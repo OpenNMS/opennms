@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,22 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.trapd;
+package org.opennms.netmgt.dao.api;
 
-/**
- * A TrapdIpMgr that doesn't talk to the database.  If we want something
- * there for our test, we'll populate it.
- * 
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- */
-public class MockTrapdIpMgr extends TrapdIpManagerDaoImpl {
+import java.net.InetAddress;
 
-    @Override
-    public synchronized void dataSourceSync() {
-        // Don't do anything... don't want to have to mess with the DB here
-    }
+public interface InterfaceToNodeCache {
 
-    public synchronized void clearKnownIpsMap() {
-        m_knownips.clear();
-    }
+	void dataSourceSync();
+
+	int getNodeId(String location, InetAddress ipAddr);
+
+	int setNodeId(String location, InetAddress ipAddr, int nodeId);
+
+	int removeNodeId(String location, InetAddress ipAddr);
+
+	/**
+	 * Should only be used for testing.
+	 */
+	void clear();
 }

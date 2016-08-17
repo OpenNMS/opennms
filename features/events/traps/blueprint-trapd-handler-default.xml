@@ -25,8 +25,9 @@
 		</cm:default-properties>
 	</cm:property-placeholder>
 
-	<bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.TrapdIpManagerDaoImpl"/>
-	
+	<!-- Get a reference to the org.opennms.netmgt.dao.api.InterfaceToNodeCache -->
+	<reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory"/>
+
 	<!-- Get a reference to the org.opennms.netmgt.events.api.EventForwarder -->
 	<reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
 
@@ -45,7 +46,7 @@
 	</bean>
 
 	<bean id="trapNotificationHandlerDefault" class="org.opennms.netmgt.trapd.TrapNotificationHandlerDefaultImpl">
-		<property name="trapdIpManager" ref="trapdIpMgr"/>
+		<property name="interfaceToNodeCache" ref="interfaceToNodeCache"/>
 		<property name="processorFactory" ref="processorFactory"/>
 	</bean>
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,19 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.syslogd;
+package org.opennms.netmgt.dao.mock;
 
-import java.sql.SQLException;
+import java.net.InetAddress;
 
-public abstract interface SyslogdIPMgr {
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 
-	void dataSourceSync() throws SQLException;
-	
-	long getNodeId(String ipAddr);
-	
-	long setNodeId(String ipAddr, long nodeId);
-	
-	long removeNodeId(String ipAddr);
-	
-	long longValue(Long result);
+public class MockInterfaceToNodeCache implements InterfaceToNodeCache {
+
+    @Override
+    public int setNodeId(String location, InetAddress ipAddr, int nodeId) {
+        return 0;
+    }
+
+    @Override
+    public int removeNodeId(String location, InetAddress ipAddr) {
+        return 0;
+    }
+
+    @Override
+    public int getNodeId(String location, InetAddress ipAddr) {
+        return 0;
+    }
+
+    @Override
+    public void dataSourceSync() {}
+
+    @Override
+    public void clear() {}
 }

@@ -26,7 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.trapd;
+package org.opennms.netmgt.dao.hibernate;
+
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
+import java.net.InetAddress;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,6 +40,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -51,16 +57,15 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/org/opennms/netmgt/trapd/trapdIpMgr-test.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class TrapdIpManagerDaoImplIT implements InitializingBean {
+public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
 
     @Autowired
-    TrapdIpMgr m_trapdIpMgr;
+    InterfaceToNodeCache m_cache;
 
     @Autowired
     DatabasePopulator m_databasePopulator;
@@ -75,7 +80,7 @@ public class TrapdIpManagerDaoImplIT implements InitializingBean {
     @Before
     public void setUp() throws Exception {
         m_databasePopulator.populateDatabase();
-        m_trapdIpMgr.dataSourceSync();
+        m_cache.dataSourceSync();
 
         OnmsNode n = new OnmsNode(m_databasePopulator.getMonitoringLocationDao().getDefaultLocation(), "my-new-node");
         n.setForeignSource("junit");
@@ -93,19 +98,19 @@ public class TrapdIpManagerDaoImplIT implements InitializingBean {
 
     @Test
     @Transactional
-    public void testTrapdIpMgrSetId() throws Exception {
-        String ipAddr = m_databasePopulator.getNode2().getPrimaryInterface().getIpAddress().getHostAddress();
+    public void testSetId() throws Exception {
+        InetAddress ipAddr = m_databasePopulator.getNode2().getPrimaryInterface().getIpAddress();
         long expectedNodeId = Long.parseLong(m_databasePopulator.getNode2().getNodeId());
 
-        long nodeId = m_trapdIpMgr.getNodeId(ipAddr);
+        long nodeId = m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, ipAddr);
         Assert.assertEquals(expectedNodeId, nodeId);
 
         // Address already exists on database and it is not primary.
-        Assert.assertEquals(-1, m_trapdIpMgr.setNodeId("192.168.1.3", 1));
+        Assert.assertEquals(-1, m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"), 1));
 
         // Address already exists on database but the new node also contain the address and is their primary address.
-        Assert.assertEquals(1, m_trapdIpMgr.setNodeId("192.168.1.3", m_testNodeId)); // return old nodeId
-        Assert.assertEquals(m_testNodeId, m_trapdIpMgr.getNodeId("192.168.1.3")); // return the new nodeId
+        Assert.assertEquals(1, m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"), m_testNodeId)); // return old nodeId
+        Assert.assertEquals(m_testNodeId, m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"))); // return the new nodeId
     }
 
 }

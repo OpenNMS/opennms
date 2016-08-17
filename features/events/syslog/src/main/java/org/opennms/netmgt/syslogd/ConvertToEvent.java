@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
@@ -52,6 +52,7 @@ import org.opennms.netmgt.config.syslogd.ParameterAssignment;
 import org.opennms.netmgt.config.syslogd.ProcessMatch;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
+import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -95,10 +96,11 @@ public class ConvertToEvent {
      */
     public ConvertToEvent(
         final String systemId,
+        final String location,
         final DatagramPacket packet,
         final SyslogdConfig config
     ) throws UnsupportedEncodingException, MessageDiscardedException {
-        this(systemId, packet.getAddress(), packet.getPort(), new String(packet.getData(), 0, packet.getLength(), "US-ASCII"), config);
+        this(systemId, location, packet.getAddress(), packet.getPort(), new String(packet.getData(), 0, packet.getLength(), "US-ASCII"), config);
     }
 
     /**
@@ -117,6 +119,7 @@ public class ConvertToEvent {
      */
     public ConvertToEvent(
         final String systemId,
+        final String location,
         final InetAddress addr,
         final int port,
         final String data,
@@ -173,16 +176,15 @@ public class ConvertToEvent {
         // Set event host
         bldr.setHost(InetAddressUtils.getLocalHostName());
 
-        final String hostAddress = message.getHostAddress();
-        if (hostAddress != null && hostAddress.length() > 0) {
+        final InetAddress hostAddress = message.getHostAddress();
+        if (hostAddress != null) {
             // Set nodeId
-            // TODO: HZN-816: This call should find nodes based on location/address tuple
-            long nodeId = SyslogdIPMgrJDBCImpl.getInstance().getNodeId(hostAddress);
-            if (nodeId != -1) {
+            int nodeId = AbstractInterfaceToNodeCache.getInstance().getNodeId(location, hostAddress);
+            if (nodeId > 0) {
                 bldr.setNodeid(nodeId);
             }
 
-            bldr.setInterface(addr(hostAddress));
+            bldr.setInterface(hostAddress);
         }
         
         bldr.setLogDest("logndisplay");
@@ -224,7 +226,7 @@ public class ConvertToEvent {
                                                   containsIgnoreCase(uei.getSeverityCollection(), priorityTxt) &&
                                                   matchProcess(uei.getProcessMatch(), message.getProcessName()) && 
                                                   matchHostname(uei.getHostnameMatch(), message.getHostName()) &&
-                                                  matchHostAddr(uei.getHostaddrMatch(), message.getHostAddress());
+                                                  matchHostAddr(uei.getHostaddrMatch(), str(hostAddress));
 
                 // Single boolean check is added instead of performing multiple
                 // boolean check for both if and else if which causes a extra time

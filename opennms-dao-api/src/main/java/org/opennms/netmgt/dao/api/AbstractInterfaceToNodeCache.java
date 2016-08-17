@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,28 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.snmp;
+package org.opennms.netmgt.dao.api;
 
-import java.net.InetAddress;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public interface TrapProcessor {
+/**
+ * This class represents a singular instance that is used to map trap IP
+ * addresses to known nodes.
+ *
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ */
+public abstract class AbstractInterfaceToNodeCache implements InterfaceToNodeCache {
 
-    void setLocation(String location);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractInterfaceToNodeCache.class);
 
-    void setCommunity(String community);
+    private static final AtomicReference<InterfaceToNodeCache> s_instance = new AtomicReference<>();
 
-    void setTimeStamp(long timeStamp);
+    public static void setInstance(InterfaceToNodeCache cache) {
+        s_instance.set(cache);
+    }
 
-    void setVersion(String version);
-
-    void setAgentAddress(InetAddress agentAddress);
-
-    void processVarBind(SnmpObjId name, SnmpValue value);
-
-    void setTrapAddress(InetAddress trapAddress);
-
-    void setTrapIdentity(TrapIdentity trapIdentity);
-
+    /**
+     * @deprecated Inject this value instead of using singleton access.
+     */
+    public static InterfaceToNodeCache getInstance() {
+        return s_instance.get(); 
+    }
 }
