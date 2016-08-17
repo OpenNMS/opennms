@@ -15,6 +15,7 @@
     <module>core</module>
     <module>availability</module>
     <module>jasper-reports</module>
+    <module>jasper-reports-compiler</module>
     <module>jasper-reports-filter</module>
     <module>repository</module>
     <module>model</module>
