@@ -64,7 +64,7 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <arguments>install</arguments>
+              <arguments>install --allow-root</arguments>
             </configuration>
           </execution>
           <execution>
@@ -692,12 +692,6 @@
       <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>   
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.node-page-list</artifactId>
-      <version>${project.version}</version>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>

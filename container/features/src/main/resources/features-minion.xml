@@ -83,4 +83,23 @@
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.rpc-impl/${project.version}</bundle>
     </feature>
+
+    <feature name="minion-provisiond-detectors" description="Minion :: Provisond :: Detectors" version="${project.version}">
+      <feature>opennms-icmp-jna</feature>
+      <feature>opennms-provisioning-detectors</feature>
+      <feature>minion-rpc-server</feature>
+      <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detectorclient-rpc/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-shell-provision" description="Minion :: Shell :: Provision" version="${project.version}">
+      <feature>opennms-core</feature>
+      <feature>opennms-provisioning-api</feature>
+      <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.provision/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-shell" description="Minion :: Shell" version="${project.version}">
+      <feature>minion-shell-provision</feature>
+    </feature>
 </features>

@@ -53,6 +53,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class RadiusAuthDetectorTest implements ApplicationContextAware, InitializingBean {
 
     @Autowired
+    public RadiusAuthDetectorFactory m_detectorFactory;
+    
     public RadiusAuthDetector m_detector;
 
     @Override
@@ -63,6 +65,7 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
     @Before
     public void setUp(){
         MockLogAppender.setupLogging();
+        m_detector = m_detectorFactory.createDetector();
     }
 
     @Test(timeout=90000)

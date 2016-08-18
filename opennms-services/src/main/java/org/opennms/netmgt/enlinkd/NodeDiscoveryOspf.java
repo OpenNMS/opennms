@@ -84,7 +84,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
         try {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ospfGeneralGroup).
             withDescription("ospfGeneralGroup").
-            atLocation(getLocation()).
+            withLocation(getLocation()).
             execute().
             get();
        } catch (ExecutionException e) {
@@ -126,7 +126,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
         try {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ospfNbrTableTracker).
             withDescription("ospfNbrTable").
-            atLocation(getLocation()).
+            withLocation(getLocation()).
             execute().
             get();
        } catch (ExecutionException e) {
@@ -147,7 +147,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
         try {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ospfIfTableTracker).
             withDescription("ospfIfTable").
-            atLocation(getLocation()).
+            withLocation(getLocation()).
             execute().
             get();
        } catch (ExecutionException e) {

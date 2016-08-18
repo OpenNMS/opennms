@@ -8,6 +8,7 @@
        <list>
          <value>META-INF/opennms/applicationContext-eventDaemon.xml</value>
          <value>META-INF/opennms/applicationContext-eventUtil.xml</value>
+         <value>META-INF/opennms/applicationContext-daoEvents.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg ref="daoContext" />

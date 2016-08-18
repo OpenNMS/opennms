@@ -2,7 +2,6 @@
 <module rename-to="coreweb">
 	<!-- <inherits name="com.google.gwt.user.User" /> -->
 	<inherits name="org.opennms.gwt.web.ui.asset.Asset"/>
-	<inherits name="org.opennms.features.node.list.gwt.NodePageList"/>
 	<inherits name="org.opennms.features.gwt.combobox.NodeSuggestionCombobox"/>
 	<inherits name="org.opennms.features.gwt.ksc.combobox.KSCResourceCombobox"/>
 	<inherits name="org.opennms.features.gwt.ksc.add.KSCResourceAddGraph"/>
@@ -14,7 +13,6 @@
 	
 	<source path="client" />
 	<entry-point class="org.opennms.gwt.web.ui.client.CoreWeb" />
-<!-- 	<entry-point class='org.opennms.features.node.list.gwt.client.NodeInterfaceList'/> -->
 
 	<collapse-all-properties/>
 </module>

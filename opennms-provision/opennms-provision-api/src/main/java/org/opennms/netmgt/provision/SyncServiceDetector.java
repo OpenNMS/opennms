@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.provision;
 
-import java.net.InetAddress;
-
 /**
  * ServiceDetector
  *
@@ -37,13 +35,13 @@ import java.net.InetAddress;
  * @version $Id: $
  */
 public interface SyncServiceDetector extends ServiceDetector {
-    
+
     /**
-     * <p>isServiceDetected</p>
+     * <p>detect</p>
      *
-     * @param address a {@link java.net.InetAddress} object.
-     * @return a boolean.
+     * @param request a {@link DetectRequest} object.
+     * @return
      */
-    boolean isServiceDetected(InetAddress address);
+    DetectResults detect(DetectRequest request);
 
 }

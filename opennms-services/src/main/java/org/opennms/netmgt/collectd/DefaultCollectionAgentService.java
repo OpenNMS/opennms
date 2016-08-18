@@ -43,6 +43,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,7 +188,16 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
     public String getForeignId() {
        return getIpInterface().getNode().getForeignId();
     }
-    
+
+    @Override
+    public String getLocationName() {
+        final OnmsMonitoringLocation location = getIpInterface().getNode().getLocation();
+        if (location != null) {
+            return location.getLocationName();
+        }
+        return null;
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getStorageDir()
      */

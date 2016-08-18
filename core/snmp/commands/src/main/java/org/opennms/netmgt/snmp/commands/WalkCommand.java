@@ -74,7 +74,7 @@ public class WalkCommand extends OsgiCommandSupport {
         final SnmpAgentConfig agent = snmpAgentConfigFactory.getAgentConfig(InetAddress.getByName(m_host));
         final CompletableFuture<List<SnmpResult>> future = locationAwareSnmpClient.walk(agent, snmpObjIds)
             .withDescription("snmp:walk")
-            .atLocation(m_location)
+            .withLocation(m_location)
             .execute();
 
         while (true) {

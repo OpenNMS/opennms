@@ -56,6 +56,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class NsclientDetectorTest implements InitializingBean {
 
     @Autowired
+    private NsclientDetectorFactory m_detectorFactory;
+    
     private NsclientDetector m_detector;
 
     private SimpleServer m_server = null;
@@ -76,6 +78,7 @@ public class NsclientDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws Exception{
         MockLogAppender.setupLogging();
+        m_detector = m_detectorFactory.createDetector();
         // Initialize Mock NSClient Server
         m_server  = new SimpleServer() {
             @Override

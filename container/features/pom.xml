@@ -206,6 +206,8 @@
             <feature>opennms-model</feature>
             <feature>opennms-poller-api</feature>
             <feature>opennms-provisioning</feature>
+            <feature>opennms-provisioning-detectors</feature>
+            <feature>opennms-provisioning-shell</feature>
             <feature>opennms-reporting</feature>
             <feature>opennms-rrd-api</feature>
             <feature>opennms-rrd-jrobin</feature>
@@ -572,8 +574,22 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-detectorclient-rpc</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.commands</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-wmi</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

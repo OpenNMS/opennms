@@ -46,8 +46,10 @@ import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager.EmptyEventConfDao;
+import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
@@ -95,6 +97,11 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 		);
 
 		services.put(
+			InterfaceToNodeCache.class.getName(),
+			new KeyValueHolder<Object, Dictionary>(new MockInterfaceToNodeCache(), new Properties())
+		);
+
+		services.put(
 			EventForwarder.class.getName(),
 			new KeyValueHolder<Object, Dictionary>(new EventForwarder() {
 				@Override
@@ -136,10 +143,10 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 		trapHandler.setExpectedMessageCount(1);
 
 		/*
-		MockTrapdIpMgr m_trapdIpMgr=new MockTrapdIpMgr();
+		MockTrapdIpMgr m_cache=new MockTrapdIpMgr();
 
-		m_trapdIpMgr.clearKnownIpsMap();
-		m_trapdIpMgr.setNodeId("127.0.0.1", 1);
+		m_cache.clearKnownIpsMap();
+		m_cache.setNodeId("127.0.0.1", 1);
 		*/
 
 		// create instance of snmp4JV2cTrap

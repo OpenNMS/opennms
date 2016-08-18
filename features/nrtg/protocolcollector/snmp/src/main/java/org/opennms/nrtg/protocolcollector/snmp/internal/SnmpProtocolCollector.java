@@ -30,23 +30,25 @@ package org.opennms.nrtg.protocolcollector.snmp.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
-import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SingleInstanceTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
-import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.nrtg.api.ProtocolCollector;
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * A ProtocolCollector to execute CollectionJobs for SNMP
@@ -55,19 +57,13 @@ import org.slf4j.LoggerFactory;
  */
 public class SnmpProtocolCollector implements ProtocolCollector {
 	
-    private static Logger logger = LoggerFactory.getLogger(SnmpProtocolCollector.class);
+    private static Logger LOG = LoggerFactory.getLogger(SnmpProtocolCollector.class);
 
     private static final String PROTOCOL = "SNMP";
 
-    private SnmpStrategy m_snmpStrategy;
+    private NodeDao m_nodeDao;
 
-    public SnmpStrategy getSnmpStrategy() {
-        return m_snmpStrategy;
-    }
-
-    public void setSnmpStrategy(SnmpStrategy snmpStrategy) {
-        m_snmpStrategy = snmpStrategy;
-    }
+    private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
     private String typeToString(int type) {
         switch (type) {
@@ -98,7 +94,7 @@ public class SnmpProtocolCollector implements ProtocolCollector {
 
     @Override
     public CollectionJob collect(final CollectionJob collectionJob) {
-        logger.info("SnmpProtocolCollector is collecting collectionJob '{}'", collectionJob.getId());
+        LOG.info("SnmpProtocolCollector is collecting collectionJob '{}'", collectionJob.getId());
 
         SnmpAgentConfig snmpAgentConfig = SnmpAgentConfig.parseProtocolConfigurationString(collectionJob.getProtocolConfiguration());
 
@@ -113,7 +109,7 @@ public class SnmpProtocolCollector implements ProtocolCollector {
 
 				@Override
 				protected void storeResult(SnmpResult result) {
-		            logger.trace("Collected SnmpValue '{}'", result);
+				    LOG.trace("Collected SnmpValue '{}'", result);
 					SnmpValue value = result.getValue();
 					String metricType = value == null ? "unknown" : typeToString(value.getType());
 					collectionJob.setMetricValue(metricObjId, metricType, value == null ? null : value.toDisplayString());
@@ -122,14 +118,14 @@ public class SnmpProtocolCollector implements ProtocolCollector {
 				@Override
 				public void setFailed(boolean failed) {
 					super.setFailed(failed);
-		            logger.trace("Collection Failed for metricObjId '{}'", metricObjId);
+					LOG.trace("Collection Failed for metricObjId '{}'", metricObjId);
 					collectionJob.setMetricValue(metricObjId, "unknown", null);
 				}
 
 				@Override
 				public void setTimedOut(boolean timedOut) {
 					super.setTimedOut(timedOut);
-		            logger.trace("Collection timedOut for metricObjId '{}'", metricObjId);
+					LOG.trace("Collection timedOut for metricObjId '{}'", metricObjId);
 					collectionJob.setMetricValue(metricObjId, "unknown", null);
 				}
 
@@ -137,19 +133,32 @@ public class SnmpProtocolCollector implements ProtocolCollector {
 			trackers.add(instanceTracker);
         	
         }
-        
-        CollectionTracker tracker = new AggregateTracker(trackers);
-        
-        SnmpWalker walker = m_snmpStrategy.createWalker(snmpAgentConfig, "SnmpProtocolCollector for " + snmpAgentConfig.getAddress(), tracker);
 
-        walker.start();
+        // Attempt to determine the location name
+        String locationName = null;
+        OnmsNode node = m_nodeDao.get(collectionJob.getNodeId());
+        if (node != null) {
+            OnmsMonitoringLocation monitoringLocation = node.getLocation();
+            if (monitoringLocation != null) {
+                locationName = monitoringLocation.getLocationName();
+            }
+        }
+
+        AggregateTracker tracker = new AggregateTracker(trackers);
+        CompletableFuture<AggregateTracker> future = m_locationAwareSnmpClient.walk(snmpAgentConfig, tracker)
+            .withDescription("NRTG")
+            .withLocation(locationName)
+            .execute();
+
         try {
-			walker.waitFor();
-		} catch (InterruptedException e) {
-			// TODO What should we do here
-		}
+            future.get();
+		} catch (ExecutionException e) {
+		    LOG.warn("Failed to collect SNMP metrics for {}.", snmpAgentConfig.getAddress(), e);
+        } catch (InterruptedException e) {
+            LOG.warn("Interupted while collectiong SNMP metrics for {}.", snmpAgentConfig.getAddress());
+            Thread.interrupted();
+        }
         return collectionJob;
-        
     }
 
     /*
@@ -160,6 +169,14 @@ public class SnmpProtocolCollector implements ProtocolCollector {
     @Override
     public String getProtcol() {
         return PROTOCOL;
+    }
+
+    public void setLocationAwareSnmpClient(LocationAwareSnmpClient locationAwareSnmpClient) {
+        m_locationAwareSnmpClient = locationAwareSnmpClient;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
     }
 
 }

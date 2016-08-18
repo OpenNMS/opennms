@@ -181,7 +181,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         try {
             m_client.walk(config,cdpGlobalGroup)
             .withDescription(trackerName)
-            .atLocation(null)
+            .withLocation(null)
             .execute()
             .get();
         } catch (final InterruptedException e) {
@@ -209,7 +209,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         try {
             m_client.walk(config,cdpGlobalGroup)
             .withDescription(trackerName)
-            .atLocation(null)
+            .withLocation(null)
             .execute()
             .get();
         } catch (final InterruptedException e) {
@@ -249,7 +249,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         try {
             m_client.walk(config,cdpCacheTableTracker)
             .withDescription(trackerName)
-            .atLocation(null)
+            .withLocation(null)
             .execute()
             .get();
         } catch (final InterruptedException e) {
@@ -274,7 +274,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         try {
             m_client.walk(config,ospfGeneralGroup)
             .withDescription(trackerName)
-            .atLocation(null)
+            .withLocation(null)
             .execute()
             .get();
         } catch (final InterruptedException e) {
@@ -328,7 +328,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         try {
             m_client.walk(config,ospfNbrTableTracker)
             .withDescription(trackerName)
-            .atLocation(null)
+            .withLocation(null)
             .execute()
             .get();
         } catch (final InterruptedException e) {
@@ -355,7 +355,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         try {
             m_client.walk(config,ospfIfTableTracker)
             .withDescription(trackerName)
-            .atLocation(null)
+            .withLocation(null)
             .execute()
             .get();
         } catch (final InterruptedException e) {
@@ -410,7 +410,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         try {
             m_client.walk(config,lldpLocalGroup)
             .withDescription(trackerName)
-            .atLocation(null)
+            .withLocation(null)
             .execute()
             .get();
         } catch (final InterruptedException e) {
@@ -510,7 +510,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         try {
             m_client.walk(config,lldpRemTable)
             .withDescription(trackerName)
-            .atLocation(null)
+            .withLocation(null)
             .execute()
             .get();
         } catch (final InterruptedException e) {
@@ -532,7 +532,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         try {
             m_client.walk(config,lldpLocalGroup)
             .withDescription(trackerName)
-            .atLocation(null)
+            .withLocation(null)
             .execute()
             .get();
         } catch (final InterruptedException e) {
@@ -624,7 +624,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             m_client.walk(config,
                           lldpRemTable)
                           .withDescription("lldpRemTable")
-                          .atLocation(null)
+                          .withLocation(null)
                           .execute()
                           .get();
         } catch (ExecutionException e) {
@@ -686,7 +686,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             m_client.walk(config,
                           lldpRemTable)
                           .withDescription("lldpRemTable")
-                          .atLocation(null)
+                          .withLocation(null)
                           .execute()
                           .get();
         } catch (final InterruptedException e) {
@@ -709,7 +709,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             m_client.walk(config,
                           tracker)
                           .withDescription(trackerName)
-                          .atLocation(null)
+                          .withLocation(null)
                           .execute()
                           .get();
         } catch (final InterruptedException e) {
@@ -746,7 +746,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             m_client.walk(config,
                           tracker)
                           .withDescription(trackerName)
-                          .atLocation(null)
+                          .withLocation(null)
                           .execute()
                           .get();
         } catch (final InterruptedException e) {
@@ -794,7 +794,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             m_client.walk(config,
                           tracker)
                           .withDescription(trackerName)
-                          .atLocation(null)
+                          .withLocation(null)
                           .execute()
                           .get();
         } catch (final InterruptedException e) {
@@ -867,7 +867,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             m_client.walk(config,
                           tracker)
                           .withDescription(trackerName)
-                          .atLocation(null)
+                          .withLocation(null)
                           .execute()
                           .get();
         } catch (final InterruptedException e) {
@@ -918,7 +918,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             m_client.walk(config,
                           tracker)
                           .withDescription(trackerName)
-                          .atLocation(null)
+                          .withLocation(null)
                           .execute()
                           .get();
         } catch (final InterruptedException e) {
@@ -958,7 +958,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             m_client.walk(config,
                           tracker)
                           .withDescription(trackerName)
-                          .atLocation(null)
+                          .withLocation(null)
                           .execute()
                           .get();
         } catch (final InterruptedException e) {
@@ -992,7 +992,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             m_client.walk(config,
                           tracker)
                           .withDescription(trackerName)
-                          .atLocation(null)
+                          .withLocation(null)
                           .execute()
                           .get();
         } catch (final InterruptedException e) {
@@ -1038,7 +1038,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             m_client.walk(config,
                           tracker)
                           .withDescription(trackerName)
-                          .atLocation(null)
+                          .withLocation(null)
                           .execute()
                           .get();
         } catch (final InterruptedException e) {
@@ -1114,7 +1114,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             m_client.walk(config1,
                           tracker1)
                           .withDescription(trackerName)
-                          .atLocation(null)
+                          .withLocation(null)
                           .execute()
                           .get();
         } catch (final InterruptedException e) {
@@ -1134,7 +1134,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             m_client.walk(config2,
                           tracker2)
                           .withDescription(trackerName)
-                          .atLocation(null)
+                          .withLocation(null)
                           .execute()
                           .get();
         } catch (final InterruptedException e) {

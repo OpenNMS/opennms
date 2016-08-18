@@ -144,7 +144,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         final Dot1dBaseTracker dot1dbase = new Dot1dBaseTracker();
 
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(), dot1dbase).withDescription("dot1dbase").atLocation(getLocation()).execute().get();
+            m_linkd.getLocationAwareSnmpClient().walk(getPeer(), dot1dbase).withDescription("dot1dbase").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.info("run: Agent error while scanning the dot1dbase table", e);
             return null; 
@@ -194,7 +194,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         try {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(), vtpStatus).
             withDescription("vtpVersion").
-            atLocation(getLocation()).
+            withLocation(getLocation()).
             execute().
             get();
        } catch (ExecutionException e) {
@@ -225,7 +225,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         try {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ciscoVtpVlanTableTracker).
             withDescription("ciscoVtpVlan").
-            atLocation(getLocation()).
+            withLocation(getLocation()).
             execute().
             get();
         } catch (ExecutionException e) {
@@ -250,7 +250,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         try {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(), dot1dBasePortTableTracker).
             withDescription("dot1dBasePortTable").
-            atLocation(getLocation()).
+            withLocation(getLocation()).
             execute().
             get();
         } catch (ExecutionException e) {
@@ -315,7 +315,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         
         try {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
-                                                      dot1dTpFdbTableTracker).withDescription("dot1dTbFdbPortTable").atLocation(getLocation()).execute().get();
+                                                      dot1dTpFdbTableTracker).withDescription("dot1dTbFdbPortTable").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.error("run: collection execution failed, exiting", e);
         } catch (final InterruptedException e) {
@@ -377,7 +377,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         };
         try {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
-                                                      dot1qTpFdbTableTracker).withDescription("dot1qTbFdbPortTable").atLocation(getLocation()).execute().get();
+                                                      dot1qTpFdbTableTracker).withDescription("dot1qTbFdbPortTable").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.error("run: collection execution failed, exiting", e);
         } catch (final InterruptedException e) {
@@ -406,7 +406,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
         try {
             m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
-                                                      stpPortTableTracker).withDescription("dot1dStpPortTable").atLocation(getLocation()).execute().get();
+                                                      stpPortTableTracker).withDescription("dot1dStpPortTable").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.error("run: collection execution failed, exiting", e);
         } catch (final InterruptedException e) {

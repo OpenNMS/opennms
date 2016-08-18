@@ -31,12 +31,10 @@ package org.opennms.netmgt.provision.detector.icmp;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.icmp.PingConstants;
-import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>IcmpDetector class.</p>
@@ -44,11 +42,12 @@ import org.springframework.stereotype.Component;
  * @author ranger
  * @version $Id: $
  */
-@Component
-@Scope("prototype")
 public class IcmpDetector extends SyncAbstractDetector {
     
     private static final Logger LOG = LoggerFactory.getLogger(IcmpDetector.class);
+
+    private Pinger pinger;
+
     /**
      * <p>Constructor for IcmpDetector.</p>
      */
@@ -65,7 +64,7 @@ public class IcmpDetector extends SyncAbstractDetector {
         boolean found = false;
         try {
             for(int i = 0; i < getRetries() && !found; i++) {
-                Number retval = PingerFactory.getInstance().ping(address, getTimeout(), getRetries());
+                Number retval = pinger.ping(address, getTimeout(), getRetries());
                 
                 LOG.debug("isServiceDetected: Response time for address: {} is: {}.", address, retval);
                 
@@ -86,18 +85,18 @@ public class IcmpDetector extends SyncAbstractDetector {
         return found;
     }
 
-    
-    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         setTimeout(PingConstants.DEFAULT_TIMEOUT);
         setRetries(PingConstants.DEFAULT_RETRIES);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void dispose() {
-        // TODO Auto-generated method stub
-        
+        // pass
+    }
+
+    public void setPinger(Pinger pinger) {
+        this.pinger = pinger;
     }
 }

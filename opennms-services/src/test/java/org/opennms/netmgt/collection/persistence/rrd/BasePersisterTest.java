@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
@@ -54,7 +55,6 @@ import org.opennms.netmgt.collectd.StringAttributeType;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
@@ -66,6 +66,8 @@ import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
+import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockUtil;
@@ -90,6 +92,7 @@ public class BasePersisterTest {
     private ServiceParameters m_serviceParams;
     private RrdStrategy<?, ?> m_rrdStrategy;
     private FilesystemResourceStorageDao m_resourceStorageDao;
+    private LocationAwareSnmpClient m_locationAwareSnmpClient = new LocationAwareSnmpClientRpcImpl(new MockRpcClientFactory());
 
     /* erg, Rule fields must be public */
     @Rule public TestName m_testName = new TestName();
@@ -205,9 +208,9 @@ public class BasePersisterTest {
         SnmpCollectionAgent agent = DefaultCollectionAgent.create(m_intf.getId(), m_ifDao, m_transMgr);
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
-        
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
-        
+
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig, m_locationAwareSnmpClient);
+
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
         
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
