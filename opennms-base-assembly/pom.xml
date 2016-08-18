@@ -604,11 +604,6 @@
       <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
     </dependency>   
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.node-page-list</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.core</artifactId>
     </dependency>
