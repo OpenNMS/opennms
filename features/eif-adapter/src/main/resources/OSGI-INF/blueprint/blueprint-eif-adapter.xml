@@ -27,6 +27,7 @@
   </cm:property-placeholder>
 
   <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
 
   <!--
         Reduces the graceful shutdown time from 300 to 15 seconds.
@@ -35,7 +36,9 @@
     <property name="timeout" value="15"/>
   </bean>
 
-  <bean id="eifMessageDecoder" class="org.opennms.features.eifadapter.EifMessageDecoder"/>
+  <bean id="eifMessageDecoder" class="org.opennms.features.eifadapter.EifMessageDecoder">
+    <property name="nodeDao" ref="nodeDao" />
+  </bean>
 
   <camelContext autoStartup="true" id="eifAdapterCamelContext" xmlns="http://camel.apache.org/schema/blueprint" allowUseOriginalMessage="false">
     <propertyPlaceholder id="properties" location="blueprint:eifAdapterProperties" />
