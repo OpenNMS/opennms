@@ -370,7 +370,7 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
                             .thenAcceptAsync(c -> c.call(), m_syslogProcessorExecutor);
                             */
 
-                            SyslogConnection conn = new SyslogConnection(source.getAddress(), source.getPort(), message.buffer, m_config, m_distPollerDao.whoami().getId());
+                            SyslogConnection conn = new SyslogConnection(source.getAddress(), source.getPort(), message.buffer, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
 
                             // Convert the syslog packet into an OpenNMS event
                             CompletableFuture<SyslogProcessor> proc = CompletableFuture.supplyAsync(conn::call, m_syslogConnectionExecutor);

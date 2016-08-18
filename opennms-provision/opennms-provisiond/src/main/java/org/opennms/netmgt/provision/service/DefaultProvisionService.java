@@ -1324,7 +1324,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource) {
+    public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource, final String locationString) {
 
         OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
 
@@ -1344,7 +1344,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             protected OnmsNode doInsert() {
                 final Date now = new Date();
 
-                OnmsMonitoringLocation location = createLocationIfNecessary(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+                OnmsMonitoringLocation location = createLocationIfNecessary(locationString);
                 // Associate the location with the node
                 final OnmsNode node = new OnmsNode(location);
 

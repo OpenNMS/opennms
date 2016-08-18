@@ -278,7 +278,7 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
                             // Create a metric for the syslog packet size
                             packetSizeHistogram.update(buffer.remaining());
                             
-                            SyslogConnection connection = new SyslogConnection(SyslogConnection.copyPacket(source.getAddress(), source.getPort(), buffer), m_config, m_distPollerDao.whoami().getId());
+                            SyslogConnection connection = new SyslogConnection(SyslogConnection.copyPacket(source.getAddress(), source.getPort(), buffer), m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
 
                             try {
                                 for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {

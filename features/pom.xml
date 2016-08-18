@@ -88,7 +88,6 @@
     <module>newts-repository-converter</module>
 
     <!-- GWT UI plugins -->
-    <module>node-page-list</module>
     <module>opennms-gwt-theme</module>
     <module>gwt-bootstrap</module>
     <module>gwt-ksc-add</module>

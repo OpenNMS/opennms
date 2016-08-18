@@ -34,6 +34,10 @@
 	</service>
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<bean class="org.opennms.netmgt.provision.detector.simple.ImapsDetectorFactory" />
+	</service>
+
+	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.netmgt.provision.detector.simple.LdapDetectorFactory" />
 	</service>
 

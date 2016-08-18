@@ -45,6 +45,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.util.KeyValueHolder;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,8 +61,11 @@ import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.dao.DistPollerDaoMinion;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
+import org.opennms.netmgt.discovery.helper.LocationAwareTestRouteBuilder;
 import org.opennms.netmgt.discovery.messages.DiscoveryJob;
 import org.opennms.netmgt.discovery.messages.DiscoveryResults;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -138,6 +142,13 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
         return "file:blueprint-discovery.xml";
     }
 
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+
+        InterfaceToNodeCacheDaoImpl.setInstance(new MockInterfaceToNodeCache());
+    }
+
     @Test(timeout=60000)
     public void testDiscover() throws Exception {
 
@@ -149,31 +160,16 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
         CamelContext mockDiscoverer = new DefaultCamelContext(registry);
         mockDiscoverer.addComponent("queuingservice", ActiveMQComponent.activeMQComponent("vm://localhost?create=false"));
 
-        mockDiscoverer.addRoutes(new RouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                JmsQueueNameFactory factory = new JmsQueueNameFactory("Discovery", "Discoverer", LOCATION);
-                String from = String.format("queuingservice:%s", factory.getName());
-
-                from(from)
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        DiscoveryJob job = exchange.getIn().getBody(DiscoveryJob.class);
-                        String foreignSource = job.getForeignSource();
-                        String location = job.getLocation();
-
-                        Message out = exchange.getOut();
-                        DiscoveryResults results = new DiscoveryResults(
-                            Collections.singletonMap(InetAddressUtils.addr("4.2.2.2"), 1000L),
-                            foreignSource,
-                            location
-                        );
-                        out.setBody(results);
-                    }
-                });
-            }
-        });
+        mockDiscoverer.addRoutes(new LocationAwareTestRouteBuilder(LOCATION, job -> {
+            final String foreignSource = job.getForeignSource();
+            final String location = job.getLocation();
+            final DiscoveryResults results = new DiscoveryResults(
+                    Collections.singletonMap(InetAddressUtils.addr("4.2.2.2"), 1000L),
+                    foreignSource,
+                    location
+            );
+            return results;
+        }));
 
         mockDiscoverer.start();
 
@@ -291,4 +287,5 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
             mockDiscoverer.stop();
         }
     }
+
 }

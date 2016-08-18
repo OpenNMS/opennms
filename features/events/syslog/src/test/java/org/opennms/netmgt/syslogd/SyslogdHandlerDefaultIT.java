@@ -49,6 +49,7 @@ import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -114,7 +115,7 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTest {
 		// Send a SyslogConnection
 		template.sendBody(
 			"queuingservice:" + factory.getName(),
-			JaxbUtils.marshal(new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap(messageBytes), config, systemId.toString()))
+			JaxbUtils.marshal(new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap(messageBytes), config, systemId.toString(), MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))
 		);
 
 		assertMockEndpointsSatisfied();

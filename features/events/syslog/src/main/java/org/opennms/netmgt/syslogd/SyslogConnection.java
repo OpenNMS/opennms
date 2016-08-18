@@ -63,6 +63,7 @@ public class SyslogConnection implements Callable<Callable<?>> {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogConnection.class);
 
     private String m_systemId;
+    private String m_location;
     private InetAddress m_sourceAddress;
     private int m_port;
     private ByteBuffer m_bytes;
@@ -75,13 +76,15 @@ public class SyslogConnection implements Callable<Callable<?>> {
     public SyslogConnection() {
     }
 
-    public SyslogConnection(final DatagramPacket packet, final SyslogdConfig config, final String systemId) {
-        this(packet.getAddress(), packet.getPort(), ByteBuffer.wrap(packet.getData(), 0, packet.getLength()), config, systemId);
+    public SyslogConnection(final DatagramPacket packet, final SyslogdConfig config, final String systemId, final String location) {
+        this(packet.getAddress(), packet.getPort(), ByteBuffer.wrap(packet.getData(), 0, packet.getLength()), config, systemId, location);
     }
 
-    public SyslogConnection(final InetAddress sourceAddress, final int port, final ByteBuffer bytes, final SyslogdConfig config, final String systemId) {
+    public SyslogConnection(final InetAddress sourceAddress, final int port, final ByteBuffer bytes, final SyslogdConfig config, final String systemId, final String location) {
         if (systemId == null) {
             throw new IllegalArgumentException("System ID cannot be null");
+        } else if (location == null) {
+            throw new IllegalArgumentException("Location cannot be null");
         } else if (sourceAddress == null) {
             throw new IllegalArgumentException("Source address cannot be null");
         } else if (bytes == null) {
@@ -91,6 +94,7 @@ public class SyslogConnection implements Callable<Callable<?>> {
         }
 
         m_systemId = systemId;
+        m_location = location;
         m_sourceAddress = sourceAddress;
         m_port = port;
         m_bytes = bytes;
@@ -104,6 +108,15 @@ public class SyslogConnection implements Callable<Callable<?>> {
 
     public void setSystemId(String systemId) {
         m_systemId = systemId;
+    }
+
+    @XmlAttribute
+    public String getLocation() {
+        return m_location;
+    }
+
+    public void setLocation(String location) {
+        m_location = location;
     }
 
     @XmlAttribute
@@ -163,6 +176,7 @@ public class SyslogConnection implements Callable<Callable<?>> {
             // TODO: Change to a static call?
             ConvertToEvent re = new ConvertToEvent(
                 m_systemId,
+                m_location,
                 m_sourceAddress,
                 m_port,
                 // Decode the packet content as ASCII

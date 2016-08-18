@@ -34,6 +34,8 @@ import org.opennms.netmgt.snmp.SnmpValue;
 
 public interface TrapProcessor {
 
+    void setLocation(String location);
+
     void setCommunity(String community);
 
     void setTimeStamp(long timeStamp);

@@ -33,6 +33,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.opennms.core.concurrent.ExecutorFactory;
 import org.opennms.core.concurrent.ExecutorFactoryJavaImpl;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,13 +53,13 @@ public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandl
 
 	private TrapQueueProcessorFactory m_processorFactory;
 
-	private TrapdIpMgr m_trapdIpManager;
+	private InterfaceToNodeCache m_cache;
 
 	@Override
 	public void handleTrapNotification(final TrapNotification message) {
 		try {
 			// HZN-632: Call message.setProcessor() to change the processor to an EventCreator
-			message.setTrapProcessor(new EventCreator(m_trapdIpManager));
+			message.setTrapProcessor(new EventCreator(m_cache));
 			// Use the TrapQueueProcessorFactory to construct a TrapQueueProcessor
 			TrapQueueProcessor processor = m_processorFactory.getInstance(message);
 			// Call the processor asynchronously
@@ -85,15 +86,15 @@ public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandl
 	/**
 	 * @return the trapdIpManager
 	 */
-	public TrapdIpMgr getTrapdIpManager() {
-		return m_trapdIpManager;
+	public InterfaceToNodeCache getInterfaceToNodeCache() {
+		return m_cache;
 	}
 
 	/**
-	 * @param trapdIpManager the TrapdIpMgr to set
+	 * @param cache the InterfaceToNodeCache to set
 	 */
-	public void setTrapdIpManager(TrapdIpMgr trapdIpManager) {
-		this.m_trapdIpManager = trapdIpManager;
+	public void setInterfaceToNodeCache(InterfaceToNodeCache cache) {
+		m_cache = cache;
 	}
 
 }
