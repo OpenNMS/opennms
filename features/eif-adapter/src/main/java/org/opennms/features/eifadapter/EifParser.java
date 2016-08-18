@@ -48,10 +48,9 @@ import org.slf4j.LoggerFactory;
 public class EifParser {
     public static final Logger LOG = LoggerFactory.getLogger(EifParser.class);
     private static final int eifStartOffset = 37;
-    private static NodeDao nodeDao;
     enum m_eifSeverities { FATAL, CRITICAL, MINOR, WARNING, OK, INFO, HARMLESS, UNKNOWN };
 
-    public static List<Event> translateEifToOpenNMS(StringBuilder eifBuff) {
+    public static List<Event> translateEifToOpenNMS(NodeDao nodeDao, StringBuilder eifBuff) {
 
         // Create a list of events to return to the packet processor
         List<Event> translatedEvents = new ArrayList<>();
@@ -73,7 +72,7 @@ public class EifParser {
                         replaceAll(System.getProperty("line.separator"),"");
                 // Parse the EIF slots into OpenNMS parms
                 Map<String, String> eifSlotMap = parseEifSlots(eifSlots);
-                long nodeId = connectEifEventToNode(eifSlotMap);
+                long nodeId = connectEifEventToNode(nodeDao, eifSlotMap);
                 List<Parm> parmList = new ArrayList<>();
                 eifSlotMap.entrySet().forEach(p -> parmList.add(new Parm(p.getKey(),p.getValue())));
 
@@ -109,7 +108,7 @@ public class EifParser {
         return mappedEifSlots;
     }
 
-    private static long connectEifEventToNode(Map<String, String> eifSlotMap) {
+    private static long connectEifEventToNode(NodeDao nodeDao, Map<String, String> eifSlotMap) {
         /*
          * Available slots for identifying the node:
          * fqhostname - Base EVENT class attribute that contains the fully qualified hostname, if available
