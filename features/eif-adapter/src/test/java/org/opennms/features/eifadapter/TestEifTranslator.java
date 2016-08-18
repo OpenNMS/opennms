@@ -50,7 +50,7 @@ public class TestEifTranslator {
                 +"origin='10.0.0.7';adapter_host='dummyHost';date='07/22/2016';severity='WARNING';"
                 +"msg='My Dummy Event Message';situation_eventdata='~';END";
         Event e = translateEifToOpenNMS(new StringBuilder(incomingEif)).get(0);
-        assertEquals("org.opennms.eif/EIF_EVENT_TYPE_A",e.getUei());
+        assertEquals("uei.opennms.org/vendor/IBM/EIF/EIF_EVENT_TYPE_A",e.getUei());
         assertEquals("DummyMonitoringSituation",e.getParm("situation_name").getValue().getContent());
     }
 
@@ -118,7 +118,7 @@ public class TestEifTranslator {
         assertTrue("Event list must not be null", events != null);
         for (Event event : events) {
             System.out.println("Evaluating UEI regex on "+event.getUei());
-            assertTrue("UEI must match regex.",event.getUei().matches("^org.opennms.eif/EIF_TEST_EVENT_TYPE_\\w$"));
+            assertTrue("UEI must match regex.",event.getUei().matches("^uei.opennms.org/vendor/IBM/EIF/EIF_TEST_EVENT_TYPE_\\w$"));
             System.out.println("Checking value of parm situation_name: "+event.getParm("situation_name").getValue().getContent());
             assertEquals("DummyMonitoringSituation",event.getParm("situation_name").getValue().getContent());
         }
@@ -126,7 +126,7 @@ public class TestEifTranslator {
 
     @Test
     public void EifTranslatorSemicolonInSlotTest() {
-        String incomingEif = "<START>>EIF_TEST_EVENT_TYPE_A;cms_hostname='hubtems01';cms_port='3661';"
+        String incomingEif = ".<START>>.............................EIF_TEST_EVENT_TYPE_A;cms_hostname='hubtems01';cms_port='3661';"
                 +"integration_type='U';master_reset_flag='';appl_label='';situation_name='Situation 01';"
                 +"situation_type='S';situation_origin='';situation_time='07/28/2016 12:19:11.000';situation_status='P';"
                 +"situation_thrunode='REMOTE_teps_host';situation_fullname='Situation 01';situation_displayitem='';"
@@ -136,7 +136,8 @@ public class TestEifTranslator {
                 +"onClose_msg='Event closed. OpenNMS EIF Testing.';onClose_severity='WARNING';send_delay='6';"
                 +"msg='This is a test of EIF for OpenNMS';situation_eventdata='~';END";
         Event e = translateEifToOpenNMS(new StringBuilder(incomingEif)).get(0);
-        assertEquals("org.opennms.eif/EIF_TEST_EVENT_TYPE_A",e.getUei());
+        assertEquals("uei.opennms.org/vendor/IBM/EIF/EIF_TEST_EVENT_TYPE_A",e.getUei());
         assertEquals("Situation 01",e.getParm("situation_name").getValue().getContent());
+        assertEquals("~",e.getParm("situation_eventdata").getValue().getContent());
     }
 }

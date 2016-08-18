@@ -95,7 +95,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
         
         await().atMost(15, SECONDS).until(() -> receivedEvents.size() == 6);
         for (Event event : receivedEvents) {
-            assertTrue("UEI must match regex.", event.getUei().matches("^org.opennms.eif/EIF_TEST_EVENT_TYPE_\\w$"));
+            assertTrue("UEI must match regex.", event.getUei().matches("^uei.opennms.org/vendor/IBM/EIF/EIF_TEST_EVENT_TYPE_\\w$"));
             assertTrue("situation_name must match regex.",event.getParm("situation_name").getValue().getContent().
                     matches("^Situation \\d{2}"));
         }
@@ -125,7 +125,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
 
         await().atMost(15, SECONDS).until(() -> receivedEvents.size() == 6);
         for (Event event : receivedEvents) {
-            assertTrue("UEI must match regex.", event.getUei().matches("^org.opennms.eif/EIF_TEST_EVENT_TYPE_\\w$"));
+            assertTrue("UEI must match regex.", event.getUei().matches("^uei.opennms.org/vendor/IBM/EIF/EIF_TEST_EVENT_TYPE_\\w$"));
             assertTrue("situation_name must match regex.",event.getParm("situation_name").getValue().getContent().
                     matches("^Situation \\d{2}"));
         }
