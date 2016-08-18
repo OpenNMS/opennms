@@ -37,8 +37,13 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.features.eifadapter.EifParser.parseEifSlots;
 import static org.opennms.features.eifadapter.EifParser.translateEifToOpenNMS;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class TestEifTranslator {
+
+    @Autowired
+    protected NodeDao nodeDao;
 
     @Test
     public void EifTranslatorTest() {
@@ -49,7 +54,7 @@ public class TestEifTranslator {
                 +"situation_displayitem='';source='EIF_TEST';sub_source='dummyHost:08';hostname='dummyHost';"
                 +"origin='10.0.0.7';adapter_host='dummyHost';date='07/22/2016';severity='WARNING';"
                 +"msg='My Dummy Event Message';situation_eventdata='~';END";
-        Event e = translateEifToOpenNMS(new StringBuilder(incomingEif)).get(0);
+        Event e = translateEifToOpenNMS(nodeDao, new StringBuilder(incomingEif)).get(0);
         assertEquals("uei.opennms.org/vendor/IBM/EIF/EIF_EVENT_TYPE_A",e.getUei());
         assertEquals("DummyMonitoringSituation",e.getParm("situation_name").getValue().getContent());
     }
@@ -114,7 +119,7 @@ public class TestEifTranslator {
         String multipleEif = new StringBuilder(incomingEif_1).append("\n").append(incomingEif_2).append("\n").
                 append(incomingEif_3).append("\n").toString();
 
-        List<Event> events = translateEifToOpenNMS(new StringBuilder(multipleEif));
+        List<Event> events = translateEifToOpenNMS(nodeDao, new StringBuilder(multipleEif));
         assertTrue("Event list must not be null", events != null);
         for (Event event : events) {
             System.out.println("Evaluating UEI regex on "+event.getUei());
@@ -135,7 +140,7 @@ public class TestEifTranslator {
                 +"semicolon_test='this is a test; of semicolons in; slot values';"
                 +"onClose_msg='Event closed. OpenNMS EIF Testing.';onClose_severity='WARNING';send_delay='6';"
                 +"msg='This is a test of EIF for OpenNMS';situation_eventdata='~';END";
-        Event e = translateEifToOpenNMS(new StringBuilder(incomingEif)).get(0);
+        Event e = translateEifToOpenNMS(nodeDao, new StringBuilder(incomingEif)).get(0);
         assertEquals("uei.opennms.org/vendor/IBM/EIF/EIF_TEST_EVENT_TYPE_A",e.getUei());
         assertEquals("Situation 01",e.getParm("situation_name").getValue().getContent());
         assertEquals("~",e.getParm("situation_eventdata").getValue().getContent());
