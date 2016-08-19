@@ -1,0 +1,18 @@
+<p class="form-control-static" ng-if="field.type=='static'">{{ asset[field.model] }}</p>
+
+<input type="text" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='text'"></input>
+
+<input type="password" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='password'"></input>
+
+<textarea class="form-control" style="height: 20em;" ng-model="asset[field.model]" ng-if="field.type=='textarea'"></textarea>
+
+<p class="input-group" ng-if="field.type=='date'">
+  <input type="text" class="form-control" uib-datepicker-popup="yyyy/MM/dd" ng-model="asset[field.model]" />
+  <span class="input-group-btn">
+    <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
+  </span>
+</p>
+
+<select class="form-control" ng-model="asset[field.model]" ng-if="field.type=='select'">
+  <option ng-repeat="value in field.options">{{value}}</option>
+</select>
