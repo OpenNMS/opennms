@@ -98,7 +98,7 @@
   <jsp:param name="headTitle" value="Detail" />
   <jsp:param name="headTtitle" value="Events" />
   <jsp:param name="breadcrumb" value="<a href='event/index'>Events</a>" />
-  <jsp:param name="breadcrumb" value="<%="Event " + (event == null? "Not Found" : event.getId()) %>" />
+  <jsp:param name="breadcrumb" value='<%="Event " + (event == null? "Not Found" : event.getId()) %>' />
 </jsp:include>
 
 <% if (event == null ) { %>

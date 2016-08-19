@@ -36,8 +36,8 @@
     pull in a bunch of other dependencies like jetty-jsp we do not want here.
     See issue #NMS-6945 for more details -->
     <dependency>
-      <groupId>org.eclipse.jetty.orbit</groupId>
-      <artifactId>javax.servlet</artifactId>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

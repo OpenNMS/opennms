@@ -345,7 +345,7 @@
       </plugin>
       <!-- plugin to use to run webapp in an embedded jetty -->
       <plugin>
-        <groupId>org.mortbay.jetty</groupId>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
         <configuration>
           <contextPath>/opennms</contextPath>
@@ -505,7 +505,7 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.mortbay.jetty</groupId>
+            <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-jspc-maven-plugin</artifactId>
             <executions>
               <execution>
@@ -852,8 +852,8 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.jetty.orbit</groupId>
-      <artifactId>org.apache.taglibs.standard.glassfish</artifactId>
+      <groupId>org.apache.taglibs</groupId>
+      <artifactId>taglibs-standard-impl</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
