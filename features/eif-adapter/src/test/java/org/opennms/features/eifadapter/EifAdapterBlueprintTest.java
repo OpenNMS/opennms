@@ -48,13 +48,14 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.dao.mock.MockNodeDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.xml.event.Event;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EifAdapterBlueprintTest extends CamelBlueprintTest {
@@ -80,7 +81,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
     }
 
     @Test
-    public void canParseEifPacketsAndGenerateEvents() throws Exception {
+    public void testCanParseEifPacketsAndGenerateEvents() throws Exception {
         // Register an event listener
         final List<Event> receivedEvents = Lists.newArrayList();
         eventIpcManager.addEventListener(new EventListener() {
@@ -110,7 +111,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
     }
 
     @Test
-    public void canParseEifWithSemicolonsInSlotsAndGenerateEvents() throws Exception {
+    public void testCanParseEifWithSemicolonsInSlotsAndGenerateEvents() throws Exception {
         // Register an event listener
         final List<Event> receivedEvents = Lists.newArrayList();
         eventIpcManager.addEventListener(new EventListener() {
