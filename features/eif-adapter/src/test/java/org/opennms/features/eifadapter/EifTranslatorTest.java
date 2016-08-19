@@ -30,23 +30,66 @@ package org.opennms.features.eifadapter;
 
 import java.util.*;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 import static org.junit.Assert.assertTrue;
+import static org.opennms.core.camel.JaxbUtilsUnmarshalProcessor.LOG;
 import static org.opennms.features.eifadapter.EifParser.parseEifSlots;
 import static org.opennms.features.eifadapter.EifParser.translateEifToOpenNMS;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.springframework.beans.factory.annotation.Autowired;
 
-public class TestEifTranslator {
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.mock.MockMonitoringLocationDao;
+import org.opennms.netmgt.dao.mock.MockNodeDao;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.xml.event.Event;
+
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+})
+@JUnitConfigurationEnvironment
+public class EifTranslatorTest {
 
     @Autowired
-    protected NodeDao nodeDao;
+    private MockMonitoringLocationDao m_locationDao;
+
+    @Autowired
+    private MockNodeDao m_nodeDao;
+
+    @Before
+    public void setUp() {
+        OnmsNode fqhostnameNode = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost.localdomain");
+        OnmsNode shortnameNode = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost");
+        OnmsNode originNode = new OnmsNode(m_locationDao.getDefaultLocation(), "10.0.0.7");
+
+        fqhostnameNode.setForeignSource("eifTestSource");
+        fqhostnameNode.setForeignId("eifTestId");
+        shortnameNode.setForeignSource("eifTestSource");
+        shortnameNode.setForeignId("eifTestId");
+        originNode.setForeignSource("eifTestSource");
+        originNode.setForeignId("eifTestId");
+
+        fqhostnameNode.setId(1);
+        shortnameNode.setId(2);
+        originNode.setId(3);
+
+        m_nodeDao.saveOrUpdate(fqhostnameNode);
+        m_nodeDao.saveOrUpdate(shortnameNode);
+        m_nodeDao.saveOrUpdate(originNode);
+        m_nodeDao.flush();
+    }
 
     @Test
-    public void EifTranslatorTest() {
+    public void testCanTranslateSimpleEifEvent() {
         String incomingEif = "<START>>......................LL.....EIF_EVENT_TYPE_A;cms_hostname='htems_host';"
                 +"cms_port='3661';integration_type='N';master_reset_flag='';appl_label='';"
                 +"situation_name='DummyMonitoringSituation';situation_type='S';situation_origin='dummyHost:08';"
@@ -54,13 +97,14 @@ public class TestEifTranslator {
                 +"situation_displayitem='';source='EIF_TEST';sub_source='dummyHost:08';hostname='dummyHost';"
                 +"origin='10.0.0.7';adapter_host='dummyHost';date='07/22/2016';severity='WARNING';"
                 +"msg='My Dummy Event Message';situation_eventdata='~';END";
-        Event e = translateEifToOpenNMS(nodeDao, new StringBuilder(incomingEif)).get(0);
+        Event e = translateEifToOpenNMS(m_nodeDao, new StringBuilder(incomingEif)).get(0);
+        assertEquals("Severity must be 'Warning'","Warning",e.getSeverity());
         assertEquals("uei.opennms.org/vendor/IBM/EIF/EIF_EVENT_TYPE_A",e.getUei());
         assertEquals("DummyMonitoringSituation",e.getParm("situation_name").getValue().getContent());
     }
 
     @Test
-    public void canParseEifSlotsTest() {
+    public void testCanParseEifSlots() {
         String eifBody = "integration_type='N';master_reset_flag='';appl_label='';"
                 +"situation_name='DummyMonitoringSituation';situation_type='S';"
                 +"situation_origin='dummyHost:08';situation_time='07/22/2016 14:05:36.000';situation_status='Y';"
@@ -74,7 +118,7 @@ public class TestEifTranslator {
     }
 
     @Test
-    public void canParseEifSlotsWithEmbeddedSemicolonsTest() {
+    public void testCanParseEifSlotsWithEmbeddedSemicolons() {
         String eifBody = "cms_hostname='hubtems01';cms_port='3661';"
                 +"integration_type='U';master_reset_flag='';appl_label='';situation_name='Situation 01';"
                 +"situation_type='S';situation_origin='';situation_time='07/28/2016 12:19:11.000';situation_status='P';"
@@ -91,7 +135,25 @@ public class TestEifTranslator {
     }
 
     @Test
-    public void EifTranslatorMultipleEventsTest() {
+    public void testCanParseEifEventWithSemicolonInSlot() {
+        String incomingEif = ".<START>>.............................EIF_TEST_EVENT_TYPE_A;cms_hostname='hubtems01';cms_port='3661';"
+                +"integration_type='U';master_reset_flag='';appl_label='';situation_name='Situation 01';"
+                +"situation_type='S';situation_origin='';situation_time='07/28/2016 12:19:11.000';situation_status='P';"
+                +"situation_thrunode='REMOTE_teps_host';situation_fullname='Situation 01';situation_displayitem='';"
+                +"source='EIF_TEST';sub_source='';hostname='';origin='';adapter_host='';date='07/28/2016';"
+                +"severity='CRITICAL';IncidentSupportTeam='Server Support Testing';"
+                +"semicolon_test='this is a test; of semicolons in; slot values';"
+                +"onClose_msg='Event closed. OpenNMS EIF Testing.';onClose_severity='WARNING';send_delay='6';"
+                +"msg='This is a test of EIF for OpenNMS';situation_eventdata='~';END";
+        Event e = translateEifToOpenNMS(m_nodeDao, new StringBuilder(incomingEif)).get(0);
+        assertEquals("Severity must be 'Warning'","Major",e.getSeverity());
+        assertEquals("uei.opennms.org/vendor/IBM/EIF/EIF_TEST_EVENT_TYPE_A",e.getUei());
+        assertEquals("Situation 01",e.getParm("situation_name").getValue().getContent());
+        assertEquals("~",e.getParm("situation_eventdata").getValue().getContent());
+    }
+
+    @Test
+    public void testCanParseMultipleEvents() {
         String incomingEif_1 = ".<START>>.......................0.....EIF_TEST_EVENT_TYPE_A;cms_hostname='hubtems01';"
                 +"cms_port='3661';integration_type='N';master_reset_flag='';appl_label='';"
                 +"situation_name='DummyMonitoringSituation';situation_type='S';situation_origin='managedsystem01:08';"
@@ -119,7 +181,7 @@ public class TestEifTranslator {
         String multipleEif = new StringBuilder(incomingEif_1).append("\n").append(incomingEif_2).append("\n").
                 append(incomingEif_3).append("\n").toString();
 
-        List<Event> events = translateEifToOpenNMS(nodeDao, new StringBuilder(multipleEif));
+        List<Event> events = translateEifToOpenNMS(m_nodeDao, new StringBuilder(multipleEif));
         assertTrue("Event list must not be null", events != null);
         for (Event event : events) {
             System.out.println("Evaluating UEI regex on "+event.getUei());
@@ -130,19 +192,41 @@ public class TestEifTranslator {
     }
 
     @Test
-    public void EifTranslatorSemicolonInSlotTest() {
-        String incomingEif = ".<START>>.............................EIF_TEST_EVENT_TYPE_A;cms_hostname='hubtems01';cms_port='3661';"
-                +"integration_type='U';master_reset_flag='';appl_label='';situation_name='Situation 01';"
-                +"situation_type='S';situation_origin='';situation_time='07/28/2016 12:19:11.000';situation_status='P';"
-                +"situation_thrunode='REMOTE_teps_host';situation_fullname='Situation 01';situation_displayitem='';"
-                +"source='EIF_TEST';sub_source='';hostname='';origin='';adapter_host='';date='07/28/2016';"
-                +"severity='CRITICAL';IncidentSupportTeam='Server Support Testing';"
-                +"semicolon_test='this is a test; of semicolons in; slot values';"
-                +"onClose_msg='Event closed. OpenNMS EIF Testing.';onClose_severity='WARNING';send_delay='6';"
-                +"msg='This is a test of EIF for OpenNMS';situation_eventdata='~';END";
-        Event e = translateEifToOpenNMS(nodeDao, new StringBuilder(incomingEif)).get(0);
-        assertEquals("uei.opennms.org/vendor/IBM/EIF/EIF_TEST_EVENT_TYPE_A",e.getUei());
-        assertEquals("Situation 01",e.getParm("situation_name").getValue().getContent());
-        assertEquals("~",e.getParm("situation_eventdata").getValue().getContent());
+    public void testCanConnectEifEventToNodeWithFqhostname() {
+        String incomingEif = "<START>>......................LL.....EIF_EVENT_TYPE_A;cms_hostname='htems_host';"
+                +"cms_port='3661';integration_type='N';master_reset_flag='';appl_label='';"
+                +"situation_name='DummyMonitoringSituation';situation_type='S';situation_origin='dummyHost:08';"
+                +"situation_time='07/22/2016 14:05:36.000';situation_status='Y';situation_thrunode='REMOTE_teps_host';"
+                +"situation_displayitem='';source='EIF_TEST';sub_source='dummyHost:08';"
+                +"fqhostname='localhost.localdomain';hostname='dummyHost';origin='127.0.0.1';adapter_host='dummyHost';"
+                +"date='07/22/2016';severity='WARNING';msg='My Dummy Event Message';situation_eventdata='~';END";
+        Event e = translateEifToOpenNMS(m_nodeDao, new StringBuilder(incomingEif)).get(0);
+        assertEquals("NodeId "+e.getNodeid()+" must equal 1","1",e.getNodeid().toString());
+    }
+
+    @Test
+    public void testCanConnectEifEventToNodeWithHostname() {
+        String incomingEif = "<START>>......................LL.....EIF_EVENT_TYPE_A;cms_hostname='htems_host';"
+                +"cms_port='3661';integration_type='N';master_reset_flag='';appl_label='';"
+                +"situation_name='DummyMonitoringSituation';situation_type='S';situation_origin='dummyHost:08';"
+                +"situation_time='07/22/2016 14:05:36.000';situation_status='Y';situation_thrunode='REMOTE_teps_host';"
+                +"situation_displayitem='';source='EIF_TEST';sub_source='dummyHost:08';"
+                +"fqhostname='';hostname='localhost';origin='127.0.0.1';adapter_host='dummyHost';"
+                +"date='07/22/2016';severity='WARNING';msg='My Dummy Event Message';situation_eventdata='~';END";
+        Event e = translateEifToOpenNMS(m_nodeDao, new StringBuilder(incomingEif)).get(0);
+        assertEquals("NodeId "+e.getNodeid()+" must equal 2","2",e.getNodeid().toString());
+    }
+
+    @Test
+    public void testCanConnectEifEventToNodeWithOrigin() {
+        String incomingEif = "<START>>......................LL.....EIF_EVENT_TYPE_A;cms_hostname='htems_host';"
+                +"cms_port='3661';integration_type='N';master_reset_flag='';appl_label='';"
+                +"situation_name='DummyMonitoringSituation';situation_type='S';situation_origin='dummyHost:08';"
+                +"situation_time='07/22/2016 14:05:36.000';situation_status='Y';situation_thrunode='REMOTE_teps_host';"
+                +"situation_displayitem='';source='EIF_TEST';sub_source='dummyHost:08';"
+                +"fqhostname='';hostname='';origin='10.0.0.7';adapter_host='dummyHost';"
+                +"date='07/22/2016';severity='WARNING';msg='My Dummy Event Message';situation_eventdata='~';END";
+        Event e = translateEifToOpenNMS(m_nodeDao, new StringBuilder(incomingEif)).get(0);
+        assertEquals("NodeId "+e.getNodeid()+" must equal 3","3",e.getNodeid().toString());
     }
 }

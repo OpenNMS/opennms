@@ -33,8 +33,6 @@ import com.google.common.net.InetAddresses;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
@@ -46,45 +44,41 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EifParser {
+
     public static final Logger LOG = LoggerFactory.getLogger(EifParser.class);
     private static final int eifStartOffset = 37;
-    enum m_eifSeverities { FATAL, CRITICAL, MINOR, WARNING, OK, INFO, HARMLESS, UNKNOWN };
+    enum m_eifSeverities { FATAL, CRITICAL, MINOR, WARNING, OK, INFO, HARMLESS, UNKNOWN }
 
     public static List<Event> translateEifToOpenNMS(NodeDao nodeDao, StringBuilder eifBuff) {
 
         // Create a list of events to return to the packet processor
         List<Event> translatedEvents = new ArrayList<>();
+
         // Loop over the received EIF package until we run out of events
         while(eifBuff.length() > 0 && eifBuff.indexOf(";END") > 1) {
+            // Extract a single event from the package
             int eventStart = eifBuff.indexOf("<START>>");
             int eventEnd = eifBuff.indexOf(";END");
-            String eifEvent = eifBuff.substring(eventStart + eifStartOffset,(eventEnd - eventStart));
+            String eifEvent = eifBuff.substring(eventStart + eifStartOffset,eventEnd);
             eifBuff.delete(0,eventEnd+4);
-            Pattern eifClassPattern = Pattern.compile("^(\\w{2,}+);.*");
-            Matcher eifClassMatcher = eifClassPattern.matcher(eifEvent);
-            if (eifClassMatcher.matches()) {
-                String eifClass = eifClassMatcher.group(1);
-                // Find the end of the eifClass string, so we can parse slots from the rest of the message body
-                int eifClassEnd = eifEvent.toString().indexOf(eifClassMatcher.group(1))+eifClassMatcher.group(1).
-                        length();
-                // Remove newlines from the event body
-                String eifSlots = eifEvent.substring(1+eifClassEnd,eifEvent.length()).
-                        replaceAll(System.getProperty("line.separator"),"");
-                // Parse the EIF slots into OpenNMS parms
-                Map<String, String> eifSlotMap = parseEifSlots(eifSlots);
-                long nodeId = connectEifEventToNode(nodeDao, eifSlotMap);
-                List<Parm> parmList = new ArrayList<>();
-                eifSlotMap.entrySet().forEach(p -> parmList.add(new Parm(p.getKey(),p.getValue())));
 
-                // Add the translated event to the list
-                translatedEvents.add(
-                        new EventBuilder("uei.opennms.org/vendor/IBM/EIF/"+eifClass,"eif").
-                                setDescription(eifSlotMap.get("msg")).setNodeid(nodeId).
-                                setSeverity(mapEifSeverity(eifSlotMap.get("severity"))).setParms(parmList).getEvent());
-            } else {
-                System.err.println("EIF class match failed");
-            }
+            // Parse the EIF slots into OpenNMS parms, and try to look up the source's nodeId
+            String eifClass = eifEvent.split(";")[0];
+            String eifSlots = eifEvent.substring(eifClass.length()+1,eifEvent.length()).
+                    replaceAll(System.getProperty("line.separator"),"");
+            Map<String, String> eifSlotMap = parseEifSlots(eifSlots);
+            List<Parm> parmList = new ArrayList<>();
+            eifSlotMap.entrySet().forEach(p -> parmList.add(new Parm(p.getKey(),p.getValue())));
+            long nodeId = connectEifEventToNode(nodeDao, eifSlotMap);
+
+            // Add the translated event to the list
+            translatedEvents.add(
+                    new EventBuilder("uei.opennms.org/vendor/IBM/EIF/"+eifClass,"eif").
+                            setDescription(eifSlotMap.get("msg")).setNodeid(nodeId).
+                            setSeverity(mapEifSeverity(eifSlotMap.get("severity"))).setParms(parmList).getEvent());
+
         }
+
         if(translatedEvents.size() > 0) {
             return translatedEvents;
         } else {
@@ -105,17 +99,16 @@ public class EifParser {
             if ( slotKeyValue.length < 2 ) { continue; }
             mappedEifSlots.put(slotKeyValue[0], slotKeyValue[1].replaceAll("^\"|^'|\"$|'$", ""));
         }
+
         return mappedEifSlots;
     }
 
     private static long connectEifEventToNode(NodeDao nodeDao, Map<String, String> eifSlotMap) {
         /*
          * Available slots for identifying the node:
-         * fqhostname - Base EVENT class attribute that contains the fully qualified hostname, if available
-         * hostname - Base EVENT class attribute that contains the TCP/IP hostname of the managed system where
-         *      the event originates, if available
-         * origin - Base EVENT class attribute that contains the TCP/IP address, if available, of the managed system
-         *      where the event originates. The address is in dotted-decimal format.
+         * fqhostname - Fully qualified host name, if available.
+         * hostname - Hostname of the managed system that originated the event, if available.
+         * origin - TCP/IP address of the originating managed system in dotted-decimal notation, if available.
          */
         long nodeId = 0;
         String fqdn = "";
@@ -129,7 +122,7 @@ public class EifParser {
                 LOG.error("UnknownHostException while resolving hostname {}",hostname);
             }
         }
-        // if the first two attempts failed to resolve a FQDN, fall back to the origin IP address
+        // if a FQDN can't be found using fqhostname or hostname, fall back to the origin IP address
         if ("".equals(fqdn) && !"".equals(eifSlotMap.get("origin")) && eifSlotMap.get("origin") != null) {
             String origin = eifSlotMap.get("origin");
             if ( InetAddresses.isInetAddress(origin) ) {
@@ -137,23 +130,37 @@ public class EifParser {
                     fqdn = InetAddress.getByAddress(origin.getBytes()).getCanonicalHostName();
                 } catch (UnknownHostException uhe) {
                     LOG.error("UnknownHostException while resolving origin {}", origin);
+                    fqdn = origin;
                 }
             }
         }
 
-        if(!"".equals(fqdn)) {
-            OnmsNode firstMatch = nodeDao.findByLabel(fqdn).get(0);
-            if (firstMatch == null) {
-                String hostname = fqdn.split("\\.")[0];
-                firstMatch = nodeDao.findByLabel(fqdn).get(0);
+        // attempt to look up the nodeId using the FQDN
+        if(!"".equals(fqdn) && !fqdn.equals(null)) {
+            List<OnmsNode> matchingNodes = new ArrayList<>();
+            OnmsNode firstMatch;
+            try {
+                matchingNodes = nodeDao.findByLabel(fqdn);
+            } catch (NullPointerException npe) {
+                LOG.debug("No node located for {}",fqdn);
             }
+            if ( matchingNodes.size() <= 0 && !InetAddresses.isInetAddress(fqdn) ) {
+                try {
+                    matchingNodes = nodeDao.findByLabel(fqdn.split("\\.")[0]);
+                } catch (NullPointerException npe) {
+                    LOG.debug("No node located for {}",fqdn.split("\\.")[0]);
+                }
+            }
+
+            firstMatch = ( matchingNodes.size() > 0 ? matchingNodes.get(0) : null );
+
             if(firstMatch != null) {
                 nodeId = Long.valueOf(firstMatch.getNodeId());
             }
         }
 
         if(nodeId == 0) {
-            LOG.warn("connectEifEventToNode : No matching nodes found. Defaulting to nodeId 0.");
+            LOG.debug("connectEifEventToNode : No matching nodes found. Defaulting to nodeId 0.");
         }
 
         return nodeId;
@@ -170,7 +177,7 @@ public class EifParser {
         eifSeverityMap.put(m_eifSeverities.MINOR,"Minor");
         eifSeverityMap.put(m_eifSeverities.CRITICAL,"Major");
         eifSeverityMap.put(m_eifSeverities.FATAL,"Critical");
-        LOG.warn("Mapping eif severity {}", eifSeverity);
+
         return eifSeverityMap.get(m_eifSeverities.valueOf(eifSeverity));
     }
 }
