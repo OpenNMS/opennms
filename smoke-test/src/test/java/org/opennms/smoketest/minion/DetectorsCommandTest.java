@@ -47,7 +47,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.smoketest.utils.SshClient;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +55,7 @@ import com.google.common.collect.ImmutableMap;
 
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
+import org.opennms.test.system.api.utils.SshClient;
 
 public class DetectorsCommandTest {
 

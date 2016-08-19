@@ -30,8 +30,8 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.core.rpc</groupId>
-      <artifactId>org.opennms.core.rpc.xml</artifactId>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.xml</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>

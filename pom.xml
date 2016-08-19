@@ -1608,13 +1608,23 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.core.rpc</groupId>
-        <artifactId>org.opennms.core.rpc.api</artifactId>
+        <groupId>org.opennms.core.ipc.rpc</groupId>
+        <artifactId>org.opennms.core.ipc.rpc.api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.core.rpc</groupId>
-        <artifactId>org.opennms.core.rpc.xml</artifactId>
+        <groupId>org.opennms.core.ipc.rpc</groupId>
+        <artifactId>org.opennms.core.ipc.rpc.xml</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.ipc.sink</groupId>
+        <artifactId>org.opennms.core.ipc.sink.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.ipc.sink</groupId>
+        <artifactId>org.opennms.core.ipc.sink.xml</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

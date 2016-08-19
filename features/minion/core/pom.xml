@@ -13,8 +13,8 @@
 
     <modules>
         <module>api</module>
-        <module>impl</module>
         <module>features</module>
+        <module>impl</module>
         <module>repository</module>
         <module>shell</module>
     </modules>

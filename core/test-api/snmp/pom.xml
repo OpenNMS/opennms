@@ -73,8 +73,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.rpc</groupId>
-      <artifactId>org.opennms.core.rpc.mock-impl</artifactId>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.mock-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
