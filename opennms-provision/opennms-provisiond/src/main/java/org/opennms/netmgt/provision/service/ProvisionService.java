@@ -229,7 +229,7 @@ public interface ProvisionService {
     OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node);
 
     @Transactional
-    OnmsNode createUndiscoveredNode(String ipAddress, String foreignSource);
+    OnmsNode createUndiscoveredNode(String ipAddress, String foreignSource, String location);
 
     @Transactional
     OnmsNode getNode(Integer nodeId);

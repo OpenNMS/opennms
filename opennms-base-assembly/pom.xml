@@ -96,7 +96,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jasperreports-maven-plugin</artifactId>
-        <version>1.0-beta-3-OPENNMS-20150402-1</version>
+        <version>${jasperreportsMavenPluginVersion}</version>
         <executions>
           <execution>
             <phase>compile</phase>
@@ -393,8 +393,8 @@
       <artifactId>org.opennms.features.events.traps</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.minion</groupId>
-      <artifactId>org.opennms.features.minion.dominion</artifactId>
+      <groupId>org.opennms.features.minion.heartbeat</groupId>
+      <artifactId>org.opennms.features.minion.heartbeat.consumer</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -571,16 +571,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-ksc-combobox</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-suggestion-combobox</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.gwt-graph-resources-list</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -598,11 +588,6 @@
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
     </dependency>   
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.node-page-list</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.core</artifactId>
@@ -675,8 +660,13 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.rpc</groupId>
-      <artifactId>org.opennms.core.rpc.camel-impl</artifactId>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.camel-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.camel-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

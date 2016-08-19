@@ -29,13 +29,13 @@
 package org.opennms.netmgt.syslogd;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,17 +143,20 @@ public class SyslogMessage {
         m_hostname = hostname;
     }
 
-    public String getHostAddress() {
+    public InetAddress getHostAddress() {
         if (m_hostname != null) {
             try {
-                final InetAddress address = InetAddressUtils.addr(m_hostname);
-                return InetAddressUtils.str(address).replace("/", "");
+                return InetAddress.getByName(m_hostname);
+            } catch (UnknownHostException e) {
+                LOG.debug("Unable to resolve hostname '" + m_hostname + "' in syslog message.", e);
+                return null;
             } catch (final IllegalArgumentException e) {
-                LOG.debug("Unable to resolve hostname '{}' in syslog message.", m_hostname, e);
+                LOG.debug("Illegal argument when trying to resolve hostname '" + m_hostname + "' in syslog message.", e);
                 return null;
             }
+        } else {
+            return null;
         }
-        return null;
     }
 
     public String getProcessName() {

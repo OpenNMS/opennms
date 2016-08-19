@@ -29,6 +29,7 @@
 package org.opennms.netmgt.discovery.actors;
 
 import java.net.InetAddress;
+import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.discovery.messages.DiscoveryResults;
@@ -39,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 
 public class EventWriter
 {
@@ -51,24 +53,25 @@ public class EventWriter
         m_ipc_manager = Preconditions.checkNotNull( ipcManager, "ipcManager argument" );
     }
 
-    public void sendEvents( DiscoveryResults results )
-    {
+    public void sendEvents( DiscoveryResults results ) {
         results.getResponses().entrySet().forEach(
-                        e -> sendNewSuspectEvent( e.getKey(), e.getValue(), results.getForeignSource() ) );
+                        e -> sendNewSuspectEvent( e.getKey(), e.getValue(),
+                                ImmutableMap.of(
+                                        "foreignSource", results.getForeignSource(),
+                                        "location", results.getLocation())));
     }
 
-    private void sendNewSuspectEvent( InetAddress address, Long rtt, String foreignSource )
-    {
+    private void sendNewSuspectEvent( InetAddress address, Long rtt, Map<String, String> eventParameters) {
         EventBuilder eb = new EventBuilder( EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "OpenNMS.Discovery" );
         eb.setInterface( address );
         eb.setHost( InetAddressUtils.getLocalHostName() );
-
         eb.addParam( "RTT", rtt );
 
-        if ( foreignSource != null )
-        {
-            eb.addParam( "foreignSource", foreignSource );
-        }
+        eventParameters.entrySet().forEach(eachEntry -> {
+            if (eachEntry.getValue() != null) {
+                eb.addParam( eachEntry.getKey(), eachEntry.getValue());
+            }
+        });
 
         try
         {

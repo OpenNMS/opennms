@@ -16,7 +16,7 @@
   <context:annotation-config />
   <tx:annotation-driven/>
 
-  <bean id="executorFactory" class="org.opennms.core.concurrent.ExecutorFactoryJavaImpl"/>
+  <bean id="syslogdExecutorFactory" class="org.opennms.core.concurrent.ExecutorFactoryJavaImpl"/>
 
   <bean id="syslogConnectionHandler" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerDefaultImpl">
     <!-- TODO: Inject executorFactory and use it to construct Executors -->

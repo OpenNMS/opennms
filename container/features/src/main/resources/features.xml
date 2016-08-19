@@ -516,6 +516,26 @@
       <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-core-ipc-sink" description="OpenNMS :: Core :: IPC :: Sink" version="${project.version}">
+      <feature>org.json</feature>
+      <feature>javax.mail</feature>
+      <feature>opennms-core-camel</feature>
+      <feature>camel-blueprint</feature>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.xml/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.camel-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-rpc" description="OpenNMS :: Core :: IPC :: RPC" version="${project.version}">
+      <feature>org.json</feature>
+      <feature>javax.mail</feature>
+      <feature>opennms-core-camel</feature>
+      <feature>camel-blueprint</feature>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.camel-impl/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-dao-api" description="OpenNMS :: DAO :: API" version="${project.version}">
       <feature>opennms-core</feature>
       <feature>opennms-model</feature>
@@ -948,4 +968,5 @@
       <!-- Dependencies should be available from the parent classloader and from the ONMSGi registry -->
       <bundle>mvn:org.opennms/opennms-provision-shell/${project.version}</bundle>
     </feature>
+
 </features>

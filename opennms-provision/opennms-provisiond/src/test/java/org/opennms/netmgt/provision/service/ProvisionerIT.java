@@ -1118,7 +1118,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
         assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
         runScan(scan);
 
         assertEquals(2, m_ipInterfaceDao.findAll().size());
@@ -1151,7 +1151,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
         assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
         runScan(scan);
 
         assertEquals(1, m_ipInterfaceDao.findAll().size());
@@ -1538,7 +1538,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test(timeout=300000)
     public void testCreateUndiscoveredNode() throws Exception {
-        m_provisionService.createUndiscoveredNode("127.0.0.1", "discovered");
+        m_provisionService.createUndiscoveredNode("127.0.0.1", "discovered", null);
     }
 
     /**
