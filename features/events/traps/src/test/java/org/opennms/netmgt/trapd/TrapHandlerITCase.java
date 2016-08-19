@@ -30,7 +30,7 @@ package org.opennms.netmgt.trapd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 import java.util.Collection;
@@ -51,6 +51,9 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -76,13 +79,19 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-trapDaemon.xml",
+        // Start this context after Eventd is available
+        "classpath:/META-INF/opennms/applicationContext-daoEvents.xml",
         "classpath:/org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml"}
 )
 @JUnitTemporaryDatabase
 @JUnitConfigurationEnvironment
 public class TrapHandlerITCase implements InitializingBean {
+
+    @Autowired
+    private DatabasePopulator m_dbPopulator;
 
     @Autowired
     private Trapd m_trapd = null;
@@ -91,19 +100,17 @@ public class TrapHandlerITCase implements InitializingBean {
     private MockEventIpcManager m_eventMgr;
 
     @Autowired
-    private MockTrapdIpMgr m_trapdIpMgr;
+    private InterfaceToNodeCache m_cache;
 
     @Autowired
     private TrapQueueProcessorFactory m_processorFactory;
-
-    private InetAddress m_localhost = null;
 
     @Resource(name="snmpTrapPort")
     private Integer m_snmpTrapPort;
 
     private boolean m_doStop = false;
 
-    private static final String m_ip = "127.0.0.1";
+    private static final InetAddress m_ip = InetAddressUtils.ONE_TWENTY_SEVEN;
     
     private static final int m_nodeId = 1;
 
@@ -119,10 +126,7 @@ public class TrapHandlerITCase implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-        m_localhost = InetAddressUtils.addr(m_ip);
-
-        m_trapdIpMgr.clearKnownIpsMap();
-        m_trapdIpMgr.setNodeId(m_ip, m_nodeId);
+        m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, m_ip, m_nodeId);
 
         m_trapd.start();
         m_doStop = true;
@@ -151,7 +155,7 @@ public class TrapHandlerITCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testV1TrapNoNewSuspect() throws Exception {
-        m_trapdIpMgr.clearKnownIpsMap();
+        m_cache.clear();
         anticipateAndSend(false, false, "uei.opennms.org/default/trap", "v1",
                 null, 6, 1);
     }
@@ -159,7 +163,7 @@ public class TrapHandlerITCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testV2TrapNoNewSuspect() throws Exception {
-        m_trapdIpMgr.clearKnownIpsMap();
+        m_cache.clear();
         anticipateAndSend(false, false, "uei.opennms.org/default/trap",
                 "v2c", null, 6, 1);
     }
@@ -167,7 +171,7 @@ public class TrapHandlerITCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testV1TrapNewSuspect() throws Exception {
-        m_trapdIpMgr.clearKnownIpsMap();
+        m_cache.clear();
         anticipateAndSend(true, false, "uei.opennms.org/default/trap",
                 "v1", null, 6, 1);
     }
@@ -175,7 +179,7 @@ public class TrapHandlerITCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testV2TrapNewSuspect() throws Exception {
-        m_trapdIpMgr.clearKnownIpsMap();
+        m_cache.clear();
         anticipateAndSend(true, false, "uei.opennms.org/default/trap",
                 "v2c", null, 6, 1);
     }
@@ -436,16 +440,21 @@ public class TrapHandlerITCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testInterfaceDeletedModifiesIpMgr() throws Exception {
+        // Put the default list of nodes in the database
+        m_dbPopulator.populateDatabase();
+
+        // Sync the managed interface cache
+        m_cache.dataSourceSync();
+
         long nodeId = 0;
         m_processorFactory.setNewSuspect(true);
 
-        anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
-
-        Event event =
-            anticipateEvent(EventConstants.INTERFACE_DELETED_EVENT_UEI,
-                    m_ip, nodeId);
+        // Send an interfaceDeleted to clear the entry out of the cache
+        Event event = anticipateEvent(EventConstants.INTERFACE_DELETED_EVENT_UEI, m_ip, m_dbPopulator.getNode1().getId());
         m_eventMgr.sendNow(event);
 
+        // Anticipate the trap and the newSuspect event
+        anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
         anticipateEvent(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, m_ip, nodeId);
 
         try {
@@ -457,16 +466,19 @@ public class TrapHandlerITCase implements InitializingBean {
         sendTrap("v1", null, 6, 1);
 
         finishUp();
+
+        m_dbPopulator.resetDatabase();
+        m_cache.clear();
     }
 
     public Event anticipateEvent(String uei) {
         return anticipateEvent(uei, m_ip, m_nodeId);
     }
 
-    public Event anticipateEvent(String uei, String ip, long nodeId) {
+    public Event anticipateEvent(String uei, InetAddress ip, long nodeId) {
         EventBuilder bldr = new EventBuilder(uei, "TrapHandlerTestCase");
         bldr.setNodeid(nodeId);
-        bldr.setInterface(addr(ip));
+        bldr.setInterface(ip);
         m_eventMgr.getEventAnticipator().anticipateEvent(bldr.getEvent());
         return bldr.getEvent();
     }
@@ -558,13 +570,13 @@ public class TrapHandlerITCase implements InitializingBean {
         pdu.setGeneric(generic);
         pdu.setSpecific(specific);
         pdu.setTimeStamp(0);
-        pdu.setAgentAddress(m_localhost);
+        pdu.setAgentAddress(m_ip);
 
         pdu.send(getHostAddress(), m_snmpTrapPort, "public");
     }
 
 	private String getHostAddress() {
-		return InetAddressUtils.str(m_localhost);
+		return str(m_ip);
 	}
 
     public void sendV1Trap(String enterprise, int generic, int specific, LinkedHashMap<String, SnmpValue> varbinds)
@@ -574,7 +586,7 @@ public class TrapHandlerITCase implements InitializingBean {
         pdu.setGeneric(generic);
         pdu.setSpecific(specific);
         pdu.setTimeStamp(0);
-        pdu.setAgentAddress(m_localhost);
+        pdu.setAgentAddress(m_ip);
         Iterator<Map.Entry<String,SnmpValue>> it = varbinds.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String,SnmpValue> pairs = it.next();

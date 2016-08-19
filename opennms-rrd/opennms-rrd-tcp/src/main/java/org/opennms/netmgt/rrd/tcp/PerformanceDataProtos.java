@@ -30,6 +30,8 @@
 
 package org.opennms.netmgt.rrd.tcp;
 
+import com.google.protobuf.UnknownFieldSet;
+
 /**
  * <p>PerformanceDataProtos class.</p>
  *
@@ -160,7 +162,12 @@ public final class PerformanceDataProtos {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
+    @Override
+    public UnknownFieldSet getUnknownFields() {
+        return UnknownFieldSet.getDefaultInstance();
+    }
+
     public static org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -193,17 +200,6 @@ public final class PerformanceDataProtos {
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeDelimitedFrom(input).buildParsed();
-    }
-    public static org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
                .buildParsed();
     }
     public static org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading parseFrom(
@@ -240,12 +236,7 @@ public final class PerformanceDataProtos {
         builder.result = new org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading();
         return builder;
       }
-      
-      @Override
-      protected org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading internalGetResult() {
-        return result;
-      }
-      
+
       @Override
       public Builder clear() {
         if (result == null) {
@@ -475,6 +466,11 @@ public final class PerformanceDataProtos {
         result.value_ = java.util.Collections.emptyList();
         return this;
       }
+
+      @Override
+      protected FieldAccessorTable internalGetFieldAccessorTable() {
+          return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.internal_static_PerformanceDataReading_fieldAccessorTable;
+      }
     }
     
     static {
@@ -483,6 +479,11 @@ public final class PerformanceDataProtos {
     
     static {
       org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.internalForceInit();
+    }
+
+    @Override
+    protected com.google.protobuf.Message.Builder newBuilderForType(BuilderParent parent) {
+        return this.newBuilderForType();
     }
   }
   
@@ -556,7 +557,12 @@ public final class PerformanceDataProtos {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
+    @Override
+    public UnknownFieldSet getUnknownFields() {
+        return UnknownFieldSet.getDefaultInstance();
+    }
+
     public static org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -589,17 +595,6 @@ public final class PerformanceDataProtos {
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeDelimitedFrom(input).buildParsed();
-    }
-    public static org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
                .buildParsed();
     }
     public static org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings parseFrom(
@@ -636,12 +631,7 @@ public final class PerformanceDataProtos {
         builder.result = new org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings();
         return builder;
       }
-      
-      @Override
-      protected org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings internalGetResult() {
-        return result;
-      }
-      
+
       @Override
       public Builder clear() {
         if (result == null) {
@@ -809,6 +799,10 @@ public final class PerformanceDataProtos {
         result.message_ = java.util.Collections.emptyList();
         return this;
       }
+      @Override
+      protected FieldAccessorTable internalGetFieldAccessorTable() {
+          return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.internal_static_PerformanceDataReading_fieldAccessorTable;
+      }
     }
     
     static {
@@ -817,6 +811,11 @@ public final class PerformanceDataProtos {
     
     static {
       org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.internalForceInit();
+    }
+
+    @Override
+    protected com.google.protobuf.Message.Builder newBuilderForType(BuilderParent parent) {
+        return newBuilder();
     }
   }
   

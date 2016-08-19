@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.trapd;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -79,19 +78,7 @@ public class Trapd extends AbstractServiceDaemon {
      * The class instance used to receive new events from for the system.
      */
     @Autowired
-    private BroadcastEventProcessor m_eventReader;
-
-    /**
-     * The class instance used to receive new events from for the system.
-     */
-    @Autowired
     private TrapReceiver m_trapReceiver;
-
-    /**
-     * Trapd IP manager.  Contains IP address -> node ID mapping.
-     */
-    @Autowired
-    private TrapdIpMgr m_trapdIpMgr;
 
     @Resource(name="snmpTrapAddress")
     private String m_snmpTrapAddress;
@@ -123,16 +110,6 @@ public class Trapd extends AbstractServiceDaemon {
     @Override
     protected synchronized void onInit() {
         BeanUtils.assertAutowiring(this);
-
-        m_trapdIpMgr.dataSourceSync();
-
-        try {
-            // Start the event listener
-            m_eventReader.open();
-        } catch (final Throwable e) {
-            LOG.error("init: Failed to open event reader", e);
-            throw new UndeclaredThrowableException(e);
-        }
     }
 
     /**
@@ -208,13 +185,6 @@ public class Trapd extends AbstractServiceDaemon {
 
         m_trapReceiver.stop();
 
-        // TODO: Should we do this? m_eventReader is launched in onInit()
-        // but it should probably be launched in onStart() so that it
-        // follows the lifecycle of this class.
-        LOG.debug("stop: Stopping event processor");
-
-        m_eventReader.close();
-
         m_status = STOPPED;
 
         LOG.debug("stop: Trapd stopped");
@@ -228,24 +198,6 @@ public class Trapd extends AbstractServiceDaemon {
     @Override
     public synchronized int getStatus() {
         return m_status;
-    }
-
-    /**
-     * <p>getEventReader</p>
-     *
-     * @return a {@link org.opennms.netmgt.trapd.BroadcastEventProcessor} object.
-     */
-    public BroadcastEventProcessor getEventReader() {
-        return m_eventReader;
-    }
-
-    /**
-     * <p>setEventReader</p>
-     *
-     * @param eventReader a {@link org.opennms.netmgt.trapd.BroadcastEventProcessor} object.
-     */
-    public void setEventReader(BroadcastEventProcessor eventReader) {
-        m_eventReader = eventReader;
     }
 
     public static String getLoggingCategory() {
@@ -284,20 +236,6 @@ public class Trapd extends AbstractServiceDaemon {
 	 */
 	public void setTrapReceiver(TrapReceiver trapReceiver) {
 		this.m_trapReceiver = trapReceiver;
-	}
-
-	/**
-	 * @return the m_trapdIpMgr
-	 */
-	public TrapdIpMgr getTrapdIpMgr() {
-		return m_trapdIpMgr;
-	}
-
-	/**
-	 * @param m_trapdIpMgr the m_trapdIpMgr to set
-	 */
-	public void setTrapdIpMgr(TrapdIpMgr trapdIpMgr) {
-		this.m_trapdIpMgr = trapdIpMgr;
 	}
 
 }

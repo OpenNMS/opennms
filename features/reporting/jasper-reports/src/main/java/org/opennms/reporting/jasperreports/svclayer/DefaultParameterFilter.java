@@ -28,14 +28,11 @@
 
 package org.opennms.reporting.jasperreports.svclayer;
 
-import net.sf.jasperreports.engine.JRParameter;
 import org.opennms.reporting.jasperreports.filter.ParameterFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import net.sf.jasperreports.engine.JRParameter;
 
 public class DefaultParameterFilter implements ParameterFilter {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public boolean apply(JRParameter reportParam) {

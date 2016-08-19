@@ -49,7 +49,7 @@
                                 <feature>opennms-trapd-handler-minion</feature>
                                 <feature>opennms-trapd-handler-kafka</feature>
                                 <feature>minion-shell</feature>
-                                <feature>minion-heartbeat</feature>
+                                <feature>minion-heartbeat-producer</feature>
                                 <feature>minion-snmp-proxy</feature>
                                 <feature>minion-provisiond-detectors</feature>
                             </features>
@@ -180,8 +180,13 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.core.rpc</groupId>
-            <artifactId>org.opennms.core.rpc.camel-impl</artifactId>
+            <groupId>org.opennms.core.ipc.rpc</groupId>
+            <artifactId>org.opennms.core.ipc.rpc.camel-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.sink</groupId>
+            <artifactId>org.opennms.core.ipc.sink.camel-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

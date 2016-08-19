@@ -28,43 +28,54 @@
 
 package org.opennms.core.camel;
 
+import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.camel.component.properties.PropertiesComponent;
+import org.opennms.core.utils.SystemInfoUtils;
 
 /**
  * This class can be used to generate uniformly-formatted JMS queue names
  * for usage in Java, Spring, or Camel code. In the constructor, location is
  * an optional parameter. If it is null, then the names that are generated
  * will not include a field for the location.
- * 
+ *
+ * Generated queue names are of the form:
+ *    $instanceid.$location.$component.$endpoint
+ *    $instanceid.$component.$endpoint
+ *
+ * i.e.:
+ *    OpenNMS.HQ.RPC.SNMP
+ *    OpenNMS.Syslogd.BroadcastSyslog
+ *
+ * @author jwhite
  * @author Seth
  */
 public class JmsQueueNameFactory {
 
-	private static final String NAME_FORMAT_WITH_LOCATION = "OpenNMS.%s.%s@%s";
-	private static final String NAME_FORMAT_WITHOUT_LOCATION = "OpenNMS.%s.%s";
+	private static final String NAME_FORMAT_WITH_LOCATION = "%s.%s.%s.%s";
+	private static final String NAME_FORMAT_WITHOUT_LOCATION = "%s.%s.%s";
 
-	private final String m_daemon;
+	private final String m_component;
 	private final String m_endpoint;
 	private final String m_location;
 
-	public JmsQueueNameFactory(String daemon, String endpoint, String location) {
-		m_daemon = daemon;
-		m_endpoint = endpoint;
+	public JmsQueueNameFactory(String component, String endpoint, String location) {
+		m_component = Objects.requireNonNull(component);
+		m_endpoint = Objects.requireNonNull(endpoint);
 		m_location = location;
 	}
 
-	public JmsQueueNameFactory(String daemon, String endpoint) {
-		this(daemon, endpoint, null);
+	public JmsQueueNameFactory(String component, String endpoint) {
+		this(component, endpoint, null);
 	}
 
 	public String getLocation() {
 		return m_location;
 	}
 
-	public String getDaemon() {
-		return m_daemon;
+	public String getComponent() {
+		return m_component;
 	}
 
 	public String getName() {
@@ -76,11 +87,11 @@ public class JmsQueueNameFactory {
 	}
 
 	public String getNameWithoutLocation() {
-		return String.format(NAME_FORMAT_WITHOUT_LOCATION, m_daemon, m_endpoint);
+		return String.format(NAME_FORMAT_WITHOUT_LOCATION, SystemInfoUtils.getInstanceId(), m_component, m_endpoint);
 	}
 
 	public String getNameWithLocation(String location) {
-		return String.format(NAME_FORMAT_WITH_LOCATION, m_daemon, m_endpoint, location);
+		return String.format(NAME_FORMAT_WITH_LOCATION, SystemInfoUtils.getInstanceId(), location, m_component, m_endpoint);
 	}
 
 	/**

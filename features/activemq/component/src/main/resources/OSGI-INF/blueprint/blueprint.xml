@@ -13,32 +13,33 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<cm:property-placeholder id="activemqProperties"
-		persistent-id="org.opennms.features.activemq.component"
-		placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="none">
-		<cm:default-properties>
-			<cm:property name="broker-url" value="tcp://localhost:61616" />
-			<cm:property name="broker-max-connections" value="8" />
-			<cm:property name="broker-concurrent-consumers" value="10" />
-		</cm:default-properties>
-	</cm:property-placeholder>
-
+	<ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]" >
+		<ext:default-properties>
+			<ext:property name="org.opennms.activemq.broker.url" value="tcp://localhost:61616" />
+			<ext:property name="org.opennms.activemq.broker.username" value="" />
+			<ext:property name="org.opennms.activemq.broker.password" value="" />
+			<ext:property name="org.opennms.activemq.client.max-connections" value="8" />
+			<ext:property name="org.opennms.activemq.client.concurrent-consumers" value="10" />
+		</ext:default-properties>
+	</ext:property-placeholder>
 
 	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-		<property name="brokerURL" value="[[broker-url]]" />
+		<property name="brokerURL" value="$[org.opennms.activemq.broker.url]" />
+		<property name="userName" value="$[org.opennms.activemq.broker.username]" />
+		<property name="password" value="$[org.opennms.activemq.broker.password]" />
 	</bean>
 
 	<!-- Setup JMS connection pooling -->
 	<bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
 		init-method="start" destroy-method="stop">
-		<property name="maxConnections" value="[[broker-max-connections]]" />
+		<property name="maxConnections" value="$[org.opennms.activemq.client.max-connections]" />
 		<property name="connectionFactory" ref="jmsConnectionFactory" />
 	</bean>
+
 	<bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
 		<property name="connectionFactory" ref="pooledConnectionFactory" />
-		<property name="concurrentConsumers" value="[[broker-concurrent-consumers]]" />
+		<property name="concurrentConsumers" value="$[org.opennms.activemq.client.concurrent-consumers]" />
 	</bean>
-
 
 	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
 		<property name="configuration" ref="jmsConfig" />
