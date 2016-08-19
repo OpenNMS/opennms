@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,10 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.gwt.combobox.client.presenter;
+package org.opennms.smoketest;
 
-import com.google.gwt.user.client.ui.HasWidgets;
+import org.junit.Assert;
+import org.junit.Test;
+import org.openqa.selenium.WebElement;
 
-public abstract interface Presenter {
-    public abstract void go(final HasWidgets container);
+/**
+ * The Test Class for the Index Page.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
+public class IndexPageIT extends OpenNMSSeleniumTestCase {
+
+    /**
+     * Can render search boxes.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void canRenderSearchBoxes() throws Exception {
+        m_driver.get(getBaseUrl() + "opennms/index.jsp");
+        // The following input fields will exist on index.jsp, only if includes/search-box.jsp is rendered and processed by AngularJS
+        WebElement asyncKsc = findElementByXpath("//input[@ng-model='asyncKsc']");
+        Assert.assertNotNull(asyncKsc);
+        WebElement asyncNode = findElementByXpath("//input[@ng-model='asyncNode']");
+        Assert.assertNotNull(asyncNode);
+    }
+
 }
