@@ -665,18 +665,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-ksc-combobox</artifactId>
-      <version>${project.version}</version>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.gwt-suggestion-combobox</artifactId>
-      <version>${project.version}</version>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.gwt-graph-resources-list</artifactId>
       <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
@@ -692,12 +680,6 @@
       <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>   
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.node-page-list</artifactId>
-      <version>${project.version}</version>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>

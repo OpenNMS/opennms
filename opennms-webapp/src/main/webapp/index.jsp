@@ -78,11 +78,8 @@
 		<!-- notification box -->    
 		<jsp:include page="/includes/notification-box.jsp" flush="false" />
 
-		<!-- Performance box -->    
-		<jsp:include page="/includes/resourceGraphs-box.jsp" flush="false" />
-
-		<!-- KSC Reports box -->    
-		<jsp:include page="/KSC/include-box.htm" flush="false" />
+		<!-- Search box -->
+		<jsp:include page="/includes/search-box.jsp" flush="false" />
 
 		<% String showGrafanaBox = System.getProperty("org.opennms.grafanaBox.show", "false");
 			if (Boolean.parseBoolean(showGrafanaBox)) { %>

@@ -220,14 +220,6 @@
     nodeModel.put("sysContact", WebSecurityUtils.sanitizeString(node_db.getSysContact(), true));
     nodeModel.put("sysDescription", WebSecurityUtils.sanitizeString(node_db.getSysDescription()));
     
-    if(!(node_db.getForeignSource() == null) && !(node_db.getForeignId() == null)) {
-        nodeModel.put("parentRes", node_db.getForeignSource() + ":" + node_db.getForeignId());
-        nodeModel.put("parentResType", "nodeSource");
-    } else {
-        nodeModel.put("parentRes", Integer.toString(nodeId));
-        nodeModel.put("parentResType", "node");
-    }
-
     pageContext.setAttribute("model", nodeModel);
 
 	final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
@@ -273,6 +265,8 @@
 
 <%@page import="org.opennms.core.resource.Vault"%>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
+  <jsp:param name="norequirejs" value="true" />
+  <jsp:param name="disableCoreWeb" value="true" />
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
   <jsp:param name="headTitle" value="ID ${model.id}" />
@@ -280,6 +274,11 @@
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="Node" />
   <jsp:param name="enableExtJS" value="false"/>
+
+  <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="js/onms-interfaces/styles.css" />' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="js/onms-interfaces/app.js"></script>' />
 </jsp:include>
 
 <script type="text/javascript">
@@ -375,10 +374,8 @@ function confirmAssetEdit() {
     <%-- TODO In order to show the following link only when there are metrics, an
               inexpensive method has to be implemented on either ResourceService
               or ResourceDao --%>
-    <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
-      <c:param name="parentResourceType" value="${model.parentResType}"/>
-      <c:param name="parentResource" value="${model.parentRes}"/>
-      <c:param name="reports" value="all"/>
+    <c:url var="resourceGraphsUrl" value="graph/chooseresource.jsp">
+      <c:param name="node" value="${model.id}"/>
     </c:url>
     <li>
       <a href="<c:out value="${resourceGraphsUrl}"/>">Resource Graphs</a>
@@ -520,17 +517,13 @@ function confirmAssetEdit() {
     </jsp:include>
   </c:if>
 
-  <script type="text/javascript">
-    var nodeId = ${model.id}
-  </script>
-  <div id="interface-panel-gwt" class="panel panel-default">
+  <div id="onms-interfaces" class="panel panel-default">
     <div class="panel-heading">
-    	<h3 class="panel-title">Node Interfaces</h3>
+        <h3 class="panel-title">Node Interfaces</h3>
     </div>
-    <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
-    <div name="opennms-interfacelist" id="gwtnodeList-ie"></div>
+    <onms-interfaces node="${model.id}"/>
   </div>
-	
+
   <!-- Vlan box if available -->
   <c:if test="${! empty model.vlans}">
     <div class="panel panel-default">

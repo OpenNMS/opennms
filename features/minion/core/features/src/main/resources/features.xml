@@ -24,7 +24,7 @@
         <bundle>mvn:org.opennms.features.minion/core-impl/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-shell" description="Minion :: Shell" version="${project.version}">
+    <feature name="minion-core-shell" description="Minion :: Core :: Shell" version="${project.version}">
         <feature>minion-core</feature>
         <bundle>mvn:org.opennms.features.minion/shell/${project.version}</bundle>
     </feature>
