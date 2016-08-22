@@ -28,8 +28,13 @@
 
 package org.opennms.netmgt.icmp;
 
+import java.util.concurrent.Callable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * <p>PingerFactory class.</p>
@@ -41,18 +46,9 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractPingerFactory implements PingerFactory {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractPingerFactory.class);
 
-    private volatile Pinger[][] m_pingers = new Pinger[MAX_DSCP][2];
+    protected static final Cache<Integer, Pinger> m_pingers = CacheBuilder.newBuilder().build();
 
     public abstract Class<? extends Pinger> getPingerClass();
-
-    protected Pinger getPinger(final int tc, final int isFrag) {
-        // because we'll basically never set an instance that's already created
-        // we can assume it's OK to not worry about concurrency for a hit
-        if (m_pingers[tc] != null && m_pingers[tc][isFrag] != null) {
-            return m_pingers[tc][isFrag];
-        }
-        return null;
-    }
 
     public Pinger getInstance() {
         return getInstance(0, true);
@@ -60,54 +56,46 @@ public abstract class AbstractPingerFactory implements PingerFactory {
 
     public Pinger getInstance(final int tc, final boolean allowFragmentation) {
         final int isFrag = allowFragmentation? FRAG_TRUE : FRAG_FALSE;
+        final Class<? extends Pinger> clazz;
 
-        final Pinger existing = getPinger(tc, isFrag);
-        if (existing != null) {
-            return existing;
+        try {
+            clazz = getPingerClass();
+        } catch (final RuntimeException e) {
+            IllegalArgumentException ex = new IllegalArgumentException("Unable to find class named " + System.getProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jni6.Jni6Pinger"), e);
+            LOG.error(ex.getLocalizedMessage(), ex);
+            throw ex;
         }
 
-        // OTHERWISE, we have to lock to write
-        synchronized(m_pingers) {
-            final Class<? extends Pinger> clazz;
-
-            try {
-                clazz = getPingerClass();
-            } catch (final RuntimeException e) {
-                IllegalArgumentException ex = new IllegalArgumentException("Unable to find class named " + System.getProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jni6.Jni6Pinger"), e);
-                LOG.error(ex.getLocalizedMessage(), ex);
-                throw ex;
+        try {
+            return m_pingers.get((tc + 1) * isFrag, new Callable<Pinger>() {
+                @Override
+                public Pinger call() throws Exception {
+                    final Pinger pinger = clazz.newInstance();
+                    pinger.setTrafficClass(tc);
+                    return pinger;
+                }
+            });
+        } catch (final Throwable e) {
+            final IllegalArgumentException ex;
+            if (e.getCause() instanceof InstantiationException) {
+                ex = new IllegalArgumentException("Error trying to create pinger of type " + clazz, e.getCause());
+            } else if (e.getCause() instanceof IllegalAccessException) {
+                ex = new IllegalArgumentException("Unable to create pinger of type " + clazz + ".  It does not appear to have a public constructor", e);
+            } else {
+                ex = new IllegalArgumentException("Unexpected exception thrown while trying to create pinger of type " + clazz, e);
             }
-
-            try {
-                final Pinger pinger = clazz.newInstance();
-                pinger.setTrafficClass(tc);
-                m_pingers[tc][isFrag] = pinger;
-            } catch (final InstantiationException e) {
-                IllegalArgumentException ex = new IllegalArgumentException("Error trying to create pinger of type " + clazz, e);
-                LOG.error(ex.getLocalizedMessage(), ex);
-                throw ex;
-            } catch (final IllegalAccessException e) {
-                IllegalArgumentException ex = new IllegalArgumentException("Unable to create pinger of type " + clazz + ".  It does not appear to have a public constructor", e);
-                LOG.error(ex.getLocalizedMessage(), ex);
-                throw ex;
-            } catch (final Throwable e) {
-                IllegalArgumentException ex = new IllegalArgumentException("Unexpected exception thrown while trying to create pinger of type " + clazz, e);
-                LOG.error(ex.getLocalizedMessage(), ex);
-                throw ex;
-            }
-            return m_pingers[tc][isFrag];
+            LOG.error(ex.getLocalizedMessage(), ex);
+            throw ex;
         }
     }
 
     public void setInstance(final int tc, final boolean allowFragmentation, final Pinger pinger) {
-        synchronized(m_pingers) {
-            m_pingers[tc][allowFragmentation? FRAG_TRUE : FRAG_FALSE] = pinger;
-        }
+        final int isFrag = allowFragmentation? FRAG_TRUE : FRAG_FALSE;
+        m_pingers.put((tc + 1) * isFrag, pinger);
     }
 
     public void reset() {
-        synchronized(m_pingers) {
-            m_pingers = new Pinger[MAX_DSCP][2];
-        }
+        m_pingers.invalidateAll();
+        m_pingers.cleanUp();
     }
 }

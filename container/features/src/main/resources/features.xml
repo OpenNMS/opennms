@@ -358,6 +358,7 @@
     </feature>
 
     <feature name="jicmp" description="jicmp" version="2.0.0.SNAPSHOT">
+      <feature>guava</feature>
       <bundle>wrap:mvn:org.opennms/jicmp-api/2.0.0-SNAPSHOT$Export-Package=org.opennms.protocols.icmp,org.opennms.protocols.ip</bundle>
     </feature>
 

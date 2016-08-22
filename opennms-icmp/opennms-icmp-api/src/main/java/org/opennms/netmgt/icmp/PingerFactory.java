@@ -30,8 +30,8 @@ package org.opennms.netmgt.icmp;
 
 public interface PingerFactory {
     public static final int MAX_DSCP = (1 << 16) - 1;
-    public static final int FRAG_FALSE = 0;
-    public static final int FRAG_TRUE = 1;
+    public static final int FRAG_FALSE = 1;
+    public static final int FRAG_TRUE = 2;
 
     /**
      * Returns an implementation of the default {@link Pinger} class

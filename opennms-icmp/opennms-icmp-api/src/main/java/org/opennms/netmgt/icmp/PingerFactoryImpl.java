@@ -8,7 +8,7 @@ public class PingerFactoryImpl extends AbstractPingerFactory {
         // If the default (0) DSCP pinger has already been initialized, use the
         // same class in case it's been manually overridden with a setInstance()
         // call (ie, in the Remote Poller)
-        final Pinger defaultPinger = getPinger(0, FRAG_TRUE);
+        final Pinger defaultPinger = m_pingers.getIfPresent(1);
         if (defaultPinger != null) {
             return defaultPinger.getClass();
         }
