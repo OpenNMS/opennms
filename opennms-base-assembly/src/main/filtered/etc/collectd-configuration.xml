@@ -120,7 +120,7 @@
             <parameter key="retry" value="2"/>
             <parameter key="timeout" value="3000"/>
             <parameter key="rrd-base-name" value="java"/>
-            <parameter key="collection" value="jsr160"/>
+            <parameter key="collection" value="minion-datacollection"/>
             <parameter key="thresholding-enabled" value="true"/>
             <parameter key="ds-name" value="minion-jvm"/>
             <parameter key="friendly-name" value="minion-jvm"/>
