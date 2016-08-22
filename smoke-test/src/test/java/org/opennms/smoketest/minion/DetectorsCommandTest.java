@@ -30,12 +30,12 @@ package org.opennms.smoketest.minion;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.junit.Assert.fail;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.hasSize;
 
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,22 +48,32 @@ import org.junit.Test;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
+import org.opennms.test.system.api.TestEnvironment;
+import org.opennms.test.system.api.TestEnvironmentBuilder;
+import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
-
+/**
+ * Verifies the list of available detectors by parsing the output
+ * of the 'provision:list-detectors' command issued in the Karaf shell.
+ *
+ * We try running this command several times since the feature providing
+ * the 'list-detectors' command the feature(s) providing the detectors
+ * may take some time to load.
+ *
+ * @author jwhite
+ * @author chandrag
+ */
 public class DetectorsCommandTest {
 
     private static TestEnvironment m_testEnvironment;
 
     private static final Logger LOG = LoggerFactory.getLogger(DetectorsCommandTest.class);
 
-    private ImmutableMap<String, String> expectedDetectorsOpenNMS = ImmutableMap.<String, String> builder()
+    private ImmutableMap<String, String> expectedDetectors = ImmutableMap.<String, String> builder()
             .put("BGP_Session", "org.opennms.netmgt.provision.detector.snmp.BgpSessionDetector")
             .put("BSF", "org.opennms.netmgt.provision.detector.bsf.BSFDetector")
             .put("CITRIX", "org.opennms.netmgt.provision.detector.simple.CitrixDetector")
@@ -109,56 +119,6 @@ public class DetectorsCommandTest {
             .put("WS-Man", "org.opennms.netmgt.provision.detector.wsman.WsManDetector")
             .put("Win32Service", "org.opennms.netmgt.provision.detector.snmp.Win32ServiceDetector").build();
 
-    private ImmutableMap<String, String> expectedDetectorsMinion = ImmutableMap.<String, String> builder()
-            .put("BGP_Session", "org.opennms.netmgt.provision.detector.snmp.BgpSessionDetector")
-            .put("BSF", "org.opennms.netmgt.provision.detector.bsf.BSFDetector")
-            .put("CITRIX", "org.opennms.netmgt.provision.detector.simple.CitrixDetector")
-            .put("Cisco_IP_SLA", "org.opennms.netmgt.provision.detector.snmp.CiscoIpSlaDetector")
-            .put("DHCP", "org.opennms.protocols.dhcp.detector.DhcpDetector")
-            .put("DNS", "org.opennms.netmgt.provision.detector.datagram.DnsDetector")
-            .put("Dell_OpenManageChassis", "org.opennms.netmgt.provision.detector.snmp.OpenManageChassisDetector")
-            .put("DiskUsage", "org.opennms.netmgt.provision.detector.snmp.DiskUsageDetector")
-            .put("DominoIIOP", "org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector")
-            .put("FTP", "org.opennms.netmgt.provision.detector.simple.FtpDetector")
-            .put("GP", "org.opennms.netmgt.provision.detector.generic.GpDetector")
-            .put("HOST-RESOURCES", "org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetector")
-            .put("HTTP", "org.opennms.netmgt.provision.detector.simple.HttpDetector")
-            .put("HTTPS", "org.opennms.netmgt.provision.detector.simple.HttpsDetector")
-            .put("ICMP", "org.opennms.netmgt.provision.detector.icmp.IcmpDetector")
-            .put("IMAP", "org.opennms.netmgt.provision.detector.simple.ImapDetector")
-            .put("IMAPS", "org.opennms.netmgt.provision.detector.simple.ImapsDetector")
-            .put("JBoss", "org.opennms.netmgt.provision.detector.jmx.JBossDetector")
-            .put("JDBC", "org.opennms.netmgt.provision.detector.jdbc.JdbcDetector")
-            .put("JSR160", "org.opennms.netmgt.provision.detector.jmx.Jsr160Detector")
-            .put("JdbcQueryDetector", "org.opennms.netmgt.provision.detector.jdbc.JdbcQueryDetector")
-            .put("JdbcStoredProcedureDetector",
-                    "org.opennms.netmgt.provision.detector.jdbc.JdbcStoredProcedureDetector")
-            .put("LDAP", "org.opennms.netmgt.provision.detector.simple.LdapDetector")
-            .put("LDAPS", "org.opennms.netmgt.provision.detector.simple.LdapsDetector")
-            .put("LOOP", "org.opennms.netmgt.provision.detector.loop.LoopDetector")
-            .put("MSExchange", "org.opennms.netmgt.provision.detector.msexchange.MSExchangeDetector")
-            .put("MX4J", "org.opennms.netmgt.provision.detector.jmx.MX4JDetector")
-            .put("Memcached", "org.opennms.netmgt.provision.detector.simple.MemcachedDetector")
-            .put("NOTES", "org.opennms.netmgt.provision.detector.simple.NotesHttpDetector")
-            .put("NRPE", "org.opennms.netmgt.provision.detector.simple.NrpeDetector")
-            .put("NSClient", "org.opennms.protocols.nsclient.detector.NsclientDetector")
-            .put("NTP", "org.opennms.netmgt.provision.detector.datagram.NtpDetector")
-            .put("OMSAStorage", "org.opennms.netmgt.provision.detector.snmp.OmsaStorageDetector")
-            .put("PERC", "org.opennms.netmgt.provision.detector.snmp.PercDetector")
-            .put("POP3", "org.opennms.netmgt.provision.detector.simple.Pop3Detector")
-            .put("RadiusAuth", "org.opennms.protocols.radius.detector.RadiusAuthDetector")
-            .put("SMB", "org.opennms.netmgt.provision.detector.smb.SmbDetector")
-            .put("SMTP", "org.opennms.netmgt.provision.detector.simple.SmtpDetector")
-            .put("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector")
-            .put("SSH", "org.opennms.netmgt.provision.detector.ssh.SshDetector")
-            .put("TCP", "org.opennms.netmgt.provision.detector.simple.TcpDetector")
-            .put("TrivialTime", "org.opennms.netmgt.provision.detector.simple.TrivialTimeDetector")
-            .put("WEB", "org.opennms.netmgt.provision.detector.web.WebDetector")
-            .put("WMI", "org.opennms.netmgt.provision.detector.wmi.WmiDetector")
-            .put("WS-Man", "org.opennms.netmgt.provision.detector.wsman.WsManDetector")
-            .put("Win32Service", "org.opennms.netmgt.provision.detector.snmp.Win32ServiceDetector")
-            .put("XMP", "org.opennms.netmgt.protocols.xmp.detector.XmpDetector").build();
-
     @ClassRule
     public static final TestEnvironment getTestEnvironment() {
         if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
@@ -180,67 +140,34 @@ public class DetectorsCommandTest {
     }
 
     @Test
-    public void LoadDetectorListOnMinionTest() throws Exception {
-
+    public void canLoadDetectorsOnMinion() throws Exception {
         final InetSocketAddress sshAddr = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 8201);
-        try (final SshClient sshClient = new SshClient(sshAddr, "admin", "admin");) {
-            PrintStream pipe = sshClient.openShell();
-            pipe.println("provision:list-detectors");
-            pipe.println("logout");
-
-            await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
-
-            String shellOutput = sshClient.getStdout();
-            shellOutput = StringUtils.substringAfter(shellOutput, "provision:list-detectors");
-            LOG.info("Detectors Output {}", shellOutput);
-            // Split based on line endings
-            String detectors[] = shellOutput.split("\\r?\\n");
-            List<String> detectorList = Arrays.asList(detectors);
-            // Wrapping List to make it modifiable
-            List<String> detectorsList = new ArrayList<String>(detectorList);
-            detectorsList.remove(detectorsList.size() - 1);
-
-            Map<String, String> detectorMap = new HashMap<String, String>();
-            for (String detector : detectorsList) {
-                if (StringUtils.isNotBlank(detector)) {
-                    String detectorSet[] = detector.split(":");
-                    if (detectorSet.length >= 2) {
-                        detectorMap.put(detectorSet[0], detectorSet[1]);
-                    }
-                }
-            }
-            for (String detectorName : expectedDetectorsMinion.keySet()) {
-                boolean match = detectorMap.containsKey(detectorName);
-                if (match == false) {
-                    fail(detectorName + "  detector was not loaded on Minion");
-                }
-            }
-        }
+        await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
+            .until(() -> listAndVerifyDetectors("Minion", sshAddr), hasSize(0));
     }
 
     @Test
-    public void LoadDetectorListOnOpenNMSTest() throws Exception {
-
+    public void canLoadDetectorsOnOpenNMS() throws Exception {
         final InetSocketAddress sshAddr = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8101);
-        try (final SshClient sshClient = new SshClient(sshAddr, "admin", "admin");) {
+        await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
+            .until(() -> listAndVerifyDetectors("OpenNMS", sshAddr), hasSize(0));
+    }
+
+    public List<String> listAndVerifyDetectors(String host, InetSocketAddress sshAddr) throws Exception {
+        List<String> unmatchedDetectors = new ArrayList<>();
+        try (final SshClient sshClient = new SshClient(sshAddr, "admin", "admin")) {
+            // List the detectors
             PrintStream pipe = sshClient.openShell();
             pipe.println("provision:list-detectors");
             pipe.println("logout");
+            await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
 
-            await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
-
+            // Parse the output
             String shellOutput = sshClient.getStdout();
             shellOutput = StringUtils.substringAfter(shellOutput, "provision:list-detectors");
-            LOG.info("Detectors Output {}", shellOutput);
-            // Split based on line endings
-            String detectors[] = shellOutput.split("\\r?\\n");
-            List<String> detectorList = Arrays.asList(detectors);
-            // Wrapping List to make it modifiable
-            List<String> detectorsList = new ArrayList<String>(detectorList);
-            detectorsList.remove(detectorsList.size() - 1);
-
+            LOG.info("Detectors output: {}", shellOutput);
             Map<String, String> detectorMap = new HashMap<String, String>();
-            for (String detector : detectorsList) {
+            for (String detector : shellOutput.split("\\r?\\n")) {
                 if (StringUtils.isNotBlank(detector)) {
                     String detectorSet[] = detector.split(":");
                     if (detectorSet.length >= 2) {
@@ -248,13 +175,16 @@ public class DetectorsCommandTest {
                     }
                 }
             }
-            for (String detectorName : expectedDetectorsOpenNMS.keySet()) {
-                boolean match = detectorMap.containsKey(detectorName);
-                if (match == false) {
-                    fail(detectorName + "  detector was not loaded on OpenNMS");
+            LOG.info("Found detectors: {}",  detectorMap);
+
+            // Verify
+            for (String detectorName : expectedDetectors.keySet()) {
+                if (!detectorMap.containsKey(detectorName)) {
+                    unmatchedDetectors.add(detectorName);
                 }
             }
         }
-
+        return unmatchedDetectors;
     }
+
 }

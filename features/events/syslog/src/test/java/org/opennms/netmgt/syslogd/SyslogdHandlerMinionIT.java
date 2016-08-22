@@ -104,7 +104,7 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
 		// Warm up (open JMS connections, etc)
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < numberOfMessages; i++) {
-			template.asyncSendBody("seda:handleMessage", conns[i]);
+			template.asyncSendBody("seda:handleMessageBlueprint", conns[i]);
 		}
 		long endTime = System.currentTimeMillis();
 		LOG.info("Warm-up messages took {}ms", endTime - startTime);
@@ -123,7 +123,7 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
 		// Send a SyslogConnection to seda:handleMessage
 		startTime = System.currentTimeMillis();
 		for (int i = 0; i < numberOfMessages; i++) {
-			template.asyncSendBody("seda:handleMessage", conns[i]);
+			template.asyncSendBody("seda:handleMessageBlueprint", conns[i]);
 		}
 		endTime = System.currentTimeMillis();
 		LOG.info("Test messages took {}ms", endTime - startTime);

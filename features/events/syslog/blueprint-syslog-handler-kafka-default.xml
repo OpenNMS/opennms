@@ -15,12 +15,12 @@
 
 	<cm:property-placeholder id="syslogHandlerDefaultKafkaProperties" persistent-id="org.opennms.netmgt.syslog.handler.kafka.default" placeholder-prefix="$[" placeholder-suffix="]" update-strategy="none">
 		<cm:default-properties>
-			<cm:property name="kafkahost" value="127.0.0.1" />
-			<cm:property name="kafkaport" value="9092" />
+			<cm:property name="kafkaAddress" value="127.0.0.1:9092" />
 			<cm:property name="kafkatopic" value="syslog" />
 			<cm:property name="zookeeperhost" value="127.0.0.1"/>
 			<cm:property name="zookeeperport" value="2181"/>
 			<cm:property name="groupId" value="syslogconsumer"/>
+			<cm:property name="consumerstreams" value="1"/>
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -40,7 +40,7 @@
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerDefaultKafkaProperties" />
 
 		<route id="receiveSyslogConnectionViaKafka">
-			<from uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}"/>
+			<from uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}&amp;consumerStreams={{consumerstreams}}"/>
 			<process ref="unmarshaller"/>
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>

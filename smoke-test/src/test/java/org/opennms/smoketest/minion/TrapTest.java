@@ -141,7 +141,7 @@ public class TrapTest {
                 .toCriteria();
 
         // Send traps to the Minion listener until one makes it through
-        await().atMost(5, MINUTES).pollInterval(30, SECONDS).until(new Callable<Boolean>() {
+        await().atMost(5, MINUTES).pollInterval(30, SECONDS).pollDelay(0, SECONDS).until(new Callable<Boolean>() {
             @Override public Boolean call() throws Exception {
                 sendTrap(trapAddr);
                 try {

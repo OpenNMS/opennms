@@ -27,7 +27,7 @@
 	</cm:property-placeholder>
 
 	<bean id="syslogConnectionHandlerCamel" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerCamelImpl">
-		<argument value="seda:handleMessage"/>
+		<argument value="seda:handleMessageBlueprint"/>
 	</bean>
 
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
@@ -43,13 +43,13 @@
 	<camelContext id="syslogConnectionHandlerMinion" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerMinionProperties" />
 
-		<route id="syslogHandleMessage">
-			<from uri="seda:handleMessage?concurrentConsumers=4" />
+		<route id="syslogReceiveMessageViaActiveMQ">
+			<from uri="seda:handleMessageBlueprint?concurrentConsumers=4" />
 			<!-- Marshal the message to XML -->
 			<bean ref="marshaller"/>
 			<to uri="seda:sendMessage"/>
 		</route>
-		<route id="syslogSendMessage">
+		<route id="syslogSendMessageActiveMQ">
 			<!-- Concurrent consumers gives a performance boost here because we have pooled connections to the JMS broker -->
 			<from uri="seda:sendMessage?concurrentConsumers=4"/>
 			<!-- Broadcast the message over ActiveMQ -->
