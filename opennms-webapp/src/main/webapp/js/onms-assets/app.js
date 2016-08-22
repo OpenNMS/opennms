@@ -32,6 +32,15 @@ angular.module('onms-assets', [
     scope: {
       field: '=',
       asset: '='
+    },
+    link: function (scope, element, attrs) {
+      scope.suggestions = scope.$parent.suggestions;
+      scope.getSuggestions = function(field) {
+        if (scope.suggestions[field]) {
+          return scope.suggestions[field].suggestion;
+        }
+        return [];
+      };
     }
   };
 })
@@ -41,6 +50,7 @@ angular.module('onms-assets', [
   $scope.infoKeys = [ 'sysObjectId', 'sysName', 'sysLocation', 'sysContact', 'sysDescription' ];
   $scope.config = {};
   $scope.asset = {};
+  $scope.suggestions = {};
   $scope.nodeId;
   $scope.nodeLabel;
   $scope.foreignSource;
@@ -64,6 +74,13 @@ angular.module('onms-assets', [
           .error(function(msg) {
             growl.error(msg);
           });
+      })
+      .error(function(msg) {
+        growl.error(msg);
+      });
+    $http.get('rest/assets/suggestions')
+      .success(function(suggestions) {
+        $scope.suggestions = suggestions
       })
       .error(function(msg) {
         growl.error(msg);

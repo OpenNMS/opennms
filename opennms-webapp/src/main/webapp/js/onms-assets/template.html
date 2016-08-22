@@ -1,6 +1,8 @@
 <p class="form-control-static" ng-if="field.type=='static'">{{ asset[field.model] }}</p>
 
-<input type="text" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='text'"></input>
+<input type="text" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='text'"
+  typeahead-editable="true" typeahead-min-length="0"
+  uib-typeahead="suggestion for suggestion in getSuggestions(field.model) | filter:$viewValue"></input>
 
 <input type="password" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='password'"></input>
 
