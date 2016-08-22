@@ -378,7 +378,7 @@
                   "tooltip": "Connection",
                   "model": "connection",
                   "type": "select",
-                  "options": [ "telnet", "ssh", "rsh" ]
+                  "options": [ "telnet", "ssh", "rsh", "" ]
                 },
                 {
                   "label": "Auto Enable",

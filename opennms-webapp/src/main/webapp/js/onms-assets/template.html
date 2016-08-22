@@ -9,9 +9,9 @@
 <textarea class="form-control" style="height: 20em;" ng-model="asset[field.model]" ng-if="field.type=='textarea'"></textarea>
 
 <p class="input-group" ng-if="field.type=='date'">
-  <input type="text" class="form-control" uib-datepicker-popup="yyyy/MM/dd" ng-model="asset[field.model]" />
+  <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" is-open="popupOpened" ng-model="asset[field.model]" />
   <span class="input-group-btn">
-    <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
+    <button type="button" class="btn btn-default" ng-click="popupOpened=true"><i class="glyphicon glyphicon-calendar"></i></button>
   </span>
 </p>
 
