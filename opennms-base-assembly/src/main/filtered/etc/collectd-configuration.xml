@@ -114,6 +114,17 @@
             <parameter key="ds-name" value="opennms-jvm"/>
             <parameter key="friendly-name" value="opennms-jvm"/>
         </service>
+        
+        <service name="Minion-JVM" interval="300000" user-defined="false" status="on">
+            <parameter key="port" value="1299"/>
+            <parameter key="retry" value="2"/>
+            <parameter key="timeout" value="3000"/>
+            <parameter key="rrd-base-name" value="java"/>
+            <parameter key="collection" value="jsr160"/>
+            <parameter key="thresholding-enabled" value="true"/>
+            <parameter key="ds-name" value="minion-jvm"/>
+            <parameter key="friendly-name" value="minion-jvm"/>
+        </service>
 
         <service name="PostgreSQL" interval="300000" user-defined="false" status="on">
             <parameter key="collection" value="PostgreSQL"/>
@@ -132,6 +143,7 @@
     <collector service="WMI" class-name="org.opennms.netmgt.collectd.WmiCollector"/>
     <collector service="WS-Man" class-name="org.opennms.netmgt.collectd.WsManCollector"/>
     <collector service="OpenNMS-JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+    <collector service="Minion-JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
     <collector service="VMware-VirtualMachine" class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
     <collector service="VMware-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
     <collector service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCimCollector"/>

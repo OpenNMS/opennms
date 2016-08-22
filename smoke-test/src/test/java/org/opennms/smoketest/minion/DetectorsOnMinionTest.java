@@ -112,7 +112,7 @@ public class DetectorsOnMinionTest {
         client.addOrReplaceRequisition(requisition);
         client.importRequisition("foreignSource");
 
-        await().atMost(5, MINUTES).pollDelay(2, MINUTES).pollInterval(30, SECONDS)
+        await().atMost(5, MINUTES).pollDelay(0, SECONDS).pollInterval(30, SECONDS)
                 .until(getnumberOfServicesDetected(client), greaterThan(0));
     }
 

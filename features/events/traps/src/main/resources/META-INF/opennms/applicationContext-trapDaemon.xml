@@ -42,7 +42,5 @@
   <bean id="snmpTrapAddress" factory-bean="trapdConfig" factory-method="getSnmpTrapAddress"/>
   
   <bean id="snmpTrapPort" factory-bean="trapdConfig" factory-method="getSnmpTrapPort"/>
-
-  <bean id="snmpV3Users" factory-bean="trapdConfig" factory-method="getSnmpV3Users"/>
   
 </beans>

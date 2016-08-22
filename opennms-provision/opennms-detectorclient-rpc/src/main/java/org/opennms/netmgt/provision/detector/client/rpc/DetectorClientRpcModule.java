@@ -112,7 +112,7 @@ public class DetectorClientRpcModule extends AbstractXmlRpcModule<DetectorReques
             } catch (Throwable t) {
                 DetectorResponseDTO responseDTO = new DetectorResponseDTO();
                 responseDTO.setDetected(false);
-                responseDTO.setFailureMesage(t.getMessage());
+                responseDTO.setFailureMessage(t.getMessage());
                 future.complete(responseDTO);
             }
             return future;

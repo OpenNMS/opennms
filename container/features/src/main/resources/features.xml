@@ -931,16 +931,11 @@
 
     <feature name="opennms-provisioning-detectors" description="OpenNMS :: Provisioning :: Detectors" version="${project.version}">
       <feature>opennms-provisioning-api</feature>
-      <bundle>wrap:mvn:org.samba.jcifs/jcifs/1.3.14</bundle>
-      <bundle>wrap:mvn:com.novell.ldap/jldap/4.3</bundle>
+      <bundle>wrap:mvn:com.novell.ldap/jldap/${jldapVersion}</bundle>
+      <bundle>wrap:mvn:org.samba.jcifs/jcifs/${jcifsVersion}</bundle>
       <feature>opennms-icmp-api</feature>
-      <bundle>wrap:mvn:bsf/bsf/2.4.0</bundle>
-      <bundle>wrap:mvn:org.dhcp.jdhcp/jdhcp/1.1.1</bundle>
-      <bundle>wrap:mvn:org.krupczak/xmp/1.40</bundle>
+      <bundle>wrap:mvn:bsf/bsf/${bsfVersion}</bundle>
       <feature>commons-cli</feature>
-      <bundle>wrap:mvn:net.jradius/jradius-dictionary/1.1.4</bundle>
-      <bundle>wrap:mvn:org.gnu/gnu-crypto/2.0.1</bundle>
-      <bundle>wrap:mvn:net.jradius/jradius-core/1.1.4$Bundle-SymbolicName=jradius-core&amp;Bundle-Version=1.1.4&amp;Import-Package=gnu.crypto.hash,gnu.crypto.mac,net.jradius.dictionary,org.apache.commons.logging,org.apache.commons.pool.*</bundle>
       <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
       <bundle>mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
@@ -956,10 +951,6 @@
       <bundle>mvn:org.opennms/opennms-detector-ssh/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-web/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
-      <bundle>mvn:org.opennms.protocols/org.opennms.protocols.dhcp/${project.version}</bundle>
-      <bundle>mvn:org.opennms.protocols/org.opennms.protocols.nsclient/${project.version}</bundle>
-      <bundle>mvn:org.opennms.protocols/org.opennms.protocols.radius/${project.version}</bundle>
-      <bundle>mvn:org.opennms.protocols/org.opennms.protocols.xmp/${project.version}</bundle>
       <feature>wsman-integration</feature>
       <feature>wmi-integration</feature>
     </feature>
