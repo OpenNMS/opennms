@@ -1,0 +1,79 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.opennms.plugins</groupId>
+    <artifactId>alarm-change-notifier.parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <!-- ProductDescriptor -->
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>alarm-change-notifier.product-descriptor</artifactId>
+  <name>alarm-change-notifier.product-descriptor</name>
+  <description>ProductDescriptor for ${productName}</description>
+  <packaging>bundle</packaging>
+
+  <build>
+    <plugins>
+
+
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.5.3</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Import-Package>
+              *
+            </Import-Package>
+            <!-- <Import-Package> -->
+            <!-- org.apache.felix.service.command, -->
+            <!-- * -->
+            <!-- </Import-Package> -->
+          </instructions>
+        </configuration>
+      </plugin>
+
+    </plugins>
+
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>org.opennms.plugin.licencemanager</artifactId>
+      <version>${org.opennms.plugin.licencemanager.version}</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Note these dependencies match org.apache.karaf.shell.console 2.2.11 -->
+    <!-- Version may need altered for OpenNMS -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <version>4.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+      <version>4.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4jVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+</project>

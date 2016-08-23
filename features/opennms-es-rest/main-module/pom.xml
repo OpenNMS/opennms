@@ -1,0 +1,203 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.opennms.plugins</groupId>
+    <artifactId>opennms-es-rest.parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <!-- LicenceAuthenticator -->
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>opennms-es-rest.main-module</artifactId>
+  <name>opennms-es-rest.main-module</name>
+  <description>Main Module for opennms-es-rest</description>
+  <packaging>bundle</packaging>
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <target>1.8</target>
+          <source>1.8</source>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.5.3</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Import-Package>
+              *
+            </Import-Package>
+            <!-- <Import-Package> -->
+            <!-- org.apache.felix.service.command, -->
+            <!-- * -->
+            <!-- </Import-Package> -->
+          </instructions>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+
+        <configuration>
+          <excludes>
+            <!-- prevent tests running in this package. These are manual one off development tests -->
+            <exclude>**/manual/*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+    </plugins>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+    </testResources>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>org.opennms.plugin.licencemanager</artifactId>
+      <version>${org.opennms.plugin.licencemanager.version}</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Note these dependencies match org.apache.karaf.shell.console 2.2.11 -->
+    <!-- Version may need altered for OpenNMS -->
+    <dependency>
+      <groupId>org.apache.karaf.shell</groupId>
+      <artifactId>org.apache.karaf.shell.console</artifactId>
+      <version>2.2.11</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <version>4.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+      <version>4.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-1.2-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- opennms dependencies -->
+    <dependency>
+      <groupId>org.opennms.osgi</groupId>
+      <artifactId>opennms-osgi-core</artifactId>
+      <version>${opennmsVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <version>${opennmsVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.api</artifactId>
+      <version>${opennmsVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
+      <version>${opennmsVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+      <version>${json-simpleVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.searchbox</groupId>
+      <artifactId>jest</artifactId>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+
+
+    <!-- <dependency> -->
+    <!-- <groupId>org.glassfish.jersey.core</groupId> -->
+    <!-- <artifactId>jersey-client</artifactId> -->
+    <!-- <version>2.22.1</version> -->
+    <!-- </dependency> -->
+    <!-- <dependency> -->
+    <!-- <groupId>com.fasterxml.jackson.jaxrs</groupId> -->
+    <!-- <artifactId>jackson-jaxrs-json-provider</artifactId> -->
+    <!-- <version>2.5.4</version> -->
+    <!-- </dependency> -->
+
+  </dependencies>
+
+</project>
