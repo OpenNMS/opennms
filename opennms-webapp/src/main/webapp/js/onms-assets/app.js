@@ -90,7 +90,7 @@ angular.module('onms-assets', [
   $scope.save = function() {
     var target = {};
     for (var k in $scope.asset) {
-      if ($scope.infoKeys.indexOf(k) == -1 && $scope.asset[k] != '' && $scope.asset[k] != null) {
+      if ($scope.infoKeys.indexOf(k) == -1 && k != 'id' && $scope.asset[k] != '' && $scope.asset[k] != null) {
         target[k] = $scope.asset[k];
       }
     }
