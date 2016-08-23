@@ -9,7 +9,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.plugins</groupId>
   <artifactId>alarm-change-notifier.parent</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>alarm-change-notifier.parent</name>
   <description>alarm-change-notifier Parent Project</description>
@@ -40,7 +39,6 @@
     <!-- <nettyVersion>4.1.1.Final</nettyVersion> -->
     <nettyVersion>4.0.32.Final</nettyVersion>
 
-    <opennmsVersion>17.0.1-SNAPSHOT</opennmsVersion>
     <json-simpleVersion>1.1.1</json-simpleVersion>
   </properties>
 

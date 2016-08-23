@@ -28,12 +28,12 @@
     <!-- If this pom is generated from the karaf-pluginmanager-archetype, this value initially matches the archetype's version -->
     <org.opennms.plugin.licencemanager.version>1.0.1</org.opennms.plugin.licencemanager.version>
 
-    <slf4jVersion>1.7.7</slf4jVersion>
-    <karafVersion>2.4.0</karafVersion>
-    <log4j2Version>2.1</log4j2Version>
-    <junitVersion>4.10</junitVersion>
+<!--     <slf4jVersion>1.7.7</slf4jVersion> -->
+<!--     <karafVersion>2.4.0</karafVersion> -->
+<!--     <log4j2Version>2.1</log4j2Version> -->
+<!--     <junitVersion>4.10</junitVersion> -->
 
-    <opennmsVersion>17.0.1-SNAPSHOT</opennmsVersion>
+<!--     <opennmsVersion>17.0.1-SNAPSHOT</opennmsVersion> -->
     <json-simpleVersion>1.1.1</json-simpleVersion>
     <jestVersion>2.0.3</jestVersion>
   </properties>
@@ -145,43 +145,43 @@
   <dependencyManagement>
     <dependencies>
       <!-- logging dependencies. Note slf4j is used in karaf. log4j is only used in tests -->
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-api</artifactId>
-        <version>${log4j2Version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-        <version>${log4j2Version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-1.2-api</artifactId>
-        <version>${log4j2Version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-slf4j-impl</artifactId>
-        <version>${log4j2Version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${slf4jVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <version>${slf4jVersion}</version>
-      </dependency>
+<!--       <dependency> -->
+<!--         <groupId>org.apache.logging.log4j</groupId> -->
+<!--         <artifactId>log4j-api</artifactId> -->
+<!--         <version>${log4j2Version}</version> -->
+<!--       </dependency> -->
+<!--       <dependency> -->
+<!--         <groupId>org.apache.logging.log4j</groupId> -->
+<!--         <artifactId>log4j-core</artifactId> -->
+<!--         <version>${log4j2Version}</version> -->
+<!--       </dependency> -->
+<!--       <dependency> -->
+<!--         <groupId>org.apache.logging.log4j</groupId> -->
+<!--         <artifactId>log4j-1.2-api</artifactId> -->
+<!--         <version>${log4j2Version}</version> -->
+<!--       </dependency> -->
+<!--       <dependency> -->
+<!--         <groupId>org.apache.logging.log4j</groupId> -->
+<!--         <artifactId>log4j-slf4j-impl</artifactId> -->
+<!--         <version>${log4j2Version}</version> -->
+<!--       </dependency> -->
+<!--       <dependency> -->
+<!--         <groupId>org.slf4j</groupId> -->
+<!--         <artifactId>slf4j-api</artifactId> -->
+<!--         <version>${slf4jVersion}</version> -->
+<!--       </dependency> -->
+<!--       <dependency> -->
+<!--         <groupId>org.slf4j</groupId> -->
+<!--         <artifactId>jcl-over-slf4j</artifactId> -->
+<!--         <version>${slf4jVersion}</version> -->
+<!--       </dependency> -->
 
 
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junitVersion}</version>
-      </dependency>
+<!--       <dependency> -->
+<!--         <groupId>junit</groupId> -->
+<!--         <artifactId>junit</artifactId> -->
+<!--         <version>${junitVersion}</version> -->
+<!--       </dependency> -->
 
 
       <dependency>

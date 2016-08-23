@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.plugins</groupId>
     <artifactId>opennms-es-rest.parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>17.0.1-SNAPSHOT</version>
   </parent>
 
   <!-- LicenceAuthenticator -->
@@ -141,28 +141,28 @@
     <dependency>
       <groupId>org.opennms.osgi</groupId>
       <artifactId>opennms-osgi-core</artifactId>
-      <version>${opennmsVersion}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
-      <version>${opennmsVersion}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.api</artifactId>
-      <version>${opennmsVersion}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
-      <version>${opennmsVersion}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
 

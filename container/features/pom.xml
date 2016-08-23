@@ -94,6 +94,13 @@
 
             <!-- OpenNMS Plugin Manager Feature -->
             <repository>mvn:org.opennms.plugins/vaadin-opennms-pluginmanager/${project.version}/xml/features</repository>
+            
+            <!-- Alarm Change Notifier -->
+            <repository>mvn:org.opennms.plugins/alarm-change-notifier/${project.version}/xml/features</repository> 
+    
+            <!-- ReST Elastic Search Integration -->
+            <repository>mvn:org.opennms.plugins/opennms-es-rest/${project.version}/xml/features</repository>
+
           </repositories>
 
           <!-- 
@@ -236,6 +243,8 @@
             <feature>jira-troubleticketer</feature>
             <feature>datachoices</feature>
             <feature>vaadin-opennms-pluginmanager</feature>
+            <feature>alarm-change-notifier</feature>
+            <feature>opennms-es-rest</feature>
           </features>
         </configuration>
       </plugin>

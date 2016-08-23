@@ -8,14 +8,14 @@
   <!-- e.g. feature version="[2.5.6,4)" -->
   <!-- so this allows us to have a single licence which can cover a range of releases of the -->
   <!-- feature which implements the product. -->
-  <productId>opennms-es-rest/1.0-SNAPSHOT</productId>
+  <productId>opennms-es-rest/17.0.1-SNAPSHOT</productId>
 
   <!-- featureRepository is expected to contain the url of the features repository -->
   <!-- which describes the Karaf feature using the concatenated form -->
   <!-- mvn:<groupId>/<artifactId>/<version>/xml/features -->
   <!-- such that the repository can be installed using features:addurl (Karaf 2.4.0) -->
   <!-- e.g. features:addurl mvn:org.apache.camel/camel-example-osgi/2.10.0/xml/features -->
-  <featureRepository>mvn:org.opennms.plugins/opennms-es-rest/1.0-SNAPSHOT/xml/features</featureRepository>
+  <featureRepository>mvn:org.opennms.plugins/opennms-es-rest/17.0.1-SNAPSHOT/xml/features</featureRepository>
   
     
   <!-- packageingDescriptor describes the packaging of this feature. This gives an locator for the Karaf kar or rpm -->
