@@ -44,6 +44,7 @@
   <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/bootbox/bootbox.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="js/onms-assets/app.js"></script>' />
 </jsp:include>
 

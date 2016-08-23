@@ -45,7 +45,7 @@ angular.module('onms-assets', [
   };
 })
 
-.controller('NodeAssetsCtrl', ['$scope', '$http', 'growl', function($scope, $http, growl) {
+.controller('NodeAssetsCtrl', ['$scope', '$http', '$q', 'growl', function($scope, $http, $q, growl) {
 
   $scope.infoKeys = [ 'sysObjectId', 'sysName', 'sysLocation', 'sysContact', 'sysDescription' ];
   $scope.config = {};
@@ -101,11 +101,30 @@ angular.module('onms-assets', [
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       data: $.param(target)
     }).success(function() {
-      // FIXME Update the requisition if foreignSource is not null
       growl.success('The asset record has been successfully updated.');
+      $scope.updateRequisition(target);
     }).error(function(msg) {
       growl.error('Cannot update the asset record: ' + msg);
     });
+  };
+
+  $scope.updateRequisition = function(assets) {
+    if ($scope.foreignSource && $scope.foreignId) {
+      bootbox.confirm('This node belongs to the requisition ' + $scope.foreignSource + '.<br/> It is recommended to update the requisition with your asset fields.<br/> Do you want to do that ?', function(ok) {
+        if (ok) {
+          var promises = [];
+          for (var key in assets) {
+            var field = { name: key, value: assets[key] };
+            promises.push($http.post('rest/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId + '/assets', field)); 
+          }
+          $q.all(promises).then(function() {
+            growl.success('Requisition ' + $scope.foreignSource + ' has been updated.');
+          }, function(error, status) {
+            growl.success('Error while updating requisition ' + $scope.foreignSource);
+          });
+        }
+      });
+    }
   };
 
 }]);
