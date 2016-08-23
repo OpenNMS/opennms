@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,11 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.gwt.ksc.add.client.rest;
+package org.opennms.netmgt.trapd;
 
-import com.google.gwt.http.client.RequestCallback;
+import java.util.Random;
 
-public interface KscReportService {
-    public void getAllReports(RequestCallback callback);
-    public void addGraphToReport(RequestCallback callback, int kscReportId, String graphTitle, String graphName, String resourceId, String timeSpan);
+import kafka.producer.Partitioner;
+
+public class TrapdKafkaPartitioner implements Partitioner{
+
+	@Override
+	public int partition(Object arg0, int a_numPartitions) {
+		return new Random().nextInt();
+	}
+
 }

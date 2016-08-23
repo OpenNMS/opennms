@@ -432,4 +432,9 @@ public final class ServletContextImpl
 	public void declareRoles(String... roleNames) {
 		context.declareRoles(roleNames);
 	}
+
+    @Override
+    public String getVirtualServerName() {
+        return context.getVirtualServerName();
+    }
 }

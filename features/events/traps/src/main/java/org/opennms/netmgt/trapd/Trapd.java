@@ -34,7 +34,6 @@ import javax.annotation.Resource;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.snmp.SnmpV3User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,15 +78,6 @@ public class Trapd extends AbstractServiceDaemon {
      */
     @Autowired
     private TrapReceiver m_trapReceiver;
-
-    @Resource(name="snmpTrapAddress")
-    private String m_snmpTrapAddress;
-
-    @Resource(name="snmpTrapPort")
-    private Integer m_snmpTrapPort;
-
-    @Resource(name="snmpV3Users")
-    private List<SnmpV3User> m_snmpV3Users;
 
     /**
      * <P>

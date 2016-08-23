@@ -26,18 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.gwt.ksc.add.client;
-
-import com.google.gwt.core.client.JavaScriptObject;
-
-public class KscReport extends JavaScriptObject {
-    protected KscReport() {}
-    
-    public final native int getId() /*-{
-        return parseInt(this.id);
-    }-*/;
-    
-    public final native String getLabel() /*-{
-        return this.label;
-    }-*/;
-}
+@XmlSchema(
+    namespace="http://xmlns.opennms.org/xsd/config/trapd",
+    elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/trapd")
+    }
+)
+package org.opennms.netmgt.config.trapd;
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlSchema;

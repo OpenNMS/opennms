@@ -2,7 +2,6 @@
 <module rename-to="coreweb">
 	<!-- <inherits name="com.google.gwt.user.User" /> -->
 	<inherits name="org.opennms.gwt.web.ui.asset.Asset"/>
-	<inherits name="org.opennms.features.gwt.ksc.add.KSCResourceAddGraph"/>
 	<inherits name="org.opennms.features.gwt.graph.resource.list.GraphResourceList"/>
 	<inherits name="org.opennms.features.gwt.snmpselect.list.SnmpSelectList"/>
 	

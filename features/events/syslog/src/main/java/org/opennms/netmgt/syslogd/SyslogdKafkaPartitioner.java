@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,10 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.gwt.ksc.add.client.presenter;
+package org.opennms.netmgt.syslogd;
 
-import com.google.gwt.user.client.ui.HasWidgets;
+import java.net.InetAddress;
+import java.util.Random;
 
-public abstract interface Presenter {
-    public abstract void go(final HasWidgets container);
+import org.opennms.core.utils.InetAddressUtils;
+
+import kafka.producer.Partitioner;
+
+public class SyslogdKafkaPartitioner implements Partitioner {
+
+	@Override
+	public int partition(Object arg0, int a_numPartitions) {
+
+		SyslogConnection syslogConn = (SyslogConnection)arg0;
+		InetAddress sourceAddress = syslogConn.getSourceAddress();
+		int partition = 0;
+		Random rnd = new Random();
+		if(sourceAddress == null) {
+			partition =  rnd.nextInt(255);
+		} else {
+			String stringKey = InetAddressUtils.toIpAddrString(sourceAddress);
+			int offset = stringKey.lastIndexOf('.');
+			if (offset > 0) {
+				partition = Integer.parseInt( stringKey.substring(offset+1)) % a_numPartitions;
+			}
+		}
+		return partition;
+	}
+
 }

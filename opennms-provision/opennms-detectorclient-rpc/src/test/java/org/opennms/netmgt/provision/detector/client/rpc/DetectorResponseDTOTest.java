@@ -57,7 +57,7 @@ public class DetectorResponseDTOTest extends XmlTestNoCastor<DetectorResponseDTO
     public static DetectorResponseDTO getDetectorResponse() {
         DetectorResponseDTO response = new DetectorResponseDTO();
         response.setDetected(true);
-        response.setFailureMesage("classCast exception");
+        response.setFailureMessage("classCast exception");
         response.addAttribute("vendor", "MOO");
         return response;
     }

@@ -57,6 +57,7 @@ import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
@@ -69,7 +70,11 @@ import org.snmp4j.smi.VariableBinding;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
+@ContextConfiguration(locations = {
+	"classpath:/META-INF/opennms/applicationContext-soa.xml",
+	"classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+})
+@JUnitConfigurationEnvironment
 public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 
 	private boolean mockInitialized = false;

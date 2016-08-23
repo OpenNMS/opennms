@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,38 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.gwt.ksc.add.client.view;
+package org.opennms.core.camel;
 
-import java.util.List;
+import java.util.Random;
 
-import org.opennms.features.gwt.ksc.add.client.KscReport;
+/**
+ * This class can be used to generate random partition keys
+ * when sending messages to Apache Kafka.
+ */
+public class RandomPartitionKeyGenerator {
 
-import com.google.gwt.event.dom.client.KeyCodeEvent;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
+	private final int m_maximum;
 
-public interface KscAddGraphView<T> extends IsWidget {
-    
-    public interface Presenter<T> {
-        void onAddButtonClicked();
-        void onKeyCodeEvent(KeyCodeEvent<?> event, String searchText);
-        void onKscReportSelected();
-    }
-    
-    String getSearchText();
-    void setPresenter(Presenter<T> presenter);
-    void setDataList(List<T> dataList);
-    @Override
-    Widget asWidget();
+	public RandomPartitionKeyGenerator() {
+		this(10000);
+	}
 
-    String getTitle();
-    void setTitle(String defaultTitle);
+	public RandomPartitionKeyGenerator(int maximum) {
+		m_maximum = maximum;
+	}
 
-    KscReport getSelectedReport();
-    void select(KscReport report);
-    void clearSelection();
-
-    boolean isPopupShowing();
-    void hidePopup();
-    void showPopup();
+	public int getPartitionKey() {
+		return new Random().nextInt(m_maximum);
+	}
 }

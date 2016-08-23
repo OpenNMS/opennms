@@ -240,6 +240,12 @@
       <parameter key="timeout" value="3000"/>
       <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
     </service>
+    <service name="Minion-JVM" interval="300000" user-defined="false" status="on">
+      <parameter key="port" value="1299"/>
+      <parameter key="retry" value="2"/>
+      <parameter key="timeout" value="3000"/>
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+    </service>
     <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2"/>
       <parameter key="timeout" value="3000"/>
@@ -319,6 +325,7 @@
   <monitor service="NRPE-NoSSL" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
   <monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
   <monitor service="OpenNMS-JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
+  <monitor service="Minion-JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
   <monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
   <monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
   <monitor service="MS-RDP" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />

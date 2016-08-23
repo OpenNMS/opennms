@@ -51,7 +51,7 @@ public class DetectorResponseDTO implements DetectResults, RpcResponse {
     private boolean detected;
 
     @XmlAttribute(name = "failure-message")
-    private String failureMesage;
+    private String failureMessage;
 
     @XmlElement(name = "attribute")
     private List<DetectorAttributeDTO> attributes = new ArrayList<>();
@@ -69,7 +69,7 @@ public class DetectorResponseDTO implements DetectResults, RpcResponse {
 
     public DetectorResponseDTO(Throwable t) {
         setDetected(false);
-        setFailureMesage(t.getMessage());
+        setFailureMessage(t.getMessage());
     }
 
     public boolean isDetected() {
@@ -80,12 +80,16 @@ public class DetectorResponseDTO implements DetectResults, RpcResponse {
         this.detected = detected;
     }
 
-    public String getFailureMesage() {
-        return failureMesage;
+    public String getFailureMessage() {
+        return failureMessage;
     }
 
-    public void setFailureMesage(String failureMesage) {
-        this.failureMesage = failureMesage;
+    public void setFailureMessage(String failureMesage) {
+        this.failureMessage = failureMesage;
+    }
+
+    public boolean didFailWithError() {
+        return failureMessage != null && !failureMessage.isEmpty();
     }
 
     public List<DetectorAttributeDTO> getAttributes() {
@@ -118,7 +122,7 @@ public class DetectorResponseDTO implements DetectResults, RpcResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(detected, failureMesage, attributes);
+        return Objects.hash(detected, failureMessage, attributes);
     }
 
     @Override
@@ -131,7 +135,7 @@ public class DetectorResponseDTO implements DetectResults, RpcResponse {
             return false;
         DetectorResponseDTO other = (DetectorResponseDTO) obj;
         return Objects.equals(this.detected, other.detected) &&
-                Objects.equals(this.failureMesage, other.failureMesage) &&
+                Objects.equals(this.failureMessage, other.failureMessage) &&
                 Objects.equals(this.attributes, other.attributes);
     }
 

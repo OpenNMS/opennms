@@ -49,6 +49,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.camel.DispatcherWhiteboard;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -89,6 +90,21 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class SyslogdLoadIT implements InitializingBean {
+
+    public static class MockDispatcherWhiteboard extends DispatcherWhiteboard {
+
+        private final SyslogConnectionHandler m_handler = new SyslogConnectionHandlerDefaultImpl();
+
+        public MockDispatcherWhiteboard(String endpointUri) {
+            super(endpointUri);
+        }
+
+        @Override
+        public void dispatch(final Object message) throws NoSuchMethodException, SecurityException {
+            m_handler.handleSyslogConnection((SyslogConnection)message);
+        }
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(SyslogdLoadIT.class);
 
     private EventCounter m_eventCounter;
@@ -174,7 +190,7 @@ public class SyslogdLoadIT implements InitializingBean {
         m_syslogd = new Syslogd();
         SyslogReceiverCamelNettyImpl receiver = new SyslogReceiverCamelNettyImpl(m_config);
         receiver.setDistPollerDao(m_distPollerDao);
-        receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
+        receiver.setSyslogDispatcher(new MockDispatcherWhiteboard("seda:handleMessageBlueprint"));
         m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);

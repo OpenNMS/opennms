@@ -90,7 +90,6 @@
     <!-- GWT UI plugins -->
     <module>opennms-gwt-theme</module>
     <module>gwt-bootstrap</module>
-    <module>gwt-ksc-add</module>
     <module>gwt-graph-resource-list</module>
     <module>gwt-snmpselect-list</module>
     <module>gwt-tableresources</module>
