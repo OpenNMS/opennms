@@ -141,7 +141,7 @@ public class NativeSocketTest {
         NativeDatagramSocket socket = null;
 
         try {
-            socket = NativeDatagramSocket.create(family, NativeDatagramSocket.SOCK_DGRAM, NativeDatagramSocket.IPPROTO_UDP, 1234);
+            socket = NativeDatagramSocket.create(family, NativeDatagramSocket.IPPROTO_UDP, 1234);
 
             for(final String cmd : cmds) {
                 final NativeDatagramSocket sock = socket;
@@ -180,7 +180,7 @@ public class NativeSocketTest {
     @Test(timeout=10000)
     @Ignore("This is ignored since I haven't found a way to interrupt a socket blocked on recvfrom in linux")
     public void testCloseInReceive() throws Exception {
-        try(final NativeDatagramSocket socket = NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, NativeDatagramSocket.SOCK_DGRAM, NativeDatagramSocket.IPPROTO_UDP, 1234)) {
+        try(final NativeDatagramSocket socket = NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, NativeDatagramSocket.IPPROTO_UDP, 1234)) {
             final FutureTask<NativeDatagramPacket> task = new FutureTask<NativeDatagramPacket>(new Callable<NativeDatagramPacket>() {
                 @Override public NativeDatagramPacket call() throws Exception {
                     final ByteBuffer buf = UTF_8.encode("msg1");

@@ -29,6 +29,7 @@
 package org.opennms.jicmp.jna;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.UnknownHostException;
 
 import org.slf4j.Logger;
@@ -80,11 +81,17 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
         }
     }
     
-    public static NativeDatagramSocket create(final int family, final int type, final int protocol, final int listenPort) throws Exception {
+    public static NativeDatagramSocket create(final int family, final int protocol, final int listenPort) throws Exception {
         final String implClassName = NativeDatagramSocket.getImplementationClassName(family);
-        LOG.debug("{}({}, {}, {}, {})", implClassName, family, type, protocol, listenPort);
+        LOG.debug("{}({}, {}, {})", implClassName, family, protocol, listenPort);
         final Class<? extends NativeDatagramSocket> implementationClass = Class.forName(implClassName).asSubclass(NativeDatagramSocket.class);
-        return implementationClass.getDeclaredConstructor(Integer.TYPE, Integer.TYPE, Integer.TYPE, Integer.TYPE).newInstance(family, type, protocol, listenPort);
+        final Constructor<? extends NativeDatagramSocket> constructor = implementationClass.getDeclaredConstructor(Integer.TYPE, Integer.TYPE, Integer.TYPE, Integer.TYPE);
+        try {
+            return constructor.newInstance(family, SOCK_DGRAM, protocol, listenPort);
+        } catch (final Exception e) {
+            LOG.warn("Failed to create {} SOCK_DGRAM socket.  Trying with SOCK_RAW.", implementationClass, e);
+            return constructor.newInstance(family, SOCK_RAW, protocol, listenPort);
+        }
     }
 
     private static String getClassPackage() {
