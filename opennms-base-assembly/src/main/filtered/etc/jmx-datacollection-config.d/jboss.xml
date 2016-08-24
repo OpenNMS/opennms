@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <jmx-datacollection-config>
-    <jmx-collection name="jboss">
+    <jmx-collection name="jmx-jboss">
         <rrd step="300">
             <rra>RRA:AVERAGE:0.5:1:2016</rra>
             <rra>RRA:AVERAGE:0.5:12:1488</rra>

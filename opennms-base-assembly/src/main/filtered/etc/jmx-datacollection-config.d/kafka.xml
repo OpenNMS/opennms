@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <jmx-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
-    <jmx-collection name="minion-datacollection">
+    <jmx-collection name="jmx-kafka">
         <rrd step="300">
             <rra>RRA:AVERAGE:0.5:1:2016</rra>
             <rra>RRA:AVERAGE:0.5:12:1488</rra>
@@ -9,7 +9,7 @@
             <rra>RRA:MIN:0.5:288:366</rra>
         </rrd>
         <mbeans>
-        	 <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
+            <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
                 <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>
                 <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
                 <attrib name="FreeSwapSpaceSize" alias="FreeSwapSpace" type="gauge"/>
@@ -30,16 +30,6 @@
                     <comp-member name="duration" type="gauge" alias="MSCDuration"/>
                     <comp-member name="endTime" type="gauge" alias="MSCEndTime"/>
                 </comp-attrib>
-            </mbean>
-            <mbean name="org.apache.camel.context" objectname="org.apache.camel:context=org.opennms.features.events.syslog,type=context,name=&quot;syslogConnectionHandler&quot;">
-                <attrib name="ExchangesCompleted" alias="SyslogsCompleted" type="counter"/>
-                <attrib name="ExchangesFailed" alias="SyslogsFailed" type="counter"/>
-                <attrib name="ExchangesTotal" alias="SyslogsTotal" type="counter"/>
-            </mbean>
-            <mbean name="org.apache.camel.context" objectname="org.apache.camel:context=org.opennms.features.events.traps,type=context,name=&quot;trapNotificationHandler&quot;">
-                <attrib name="ExchangesCompleted" alias="TrapsCompleted" type="counter"/>
-                <attrib name="ExchangesFailed" alias="TrapsFailed" type="counter"/>
-                <attrib name="ExchangesTotal" alias="TrapsTotal" type="counter"/>
             </mbean>
         </mbeans>
     </jmx-collection>
