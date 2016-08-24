@@ -742,6 +742,19 @@
                   <ignore></ignore>
                 </action>
               </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>exec-maven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>java</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                    <execute></execute>
+                </action>
+              </pluginExecution>
             </pluginExecutions>
           </lifecycleMappingMetadata>
         </configuration>
@@ -1324,7 +1337,7 @@
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
     <vaadinExtenderVersion>1.0.0</vaadinExtenderVersion>
     
-    <!-- moved here from cadin-opennms-pluginmanger -->
+    <!-- moved here from opennms-pluginmanger -->
     <pluginmanagerVersion>1.0.1</pluginmanagerVersion>
     <licencemanagerVersion>1.0.1</licencemanagerVersion>
     <featuremanagerVersion>1.0.1</featuremanagerVersion>

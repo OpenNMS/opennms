@@ -126,5 +126,8 @@
     <!-- Alarm Change Notifier -->
     <module>alarm-change-notifier</module>
     
+    <!-- Internal Plugins Descriptor -->
+    <module>internal-plugins-descriptor</module>
+    
   </modules>
 </project>

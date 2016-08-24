@@ -20,7 +20,7 @@
     
   <!-- packageingDescriptor describes the packaging of this feature. This gives an locator for the Karaf kar or rpm -->
   <!-- in which this feature was packaged for delivery. Null or empty if no packaging described. -->
-  <packageingDescriptor>This optional plugin is packaged with OpenNMS</packageingDescriptor>
+  <packageingDescriptor>This system plugin is packaged with OpenNMS</packageingDescriptor>
 	
   <organization>OpenNMS Project</organization>
   <productDescription>The alarm-change-notifier generates OpenNMS events for changes in alarms in alarms table</productDescription>
