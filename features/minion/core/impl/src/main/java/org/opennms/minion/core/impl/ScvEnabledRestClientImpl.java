@@ -30,6 +30,7 @@ package org.opennms.minion.core.impl;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -43,6 +44,7 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.minion.core.api.RestClient;
@@ -69,36 +71,52 @@ public class ScvEnabledRestClientImpl implements RestClient {
         }
     }
     
-	public String getSnmpV3RestLink() throws MalformedURLException {
-		HttpGet httpget = new HttpGet(url.toExternalForm()
-				+ "/rest/config/trapd");
-		return httpget.getURI().toString();
+	public String getSnmpV3Users() {
+		String responseString = null;
+		CloseableHttpResponse response = null;
+		try {
+			HttpGet httpget = new HttpGet(url.toExternalForm()
+					+ "/rest/config/trapd");
+
+			response = getResponse(httpget);
+			HttpEntity entity = response.getEntity();
+			responseString = EntityUtils.toString(entity);
+			response.close();
+			return responseString;
+
+		} catch (Exception e) {
+			LOG.debug("Failed to fetch SnmpV3Users from REST Client.");
+		}
+		return responseString;
+	}
+	
+	// Setup a client with pre-emptive authentication
+	private CloseableHttpResponse getResponse(HttpGet httpget) throws Exception {
+		CloseableHttpResponse response = null;
+		HttpHost target = new HttpHost(url.getHost(), url.getPort(),
+				url.getProtocol());
+		CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		credsProvider.setCredentials(
+				new AuthScope(target.getHostName(), target.getPort()),
+				new UsernamePasswordCredentials(username, password));
+		CloseableHttpClient httpclient = HttpClients.custom()
+				.setDefaultCredentialsProvider(credsProvider).build();
+			AuthCache authCache = new BasicAuthCache();
+			BasicScheme basicAuth = new BasicScheme();
+			authCache.put(target, basicAuth);
+
+			HttpClientContext localContext = HttpClientContext.create();
+			localContext.setAuthCache(authCache);
+
+			response = httpclient.execute(target, httpget, localContext);
+			return response;
 	}
     
     @Override
-    public void ping() throws Exception {
-        // Setup a client with pre-emptive authentication
-        HttpHost target = new HttpHost(url.getHost(), url.getPort(), url.getProtocol());
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(
-                new AuthScope(target.getHostName(), target.getPort()),
-                new UsernamePasswordCredentials(username, password));
-        CloseableHttpClient httpclient = HttpClients.custom()
-                .setDefaultCredentialsProvider(credsProvider).build();
-        try {
-            AuthCache authCache = new BasicAuthCache();
-            BasicScheme basicAuth = new BasicScheme();
-            authCache.put(target, basicAuth);
-
-            HttpClientContext localContext = HttpClientContext.create();
-            localContext.setAuthCache(authCache);
-
-            // Issue a simple GET against the Info endpoint
-            HttpGet httpget = new HttpGet(url.toExternalForm() + "/rest/info");
-            CloseableHttpResponse response = httpclient.execute(target, httpget, localContext);
-            response.close();
-        } finally {
-            httpclient.close();
-        }
-    }
+	public void ping() throws Exception {
+		// Issue a simple GET against the Info endpoint
+		HttpGet httpget = new HttpGet(url.toExternalForm() + "/rest/info");
+		CloseableHttpResponse response = getResponse(httpget);
+		response.close();
+	}
 }
