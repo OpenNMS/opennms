@@ -31,7 +31,8 @@ angular.module('onms-assets', [
     templateUrl: 'js/onms-assets/template.html',
     scope: {
       field: '=',
-      asset: '='
+      asset: '=',
+      form: '='
     },
     link: function (scope, element, attrs) {
       scope.suggestions = scope.$parent.suggestions;

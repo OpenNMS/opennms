@@ -1,11 +1,11 @@
-<div class="form-group" ng-class="{ 'has-error' : assetForm[field.model].$invalid }">
+<div class="form-group" ng-class="{ 'has-error': form[field.model].$invalid }">
 
-  <label class="control-label col-md-3" uib-tooltip="{{ field.tooltip  }}">{{ field.label }}</label>
+  <label class="control-label col-md-3" for="{{ field.model }}" uib-tooltip="{{ field.tooltip  }}">{{ field.label }}</label>
 
   <div class="col-md-9">
     <p class="form-control-static" ng-if="field.type=='static'">{{ asset[field.model] }}</p>
 
-    <input type="text" class="form-control" name="{{ field.model }}" ng-model="asset[field.model]" ng-if="field.type=='text'"
+    <input type="text" class="form-control" id="{{ field.model }}" name="{{ field.model }}" ng-model="asset[field.model]" ng-if="field.type=='text'"
       typeahead-editable="true" typeahead-min-length="0" ng-pattern="field.pattern"
       uib-typeahead="suggestion for suggestion in getSuggestions(field.model) | filter:$viewValue"></input>
 

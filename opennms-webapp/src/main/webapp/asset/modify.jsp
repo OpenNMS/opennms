@@ -65,7 +65,7 @@
           </div>
           <div class="panel-body">
             <div class="form-horizontal" ng-repeat="field in panel.fields"> 
-              <asset-field field="field" asset="asset"></asset-field>
+              <asset-field field="field" asset="asset" form="assetForm"></asset-field>
             </div> 
           </div>
         </div>
