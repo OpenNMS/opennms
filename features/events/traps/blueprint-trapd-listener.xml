@@ -51,7 +51,7 @@
         <cm:default-properties>
             <cm:property name="location" value="MINION"/>
             <cm:property name="id" value="00000000-0000-0000-0000-000000ddba11"/>
-            <cm:property name="http-url" value="http://cerniossfabric111.cernerasp.com:8980/opennms"/>
+            <cm:property name="http-url" value="http://127.0.0.1:8980/opennms"/>
             <cm:property name="username" value="admin"/>
             <cm:property name="password" value="admin"/>
         </cm:default-properties>
