@@ -1323,6 +1323,11 @@
     <vaadinVersion>7.2.7</vaadinVersion>
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
     <vaadinExtenderVersion>1.0.0</vaadinExtenderVersion>
+    
+    <!-- moved here from cadin-opennms-pluginmanger -->
+    <pluginmanagerVersion>1.0.1</pluginmanagerVersion>
+    <licencemanagerVersion>1.0.1</licencemanagerVersion>
+    <featuremanagerVersion>1.0.1</featuremanagerVersion>
 
   </properties>
 

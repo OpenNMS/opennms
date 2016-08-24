@@ -16,6 +16,52 @@
   <build>
     <plugins>
 
+      <!-- copy and process the productSpec for this project and update version-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>filter-resources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/filtered-resources</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/filtered-resources</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.9.1</version>
+        <executions>
+          <execution>
+            <id>add-resource</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>add-resource</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/filtered-resources</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
 
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -50,7 +96,7 @@
     <dependency>
       <groupId>org.opennms.plugins</groupId>
       <artifactId>org.opennms.plugin.licencemanager</artifactId>
-      <version>${org.opennms.plugin.licencemanager.version}</version>
+      <version>${licencemanagerVersion}</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>

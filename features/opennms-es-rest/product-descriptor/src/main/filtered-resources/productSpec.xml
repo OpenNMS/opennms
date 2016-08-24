@@ -8,22 +8,22 @@
   <!-- e.g. feature version="[2.5.6,4)" -->
   <!-- so this allows us to have a single licence which can cover a range of releases of the -->
   <!-- feature which implements the product. -->
-  <productId>opennms-es-rest/17.0.1-SNAPSHOT</productId>
+  <productId>${productId}</productId>
 
   <!-- featureRepository is expected to contain the url of the features repository -->
   <!-- which describes the Karaf feature using the concatenated form -->
   <!-- mvn:<groupId>/<artifactId>/<version>/xml/features -->
   <!-- such that the repository can be installed using features:addurl (Karaf 2.4.0) -->
   <!-- e.g. features:addurl mvn:org.apache.camel/camel-example-osgi/2.10.0/xml/features -->
-  <featureRepository>mvn:org.opennms.plugins/opennms-es-rest/17.0.1-SNAPSHOT/xml/features</featureRepository>
+  <featureRepository>${productFeatureRepository}</featureRepository>
   
     
   <!-- packageingDescriptor describes the packaging of this feature. This gives an locator for the Karaf kar or rpm -->
   <!-- in which this feature was packaged for delivery. Null or empty if no packaging described. -->
-  <packageingDescriptor>Not Defined</packageingDescriptor>
+  <packageingDescriptor>This optional plugin is packaged with OpenNMS</packageingDescriptor>
 	
   <organization>OpenNMS Project</organization>
-  <productDescription>the opennms-es-rest uses a REST library to send data to ElasticSearch</productDescription>
+  <productDescription>The opennms-es-rest plugin uses the Jest ReST library to send data to ElasticSearch</productDescription>
   <productName>opennms-es-rest</productName>
   <productUrl>http:\\opennms.co.uk</productUrl>
   <licenceKeyRequired>false</licenceKeyRequired>
