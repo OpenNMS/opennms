@@ -114,24 +114,28 @@
                   "label": "Display Category",
                   "tooltip": "This column is to be used to specify what category of Network Element this device would fall into (E.G. WAN Router, Firewall, Etc.).",
                   "model": "displayCategory",
+                  "pattern": "/^[A-Za-z0-9_-]*$/",
                   "type": "text"
                 },
                 {
                   "label": "Notification Category",
                   "tooltip": "This could be something like 'serverAdmin' or 'networkAdmin' to be used in filter rules for directing notifications.",
                   "model": "notifyCategory",
+                  "pattern": "/^[A-Za-z0-9_-]*$/",
                   "type": "text"
                 },
                 {
                   "label": "Poller Category",
                   "tooltip": "This is to be used in filter rules to define devices in a particular poller package.",
                   "model": "pollerCategory",
+                  "pattern": "/^[A-Za-z0-9_-]*$/",
                   "type": "text"
                 },
                 {
                   "label": "Threshold Category",
                   "tooltip": "This is to be used in filter rules to define devices in a particular thresholding package.",
                   "model": "thresholdCategory",
+                  "pattern": "/^[A-Za-z0-9_-]*$/",
                   "type": "text"
                 }
               ]

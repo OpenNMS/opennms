@@ -1,20 +1,31 @@
-<p class="form-control-static" ng-if="field.type=='static'">{{ asset[field.model] }}</p>
+<div class="form-group" ng-class="{ 'has-error' : assetForm[field.model].$invalid }">
 
-<input type="text" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='text'"
-  typeahead-editable="true" typeahead-min-length="0"
-  uib-typeahead="suggestion for suggestion in getSuggestions(field.model) | filter:$viewValue"></input>
+  <label class="control-label col-md-3" uib-tooltip="{{ field.tooltip  }}">{{ field.label }}</label>
 
-<input type="password" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='password'"></input>
+  <div class="col-md-9">
+    <p class="form-control-static" ng-if="field.type=='static'">{{ asset[field.model] }}</p>
 
-<textarea class="form-control" style="height: 20em;" ng-model="asset[field.model]" ng-if="field.type=='textarea'"></textarea>
+    <input type="text" class="form-control" name="{{ field.model }}" ng-model="asset[field.model]" ng-if="field.type=='text'"
+      typeahead-editable="true" typeahead-min-length="0" ng-pattern="field.pattern"
+      uib-typeahead="suggestion for suggestion in getSuggestions(field.model) | filter:$viewValue"></input>
 
-<p class="input-group" ng-if="field.type=='date'">
-  <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" is-open="popupOpened" ng-model="asset[field.model]" />
-  <span class="input-group-btn">
-    <button type="button" class="btn btn-default" ng-click="popupOpened=true"><i class="glyphicon glyphicon-calendar"></i></button>
-  </span>
-</p>
+    <input type="password" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='password'"></input>
 
-<select class="form-control" ng-model="asset[field.model]" ng-if="field.type=='select'">
-  <option ng-repeat="value in field.options">{{value}}</option>
-</select>
+    <textarea class="form-control" style="height: 20em;" ng-model="asset[field.model]" ng-if="field.type=='textarea'"></textarea>
+
+    <p class="input-group" ng-if="field.type=='date'">
+      <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" is-open="popupOpened" ng-model="asset[field.model]" />
+      <span class="input-group-btn">
+        <button type="button" class="btn btn-default" ng-click="popupOpened=true"><i class="glyphicon glyphicon-calendar"></i></button>
+      </span>
+    </p>
+
+    <select class="form-control" ng-model="asset[field.model]" ng-if="field.type=='select'">
+      <option ng-repeat="value in field.options">{{value}}</option>
+    </select>
+  </div>
+
+</div>
+
+
+

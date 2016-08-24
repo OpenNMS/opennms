@@ -49,6 +49,7 @@ angular.module('onms-assets', [
 
   $scope.infoKeys = [ 'sysObjectId', 'sysName', 'sysLocation', 'sysContact', 'sysDescription' ];
   $scope.config = {};
+  $scope.master = {};
   $scope.asset = {};
   $scope.suggestions = {};
   $scope.nodeId;
@@ -66,6 +67,7 @@ angular.module('onms-assets', [
             $scope.nodeLabel = node.label;
             $scope.foreignSource = node.foreignSource;
             $scope.foreignId = node.foreignId;
+            $scope.master = angular.copy(node.assetRecord);
             $scope.asset = angular.copy(node.assetRecord);
             angular.forEach($scope.infoKeys, function(k) {
               $scope.asset[k] = node[k];
@@ -87,6 +89,10 @@ angular.module('onms-assets', [
       });
   };
 
+  $scope.reset = function() {
+    $scope.asset = angular.copy($scope.master);
+  };
+
   $scope.save = function() {
     var target = {};
     for (var k in $scope.asset) {
@@ -102,29 +108,41 @@ angular.module('onms-assets', [
       data: $.param(target)
     }).success(function() {
       growl.success('The asset record has been successfully updated.');
-      $scope.updateRequisition(target);
+      $scope.checkRequisition(target);
     }).error(function(msg) {
       growl.error('Cannot update the asset record: ' + msg);
     });
   };
 
-  $scope.updateRequisition = function(assets) {
+  $scope.checkRequisition = function(assets) {
     if ($scope.foreignSource && $scope.foreignId) {
-      bootbox.confirm('This node belongs to the requisition ' + $scope.foreignSource + '.<br/> It is recommended to update the requisition with your asset fields.<br/> Do you want to do that ?', function(ok) {
+      bootbox.confirm('This node belongs to the requisition ' + $scope.foreignSource + '.<br/> It is recommended to update the requisition with your asset fields, but all the existing fields will be overriden.<br/> Do you want to do that ?', function(ok) {
         if (ok) {
-          var promises = [];
-          for (var key in assets) {
-            var field = { name: key, value: assets[key] };
-            promises.push($http.post('rest/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId + '/assets', field)); 
-          }
-          $q.all(promises).then(function() {
-            growl.success('Requisition ' + $scope.foreignSource + ' has been updated.');
-          }, function(error, status) {
-            growl.success('Error while updating requisition ' + $scope.foreignSource);
-          });
+          $scope.updateRequisition(assets);
         }
       });
     }
+  };
+
+  $scope.updateRequisition = function(assets) {
+    var assetFields = [];
+    for (var key in assets) {
+      assetFields.push({ name: key, value: assets[key] });
+    }
+    $http.get('rest/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId)
+      .success(function(node) {
+        node.asset = assetFields;
+        $http.post('rest/requisitions/' + $scope.foreignSource + '/nodes', node)
+          .success(function() {
+            growl.success('Requisition ' + $scope.foreignSource + ' has been updated.');
+          })
+          .error(function() {
+            growl.error('Cannot update requisition ' + $scope.foreignSource);
+          });
+      })
+      .error(function() {
+        growl.error('Cannot obtain node data from requisition ' + $scope.foreignSource);
+      });
   };
 
 }]);

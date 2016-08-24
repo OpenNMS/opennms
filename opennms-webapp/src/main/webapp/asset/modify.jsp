@@ -56,35 +56,34 @@
     Node: <strong><a href="element/node.jsp?node=${nodeId}">{{ nodeLabel }}</a></strong>
   </h4>
 
-  <div class="row" ng-repeat="row in config.rows">
-    <div ng-class="col.class" ng-repeat="col in row.columns">
-      <div class="panel panel-default" ng-repeat="panel in col.panels">
-        <div class="panel-heading">
-          <h3 class="panel-title">{{ panel.title }}</h3>
-        </div>
-        <div class="panel-body">
-          <form role="form" class="form-horizontal" ng-repeat="field in panel.fields"> 
-            <div class="form-group">
-              <label class="control-label col-md-3" uib-tooltip="{{ field.tooltip  }}">{{ field.label }}</label>
-              <div class="col-md-9">
-                <asset-field field="field" asset="asset"></asset-field>
-              </div>
-            </div>
-          </form> 
+  <form name="assetForm" novalidate>
+    <div class="row" ng-repeat="row in config.rows">
+      <div ng-class="col.class" ng-repeat="col in row.columns">
+        <div class="panel panel-default" ng-repeat="panel in col.panels">
+          <div class="panel-heading">
+            <h3 class="panel-title">{{ panel.title }}</h3>
+          </div>
+          <div class="panel-body">
+            <div class="form-horizontal" ng-repeat="field in panel.fields"> 
+              <asset-field field="field" asset="asset"></asset-field>
+            </div> 
+          </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-6">
-      <div class="btn-group btn-group-lg">
-        <button type="button" class="btn btn-default" ng-click="save()" id="save-asset">Save Asset Record&nbsp;&nbsp;&nbsp;
-          <span class="glyphicon glyphicon-save"><span>
-        </button>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="btn-group btn-group-lg">
+          <button type="button" class="btn btn-default" ng-click="save()" id="save-asset" ng-disabled="assetForm.$invalid">Save Asset Record&nbsp;&nbsp;&nbsp;
+            <span class="glyphicon glyphicon-save"><span>
+          </button>
+          <button type="button" class="btn btn-default" ng-click="reset()" id="reset-asset" ng-disabled="assetForm.$invalid">Reset&nbsp;&nbsp;&nbsp;
+            <span class="glyphicon glyphicon-refresh"><span>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
+  </form>
 
 </div>
 
