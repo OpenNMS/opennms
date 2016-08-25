@@ -71,24 +71,18 @@ public class ScvEnabledRestClientImpl implements RestClient {
         }
     }
     
-	public String getSnmpV3Users() {
-		String responseString = null;
-		CloseableHttpResponse response = null;
-		try {
-			HttpGet httpget = new HttpGet(url.toExternalForm()
-					+ "/rest/config/trapd");
-
-			response = getResponse(httpget);
-			HttpEntity entity = response.getEntity();
-			responseString = EntityUtils.toString(entity);
-			response.close();
-			return responseString;
-
-		} catch (Exception e) {
-			LOG.debug("Failed to fetch SnmpV3Users from REST Client.");
-		}
-		return responseString;
-	}
+        public String getSnmpV3Users() throws Exception {
+            String responseString = null;
+            CloseableHttpResponse response = null;
+            HttpGet httpget = new HttpGet(url.toExternalForm()
+                    + "/rest/config/trapd");
+    
+            response = getResponse(httpget);
+            HttpEntity entity = response.getEntity();
+            responseString = EntityUtils.toString(entity);
+            response.close();
+            return responseString;
+        }
 	
 	// Setup a client with pre-emptive authentication
 	private CloseableHttpResponse getResponse(HttpGet httpget) throws Exception {
