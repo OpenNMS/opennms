@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-=== Internal Plugins
+=== Installing Internal Plugins
 
 _{opennms-product-name}_ is packaged with an internal repository of plugins which are can be installed in _Karaf_ 
 and activated by a user using the _Plugin Manager_ in the same way it could be used to download external plugins.
