@@ -55,6 +55,9 @@
   <h4>
     Node: <strong><a href="element/node.jsp?node=${nodeId}">{{ nodeLabel }}</a></strong>
   </h4>
+  <p>
+    Last modified by {{ master['lastModifiedBy'] }} at {{ master['lastModifiedDate'] | date }}
+  </p>
 
   <form name="assetForm" novalidate>
     <div class="row" ng-repeat="row in config.rows">

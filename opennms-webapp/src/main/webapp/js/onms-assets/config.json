@@ -445,7 +445,7 @@
                   "label": "Lease Expires",
                   "tooltip": "If all goes according to plan, this should be a date after you’ve got new equipment commissioned to take over for the service this equipment provides",
                   "model": "leaseExpires",
-                  "type": "text"
+                  "type": "date"
                 },
                 {
                   "label": "Vendor Asset Number",
@@ -488,7 +488,7 @@
                   "type": "text"
                 },
                 {
-                  "label": "VMware managed entity 'type'",
+                  "label": "VMware managed entity type",
                   "tooltip": "Defines a VMware host system or virtual machine",
                   "model": "vmwareManagedEntityType",
                   "type": "text"

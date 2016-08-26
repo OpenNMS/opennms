@@ -35,6 +35,7 @@ angular.module('onms-assets', [
       form: '='
     },
     link: function (scope, element, attrs) {
+      scope.dateFormat = scope.$parent.dateFormat;
       scope.suggestions = scope.$parent.suggestions;
       scope.getSuggestions = function(field) {
         if (scope.suggestions[field]) {
@@ -46,9 +47,14 @@ angular.module('onms-assets', [
   };
 })
 
-.controller('NodeAssetsCtrl', ['$scope', '$http', '$q', 'growl', function($scope, $http, $q, growl) {
+.controller('NodeAssetsCtrl', ['$scope', '$http', '$q', 'growl', 'uibDateParser', function($scope, $http, $q, growl, uibDateParser) {
 
+  $scope.blackList = [ 'id', 'lastModifiedDate', 'lastModifiedBy', 'lastCapsdPoll', 'createTime' ];
   $scope.infoKeys = [ 'sysObjectId', 'sysName', 'sysLocation', 'sysContact', 'sysDescription' ];
+  $scope.dateKeys = [ 'dateInstalled', 'leaseExpires', 'maintContractExpiration' ];
+
+  $scope.dateFormat = 'yyyy-MM-dd';
+
   $scope.config = {};
   $scope.master = {};
   $scope.asset = {};
@@ -68,6 +74,9 @@ angular.module('onms-assets', [
             $scope.nodeLabel = node.label;
             $scope.foreignSource = node.foreignSource;
             $scope.foreignId = node.foreignId;
+            angular.forEach($scope.dateKeys, function(key) {
+              node.assetRecord[key] = uibDateParser.parse(node.assetRecord[key], $scope.dateFormat);
+            });
             $scope.master = angular.copy(node.assetRecord);
             $scope.asset = angular.copy(node.assetRecord);
             angular.forEach($scope.infoKeys, function(k) {
@@ -97,11 +106,11 @@ angular.module('onms-assets', [
   $scope.save = function() {
     var target = {};
     for (var k in $scope.asset) {
-      if ($scope.infoKeys.indexOf(k) == -1 && k != 'id' && $scope.asset[k] != '' && $scope.asset[k] != null) {
-        target[k] = $scope.asset[k];
+      if ($scope.infoKeys.indexOf(k) == -1 && $scope.blackList.indexOf(k) == -1 && $scope.asset[k] != '' && $scope.asset[k] != null) {
+        target[k] = $scope.dateKeys.indexOf(k) == -1 ? $scope.asset[k] : uibDateParser.filter($scope.asset[k], $scope.dateFormat);
       }
     }
-    console.log(target);
+    console.log('Assets to save: ' + angular.toJson(target));
     $http({
       method: 'PUT',
       url: 'rest/nodes/' + $scope.nodeId + '/assetRecord',
