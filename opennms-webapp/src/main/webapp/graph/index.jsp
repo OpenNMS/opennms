@@ -64,10 +64,14 @@
           <input type="radio" name="reportTarget" id="reportTarget" value="graph/results.htm" ng-model="endUrl"/>
           Standard Performance Reports
         </label>
+        <br/>
+        <br/>
         <label>
           <input type="radio" name="reportTarget" id="reportTarget" value="graph/adhoc2.jsp" ng-model="endUrl"/>
           Custom Performance Reports
         </label>
+        <br/>
+        <br/>
       </div>
       <div class="table-responsive">
         <div class="input-group">
