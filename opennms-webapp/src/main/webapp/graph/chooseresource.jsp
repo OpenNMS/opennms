@@ -42,8 +42,8 @@
     } 
   }
   String reports = request.getParameter("reports");
-  pageContext.setAttribute("node", node == null ? "" : node);
-  pageContext.setAttribute("reports", reports == null ? "" : reports);
+  pageContext.setAttribute("node", node == null ? "null" : node);
+  pageContext.setAttribute("reports", reports == null ? "null" : reports);
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >

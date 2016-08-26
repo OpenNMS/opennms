@@ -2,7 +2,7 @@
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
- * Version: 2.0.1 - 2016-08-02
+ * Version: 2.0.2 - 2016-08-15
  * License: MIT
  */angular.module("ui.bootstrap", ["ui.bootstrap.tpls", "ui.bootstrap.collapse","ui.bootstrap.tabindex","ui.bootstrap.accordion","ui.bootstrap.alert","ui.bootstrap.buttons","ui.bootstrap.carousel","ui.bootstrap.dateparser","ui.bootstrap.isClass","ui.bootstrap.datepicker","ui.bootstrap.position","ui.bootstrap.datepickerPopup","ui.bootstrap.debounce","ui.bootstrap.dropdown","ui.bootstrap.stackedMap","ui.bootstrap.modal","ui.bootstrap.paging","ui.bootstrap.pager","ui.bootstrap.pagination","ui.bootstrap.tooltip","ui.bootstrap.popover","ui.bootstrap.progressbar","ui.bootstrap.rating","ui.bootstrap.tabs","ui.bootstrap.timepicker","ui.bootstrap.typeahead"]);
 angular.module("ui.bootstrap.tpls", ["uib/template/accordion/accordion-group.html","uib/template/accordion/accordion.html","uib/template/alert/alert.html","uib/template/carousel/carousel.html","uib/template/carousel/slide.html","uib/template/datepicker/datepicker.html","uib/template/datepicker/day.html","uib/template/datepicker/month.html","uib/template/datepicker/year.html","uib/template/datepickerPopup/popup.html","uib/template/modal/window.html","uib/template/pager/pager.html","uib/template/pagination/pagination.html","uib/template/tooltip/tooltip-html-popup.html","uib/template/tooltip/tooltip-popup.html","uib/template/tooltip/tooltip-template-popup.html","uib/template/popover/popover-html.html","uib/template/popover/popover-template.html","uib/template/popover/popover.html","uib/template/progressbar/bar.html","uib/template/progressbar/progress.html","uib/template/progressbar/progressbar.html","uib/template/rating/rating.html","uib/template/tabs/tab.html","uib/template/tabs/tabset.html","uib/template/timepicker/timepicker.html","uib/template/typeahead/typeahead-match.html","uib/template/typeahead/typeahead-popup.html"]);
@@ -2727,7 +2727,11 @@ function($scope, $element, $attrs, $compile, $log, $parse, $window, $document, $
 
   this.init = function(_ngModel_) {
     ngModel = _ngModel_;
-    ngModelOptions = _ngModel_.$options;
+    ngModelOptions = angular.isObject(_ngModel_.$options) ?
+      _ngModel_.$options :
+      {
+        timezone: null
+      };
     closeOnDateSelection = angular.isDefined($attrs.closeOnDateSelection) ?
       $scope.$parent.$eval($attrs.closeOnDateSelection) :
       datepickerPopupConfig.closeOnDateSelection;
@@ -2818,13 +2822,13 @@ function($scope, $element, $attrs, $compile, $log, $parse, $window, $document, $
           value = new Date(value);
         }
 
-        $scope.date = value;
+        $scope.date = dateParser.fromTimezone(value, ngModelOptions.timezone);
 
         return dateParser.filter($scope.date, dateFormat);
       });
     } else {
       ngModel.$formatters.push(function(value) {
-        $scope.date = value;
+        $scope.date = dateParser.fromTimezone(value, ngModelOptions.timezone);
         return value;
       });
     }
@@ -2876,7 +2880,7 @@ function($scope, $element, $attrs, $compile, $log, $parse, $window, $document, $
 
   $scope.isDisabled = function(date) {
     if (date === 'today') {
-      date = new Date();
+      date = dateParser.fromTimezone(new Date(), ngModelOptions.timezone);
     }
 
     var dates = {};
@@ -3023,7 +3027,7 @@ function($scope, $element, $attrs, $compile, $log, $parse, $window, $document, $
     if (angular.isString(viewValue)) {
       var date = parseDateString(viewValue);
       if (!isNaN(date)) {
-        return date;
+        return dateParser.fromTimezone(date, ngModelOptions.timezone);
       }
     }
 
@@ -3185,10 +3189,7 @@ angular.module('ui.bootstrap.dropdown', ['ui.bootstrap.position'])
     if (openScope === dropdownScope) {
       openScope = null;
       $document.off('click', closeDropdown);
-      var dropdownMenu = dropdownScope.getDropdownElement();
-      if (dropdownMenu) {
-        dropdownMenu.off('keydown', this.keybindFilter);
-      }
+      $document.off('keydown', this.keybindFilter);
     }
   };
 
@@ -3221,11 +3222,15 @@ angular.module('ui.bootstrap.dropdown', ['ui.bootstrap.position'])
   };
 
   this.keybindFilter = function(evt) {
+    var dropdownElement = openScope.getDropdownElement();
+    var toggleElement = openScope.getToggleElement();
+    var dropdownElementTargeted = dropdownElement && dropdownElement[0].contains(evt.target);
+    var toggleElementTargeted = toggleElement && toggleElement[0].contains(evt.target);
     if (evt.which === 27) {
       evt.stopPropagation();
       openScope.focusToggleElement();
       closeDropdown();
-    } else if (openScope.isKeynavEnabled() && [38, 40].indexOf(evt.which) !== -1 && openScope.isOpen) {
+    } else if (openScope.isKeynavEnabled() && [38, 40].indexOf(evt.which) !== -1 && openScope.isOpen && (dropdownElementTargeted || toggleElementTargeted)) {
       evt.preventDefault();
       evt.stopPropagation();
       openScope.focusDropdownEntry(evt.which);
@@ -3417,13 +3422,11 @@ angular.module('ui.bootstrap.dropdown', ['ui.bootstrap.position'])
             var newEl = dropdownElement;
             self.dropdownMenu.replaceWith(newEl);
             self.dropdownMenu = newEl;
-            self.dropdownMenu.on('keydown', uibDropdownService.keybindFilter);
+            $document.on('keydown', uibDropdownService.keybindFilter);
           });
         });
       } else {
-        if (self.dropdownMenu) {
-          self.dropdownMenu.on('keydown', uibDropdownService.keybindFilter);
-        }
+        $document.on('keydown', uibDropdownService.keybindFilter);
       }
 
       scope.focusToggleElement();
@@ -6433,7 +6436,7 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.debounce', 'ui.bootstrap
  * Extracted to a separate service for ease of unit testing
  */
   .factory('uibTypeaheadParser', ['$parse', function($parse) {
-    //                      00000111000000000000022200000000000000003333333333333330000000000044000
+    //                      000001111111100000000000002222222200000000000000003333333333333330000000000044444444000
     var TYPEAHEAD_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w\d]*))\s+in\s+([\s\S]+?)$/;
     return {
       parse: function(input) {
