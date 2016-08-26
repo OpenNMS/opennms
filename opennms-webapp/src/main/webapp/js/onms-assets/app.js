@@ -101,6 +101,7 @@ angular.module('onms-assets', [
 
   $scope.reset = function() {
     $scope.asset = angular.copy($scope.master);
+    $scope.assetForm.$setPristine();
   };
 
   $scope.save = function() {

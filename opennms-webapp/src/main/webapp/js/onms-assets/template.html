@@ -1,4 +1,4 @@
-<div class="form-group" ng-class="{ 'has-error': form[field.model].$invalid }">
+<div class="form-group" ng-class="{ 'has-error': form[field.model].$invalid && !form[field.model].$pristine, 'has-warning': form[field.model].$dirty }">
 
   <label class="control-label col-md-3" for="{{ field.model }}" uib-tooltip="{{ field.tooltip  }}">{{ field.label }}</label>
 
@@ -14,7 +14,7 @@
     <textarea class="form-control" style="height: 20em;" ng-model="asset[field.model]" ng-if="field.type=='textarea'"></textarea>
 
     <p class="input-group" ng-if="field.type=='date'">
-      <input type="text" class="form-control" uib-datepicker-popup="{{ dateFormat }}" is-open="field.open" ng-model="asset[field.model]" />
+      <input type="text" class="form-control" uib-datepicker-popup="{{ dateFormat }}" is-open="field.open" ng-model="asset[field.model]" placeholder="Specify date using this format: {{ dateFormat }}" />
       <span class="input-group-btn">
         <button type="button" class="btn btn-default" ng-click="field.open=true"><i class="glyphicon glyphicon-calendar"></i></button>
       </span>

@@ -76,11 +76,11 @@
     </div>
     <div class="row">
       <div class="col-md-6">
-        <div class="btn-group btn-group-lg">
+        <div class="btn-group">
           <button type="button" class="btn btn-default" ng-click="save()" id="save-asset" ng-disabled="assetForm.$invalid">Save Asset Record&nbsp;&nbsp;&nbsp;
             <span class="glyphicon glyphicon-save"><span>
           </button>
-          <button type="button" class="btn btn-default" ng-click="reset()" id="reset-asset" ng-disabled="assetForm.$invalid">Reset&nbsp;&nbsp;&nbsp;
+          <button type="button" class="btn btn-default" ng-click="reset()" id="reset-asset">Reset&nbsp;&nbsp;&nbsp;
             <span class="glyphicon glyphicon-refresh"><span>
           </button>
         </div>
