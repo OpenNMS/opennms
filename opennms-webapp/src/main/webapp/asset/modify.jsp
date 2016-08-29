@@ -68,7 +68,32 @@
           </div>
           <div class="panel-body">
             <div class="form-horizontal" ng-repeat="field in panel.fields"> 
-              <asset-field field="field" asset="asset" form="assetForm"></asset-field>
+              <div class="form-group" ng-class="{ 'has-error': assetForm[field.model].$invalid && !assetForm[field.model].$pristine, 'has-warning': assetForm[field.model].$dirty }">
+                <label class="control-label col-md-3" for="{{ field.model }}" uib-tooltip="{{ field.tooltip  }}">{{ field.label }}</label>
+                <div class="col-md-9">
+                  <%-- Static/ReadOnly fields --%>
+                  <p class="form-control-static" ng-if="field.type=='static'">{{ asset[field.model] }}</p>
+                  <%-- Standard fields with typeahead suggestions --%>
+                  <input type="text" class="form-control" id="{{ field.model }}" name="{{ field.model }}" ng-model="asset[field.model]" ng-if="field.type=='text'"
+                    typeahead-editable="true" typeahead-min-length="0" ng-pattern="field.pattern"
+                    uib-typeahead="suggestion for suggestion in getSuggestions(field.model) | filter:$viewValue"></input>
+                  <%-- Password fields --%>
+                  <input type="password" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='password'"></input>
+                  <%-- Textarea fields --%>
+                  <textarea class="form-control" style="height: 20em;" ng-model="asset[field.model]" ng-if="field.type=='textarea'"></textarea>
+                  <%-- Date fields with Popup Picker --%>
+                  <p class="input-group" ng-if="field.type=='date'">
+                    <input type="date" class="form-control" uib-datepicker-popup="{{ dateFormat }}" is-open="field.open" ng-model="asset[field.model]" placeholder="Specify date using this format: {{ dateFormat }}" />
+                    <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="field.open=true"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                  </p>
+                  <%-- List/Select fields --%>
+                  <select class="form-control" ng-model="asset[field.model]" ng-if="field.type=='select'">
+                    <option ng-repeat="value in field.options">{{value}}</option>
+                  </select>
+                </div>
+              </div>
             </div> 
           </div>
         </div>

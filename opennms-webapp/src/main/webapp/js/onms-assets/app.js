@@ -25,28 +25,6 @@ angular.module('onms-assets', [
   });
 }])
 
-.directive('assetField', function() {
-  return {
-    restrict: 'E',
-    templateUrl: 'js/onms-assets/template.html',
-    scope: {
-      field: '=',
-      asset: '=',
-      form: '='
-    },
-    link: function (scope, element, attrs) {
-      scope.dateFormat = scope.$parent.dateFormat;
-      scope.suggestions = scope.$parent.suggestions;
-      scope.getSuggestions = function(field) {
-        if (scope.suggestions[field]) {
-          return scope.suggestions[field].suggestion;
-        }
-        return [];
-      };
-    }
-  };
-})
-
 .controller('NodeAssetsCtrl', ['$scope', '$http', '$q', 'growl', 'uibDateParser', function($scope, $http, $q, growl, uibDateParser) {
 
   $scope.blackList = [ 'id', 'lastModifiedDate', 'lastModifiedBy', 'lastCapsdPoll', 'createTime' ];
@@ -97,6 +75,13 @@ angular.module('onms-assets', [
       .error(function(msg) {
         growl.error(msg);
       });
+  };
+
+  $scope.getSuggestions = function(field) {
+    if ($scope.suggestions[field]) {
+      return $scope.suggestions[field].suggestion;
+    }
+    return [];
   };
 
   $scope.reset = function() {
