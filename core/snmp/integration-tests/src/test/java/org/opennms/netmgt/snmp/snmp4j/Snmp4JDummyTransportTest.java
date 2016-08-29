@@ -28,21 +28,28 @@
 
 package org.opennms.netmgt.snmp.snmp4j;
 
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.CommunityTarget;
+import org.snmp4j.MessageDispatcher;
+import org.snmp4j.MessageDispatcherImpl;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.TransportStateReference;
+import org.snmp4j.mp.MPv1;
+import org.snmp4j.mp.MPv2c;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.Integer32;
@@ -65,51 +72,41 @@ public class Snmp4JDummyTransportTest {
 		MockLogAppender.setupLogging(true, "DEBUG");
 	}
 
-	//private static class DummyAddress extends IpAddress {}
-
 	@Test
-	public void testTrapReceiverWithoutOpenNMS() throws Exception {
+	public void testDummyTransport() throws Exception {
 
 		final CountDownLatch latch = new CountDownLatch(1);
-
-		//DummyAddress address = new DummyAddress();
+		final AtomicReference<byte[]> bytes = new AtomicReference<>();
 
 		// IP address is optional when using the DummyTransport because
 		// all requests are sent to the {@link DummyTransportResponder}
 		final DummyTransport<IpAddress> transport = new DummyTransport<IpAddress>(null);
 
-		/*
-		transport.addTransportListener(new TransportListener() {
-			@Override
-			public void processMessage(TransportMapping arg0, Address arg1, ByteBuffer arg2, TransportStateReference arg3) {
-				// TODO: Capture byte[]
-				LOG.debug("GOT HERE 111");
-				LOG.debug(arg2.toString());
-				latch.countDown();
-			}
-		});
-		 */
-
 		final AbstractTransportMapping<IpAddress> responder = transport.getResponder(null);
+
 		responder.addTransportListener(new TransportListener() {
 			@Override
 			public void processMessage(TransportMapping transport, Address address, ByteBuffer byteBuffer, TransportStateReference state) {
+				LOG.debug(address == null ? "[null]" : address.toString());
 				LOG.debug(byteBuffer.toString());
+
+				byteBuffer.rewind();
+				final byte[] byteArray = new byte[byteBuffer.remaining()];
+				byteBuffer.get(byteArray);
+				bytes.set(byteArray);
+				byteBuffer.rewind();
+
 				latch.countDown();
 			}
 		});
 
-		Snmp snmp = new Snmp(responder);
+		// Create our own MessageDispatcher since we don't need to do all
+		// of the crypto operations necessary to initialize SNMPv3
+		MessageDispatcher dispatcher = new MessageDispatcherImpl();
+		dispatcher.addMessageProcessingModel(new MPv1());
+		dispatcher.addMessageProcessingModel(new MPv2c());
 
-		/*
-		snmp.addCommandResponder(new CommandResponder() {
-			@Override
-			public void processPdu(CommandResponderEvent event) {
-				LOG.debug("HELLOWE");
-			}
-		});
-		//transport.listen();
-		 */
+		Snmp snmp = new Snmp(dispatcher, responder);
 
 		snmp.listen();
 
@@ -132,12 +129,28 @@ public class Snmp4JDummyTransportTest {
 		snmp.send(pdu, target, transport);
 
 		latch.await();
+
+		LOG.debug(SnmpUtils.getHexString(bytes.get()));
+	}
+
+	/**
+	 * TODO: Move conversion into this method
+	 * 
+	 * @param address
+	 * @param port
+	 * @param pdu
+	 * @param community
+	 * @return
+	 */
+	public static byte[] convertPduToBytes(InetAddress address, int port, PDU pdu, String community) {
+		return null;
 	}
 
 	private static final PDU makePdu() {
 		PDU snmp4JV2cTrapPdu = new PDUv1();
 
 		OID oid = new OID(".1.3.6.1.2.1.1.3.0");
+
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.sysUpTime, new TimeTicks(5000)));
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(oid)));
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapAddress,new IpAddress("127.0.0.1")));
@@ -145,22 +158,14 @@ public class Snmp4JDummyTransportTest {
 		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString("Trap Msg v2-1")));
 		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString("Trap Msg v2-2")));
 
-		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.0"),
-				new OctetString("Trap v1 msg-1")));
-		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(".1.3.6.1.2.1.1.3"),
-				new OctetString("Trap v1 msg-2")));
-		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(".1.3.6.1.6.3.1.1.4.1.1"), 
-				new OctetString("Trap v1 msg-3")));
-		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(".1.3.6.1.4.1.733.6.3.18.1.5.0"),
-				new Integer32(1))); 
-		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.0"),
-				new Null())); 
-		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.1"),
-				new Null(128)));
-		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.2"),
-				new Null(129)));
-		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.3"),
-				new Null(130)));
+		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.0"), new OctetString("Trap v1 msg-1")));
+		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(".1.3.6.1.2.1.1.3"), new OctetString("Trap v1 msg-2")));
+		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(".1.3.6.1.6.3.1.1.4.1.1"), new OctetString("Trap v1 msg-3")));
+		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(".1.3.6.1.4.1.733.6.3.18.1.5.0"), new Integer32(1))); 
+		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.0"), new Null())); 
+		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.1"), new Null(128)));
+		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.2"), new Null(129)));
+		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.3"), new Null(130)));
 		snmp4JV2cTrapPdu.setType(PDU.V1TRAP);
 
 		return snmp4JV2cTrapPdu;
