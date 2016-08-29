@@ -25,6 +25,91 @@ angular.module('onms-ksc-wizard', [
   };
 })
 
+.controller('KSCResourceCtrl', ['$scope', '$filter', '$http', '$window', 'growl', function($scope, $filter, $http, $window, growl) {
+
+  $scope.level = 0; // 0: Top-Level, 1: Resource-Level, 2: Graph-Level
+
+  $scope.selectedNode = null;
+  $scope.selectedResource = null;
+
+  $scope.resources = [];
+  $scope.filteredResources = [];
+  $scope.pageSize = 10;
+  $scope.maxSize = 5;
+  $scope.totalItems = 0;
+
+  $scope.goBack = function() {
+    $scope.setLevel($scope.level - 1, true);
+  };
+
+  $scope.setLevel = function(level, reset) {
+    $scope.level = level;
+    var resources = [];
+    switch (level) {
+      case 0:
+        $http.get('rest/resources?depth=0').success(function(data) {
+          $scope.resources = data.resource;
+          $scope.filteredResources = angular.copy($scope.resources);
+          $scope.updateResources();
+        });
+        break;
+      case 1:
+        if (reset) {
+          $scope.selectedResource = angular.copy($scope.selectedNode);
+        } else {
+          $scope.selectedNode = angular.copy($scope.selectedResource);
+        }
+        $http.get('rest/resources/' + $scope.getSelectedId()).success(function(data) {
+          $scope.resources = data.children.resource;
+          $scope.filteredResources = angular.copy($scope.resources);
+          $scope.updateResources();
+        });
+        break;
+      case 2:
+        $scope.resources = [];
+        $scope.filteredResources = [];
+        break;
+    }
+  };
+
+  $scope.getSelectedId = function() {
+    return escape($scope.selectedResource.id.replace('%3A',':'));
+  };
+
+  $scope.chooseResource = function() {
+    if ($scope.selectedResource == null) {
+      growl.warning('Please select a resource from the list.');
+      return; 
+    }
+    $window.document.location.href = 'KSC/customGraphEditDetails.htm?resourceId=' + $scope.getSelectedId();
+  };
+
+  $scope.selectResource = function(resource) {
+    $scope.selectedResource = resource;
+  };
+
+  $scope.viewResource = function() {
+    if ($scope.selectedResource == null) {
+      growl.warning('Please select a resource from the list.');
+      return; 
+    }
+    $scope.setLevel($scope.level + 1);
+  };
+
+  $scope.updateResources = function() {
+    $scope.currentPage = 1;
+    $scope.totalItems = $scope.filteredResources.length;
+    $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
+  };
+
+  $scope.$watch('resourceFilter', function() {
+    $scope.filteredResources = $filter('filter')($scope.resources, $scope.resourceFilter);
+    $scope.updateResources();
+  });
+
+  $scope.setLevel(0);
+}])
+
 .controller('KSCWizardCtrl', ['$scope', '$filter', '$http', '$window', 'growl', function($scope, $filter, $http, $window, growl) {
 
   $scope.resources = [];
@@ -44,6 +129,7 @@ angular.module('onms-ksc-wizard', [
 
   $scope.reloadConfig = function() {
     if (confirm("Are you sure you want to do this?")) {
+      // FIXME NMS-8701 This has to be reimplemented as KSC/index.htm will be removed
       $window.location.href = 'KSC/index.htm?reloadConfig=true';
     }
   };
