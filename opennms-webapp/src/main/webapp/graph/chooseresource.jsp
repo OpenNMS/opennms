@@ -30,7 +30,21 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<% pageContext.setAttribute("nodeId", request.getParameter("node")); %>
+<%
+  String node = request.getParameter("node");
+  if (node == null) {
+    String parentResource = request.getParameter("parentResourceId");
+    if (parentResource != null) {
+      java.util.regex.Matcher m = java.util.regex.Pattern.compile("node\\[([^\\]]+)\\]").matcher(parentResource);
+      if (m.find()) {
+        node = m.group(1);
+      }
+    } 
+  }
+  String reports = request.getParameter("reports");
+  pageContext.setAttribute("node", node == null ? "null" : node);
+  pageContext.setAttribute("reports", reports == null ? "null" : reports);
+%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="norequirejs" value="true" />
@@ -50,7 +64,7 @@
   <jsp:param name="script" value='<script type="text/javascript" src="js/onms-resources/app.js"></script>' />
 </jsp:include>
 
-<div class="container-fluid" ng-app="onms-resources" ng-controller="NodeResourcesCtrl" ng-init="init(${nodeId})">
+<div class="container-fluid" ng-app="onms-resources" ng-controller="NodeResourcesCtrl" ng-init="init(${node},${reports})">
 
   <div growl></div>
 

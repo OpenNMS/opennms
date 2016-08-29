@@ -15,7 +15,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         	<cm:property name="nodeListURL" value="element/nodeList.htm"/>
         	<cm:property name="nodePageURL" value="element/node.jsp?node="/>
         	<cm:property name="resourceGraphListURL" value="graph/index.jsp"/>
-        	<cm:property name="resourceGraphNodeURL" value="graph/chooseresource.htm?reports=all&amp;parentResourceId=node"/> 
+        	<cm:property name="resourceGraphNodeURL" value="graph/chooseresource.jsp?reports=all&amp;parentResourceId=node"/> 
         </cm:default-properties>
     </cm:property-placeholder>
     
