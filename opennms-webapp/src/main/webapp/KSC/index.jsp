@@ -57,7 +57,7 @@
   <jsp:param name="script" value='<script type="text/javascript" src="js/onms-ksc/wizard.js"></script>' />
 </jsp:include>
 
-<div class="container-fluid" ng-app="onms-ksc" ng-controller="KSCWizardCtrl">
+<div class="container-fluid" ng-app="onms-ksc-wizard" ng-controller="KSCWizardCtrl">
 
   <div growl></div>
 
