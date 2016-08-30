@@ -9,7 +9,7 @@
             <rra>RRA:MIN:0.5:288:366</rra>
         </rrd>
         <mbeans>
-        	 <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
+             <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
                 <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>
                 <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
                 <attrib name="FreeSwapSpaceSize" alias="FreeSwapSpace" type="gauge"/>
@@ -31,67 +31,18 @@
                 </comp-attrib>
             </mbean>
 
-            <!-- Route/seda stats for syslogHandleMessage -->
-            <mbean name="Syslog Message Processing" objectname="org.apache.camel:context=org.opennms.features.events.syslog,type=routes,name=&quot;syslogHandleMessage&quot;">
-                <!-- TODO: Make aliases unique -->
-                <attrib name="ExchangesCompleted" alias="SyslogCompleted" type="counter"/>
-                <attrib name="ExchangesFailed" alias="SyslogFailed" type="counter"/>
-                <attrib name="ExchangesTotal" alias="SyslogTotal" type="counter"/>
-                <attrib name="MaxProcessingTime" alias="SyslogMaxProc" type="gauge"/>
-                <attrib name="MeanProcessingTime" alias="SyslogMeanProc" type="gauge"/>
-                <attrib name="MinProcessingTime" alias="SyslogMinProc" type="gauge"/>
-                <attrib name="LastProcessingTime" alias="SyslogLastProc" type="gauge"/>
-                <attrib name="TotalProcessingTime" alias="SyslogTotalProc" type="counter"/>
-            </mbean>
-            <mbean name="Syslog Message Processing Queue" objectname="org.apache.camel:context=org.opennms.features.events.syslog,type=endpoints,name=&quot;seda://handleMessage?concurrentConsumers=4&quot;">
-                <attrib name="CurrentQueueSize" alias="SyslogHandlerQueue" type="gauge"/>
-            </mbean>
-
-            <!-- Route/seda stats for syslogSendMessage -->
-            <mbean name="Syslog Message Sender" objectname="org.apache.camel:context=org.opennms.features.events.syslog,type=routes,name=&quot;syslogSendMessage&quot;">
-                <attrib name="ExchangesCompleted" alias="SyslogCompleted" type="counter"/>
-                <attrib name="ExchangesFailed" alias="SyslogFailed" type="counter"/>
-                <attrib name="ExchangesTotal" alias="SyslogTotal" type="counter"/>
-                <attrib name="MaxProcessingTime" alias="SyslogMaxProc" type="gauge"/>
-                <attrib name="MeanProcessingTime" alias="SyslogMeanProc" type="gauge"/>
-                <attrib name="MinProcessingTime" alias="SyslogMinProc" type="gauge"/>
-                <attrib name="LastProcessingTime" alias="SyslogLastProc" type="gauge"/>
-                <attrib name="TotalProcessingTime" alias="SyslogTotalProc" type="counter"/>
-            </mbean>
-            <mbean name="Syslog Message Sender Queue" objectname="org.apache.camel:context=org.opennms.features.events.syslog,type=endpoints,name=&quot;seda://sendMessage&quot;">
-                <attrib name="CurrentQueueSize" alias="SyslogSendQueue" type="gauge"/>
-            </mbean>
-
             <!-- Route/seda stats for trapHandlerMinion -->
-            <mbean name="Trap Message Processor" objectname="org.apache.camel:context=org.opennms.features.events.traps,type=routes,name=&quot;trapdHandlerMinion&quot;">
-                <attrib name="ExchangesCompleted" alias="TrapCompleted" type="counter"/>
-                <attrib name="ExchangesFailed" alias="TrapFailed" type="counter"/>
-                <attrib name="ExchangesTotal" alias="TrapTotal" type="counter"/>
-                <attrib name="MaxProcessingTime" alias="TrapMaxProc" type="gauge"/>
-                <attrib name="MeanProcessingTime" alias="TrapMeanProc" type="gauge"/>
-                <attrib name="MinProcessingTime" alias="TrapMinProc" type="gauge"/>
-                <attrib name="LastProcessingTime" alias="TrapLastProc" type="gauge"/>
-                <attrib name="TotalProcessingTime" alias="TrapTotalProc" type="counter"/>
+            <mbean name="org.apache.camel.context" objectname="org.apache.camel:context=org.opennms.features.events.traps,type=context,name=&quot;trapNotificationHandler&quot;">
+                <attrib name="ExchangesCompleted" alias="5ExchangesCompleted" type="counter"/>
+                <attrib name="ExchangesFailed" alias="5ExchangesFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="5ExchangesTotal" type="counter"/>
+                <attrib name="LastProcessingTime" alias="5LastProcessingTime" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="5MaxProcessingTime" type="counter"/>
+                <attrib name="MeanProcessingTime" alias="5MeanProcessingTime" type="counter"/>
+                <attrib name="MinProcessingTime" alias="5MinProcessingTime" type="counter"/>
+                <attrib name="TotalProcessingTime" alias="5TotalProcessinTime" type="counter"/>
             </mbean>
-            <!-- TODO: Add seda stats -->
-
-            <!-- TODO: Collect route stats for RPC.Server.Discover (when available) -->
-
-            <!-- TODO: Collect route stats for RPC.Server.Detect -->
-
-            <!-- Route stats for RPC.Server.SNMP -->
-            <mbean name="SNMP RPC Server" objectname="org.apache.camel:context=org.opennms.core.rpc.camel-impl,type=routes,name=&quot;RPC.Server.SNMP&quot;">
-                <attrib name="ExchangesCompleted" alias="SnmpCompleted" type="counter"/>
-                <attrib name="ExchangesFailed" alias="SnmpFailed" type="counter"/>
-                <attrib name="ExchangesTotal" alias="SnmpTotal" type="counter"/>
-                <attrib name="MaxProcessingTime" alias="SnmpMaxProc" type="gauge"/>
-                <attrib name="MeanProcessingTime" alias="SnmpMeanProc" type="gauge"/>
-                <attrib name="MinProcessingTime" alias="SnmpMinProc" type="gauge"/>
-                <attrib name="LastProcessingTime" alias="SnmpLastProc" type="gauge"/>
-                <attrib name="TotalProcessingTime" alias="SnmpTotalProc" type="counter"/>
-            </mbean>
-
-            <!-- TODO: Collect route stats for RPC.Server.Poll (when available) -->
+            
 
         </mbeans>
     </jmx-collection>
