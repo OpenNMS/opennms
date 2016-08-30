@@ -36,8 +36,12 @@ import org.opennms.core.ipc.sink.api.MessageProducerFactory;
 import org.opennms.minion.core.api.MinionIdentity;
 import org.opennms.minion.heartbeat.common.HeartbeatModule;
 import org.opennms.minion.heartbeat.common.MinionIdentityDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HeartbeatProducer {
+
+    private static final Logger LOG = LoggerFactory.getLogger(HeartbeatProducer.class);
 
     private static final int PERIOD_MS = 30 * 1000;
 
@@ -50,6 +54,8 @@ public class HeartbeatProducer {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+                LOG.info("Sending heartbeat to Minion with id: {} at location: {}",
+                         identity.getId(), identity.getLocation());
                 delegate.send(identityDTO);
             }
         }, 0, PERIOD_MS);
