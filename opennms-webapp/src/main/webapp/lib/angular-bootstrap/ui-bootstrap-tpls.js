@@ -2,7 +2,7 @@
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
- * Version: 2.0.2 - 2016-08-15
+ * Version: 2.1.3 - 2016-08-25
  * License: MIT
  */angular.module("ui.bootstrap", ["ui.bootstrap.tpls", "ui.bootstrap.collapse","ui.bootstrap.tabindex","ui.bootstrap.accordion","ui.bootstrap.alert","ui.bootstrap.buttons","ui.bootstrap.carousel","ui.bootstrap.dateparser","ui.bootstrap.isClass","ui.bootstrap.datepicker","ui.bootstrap.position","ui.bootstrap.datepickerPopup","ui.bootstrap.debounce","ui.bootstrap.dropdown","ui.bootstrap.stackedMap","ui.bootstrap.modal","ui.bootstrap.paging","ui.bootstrap.pager","ui.bootstrap.pagination","ui.bootstrap.tooltip","ui.bootstrap.popover","ui.bootstrap.progressbar","ui.bootstrap.rating","ui.bootstrap.tabs","ui.bootstrap.timepicker","ui.bootstrap.typeahead"]);
 angular.module("ui.bootstrap.tpls", ["uib/template/accordion/accordion-group.html","uib/template/accordion/accordion.html","uib/template/alert/alert.html","uib/template/carousel/carousel.html","uib/template/carousel/slide.html","uib/template/datepicker/datepicker.html","uib/template/datepicker/day.html","uib/template/datepicker/month.html","uib/template/datepicker/year.html","uib/template/datepickerPopup/popup.html","uib/template/modal/window.html","uib/template/pager/pager.html","uib/template/pagination/pagination.html","uib/template/tooltip/tooltip-html-popup.html","uib/template/tooltip/tooltip-popup.html","uib/template/tooltip/tooltip-template-popup.html","uib/template/popover/popover-html.html","uib/template/popover/popover-template.html","uib/template/popover/popover.html","uib/template/progressbar/bar.html","uib/template/progressbar/progress.html","uib/template/progressbar/progressbar.html","uib/template/rating/rating.html","uib/template/tabs/tab.html","uib/template/tabs/tabset.html","uib/template/timepicker/timepicker.html","uib/template/typeahead/typeahead-match.html","uib/template/typeahead/typeahead-popup.html"]);
@@ -26,14 +26,12 @@ angular.module('ui.bootstrap.collapse', [])
           horizontal = !!('horizontal' in attrs);
           if (horizontal) {
             css = {
-              width: 'auto',
-              height: 'inherit'
+              width: ''
             };
             cssTo = {width: '0'};
           } else {
             css = {
-              width: 'inherit',
-              height: 'auto'
+              height: ''
             };
             cssTo = {height: '0'};
           }
@@ -69,10 +67,16 @@ angular.module('ui.bootstrap.collapse', [])
                 $animateCss(element, {
                   addClass: 'in',
                   easing: 'ease',
+                  css: {
+                    overflow: 'hidden'
+                  },
                   to: getScrollFromElement(element[0])
                 }).start()['finally'](expandDone);
               } else {
                 $animate.addClass(element, 'in', {
+                  css: {
+                    overflow: 'hidden'
+                  },
                   to: getScrollFromElement(element[0])
                 }).then(expandDone);
               }
@@ -1544,7 +1548,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
       case 'minMode':
         if ($scope.datepickerOptions[key]) {
           $scope.$watch(function() { return $scope.datepickerOptions[key]; }, function(value) {
-            self[key] = $scope[key] = angular.isDefined(value) ? value : datepickerOptions[key];
+            self[key] = $scope[key] = angular.isDefined(value) ? value : $scope.datepickerOptions[key];
             if (key === 'minMode' && self.modes.indexOf($scope.datepickerOptions.datepickerMode) < self.modes.indexOf(self[key]) ||
               key === 'maxMode' && self.modes.indexOf($scope.datepickerOptions.datepickerMode) > self.modes.indexOf(self[key])) {
               $scope.datepickerMode = self[key];
@@ -2937,7 +2941,8 @@ function($scope, $element, $attrs, $compile, $log, $parse, $window, $document, $
         date = new Date($scope.date);
         date.setFullYear(today.getFullYear(), today.getMonth(), today.getDate());
       } else {
-        date = new Date(today.setHours(0, 0, 0, 0));
+        date = dateParser.fromTimezone(today, ngModelOptions.timezone);
+        date.setHours(0, 0, 0, 0);
       }
     }
     $scope.dateSelection(date);
@@ -3836,6 +3841,15 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
         'button:not([disabled]):not([tabindex=\'-1\']),select:not([disabled]):not([tabindex=\'-1\']), textarea:not([disabled]):not([tabindex=\'-1\']), ' +
         'iframe, object, embed, *[tabindex]:not([tabindex=\'-1\']), *[contenteditable=true]';
       var scrollbarPadding;
+      var SNAKE_CASE_REGEXP = /[A-Z]/g;
+
+      // TODO: extract into common dependency with tooltip
+      function snake_case(name) {
+        var separator = '-';
+        return name.replace(SNAKE_CASE_REGEXP, function(letter, pos) {
+          return (pos ? separator : '') + letter.toLowerCase();
+        });
+      }
 
       function isVisible(element) {
         return !!(element.offsetWidth ||
@@ -4072,6 +4086,20 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
           }
         }
 
+        var content;
+        if (modal.component) {
+          content = document.createElement(snake_case(modal.component.name));
+          content = angular.element(content);
+          content.attr({
+            resolve: '$resolve',
+            'modal-instance': '$uibModalInstance',
+            close: '$close($value)',
+            dismiss: '$dismiss($value)'
+          });
+        } else {
+          content = modal.content;
+        }
+
         // Set the top modal index based on the index of the previous top modal
         topModalIndex = previousTopOpenedModal ? parseInt(previousTopOpenedModal.value.modalDomEl.attr('index'), 10) + 1 : 0;
         var angularDomEl = angular.element('<div uib-modal-window="modal-window"></div>');
@@ -4080,6 +4108,8 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
           'template-url': modal.windowTemplateUrl,
           'window-top-class': modal.windowTopClass,
           'role': 'dialog',
+          'aria-labelledby': modal.ariaLabelledBy,
+          'aria-describedby': modal.ariaDescribedBy,
           'size': modal.size,
           'index': topModalIndex,
           'animate': 'animate',
@@ -4087,7 +4117,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
           'tabindex': -1,
           'uib-modal-animation-class': 'fade',
           'modal-in-class': 'in'
-        }).html(modal.content);
+        }).append(content);
         if (modal.windowClass) {
           angularDomEl.addClass(modal.windowClass);
         }
@@ -4256,12 +4286,17 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
             modalOptions.appendTo = modalOptions.appendTo || $document.find('body').eq(0);
 
             //verify options
-            if (!modalOptions.template && !modalOptions.templateUrl) {
-              throw new Error('One of template or templateUrl options is required.');
+            if (!modalOptions.component && !modalOptions.template && !modalOptions.templateUrl) {
+              throw new Error('One of component or template or templateUrl options is required.');
             }
 
-            var templateAndResolvePromise =
-              $q.all([getTemplatePromise(modalOptions), $uibResolve.resolve(modalOptions.resolve, {}, null, null)]);
+            var templateAndResolvePromise;
+            if (modalOptions.component) {
+              templateAndResolvePromise = $q.when($uibResolve.resolve(modalOptions.resolve, {}, null, null));
+            } else {
+              templateAndResolvePromise =
+                $q.all([getTemplatePromise(modalOptions), $uibResolve.resolve(modalOptions.resolve, {}, null, null)]);
+            }
 
             function resolveWithTemplate() {
               return templateAndResolvePromise;
@@ -4287,17 +4322,34 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
                   }
                 });
 
+                var modal = {
+                  scope: modalScope,
+                  deferred: modalResultDeferred,
+                  renderDeferred: modalRenderDeferred,
+                  closedDeferred: modalClosedDeferred,
+                  animation: modalOptions.animation,
+                  backdrop: modalOptions.backdrop,
+                  keyboard: modalOptions.keyboard,
+                  backdropClass: modalOptions.backdropClass,
+                  windowTopClass: modalOptions.windowTopClass,
+                  windowClass: modalOptions.windowClass,
+                  windowTemplateUrl: modalOptions.windowTemplateUrl,
+                  ariaLabelledBy: modalOptions.ariaLabelledBy,
+                  ariaDescribedBy: modalOptions.ariaDescribedBy,
+                  size: modalOptions.size,
+                  openedClass: modalOptions.openedClass,
+                  appendTo: modalOptions.appendTo
+                };
+
+                var component = {};
                 var ctrlInstance, ctrlInstantiate, ctrlLocals = {};
 
-                //controllers
-                if (modalOptions.controller) {
-                  ctrlLocals.$scope = modalScope;
-                  ctrlLocals.$scope.$resolve = {};
-                  ctrlLocals.$uibModalInstance = modalInstance;
-                  angular.forEach(tplAndVars[1], function(value, key) {
-                    ctrlLocals[key] = value;
-                    ctrlLocals.$scope.$resolve[key] = value;
-                  });
+                if (modalOptions.component) {
+                  constructLocals(component, false, true, false);
+                  component.name = modalOptions.component;
+                  modal.component = component;
+                } else if (modalOptions.controller) {
+                  constructLocals(ctrlLocals, true, false, true);
 
                   // the third param will make the controller instantiate later,private api
                   // @see https://github.com/angular/angular.js/blob/master/src/ng/controller.js#L126
@@ -4318,25 +4370,31 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
                   }
                 }
 
-                $modalStack.open(modalInstance, {
-                  scope: modalScope,
-                  deferred: modalResultDeferred,
-                  renderDeferred: modalRenderDeferred,
-                  closedDeferred: modalClosedDeferred,
-                  content: tplAndVars[0],
-                  animation: modalOptions.animation,
-                  backdrop: modalOptions.backdrop,
-                  keyboard: modalOptions.keyboard,
-                  backdropClass: modalOptions.backdropClass,
-                  windowTopClass: modalOptions.windowTopClass,
-                  windowClass: modalOptions.windowClass,
-                  windowTemplateUrl: modalOptions.windowTemplateUrl,
-                  size: modalOptions.size,
-                  openedClass: modalOptions.openedClass,
-                  appendTo: modalOptions.appendTo
-                });
+                if (!modalOptions.component) {
+                  modal.content = tplAndVars[0];
+                }
+
+                $modalStack.open(modalInstance, modal);
                 modalOpenedDeferred.resolve(true);
 
+                function constructLocals(obj, template, instanceOnScope, injectable) {
+                  obj.$scope = modalScope;
+                  obj.$scope.$resolve = {};
+                  if (instanceOnScope) {
+                    obj.$scope.$uibModalInstance = modalInstance;
+                  } else {
+                    obj.$uibModalInstance = modalInstance;
+                  }
+
+                  var resolves = template ? tplAndVars[1] : tplAndVars;
+                  angular.forEach(resolves, function(value, key) {
+                    if (injectable) {
+                      obj[key] = value;
+                    }
+
+                    obj.$scope.$resolve[key] = value;
+                  });
+                }
             }, function resolveError(reason) {
               modalOpenedDeferred.reject(reason);
               modalResultDeferred.reject(reason);
@@ -4719,10 +4777,10 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
    */
   this.$get = ['$window', '$compile', '$timeout', '$document', '$uibPosition', '$interpolate', '$rootScope', '$parse', '$$stackedMap', function($window, $compile, $timeout, $document, $position, $interpolate, $rootScope, $parse, $$stackedMap) {
     var openedTooltips = $$stackedMap.createNew();
-    $document.on('keypress', keypressListener);
+    $document.on('keyup', keypressListener);
 
     $rootScope.$on('$destroy', function() {
-      $document.off('keypress', keypressListener);
+      $document.off('keyup', keypressListener);
     });
 
     function keypressListener(e) {
@@ -4730,7 +4788,6 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
         var last = openedTooltips.top();
         if (last) {
           last.value.close();
-          openedTooltips.removeTop();
           last = null;
         }
       }
@@ -4855,9 +4912,6 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
             // By default, the tooltip is not open.
             // TODO add ability to start tooltip opened
             ttScope.isOpen = false;
-            openedTooltips.add(ttScope, {
-              close: hide
-            });
 
             function toggleTooltipBind() {
               if (!ttScope.isOpen) {
@@ -4984,6 +5038,10 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
                 }
               });
 
+              openedTooltips.add(ttScope, {
+                close: hide
+              });
+
               prepObservers();
             }
 
@@ -4996,6 +5054,9 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
                 tooltip.remove();
                 tooltip = null;
               }
+
+              openedTooltips.remove(ttScope);
+              
               if (tooltipLinkedScope) {
                 tooltipLinkedScope.$destroy();
                 tooltipLinkedScope = null;
@@ -5211,7 +5272,6 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
             scope.$on('$destroy', function onDestroyTooltip() {
               unregisterTriggers();
               removeTooltip();
-              openedTooltips.remove(ttScope);
               ttScope = null;
             });
           };
@@ -7183,7 +7243,7 @@ angular.module("uib/template/datepicker/day.html", []).run(["$templateCache", fu
     "    </tr>\n" +
     "  </thead>\n" +
     "  <tbody>\n" +
-    "    <tr class=\"uib-weeks\" ng-repeat=\"row in rows track by $index\">\n" +
+    "    <tr class=\"uib-weeks\" ng-repeat=\"row in rows track by $index\" role=\"row\">\n" +
     "      <td ng-if=\"showWeeks\" class=\"text-center h6\"><em>{{ weekNumbers[$index] }}</em></td>\n" +
     "      <td ng-repeat=\"dt in row\" class=\"uib-day text-center\" role=\"gridcell\"\n" +
     "        id=\"{{::dt.uid}}\"\n" +
@@ -7214,7 +7274,7 @@ angular.module("uib/template/datepicker/month.html", []).run(["$templateCache", 
     "    </tr>\n" +
     "  </thead>\n" +
     "  <tbody>\n" +
-    "    <tr class=\"uib-months\" ng-repeat=\"row in rows track by $index\">\n" +
+    "    <tr class=\"uib-months\" ng-repeat=\"row in rows track by $index\" role=\"row\">\n" +
     "      <td ng-repeat=\"dt in row\" class=\"uib-month text-center\" role=\"gridcell\"\n" +
     "        id=\"{{::dt.uid}}\"\n" +
     "        ng-class=\"::dt.customClass\">\n" +
@@ -7244,7 +7304,7 @@ angular.module("uib/template/datepicker/year.html", []).run(["$templateCache", f
     "    </tr>\n" +
     "  </thead>\n" +
     "  <tbody>\n" +
-    "    <tr class=\"uib-years\" ng-repeat=\"row in rows track by $index\">\n" +
+    "    <tr class=\"uib-years\" ng-repeat=\"row in rows track by $index\" role=\"row\">\n" +
     "      <td ng-repeat=\"dt in row\" class=\"uib-year text-center\" role=\"gridcell\"\n" +
     "        id=\"{{::dt.uid}}\"\n" +
     "        ng-class=\"::dt.customClass\">\n" +
