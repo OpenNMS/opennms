@@ -28,6 +28,7 @@
 
 package org.opennms.minion.heartbeat.consumer;
 
+import java.util.Collections;
 import java.util.Date;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
@@ -36,11 +37,23 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.minion.heartbeat.common.HeartbeatModule;
 import org.opennms.minion.heartbeat.common.MinionIdentityDTO;
 import org.opennms.netmgt.dao.api.MinionDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
 public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, InitializingBean {
@@ -55,17 +68,87 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
     @Autowired
     private MessageConsumerManager messageConsumerManager;
 
+    @Autowired
+    @Qualifier("deployed")
+    private ForeignSourceRepository m_deployedForeignSourceRepository;
+
+    @Autowired
+    @Qualifier("eventProxy")
+    private EventProxy m_eventProxy;
+
     @Override
     @Transactional
     public void handleMessage(MinionIdentityDTO minionHandle) {
         LOG.info("Received heartbeat for Minion with id: {} at location: {}",
                 minionHandle.getId(), minionHandle.getLocation());
         OnmsMinion minion = minionDao.findById(minionHandle.getId());
+
+        boolean synchronizeRequisition = false;
+
         if (minion == null) {
             minion = new OnmsMinion();
             minion.setId(minionHandle.getId());
             minion.setLocation(minionHandle.getLocation());
+
+            synchronizeRequisition = true;
         }
+
+        final String foreignSourceName = "Minions@"+ minion.getLocation();
+
+        ForeignSource foreignSource = m_deployedForeignSourceRepository.getForeignSource(foreignSourceName);
+
+        if (foreignSource == null) {
+            foreignSource = new ForeignSource(foreignSourceName);
+            foreignSource.setDetectors(Collections.emptyList());
+            foreignSource.setPolicies(Collections.emptyList());
+            m_deployedForeignSourceRepository.save(foreignSource);
+
+            synchronizeRequisition = true;
+        }
+
+        Requisition requisition = m_deployedForeignSourceRepository.getRequisition(foreignSource);
+        if (requisition == null) {
+            requisition = new Requisition(foreignSourceName);
+
+            synchronizeRequisition = true;
+        }
+
+        RequisitionNode requisitionNode = requisition.getNode(minion.getId());
+
+        if (requisitionNode == null) {
+            final RequisitionMonitoredService requisitionMonitoredService = new RequisitionMonitoredService();
+            requisitionMonitoredService.setServiceName("Minion-Heartbeat");
+
+            final RequisitionInterface requisitionInterface = new RequisitionInterface();
+            requisitionInterface.setIpAddr("127.0.0.1");
+            requisitionInterface.putMonitoredService(requisitionMonitoredService);
+
+            requisitionNode = new RequisitionNode();
+            requisitionNode.setNodeLabel(minion.getId());
+            requisitionNode.setForeignId(minion.getLabel() != null ? minion.getLabel() : minion.getId());
+            requisitionNode.setLocation(minion.getLocation());
+            requisitionNode.putInterface(requisitionInterface);
+
+            requisition.putNode(requisitionNode);
+
+            synchronizeRequisition = true;
+        }
+
+        if (synchronizeRequisition) {
+            m_deployedForeignSourceRepository.save(requisition);
+            m_deployedForeignSourceRepository.flush();
+
+            final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
+            eventBuilder.addParam(EventConstants.PARM_URL, String.valueOf(m_deployedForeignSourceRepository.getRequisitionURL(foreignSource.getName())));
+
+            try {
+                m_eventProxy.send(eventBuilder.getEvent());
+            } catch (final EventProxyException e) {
+                throw new DataAccessResourceFailureException("Unable to send event to import group " + foreignSource, e);
+            }
+        }
+
+
         Date lastUpdated = new Date();
         minion.setLastUpdated(lastUpdated);
         minionDao.saveOrUpdate(minion);
