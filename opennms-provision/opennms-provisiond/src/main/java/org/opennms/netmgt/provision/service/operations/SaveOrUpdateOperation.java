@@ -29,6 +29,8 @@
 package org.opennms.netmgt.provision.service.operations;
 
 import java.net.InetAddress;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -100,7 +102,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_currentInterface.setIsSnmpPrimary(primaryType);
         
         if (System.getProperty("org.opennms.provisiond.reverseResolveRequisitionIpInterfaceHostnames", "true").equalsIgnoreCase("true")) {
-        	m_currentInterface.setIpHostName(reverseResolveHostname(ipAddr));
+        	m_currentInterface.setIpHostName(reverseResolveHostname(ipAddr, m_node.getLocation().getLocationName()));
         }
         
         if (PrimaryType.PRIMARY.equals(primaryType)) {
@@ -188,9 +190,13 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         }
     }
 
-	private String reverseResolveHostname(String ipAddr) {
-		InetAddress addr = InetAddressUtils.addr(ipAddr);
-		return addr.getCanonicalHostName();
+	private String reverseResolveHostname(String ipAddr, String location) {
+	    CompletableFuture<String> future = getProvisionService().getLocationAwareDnsLookupClient().reverseLookup(ipAddr, location);
+		try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
 	}
     
 }

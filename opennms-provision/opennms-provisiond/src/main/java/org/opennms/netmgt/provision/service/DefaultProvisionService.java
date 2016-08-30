@@ -81,6 +81,7 @@ import org.opennms.netmgt.model.events.UpdateEventVisitor;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -180,6 +181,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     @Autowired
     private LocationAwareDetectorClient m_locationAwareDetectorClient;
+    
+    @Autowired
+    private LocationAwareDnsLookupClient m_locationAwareDnsLookuClient;
 
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
@@ -1466,5 +1470,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public LocationAwareSnmpClient getLocationAwareSnmpClient() {
         return m_locationAwareSnmpClient;
+    }
+
+    @Override
+    public LocationAwareDnsLookupClient getLocationAwareDnsLookupClient() {
+        return m_locationAwareDnsLookuClient;
     }
 }
