@@ -43,9 +43,9 @@
   }
   String reports = request.getParameter("reports");
   String endUrl = request.getParameter("endUrl");
-  pageContext.setAttribute("node", node == null ? "null" : node);
-  pageContext.setAttribute("reports", reports == null ? "null" : reports);
-  pageContext.setAttribute("endUrl", endUrl == null ? "null" : endUrl);
+  pageContext.setAttribute("node", node == null ? "null" : "'" + node + "'");
+  pageContext.setAttribute("reports", reports == null ? "null" : "'" + reports + "'");
+  pageContext.setAttribute("endUrl", endUrl == null ? "null" : "'" + endUrl + "'");
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -66,7 +66,7 @@
   <jsp:param name="script" value='<script type="text/javascript" src="js/onms-resources/app.js"></script>' />
 </jsp:include>
 
-<div class="container-fluid" ng-app="onms-resources" ng-controller="NodeResourcesCtrl" ng-init="init('${node}','${reports}','${endUrl}')">
+<div class="container-fluid" ng-app="onms-resources" ng-controller="NodeResourcesCtrl" ng-init="init(${node},${reports},${endUrl})">
 
   <div growl></div>
 

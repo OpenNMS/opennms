@@ -61,7 +61,6 @@ angular.module('onms-resources', [
 
 .controller('NodeResourcesCtrl', ['$scope', '$filter', '$http', '$window', 'growl', function($scope, $filter, $http, $window, growl) {
 
-  $scope.reports;
   $scope.searchQuery = undefined;
   $scope.resources = {};
   $scope.hasResources = false;
@@ -70,6 +69,7 @@ angular.module('onms-resources', [
   $scope.nodeLink = undefined;
   $scope.nodeLabel = undefined;
   $scope.url = 'graph/results.htm';
+  $scope.reports = 'all';
 
   $scope.init = function(nodeCriteria, reports, endUrl) {
     if (nodeCriteria == null || nodeCriteria == '') {
