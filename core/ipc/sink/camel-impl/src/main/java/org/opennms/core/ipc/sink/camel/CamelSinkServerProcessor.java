@@ -57,6 +57,7 @@ public class CamelSinkServerProcessor implements AsyncProcessor {
         final String messageAsString = exchange.getIn().getBody(String.class);
         final Message message = module.unmarshal(messageAsString);
         consumerManager.dispatch(module, message);
+        callback.done(true);
         return false;
     }
 }
