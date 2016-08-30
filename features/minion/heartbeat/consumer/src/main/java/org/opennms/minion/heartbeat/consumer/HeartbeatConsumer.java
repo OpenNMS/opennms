@@ -83,34 +83,24 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
                 minionHandle.getId(), minionHandle.getLocation());
         OnmsMinion minion = minionDao.findById(minionHandle.getId());
 
-        boolean synchronizeRequisition = false;
+        // defines whether the requisition has changed and has to be synchronized
+        boolean requisitionUpdated = false;
+        // defines whether this is the initial creation of the requisition
+        boolean requisitionCreated = false;
 
         if (minion == null) {
             minion = new OnmsMinion();
             minion.setId(minionHandle.getId());
             minion.setLocation(minionHandle.getLocation());
-
-            synchronizeRequisition = true;
         }
 
         final String foreignSourceName = "Minions@"+ minion.getLocation();
 
-        ForeignSource foreignSource = m_deployedForeignSourceRepository.getForeignSource(foreignSourceName);
-
-        if (foreignSource == null) {
-            foreignSource = new ForeignSource(foreignSourceName);
-            foreignSource.setDetectors(Collections.emptyList());
-            foreignSource.setPolicies(Collections.emptyList());
-            m_deployedForeignSourceRepository.save(foreignSource);
-
-            synchronizeRequisition = true;
-        }
-
-        Requisition requisition = m_deployedForeignSourceRepository.getRequisition(foreignSource);
+        Requisition requisition = m_deployedForeignSourceRepository.getRequisition(foreignSourceName);
         if (requisition == null) {
             requisition = new Requisition(foreignSourceName);
 
-            synchronizeRequisition = true;
+            requisitionCreated = true;
         }
 
         RequisitionNode requisitionNode = requisition.getNode(minion.getId());
@@ -131,23 +121,30 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
 
             requisition.putNode(requisitionNode);
 
-            synchronizeRequisition = true;
+            requisitionUpdated = true;
         }
 
-        if (synchronizeRequisition) {
+        if (requisitionCreated || requisitionUpdated) {
+            requisition.setDate(new Date());
             m_deployedForeignSourceRepository.save(requisition);
             m_deployedForeignSourceRepository.flush();
 
+            if (requisitionCreated) {
+                final ForeignSource foreignSource = m_deployedForeignSourceRepository.getForeignSource(foreignSourceName);
+                foreignSource.setDetectors(Collections.emptyList());
+                foreignSource.setPolicies(Collections.emptyList());
+                m_deployedForeignSourceRepository.save(foreignSource);
+            }
+
             final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
-            eventBuilder.addParam(EventConstants.PARM_URL, String.valueOf(m_deployedForeignSourceRepository.getRequisitionURL(foreignSource.getName())));
+            eventBuilder.addParam(EventConstants.PARM_URL, String.valueOf(m_deployedForeignSourceRepository.getRequisitionURL(foreignSourceName)));
 
             try {
                 m_eventProxy.send(eventBuilder.getEvent());
             } catch (final EventProxyException e) {
-                throw new DataAccessResourceFailureException("Unable to send event to import group " + foreignSource, e);
+                throw new DataAccessResourceFailureException("Unable to send event to import group " + foreignSourceName, e);
             }
         }
-
 
         Date lastUpdated = new Date();
         minion.setLastUpdated(lastUpdated);
