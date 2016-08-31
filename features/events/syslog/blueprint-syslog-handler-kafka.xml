@@ -28,7 +28,10 @@
 
 	<!-- Camel Event marshalling processor -->
 	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
-		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
+		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
+	</bean>
+	
+	<bean id="miniondtomapper" class="org.opennms.netmgt.syslogd.MinionDTOMapper">
 	</bean>
 	
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
@@ -51,7 +54,9 @@
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
 			</setHeader>
-
+			<bean ref="miniondtomapper" method="mapper"/>
+			<bean ref="marshaller"/>
+			
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
 			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>
