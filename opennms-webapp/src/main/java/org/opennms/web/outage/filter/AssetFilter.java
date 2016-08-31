@@ -49,7 +49,7 @@ public class AssetFilter extends EqualsFilter<String> {
     private String assetField;
 
     /**
-     * Instantiates a new building filter.
+     * Instantiates a new asset filter.
      *
      * @param field the name of the field field
      * @param value the value
