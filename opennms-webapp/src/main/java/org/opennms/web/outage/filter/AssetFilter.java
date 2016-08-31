@@ -35,7 +35,7 @@ import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
 /**
- * The Class BuildingFilter.
+ * The Class AssetFilter.
  * <p>See NMS-8702 for more details.</p>
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
@@ -75,7 +75,7 @@ public class AssetFilter extends EqualsFilter<String> {
      * @see org.opennms.web.filter.BaseFilter#toString()
      */
     public String toString() {
-        return ("<BuildingFilter: " + this.getDescription() + ">");
+        return ("<AssetFilter: " + this.getDescription() + ">");
     }
 
     /* (non-Javadoc)
