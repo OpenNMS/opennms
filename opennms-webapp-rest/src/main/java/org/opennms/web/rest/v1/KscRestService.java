@@ -108,6 +108,21 @@ public class KscRestService extends OnmsRestService {
     }
 
     @PUT
+    @Path("reloadConfig")
+    @Transactional
+    public Response reloadConfiguration() {
+        writeLock();
+        try {
+            KSC_PerformanceReportFactory.getInstance().reload();
+            return Response.noContent().build();
+        } catch (Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, e);
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @PUT
     @Path("{kscReportId}")
     @Transactional
     public Response addGraph(@PathParam("kscReportId") final Integer kscReportId, @QueryParam("title") final String title, @QueryParam("reportName") final String reportName, @QueryParam("resourceId") final String resourceId, @QueryParam("timespan") String timespan) {
