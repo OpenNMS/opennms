@@ -62,13 +62,13 @@
       <div class="radio">
         <label>
           <input type="radio" name="reportTarget" id="reportTarget" value="graph/results.htm" ng-model="endUrl"/>
-          Standard Performance Reports
+          Standard Resource Performance Reports
         </label>
         <br/>
         <br/>
         <label>
           <input type="radio" name="reportTarget" id="reportTarget" value="graph/adhoc2.jsp" ng-model="endUrl"/>
-          Custom Performance Reports
+          Custom Resource Performance Reports
         </label>
         <br/>
         <br/>

@@ -55,7 +55,7 @@ public class ReportsPageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testAllLinks() throws Exception {
         findElementByLink("Resource Graphs").click();
-        findElementByXpath("//h3[contains(text(), 'Standard Resource')]");
+        findElementByXpath("//input[contains(text(), 'Standard Resource')]");
         findElementByXpath("//h3[text()='Network Performance Data']");
 
         reportsPage();

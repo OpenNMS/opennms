@@ -29,7 +29,10 @@
 --%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" 
-  import="org.opennms.web.api.Authentication"
+  import="
+    org.opennms.web.api.Authentication,
+    org.springframework.security.core.GrantedAuthority,
+    org.springframework.security.core.context.SecurityContextHolder"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -37,6 +40,14 @@
 <%
   boolean kscReadOnly = !request.isUserInRole(Authentication.ROLE_ADMIN) || request.isUserInRole(Authentication.ROLE_READONLY) || request.getRemoteUser() == null;
   pageContext.setAttribute("kscReadOnly", kscReadOnly);
+  boolean isReadOnly = false;
+  for (GrantedAuthority authority : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
+    if (Authentication.ROLE_READONLY.equals(authority.getAuthority())){
+      isReadOnly = true;
+      break;
+    }
+  }
+  pageContext.setAttribute("isReadOnly", isReadOnly);
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -105,22 +116,26 @@
               <button type="button" class="btn btn-default" ng-click="viewReport()"> View
               </button>
             </div> 
-            <div class="btn-group" role="group">
-              <button type="button" class="btn btn-default" ng-click="customizeReport()"> Customize
-              </button>
-            </div> 
-            <div class="btn-group" role="group">
-              <button type="button" class="btn btn-default" ng-click="createReport()"> Create New
-              </button>
-            </div> 
-            <div class="btn-group" role="group">
-              <button type="button" class="btn btn-default" ng-click="createReportFromExisting()"> Create from Existing
-              </button>
-            </div> 
-            <div class="btn-group" role="group">
-              <button type="button" class="btn btn-default" ng-click="deleteReport()"> Delete
-              </button>
-            </div> 
+            <c:choose>
+              <c:when test="${isReadOnly == false}">
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default" ng-click="customizeReport()"> Customize
+                </button>
+              </div> 
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default" ng-click="createReport()"> Create New
+                </button>
+              </div> 
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default" ng-click="createReportFromExisting()"> Create from Existing
+                </button>
+              </div> 
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default" ng-click="deleteReport()"> Delete
+                </button>
+              </div> 
+              </c:when>
+            </c:choose>
           </div> 
           </form>
         </div>
