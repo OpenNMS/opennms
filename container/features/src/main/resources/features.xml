@@ -826,15 +826,14 @@
     <feature name="opennms-trapd-listener" description="OpenNMS :: Trapd :: Listener" version="${project.version}">
       <feature>camel-blueprint</feature>
       <feature>opennms-trapd</feature>
+       <bundle>mvn:org.opennms.features.minion/core-impl/${project.version}</bundle>
 	  <feature>scv</feature>
-	  <feature>guava</feature>
-	  <bundle>mvn:org.opennms.features.minion/core-impl/${project.version}</bundle>
-
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-listener</bundle>
     </feature>
 
 	<feature name="scv" description="Secure Credentials Vault"
 		version="${project.version}">
+		<feature>guava</feature>
 		<bundle>mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
 		<bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
 		<bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>

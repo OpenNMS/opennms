@@ -23,19 +23,6 @@
         <argument value="org.opennms.netmgt.config.trapd.TrapdConfiguration" />
     </bean>
     
-    
- <bean id="jceksSecureCredentialsVault" class="org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault">
-        <argument value="$[karaf.etc]$[file.separator]scv.jce"/>
-        <argument value="[[key]]"/>
-    </bean>
-
-    <service ref="jceksSecureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault">
-        <service-properties>
-            <entry key="type" value="jceks"/>
-        </service-properties>
-    </service>
-
-
     <camelContext id="trapConnectionHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
         <propertyPlaceholder id="minionproperties" location="blueprint:minionProperties" />
         <route id="restClientToTrapdConfig">
@@ -56,24 +43,9 @@
             <cm:property name="password" value="admin"/>
         </cm:default-properties>
     </cm:property-placeholder>
-    
-  
 
-    <!-- A canonical source for this Minion's identity -->
-    <bean id="minionIdentity" class="org.opennms.minion.core.impl.MinionIdentityImpl">
-       <argument value="[[location]]"/>
-       <argument value="[[id]]"/>
-    </bean>
-    <service ref="minionIdentity" interface="org.opennms.minion.core.api.MinionIdentity"/>
-
-    <!-- REST Client used to communicate with the OpenNMS controller -->
-    <bean id="restClient" class="org.opennms.minion.core.impl.ScvEnabledRestClientImpl">
-        <argument value="[[http-url]]"/>
-        <argument ref="jceksSecureCredentialsVault"/>
-        <argument value="opennms.http"/>
-    </bean>
-    <service ref="restClient" interface="org.opennms.minion.core.api.RestClient"/>
-
+   <reference id="restClient" interface="org.opennms.minion.core.api.RestClient"/>
+ 
     <bean id="trapdConfig" class="org.opennms.netmgt.trapd.TrapdConfigBean">
         <property name="snmpTrapPort" value="${trapd.listen.port}"/>
         <property name="snmpTrapAddress" value="${trapd.listen.interface}"/>
