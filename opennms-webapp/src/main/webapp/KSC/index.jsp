@@ -64,7 +64,7 @@
   <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/underscore/underscore.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/bootbox/bootbox.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="js/onms-ksc/wizard.js"></script>' />
 </jsp:include>
 
@@ -216,7 +216,11 @@
           <br/>
         </div>
       </div>
-      <button class="btn btn-default" type="button" ng-click="reloadConfig()">Request a Reload of KSC Reports Configuration</button>
+      <c:choose>
+        <c:when test="${isReadOnly == false}">
+        <button class="btn btn-default" type="button" ng-click="reloadConfig()">Request a Reload of KSC Reports Configuration</button>
+        </c:when>
+      </c:choose>
     </div>
 
   </div>

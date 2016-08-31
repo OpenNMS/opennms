@@ -128,10 +128,29 @@ angular.module('onms-ksc-wizard', [
   $scope.actionUrl = 'KSC/formProcMain.htm';
 
   $scope.reloadConfig = function() {
-    if (confirm("Are you sure you want to do this?")) {
-      // FIXME NMS-8701 This has to be reimplemented as KSC/index.htm will be removed
-      $window.location.href = 'KSC/index.htm?reloadConfig=true';
-    }
+    bootbox.dialog({
+      message: 'Are you sure you want to do this?<br/>',
+      title: 'Reload KSC Configuration',
+      buttons: {
+        reload: {
+          label: 'Yes',
+          className: 'btn-success',
+          callback: function() {
+            $http.put('rest/ksc/reloadConfig')
+              .success(function() {
+                growl.success('The configuration has been reloaded.');
+              })
+              .error(function(msg) {
+                growl.error(msg);
+              });
+          }
+        },
+        main: {
+          label: 'No',
+          className: 'btn-danger'
+        }
+      }
+    });
   };
 
   $scope.viewReport = function() {
