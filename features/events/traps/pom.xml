@@ -274,15 +274,16 @@
         </exclusion>
       </exclusions>
     </dependency>
-      <dependency>
-            <groupId>org.opennms.features.minion</groupId>
-            <artifactId>core-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.scv</groupId>
-            <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+	<dependency>
+		<groupId>org.opennms.features.minion</groupId>
+		<artifactId>core-impl</artifactId>
+		<version>${project.version}</version>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.opennms.features.minion</groupId>
+		<artifactId>core-api</artifactId>
+		<version>${project.version}</version>
+	</dependency>
   </dependencies>
 </project>

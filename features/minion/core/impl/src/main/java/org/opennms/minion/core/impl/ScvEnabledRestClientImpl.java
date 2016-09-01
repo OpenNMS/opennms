@@ -71,40 +71,29 @@ public class ScvEnabledRestClientImpl implements RestClient {
         }
     }
     
-        public String getSnmpV3Users() throws Exception {
-            String responseString = null;
-            CloseableHttpResponse response = null;
-            HttpGet httpget = new HttpGet(url.toExternalForm()
-                    + "/rest/config/trapd");
-    
-            response = getResponse(httpget);
-            HttpEntity entity = response.getEntity();
-            responseString = EntityUtils.toString(entity);
-            response.close();
-            return responseString;
-        }
-	
 	// Setup a client with pre-emptive authentication
-	private CloseableHttpResponse getResponse(HttpGet httpget) throws Exception {
-		CloseableHttpResponse response = null;
-		HttpHost target = new HttpHost(url.getHost(), url.getPort(),
-				url.getProtocol());
-		CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		credsProvider.setCredentials(
-				new AuthScope(target.getHostName(), target.getPort()),
-				new UsernamePasswordCredentials(username, password));
-		CloseableHttpClient httpclient = HttpClients.custom()
-				.setDefaultCredentialsProvider(credsProvider).build();
-			AuthCache authCache = new BasicAuthCache();
-			BasicScheme basicAuth = new BasicScheme();
-			authCache.put(target, basicAuth);
+    private CloseableHttpResponse getResponse(HttpGet httpget)
+            throws Exception {
+        CloseableHttpResponse response = null;
+        HttpHost target = new HttpHost(url.getHost(), url.getPort(),
+                                       url.getProtocol());
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(new AuthScope(target.getHostName(),
+                                                   target.getPort()),
+                                     new UsernamePasswordCredentials(
+                                                                     username,
+                                                                     password));
+        CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
+        AuthCache authCache = new BasicAuthCache();
+        BasicScheme basicAuth = new BasicScheme();
+        authCache.put(target, basicAuth);
 
-			HttpClientContext localContext = HttpClientContext.create();
-			localContext.setAuthCache(authCache);
+        HttpClientContext localContext = HttpClientContext.create();
+        localContext.setAuthCache(authCache);
 
-			response = httpclient.execute(target, httpget, localContext);
-			return response;
-	}
+        response = httpclient.execute(target, httpget, localContext);
+        return response;
+    }
     
     @Override
 	public void ping() throws Exception {
@@ -113,4 +102,18 @@ public class ScvEnabledRestClientImpl implements RestClient {
 		CloseableHttpResponse response = getResponse(httpget);
 		response.close();
 	}
+
+    @Override
+    public String getSnmpV3Users() throws Exception {
+        String responseString = null;
+        CloseableHttpResponse response = null;
+        HttpGet httpget = new HttpGet(url.toExternalForm()
+                + "/rest/config/trapd");
+
+        response = getResponse(httpget);
+        HttpEntity entity = response.getEntity();
+        responseString = EntityUtils.toString(entity);
+        response.close();
+        return responseString;
+    }
 }
