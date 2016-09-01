@@ -29,35 +29,28 @@
 package org.opennms.netmgt.syslogd;
 
 import java.net.InetAddress;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.camel.MinionDTO;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.snmp.InetAddrUtils;
 
 @XmlRootElement(name="syslog-dto")
 @XmlAccessorType(XmlAccessType.NONE)
 public class SyslogDTO extends MinionDTO {
 
-    protected SyslogDTO() {
+    public SyslogDTO() {
         super();
     }
 	
 //    @Override
-//    public String toString() {
-//        return new ToStringBuilder(this)
-//            .append("systemid", getSystemId())
-//            .append("location", getLocation())
-//            .append("sourceaddress", getSourceAddress())
-//            .append("sourceport", getSourceport())
-//            .toString();
+//    public int hashCode() {
+//        return Objects.hash(super.getHeaders(), super.getBody());
 //    }
 //
 //    @Override
@@ -69,13 +62,21 @@ public class SyslogDTO extends MinionDTO {
 //        if (getClass() != obj.getClass())
 //            return false;
 //        final SyslogDTO other = (SyslogDTO) obj;
-//        return Objects.equals(this.m_systemId, other.m_systemId)
-//                && Objects.equals(this.m_location, other.m_location)
-//                && Objects.equals(this.m_sourceAddress, other.m_sourceAddress)
-//                && Objects.equals(this.m_sourceport, other.m_sourceport);
+//        return Objects.equals(super.getHeaders(), other.getHeaders())
+//                && Arrays.equals(super.getBody(), other.getBody());
 //    }
-//    
-
+    
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("systemid", super.getHeaders().get(SYSTEM_ID))
+            .append("location", super.getHeaders().get(LOCATION))
+            .append("sourceaddress", super.getHeaders().get(SOURCE_ADDRESS))
+            .append("sourceport", super.getHeaders().get(SOURCE_PORT))
+            .append("body", super.getBody())
+            .toString();
+    }
+    
 	public void setSystemId(String m_systemId) {
 		super.putIntoMap(MinionDTO.SYSTEM_ID, m_systemId);
 	}

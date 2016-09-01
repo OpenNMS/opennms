@@ -28,6 +28,7 @@
 
 package org.opennms.core.camel;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,7 +75,7 @@ public class MinionDTO { // move this file to opennms.core.camel, change the nam
             return false;
         final MinionDTO other = (MinionDTO) obj;
         return Objects.equals(this.m_headers, other.m_headers)
-                && Objects.equals(this.m_body, other.m_body);
+                && Arrays.equals(this.m_body, other.m_body);
     }
 
 	public Map<String, String> getHeaders() {
@@ -91,6 +92,12 @@ public class MinionDTO { // move this file to opennms.core.camel, change the nam
 	public void putIntoMap(String key, String value){
 		synchronized (m_headers) {
 			m_headers.put(key, value);
+		}
+	}
+	
+	public String getFromMap(String key){
+		synchronized (m_headers) {
+			return m_headers.get(key);
 		}
 	}
 	

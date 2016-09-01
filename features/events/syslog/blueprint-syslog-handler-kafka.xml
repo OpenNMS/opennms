@@ -31,8 +31,7 @@
 		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
 	</bean>
 	
-	<bean id="miniondtomapper" class="org.opennms.netmgt.syslogd.MinionDTOMapper">
-	</bean>
+	<bean id="miniondtomapper" class="org.opennms.netmgt.syslogd.MinionDTOMapper"/>
 	
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
 
@@ -54,7 +53,7 @@
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
 			</setHeader>
-			<bean ref="miniondtomapper" method="mapper"/>
+			<bean ref="miniondtomapper" method="object2dto"/>
 			<bean ref="marshaller"/>
 			
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->

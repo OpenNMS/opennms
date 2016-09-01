@@ -227,6 +227,11 @@
     </dependency>
 
 	<!-- end of  HZN-742-->
-    
+     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jaxb-dependencies</artifactId>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 </project>
