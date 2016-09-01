@@ -53,7 +53,8 @@
 		<argument value="org.opennms.netmgt.snmp.TrapNotification" />
 	</bean>
 
-	<camelContext id="trapNotificationHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
+	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
+	<camelContext id="trapdHandlerKafkaDefaultContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:trapHandlerDefaultProperties" />
 
 		<route id="receiveTrapConnectionViaKafka">
