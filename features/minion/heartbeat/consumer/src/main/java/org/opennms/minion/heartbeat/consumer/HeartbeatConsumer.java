@@ -28,9 +28,7 @@
 
 package org.opennms.minion.heartbeat.consumer;
 
-import java.util.Collections;
-import java.util.Date;
-
+import com.google.common.collect.Sets;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -56,9 +54,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.Date;
+import java.util.Objects;
+import java.util.Set;
+
 public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(HeartbeatConsumer.class);
+
+    private static final boolean PROVISIONING = Boolean.valueOf(System.getProperty("opennms.minion.provisioning", "true"));
+    private static final String PROVISIONING_FOREIGN_SOURCE_PATTERN = System.getProperty("opennms.minion.provisioning.foreignSourcePattern", "Minions@%s");
 
     private static final HeartbeatModule heartbeatModule = new HeartbeatModule();
 
@@ -70,7 +76,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
 
     @Autowired
     @Qualifier("deployed")
-    private ForeignSourceRepository m_deployedForeignSourceRepository;
+    private ForeignSourceRepository deployedForeignSourceRepository;
 
     @Autowired
     @Qualifier("eventProxy")
@@ -80,31 +86,68 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
     @Transactional
     public void handleMessage(MinionIdentityDTO minionHandle) {
         LOG.info("Received heartbeat for Minion with id: {} at location: {}",
-                minionHandle.getId(), minionHandle.getLocation());
+                 minionHandle.getId(), minionHandle.getLocation());
+
         OnmsMinion minion = minionDao.findById(minionHandle.getId());
-
-        // defines whether the requisition has changed and has to be synchronized
-        boolean requisitionUpdated = false;
-        // defines whether this is the initial creation of the requisition
-        boolean requisitionCreated = false;
-
         if (minion == null) {
             minion = new OnmsMinion();
             minion.setId(minionHandle.getId());
-            minion.setLocation(minionHandle.getLocation());
         }
 
-        final String foreignSourceName = "Minions@"+ minion.getLocation();
+        // Provision the minions node before we alter the location
+        this.provision(minion,
+                       minion.getLocation(),
+                       minionHandle.getLocation());
 
-        Requisition requisition = m_deployedForeignSourceRepository.getRequisition(foreignSourceName);
-        if (requisition == null) {
-            requisition = new Requisition(foreignSourceName);
+        minion.setLocation(minionHandle.getLocation());
+        minion.setLastUpdated(new Date());
+        minionDao.saveOrUpdate(minion);
+    }
 
-            requisitionCreated = true;
+    private void provision(final OnmsMinion minion,
+                           final String prevLocation,
+                           final String nextLocation) {
+        if (!PROVISIONING) {
+            return;
         }
 
-        RequisitionNode requisitionNode = requisition.getNode(minion.getId());
+        final String prevForeignSource = String.format(PROVISIONING_FOREIGN_SOURCE_PATTERN, prevLocation);
+        final String nextForeignSource = String.format(PROVISIONING_FOREIGN_SOURCE_PATTERN, nextLocation);
 
+        final Set<String> alteredForeignSources = Sets.newHashSet();
+
+        // Remove the node from the previous requisition, if location has changed
+        if (!Objects.equals(prevForeignSource, nextForeignSource)) {
+            final Requisition prevRequisition = this.deployedForeignSourceRepository.getRequisition(prevForeignSource);
+            if (prevRequisition != null && prevRequisition.getNode(minion.getId()) != null) {
+                prevRequisition.deleteNode(minion.getId());
+                prevRequisition.setDate(new Date());
+
+                deployedForeignSourceRepository.save(prevRequisition);
+                deployedForeignSourceRepository.flush();
+
+                alteredForeignSources.add(prevForeignSource);
+            }
+        }
+
+        Requisition nextRequisition = deployedForeignSourceRepository.getRequisition(nextForeignSource);
+        if (nextRequisition == null) {
+            nextRequisition = new Requisition(nextForeignSource);
+            nextRequisition.setDate(new Date());
+
+            // We have to save the requisition before we can alter the according foreign source definition
+            deployedForeignSourceRepository.save(nextRequisition);
+
+            // Remove all policies and detectors from the foreign source
+            final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(nextForeignSource);
+            foreignSource.setDetectors(Collections.emptyList());
+            foreignSource.setPolicies(Collections.emptyList());
+            deployedForeignSourceRepository.save(foreignSource);
+
+            alteredForeignSources.add(nextForeignSource);
+        }
+
+        RequisitionNode requisitionNode = nextRequisition.getNode(minion.getId());
         if (requisitionNode == null) {
             final RequisitionMonitoredService requisitionMonitoredService = new RequisitionMonitoredService();
             requisitionMonitoredService.setServiceName("Minion-Heartbeat");
@@ -115,40 +158,30 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
 
             requisitionNode = new RequisitionNode();
             requisitionNode.setNodeLabel(minion.getId());
-            requisitionNode.setForeignId(minion.getLabel() != null ? minion.getLabel() : minion.getId());
+            requisitionNode.setForeignId(minion.getLabel() != null
+                                         ? minion.getLabel()
+                                         : minion.getId());
             requisitionNode.setLocation(minion.getLocation());
             requisitionNode.putInterface(requisitionInterface);
 
-            requisition.putNode(requisitionNode);
+            nextRequisition.putNode(requisitionNode);
+            nextRequisition.setDate(new Date());
+            deployedForeignSourceRepository.save(nextRequisition);
+            deployedForeignSourceRepository.flush();
 
-            requisitionUpdated = true;
+            alteredForeignSources.add(nextForeignSource);
         }
 
-        if (requisitionCreated || requisitionUpdated) {
-            requisition.setDate(new Date());
-            m_deployedForeignSourceRepository.save(requisition);
-            m_deployedForeignSourceRepository.flush();
-
-            if (requisitionCreated) {
-                final ForeignSource foreignSource = m_deployedForeignSourceRepository.getForeignSource(foreignSourceName);
-                foreignSource.setDetectors(Collections.emptyList());
-                foreignSource.setPolicies(Collections.emptyList());
-                m_deployedForeignSourceRepository.save(foreignSource);
-            }
-
+        for (final String alteredForeignSource : alteredForeignSources) {
             final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
-            eventBuilder.addParam(EventConstants.PARM_URL, String.valueOf(m_deployedForeignSourceRepository.getRequisitionURL(foreignSourceName)));
+            eventBuilder.addParam(EventConstants.PARM_URL, String.valueOf(deployedForeignSourceRepository.getRequisitionURL(alteredForeignSource)));
 
             try {
                 m_eventProxy.send(eventBuilder.getEvent());
             } catch (final EventProxyException e) {
-                throw new DataAccessResourceFailureException("Unable to send event to import group " + foreignSourceName, e);
+                throw new DataAccessResourceFailureException("Unable to send event to import group " + alteredForeignSource, e);
             }
         }
-
-        Date lastUpdated = new Date();
-        minion.setLastUpdated(lastUpdated);
-        minionDao.saveOrUpdate(minion);
     }
 
     @Override
