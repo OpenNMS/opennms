@@ -21,8 +21,7 @@
                 <attrib name="DaemonThreadCount" alias="DaemonThreadCount" type="gauge"/>
                 <attrib name="CurrentThreadCpuTime" alias="CurThreadCpuTime" type="gauge"/>
             </mbean>
-             <mbean name="JVM GarbageCollector:MarkSweepCompact"
-                   objectname="java.lang:type=GarbageCollector,name=MarkSweepCompact">
+             <mbean name="JVM GarbageCollector:MarkSweepCompact" objectname="java.lang:type=GarbageCollector,name=MarkSweepCompact">
                 <attrib name="CollectionCount" alias="MSCCollCnt" type="counter"/>
                 <attrib name="CollectionTime" alias="MSCCollTime" type="counter"/>
                 <comp-attrib name="LastGcInfo" type="Composite" alias="MSCLastGcInfo">
@@ -32,5 +31,8 @@
                 </comp-attrib>
             </mbean>
         </mbeans>
+
+        <!-- TODO: NMS-8545: Add Kafka JMX metrics to this configuration -->
+
     </jmx-collection>
 </jmx-datacollection-config>
