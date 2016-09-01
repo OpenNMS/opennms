@@ -36,7 +36,7 @@ import org.opennms.core.utils.InetAddressUtils;
 
 public class DnsLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequestDTO, DnsLookupResponseDTO> {
 
-    public static final String RPC_MODULE_ID = "DnsLookup";
+    public static final String RPC_MODULE_ID = "DNS";
 
     public DnsLookupClientRpcModule() {
         super(DnsLookupRequestDTO.class, DnsLookupResponseDTO.class);
@@ -49,10 +49,19 @@ public class DnsLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequ
 
     @Override
     public CompletableFuture<DnsLookupResponseDTO> execute(DnsLookupRequestDTO request) {
-        String ipAddr = request.getHostRequest();
-        InetAddress addr = InetAddressUtils.addr(ipAddr);
+        String hostRequest = request.getHostRequest();
+        QueryType queryType = request.getQueryType();
         DnsLookupResponseDTO dto = new DnsLookupResponseDTO();
-        dto.setHostResponse(addr.getHostAddress());
+        try {
+            InetAddress addr = InetAddressUtils.addr(hostRequest);
+            if (queryType.equals(QueryType.LOOKUP)) {
+                dto.setHostResponse(addr.getHostAddress());
+            } else if (queryType.equals(QueryType.REVERSE_LOOKUP)) {
+                dto.setHostResponse(addr.getCanonicalHostName());
+            }
+        } catch (Exception e) {
+            dto.setFailureMessage(e.getMessage());
+        }
         CompletableFuture<DnsLookupResponseDTO> response = new CompletableFuture<DnsLookupResponseDTO>();
         response.complete(dto);
         return response;

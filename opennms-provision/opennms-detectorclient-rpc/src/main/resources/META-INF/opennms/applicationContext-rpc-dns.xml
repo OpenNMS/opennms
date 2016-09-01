@@ -13,8 +13,6 @@
 
     <bean id="dnsLookupClientRpcModule" class="org.opennms.netmgt.provision.dns.client.rpc.DnsLookupClientRpcModule" />
     
-    <bean id="dnsReverseLookupClientRpcModule" class="org.opennms.netmgt.provision.dns.client.rpc.DnsReverseLookupClientRpcModule" />
-
     <bean id="locationAwareDnsClient" class="org.opennms.netmgt.provision.dns.client.rpc.LocationAwareDnsLookupClientRpcImpl" />
     <onmsgi:service interface="org.opennms.netmgt.provision.LocationAwareDnsLookupClient" ref="locationAwareDnsClient"/>
 

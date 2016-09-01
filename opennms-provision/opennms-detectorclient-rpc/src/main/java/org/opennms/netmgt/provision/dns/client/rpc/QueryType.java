@@ -28,34 +28,12 @@
 
 package org.opennms.netmgt.provision.dns.client.rpc;
 
-import java.net.InetAddress;
-import java.util.concurrent.CompletableFuture;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlType;
 
-import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
-import org.opennms.core.utils.InetAddressUtils;
+@XmlEnum
+@XmlType(name = "query-type")
+public enum QueryType {
 
-public class DnsReverseLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequestDTO, DnsLookupResponseDTO> {
-
-    public static final String RPC_MODULE_ID = "DnsReverseLookup";
-
-    public DnsReverseLookupClientRpcModule() {
-        super(DnsLookupRequestDTO.class, DnsLookupResponseDTO.class);
-    }
-
-    @Override
-    public String getId() {
-        return RPC_MODULE_ID;
-    }
-
-    @Override
-    public CompletableFuture<DnsLookupResponseDTO> execute(DnsLookupRequestDTO request) {
-        String ipAddr = request.getHostRequest();
-        InetAddress addr = InetAddressUtils.addr(ipAddr);
-        DnsLookupResponseDTO dto = new DnsLookupResponseDTO();
-        dto.setHostResponse(addr.getCanonicalHostName());
-        CompletableFuture<DnsLookupResponseDTO> response = new CompletableFuture<DnsLookupResponseDTO>();
-        response.complete(dto);
-        return response;
-    }
-
+    LOOKUP, REVERSE_LOOKUP
 }

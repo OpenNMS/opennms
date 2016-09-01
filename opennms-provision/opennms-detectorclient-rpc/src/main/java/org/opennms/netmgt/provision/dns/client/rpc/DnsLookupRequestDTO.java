@@ -47,6 +47,9 @@ public class DnsLookupRequestDTO implements RpcRequest {
     @XmlAttribute(name = "host-request")
     private String hostRequest;
 
+    @XmlAttribute(name = "query-type")
+    private QueryType queryType;
+
     @Override
     public String getLocation() {
         return location;
@@ -69,9 +72,17 @@ public class DnsLookupRequestDTO implements RpcRequest {
         this.location = location;
     }
 
+    public QueryType getQueryType() {
+        return this.queryType == null ? QueryType.LOOKUP : this.queryType;
+    }
+
+    public void setQueryType(QueryType queryType) {
+        this.queryType = queryType;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(location, hostRequest);
+        return Objects.hash(location, hostRequest, queryType);
     }
 
     @Override
@@ -83,7 +94,9 @@ public class DnsLookupRequestDTO implements RpcRequest {
         if (getClass() != obj.getClass())
             return false;
         DnsLookupRequestDTO other = (DnsLookupRequestDTO) obj;
-        return Objects.equals(this.location, other.location) && Objects.equals(this.hostRequest, other.hostRequest);
+        return Objects.equals(this.location, other.location)
+                && Objects.equals(this.hostRequest, other.hostRequest)
+                && Objects.equals(this.queryType, other.queryType);
     }
 
 }

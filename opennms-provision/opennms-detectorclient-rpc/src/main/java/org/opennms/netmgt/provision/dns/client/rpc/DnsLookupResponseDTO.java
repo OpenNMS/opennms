@@ -44,6 +44,8 @@ public class DnsLookupResponseDTO implements RpcResponse {
     @XmlAttribute(name = "host-response")
     private String hostResponse;
 
+    @XmlAttribute(name = "failure-message")
+    private String failureMessage;
 
     public String getHostResponse() {
         return hostResponse;
@@ -53,9 +55,21 @@ public class DnsLookupResponseDTO implements RpcResponse {
         this.hostResponse = hostResponse;
     }
 
+    public String getFailureMessage() {
+        return failureMessage;
+    }
+
+    public void setFailureMessage(String failureMessage) {
+        this.failureMessage = failureMessage;
+    }
+
+    public boolean didFailWithError() {
+        return failureMessage != null && !failureMessage.isEmpty();
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(hostResponse);
+        return Objects.hash(hostResponse, failureMessage);
     }
 
     @Override
@@ -67,7 +81,8 @@ public class DnsLookupResponseDTO implements RpcResponse {
         if (getClass() != obj.getClass())
             return false;
         DnsLookupResponseDTO other = (DnsLookupResponseDTO) obj;
-        return Objects.equals(this.hostResponse, other.hostResponse);
+        return Objects.equals(this.hostResponse, other.hostResponse)
+                && Objects.equals(this.failureMessage, other.failureMessage);
     }
 
 }

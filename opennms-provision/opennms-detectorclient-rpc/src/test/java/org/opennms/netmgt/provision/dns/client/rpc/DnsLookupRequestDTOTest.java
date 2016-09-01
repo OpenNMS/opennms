@@ -46,7 +46,7 @@ public class DnsLookupRequestDTOTest extends XmlTestNoCastor<DnsLookupRequestDTO
         return Arrays.asList(new Object[][] {
             {   getDnsLookupRequest(),
                 "<?xml version=\"1.0\"?>\n" +
-                "<dns-lookup-request location=\"MINION\" host-request=\"localhost\"/>"
+                "<dns-lookup-request location=\"MINION\" host-request=\"localhost\" query-type=\"LOOKUP\"/>"
             }
         });
     }
@@ -55,6 +55,7 @@ public class DnsLookupRequestDTOTest extends XmlTestNoCastor<DnsLookupRequestDTO
         DnsLookupRequestDTO dto = new DnsLookupRequestDTO();
         dto.setLocation("MINION");
         dto.setHostRequest("localhost");
+        dto.setQueryType(QueryType.LOOKUP);
         return dto;
     }
 

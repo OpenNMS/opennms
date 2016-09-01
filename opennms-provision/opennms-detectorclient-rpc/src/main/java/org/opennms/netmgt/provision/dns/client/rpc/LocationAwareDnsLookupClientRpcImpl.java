@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.dns.client.rpc;
 
-
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.rpc.api.RpcClient;
@@ -44,51 +43,43 @@ public class LocationAwareDnsLookupClientRpcImpl implements LocationAwareDnsLook
 
     @Autowired
     private DnsLookupClientRpcModule dnsLookupClientRpcModule;
-    
-    @Autowired
-    private DnsReverseLookupClientRpcModule dnsReverseLookupClientRpcModule;
 
     private RpcClient<DnsLookupRequestDTO, DnsLookupResponseDTO> delegate;
-    
-    private RpcClient<DnsLookupRequestDTO, DnsLookupResponseDTO> delegateR;
 
     @Override
     public void afterPropertiesSet() {
         delegate = rpcClientFactory.getClient(dnsLookupClientRpcModule);
-        delegateR = rpcClientFactory.getClient(dnsReverseLookupClientRpcModule);
     }
 
     @Override
     public CompletableFuture<String> lookup(String hostName, String location) {
-        final DnsLookupRequestDTO dto = new DnsLookupRequestDTO();
-        dto.setHostRequest(hostName);
-        dto.setLocation(location);
-        CompletableFuture<DnsLookupResponseDTO> future = getDelegate().execute(dto);
-        return future.thenApply(response -> {
-            return response.getHostResponse();
-        });
-
+        return lookupExecute(hostName, location, QueryType.LOOKUP);
     }
 
     @Override
     public CompletableFuture<String> reverseLookup(String ipAddress, String location) {
-        final DnsLookupRequestDTO dto = new DnsLookupRequestDTO();
-        dto.setHostRequest(ipAddress);
-        dto.setLocation(location);
-        CompletableFuture<DnsLookupResponseDTO> future = getDelegateR().execute(dto);
-        return future.thenApply(response -> {
-            return response.getHostResponse();
-        });
+        return lookupExecute(ipAddress, location, QueryType.REVERSE_LOOKUP);
     }
 
     public RpcClient<DnsLookupRequestDTO, DnsLookupResponseDTO> getDelegate() {
         return delegate;
     }
-    
 
-    public RpcClient<DnsLookupRequestDTO, DnsLookupResponseDTO> getDelegateR() {
-        return delegateR;
+    private CompletableFuture<String> lookupExecute(String request, String location, QueryType queryType) {
+
+        final DnsLookupRequestDTO dto = new DnsLookupRequestDTO();
+        dto.setHostRequest(request);
+        dto.setLocation(location);
+        dto.setQueryType(queryType);
+        CompletableFuture<DnsLookupResponseDTO> future = getDelegate().execute(dto);
+        return future.thenApply(response -> {
+            if (response.didFailWithError()) {
+                throw new RuntimeException(response.getFailureMessage());
+            } else {
+                return response.getHostResponse();
+            }
+        });
+
     }
-
 
 }
