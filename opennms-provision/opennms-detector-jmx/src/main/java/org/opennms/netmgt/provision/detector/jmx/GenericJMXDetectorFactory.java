@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Map;
 
+import org.opennms.netmgt.config.jmx.MBeanServer;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.support.DetectRequestImpl;
@@ -68,7 +69,12 @@ public class GenericJMXDetectorFactory<T extends JMXDetector> extends GenericSer
         if (jmxConfigDao == null) {
             return Collections.emptyMap();
         } else {
-            return jmxConfigDao.getConfig().lookupMBeanServer(ipAddress, port).getParameterMap();
+            MBeanServer serverConfig = jmxConfigDao.getConfig().lookupMBeanServer(ipAddress, port);
+            if (serverConfig == null) {
+                return Collections.emptyMap();
+            } else {
+                return serverConfig.getParameterMap();
+            }
         }
     }
 
