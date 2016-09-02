@@ -28,14 +28,16 @@
 
 package org.opennms.web.api;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * An uninstantiatable class that provides a servlet container-independent
  * interface to the authentication system and a list of useful constants.
  *
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="mailto:agalue@opennms.org">Alejandro Galue</A>
  */
 public final class Authentication extends Object {
     public static final String ROLE_USER = "ROLE_USER";
@@ -48,35 +50,34 @@ public final class Authentication extends Object {
     public static final String ROLE_REST = "ROLE_REST";
     public static final String ROLE_ASSET_EDITOR = "ROLE_ASSET_EDITOR";
     public static final String ROLE_MOBILE = "ROLE_MOBILE";
+    public static final String ROLE_JMX = "ROLE_JMX";
 
-    private static Map<String, String> s_oldToNewMap = new HashMap<String, String>();
+    private static List<String> s_availableRoles = new ArrayList<String>();
 
     static {
-        s_oldToNewMap.put("OpenNMS RTC Daemon", ROLE_RTC);
-        s_oldToNewMap.put("OpenNMS Administrator", ROLE_ADMIN);
-        s_oldToNewMap.put("OpenNMS Read-Only User", ROLE_READONLY);
-        s_oldToNewMap.put("OpenNMS Dashboard User", ROLE_DASHBOARD);
-        s_oldToNewMap.put("OpenNMS Provision User", ROLE_PROVISION);
-        s_oldToNewMap.put("OpenNMS Remote Poller User", ROLE_REMOTING);
-        s_oldToNewMap.put("OpenNMS REST User", ROLE_REST);
-        s_oldToNewMap.put("OpenNMS Asset Editor", ROLE_ASSET_EDITOR);
-        s_oldToNewMap.put("OpenNMS Mobile User", ROLE_MOBILE);
-
-        // There is no entry for ROLE_USER, because all authenticated people are users
+        s_availableRoles.add(ROLE_USER);
+        s_availableRoles.add(ROLE_ADMIN);
+        s_availableRoles.add(ROLE_READONLY);
+        s_availableRoles.add(ROLE_DASHBOARD);
+        s_availableRoles.add(ROLE_RTC);
+        s_availableRoles.add(ROLE_PROVISION);
+        s_availableRoles.add(ROLE_REMOTING);
+        s_availableRoles.add(ROLE_REST);
+        s_availableRoles.add(ROLE_ASSET_EDITOR);
+        s_availableRoles.add(ROLE_MOBILE);
+        s_availableRoles.add(ROLE_JMX);
     }
 
     /** Private, empty constructor so this class cannot be instantiated. */
     private Authentication() {
     }
 
-    /**
-     * <p>getSpringSecuirtyRoleFromOldRoleName</p>
-     *
-     * @param oldRole a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public static String getSpringSecurityRoleFromOldRoleName(String oldRole) {
-        return s_oldToNewMap.get(oldRole);
+    public static List<String> getAvailableRoles() {
+        return Collections.unmodifiableList(s_availableRoles);
+    }
+
+    public static boolean isValidRole(String role) {
+        return s_availableRoles.contains(role);
     }
 
 }

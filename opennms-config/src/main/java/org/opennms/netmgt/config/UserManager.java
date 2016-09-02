@@ -186,6 +186,9 @@ public abstract class UserManager implements UserConfig {
             if (onmsUser.getDutySchedule() != null) {
                 castorUser.setDutySchedule(onmsUser.getDutySchedule());
             }
+            if (onmsUser.getRoles() != null) {
+                castorUser.setRole(onmsUser.getRoles());
+            }
             
             _writeUser(onmsUser.getUsername(), castorUser);
         } finally {
@@ -313,6 +316,7 @@ public abstract class UserManager implements UserConfig {
         user.setPassword(castorUser.getPassword().getContent());
         user.setPasswordSalted(castorUser.getPassword().getSalt());
         user.setDutySchedule(castorUser.getDutyScheduleCollection());
+        user.setRoles(castorUser.getRoleCollection());
         user.setEmail(_getContactInfo(castorUser, ContactType.email));
         return user;
     }
