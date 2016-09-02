@@ -120,6 +120,10 @@
             <parameter key="port" value="1299"/>
             <parameter key="retry" value="2"/>
             <parameter key="timeout" value="3000"/>
+            <parameter key="urlPath" value="/karaf-minion"/>
+            <parameter key="factory" value="PASSWORD-CLEAR"/>
+            <parameter key="username" value="admin"/>
+            <parameter key="password" value="admin"/>
             <parameter key="rrd-base-name" value="java"/>
             <parameter key="collection" value="jmx-minion"/>
             <parameter key="thresholding-enabled" value="true"/>
