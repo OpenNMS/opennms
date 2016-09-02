@@ -32,42 +32,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<style type="text/css">
-
-    .alert-trend {
-        background-color: #4c9d29;
-        border-color: #4c9d29;
-        height: 90px;
-        color: white;
-        margin-bottom: 5px;
-    }
-
-    .alert-trend hr {
-        border-top-color: white;
-    }
-
-    .alert-trend .alert-link {
-        color: white;
-    }
-
-    .alert-trend a {
-        color: white;
-    }
-
-    .jqstooltip {
-        width: auto !important;
-        height: auto !important;
-    }
-
-</style>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/opennms-trendline.css" />
 
 <div class="alert alert-trend" role="alert">
-    <table cellpadding="0" cellspacing="0" width="100%" border="0">
+    <table width="100%" border="0">
         <tr>
             <td width="1%">
                 <h1 style="margin:0;"><span class="glyphicon ${trendDefinition.icon}" aria-hidden="true"></span></h1>
             </td>
-            <td style="white-space: nowrap; padding-left:5px; padding-right:5px;">
+            <td style="white-space: nowrap;">
                 <h3 style="margin:0;">${trendDefinition.title}</h3><h4 style="margin:0;">${trendDefinition.subtitle}</h4>
             </td>
             <td width="50%" align="right">
@@ -84,7 +57,7 @@
             </td>
         </tr>
     </table>
-    <hr style="margin-top:5px;margin-bottom:5px;"/>
+
     <c:choose>
         <c:when test="${trendDefinition.descriptionLink!=''}">
             <a href="${trendDefinition.descriptionLink}">${trendDefinition.description}</a>
@@ -100,6 +73,4 @@
         $('.sparkline-${trendDefinition.name}').sparkline('html', { enableTagOptions: true });
     });
 </script>
-
-
 

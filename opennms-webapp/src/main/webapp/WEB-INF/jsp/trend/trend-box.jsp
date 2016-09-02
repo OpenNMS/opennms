@@ -36,20 +36,6 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
-<style type="text/css">
-
-    .row.gutter-10 {
-        margin-right: -5px;
-        margin-left: -5px;
-    }
-
-    .gutter-10 > [class^="col-"], .gutter-10 > [class^=" col-"] {
-        padding-right: 5px;
-        padding-left: 5px;
-    }
-
-</style>
-
 <%
     int columns = 2;
 
@@ -64,7 +50,7 @@
     <div class="panel-heading">
         <h3 class="panel-title">Trend</h3>
     </div>
-    <div class="panel-body">
+    <div class="alert-box panel-body">
         <div class="row gutter-10">
             <c:forEach var="trendDefinition" items="${trendDefinitions}">
                 <div class="col-xs-<%= colClass %>">

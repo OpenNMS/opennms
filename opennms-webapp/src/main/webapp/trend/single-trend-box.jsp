@@ -28,6 +28,7 @@
  *******************************************************************************/
 --%>
 
+
 <%@page language="java"
         contentType="text/html"
         session="true"%>
@@ -35,25 +36,13 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
-<style type="text/css">
-
-    .row.gutter-10 {
-        margin-right: -5px;
-        margin-left: -5px;
-    }
-
-    .gutter-10 > [class^="col-"], .gutter-10 > [class^=" col-"] {
-        padding-right: 5px;
-        padding-left: 5px;
-    }
-
-</style>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/opennms-trendline.css" />
 
 <div class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">Trend</h3>
     </div>
-    <div class="panel-body">
+    <div class="alert-box panel-body">
         <jsp:include page="/trend/trend.htm" flush="false">
             <jsp:param name="name" value="${param.name}"/>
         </jsp:include>
