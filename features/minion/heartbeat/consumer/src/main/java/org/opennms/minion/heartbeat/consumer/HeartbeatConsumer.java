@@ -94,12 +94,16 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
             minion.setId(minionHandle.getId());
         }
 
-        // Provision the minions node before we alter the location
-        this.provision(minion,
-                       minion.getLocation(),
-                       minionHandle.getLocation());
+        String prevLocation = minion.getLocation();
+        String nextLocation = minionHandle.getLocation();
 
         minion.setLocation(minionHandle.getLocation());
+
+        // Provision the minions node before we alter the location
+        this.provision(minion,
+                       prevLocation,
+                       nextLocation);
+
         minion.setLastUpdated(new Date());
         minionDao.saveOrUpdate(minion);
     }
