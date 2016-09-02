@@ -43,6 +43,7 @@ angular.module('onms-ksc-wizard', [
   };
 
   $scope.setLevel = function(level, reset) {
+    $scope.resourceFilter = '';
     $scope.level = level;
     var resources = [];
     switch (level) {
