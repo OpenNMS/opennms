@@ -41,7 +41,7 @@ public final class GWTEdge extends JavaScriptObject {
     protected GWTEdge() {};
     
     public static final native GWTEdge create(String id, GWTVertex source, GWTVertex target) /*-{
-    	return {"id":id, "source":source, "target":target, "cssClass": "path", "linkNum":0, "tooltipText": "", "status":"", "linkCount":1};
+        return {"id":id, "source":source, "target":target, "cssClass": "path", "linkNum":0, "tooltipText": "", "status":"", "linkCount":1};
 	}-*/;
 
     public static final native void consoleLog(Object obj)/*-{
@@ -140,6 +140,31 @@ public final class GWTEdge extends JavaScriptObject {
         };
     }
 
+    protected static double getPathSign(int linkIndex, int linkCount) {
+        final int linkNum = linkIndex + 1;
+        if (linkCount % 2 == 0) {
+            // When there's an even number of links, alternate from
+            // positive to negative
+            return linkNum % 2 == 1 ? 1 : -1;
+        } else if (linkNum == 1) {
+            // When there's an odd number of links, the first link should
+            // always be horizontal
+            return 0;
+        } else {
+            // When there's an odd number of links, alternate from
+            // positive to negative
+            return linkNum % 2 == 0 ? 1 : -1;
+        }
+    }
+
+    protected static double getPathMultiplier(int linkIndex, int linkCount) {
+        final int linkNum = linkIndex + 1;
+        // Increase the multiplier after every pair of links
+        // If there's an odd number of links, use 0 for the first multiplier
+        // since the link will be horizontal
+        return Math.ceil((linkNum-(linkCount % 2)) / 2d);
+    }
+
     protected static Func<String, GWTEdge> createPath() {
         return new Func<String, GWTEdge>(){
 
@@ -147,31 +172,49 @@ public final class GWTEdge extends JavaScriptObject {
             public String call(GWTEdge edge, int index) {
                 final GWTVertex source = edge.getSource();
 				final GWTVertex target = edge.getTarget();
-				final int dx = Math.abs(target.getX() - source.getX());
-                final int dy = Math.abs(target.getY() - source.getY());
-                // The distance of two points is a^2 + b^2 = c^2 -> c = SQRT(dx^2 + dy^2)
-                final double distance =  Math.sqrt(dx * dx + dy * dy);
-                // The minimal radius therefore is distance / 2
-                final double minRadius = distance / 2;
-                final double step = Math.max((int) distance, 300); // Minimal Step size is 300
-                // A guessed maxRadius
-                final double maxRadius = distance * 4;
-                int direction = edge.getLinkNum() % 2 == 0  ? 0 : 1;
 
-                // By default we draw an arc
-                int rx = (int) Math.max(maxRadius - (edge.getLinkNum() / 2 * step), minRadius);
-                if (edge.getLinkCount() % 2 == 1 && edge.getLinkNum() == edge.getLinkCount() -1 ) {
-                    rx = 0; // if uneven link count, the last edge is always straight
+                // Find the middle point of the line connecting the source and target vertices
+                double sx = (source.getX() + target.getX()) / 2;
+                double sy = (source.getY() + target.getY()) / 2;
+
+                // Find the length of the line connecting p1 and p2
+                double dy = target.getY() - source.getY();
+                double dx = target.getX() - source.getX();
+                double len = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
+
+                // Calculate the sign (i.e. direction) and distance we'll use to project to the control point
+                double pathSign = getPathSign(edge.getLinkNum(), edge.getLinkCount());
+                double pathMultiplier = getPathMultiplier(edge.getLinkNum(), edge.getLinkCount());
+                // Use the largest offset from the source and target vertices
+                int pathOffset = Math.max(edge.getSource().getEdgePathOffset(), edge.getTarget().getEdgePathOffset());
+                // Slowly increase the distance as the points get further apart (this is a logistics growth model)
+                double lengthMultiplier = Math.max(3 / (1 + 250*Math.exp((-1/200d)*len)), 1);
+                double effectiveDistance = pathMultiplier * lengthMultiplier * pathOffset;
+
+                // Now calculate the coordinates (qx,qy) of our control point
+                double qx, qy;
+                if (dy == 0) {
+                    // Both vertices are on the same horizontal line, project out vertically
+                    qx = sx;
+                    qy = sy + pathSign * effectiveDistance;
+                } else if (dx == 0) {
+                    // Both vertices are on the same vertical line, project out horizontally
+                    qx = sx + pathSign * effectiveDistance;
+                    qy = sy;
+                } else {
+                    // Calculate the slope and intercept of the line that is perpendicular to the
+                    // line connecting both vertices and passes through the middle point (sx, sy)
+                    double m = dy / dx;
+                    double invm = -1/m; // The conjugate slope is perpendicular
+                    double b = sy - invm * sx;
+                    // Now calculate the coordinates of the point that is on the line
+                    // we found above, and *distance* units away from (sx, sy)
+                    qx = sx + pathSign * Math.sqrt(Math.pow(effectiveDistance, 2) / (1 + Math.pow(invm, 2)));
+                    qy = invm * qx + b;
                 }
-                consoleLog(edge.getId() + " Distance: " + distance);
-                consoleLog(edge.getId() + " MaxRadius: " + maxRadius);
-                consoleLog(edge.getId() + " MinRadius: " + minRadius);
-                consoleLog(edge.getId() + " Step: " + step);
-                consoleLog(edge.getId() + " rx: " + rx);
-                consoleLog("-----");
 
-                return "M" + source.getX() + "," + source.getY() +
-                       " A" + rx + "," + rx + " 0 0, " + direction + " " + target.getX() + "," + target.getY();
+                return "M" + source.getX() + " " + source.getY() + " Q " + qx + " " + qy +
+                            " " + target.getX() + " " + target.getY();
             }
 
         };

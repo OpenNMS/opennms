@@ -62,6 +62,8 @@ import com.vaadin.server.PaintException;
 
 public class GraphPainter extends BaseGraphVisitor {
 
+    public static final int DEFAULT_EDGE_PATH_OFFSET = Integer.getInteger("org.opennms.features.topology.api.topo.defaultEdgePathOffset", 20);
+
 	private final GraphContainer m_graphContainer;
 	private final IconRepositoryManager m_iconRepoManager;
 	private final Layout m_layout;
@@ -140,8 +142,17 @@ public class GraphPainter extends BaseGraphVisitor {
 		v.setTooltipText(getTooltipText(vertex));
 		v.setStyleName(getVertexStyle(vertex, selected));
 		v.setTargets(getTargets(vertex));
+		v.setEdgePathOffset(getEdgePathOffset(vertex));
 		m_vertices.add(v);
 	}
+
+    private static int getEdgePathOffset(Vertex vertex) {
+        if (vertex.getEdgePathOffset() != null) {
+            return vertex.getEdgePathOffset();
+        } else {
+            return DEFAULT_EDGE_PATH_OFFSET;
+        }
+    }
 
 	private String getIconId(Vertex vertex) {
 		return m_iconRepoManager.getSVGIconId(vertex);

@@ -50,4 +50,5 @@ public interface GraphMLProperties {
     String SEMANTIC_ZOOM_LEVEL = "semantic-zoom-level";
     String VERTEX_STATUS_PROVIDER = "vertex-status-provider";
     String LEVEL = "level";
+    String EDGE_PATH_OFFSET = "edge-path-offset";
 }
