@@ -45,10 +45,10 @@ public class SendEventsToEsCommand extends OsgiCommandSupport {
 	@Argument(index = 3, name = "onms-password", description = "rest username for opennms", required = false, multiValued = false)
 	String onmsPassWord = null;
 	
-	@Argument(index = 4, name = "onms-url", description = "URL of OpenNMS ReST interface to retreive events to send", required = false, multiValued = false)
+	@Argument(index = 4, name = "onms-url", description = "URL of OpenNMS ReST interface to retrieve events to send", required = false, multiValued = false)
 	String onmsUrl = null;
 	
-	@Argument(index = 5, name = "use-node-label", description = "If false local node cache will get nodelabel for nodeid. If true will used remote nodelabel", required = false, multiValued = false)
+	@Argument(index = 5, name = "use-node-label", description = "If false local node cache will get nodelabel for nodeid. If true will use remote nodelabel", required = false, multiValued = false)
 	String useNodelabel = "false";
 
 	
