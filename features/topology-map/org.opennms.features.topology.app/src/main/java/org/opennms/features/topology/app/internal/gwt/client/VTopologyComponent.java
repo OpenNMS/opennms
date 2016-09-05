@@ -747,6 +747,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
             vertex.setStyleName(sharedVertex.getStyleName());
 
+            vertex.setEdgePathOffset(sharedVertex.getEdgePathOffset());
+
             graph.addVertex(vertex);
 		}
 
