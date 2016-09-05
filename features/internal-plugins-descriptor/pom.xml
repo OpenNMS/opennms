@@ -12,14 +12,14 @@
   <artifactId>internal-plugins-descriptor</artifactId>
   <description>Module to generate list of internal plugins which can be installed</description>
   <packaging>bundle</packaging>
-  
+
   <properties>
     <!-- these properties define the productSpec.xml variables -->
     <!-- <productFeatureRepository>mvn:${groupId}/${productName}/${project.version}/xml/features</productFeatureRepository> -->
     <productFeatureRepository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</productFeatureRepository>
     <productName>${project.artifactId}</productName>
     <productId>${productName}/${project.version}</productId>
-  
+
   </properties>
 
   <build>
@@ -202,6 +202,13 @@
               <goal>generate-features-xml</goal>
             </goals>
             <configuration>
+              <!-- so that licence manager feature starts before this module -->
+              <repositories>
+                <repository>mvn:org.opennms.plugins/org.opennms.plugin.licencemanager/${licencemanagerVersion}/xml/features</repository>
+              </repositories>
+              <features>
+                <feature>org.opennms.plugin.licencemanager</feature>
+              </features>
               <bundles>
                 <bundle>mvn:${project.groupId}/${project.artifactId}/${project.version}</bundle>
               </bundles>
