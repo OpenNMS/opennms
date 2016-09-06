@@ -76,7 +76,7 @@
   </div>
   <div class="panel-body">
     <c:url var="outagesLink" value="outage/list.htm">
-      <c:param name="filter" value="building=${view.columnValue}"/>
+      <c:param name="filter" value="asset.building=${view.columnValue}"/>
     </c:url>
     <p>
       <a href="${outagesLink}">View</a> current site outages.
