@@ -182,6 +182,14 @@ public class UpdateUserServlet extends HttpServlet {
                 }
             }
 
+            String[] configuredRoles = request.getParameterValues("configuredRoles");
+            if (configuredRoles != null && configuredRoles.length > 0) {
+                newUser.getRoleCollection().clear();
+                for (String role : configuredRoles) {
+                    newUser.addRole(role);
+                }
+            }
+
             userSession.setAttribute("user.modifyUser.jsp", newUser);
         }
 

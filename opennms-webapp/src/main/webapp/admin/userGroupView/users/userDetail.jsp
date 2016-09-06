@@ -83,7 +83,14 @@
             <%=user.getFullName()%>
           </td>
         </tr>
-
+        <tr>
+          <th>
+            Security Roles:
+          </th>
+          <td width="75%">
+            <%=org.apache.commons.lang.StringUtils.join(user.getRoleCollection().toArray(new String[user.getRoleCollection().size()]), "<br/>")%>
+          </td>
+        </tr>
         <tr>
           <th>
             Comments:
