@@ -13,15 +13,6 @@
     <property name="dataSourceFileUri" value="./etc/opennms-datasources.xml" />
   </bean>
 
-<!-- TODO REMOVE -->
-<!--   <bean id="pgDataSource" class="com.impossibl.postgres.jdbc.PGDataSource"> -->
-<!--     <property name="host" value="localhost" /> -->
-<!--     <property name="port" value="5432" /> -->
-<!--     <property name="database" value="opennms" /> -->
-<!--     <property name="user" value="opennms" /> -->
-<!--     <property name="password" value="opennms" /> -->
-<!--   </bean> -->
-
   <bean id="databaseChangeNotifierClient" class="org.opennms.plugins.dbnotifier.DbNotificationClientQueueImpl" init-method="init" destroy-method="destroy">
     <property name="databaseChangeNotifier" ref="databaseChangeNotifier" />
     <property name="maxQueueLength" value="1000" />
@@ -31,15 +22,20 @@
         <!-- <entry key="opennms_alarm_changes" value-ref="verySimpleClient" /> -->
         <entry key="opennms_alarm_changes" value-ref="alarmChangeNotificationClient" />
         <!-- <entry key="opennms_event_changes" value-ref="verySimpleClient"/> -->
-        <entry key="opennms_memos_changes" value-ref="verySimpleClient"/>
+        <entry key="opennms_memos_changes" value-ref="memosChangeNotificationClient" />
       </map>
     </property>
   </bean>
 
-  <bean id="verySimpleClient" class="org.opennms.plugins.dbnotifier.VerySimpleNotificationClient">
-  </bean>
+  <!-- used for testing only -->
+  <!-- <bean id="verySimpleClient" class="org.opennms.plugins.dbnotifier.VerySimpleNotificationClient" /> -->
 
   <bean id="alarmChangeNotificationClient" class="org.opennms.plugins.dbnotifier.alarmnotifier.AlarmChangeNotificationClient" init-method="init"
+    destroy-method="destroy">
+    <property name="eventProxy" ref="eventProxy" />
+  </bean>
+
+  <bean id="memosChangeNotificationClient" class="org.opennms.plugins.dbnotifier.alarmnotifier.MemosChangeNotificationClient" init-method="init"
     destroy-method="destroy">
     <property name="eventProxy" ref="eventProxy" />
   </bean>
@@ -150,7 +146,7 @@ $$ LANGUAGE plpgsql;
       DROP FUNCTION IF EXISTS notify_alarm();
   " />
   </bean>
-  
+
   <!-- ********************************** -->
   <!-- memos notification sql statements -->
   <!-- ********************************** -->
@@ -204,12 +200,11 @@ $$ LANGUAGE plpgsql;
  DROP TRIGGER IF EXISTS memos_change_notify ON memos;
 
  CREATE TRIGGER memos_change_notify
- AFTER INSERT OR UPDATE OR DELETE ON memos
+ AFTER INSERT OR UPDATE ON memos
     FOR EACH ROW EXECUTE PROCEDURE notify_memos();
-      " 
-      />
+      " />
   </bean>
-  
+
   <!-- This sql statement removes the triggers from the database for the memos table -->
   <!-- Note you must use /* */ for comments as string is rendered as single line. -->
   <bean id="disConnectionStatementMemos" class="java.lang.String">
@@ -219,7 +214,7 @@ $$ LANGUAGE plpgsql;
       DROP FUNCTION IF EXISTS notify_memos();
   " />
   </bean>
-  
+
 
 
   <!-- ********************************** -->
