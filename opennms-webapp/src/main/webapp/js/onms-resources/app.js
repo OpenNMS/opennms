@@ -17,6 +17,7 @@ angular.module('onms-resources', [
 
 .controller('NodeResourcesCtrl', ['$scope', '$filter', '$http', '$window', 'growl', function($scope, $filter, $http, $window, growl) {
 
+  $scope.reports = 'all';
   $scope.searchQuery = undefined;
   $scope.resources = {};
   $scope.hasResources = false;
@@ -24,10 +25,16 @@ angular.module('onms-resources', [
   $scope.isCollapsed = {};
   $scope.nodeLink = undefined;
   $scope.nodeLabel = undefined;
-  $scope.url = 'graph/results.htm?reports=all';
+  $scope.url = 'graph/results.htm';
 
-  $scope.init = function(criteria) {
-    $http.get('rest/resources/fornode/'+criteria).success(function(data) {
+  $scope.init = function(nodeCriteria, reports) {
+    if (nodeCriteria == null || nodeCriteria == '') {
+      return;
+    }
+    if (reports != null && reports != '') {
+      $scope.reports = reports;
+    }
+    $http.get('rest/resources/fornode/'+nodeCriteria).success(function(data) {
       $scope.nodeLink = data.link;
       $scope.nodeLabel = data.label;
       $scope.hasResources = data.children.resource.length > 0;
@@ -74,7 +81,7 @@ angular.module('onms-resources', [
 
   $scope.doGraph = function(selected) {
     if (selected.length > 0) {
-      $window.location.href = $scope.url + '&' + selected.join('&');
+      $window.location.href = $scope.url + '?reports=' + $scope.reports + '&' + selected.join('&');
     } else {
       growl.error('Please select at least one resource.');
     }

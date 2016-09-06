@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module rename-to="coreweb">
-	<!-- <inherits name="com.google.gwt.user.User" /> -->
-	<inherits name="org.opennms.gwt.web.ui.asset.Asset"/>
+    <inherits name="com.google.gwt.user.User"/>
+    <inherits name="com.google.gwt.i18n.I18N"/>
+    <inherits name="org.gwtbootstrap3.GwtBootstrap3NoThemeNoJs"/>
 	<inherits name="org.opennms.features.gwt.graph.resource.list.GraphResourceList"/>
-	<inherits name="org.opennms.features.gwt.snmpselect.list.SnmpSelectList"/>
 	
 	<!-- Theme -->
 	<inherits name='org.opennms.features.gwt.theme.OpennmsTheme'/>

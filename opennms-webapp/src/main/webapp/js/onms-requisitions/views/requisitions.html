@@ -132,9 +132,9 @@
 
       <br ng-hide="filteredRequisitions.length > pageSize" />
 
-      <uib-pagination total-items="totalItems" num-pages="numPages" ng-model="currentPage" max-size="maxSize" boundary-links="true"
+      <ul uib-pagination total-items="totalItems" num-pages="numPages" ng-model="currentPage" max-size="maxSize" boundary-links="true"
         class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"
-        ng-show="filteredRequisitions.length > pageSize"></uib-pagination>
+        ng-show="filteredRequisitions.length > pageSize"></ul>
 
     </div> <!-- table-with-navigation -->
 
