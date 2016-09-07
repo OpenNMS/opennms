@@ -37,7 +37,12 @@ public class MemosChangeNotificationClient implements NotificationClient {
 	public static final String STICKY_MEMO_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/StickyMemoUpdate";
 	public static final String JOURNAL_MEMO_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/JournalMemoUpdate";
 	
-	public static final String MEMO_VALUES="memovalues";
+	// param names in memo change events
+	public static final String MEMO_VALUES_PARAM="memovalues";
+	public static final String MEMO_ALARMID_PARAM="alarmid";
+	public static final String MEMO_BODY_PARAM="body";
+	public static final String MEMO_AUTHOR_PARAM="author";
+	public static final String MEMO_REDUCTIONKEY_PARAM="reductionkey";
 
 	EventProxy eventProxy = null;
 
@@ -89,10 +94,10 @@ public class MemosChangeNotificationClient implements NotificationClient {
 					EventBuilder eb= new EventBuilder( STICKY_MEMO_EVENT, EVENT_SOURCE_NAME);
 
 					//copy in all values as json in params
-					eb.addParam(MEMO_VALUES,memoJsonObject.toString());
-					eb.addParam("alarmid", alarmId );
-					eb.addParam("body", body );
-					eb.addParam("author", author );
+					eb.addParam(MEMO_VALUES_PARAM,memoJsonObject.toString());
+					eb.addParam(MEMO_ALARMID_PARAM, alarmId );
+					eb.addParam(MEMO_BODY_PARAM, body );
+					eb.addParam(MEMO_AUTHOR_PARAM, author );
 
 					sendEvent(eb.getEvent());
 				} else if("ReductionKeyMemo".equals(memoJsonObject.get("type").toString())) {
@@ -100,11 +105,11 @@ public class MemosChangeNotificationClient implements NotificationClient {
 					EventBuilder eb= new EventBuilder( JOURNAL_MEMO_EVENT, EVENT_SOURCE_NAME);
 
 					//copy in all values as json in params
-					eb.addParam(MEMO_VALUES,memoJsonObject.toString());
-					eb.addParam("alarmid", alarmId );
-					eb.addParam("body", body );
-					eb.addParam("author", author );
-					eb.addParam("reductionkey", reductionkey );
+					eb.addParam(MEMO_VALUES_PARAM,memoJsonObject.toString());
+					eb.addParam(MEMO_ALARMID_PARAM, alarmId );
+					eb.addParam(MEMO_BODY_PARAM, body );
+					eb.addParam(MEMO_AUTHOR_PARAM, author );
+					eb.addParam(MEMO_REDUCTIONKEY_PARAM, reductionkey );
 
 					sendEvent(eb.getEvent());
 				}

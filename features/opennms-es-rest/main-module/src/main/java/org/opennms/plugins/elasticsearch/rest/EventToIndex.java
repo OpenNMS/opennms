@@ -64,6 +64,17 @@ public class EventToIndex {
 	public static final String ALARM_CLEAR_TIME="alarmcleartime";
 	public static final String ALARM_DELETED_TIME="alarmdeletedtime";
 
+	// uei definitions of memo change events
+	public static final String STICKY_MEMO_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/StickyMemoUpdate";
+	public static final String JOURNAL_MEMO_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/JournalMemoUpdate";
+
+	// param names in memo change events
+	public static final String MEMO_VALUES_PARAM="memovalues";
+	public static final String MEMO_ALARMID_PARAM="alarmid";
+	public static final String MEMO_BODY_PARAM="body";
+	public static final String MEMO_AUTHOR_PARAM="author";
+	public static final String MEMO_REDUCTIONKEY_PARAM="reductionkey";
+
 	private boolean logEventDescription=false;
 
 	private boolean archiveRawEvents=true;
@@ -71,9 +82,9 @@ public class EventToIndex {
 	private boolean archiveAlarms=true;
 
 	private boolean archiveAlarmChangeEvents=true;
-	
+
 	private boolean archiveOldAlarmValues=true;
-	
+
 	private boolean archiveNewAlarmValues=true;
 
 	private NodeCache nodeCache=null;
@@ -139,7 +150,7 @@ public class EventToIndex {
 	public void setArchiveRawEvents(boolean archiveRawEvents) {
 		this.archiveRawEvents = archiveRawEvents;
 	}
-	
+
 	public boolean getArchiveOldAlarmValues() {
 		return archiveOldAlarmValues;
 	}
@@ -202,58 +213,69 @@ public class EventToIndex {
 
 			// if alarm change notification then handle change
 			// change alarm index and add event to alarm change event index
-			if(uei.startsWith(ALARM_NOTIFICATION_UEI_STEM)) {			
+			if(uei.startsWith(ALARM_NOTIFICATION_UEI_STEM)) {
+				if (STICKY_MEMO_EVENT.equals(uei)|| JOURNAL_MEMO_EVENT.equals(uei) ){
+                  // handle memo change events
+				  // TODO may want to create a sticky and journal memo field in alarms index and update accordingly
+				  // currently we just save the event as an event to ES with no other processing
+				  if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm MEMO Event to ES:"+event.toString());
+					
+				} else {
+					// handle alarm change events
 
-				if (ALARM_CREATED_EVENT.equals(uei)){
-					if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Created Event to ES:"+event.toString());
+					if (ALARM_CREATED_EVENT.equals(uei)){
+						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Created Event to ES:"+event.toString());
 
-				} else if( ALARM_DELETED_EVENT.equals(uei)){
-					if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Deleted Event to ES:"+event.toString());
+					} else if( ALARM_DELETED_EVENT.equals(uei)){
+						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Deleted Event to ES:"+event.toString());
 
-				} else if (ALARM_SEVERITY_CHANGED_EVENT.equals(uei)){
-					if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Changed Severity Event to ES:"+event.toString());
+					} else if (ALARM_SEVERITY_CHANGED_EVENT.equals(uei)){
+						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Changed Severity Event to ES:"+event.toString());
 
-				} else if (ALARM_CLEARED_EVENT.equals(uei)){
-					if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Cleared Event to ES:"+event.toString());
+					} else if (ALARM_CLEARED_EVENT.equals(uei)){
+						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Cleared Event to ES:"+event.toString());
 
-				} else if (ALARM_ACKNOWLEDGED_EVENT.equals(uei)){
-					if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Acknowledged Event to ES:"+event.toString());
+					} else if (ALARM_ACKNOWLEDGED_EVENT.equals(uei)){
+						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Acknowledged Event to ES:"+event.toString());
 
-				} else if (ALARM_UNACKNOWLEDGED_EVENT.equals(uei)){
-					if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Unacknowledged Event to ES:"+event.toString());
+					} else if (ALARM_UNACKNOWLEDGED_EVENT.equals(uei)){
+						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Unacknowledged Event to ES:"+event.toString());
 
-				} else if (ALARM_SUPPRESSED_EVENT.equals(uei)){
-					if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Suppressed Event to ES:"+event.toString());
+					} else if (ALARM_SUPPRESSED_EVENT.equals(uei)){
+						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Suppressed Event to ES:"+event.toString());
 
-				} else if (ALARM_UNSUPPRESSED_EVENT.equals(uei)){
-					if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Unsuppressed Event to ES:"+event.toString());
+					} else if (ALARM_UNSUPPRESSED_EVENT.equals(uei)){
+						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Unsuppressed Event to ES:"+event.toString());
 
-				} else if (ALARM_TROUBLETICKET_STATE_CHANGE_EVENT.equals(uei)){
-					if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm TroubleTicked state changed Event to ES:"+event.toString());
+					} else if (ALARM_TROUBLETICKET_STATE_CHANGE_EVENT.equals(uei)){
+						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm TroubleTicked state changed Event to ES:"+event.toString());
 
-				} else if (ALARM_CHANGED_EVENT.equals(uei)){
-					if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Changed Event to ES:"+event.toString());
+					} else if (ALARM_CHANGED_EVENT.equals(uei)){
+						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Changed Event to ES:"+event.toString());
 
-				}
-
-				if(archiveAlarms){
-					alarmUpdate = populateAlarmIndexBodyFromAlarmChangeEvent(event, ALARM_INDEX_NAME, ALARM_INDEX_TYPE);
-					if (alarmUpdate!=null){
-						alarmIndexresult = getJestClient().execute(alarmUpdate);
 					}
 
-					if(LOG.isDebugEnabled()) {
-						if (alarmIndexresult==null) {
-							LOG.debug("returned result==null");
-						} else{
-							LOG.debug("Alarm sent to es index:"+ALARM_INDEX_NAME+" type:"+ ALARM_INDEX_TYPE
-									+ "\n   received search result: "+alarmIndexresult.getJsonString()
-									+ "\n   response code:" +alarmIndexresult.getResponseCode() 
-									+ "\n   error message: "+alarmIndexresult.getErrorMessage());
+					if(archiveAlarms){
+						// if an alarm change event, use the alarm change fields to update the alarm index
+						alarmUpdate = populateAlarmIndexBodyFromAlarmChangeEvent(event, ALARM_INDEX_NAME, ALARM_INDEX_TYPE);
+						if (alarmUpdate!=null){
+							alarmIndexresult = getJestClient().execute(alarmUpdate);
+						}
+
+						if(LOG.isDebugEnabled()) {
+							if (alarmIndexresult==null) {
+								LOG.debug("returned result==null");
+							} else{
+								LOG.debug("Alarm sent to es index:"+ALARM_INDEX_NAME+" type:"+ ALARM_INDEX_TYPE
+										+ "\n   received search result: "+alarmIndexresult.getJsonString()
+										+ "\n   response code:" +alarmIndexresult.getResponseCode() 
+										+ "\n   error message: "+alarmIndexresult.getErrorMessage());
+							}
 						}
 					}
 				}
 
+				// save all Alarm Change Events including memo change events
 				if(archiveAlarmChangeEvents){
 					eventIndex = populateEventIndexBodyFromEvent(event, ALARM_EVENT_INDEX_NAME, EVENT_INDEX_TYPE);
 					eventIndexresult = getJestClient().execute(eventIndex);
@@ -270,9 +292,9 @@ public class EventToIndex {
 					}
 				}
 
-				// else handle all other event types
 			} else {
-
+				// else handle all other event types
+				
 				if(archiveRawEvents){
 					// only send events to ES which are persisted to database
 					if(event.getDbid()!=null && event.getDbid()!=0) {
@@ -351,12 +373,12 @@ public class EventToIndex {
 		for(Parm parm : event.getParmCollection()) {
 			body.put("p_" + parm.getParmName(), parm.getValue().getContent());
 		}
-		
+
 		// remove old and new alarm values parms if not needed
 		if(! archiveNewAlarmValues){
 			body.remove("p_"+OLD_ALARM_VALUES);
 		}
-		
+
 		if(! archiveOldAlarmValues){
 			body.remove("p_"+NEW_ALARM_VALUES);
 		}
