@@ -161,29 +161,21 @@ $$ LANGUAGE plpgsql;
     DECLARE 
         data json;
         notification text= '[{},{}]';
+        almid integer=0;
     
     BEGIN
-    
 /*
-        -- Convert the old or new row to JSON, based on the kind of action.
-        -- Action = DELETE?             -> OLD row
-        -- Action = INSERT or UPDATE?   -> NEW row
+       -- This selects the latest alarmid with matching stickymemo or reductionkey
 */
-        IF (TG_OP = 'DELETE') THEN
-            data = row_to_json(OLD);
-        ELSE
-            data = row_to_json(NEW);
-        END IF;
+       IF (NEW.type='Memo') THEN
+          SELECT alarmid FROM alarms WHERE stickymemo=NEW.id ORDER BY alarmid DESC LIMIT 1 INTO almid;
+       ELSE
+         SELECT alarmid FROM alarms WHERE reductionkey=NEW.reductionkey ORDER BY alarmid DESC LIMIT 1 INTO almid;
+       END IF;
+    
+       data = row_to_json(NEW);
 
-/*        
-        -- Contruct the notification as a JSON string. ( only in 9.4 not 9.2)
-        --notification = json_build_object(
-        --                  'table',TG_TABLE_NAME,
-        --                  'action', TG_OP,
-        --                  'data', data);
-*/
-       notification = data;
-       notification=CONCAT('[', data::text, ', { &quot;alarmid&quot; : &quot;1&quot;}]');
+       notification=CONCAT('[', data::text, ', { &quot;alarmid&quot; : &quot;', almid::text , '&quot;}]');
         
 /*                        
         -- Execute pg_notify(channel, notification)
