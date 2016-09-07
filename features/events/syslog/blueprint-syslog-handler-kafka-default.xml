@@ -36,7 +36,8 @@
 		<argument ref="syslogdConfig"/>
 	</bean>
 
-	<camelContext id="syslogConnectionHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
+	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
+	<camelContext id="syslogdHandlerKafkaDefaultContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerDefaultKafkaProperties" />
 
 		<route id="receiveSyslogConnectionViaKafka">

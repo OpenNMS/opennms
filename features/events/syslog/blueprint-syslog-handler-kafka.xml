@@ -23,7 +23,7 @@
 	<bean id="partitionKeyGenerator" class="org.opennms.core.camel.RandomPartitionKeyGenerator"/>
 
 	<bean id="syslogConnectionHandlerCamel" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerCamelImpl">
-		<argument value="seda:handleMessageBlueprint"/>
+		<argument value="seda:handleMessage"/>
 	</bean>
 
 	<!-- Camel Event marshalling processor -->
@@ -33,16 +33,25 @@
 	
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
 
-	<camelContext id="syslogConnectionHandler" xmlns="http://camel.apache.org/schema/blueprint">
+	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
+	<camelContext id="syslogdHandlerKafkaContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerKafkaProperties" />
-		<route id="sendSyslogViaKafka">
-			<from uri="seda:handleMessageBlueprint" />
-			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
+
+		<route id="syslogMarshal">
+			<from uri="seda:handleMessage?concurrentConsumers=4" />
+			<!-- Marshal the message to XML -->
+			<bean ref="marshaller"/>
+			<to uri="seda:sendMessage"/>
+		</route>
+
+		<route id="syslogSendKafka">
+			<from uri="seda:sendMessage?concurrentConsumers=4" />
+
+			<!-- HZN-862: Use ByteArrayPartitioner instead of this key generator -->
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
 			</setHeader>
-			<bean ref="marshaller"/>
-			
+
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
 			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>

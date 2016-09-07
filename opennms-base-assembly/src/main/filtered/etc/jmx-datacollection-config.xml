@@ -299,16 +299,6 @@
                 <attrib name="999thPercentile" alias="CasCluster1Req999" type="gauge"/>
                 <attrib name="Count" alias="CasCluster1ReqCnt" type="counter"/>
             </mbean>
-            <mbean name="org.apache.camel.context" objectname="org.apache.camel:context=org.opennms.features.events.syslog,type=context,name=&quot;syslogConnectionHandler&quot;">
-                <attrib name="ExchangesCompleted" alias="SyslogsCompleted" type="counter"/>
-                <attrib name="ExchangesFailed" alias="SyslogsFailed" type="counter"/>
-                <attrib name="ExchangesTotal" alias="SyslogsTotal" type="counter"/>
-            </mbean>
-            <mbean name="org.apache.camel.context" objectname="org.apache.camel:context=org.opennms.features.events.traps,type=context,name=&quot;trapNotificationHandler&quot;">
-                <attrib name="ExchangesCompleted" alias="TrapsCompleted" type="counter"/>
-                <attrib name="ExchangesFailed" alias="TrapsFailed" type="counter"/>
-                <attrib name="ExchangesTotal" alias="TrapsTotal" type="counter"/>
-            </mbean>
         </mbeans>
     </jmx-collection>
 </jmx-datacollection-config>

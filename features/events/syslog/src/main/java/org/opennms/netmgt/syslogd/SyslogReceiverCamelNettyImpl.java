@@ -41,6 +41,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.netty.NettyComponent;
 import org.apache.camel.component.netty.NettyConstants;
 import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.impl.DefaultManagementNameStrategy;
 import org.apache.camel.impl.SimpleRegistry;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.opennms.core.camel.DispatcherWhiteboard;
@@ -149,10 +150,16 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         //Adding netty component to camel inorder to resolve OSGi loading issues
         NettyComponent nettyComponent = new NettyComponent();
         m_camel = new DefaultCamelContext(registry);
+
         // Set the context name so that it shows up nicely in JMX
-        m_camel.setName("org.opennms.features.events.syslog.listener.camel-netty");
+        //
+        // @see org.apache.camel.management.DefaultManagementNamingStrategy
+        //
+        //m_camel.setManagementName("org.opennms.features.events.syslog.listener");
+        m_camel.setName("syslogdListenerCamelNettyContext");
+        m_camel.setManagementNameStrategy(new DefaultManagementNameStrategy(m_camel, "#name#", null));
+
         m_camel.addComponent("netty", nettyComponent);
-        
 
         try {
             m_camel.addRoutes(new RouteBuilder() {
@@ -166,6 +173,8 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                     );
                     
                     from(from)
+                    // Polled via JMX
+                    .routeId("syslogListen")
                     //.convertBodyTo(java.nio.ByteBuffer.class)
                     .process(new Processor() {
                         @Override
