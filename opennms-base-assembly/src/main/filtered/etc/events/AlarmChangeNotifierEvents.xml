@@ -179,12 +179,13 @@
     <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/StickyMemoUpdate</uei>
     <event-label>Alarm Change Notification Event : Sticky Memo Update</event-label>
     <descr>
-    &lt;p&gt;Sticky Memo Update&lt;p&gt;
-    &lt;p&gt;%parm[memovalues]%&lt;p&gt;
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Sticky Memo Update by %parm[author]%&lt;p&gt;
+    &lt;p&gt;Author          : %parm[author]%&lt;p&gt;
+    &lt;p&gt;Updated Memo    : %parm[body]%&lt;p&gt;
+    &lt;p&gt;All Memo Values : %parm[memovalues]%&lt;p&gt;
     </descr>
     <logmsg dest="logndisplay">
-    &lt;p&gt;Sticky Memo Update&lt;p&gt;
-    &lt;p&gt;%parm[memovalues]%&lt;p&gt;
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Sticky Memo Update by %parm[author]%&lt;p&gt;
     </logmsg>
     <severity>Normal</severity>
     <operinstruct></operinstruct>
@@ -194,12 +195,14 @@
     <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/JournalMemoUpdate</uei>
     <event-label>Alarm Change Notification Event : Journal Memo Update</event-label>
     <descr>
-    &lt;p&gt;Journal Memo Update&lt;p&gt;
-    &lt;p&gt;%parm[memovalues]%&lt;p&gt;
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Journal Memo Update by %parm[author]%&lt;p&gt;
+    &lt;p&gt;Author          : %parm[author]%&lt;p&gt;
+    &lt;p&gt;Updated Memo    : %parm[body]%&lt;p&gt;
+    &lt;p&gt;Reduction Key   : %parm[reductionkey]%&lt;p&gt;
+    &lt;p&gt;All Memo Values : %parm[memovalues]%&lt;p&gt;
     </descr>
     <logmsg dest="logndisplay">
-    &lt;p&gt;Journal Memo Update&lt;p&gt;
-    &lt;p&gt;%parm[memovalues]%&lt;p&gt;
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Journal Memo Update by %parm[author]%&lt;p&gt;
     </logmsg>
     <severity>Normal</severity>
     <operinstruct></operinstruct>

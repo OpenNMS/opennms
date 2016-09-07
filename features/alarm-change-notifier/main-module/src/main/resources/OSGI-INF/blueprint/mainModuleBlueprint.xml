@@ -160,7 +160,7 @@ $$ LANGUAGE plpgsql;
 
     DECLARE 
         data json;
-        notification json;
+        notification text= '[{},{}]';
     
     BEGIN
     
@@ -183,6 +183,7 @@ $$ LANGUAGE plpgsql;
         --                  'data', data);
 */
        notification = data;
+       notification=CONCAT('[', data::text, ', { &quot;alarmid&quot; : &quot;1&quot;}]');
         
 /*                        
         -- Execute pg_notify(channel, notification)

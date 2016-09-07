@@ -55,16 +55,28 @@ public class MemosChangeNotificationClient implements NotificationClient {
 			String payload = dbNotification.getPayload();
 
 			JSONObject memoJsonObject=null;
+			JSONObject alarmIdJsonObject=null;
+			String alarmId=null;
+			String body=null;
+			String author=null;
+			String reductionkey=null;
 
 			try {
 				JSONParser parser = new JSONParser();
 				Object obj;
 				obj = parser.parse(payload);
-				memoJsonObject = (JSONObject) obj;
-				LOG.debug("payload memoJsonObject.toString():" + memoJsonObject.toString());
-
+				
+				JSONArray jsonArray = (JSONArray) obj;
+				if (LOG.isDebugEnabled()) LOG.debug("payload memo jsonArray.toString():" + jsonArray.toString());
+				memoJsonObject = (JSONObject) jsonArray.get(0);
 				memoJsonObject = jsonMemoTimeNormaliser(memoJsonObject);
-
+				
+				alarmIdJsonObject = (JSONObject) jsonArray.get(1);
+				alarmId= (alarmIdJsonObject.get("alarmid")==null) ? null : alarmIdJsonObject.get("alarmid").toString();
+				body= (memoJsonObject.get("body")==null) ? null : memoJsonObject.get("body").toString();
+				author= (memoJsonObject.get("author")==null) ? null : memoJsonObject.get("author").toString();
+				reductionkey= (memoJsonObject.get("reductionkey")==null) ? null : memoJsonObject.get("reductionkey").toString();
+				
 			} catch (ParseException e1) {
 				throw new RuntimeException("cannot parse notification payload to json object. payload="+ payload, e1);
 			}
@@ -77,8 +89,10 @@ public class MemosChangeNotificationClient implements NotificationClient {
 					EventBuilder eb= new EventBuilder( STICKY_MEMO_EVENT, EVENT_SOURCE_NAME);
 
 					//copy in all values as json in params
-
 					eb.addParam(MEMO_VALUES,memoJsonObject.toString());
+					eb.addParam("alarmid", alarmId );
+					eb.addParam("body", body );
+					eb.addParam("author", author );
 
 					sendEvent(eb.getEvent());
 				} else if("ReductionKeyMemo".equals(memoJsonObject.get("type").toString())) {
@@ -86,8 +100,11 @@ public class MemosChangeNotificationClient implements NotificationClient {
 					EventBuilder eb= new EventBuilder( JOURNAL_MEMO_EVENT, EVENT_SOURCE_NAME);
 
 					//copy in all values as json in params
-
 					eb.addParam(MEMO_VALUES,memoJsonObject.toString());
+					eb.addParam("alarmid", alarmId );
+					eb.addParam("body", body );
+					eb.addParam("author", author );
+					eb.addParam("reductionkey", reductionkey );
 
 					sendEvent(eb.getEvent());
 				}
@@ -109,9 +126,7 @@ public class MemosChangeNotificationClient implements NotificationClient {
 				LOG.error("OpenNMS event proxy not set - cannot send events to opennms");
 			}
 		} catch (EventProxyException ex) {
-			throw new RuntimeException(
-					"event proxy problem sending Memo Change Event to OpenNMS:",
-					ex);
+			throw new RuntimeException(	"event proxy problem sending Memo Change Event to OpenNMS:",ex);
 		}
 	}
 
