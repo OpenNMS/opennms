@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="minion-dto")
 @XmlAccessorType(XmlAccessType.NONE)
-public class MinionDTO { // move this file to opennms.core.camel, change the name like BasicDTO ... 
+public class MinionDTO{
     
 	public static String SYSTEM_ID = "systemId";
 	public static String LOCATION = "location";

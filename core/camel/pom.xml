@@ -30,9 +30,12 @@
               org.opennms.netmgt.syslogd;resolution:=optional,
               org.opennms.minion.core.api;resolution:=optional,
               org.opennms.netmgt.snmp;resolution:=optional,
+              org.eclipse.persistence.internal.jaxb;resolution:=optional,
+              org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
               *
             </Import-Package>
-            <Export-Package>org.opennms.core.camel.*;version="${project.version}"</Export-Package>
+            <Export-Package>org.opennms.core.camel.*;version="${project.version}",org.eclipse.persistence.internal.jaxb.many.*</Export-Package>
+            
           </instructions>
         </configuration>
       </plugin>

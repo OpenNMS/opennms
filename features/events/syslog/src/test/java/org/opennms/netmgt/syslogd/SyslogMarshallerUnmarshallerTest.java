@@ -54,18 +54,9 @@ import org.opennms.netmgt.dao.api.MonitoringLocationDao;
  * @author Deepak
  */
 public class SyslogMarshallerUnmarshallerTest {
-	
-//	@XmlRootElement(name="test-me")
-//	@XmlAccessorType(XmlAccessType.FIELD)
-//	private static class TestMe {
-//		public String lets;
-//		public String make;
-//		public String an;
-//		public String object;
-//	}
 
 	@Test
-	public void testSpeed() throws Exception {
+	public void testSyslogMarshalierAndUnmarshaller() throws Exception {
 
 		// Create a mock SyslogdConfig
 		SyslogConfigBean config = new SyslogConfigBean();
@@ -76,13 +67,18 @@ public class SyslogMarshallerUnmarshallerTest {
 
 		UUID systemId = UUID.randomUUID();
 		SyslogConnection syslogConn = new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap(messageBytes), config, systemId.toString(), MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+		
+		// Map from SyslogConnection to SyslogDTO object
 		MinionDTOMapper minionDtoMapper = new MinionDTOMapper();
 		SyslogDTO syslogDto = minionDtoMapper.object2dto(syslogConn);
 		
+		// Marshall SyslogDTO
 		String marshalled = JaxbUtils.marshal(syslogDto);
 		
 		System.out.println("marshalled is : "+marshalled);
 		
+		
+		// Unmarshall SyslogDTO
 		CamelContext m_camel = new DefaultCamelContext(new SimpleRegistry());
 		JaxbUtilsUnmarshalProcessor processor = new JaxbUtilsUnmarshalProcessor(SyslogDTO.class);
 		List<Exchange> exchanges = IntStream.range(0,1).mapToObj(i -> { return new ExchangeBuilder(m_camel).withBody(marshalled).build(); }).collect(Collectors.toList());
