@@ -211,16 +211,14 @@ angular.module('onms-ksc-wizard', [
   };
 
   $http.get('rest/resources?depth=0').success(function(data) {
-    $scope.hasResources = data.resource.length > 0;
     $scope.resources = data.resource;
-    $scope.filteredResources = $scope.resources;
+    $scope.filteredResources = angular.copy($scope.resources);
     $scope.updateResources();
   });
 
   $http.get('rest/ksc').success(function(data) {
-    $scope.hasResources = data.kscReport.length > 0;
     $scope.reports = data.kscReport;
-    $scope.filteredReports = $scope.reports;
+    $scope.filteredReports = angular.copy($scope.reports);
     $scope.updateReports();
   });
 
