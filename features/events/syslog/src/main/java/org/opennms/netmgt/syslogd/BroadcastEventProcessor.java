@@ -45,10 +45,12 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 final class BroadcastEventProcessor implements EventListener {
+
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
-    
+
     @Autowired
     private SyslogdIPMgr m_syslogdIPMgr;
+
     /**
      * Create message selector to set to the subscription
      */
@@ -116,6 +118,10 @@ final class BroadcastEventProcessor implements EventListener {
             }
             LOG.debug("Reparented {} to known node list", event.getInterface());
         }
+    }
+
+    public void setSyslogdIPMgr(SyslogdIPMgr manager) {
+        m_syslogdIPMgr = manager;
     }
 
     /**
