@@ -28,51 +28,63 @@
 
 package org.opennms.netmgt.bsm.service.model.functions.reduce;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.StatusWithIndex;
 import org.opennms.netmgt.bsm.service.model.StatusWithIndices;
-import org.opennms.netmgt.bsm.service.model.functions.annotations.Function;
-import org.opennms.netmgt.bsm.service.model.functions.annotations.Parameter;
 
-@Function(name="HighestSeverityAbove", description = "Uses the highest severity greater than the given threshold severity")
-public class HighestSeverityAbove implements ReductionFunction {
+/**
+ * Utility methods for manipulating {@link StatusWithIndex} and {@link StatusWithIndices} objects.
+ *
+ * @author jwhite
+ */
+public class StatusUtils {
 
-    @Parameter(key="threshold", description = "The status value to use as threshold")
-    private Status threshold;
-
-    @Override
-    public Optional<StatusWithIndices> reduce(List<StatusWithIndex> statuses) {
-        return reduceWithHighestSeverityAbove(statuses, threshold);
+    /**
+     * Retrieves the indices with a status >= the given threshold.
+     *
+     * @param statuses
+     * @param threshold
+     * @return
+     */
+    protected static List<Integer> getIndicesWithStatusGe(List<StatusWithIndex> statuses, Status threshold) {
+        return statuses.stream()
+            .filter(si -> si.getStatus().isGreaterThanOrEqual(threshold))
+            .map(si -> si.getIndex())
+            .collect(Collectors.toList());
     }
 
-    protected static Optional<StatusWithIndices> reduceWithHighestSeverityAbove(List<StatusWithIndex> statuses, Status threshold) {
-        final Status highestSeverity = statuses.stream()
-                .map(si -> si.getStatus())
-                .filter(s -> s.isGreaterThan(threshold))
-                .reduce((a, b) -> a.isGreaterThan(b) ? a : b)
-                .orElse(null);
-        if (highestSeverity == null) {
+    /**
+     * Converts a list of {@link Status} to a list of {@link StatusWithIndex}, using
+     * the position in the array as the index.
+     *
+     * @param statuses
+     * @return
+     */
+    protected static List<StatusWithIndex> toListWithIndices(List<Status> statuses) {
+        final List<StatusWithIndex> indexedStatuses = new ArrayList<>();
+        for (int i = 0; i < statuses.size(); i++) {
+            indexedStatuses.add(new StatusWithIndex(statuses.get(i), i));
+        }
+        return indexedStatuses;
+    }
+
+    /**
+     * Retrieves the {@link Status} from a {@link StatusWithIndices}.
+     *
+     * @param si
+     * @return
+     */
+    protected static Optional<Status> getStatus(Optional<StatusWithIndices> si) {
+        if (!si.isPresent()) {
             return Optional.empty();
         } else {
-            return Optional.of(new StatusWithIndices(highestSeverity,
-                    StatusUtils.getIndicesWithStatusGe(statuses, highestSeverity)));
+            return Optional.of(si.get().getStatus());
         }
     }
 
-    public void setThreshold(Status threshold) {
-        this.threshold = Objects.requireNonNull(threshold);
-    }
-
-    public Status getThreshold() {
-        return threshold;
-    }
-
-    @Override
-    public <T> T accept(ReduceFunctionVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
 }
