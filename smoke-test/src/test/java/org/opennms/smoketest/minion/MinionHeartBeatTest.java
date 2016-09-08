@@ -35,6 +35,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import java.net.InetSocketAddress;
 import java.util.Date;
 
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -100,10 +101,10 @@ public class MinionHeartBeatTest {
 			   .pollInterval(5, SECONDS)
 			   .until(DaoUtils.countMatchingCallable(nodeDao,
 													 new CriteriaBuilder(OnmsNode.class).eq("foreignSource", "Minions@MINION")
-																						.eq("foreignId", "00000000-0000-0000-0000-000000ddba11 XXX")
-																						.eq("location.locationName", "MINION")
+																						.eq("foreignId", "00000000-0000-0000-0000-000000ddba11")
 																						.toCriteria()),
 					  equalTo(1));
 
+		Assert.assertEquals("MINION", nodeDao.get("Minions@MINION:00000000-0000-0000-0000-000000ddba11").getLocation().getLocationName());
 	}
 }
