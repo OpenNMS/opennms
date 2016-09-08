@@ -55,7 +55,6 @@ describe('Controller: NodeResourcesCtrl', function () {
     httpBackend.flush();
     console.log('Original Resources: ' + angular.toJson(scope.resources));
     console.log('Filtered Resources: ' + angular.toJson(scope.filteredResources));
-    expect(scope.reports).toEqual('all');
     expect(scope.nodeLink).toEqual('element/node.jsp?node=Test:Node');
     expect(scope.nodeLabel).toEqual('Test Node');
     expect(scope.hasResources).toEqual(true);
