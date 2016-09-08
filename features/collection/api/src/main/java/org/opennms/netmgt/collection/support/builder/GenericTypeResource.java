@@ -51,12 +51,16 @@ public class GenericTypeResource implements Resource {
 
     public GenericTypeResource(NodeLevelResource node, ResourceType resourceType, String instance) {
         m_node = Objects.requireNonNull(node, "node argument");
-        m_instance = Objects.requireNonNull(instance, "instance argument");
+        m_instance = sanitizeInstance(Objects.requireNonNull(instance, "instance argument"));
         m_resourceType = Objects.requireNonNull(resourceType, "resourceType argument");
-        m_storageStrategy = instantiateStorageStrategy(m_resourceType.getStorageStrategy().getClazz());
-        m_storageStrategy.setParameters(m_resourceType.getStorageStrategy().getParameters());
-        m_persistenceSelectorStrategy = instantiatePersistenceSelector(m_resourceType.getPersistenceSelectorStrategy().getClazz());
-        m_persistenceSelectorStrategy.setParameters(m_resourceType.getPersistenceSelectorStrategy().getParameters());
+        m_storageStrategy = instantiateStorageStrategy(resourceType.getStorageStrategy().getClazz(), resourceType.getName());
+        m_storageStrategy.setParameters(resourceType.getStorageStrategy().getParameters());
+        m_persistenceSelectorStrategy =  instantiatePersistenceSelector(resourceType.getPersistenceSelectorStrategy().getClazz());
+        m_persistenceSelectorStrategy.setParameters(resourceType.getPersistenceSelectorStrategy().getParameters());
+    }
+
+    protected static String sanitizeInstance(String instance) {
+        return instance.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_");
     }
 
     @Override
@@ -86,7 +90,7 @@ public class GenericTypeResource implements Resource {
         return m_persistenceSelectorStrategy;
     }
 
-    private StorageStrategy instantiateStorageStrategy(String className) {
+    private StorageStrategy instantiateStorageStrategy(String className, String resourceTypeName) {
         Class<?> cinst;
         try {
             cinst = Class.forName(className);
@@ -95,7 +99,7 @@ public class GenericTypeResource implements Resource {
         }
         try {
             StorageStrategy storageStrategy = (StorageStrategy) cinst.newInstance();
-            storageStrategy.setResourceTypeName(m_resourceType.getName());
+            storageStrategy.setResourceTypeName(resourceTypeName);
             return storageStrategy;
         } catch (InstantiationException e) {
             throw new ObjectRetrievalFailureException(StorageStrategy.class, className, "Could not instantiate", e);

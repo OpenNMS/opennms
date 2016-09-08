@@ -51,6 +51,12 @@ import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
+import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
+import org.opennms.netmgt.config.api.ResourceTypesDao;
+import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
+import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.config.jdbc.JdbcColumn;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollection;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
@@ -96,7 +102,7 @@ public class JdbcCollectorTest {
         CollectionSet collectionSet = collect(collection, resultSet);
         assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
         List<String> collectionSetKeys = CollectionSetUtils.flatten(collectionSet);
-        assertEquals(Arrays.asList("snmp/1/someJdbcQuery/someAlias[99,99.0]"),
+        assertEquals(Arrays.asList("snmp/1/someJdbcQuery/someAlias[null,99.0]"),
                 collectionSetKeys);
     }
 
@@ -131,15 +137,27 @@ public class JdbcCollectorTest {
         when(resultSet.getString("ts_size")).thenReturn("41").thenReturn("52");
         when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
 
+        // Define the resource type
+        ResourceType resourceType = new ResourceType();
+        resourceType.setName("pgTableSpace");
+        resourceType.setLabel("PostgreSQL Tablespace");
+        resourceType.setResourceLabel("${spcname}");
+        StorageStrategy storageStrategy = new StorageStrategy();
+        storageStrategy.setClazz(IndexStorageStrategy.class.getCanonicalName());
+        resourceType.setStorageStrategy(storageStrategy);
+        PersistenceSelectorStrategy persistenceSelectorStrategy = new PersistenceSelectorStrategy();
+        persistenceSelectorStrategy.setClazz(PersistAllSelectorStrategy.class.getCanonicalName());
+        resourceType.setPersistenceSelectorStrategy(persistenceSelectorStrategy);
+
         // Collect and verify
-        CollectionSet collectionSet = collect(collection, resultSet);
+        CollectionSet collectionSet = collect(collection, resultSet, resourceType);
         assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
         List<String> collectionSetKeys = CollectionSetUtils.flatten(collectionSet);
 
         assertEquals(Arrays.asList("snmp/1/pgTableSpace/some__name/pg_tablespace_size/spcname[some: name,null]",
-                "snmp/1/pgTableSpace/some__name/pg_tablespace_size/ts_size[41,41.0]",
+                "snmp/1/pgTableSpace/some__name/pg_tablespace_size/ts_size[null,41.0]",
                 "snmp/1/pgTableSpace/some__name/pg_tablespace_size/spcname[some: name,null]",
-                "snmp/1/pgTableSpace/some__name/pg_tablespace_size/ts_size[52,52.0]"),
+                "snmp/1/pgTableSpace/some__name/pg_tablespace_size/ts_size[null,52.0]"),
                     collectionSetKeys);
     }
 
@@ -147,7 +165,7 @@ public class JdbcCollectorTest {
         return collect(collection, null);
     }
 
-    public CollectionSet collect(JdbcDataCollection collection, ResultSet resultSet) throws Exception {
+    public CollectionSet collect(JdbcDataCollection collection, ResultSet resultSet, ResourceType...resourceTypes) throws Exception {
         final int nodeId = 1;
 
         JdbcDataCollectionConfig config = new JdbcDataCollectionConfig();
@@ -157,8 +175,14 @@ public class JdbcCollectorTest {
         when(jdbcCollectionDao.getConfig()).thenReturn(config);
         when(jdbcCollectionDao.getDataCollectionByName(null)).thenReturn(collection);
 
+        ResourceTypesDao resourceTypesDao = mock(ResourceTypesDao.class);
+        for (ResourceType resourceType : resourceTypes) {
+            when(resourceTypesDao.getResourceTypeByName(resourceType.getName())).thenReturn(resourceType);
+        }
+
         JdbcCollector jdbcCollector = new JdbcCollector();
         jdbcCollector.setJdbcCollectionDao(jdbcCollectionDao);
+        jdbcCollector.setResourceTypesDao(resourceTypesDao);
         jdbcCollector.initialize(Collections.emptyMap());
 
         CollectionAgent agent = mock(CollectionAgent.class);

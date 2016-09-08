@@ -51,7 +51,7 @@ public class JdbcColumn implements Serializable, Comparable<JdbcColumn> {
 
     @XmlAttribute(name="type", required=true)    
     private AttributeType m_dataType;
-    
+
     @XmlAttribute(name="alias", required=true)
     private String m_alias;
     
@@ -72,7 +72,7 @@ public class JdbcColumn implements Serializable, Comparable<JdbcColumn> {
     public void setDataSourceName(String dataSourceName) {
         m_dataSourceName = dataSourceName;
     }
-    
+
     @XmlTransient
     public AttributeType getDataType() {
         return m_dataType;
@@ -81,7 +81,7 @@ public class JdbcColumn implements Serializable, Comparable<JdbcColumn> {
     public void setDataType(AttributeType dataType) {
         m_dataType = dataType;
     }
-    
+
     @XmlTransient
     public String getAlias() {
         return m_alias;
