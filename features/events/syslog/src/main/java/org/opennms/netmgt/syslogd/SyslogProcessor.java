@@ -119,6 +119,13 @@ public final class SyslogProcessor implements Callable<Void> {
         return null;
     }
 
+    /**
+     * Only used for testing.
+     */
+    ConvertToEvent getConvertToEvent() {
+        return m_event;
+    }
+
     private static void sendNewSuspectEvent(String localAddr, String trapInterface) {
         EventBuilder bldr = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "syslogd");
         bldr.setInterface(addr(trapInterface));

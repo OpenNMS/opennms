@@ -31,13 +31,13 @@ package org.opennms.netmgt.syslogd;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
@@ -62,6 +62,9 @@ final class BroadcastEventProcessor implements EventListener {
 
         // interfaceDeleted
         ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
+
+        // interfaceReparented
+        ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
 
         EventIpcManagerFactory.init();
         EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);

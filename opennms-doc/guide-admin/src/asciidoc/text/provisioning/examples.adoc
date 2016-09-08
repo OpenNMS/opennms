@@ -214,7 +214,7 @@ The Policy API in Provisiond allow you to control the persistence of discovered 
 
 .Matching IP Interface Policy
 
-The Matching IP Interface policy controls whether discovered I interfaces are to be persisted and if they are to be persisted, whether or not they will be forced to be Managed or Unmanaged.
+The Matching IP Interface policy controls whether discovered interfaces are to be persisted and if they are to be persisted, whether or not they will be forced to be Managed or Unmanaged.
 
 Continuing with this example Provisioning Group, we are going to define a few policies that:
 
