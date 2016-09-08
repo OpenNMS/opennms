@@ -52,7 +52,6 @@
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="norequirejs" value="true" />
-  <jsp:param name="disableCoreWeb" value="true" />
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
   <jsp:param name="headTitle" value="Performance" />
   <jsp:param name="headTitle" value="Reports" />
