@@ -43,6 +43,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -55,6 +56,7 @@ import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
 import org.springframework.core.io.FileSystemResource;
@@ -202,11 +204,7 @@ public class NodeLevelDataOnMultipleNodesTest {
     public void executeCollectorTest(int nodeId, String ipAddress, String xmlSampleFileName, Map<String, Object> parameters, int expectedFiles) throws Exception {
         MockDocumentBuilder.setXmlFileName(xmlSampleFileName);
 
-        CollectionAgent collectionAgent = EasyMock.createMock(CollectionAgent.class);
-        EasyMock.expect(collectionAgent.getNodeId()).andReturn(nodeId).anyTimes();
-        EasyMock.expect(collectionAgent.getHostAddress()).andReturn(ipAddress).anyTimes();
-        EasyMock.expect(collectionAgent.getStorageDir()).andReturn(new File(Integer.toString(nodeId))).anyTimes();
-        EasyMock.replay(collectionAgent);
+        CollectionAgent collectionAgent = new MockCollectionAgent(nodeId, "mynode", InetAddrUtils.addr(ipAddress));
 
         m_collector.initialize(collectionAgent, parameters);
         CollectionSet collectionSet = m_collector.collect(collectionAgent, m_eventProxy, parameters);
@@ -221,7 +219,6 @@ public class NodeLevelDataOnMultipleNodesTest {
         collectionSet.visit(persister);
 
         Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(getSnmpRoot(), Integer.toString(nodeId)), new String[] { getRrdExtension() }, true).size());
-        EasyMock.verify(collectionAgent);
     }
 
     /**

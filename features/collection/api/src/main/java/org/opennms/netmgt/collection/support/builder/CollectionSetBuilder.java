@@ -154,4 +154,14 @@ public class CollectionSetBuilder {
             }
         };
     }
+
+    public int getNumResources() {
+        return m_attributesByResource.keySet().size();
+    }
+
+    public int getNumAttributes() {
+        return m_attributesByResource.values().stream()
+                    .mapToInt(attrs -> attrs.size())
+                    .sum();
+    }
 }

@@ -28,14 +28,13 @@
 
 package org.opennms.protocols.json.collector;
 
-import net.sf.json.JSONObject;
-
-import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.protocols.xml.collector.XmlCollectionResource;
-import org.opennms.protocols.xml.collector.XmlCollectionSet;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlSource;
+
+import net.sf.json.JSONObject;
 
 /**
  * The default implementation of the interface XmlCollectionHandler based on AbstractJsonCollectionHandler.
@@ -45,18 +44,13 @@ import org.opennms.protocols.xml.config.XmlSource;
  */
 public class DefaultJsonCollectionHandler extends AbstractJsonCollectionHandler {
 
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#fillCollectionSet(java.lang.String, org.opennms.protocols.xml.config.Request, org.opennms.netmgt.collection.api.CollectionAgent, org.opennms.protocols.xml.collector.XmlCollectionSet, org.opennms.protocols.xml.config.XmlSource)
-     */
     @Override
-    protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source) throws Exception {
+    protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, CollectionSetBuilder builder, XmlSource source) throws Exception {
         JSONObject json = getJSONObject(urlString, request);
-        fillCollectionSet(agent, collectionSet, source, json);
+        fillCollectionSet(agent, builder, source, json);
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#processXmlResource(org.opennms.protocols.xml.collector.XmlCollectionResource, org.opennms.netmgt.config.collector.AttributeGroupType)
-     */
-    protected void processXmlResource(XmlCollectionResource collectionResource, AttributeGroupType attribGroupType) {}
+    @Override
+    protected void processXmlResource(CollectionSetBuilder builder, Resource collectionResource, String resourceTypeName, String group) { };
 
 }

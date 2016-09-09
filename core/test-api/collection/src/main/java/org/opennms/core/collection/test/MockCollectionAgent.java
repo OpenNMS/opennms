@@ -30,6 +30,7 @@ package org.opennms.core.collection.test;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Set;
 import java.util.HashMap;
@@ -75,6 +76,12 @@ public class MockCollectionAgent implements CollectionAgent {
         this.nodeLabel = nodeLabel;
         this.foreignSource = foreignSource;
         this.foreignId = foreignId;
+        this.ipAddress = ipAddress;
+    }
+
+    public MockCollectionAgent(int nodeId, String nodeLabel, InetAddress ipAddress) {
+        this.nodeId = nodeId;
+        this.nodeLabel = nodeLabel;
         this.ipAddress = ipAddress;
     }
 
@@ -185,7 +192,11 @@ public class MockCollectionAgent implements CollectionAgent {
      */
     @Override
     public File getStorageDir() {
-        return new File("fs" + File.separator + foreignSource + File.separator + foreignId);
+        if (foreignSource != null && foreignId != null) {
+            return Paths.get("fs", foreignSource, foreignId).toFile();
+        } else {
+            return new File(Integer.toString(nodeId));
+        }
     }
 
     /* (non-Javadoc)

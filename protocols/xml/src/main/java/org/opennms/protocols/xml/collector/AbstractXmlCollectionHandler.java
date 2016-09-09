@@ -66,12 +66,15 @@ import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Entities.EscapeMode;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionResource;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
@@ -185,10 +188,9 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#collect(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.protocols.xml.config.XmlDataCollection, java.util.Map)
      */
     @Override
-    public XmlCollectionSet collect(CollectionAgent agent, XmlDataCollection collection, Map<String, Object> parameters) throws CollectionException {
-        XmlCollectionSet collectionSet = new XmlCollectionSet();
-        collectionSet.setCollectionTimestamp(new Date());
-        collectionSet.setStatus(ServiceCollector.COLLECTION_UNKNOWN);
+    public CollectionSet collect(CollectionAgent agent, XmlDataCollection collection, Map<String, Object> parameters) throws CollectionException {
+        String status = "finished";
+        CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         DateTime startTime = new DateTime();
         try {
             LOG.debug("collect: looping sources for collection {}", collection.getName());
@@ -198,16 +200,14 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
                 LOG.debug("collect: parsed url for source url '{}'", urlStr);
                 Request request = parseRequest(source.getRequest(), agent, collection.getXmlRrd().getStep());
                 LOG.debug("collect: parsed request for source url '{}' : {}", urlStr, request);
-                fillCollectionSet(urlStr, request, agent, collectionSet, source);
-                LOG.debug("collect: finished source url '{}' collection with {} resources", urlStr, collectionSet.getCollectionResources().size());
+                fillCollectionSet(urlStr, request, agent, builder, source);
+                LOG.debug("collect: finished source url '{}' collection with {} resources", urlStr, builder.getNumResources());
             }
-            collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
-            return collectionSet;
+            return builder.build();
         } catch (Exception e) {
-            collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
+            status = "failed";
             throw new CollectionException(e.getMessage(), e);
         } finally {
-            String status = collectionSet.getStatus() == ServiceCollector.COLLECTION_SUCCEEDED ? "finished" : "failed";
             DateTime endTime = new DateTime();
             LOG.debug("collect: {} collection {}: duration: {} ms", status, collection.getName(), endTime.getMillis()-startTime.getMillis());
         }
@@ -223,8 +223,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @throws XPathExpressionException the x path expression exception
      * @throws ParseException the parse exception
      */
-    protected void fillCollectionSet(CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source, Document doc) throws XPathExpressionException, ParseException {
-        XmlCollectionResource nodeResource = new XmlSingleInstanceCollectionResource(agent);
+    protected void fillCollectionSet(CollectionAgent agent, CollectionSetBuilder builder, XmlSource source, Document doc) throws XPathExpressionException, ParseException {
         NamespaceContext nc = new DocumentNamespaceResolver(doc);
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(nc);
@@ -235,27 +234,16 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             for (int j = 0; j < resourceList.getLength(); j++) {
                 Node resource = resourceList.item(j);
                 String resourceName = getResourceName(xpath, group, resource);
-                XmlCollectionResource collectionResource;
-                if (group.getResourceType().equalsIgnoreCase(CollectionResource.RESOURCE_TYPE_NODE)) {
-                    collectionResource = nodeResource;
-                } else {
-                    collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
-                }
+                final Resource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
                 LOG.debug("fillCollectionSet: processing resource {}", collectionResource);
-                AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
                 for (XmlObject object : group.getXmlObjects()) {
                     String value = (String) xpath.evaluate(object.getXpath(), resource, XPathConstants.STRING);
-                    XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
-                    collectionResource.setAttributeValue(attribType, value);
+                    builder.withAttribute(collectionResource, group.getName(), object.getName(), value, object.getDataType());
                 }
-                processXmlResource(collectionResource, attribGroupType);
-                LOG.debug("fillCollectionSet: adding collection resource {}", collectionResource);
-                collectionSet.getCollectionResources().add(collectionResource);
+                processXmlResource(builder, collectionResource, resourceName, group.getName());
             }
         }
-        XmlAttributeCounter counter = new XmlAttributeCounter();
-        collectionSet.visit(counter);
-        LOG.debug("fillCollectionSet: finishing collection set with {} resources and {} attributes on {}", collectionSet.getCollectionResources().size(), counter.getCount(), agent);
+        LOG.debug("fillCollectionSet: finishing collection set with {} resources and {} attributes on {}", builder.getNumResources(), builder.getNumAttributes(), agent);
     }
 
     /**
@@ -299,7 +287,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param source the XML source
      * @throws Exception the exception
      */
-    protected abstract void fillCollectionSet(String urlString, Request request, CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source) throws Exception;
+    protected abstract void fillCollectionSet(String urlString, Request request, CollectionAgent agent, CollectionSetBuilder builder, XmlSource source) throws Exception;
 
     /**
      * Process XML resource.
@@ -307,7 +295,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param collectionResource the collection resource
      * @param attribGroupType the attribute group type
      */
-    protected abstract void processXmlResource(XmlCollectionResource collectionResource, AttributeGroupType attribGroupType);
+    protected abstract void processXmlResource(CollectionSetBuilder builder, Resource collectionResource, String resourceTypeName, String group);
 
     /**
      * Gets the collection resource.
@@ -318,14 +306,19 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param timestamp the timestamp
      * @return the collection resource
      */
-    protected XmlCollectionResource getCollectionResource(CollectionAgent agent, String instance, String resourceType, Date timestamp) {
-        XmlResourceType type = getXmlResourceType(agent, resourceType);
-        XmlCollectionResource resource = new XmlMultiInstanceCollectionResource(agent, instance, type);
-        if (timestamp != null) {
-            LOG.debug("getCollectionResource: the date that will be used when updating the RRDs is {}", timestamp);
-            resource.setTimeKeeper(new ConstantTimeKeeper(timestamp));
+    protected Resource getCollectionResource(CollectionAgent agent, String instance, String resourceType, Date timestamp) {
+        final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
+        if (CollectionResource.RESOURCE_TYPE_NODE.equalsIgnoreCase(resourceType)) {
+            return nodeResource;
+        } else {
+            ResourceType type = getResourceType(resourceType);
+            GenericTypeResource resource = new GenericTypeResource(nodeResource, type, instance);
+            if (timestamp != null) {
+                LOG.debug("getCollectionResource: the date that will be used when updating the RRDs is {}", timestamp);
+                resource.setTimestamp(timestamp);
+            }
+            return resource;
         }
-        return resource;
     }
 
     /**
@@ -430,7 +423,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @return the string
      * @throws IllegalArgumentException the illegal argument exception
      */
-    protected String parseString(final String reference, final String unformattedString, final OnmsNode node, final String ipAddress, final Integer collectionStep) throws IllegalArgumentException {
+    protected static String parseString(final String reference, final String unformattedString, final OnmsNode node, final String ipAddress, final Integer collectionStep) throws IllegalArgumentException {
         if (unformattedString == null || node == null)
             return null;
         String formattedString = unformattedString.replaceAll("[{](?i)(ipAddr|ipAddress)[}]", ipAddress);
@@ -568,11 +561,10 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     /**
      * Gets the XML resource type.
      *
-     * @param agent the collection agent
      * @param resourceType the resource type
      * @return the XML resource type
      */
-    protected XmlResourceType getXmlResourceType(CollectionAgent agent, String resourceType) {
+    protected ResourceType getResourceType(String resourceType) {
         ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
         if (rt == null) {
             LOG.debug("getXmlResourceType: using default XML resource type strategy.");
@@ -583,7 +575,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
             rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
         }
-        return new XmlResourceType(agent, rt);
+        return rt;
     }
 
 }
