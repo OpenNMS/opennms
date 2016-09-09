@@ -104,12 +104,6 @@ public class MagicUsersMigratorOfflineIT {
         final User agalue = getUser(userInfo, "agalue");
         Assert.assertNotNull(agalue);
         Assert.assertEquals(0, agalue.getRoleCount());
-
-        final User iphone = getUser(userInfo, "iphone");
-        Assert.assertNotNull(iphone);
-        Assert.assertEquals(2, iphone.getRoleCount());
-        Assert.assertTrue(iphone.getRoleCollection().contains(Authentication.ROLE_USER));
-        Assert.assertTrue(iphone.getRoleCollection().contains(Authentication.ROLE_REST));
     }
 
     /**
