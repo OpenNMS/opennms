@@ -1345,7 +1345,7 @@ public abstract class UserManager implements UserConfig {
     }
     
     /**
-     * <p>hasRole</p>
+     * <p>hasOnCallRole</p>
      *
      * @param roleid a {@link java.lang.String} object.
      * @return a boolean.
@@ -1353,7 +1353,7 @@ public abstract class UserManager implements UserConfig {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public boolean hasRole(final String roleid) throws MarshalException, ValidationException, IOException {
+    public boolean hasOnCallRole(final String roleid) throws MarshalException, ValidationException, IOException {
         update();
 
         m_readLock.lock();

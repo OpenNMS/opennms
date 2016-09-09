@@ -620,7 +620,7 @@ public interface UserConfig {
 	String[] getUsersScheduledForRole(final String roleid, final Date time) throws MarshalException, ValidationException, IOException;
 	
 	/**
-	 * <p>hasRole</p>
+	 * <p>hasOnCallRole</p>
 	 * 
 	 * @param a String
 	 * @return a boolean
@@ -628,7 +628,7 @@ public interface UserConfig {
 	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	boolean hasRole(final String roleid) throws MarshalException, ValidationException, IOException;
+	boolean hasOnCallRole(final String roleid) throws MarshalException, ValidationException, IOException;
 	
 	/**
 	 * <p>countUsersWithRole</p>
