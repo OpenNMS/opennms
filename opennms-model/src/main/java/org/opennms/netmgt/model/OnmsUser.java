@@ -134,6 +134,7 @@ public class OnmsUser {
         .append("username", m_username)
         .append("full-name", m_fullName)
         .append("comments", m_comments)
+        .append("roles", m_roles)
         .toString();
     }
 

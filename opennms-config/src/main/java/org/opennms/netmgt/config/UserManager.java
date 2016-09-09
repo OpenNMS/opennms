@@ -184,10 +184,10 @@ public abstract class UserManager implements UserConfig {
             castorUser.setPassword(pass);
     
             if (onmsUser.getDutySchedule() != null) {
-                castorUser.setDutySchedule(onmsUser.getDutySchedule());
+                castorUser.setDutySchedule(new ArrayList<String>(onmsUser.getDutySchedule()));
             }
             if (onmsUser.getRoles() != null) {
-                castorUser.setRole(onmsUser.getRoles());
+                castorUser.setRole(new ArrayList<String>(onmsUser.getRoles()));
             }
             
             _writeUser(onmsUser.getUsername(), castorUser);

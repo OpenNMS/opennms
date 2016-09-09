@@ -182,6 +182,9 @@ public class UpdateUserServlet extends HttpServlet {
                 }
             }
 
+            // The new list of roles will override the existing one.
+            // If the new list is empty or null, that means the user should not have roles, and the existing ones should be removed.
+            newUser.getRoleCollection().clear();
             String[] configuredRoles = request.getParameterValues("configuredRoles");
             if (configuredRoles != null && configuredRoles.length > 0) {
                 newUser.getRoleCollection().clear();
