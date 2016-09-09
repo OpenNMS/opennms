@@ -124,6 +124,12 @@ public class OnmsUser {
         return m_roles;
     }
 
+    public void addRole(String role) {
+        if (!getRoles().contains(role)) {
+            getRoles().add(role);
+        }
+    }
+
     public void setRoles(List<String> roles) {
         this.m_roles = roles;
     }
