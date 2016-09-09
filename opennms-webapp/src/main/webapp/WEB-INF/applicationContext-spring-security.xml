@@ -15,6 +15,8 @@
     <!-- ack/unack/escalate/clear alarms -->
     <intercept-url pattern="/rest/alarms/**" method="PUT" access="ROLE_MOBILE,ROLE_REST,ROLE_ADMIN" />
 
+    <!-- update asset fields -->
+    <intercept-url pattern="/rest/nodes/*/assetRecord" method="PUT" access="ROLE_ASSET_EDITOR,ROLE_MOBILE,ROLE_REST,ROLE_ADMIN" />
     <!-- set/unset maintenance mode on services -->
     <intercept-url pattern="/rest/nodes/**" method="PUT" access="ROLE_MOBILE,ROLE_REST,ROLE_ADMIN" />
     <!-- set/unset maintenance mode on nodes -->
