@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,6 +47,8 @@ public abstract class WebSecurityUtils {
 	
     private static final Pattern scriptPattern = Pattern.compile("script", Pattern.CASE_INSENSITIVE);
 
+    private static final Pattern imgOnErrorPattern = Pattern.compile("img([^>]+)(onerror=[^>]+>)", Pattern.CASE_INSENSITIVE);
+
     /**
      * <p>sanitizeString</p>
      *
@@ -85,6 +87,10 @@ public abstract class WebSecurityUtils {
 
         Matcher scriptMatcher = scriptPattern.matcher(raw);
         String next = scriptMatcher.replaceAll("&#x73;cript");
+
+        Matcher imgOnErrorMatcher = imgOnErrorPattern.matcher(raw);
+        next = imgOnErrorMatcher.replaceAll("&#x69;mg$1$2");
+
         if (!allowHTML) {
             next = next.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;");
         }
