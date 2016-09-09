@@ -15,9 +15,52 @@ angular.module('onms-resources', [
   growlProvider.globalPosition('bottom-center');
 }])
 
+.filter('startFrom', function() {
+  return function(input, start) {
+    start = +start; // convert it to integer
+    if (input) {
+      return input.length < start ? input : input.slice(start);
+    }
+    return [];
+  };
+})
+
+.controller('NodeListCtrl', ['$scope', '$filter', '$http', '$window', 'growl', function($scope, $filter, $http, $window, growl) {
+
+  $scope.endUrl = 'graph/results.htm';
+  $scope.resources = [];
+  $scope.filteredResources = [];
+  $scope.pageSize = 10;
+  $scope.maxSize = 5;
+  $scope.totalItems = 0;
+  $scope.hasResources = false;
+
+  $scope.goTo = function(id) {
+    $window.location.href = 'graph/chooseresource.jsp?reports=all&parentResourceId=' + id + '&endUrl=' + $scope.endUrl;
+  };
+
+  $scope.update = function() {
+    $scope.currentPage = 1;
+    $scope.totalItems = $scope.filteredResources.length;
+    $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
+  };
+
+  $http.get('rest/resources?depth=0').success(function(data) {
+    $scope.hasResources = data.resource.length > 0;
+    $scope.resources = data.resource;
+    $scope.filteredResources = $scope.resources;
+    $scope.update();
+  });
+
+  $scope.$watch('resourceFilter', function() {
+    $scope.filteredResources = $filter('filter')($scope.resources, $scope.resourceFilter);
+    $scope.update();
+  });
+
+}])
+
 .controller('NodeResourcesCtrl', ['$scope', '$filter', '$http', '$window', 'growl', function($scope, $filter, $http, $window, growl) {
 
-  $scope.reports = 'all';
   $scope.searchQuery = undefined;
   $scope.resources = {};
   $scope.hasResources = false;
@@ -26,13 +69,17 @@ angular.module('onms-resources', [
   $scope.nodeLink = undefined;
   $scope.nodeLabel = undefined;
   $scope.url = 'graph/results.htm';
+  $scope.reports = 'all';
 
-  $scope.init = function(nodeCriteria, reports) {
+  $scope.init = function(nodeCriteria, reports, endUrl) {
     if (nodeCriteria == null || nodeCriteria == '') {
       return;
     }
     if (reports != null && reports != '') {
       $scope.reports = reports;
+    }
+    if (endUrl != null && endUrl != '') {
+      $scope.url = endUrl;
     }
     $http.get('rest/resources/fornode/'+nodeCriteria).success(function(data) {
       $scope.nodeLink = data.link;
@@ -81,7 +128,7 @@ angular.module('onms-resources', [
 
   $scope.doGraph = function(selected) {
     if (selected.length > 0) {
-      $window.location.href = $scope.url + '?reports=' + $scope.reports + '&' + selected.join('&');
+      $window.location.href = $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
     } else {
       growl.error('Please select at least one resource.');
     }

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.bsm.service.internal;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,8 +42,6 @@ import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.internal.BusinessServiceGraphImpl;
 
 import com.google.common.collect.ImmutableList;
-
-import org.junit.Assert;
 
 public class BusinessServiceCriteriaTest {
 
@@ -89,7 +89,7 @@ public class BusinessServiceCriteriaTest {
                 .order(BusinessServiceSearchCriteriaBuilder.Order.Name)
                 .asc()
                 .limit(6);
-        Assert.assertEquals(
+        assertEquals(
                 ImmutableList.<BusinessService>builder().add(bs1, bs2, bs3, bs4, bs5, bs6).build(),
                 businessServiceManager.search(b));
     }
@@ -100,7 +100,7 @@ public class BusinessServiceCriteriaTest {
                 .order(BusinessServiceSearchCriteriaBuilder.Order.Severity)
                 .desc()
                 .limit(5);
-        Assert.assertEquals(
+        assertEquals(
                 ImmutableList.<BusinessService>builder().add(bs7, bs6, bs5, bs4, bs3).build(),
                 businessServiceManager.search(b));
     }
@@ -111,7 +111,7 @@ public class BusinessServiceCriteriaTest {
                 .attribute("att1", ".*Yes")
                 .order(BusinessServiceSearchCriteriaBuilder.Order.Name)
                 .desc();
-        Assert.assertEquals(
+        assertEquals(
                 ImmutableList.<BusinessService>builder().add(bs7, bs5, bs4, bs2, bs1).build(),
                 businessServiceManager.search(b));
     }
@@ -122,7 +122,7 @@ public class BusinessServiceCriteriaTest {
                 .name(".*sG")
                 .order(BusinessServiceSearchCriteriaBuilder.Order.Name)
                 .asc();
-        Assert.assertEquals(
+        assertEquals(
                 ImmutableList.<BusinessService>builder().add(bs7).build(),
                 businessServiceManager.search(b));
     }
@@ -133,7 +133,7 @@ public class BusinessServiceCriteriaTest {
                 .greaterOrEqualSeverity(Status.WARNING)
                 .order(BusinessServiceSearchCriteriaBuilder.Order.Severity)
                 .desc();
-        Assert.assertEquals(
+        assertEquals(
                 ImmutableList.<BusinessService>builder().add(bs7, bs6, bs5, bs4).build(),
                 businessServiceManager.search(b));
     }

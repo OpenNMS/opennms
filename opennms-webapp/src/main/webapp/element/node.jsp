@@ -376,6 +376,7 @@ function confirmAssetEdit() {
               or ResourceDao --%>
     <c:url var="resourceGraphsUrl" value="graph/chooseresource.jsp">
       <c:param name="node" value="${model.id}"/>
+      <c:param name="reports" value="all"/>
     </c:url>
     <li>
       <a href="<c:out value="${resourceGraphsUrl}"/>">Resource Graphs</a>

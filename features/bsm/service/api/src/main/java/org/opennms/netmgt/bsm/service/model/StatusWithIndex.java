@@ -26,32 +26,47 @@
  *      http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.functions.reduce;
+package org.opennms.netmgt.bsm.service.model;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Objects;
 
-import java.util.Arrays;
+public class StatusWithIndex {
 
-import org.junit.Test;
-import org.opennms.netmgt.bsm.service.model.Status;
+    private final Status status;
+    private final int index;
 
-public class ThresholdTest {
-
-    @Test
-    public void verifyReduce() {
-        // Example from http://www.opennms.org/wiki/BusinessServiceMonitoring
-        assertEquals(Status.MAJOR, applyThreshold(0.75f, Status.MAJOR, Status.MAJOR, Status.CRITICAL, Status.CRITICAL, Status.WARNING));
-
-        // Another Example with higher threshold
-        assertEquals(Status.WARNING, applyThreshold(1.0f, Status.MAJOR, Status.MAJOR, Status.CRITICAL, Status.CRITICAL, Status.WARNING));
-
-        // Another Example
-        assertEquals(Status.MINOR, applyThreshold(1.0f, Status.CRITICAL, Status.MINOR));
+    public StatusWithIndex(Status status, int index) {
+        this.status = Objects.requireNonNull(status);
+        this.index = index;
     }
 
-    private Status applyThreshold(float threshold, Status...statuses) {
-        Threshold t = new Threshold();
-        t.setThreshold(threshold);
-        return t.reduce(StatusUtils.toListWithIndices(Arrays.asList(statuses))).get().getStatus();
+    public Status getStatus() {
+        return status;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(status, index);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        StatusWithIndex other = (StatusWithIndex) obj;
+        return Objects.equals(this.status, other.status)
+                && Objects.equals(this.index, other.index);
+    }
+
+    public String toString() {
+        return String.format("StatusWithIndex[status=%s, index=%s]", status, index);
     }
 }

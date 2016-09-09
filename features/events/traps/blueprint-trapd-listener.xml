@@ -23,7 +23,8 @@
         <argument value="org.opennms.netmgt.config.trapd.TrapdConfiguration" />
     </bean>
 
-    <camelContext id="trapConnectionHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
+    <!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
+    <camelContext id="trapdListenerContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
         <propertyPlaceholder id="minionproperties" location="blueprint:minionProperties" />
         <route id="restClientToTrapdConfig">
             <from uri="timer://restTrapConfigurationTimer?fixedRate=true&amp;period=60000"/>

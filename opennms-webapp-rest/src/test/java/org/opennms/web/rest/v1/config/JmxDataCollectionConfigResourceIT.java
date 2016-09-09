@@ -79,21 +79,27 @@ public class JmxDataCollectionConfigResourceIT extends AbstractSpringJerseyRestT
 
         assertNotNull(config);
 
-        assertEquals(4, config.getJmxCollectionCount());
+        assertEquals(6, config.getJmxCollectionCount());
 
-        assertEquals("jboss", config.getJmxCollection("jboss").getName());
-        assertEquals(300, config.getJmxCollection("jboss").getRrd().getStep());
-        assertEquals(4, config.getJmxCollection("jboss").getMbeanCount());
+        assertEquals("jmx-jboss", config.getJmxCollection("jmx-jboss").getName());
+        assertEquals(300, config.getJmxCollection("jmx-jboss").getRrd().getStep());
+        assertEquals(4, config.getJmxCollection("jmx-jboss").getMbeanCount());
 
         assertEquals("jsr160", config.getJmxCollection("jsr160").getName());
         assertEquals(300, config.getJmxCollection("jsr160").getRrd().getStep());
-        assertEquals(39, config.getJmxCollection("jsr160").getMbeanCount());
+        assertEquals(37, config.getJmxCollection("jsr160").getMbeanCount());
 
-        assertEquals(300, config.getJmxCollection("cassandra30x").getRrd().getStep());
-        assertEquals("cassandra30x", config.getJmxCollection("cassandra30x").getName());
+        assertEquals("jmx-minion", config.getJmxCollection("jmx-minion").getName());
+        assertEquals(300, config.getJmxCollection("jmx-minion").getRrd().getStep());
+        assertEquals(11, config.getJmxCollection("jmx-minion").getMbeanCount());
 
-        assertEquals(300, config.getJmxCollection("cassandra30x-newts").getRrd().getStep());
-        assertEquals("cassandra30x-newts", config.getJmxCollection("cassandra30x-newts").getName());
+        assertEquals("jmx-cassandra30x", config.getJmxCollection("jmx-cassandra30x").getName());
+        assertEquals(300, config.getJmxCollection("jmx-cassandra30x").getRrd().getStep());
+        assertEquals(53, config.getJmxCollection("jmx-cassandra30x").getMbeanCount());
+
+        assertEquals("jmx-cassandra30x-newts", config.getJmxCollection("jmx-cassandra30x-newts").getName());
+        assertEquals(300, config.getJmxCollection("jmx-cassandra30x-newts").getRrd().getStep());
+        assertEquals(22, config.getJmxCollection("jmx-cassandra30x-newts").getMbeanCount());
     }
 
 }

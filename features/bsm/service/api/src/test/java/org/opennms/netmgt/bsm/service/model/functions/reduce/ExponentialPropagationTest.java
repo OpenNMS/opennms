@@ -28,103 +28,99 @@
 
 package org.opennms.netmgt.bsm.service.model.functions.reduce;
 
-import com.google.common.collect.Lists;
-import org.junit.Test;
-import org.opennms.netmgt.bsm.service.model.Status;
+import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.StatusWithIndices;
 
 public class ExponentialPropagationTest {
 
     @Test
     public void testEmpty() {
-        ExponentialPropagation reduceFunction = new ExponentialPropagation();
-        reduceFunction.setBase(2.0);
-
-        assertEquals(Optional.empty(),
-                     reduceFunction.reduce(Lists.newArrayList()));
-
+        reduceAndVerify(Optional.empty(), Collections.emptyList(), 2.0);
     }
 
     @Test
     public void testSingleInput() {
-        ExponentialPropagation reduceFunction = new ExponentialPropagation();
-        reduceFunction.setBase(2.0);
+        reduceAndVerify(Optional.of(Status.NORMAL), Collections.emptyList(),
+                2.0, Status.NORMAL);
 
-        assertEquals(Optional.of(Status.NORMAL),
-                     reduceFunction.reduce(Lists.newArrayList(Status.NORMAL)));
-
-        assertEquals(Optional.of(Status.WARNING),
-                     reduceFunction.reduce(Lists.newArrayList(Status.WARNING)));
+        reduceAndVerify(Optional.of(Status.WARNING), Arrays.asList(0),
+                2.0, Status.WARNING);
     }
 
     @Test
     public void testIndeterminate() {
-        ExponentialPropagation reduceFunction = new ExponentialPropagation();
-        reduceFunction.setBase(2.0);
-
-        assertEquals(Optional.of(Status.INDETERMINATE),
-                     reduceFunction.reduce(Lists.newArrayList(Status.INDETERMINATE,
-                                                              Status.INDETERMINATE,
-                                                              Status.INDETERMINATE)));
-
+        reduceAndVerify(Optional.empty(), Collections.emptyList(),
+                2.0, Status.INDETERMINATE, Status.INDETERMINATE, Status.INDETERMINATE);
     }
 
     @Test
     public void testBaseTwo() {
-        ExponentialPropagation reduceFunction = new ExponentialPropagation();
-        reduceFunction.setBase(2.0);
+        reduceAndVerify(Optional.of(Status.NORMAL), Collections.emptyList(),
+                2.0, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL);
 
-        assertEquals(Optional.of(Status.NORMAL),
-                     reduceFunction.reduce(Lists.newArrayList(Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL)));
+        reduceAndVerify(Optional.of(Status.WARNING), Arrays.asList(0),
+                2.0, Status.WARNING, Status.NORMAL, Status.NORMAL, Status.NORMAL);
 
-        assertEquals(Optional.of(Status.WARNING),
-                     reduceFunction.reduce(Lists.newArrayList(Status.WARNING, Status.NORMAL, Status.NORMAL, Status.NORMAL)));
+        reduceAndVerify(Optional.of(Status.MINOR), Arrays.asList(0, 1),
+                2.0, Status.WARNING, Status.WARNING, Status.NORMAL, Status.NORMAL);
 
-        assertEquals(Optional.of(Status.MINOR),
-                     reduceFunction.reduce(Lists.newArrayList(Status.WARNING, Status.WARNING, Status.NORMAL, Status.NORMAL)));
+        reduceAndVerify(Optional.of(Status.MINOR), Arrays.asList(0, 1, 2),
+                2.0, Status.WARNING, Status.WARNING, Status.WARNING, Status.NORMAL);
 
-        assertEquals(Optional.of(Status.MINOR),
-                     reduceFunction.reduce(Lists.newArrayList(Status.WARNING, Status.WARNING, Status.WARNING, Status.NORMAL)));
+        reduceAndVerify(Optional.of(Status.MAJOR), Arrays.asList(0, 1, 2, 3),
+                2.0, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING);
 
-        assertEquals(Optional.of(Status.MAJOR),
-                     reduceFunction.reduce(Lists.newArrayList(Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING)));
+        reduceAndVerify(Optional.of(Status.MINOR), Arrays.asList(0, 1),
+                2.0, Status.MINOR, Status.WARNING, Status.NORMAL);
 
-
-        assertEquals(Optional.of(Status.MINOR),
-                     reduceFunction.reduce(Lists.newArrayList(Status.MINOR, Status.WARNING, Status.NORMAL)));
-
-        assertEquals(Optional.of(Status.MAJOR),
-                     reduceFunction.reduce(Lists.newArrayList(Status.MINOR, Status.WARNING, Status.WARNING)));
+        reduceAndVerify(Optional.of(Status.MAJOR), Arrays.asList(0, 1, 2),
+                2.0, Status.MINOR, Status.WARNING, Status.WARNING);
     }
 
     @Test
     public void testBaseThree() {
-        ExponentialPropagation reduceFunction = new ExponentialPropagation();
-        reduceFunction.setBase(3.0);
+        reduceAndVerify(Optional.of(Status.NORMAL), Collections.emptyList(),
+                3.0, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL);
 
-        assertEquals(Optional.of(Status.NORMAL),
-                     reduceFunction.reduce(Lists.newArrayList(Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL)));
+        reduceAndVerify(Optional.of(Status.WARNING), Arrays.asList(0),
+                3.0, Status.WARNING, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL);
 
-        assertEquals(Optional.of(Status.WARNING),
-                     reduceFunction.reduce(Lists.newArrayList(Status.WARNING, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL)));
+        reduceAndVerify(Optional.of(Status.MINOR),  Arrays.asList(0, 1, 2),
+                3.0, Status.WARNING, Status.WARNING, Status.WARNING, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL);
 
-        assertEquals(Optional.of(Status.MINOR),
-                     reduceFunction.reduce(Lists.newArrayList(Status.WARNING, Status.WARNING, Status.WARNING, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL)));
+        reduceAndVerify(Optional.of(Status.MINOR), Arrays.asList(0, 1, 2, 3),
+                3.0, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL);
 
-        assertEquals(Optional.of(Status.MINOR),
-                     reduceFunction.reduce(Lists.newArrayList(Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL, Status.NORMAL)));
+        reduceAndVerify(Optional.of(Status.MAJOR), Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8),
+                3.0, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING);
 
-        assertEquals(Optional.of(Status.MAJOR),
-                     reduceFunction.reduce(Lists.newArrayList(Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING)));
+        reduceAndVerify(Optional.of(Status.MINOR), Arrays.asList(0, 1, 2, 3, 4, 5),
+                3.0, Status.MINOR, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.NORMAL);
 
+        reduceAndVerify(Optional.of(Status.MAJOR), Arrays.asList(0, 1, 2, 3, 4, 5, 6),
+                3.0, Status.MINOR, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING);
+    }
 
-        assertEquals(Optional.of(Status.MINOR),
-                     reduceFunction.reduce(Lists.newArrayList(Status.MINOR, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.NORMAL)));
+    private void reduceAndVerify(Optional<Status> expectedStatus, List<Integer> expectedCauseIndices, double base, Status...statuses) {
+        // Reduce
+        ExponentialPropagation exp = new ExponentialPropagation();
+        exp.setBase(base);
+        Optional<StatusWithIndices> reduced = exp.reduce(StatusUtils.toListWithIndices(Arrays.asList(statuses)));
 
-        assertEquals(Optional.of(Status.MAJOR),
-                     reduceFunction.reduce(Lists.newArrayList(Status.MINOR, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING, Status.WARNING)));
+        // Verify the resulting status
+        assertEquals(expectedStatus, StatusUtils.getStatus(reduced));
+
+        // Verify the cause indices
+        if (reduced.isPresent() || expectedCauseIndices.size() > 0) {
+            assertEquals(expectedCauseIndices, reduced.get().getIndices());
+        }
     }
 }
