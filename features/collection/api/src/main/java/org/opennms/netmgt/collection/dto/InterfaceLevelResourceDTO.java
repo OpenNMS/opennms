@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collection.dto;
 
+import java.util.Date;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -48,11 +49,15 @@ public class InterfaceLevelResourceDTO {
     @XmlAttribute(name = "if-name")
     private String ifName;
 
+    @XmlAttribute(name = "timestamp")
+    private Date timestamp;
+
     public InterfaceLevelResourceDTO() { }
 
     public InterfaceLevelResourceDTO(InterfaceLevelResource resource) {
         parent = new NodeLevelResourceDTO(resource.getParent());
         ifName = resource.getIfName();
+        timestamp = resource.getTimestamp();
     }
 
     @Override
@@ -62,7 +67,7 @@ public class InterfaceLevelResourceDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(parent, ifName);
+        return Objects.hash(parent, ifName, timestamp);
     }
 
     @Override
@@ -76,10 +81,13 @@ public class InterfaceLevelResourceDTO {
         }
         InterfaceLevelResourceDTO other = (InterfaceLevelResourceDTO) obj;
         return Objects.equals(this.parent, other.parent)
-                && Objects.equals(this.ifName, other.ifName);
+                && Objects.equals(this.ifName, other.ifName)
+                && Objects.equals(this.timestamp, other.timestamp);
     }
 
     public InterfaceLevelResource toResource() {
-        return new InterfaceLevelResource(parent.toResource(), ifName);
+        final InterfaceLevelResource resource = new InterfaceLevelResource(parent.toResource(), ifName);
+        resource.setTimestamp(timestamp);
+        return resource;
     }
 }

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -38,7 +39,10 @@ import java.util.Objects;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.dto.CollectionSetDTO;
+import org.opennms.netmgt.collection.support.AbstractCollectionResource;
+import org.opennms.netmgt.collection.support.ConstantTimeKeeper;
 import org.opennms.netmgt.collection.support.NumericAttributeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,5 +121,37 @@ public class CollectionSetBuilder {
 
     public CollectionSetDTO build() {
         return new CollectionSetDTO(m_agent, m_status, m_timestamp, m_attributesByResource);
+    }
+
+    public static AbstractCollectionResource toCollectionResource(Resource resource, CollectionAgent agent) {
+        return new AbstractCollectionResource(agent) {
+            @Override
+            public String getResourceTypeName() {
+                return "*";
+            }
+
+            @Override
+            public String getInstance() {
+                return resource.getInstance();
+            }
+
+            @Override
+            public Path getPath() {
+                return super.getPath().resolve(resource.getPath(this));
+            }
+
+            @Override
+            public TimeKeeper getTimeKeeper() {
+                if (resource.getTimestamp() != null) {
+                    return new ConstantTimeKeeper(resource.getTimestamp());
+                }
+                return null;
+            }
+
+            @Override
+            public String toString() {
+                return String.format("Resource[%s]/Node[%d]", resource, m_agent.getNodeId());
+            }
+        };
     }
 }

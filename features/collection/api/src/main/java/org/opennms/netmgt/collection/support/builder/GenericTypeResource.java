@@ -41,7 +41,7 @@ import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 @XmlJavaTypeAdapter(GenericTypeResourceAdapter.class)
-public class GenericTypeResource implements Resource {
+public class GenericTypeResource extends AbstractResource {
 
     private final NodeLevelResource m_node;
     private final String m_instance;
@@ -133,7 +133,7 @@ public class GenericTypeResource implements Resource {
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_node, m_instance, m_resourceType);
+        return Objects.hash(m_node, m_instance, m_resourceType, getTimestamp());
     }
 
     @Override
@@ -148,6 +148,7 @@ public class GenericTypeResource implements Resource {
         GenericTypeResource other = (GenericTypeResource) obj;
         return Objects.equals(this.m_node, other.m_node)
                 && Objects.equals(this.m_instance, other.m_instance)
-                && Objects.equals(this.m_resourceType, other.m_resourceType);
+                && Objects.equals(this.m_resourceType, other.m_resourceType)
+                && Objects.equals(this.getTimestamp(), other.getTimestamp());
     }
 }

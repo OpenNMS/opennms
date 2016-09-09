@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collection.dto;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -56,6 +55,7 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.builder.Attribute;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.CollectionStatus;
 import org.opennms.netmgt.collection.support.builder.Resource;
 
@@ -134,28 +134,7 @@ public class CollectionSetDTO implements CollectionSet {
         final Set<CollectionResource> collectionResources = new LinkedHashSet<>();
         for (CollectionResourceDTO entry : this.collectionResources) {
             final Resource resource = entry.getResource();
-            final AbstractCollectionResource collectionResource = new AbstractCollectionResource(agent) {
-                @Override
-                public String getResourceTypeName() {
-                    return "*";
-                }
-
-                @Override
-                public String getInstance() {
-                    return resource.getInstance();
-                }
-
-                @Override
-                public Path getPath() {
-                    return super.getPath().resolve(resource.getPath(this));
-                }
-
-                @Override
-                public String toString() {
-                    return String.format("Resource[%s]/Node[%d]", resource, m_agent.getNodeId());
-                }
-            };
-
+            final AbstractCollectionResource collectionResource = CollectionSetBuilder.toCollectionResource(resource, agent);
             for (Attribute<?> attribute : entry.getAttributes()) {
                 final AttributeGroupType groupType = new AttributeGroupType(attribute.getGroup(), AttributeGroupType.IF_TYPE_ALL);
                 final AbstractCollectionAttributeType attributeType = new AbstractCollectionAttributeType(groupType) {

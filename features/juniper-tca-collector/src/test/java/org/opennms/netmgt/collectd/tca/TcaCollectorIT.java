@@ -46,6 +46,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.opennms.core.collection.test.CollectionSetUtils;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -61,7 +62,13 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
+import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.api.ResourceTypesDao;
+import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
+import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
@@ -146,6 +153,8 @@ public class TcaCollectorIT implements InitializingBean {
     @Autowired
     private FilesystemResourceStorageDao m_resourceStorageDao;
 
+    private ResourceTypesDao m_resourceTypesDao;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -206,6 +215,22 @@ public class TcaCollectorIT implements InitializingBean {
 		tcadcc.setRrdRepository(getSnmpRoot().getAbsolutePath());
 		EasyMock.expect(m_configDao.getConfig()).andReturn(tcadcc).atLeastOnce();
 		EasyMock.replay(m_configDao);
+
+		// Define the resource type
+		ResourceType resourceType = new ResourceType();
+		resourceType.setName("juniperTcaEntry");
+		resourceType.setLabel("Juniper TCA Entry");
+		resourceType.setResourceLabel("Peer ${index}");
+		StorageStrategy storageStrategy = new StorageStrategy();
+		storageStrategy.setClazz(IndexStorageStrategy.class.getCanonicalName());
+		resourceType.setStorageStrategy(storageStrategy);
+		PersistenceSelectorStrategy persistenceSelectorStrategy = new PersistenceSelectorStrategy();
+		persistenceSelectorStrategy.setClazz(PersistAllSelectorStrategy.class.getCanonicalName());
+		resourceType.setPersistenceSelectorStrategy(persistenceSelectorStrategy);
+
+		m_resourceTypesDao = EasyMock.createMock(ResourceTypesDao.class);
+		EasyMock.expect(m_resourceTypesDao.getResourceTypeByName(TcaCollectionHandler.RESOURCE_TYPE_NAME)).andReturn(resourceType).anyTimes();
+		EasyMock.replay(m_resourceTypesDao);
 	}
 
 	/**
@@ -233,6 +258,7 @@ public class TcaCollectorIT implements InitializingBean {
 		TcaCollector collector = new TcaCollector();
 		collector.setConfigDao(m_configDao);
 		collector.setResourceStorageDao(m_resourceStorageDao);
+		collector.setResourceTypesDao(m_resourceTypesDao);
 		collector.initialize(new HashMap<String,String>());
 		collector.initialize(m_collectionAgent, parameters);
 
@@ -276,8 +302,8 @@ public class TcaCollectorIT implements InitializingBean {
 		collectionSet.visit(persister);
 
 		// Validate Persisted Data
-		Path pathToJrbFile = getSnmpRoot().toPath().resolve(Paths.get("1", TcaCollectionResource.RESOURCE_TYPE_NAME,
-		        "171.19.37.60", TcaCollectionSet.INBOUND_DELAY + m_rrdStrategy.getDefaultFileExtension()));
+		Path pathToJrbFile = getSnmpRoot().toPath().resolve(Paths.get("1", TcaCollectionHandler.RESOURCE_TYPE_NAME,
+		        "171.19.37.60", TcaCollectionHandler.INBOUND_DELAY + m_rrdStrategy.getDefaultFileExtension()));
 		RrdDb jrb = new RrdDb(pathToJrbFile.toString());
 
 		// According with the Fixed Step
@@ -297,15 +323,12 @@ public class TcaCollectorIT implements InitializingBean {
 	/**
 	 * Validate collection set.
 	 * <p>Each collection set must contain:<br>
-	 * 25 Samples of each of 2 peers = 50 resources</p>
-	 * 
+	 * 25 Samples of each of 2 peers, each 5 attributes = 250 attributes</p>
+	 *
 	 * @param collectionSet the collection set
 	 */
 	private void validateCollectionSet(CollectionSet collectionSet) {
-		Assert.assertTrue(collectionSet instanceof TcaCollectionSet);
-		TcaCollectionSet tcaCollection = (TcaCollectionSet) collectionSet;
-		Assert.assertFalse(tcaCollection.getCollectionResources().isEmpty());
-		Assert.assertEquals(50, tcaCollection.getCollectionResources().size());
+		Assert.assertEquals(250, CollectionSetUtils.flatten(collectionSet).size());
 	}
 
 	public File getSnmpRoot() {

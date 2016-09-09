@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,36 +28,19 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
-import java.nio.file.Path;
 import java.util.Date;
 
-import org.opennms.netmgt.collection.api.CollectionResource;
+public abstract class AbstractResource implements Resource {
 
-public interface Resource {
+    private Date timestamp;
 
-    public Resource getParent();
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
 
-    /**
-     * Returns a unique name for the instance of this resource.
-     * Used by the {@link org.opennms.netmgt.collection.support.IndexStorageStrategy}
-     *
-     * @return instance name
-     */
-    public String getInstance();
-
-    /**
-     * Retrieves the path of the resource, relative to the repository root.
-     *
-     * @param resource Used by the {@link GenericTypeResource} in order to determine the instance name.
-     * @return relative path
-     */
-    public Path getPath(CollectionResource resource);
-
-    /**
-     * Returns the {@link Date} to use for attributes associated with this resource.
-     *
-     * @return a {@link Date} or null if the current time should be used.
-     */
-    public Date getTimestamp();
+    @Override
+    public Date getTimestamp() {
+        return timestamp;
+    }
 
 }

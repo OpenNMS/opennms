@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collection.dto;
 
+import java.util.Date;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -53,12 +54,16 @@ public class GenericTypeResourceDTO {
     @XmlAttribute(name = "instance")
     private String instance;
 
+    @XmlAttribute(name = "timestamp")
+    private Date timestamp;
+
     public GenericTypeResourceDTO() { }
 
     public GenericTypeResourceDTO(GenericTypeResource resource) {
         parent = new NodeLevelResourceDTO(resource.getParent());
         name = resource.getResourceType().getName();
         instance = resource.getInstance();
+        timestamp = resource.getTimestamp();
     }
 
     @Override
@@ -69,7 +74,7 @@ public class GenericTypeResourceDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(parent, name, instance);
+        return Objects.hash(parent, name, instance, timestamp);
     }
 
     @Override
@@ -84,11 +89,14 @@ public class GenericTypeResourceDTO {
         GenericTypeResourceDTO other = (GenericTypeResourceDTO) obj;
         return Objects.equals(this.parent, other.parent)
                 && Objects.equals(this.name, other.name)
-                && Objects.equals(this.instance, other.instance);
+                && Objects.equals(this.instance, other.instance)
+                && Objects.equals(this.timestamp, other.timestamp);
     }
 
     public GenericTypeResource toResource() {
         final ResourceType resourceType = ResourceTypeMapper.getInstance().getResourceType(name);
-        return new GenericTypeResource(parent.toResource(), resourceType, instance);
+        final GenericTypeResource resource = new GenericTypeResource(parent.toResource(), resourceType, instance);
+        resource.setTimestamp(timestamp);
+        return resource;
     }
 }
