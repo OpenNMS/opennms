@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -296,7 +296,7 @@
           </td>
         </tr>
         <tr class="severity-<%=eventSeverity%>">
-          <td colspan="6"><%=notification.getTextMessage()%></td> 
+          <td colspan="6"><%=WebSecurityUtils.sanitizeString(notification.getTextMessage())%></td> 
         </tr>
       <% } /*end for*/%>
       </table>
