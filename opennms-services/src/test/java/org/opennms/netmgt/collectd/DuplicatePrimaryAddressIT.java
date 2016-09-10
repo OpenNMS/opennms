@@ -51,6 +51,7 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.support.AbstractCollectionSet;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
@@ -317,26 +318,7 @@ public class DuplicatePrimaryAddressIT {
         @Override
         public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
             m_collectCount++;
-            CollectionSet collectionSetResult=new AbstractCollectionSet() {
-                private Date m_timestamp = new Date();
-
-                @Override
-                public int getStatus() {
-                    return ServiceCollector.COLLECTION_SUCCEEDED;
-                }
-
-                @Override
-                public void visit(CollectionSetVisitor visitor) {
-                    visitor.visitCollectionSet(this);   
-                    visitor.completeCollectionSet(this);
-                }
-
-                @Override
-                public Date getCollectionTimestamp() {
-                    return m_timestamp;
-                }
-            }; 
-            return collectionSetResult;
+            return new CollectionSetBuilder(agent).build();
         }
 
         /**

@@ -39,12 +39,9 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.opennms.core.test.ConfigurationTestUtils;
@@ -53,10 +50,9 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.support.AbstractCollectionSet;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -90,6 +86,8 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.SimpleTransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import junit.framework.TestCase;
 
 public class CollectdTest extends TestCase {
 
@@ -384,24 +382,7 @@ public class CollectdTest extends TestCase {
         
         @Override
         public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
-            return new AbstractCollectionSet() {
-                private Date m_timestamp = new Date();
-                @Override
-                public int getStatus() {
-                    return ServiceCollector.COLLECTION_SUCCEEDED;
-                }
-
-                @Override
-                public void visit(CollectionSetVisitor visitor) {
-                    visitor.visitCollectionSet(this);   
-                    visitor.completeCollectionSet(this);
-                }
-
-                @Override
-                public Date getCollectionTimestamp() {
-                    return m_timestamp;
-                }
-            };
+            return new CollectionSetBuilder(agent).build();
         }
 
         @Override

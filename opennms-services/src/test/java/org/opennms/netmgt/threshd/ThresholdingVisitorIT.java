@@ -56,6 +56,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.core.test.MockLogAppender;
@@ -77,9 +78,8 @@ import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collectd.SnmpIfData;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.CollectionSetVisitor;
-import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
@@ -1796,28 +1796,9 @@ public class ThresholdingVisitorIT {
     }
 
     private static CollectionSet createAnonymousCollectionSet(long timestamp) {
-    	final Date internalTimestamp = new Date(timestamp);
-    	return new CollectionSet() {
-			@Override
-			public void visit(CollectionSetVisitor visitor) {
-				//Nothing to do
-			}
-			
-			@Override
-			public boolean ignorePersist() {
-				return true;
-			}
-			
-			@Override
-			public int getStatus() {
-				return ServiceCollector.COLLECTION_SUCCEEDED;
-			}
-			
-			@Override
-			public Date getCollectionTimestamp() {
-				return internalTimestamp;
-			}
-		};
+        final MockCollectionAgent agent = new MockCollectionAgent(1, "node", "fs", "fid", InetAddressUtils.ONE_TWENTY_SEVEN);
+        return new CollectionSetBuilder(agent)
+            .withTimestamp(new Date(timestamp)).build();
     }
 
 }
