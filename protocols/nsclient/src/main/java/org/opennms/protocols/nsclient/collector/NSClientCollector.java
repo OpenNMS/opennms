@@ -38,20 +38,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.api.AttributeGroupType;
-import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionAttribute;
-import org.opennms.netmgt.collection.api.CollectionAttributeType;
-import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
-import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
-import org.opennms.netmgt.collection.support.AbstractCollectionResource;
-import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
+import org.opennms.netmgt.collection.support.NumericAttributeUtils;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.CollectionStatus;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.datacollction.nsclient.Attrib;
 import org.opennms.netmgt.config.datacollction.nsclient.NsclientCollection;
 import org.opennms.netmgt.config.datacollction.nsclient.Wpm;
@@ -77,99 +71,15 @@ public class NSClientCollector implements ServiceCollector {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(NSClientCollector.class);
 
-
     // Don't make this static because each service will have its own
     // copy and the key won't require the service name as part of the key.
     private final Map<Integer, NSClientAgentState> m_scheduledNodes = new HashMap<Integer, NSClientAgentState>();
 
-
-    private static class NSClientCollectionAttributeType extends AbstractCollectionAttributeType {
-        private final Attrib m_attribute;
-
-        public NSClientCollectionAttributeType(Attrib attribute, AttributeGroupType groupType) {
-            super(groupType);
-            m_attribute=attribute;
-        }
-
-        @Override
-        public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-            //Only numeric data comes back from NSClient in data collection
-            persister.persistNumericAttribute(attribute);
-        }
-
-        @Override
-        public String getName() {
-            return m_attribute.getAlias();
-        }
-
-        @Override
-        public AttributeType getType() {
-            return m_attribute.getType();
-        }
-
-    }
-    
-    private static class NSClientCollectionAttribute extends AbstractCollectionAttribute {
-
-        private final String m_value;
-        
-        public NSClientCollectionAttribute(NSClientCollectionResource resource, CollectionAttributeType attribType, String value) {
-            super(attribType, resource);
-            m_value = value;
-        }
-
-        @Override
-        public Double getNumericValue() {
-            try {
-                return Double.parseDouble(m_value);
-            } catch (NumberFormatException|NullPointerException e) {
-                return null;
-            }
-        }
-
-        @Override
-        public String getStringValue() {
-            return m_value;
-        }
-
-        @Override
-        public String toString() {
-            return "NSClientCollectionAttribute " + getName() + "=" + m_value;
-        }
-
-        @Override
-        public String getMetricIdentifier() {
-            return "Not supported yet._" + "NSC_" + getName();
-        }
-        
-    }
-    
-    private static class NSClientCollectionResource extends AbstractCollectionResource {
-         
-        public NSClientCollectionResource(CollectionAgent agent) { 
-            super(agent);
-        }
-        
-        public void setAttributeValue(CollectionAttributeType type, String value) {
-            NSClientCollectionAttribute attr = new NSClientCollectionAttribute(this, type, value);
-            addAttribute(attr);
-        }
-        
-        @Override
-        public String getResourceTypeName() {
-            return CollectionResource.RESOURCE_TYPE_NODE; //All node resources for NSClient; nothing of interface or "indexed resource" type
-        }
-        
-        @Override
-        public String getInstance() {
-            return null; //For node type resources, use the default instance
-        }
-    }
-    
     /** {@inheritDoc} */
     @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
-        int status = ServiceCollector.COLLECTION_FAILED;
+        CollectionSetBuilder builder = new CollectionSetBuilder(agent);
+        builder.withStatus(CollectionStatus.SUCCEEDED);
         final ServiceParameters serviceParams = new ServiceParameters(parameters);
         String collectionName = serviceParams.getCollectionName();
 
@@ -178,12 +88,9 @@ public class NSClientCollector implements ServiceCollector {
         NsclientCollection collection = NSClientDataCollectionConfigFactory.getInstance().getNSClientCollection(collectionName);
         NSClientAgentState agentState = m_scheduledNodes.get(agent.getNodeId());
 
-        NSClientCollectionResource collectionResource = new NSClientCollectionResource(agent);
-        SingleResourceCollectionSet collectionSet = new SingleResourceCollectionSet(collectionResource, new Date());
-
+        // All node resources for NSClient; nothing of interface or "indexed resource" type
+        NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
         for (Wpm wpm : collection.getWpms().getWpm()) {
-            //All NSClient Perfmon counters are per node
-            AttributeGroupType attribGroupType=new AttributeGroupType(wpm.getName(), AttributeGroupType.IF_TYPE_ALL);
             // A wpm consists of a list of attributes, identified by name
             if (agentState.shouldCheckAvailability(wpm.getName(), wpm.getRecheckInterval())) {
                 LOG.debug("Checking availability of group {}", wpm.getName());
@@ -228,12 +135,12 @@ public class NSClientCollector implements ServiceCollector {
                             if (result.getResultCode() != NsclientPacket.RES_STATE_OK) {
                                 LOG.info("not writing parameters for attribute '{}', state is not 'OK'", attrib.getName());
                             } else {
-                                NSClientCollectionAttributeType attribType=new NSClientCollectionAttributeType(attrib, attribGroupType);
-                                collectionResource.setAttributeValue(attribType, result.getResponse());
-                                status = ServiceCollector.COLLECTION_SUCCEEDED;
+                                // Only numeric data comes back from NSClient in data collection
+                                builder.withNumericAttribute(nodeResource, wpm.getName(), attrib.getAlias(), NumericAttributeUtils.parseNumericValue(result.getResponse()), attrib.getType());
                             }
                         }
                     }
+                    builder.withStatus(CollectionStatus.SUCCEEDED);
                     manager.close(); // Only close once all the attribs have
                                         // been done (optimizing as much as
                                         // possible with NSClient)
@@ -242,8 +149,7 @@ public class NSClientCollector implements ServiceCollector {
                 }
             }
         }
-        collectionSet.setStatus(status);
-        return collectionSet;
+        return builder.build();
     }
 
     /** {@inheritDoc} */
