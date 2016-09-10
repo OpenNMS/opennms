@@ -80,7 +80,7 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
                 userManager =  UserFactory.getInstance();
             }
         } catch (Exception e) {
-            throw new OnmsUpgradeException("Unexpected exception while parsing users.xml", e);
+            log("Error: cannot execute task because: %s", e.getMessage());
         }
     }
 
