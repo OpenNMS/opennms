@@ -47,6 +47,10 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
+import org.opennms.netmgt.collection.support.NumericAttributeUtils;
+import org.opennms.netmgt.config.datacollection.AttributeType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A fluent API for building a {@link CollectionSet}.
@@ -58,6 +62,8 @@ import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
  * @author jwhite
  */
 public class CollectionSetBuilder {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CollectionSetBuilder.class);
 
     private final CollectionAgent m_agent;
     private CollectionStatus m_status = CollectionStatus.SUCCEEDED;
@@ -84,6 +90,17 @@ public class CollectionSetBuilder {
 
     public CollectionSetBuilder withStringAttribute(Resource resource, String group, String name, String value) {
         return withAttribute(new StringAttribute(resource, group, name, value));
+    }
+
+    public CollectionSetBuilder withAttribute(Resource resource, String group, String name, String value, AttributeType type) {
+        if (value == null) {
+            LOG.info("Ignoring null value for attribute '{}' in group '{}' on resource '{}'", name, group, resource);
+            return this;
+        } else if (type.isNumeric()) {
+            return withNumericAttribute(resource, group, name, NumericAttributeUtils.parseNumericValue(value), type);
+        } else {
+            return withStringAttribute(resource, group, name, value);
+        }
     }
 
     private CollectionSetBuilder withAttribute(Attribute<?> attribute) {
