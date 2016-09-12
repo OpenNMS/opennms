@@ -12,6 +12,7 @@ angular.module('onms-search', [
 .directive('onmsSearchNodes', function() {
   return {
     restrict: 'E',
+    transclude: true,
     templateUrl: 'js/onms-search/template.nodes.html',
     controller: 'NodeSearchCtrl'
   };
@@ -20,6 +21,7 @@ angular.module('onms-search', [
 .directive('onmsSearchKsc', function() {
   return {
     restrict: 'E',
+    transclude: true,
     templateUrl: 'js/onms-search/template.ksc.html',
     controller: 'KscSearchCtrl'
   };

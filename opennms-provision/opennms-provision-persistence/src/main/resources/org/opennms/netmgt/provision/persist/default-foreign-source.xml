@@ -26,6 +26,17 @@
 			<parameter key="type" value="default"/>
 			<parameter key="ipMatch" value="127.0.0.1"/>
 		</detector>
+		<detector name="JMX-Minion" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
+			<parameter key="port" value="1299"/>
+			<parameter key="factory" value="PASSWORD-CLEAR"/>
+			<parameter key="username" value="admin"/>
+			<parameter key="password" value="admin"/>
+			<parameter key="protocol" value="rmi"/>
+			<parameter key="urlPath" value="/karaf-minion"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="retries" value="2"/>
+			<parameter key="type" value="default"/>
+		</detector>
 		<detector name="JMX-Cassandra" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
 			<parameter key="port" value="7199"/>
 			<parameter key="retries" value="2"/>

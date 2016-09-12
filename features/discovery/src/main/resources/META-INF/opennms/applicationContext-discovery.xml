@@ -93,7 +93,7 @@
 
   <onmsgi:service interface="org.opennms.netmgt.discovery.DiscoveryTaskExecutor" ref="discoveryTaskExecutorCamel"/>
 
-  <camelContext id="discoveryCamelContext" xmlns="http://camel.apache.org/schema/spring">
+  <camelContext id="discoveryContext" xmlns="http://camel.apache.org/schema/spring">
 
     <!-- Bootstrap timer -->
     <route id="startDiscoveryTimer">

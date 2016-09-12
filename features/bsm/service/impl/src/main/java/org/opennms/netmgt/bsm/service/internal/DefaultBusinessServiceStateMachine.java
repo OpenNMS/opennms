@@ -37,10 +37,12 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -57,6 +59,8 @@ import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.StatusWithIndex;
+import org.opennms.netmgt.bsm.service.model.StatusWithIndices;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ThresholdResultExplanation;
@@ -191,18 +195,27 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         }
 
         // Calculate the weighed statuses from the child edges
-        List<Status> statuses = weighStatuses(graph.getOutEdges(vertex));
+        List<StatusWithIndex> statuses = weighEdges(graph.getOutEdges(vertex));
 
         // Reduce
-        Status newStatus = vertex.getReductionFunction().reduce(statuses).orElse(MIN_SEVERITY);
+        Optional<StatusWithIndices> reducedStatus = vertex.getReductionFunction().reduce(statuses);
+
+        Status newStatus;
+        if (reducedStatus.isPresent()) {
+            newStatus = reducedStatus.get().getStatus();
+        } else {
+            newStatus = MIN_SEVERITY;
+        }
 
         // Update and propagate
         updateAndPropagateVertex(graph, vertex, newStatus);
     }
 
-    public static List<Status> weighStatuses(Collection<GraphEdge> edges) {
+    public static List<StatusWithIndex> weighEdges(Collection<GraphEdge> edges) {
         return weighStatuses(edges.stream()
-                .collect(Collectors.toMap(Function.identity(), e -> e.getStatus())));
+                .collect(Collectors.toMap(Function.identity(), e -> e.getStatus(),
+                        (u,v) -> { throw new IllegalStateException(String.format("Duplicate key %s", u)); },
+                        LinkedHashMap::new)));
     }
 
     /**
@@ -213,7 +226,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
      * @param edgesWithStatus
      * @return
      */
-    public static List<Status> weighStatuses(Map<GraphEdge, Status> edgesWithStatus) {
+    public static List<StatusWithIndex> weighStatuses(Map<GraphEdge, Status> edgesWithStatus) {
         // Find the greatest common divisor of all the weights
         int gcd = edgesWithStatus.keySet().stream()
                 .map(e -> e.getWeight())
@@ -221,12 +234,14 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                 .orElse(1);
 
         // Multiply the statuses based on their relative weight
-        List<Status> statuses = Lists.newArrayList();
+        List<StatusWithIndex> statuses = Lists.newArrayList();
+        int k = 0;
         for (Entry<GraphEdge, Status> entry : edgesWithStatus.entrySet()) {
             int relativeWeight = Math.floorDiv(entry.getKey().getWeight(), gcd);
             for (int i = 0; i < relativeWeight; i++) {
-                statuses.add(entry.getValue());
+                statuses.add(new StatusWithIndex(entry.getValue(), k));
             }
+            k++;
         }
 
         return statuses;
@@ -496,13 +511,18 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         final GraphVertex vertex = getGraph().getVertexByBusinessServiceId(businessService.getId());
 
         // Calculate the weighed statuses from the child edges
-        List<Status> statuses = weighStatuses(getGraph().getOutEdges(vertex));
+        List<StatusWithIndex> statusesWithIndices = weighEdges(getGraph().getOutEdges(vertex));
+        List<Status> statuses = statusesWithIndices.stream()
+            .map(si -> si.getStatus())
+            .collect(Collectors.toList());
 
         // Reduce
-        Status result = threshold.reduce(statuses).orElse(MIN_SEVERITY);
+        Status reducedStatus = threshold.reduce(statusesWithIndices)
+            .orElse(new StatusWithIndices(MIN_SEVERITY, Collections.emptyList()))
+            .getStatus();
 
         ThresholdResultExplanation explanation = new ThresholdResultExplanation();
-        explanation.setStatus(result);
+        explanation.setStatus(reducedStatus);
         explanation.setHitsByStatus(threshold.getHitsByStatus(statuses));
         explanation.setGraphEdges(getGraph().getOutEdges(vertex));
         explanation.setWeightStatuses(statuses);

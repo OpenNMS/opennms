@@ -33,21 +33,26 @@
 	
 	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapNotificationHandlerCamel"/>
 
-	<camelContext id="trapNotificationHandler" xmlns="http://camel.apache.org/schema/blueprint">
+	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
+	<camelContext id="trapdHandlerKafkaContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:trapdHandlerKafkaProperties" />
-		<route id="handleTrap">
-			<from uri="seda:handleMessage" />
-			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
+
+		<route id="trapMarshal">
+			<from uri="seda:handleMessage?concurrentConsumers=4" />
+			<!-- Marshal the message to XML -->
+			<!-- TODO: HZN-766: Implement this marshaller -->
+			<!-- <bean ref="marshaller"/> -->
+			<to uri="seda:sendMessage"/>
+		</route>
+
+		<route id="trapSendKafka">
+			<from uri="seda:sendMessage?concurrentConsumers=4" />
+
+			<!-- HZN-862: Use ByteArrayPartitioner instead of this key generator -->
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
 			</setHeader>
-			<!-- TODO: Implement this marshaller -->
-			<!-- <bean ref="kafkaEncoder" method="toBytes"/> -->
-			<to uri="seda:trapHandler"/>
-		</route>
-		
-		<route id="sendTrapViaKafka">
-			<from uri="seda:trapHandler"/>
+
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
 			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>

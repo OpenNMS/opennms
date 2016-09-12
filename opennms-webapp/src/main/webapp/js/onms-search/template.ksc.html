@@ -1,4 +1,4 @@
-<form class="form" role="form">
+<div class="form-group">
   <div class="input-group">
     <input type="text" class="form-control" ng-model="asyncKsc" placeholder="Type the KSC report name"
       uib-typeahead="ksc as ksc.label for ksc in getKscReports($viewValue)"
@@ -10,9 +10,9 @@
     <span class="input-group-addon">
       <span class="glyphicon glyphicon-search"></span>
     </span>
-    <i ng-show="kscLoadingNodes" class="glyphicon glyphicon-refresh"></i>
-    <p class="help-block" ng-show="nodeNoResults">
-      <i class="glyphicon glyphicon-remove"></i> No Results Found
-    </p>
   </div>
-</form>
+  <i ng-show="kscLoadingNodes" class="glyphicon glyphicon-refresh"></i>
+  <p class="help-block" ng-show="kscNoResults">
+    <i class="glyphicon glyphicon-remove"></i> No Results Found
+  </p>
+</div>

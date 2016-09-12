@@ -52,7 +52,8 @@
 
 	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=onms.broker)"/>
 
-	<camelContext id="trapNotificationHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
+	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
+	<camelContext id="trapdHandlerDefaultContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:trapHandlerDefaultProperties" />
 
 		<route id="receiveTrapConnection">
@@ -63,7 +64,7 @@
 		</route>
 
 		<route id="trapHandler">
-			<from uri="seda:trapHandler" />
+			<from uri="seda:trapHandler?concurrentConsumers=4" />
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification" />
 			<!--
 				Pass the message to the default handler which will convert it into 
