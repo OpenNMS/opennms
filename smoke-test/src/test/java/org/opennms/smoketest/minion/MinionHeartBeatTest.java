@@ -29,11 +29,13 @@ package org.opennms.smoketest.minion;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 
 import java.net.InetSocketAddress;
 import java.util.Date;
 
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -41,8 +43,12 @@ import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MinionDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.hibernate.MinionDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
+import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.utils.DaoUtils;
@@ -81,12 +87,24 @@ public class MinionHeartBeatTest {
 		InetSocketAddress pgsql = m_testEnvironment.getServiceAddress(ContainerAlias.POSTGRES, 5432);
 		HibernateDaoFactory daoFactory = new HibernateDaoFactory(pgsql);
 		MinionDao minionDao = daoFactory.getDao(MinionDaoHibernate.class);
-
-		Criteria criteria = new CriteriaBuilder(OnmsMinion.class).ge("lastUpdated", startOfTest).toCriteria();
+		NodeDao nodeDao = daoFactory.getDao(NodeDaoHibernate.class);
 
 		// The heartbeat runs every minute so if we miss the first one, poll long enough
 		// to catch the next one
-		await().atMost(90, SECONDS).pollInterval(5, SECONDS).until(DaoUtils.countMatchingCallable(minionDao, criteria), greaterThan(0));
+		await().atMost(900, SECONDS)
+			   .pollInterval(5, SECONDS)
+			   .until(DaoUtils.countMatchingCallable(minionDao,
+													 new CriteriaBuilder(OnmsMinion.class).ge("lastUpdated", startOfTest).toCriteria()),
+					  greaterThan(0));
 
+		await().atMost(90, SECONDS)
+			   .pollInterval(5, SECONDS)
+			   .until(DaoUtils.countMatchingCallable(nodeDao,
+													 new CriteriaBuilder(OnmsNode.class).eq("foreignSource", "Minions")
+																						.eq("foreignId", "00000000-0000-0000-0000-000000ddba11")
+																						.toCriteria()),
+					  equalTo(1));
+
+		Assert.assertEquals("MINION", nodeDao.get("Minions:00000000-0000-0000-0000-000000ddba11").getLocation().getLocationName());
 	}
 }
