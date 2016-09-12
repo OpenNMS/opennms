@@ -40,6 +40,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -116,6 +117,33 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
 
         minion.setLastUpdated(new Date());
         minionDao.saveOrUpdate(minion);
+
+        if (prevLocation == null) {
+            final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_ADDED_UEI,
+                    "Minion_System_Updates");
+            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
+            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
+            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, nextLocation);
+            try {
+                m_eventProxy.send(eventBuilder.getEvent());
+            } catch (final EventProxyException e) {
+                throw new DataAccessResourceFailureException("Unable to send event to Minion System ", e);
+            }
+        } else if (!prevLocation.equals(nextLocation)) {
+
+            final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_LOCATION_CHANGED_UEI,
+                    "Minion_System_Updates");
+            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
+            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
+            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_PREV_LOCATION, prevLocation);
+            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, nextLocation);
+            try {
+                m_eventProxy.send(eventBuilder.getEvent());
+            } catch (final EventProxyException e) {
+                throw new DataAccessResourceFailureException("Unable to send event to Minion System ", e);
+            }
+        }
+
     }
 
     private void provision(final OnmsMinion minion,
