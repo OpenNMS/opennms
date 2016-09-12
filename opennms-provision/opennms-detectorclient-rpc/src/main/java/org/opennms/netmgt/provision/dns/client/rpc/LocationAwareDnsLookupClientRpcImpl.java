@@ -28,10 +28,12 @@
 
 package org.opennms.netmgt.provision.dns.client.rpc;
 
+import java.net.InetAddress;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,8 +59,8 @@ public class LocationAwareDnsLookupClientRpcImpl implements LocationAwareDnsLook
     }
 
     @Override
-    public CompletableFuture<String> reverseLookup(String ipAddress, String location) {
-        return lookupExecute(ipAddress, location, QueryType.REVERSE_LOOKUP);
+    public CompletableFuture<String> reverseLookup(InetAddress ipAddress, String location) {
+        return lookupExecute(InetAddressUtils.toIpAddrString(ipAddress), location, QueryType.REVERSE_LOOKUP);
     }
 
     public RpcClient<DnsLookupRequestDTO, DnsLookupResponseDTO> getDelegate() {

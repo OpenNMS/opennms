@@ -28,12 +28,13 @@
 
 package org.opennms.netmgt.provision;
 
+import java.net.InetAddress;
 import java.util.concurrent.CompletableFuture;
 
 public interface LocationAwareDnsLookupClient {
-    
+
     CompletableFuture<String> lookup(String hostName, String location);
-    
-    CompletableFuture<String> reverseLookup(String ipAddress, String location);
+
+    CompletableFuture<String> reverseLookup(InetAddress ipAddress, String location);
 
 }

@@ -38,6 +38,7 @@ import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 
 @Command(scope = "dns", name = "reverse-lookup", description = "DNS reverse lookup for the specified ipaddress")
 public class DnsReverseLookup extends OsgiCommandSupport {
@@ -52,7 +53,7 @@ public class DnsReverseLookup extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-        final CompletableFuture<String> future = client.reverseLookup(ipAddress, m_location);
+        final CompletableFuture<String> future = client.reverseLookup(InetAddrUtils.addr(ipAddress), m_location);
         while (true) {
             try {
                 try {
