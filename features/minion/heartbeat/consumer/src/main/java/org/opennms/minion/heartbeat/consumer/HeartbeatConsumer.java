@@ -64,7 +64,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
     private static final Logger LOG = LoggerFactory.getLogger(HeartbeatConsumer.class);
 
     private static final boolean PROVISIONING = Boolean.valueOf(System.getProperty("opennms.minion.provisioning", "true"));
-    private static final String PROVISIONING_FOREIGN_SOURCE_PATTERN = System.getProperty("opennms.minion.provisioning.foreignSourcePattern", "Minions@%s");
+    private static final String PROVISIONING_FOREIGN_SOURCE_PATTERN = System.getProperty("opennms.minion.provisioning.foreignSourcePattern", "Minions");
 
     private static final HeartbeatModule heartbeatModule = new HeartbeatModule();
 

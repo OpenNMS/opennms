@@ -100,11 +100,11 @@ public class MinionHeartBeatTest {
 		await().atMost(90, SECONDS)
 			   .pollInterval(5, SECONDS)
 			   .until(DaoUtils.countMatchingCallable(nodeDao,
-													 new CriteriaBuilder(OnmsNode.class).eq("foreignSource", "Minions@MINION")
+													 new CriteriaBuilder(OnmsNode.class).eq("foreignSource", "Minions")
 																						.eq("foreignId", "00000000-0000-0000-0000-000000ddba11")
 																						.toCriteria()),
 					  equalTo(1));
 
-		Assert.assertEquals("MINION", nodeDao.get("Minions@MINION:00000000-0000-0000-0000-000000ddba11").getLocation().getLocationName());
+		Assert.assertEquals("MINION", nodeDao.get("Minions:00000000-0000-0000-0000-000000ddba11").getLocation().getLocationName());
 	}
 }
