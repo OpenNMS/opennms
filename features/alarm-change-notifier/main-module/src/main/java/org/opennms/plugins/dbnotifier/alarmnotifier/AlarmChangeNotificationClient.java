@@ -44,6 +44,7 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 	public static final String ALARM_UNSUPPRESSED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmUnSuppressed";
 	public static final String ALARM_TROUBLETICKET_STATE_CHANGE_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/TroubleTicketStateChange";
 	public static final String ALARM_CHANGED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmChanged";
+	public static final String ALARM_STICKYMEMO_ADD_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/StickyMemoAdded";
 
 	public static final String OLD_ALARM_VALUES="oldalarmvalues";
 	public static final String NEW_ALARM_VALUES="newalarmvalues";
@@ -276,7 +277,23 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 							sendEvent(eb.getEvent());
 						}
 
-						// TODO alarm sticky note changed
+						// alarm sticky note changed notification
+						String oldstickymemo= (oldJsonObject.get("stickymemo")==null) ? null : oldJsonObject.get("stickymemo").toString();
+						String newstickymemo= (newJsonObject.get("stickymemo")==null) ? null : newJsonObject.get("stickymemo").toString();
+
+						if ( (newstickymemo!=null && ! newstickymemo.equals(oldstickymemo)) ) {
+							if (LOG.isDebugEnabled()) LOG.debug("Sticky memo added for alarmid="+oldJsonObject.get("alarmid")
+									+" newstickymemo="+newstickymemo);
+							EventBuilder eb= jsonAlarmToEventBuilder(newJsonObject, 
+									new EventBuilder( ALARM_STICKYMEMO_ADD_EVENT, EVENT_SOURCE_NAME));
+							eb.addParam("stickymemo",newstickymemo);
+
+							//copy in all values as json in params
+							eb.addParam(OLD_ALARM_VALUES,oldJsonObject.toString());
+							eb.addParam(NEW_ALARM_VALUES,newJsonObject.toString());
+
+							sendEvent(eb.getEvent());
+						}
 
 						// send alarm changed event for any other changes not captured above
 						newobj.remove("severity");
@@ -293,6 +310,9 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 						oldobj.remove("tticketid");
 						newobj.remove("tticketstate");
 						oldobj.remove("tticketstate");
+						newobj.remove("stickymemo");
+						oldobj.remove("stickymemo");
+						
 						if (! newobj.toString().equals(oldobj.toString())) {
 
 							EventBuilder eb= jsonAlarmToEventBuilder(oldJsonObject, 
