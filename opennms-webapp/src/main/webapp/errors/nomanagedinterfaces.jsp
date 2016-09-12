@@ -33,22 +33,11 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
-	import="org.opennms.web.admin.nodeManagement.*"
+	import="org.opennms.web.admin.nodeManagement.*, org.opennms.web.utils.ExceptionUtils"
 %>
 
 <%
-     NoManagedInterfacesException nmie = null;
-    
-    if( exception instanceof NoManagedInterfacesException ) {
-        nmie = (NoManagedInterfacesException)exception;
-    }
-    else if( exception instanceof ServletException ) {
-        nmie = (NoManagedInterfacesException)((ServletException)exception).getRootCause();
-    }
-    else {
-        throw new ServletException( "This error page does not handle this exception type.", exception );
-    }
-    
+    NoManagedInterfacesException nmie = ExceptionUtils.getRootCause(exception, NoManagedInterfacesException.class);
 %>
 
 
