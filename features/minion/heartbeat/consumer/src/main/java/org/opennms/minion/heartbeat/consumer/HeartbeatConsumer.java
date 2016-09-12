@@ -120,19 +120,19 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
 
         if (prevLocation == null) {
             final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_ADDED_UEI,
-                    "Minion_System_Updates");
+                    "Monitoring_System_Updates");
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, nextLocation);
             try {
                 m_eventProxy.send(eventBuilder.getEvent());
             } catch (final EventProxyException e) {
-                throw new DataAccessResourceFailureException("Unable to send event to Minion System ", e);
+                throw new DataAccessResourceFailureException("Unable to send event", e);
             }
         } else if (!prevLocation.equals(nextLocation)) {
 
             final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_LOCATION_CHANGED_UEI,
-                    "Minion_System_Updates");
+                    "Monitoring_System_Updates");
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_PREV_LOCATION, prevLocation);
@@ -140,7 +140,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
             try {
                 m_eventProxy.send(eventBuilder.getEvent());
             } catch (final EventProxyException e) {
-                throw new DataAccessResourceFailureException("Unable to send event to Minion System ", e);
+                throw new DataAccessResourceFailureException("Unable to send event", e);
             }
         }
 
