@@ -47,7 +47,7 @@ public abstract class WebSecurityUtils {
 	
     private static final Pattern scriptPattern = Pattern.compile("script", Pattern.CASE_INSENSITIVE);
 
-    private static final Pattern imgOnErrorPattern = Pattern.compile("img([^>]+)(onerror=[^>]+>)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern imgOnErrorPattern = Pattern.compile("(img[^>]+)o(nerror=[^>]+>)", Pattern.CASE_INSENSITIVE);
 
     /**
      * <p>sanitizeString</p>
@@ -88,8 +88,8 @@ public abstract class WebSecurityUtils {
         Matcher scriptMatcher = scriptPattern.matcher(raw);
         String next = scriptMatcher.replaceAll("&#x73;cript");
 
-        Matcher imgOnErrorMatcher = imgOnErrorPattern.matcher(raw);
-        next = imgOnErrorMatcher.replaceAll("&#x69;mg$1$2");
+        Matcher imgOnErrorMatcher = imgOnErrorPattern.matcher(next);
+        next = imgOnErrorMatcher.replaceAll("$1&#x6f;$2");
 
         if (!allowHTML) {
             next = next.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;");
