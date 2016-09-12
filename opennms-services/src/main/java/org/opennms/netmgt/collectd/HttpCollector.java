@@ -67,8 +67,6 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -172,7 +170,7 @@ public class HttpCollector implements ServiceCollector {
             }
             HttpCollection collection = HttpCollectionConfigFactory.getInstance().getHttpCollection(collectionName);
             m_collectionResourceList = new ArrayList<HttpCollectionResource>();
-            List<Uri> uriDefs = collection.getUris().getUriCollection();
+            List<Uri> uriDefs = collection.getUris().getUri();
             for (Uri uriDef : uriDefs) {
                 m_uriDef = uriDef;
                 HttpCollectionResource collectionResource = new HttpCollectionResource(m_agent, uriDef);
@@ -389,28 +387,28 @@ public class HttpCollector implements ServiceCollector {
         LOG.debug("getmatches = {}", collectionSet.getUriDef().getUrl().getMatches());
         List<HttpCollectionAttribute> butes = new LinkedList<HttpCollectionAttribute>();
         int flags = 0;
-        if (collectionSet.getUriDef().getUrl().getCanonicalEquivalence()) {
+        if (collectionSet.getUriDef().getUrl().isCanonicalEquivalence()) {
             flags |= Pattern.CANON_EQ;
         }
-        if (collectionSet.getUriDef().getUrl().getCaseInsensitive()) {
+        if (collectionSet.getUriDef().getUrl().isCaseInsensitive()) {
             flags |= Pattern.CASE_INSENSITIVE;
         }
-        if (collectionSet.getUriDef().getUrl().getComments()) {
+        if (collectionSet.getUriDef().getUrl().isComments()) {
             flags |= Pattern.COMMENTS;
         }
-        if (collectionSet.getUriDef().getUrl().getDotall()) {
+        if (collectionSet.getUriDef().getUrl().isDotall()) {
             flags |= Pattern.DOTALL;
         }
-        if (collectionSet.getUriDef().getUrl().getLiteral()) {
+        if (collectionSet.getUriDef().getUrl().isLiteral()) {
             flags |= Pattern.LITERAL;
         }
-        if (collectionSet.getUriDef().getUrl().getMultiline()) {
+        if (collectionSet.getUriDef().getUrl().isMultiline()) {
             flags |= Pattern.MULTILINE;
         }
-        if (collectionSet.getUriDef().getUrl().getUnicodeCase()) {
+        if (collectionSet.getUriDef().getUrl().isUnicodeCase()) {
             flags |= Pattern.UNICODE_CASE;
         }
-        if (collectionSet.getUriDef().getUrl().getUnixLines()) {
+        if (collectionSet.getUriDef().getUrl().isUnixLines()) {
             flags |= Pattern.UNIX_LINES;
         }
         LOG.debug("flags = {}", flags);
@@ -420,7 +418,7 @@ public class HttpCollector implements ServiceCollector {
         final boolean matches = m.matches();
         if (matches) {
             LOG.debug("processResponse: found matching attributes: {}", matches);
-            final List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttribCollection();
+            final List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttrib();
             final AttributeGroupType groupType = new AttributeGroupType(collectionSet.getUriDef().getName(), AttributeGroupType.IF_TYPE_ALL);
 
             final List<Locale> locales = new ArrayList<Locale>();
@@ -616,7 +614,7 @@ public class HttpCollector implements ServiceCollector {
         if (collectionSet.getUriDef().getUrl().getParameters() == null) {
             return retval;
         }
-        List<Parameter> parameters = collectionSet.getUriDef().getUrl().getParameters().getParameterCollection();
+        List<Parameter> parameters = collectionSet.getUriDef().getUrl().getParameters().getParameter();
         for (Parameter p : parameters) {
             retval.add(new BasicNameValuePair(p.getKey(), p.getValue()));
         }
@@ -673,12 +671,6 @@ public class HttpCollector implements ServiceCollector {
         try {
             LOG.debug("initialize: Initializing collector: {}", HttpCollector.class.getSimpleName());
             HttpCollectionConfigFactory.init();
-        } catch (MarshalException e) {
-            LOG.error("initialize: Error marshalling configuration.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            LOG.error("initialize: Error validating configuration.", e);
-            throw new UndeclaredThrowableException(e);
         } catch (FileNotFoundException e) {
             LOG.error("initialize: Error locating configuration.", e);
             throw new UndeclaredThrowableException(e);
