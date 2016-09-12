@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,10 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.service;
+package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
+import java.util.concurrent.CompletableFuture;
 
-public interface HostnameResolver {
-    public String getHostname(final InetAddress addr, final String location);
+public interface LocationAwareDnsLookupClient {
+
+    CompletableFuture<String> lookup(String hostName, String location);
+
+    CompletableFuture<String> reverseLookup(InetAddress ipAddress, String location);
+
 }

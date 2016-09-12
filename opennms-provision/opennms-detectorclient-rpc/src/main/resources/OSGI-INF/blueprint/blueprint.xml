@@ -19,4 +19,7 @@
     </bean>
     <service ref="detectorRpcModule" interface="org.opennms.core.rpc.api.RpcModule" />
 
+    <bean id="dnsLookupRpcModule" class="org.opennms.netmgt.provision.dns.client.rpc.DnsLookupClientRpcModule" />
+    <service ref="dnsLookupRpcModule" interface="org.opennms.core.rpc.api.RpcModule" />
+
 </blueprint>
