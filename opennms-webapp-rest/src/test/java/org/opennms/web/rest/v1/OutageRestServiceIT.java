@@ -208,6 +208,25 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
         LOG.debug(json);
         restObject = new JSONObject(json);
         assertEquals(3, restObject.getJSONArray("outage").length());
+
+        // Check serviceRegainedEvent filters
+        jsonRequest = createRequest(m_context, GET, "/outages");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("comparator=lt&serviceRegainedEvent.eventSeverity=2"); // OnmsSeverity.CLEARED
+        json = sendRequest(jsonRequest, 200);
+        LOG.debug(json);
+        // There is one test outage that has been resolved
+        restObject = new JSONObject(json);
+        assertEquals(1, restObject.getJSONArray("outage").length());
+
+        jsonRequest = createRequest(m_context, GET, "/outages");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("comparator=like&serviceRegainedEvent.eventLogMsg=Test%25");
+        json = sendRequest(jsonRequest, 200);
+        LOG.debug(json);
+        // There is one test outage that has been resolved
+        restObject = new JSONObject(json);
+        assertEquals(1, restObject.getJSONArray("outage").length());
     }
 
     @Test
