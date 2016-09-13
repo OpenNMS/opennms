@@ -120,6 +120,10 @@ public class ProvisioningTest extends OpenNMSSeleniumTestCase {
         findElementByXpath("//a[text() = 'Add Service']").click();
         setTreeFieldsAndSave("nodeEditForm", select("serviceName", "HTTP-8980"));
 
+        // add the interface service
+        findElementByXpath("//a[text() = 'Add Service']").click();
+        setTreeFieldsAndSave("nodeEditForm", select("serviceName", "ICMP"));
+
         findElementByXpath("//input[@value='Done']").click();
         findElementByXpath("//input[@value='Synchronize']").click();
 
