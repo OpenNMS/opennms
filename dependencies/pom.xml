@@ -39,6 +39,7 @@
     <module>liquibase</module>
     <module>mina</module>
     <module>netty</module>
+    <module>owasp-encoder</module>
     <module>pax-exam</module>
     <module>quartz</module>
     <module>rancid</module>

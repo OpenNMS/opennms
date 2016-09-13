@@ -1139,6 +1139,7 @@
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>4.3.1</osgiVersion>
     <osgiEnterpriseVersion>4.2.0</osgiEnterpriseVersion>
+    <owaspEncoderVersion>1.2</owaspEncoderVersion>
     <slf4jVersion>1.7.7</slf4jVersion>
     <springJaxbVersion>2.1.7</springJaxbVersion>
     <xalanVersion>2.7.2</xalanVersion>
@@ -2436,6 +2437,12 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>tracker-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>owasp-encoder-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>

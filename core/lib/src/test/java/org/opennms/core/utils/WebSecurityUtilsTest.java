@@ -52,8 +52,8 @@ public class WebSecurityUtilsTest {
 		script = WebSecurityUtils.sanitizeString(script);
 		imgXss = WebSecurityUtils.sanitizeString(imgXss);
 		html = WebSecurityUtils.sanitizeString(html);
-		assertEquals("Script is sanitized", "&lt;&#x73;cript&gt;foo&lt;/&#x73;cript&gt;", script);
-		assertEquals("IMG XSS is sanitized", "&lt;img src=/ &#x6f;nerror=&quot;alert('XSS');&quot;&gt;&lt;/img&gt;", imgXss);
+		assertEquals("Script is sanitized", "&lt;script&gt;foo&lt;/script&gt;", script);
+		assertEquals("IMG XSS is sanitized", "&lt;img src=/ onerror=\"alert('XSS');\"&gt;&lt;/img&gt;", imgXss);
 		assertEquals("Html is sanitized", "&lt;table&gt;", html);
 	}
 

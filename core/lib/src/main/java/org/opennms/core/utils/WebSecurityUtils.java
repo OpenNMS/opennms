@@ -31,6 +31,8 @@ package org.opennms.core.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.owasp.encoder.Encode;
+
 /**
  * <p>WebSecurityUtils class.</p>
  *
@@ -84,15 +86,16 @@ public abstract class WebSecurityUtils {
         if (raw==null || raw.length()==0) {
             return raw;
         }
+        String next;
 
-        Matcher scriptMatcher = scriptPattern.matcher(raw);
-        String next = scriptMatcher.replaceAll("&#x73;cript");
+        if (allowHTML) {
+            Matcher scriptMatcher = scriptPattern.matcher(raw);
+            next = scriptMatcher.replaceAll("&#x73;cript");
 
-        Matcher imgOnErrorMatcher = imgOnErrorPattern.matcher(next);
-        next = imgOnErrorMatcher.replaceAll("$1&#x6f;$2");
-
-        if (!allowHTML) {
-            next = next.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;");
+            Matcher imgOnErrorMatcher = imgOnErrorPattern.matcher(next);
+            next = imgOnErrorMatcher.replaceAll("$1&#x6f;$2");
+        } else {
+            next = Encode.forHtmlContent(raw);
         }
         return next;
     }
