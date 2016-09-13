@@ -19,7 +19,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
         <configuration>
           <target>1.8</target>
           <source>1.8</source>
@@ -29,7 +28,6 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.5.3</version>
         <extensions>true</extensions>
         <configuration>
           <instructions>
@@ -83,19 +81,16 @@
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
       <artifactId>org.apache.karaf.shell.console</artifactId>
-      <version>2.2.11</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
-      <version>4.2.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.compendium</artifactId>
-      <version>4.2.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -148,21 +143,18 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
-      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.api</artifactId>
-      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
-      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
 

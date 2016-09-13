@@ -148,94 +148,35 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- logging dependencies. Note slf4j is used in karaf. log4j is only used in tests -->
-      <!-- <dependency> -->
-      <!-- <groupId>org.apache.logging.log4j</groupId> -->
-      <!-- <artifactId>log4j-api</artifactId> -->
-      <!-- <version>${log4j2Version}</version> -->
-      <!-- </dependency> -->
-      <!-- <dependency> -->
-      <!-- <groupId>org.apache.logging.log4j</groupId> -->
-      <!-- <artifactId>log4j-core</artifactId> -->
-      <!-- <version>${log4j2Version}</version> -->
-      <!-- </dependency> -->
-      <!-- <dependency> -->
-      <!-- <groupId>org.apache.logging.log4j</groupId> -->
-      <!-- <artifactId>log4j-1.2-api</artifactId> -->
-      <!-- <version>${log4j2Version}</version> -->
-      <!-- </dependency> -->
-      <!-- <dependency> -->
-      <!-- <groupId>org.apache.logging.log4j</groupId> -->
-      <!-- <artifactId>log4j-slf4j-impl</artifactId> -->
-      <!-- <version>${log4j2Version}</version> -->
-      <!-- </dependency> -->
-      <!-- <dependency> -->
-      <!-- <groupId>org.slf4j</groupId> -->
-      <!-- <artifactId>slf4j-api</artifactId> -->
-      <!-- <version>${slf4jVersion}</version> -->
-      <!-- </dependency> -->
-
-      <!-- <dependency> -->
-      <!-- <groupId>junit</groupId> -->
-      <!-- <artifactId>junit</artifactId> -->
-      <!-- <version>${junitVersion}</version> -->
-      <!-- </dependency> -->
 
     </dependencies>
 
 
   </dependencyManagement>
 
-  <!-- <repositories> -->
-  <!-- <repository> -->
-  <!-- <snapshots> -->
-  <!-- <enabled>false</enabled> -->
-  <!-- </snapshots> -->
-  <!-- <releases> -->
-  <!-- <enabled>true</enabled> -->
-  <!-- </releases> -->
-  <!-- <id>opennms-repo</id> -->
-  <!-- <name>OpenNMS Repository</name> -->
-  <!-- <url>http://maven.opennms.org/content/groups/opennms.org-release</url> -->
-  <!-- </repository> -->
-  <!-- <repository> -->
-  <!-- <id>opennms-snapshots</id> -->
-  <!-- <name>OpenNMS Snapshot Maven Repository</name> -->
-  <!-- <snapshots> -->
-  <!-- <enabled>true</enabled> -->
-  <!-- </snapshots> -->
-  <!-- <releases> -->
-  <!-- <enabled>false</enabled> -->
-  <!-- </releases> -->
-  <!-- <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url> -->
-  <!-- </repository> -->
-  <!-- </repositories> -->
-
-  <!-- <pluginRepositories> -->
-  <!-- <pluginRepository> -->
-  <!-- <snapshots> -->
-  <!-- <enabled>false</enabled> -->
-  <!-- </snapshots> -->
-  <!-- <releases> -->
-  <!-- <enabled>true</enabled> -->
-  <!-- </releases> -->
-  <!-- <id>opennms-repo</id> -->
-  <!-- <name>OpenNMS Repository</name> -->
-  <!-- <url>http://maven.opennms.org/content/groups/opennms.org-release</url> -->
-  <!-- </pluginRepository> -->
-  <!-- </pluginRepositories> -->
-
-  <!-- Change this to match your repo for the licenced product modules (i.e. containing the authenticator) -->
-
-  <!-- <distributionManagement> -->
-  <!-- <repository> -->
-  <!-- <id>osgi-licenced-products</id> -->
-  <!-- <url>http://devel2.entimoss.org:8081/nexus/content/repositories/osgi-licenced-products</url> -->
-  <!-- </repository> -->
-  <!-- <snapshotRepository> -->
-  <!-- <id>osgi-licenced-products-snapshots</id> -->
-  <!-- <url>http://devel2.entimoss.org:8081/nexus/content/repositories/osgi-licenced-products-snapshots</url> -->
-  <!-- </snapshotRepository> -->
-  <!-- </distributionManagement> -->
+  <repositories>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+    <repository>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Snapshot Maven Repository</name>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+    </repository>
+  </repositories>
 
 </project>
