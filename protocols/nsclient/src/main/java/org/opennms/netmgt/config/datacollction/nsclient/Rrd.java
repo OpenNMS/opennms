@@ -26,11 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.nsclient;
+package org.opennms.netmgt.config.datacollction.nsclient;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Objects;
@@ -45,8 +48,16 @@ import java.util.Objects;
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="begin" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="end" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="rra" maxOccurs="unbounded"&gt;
+ *           &lt;simpleType&gt;
+ *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
+ *               &lt;pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/&gt;
+ *             &lt;/restriction&gt;
+ *           &lt;/simpleType&gt;
+ *         &lt;/element&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="step" use="required" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -55,75 +66,74 @@ import java.util.Objects;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "range")
-public class Range {
+@XmlType(name = "", propOrder = {
+    "rra"
+})
+@XmlRootElement(name = "rrd")
+public class Rrd {
 
-    @XmlAttribute(name = "begin", required = true)
-    protected String begin;
-    @XmlAttribute(name = "end", required = true)
-    protected String end;
+    @XmlElement(required = true)
+    protected List<String> rra;
+    @XmlAttribute(name = "step", required = true)
+    protected int step;
 
     /**
-     * Gets the value of the begin property.
+     * Gets the value of the rra property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the rra property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRra().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link String }
+     * 
+     * 
      */
-    public String getBegin() {
-        return begin;
+    public List<String> getRra() {
+        if (rra == null) {
+            rra = new ArrayList<String>();
+        }
+        return this.rra;
     }
 
     /**
-     * Sets the value of the begin property.
+     * Gets the value of the step property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
      */
-    public void setBegin(String value) {
-        this.begin = value;
+    public int getStep() {
+        return step;
     }
 
     /**
-     * Gets the value of the end property.
+     * Sets the value of the step property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
      */
-    public String getEnd() {
-        return end;
-    }
-
-    /**
-     * Sets the value of the end property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setEnd(String value) {
-        this.end = value;
+    public void setStep(int value) {
+        this.step = value;
     }
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof Range)) {
+        if (!(other instanceof Rrd)) {
             return false;
         }
-        Range castOther = (Range) other;
-        return Objects.equals(begin, castOther.begin) && Objects.equals(end, castOther.end);
+        Rrd castOther = (Rrd) other;
+        return Objects.equals(rra, castOther.rra) && Objects.equals(step, castOther.step);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(begin, end);
+        return Objects.hash(rra, step);
     }
 
 }

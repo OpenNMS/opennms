@@ -26,11 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.nsclient;
+package org.opennms.netmgt.config.datacollction.nsclient;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Objects;
@@ -45,8 +46,11 @@ import java.util.Objects;
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="begin" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="end" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://xmlns.opennms.org/xsd/config/nsclient-datacollection}rrd"/&gt;
+ *         &lt;element ref="{http://xmlns.opennms.org/xsd/config/nsclient-datacollection}wpms"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -55,75 +59,105 @@ import java.util.Objects;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "range")
-public class Range {
+@XmlType(name = "", propOrder = {
+    "rrd",
+    "wpms"
+})
+@XmlRootElement(name = "nsclient-collection")
+public class NsclientCollection {
 
-    @XmlAttribute(name = "begin", required = true)
-    protected String begin;
-    @XmlAttribute(name = "end", required = true)
-    protected String end;
+    @XmlElement(required = true)
+    protected Rrd rrd;
+    @XmlElement(required = true)
+    protected Wpms wpms;
+    @XmlAttribute(name = "name", required = true)
+    protected String name;
 
     /**
-     * Gets the value of the begin property.
+     * Gets the value of the rrd property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Rrd }
+     *     
+     */
+    public Rrd getRrd() {
+        return rrd;
+    }
+
+    /**
+     * Sets the value of the rrd property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Rrd }
+     *     
+     */
+    public void setRrd(Rrd value) {
+        this.rrd = value;
+    }
+
+    /**
+     * Gets the value of the wpms property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Wpms }
+     *     
+     */
+    public Wpms getWpms() {
+        return wpms;
+    }
+
+    /**
+     * Sets the value of the wpms property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Wpms }
+     *     
+     */
+    public void setWpms(Wpms value) {
+        this.wpms = value;
+    }
+
+    /**
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getBegin() {
-        return begin;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the begin property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setBegin(String value) {
-        this.begin = value;
-    }
-
-    /**
-     * Gets the value of the end property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEnd() {
-        return end;
-    }
-
-    /**
-     * Sets the value of the end property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setEnd(String value) {
-        this.end = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof Range)) {
+        if (!(other instanceof NsclientCollection)) {
             return false;
         }
-        Range castOther = (Range) other;
-        return Objects.equals(begin, castOther.begin) && Objects.equals(end, castOther.end);
+        NsclientCollection castOther = (NsclientCollection) other;
+        return Objects.equals(rrd, castOther.rrd) && Objects.equals(wpms, castOther.wpms)
+                && Objects.equals(name, castOther.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(begin, end);
+        return Objects.hash(rrd, wpms, name);
     }
 
 }
