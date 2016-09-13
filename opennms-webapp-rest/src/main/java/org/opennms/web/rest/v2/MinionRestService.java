@@ -103,7 +103,7 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String>
         Response response = super.delete(id);
 
         final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_DELETED_UEI,
-                "Monitoring_System_Updates");
+                "OpenNMS.WebUI");
         eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
         eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, id);
         eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, location);

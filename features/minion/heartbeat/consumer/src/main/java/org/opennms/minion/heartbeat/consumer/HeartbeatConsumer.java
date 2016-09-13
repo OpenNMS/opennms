@@ -120,7 +120,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
 
         if (prevLocation == null) {
             final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_ADDED_UEI,
-                    "Monitoring_System_Updates");
+                    "OpenNMS.Minion.Heartbeat");
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, nextLocation);
@@ -132,7 +132,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
         } else if (!prevLocation.equals(nextLocation)) {
 
             final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_LOCATION_CHANGED_UEI,
-                    "Monitoring_System_Updates");
+                    "OpenNMS.Minion.Heartbeat");
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_PREV_LOCATION, prevLocation);

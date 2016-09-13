@@ -2082,22 +2082,22 @@
    <event>
     <uei>uei.opennms.org/internal/monitoringSystemAdded</uei>
     <event-label>Monitoring system Added</event-label>
-    <descr> New monitoring system has been added </descr>
-    <logmsg dest="logndisplay">New monitoring System of type '%parm[monitoringSystemType]%' has been added with Id : %parm[monitoringSystemId]% at location '%parm[monitoringSystemLocation]%' </logmsg>
+    <descr> A new monitoring system has been added </descr>
+    <logmsg dest="logndisplay">A new monitoring system of type '%parm[monitoringSystemType]%' has been added with ID '%parm[monitoringSystemId]%' at location '%parm[monitoringSystemLocation]%'. </logmsg>
     <severity>Normal</severity>
   </event>
   <event>
     <uei>uei.opennms.org/internal/monitoringSystemLocationChanged</uei>
     <event-label>Monitoring system Location Changed</event-label>
     <descr> Monitoring system location changed</descr>
-    <logmsg dest="logndisplay"> Monitoring System of type '%parm[monitoringSystemType]%' with Id : %parm[monitoringSystemId]% has changed its location from '%parm[monitoringSystemPreviousLocation]%'  to  '%parm[monitoringSystemLocation]%' </logmsg>
+    <logmsg dest="logndisplay"> Monitoring system of type '%parm[monitoringSystemType]%' with ID '%parm[monitoringSystemId]%' has changed its location from '%parm[monitoringSystemPreviousLocation]%'  to  '%parm[monitoringSystemLocation]%'. </logmsg>
     <severity>Normal</severity>
   </event>
     <event>
     <uei>uei.opennms.org/internal/monitoringSystemDeleted</uei>
     <event-label>Monitoring system Deleted</event-label>
     <descr> Monitoring system Deleted</descr>
-    <logmsg dest="logndisplay"> Monitoring System of type '%parm[monitoringSystemType]%' with Id : %parm[monitoringSystemId]% at location '%parm[monitoringSystemLocation]%' has been deleted </logmsg>
+    <logmsg dest="logndisplay"> Monitoring system of type '%parm[monitoringSystemType]%' with ID '%parm[monitoringSystemId]%' at location '%parm[monitoringSystemLocation]%' has been deleted. </logmsg>
     <severity>Normal</severity>
   </event>
 </events>
