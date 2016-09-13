@@ -454,5 +454,26 @@
         </exclusion>
       </exclusions> 
     </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>alarm-change-notifier</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>opennms-es-rest</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>internal-plugins-descriptor</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 </project>
