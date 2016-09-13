@@ -2093,4 +2093,11 @@
     <logmsg dest="logndisplay"> Monitoring System of type '%parm[monitoringSystemType]%' with Id : %parm[monitoringSystemId]% has changed its location from '%parm[monitoringSystemPreviousLocation]%'  to  '%parm[monitoringSystemLocation]%' </logmsg>
     <severity>Normal</severity>
   </event>
+    <event>
+    <uei>uei.opennms.org/internal/monitoringSystemDeleted</uei>
+    <event-label>Monitoring system Deleted</event-label>
+    <descr> Monitoring system Deleted</descr>
+    <logmsg dest="logndisplay"> Monitoring System of type '%parm[monitoringSystemType]%' with Id : %parm[monitoringSystemId]% at location '%parm[monitoringSystemLocation]%' has been deleted </logmsg>
+    <severity>Normal</severity>
+  </event>
 </events>
