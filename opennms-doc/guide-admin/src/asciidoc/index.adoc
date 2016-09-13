@@ -200,13 +200,13 @@ include::text/operation/newts/configuration.adoc[]
 include::text/operation/newts/cassandra-jmx.adoc[]
 include::text/operation/newts/cassandra-newts-jmx.adoc[]
 
-[[ga-opennms-system-properties]]
-== System Properties
-include::text/system-properties/introduction.adoc[]
-
 [[ga-opennms-operation-daemon-config-files]]
 === Daemon Configuration Files
 include::text/operation/daemon-config-files/notifd.adoc[]
+
+[[ga-opennms-system-properties]]
+== System Properties
+include::text/system-properties/introduction.adoc[]
 
 [[ga-ticketing]]
 == Ticketing
