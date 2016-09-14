@@ -64,6 +64,12 @@ public class sun_sockaddr_in6 extends Structure {
              new byte[] {(byte)(0xff & (port >> 8)), (byte)(0xff & port)});
     }
 
+    public sun_sockaddr_in6(final int port) {
+        this(NativeDatagramSocket.AF_INET6, 
+             new byte[16], 
+             new byte[] {(byte)(0xff & (port >> 8)), (byte)(0xff & port)});
+    }
+
     @Override
     protected List<String> getFieldOrder() {
         return Arrays.asList(new String[] {"sin6_family", "sin6_port", "sin6_flowinfo", "sin6_addr", "sin6_scope_id", "__sin6_src_id"});

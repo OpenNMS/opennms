@@ -8,17 +8,7 @@
                 http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd
         ">
 
-        <bean id="jni6Pinger" class="org.opennms.netmgt.icmp.jni6.Jni6Pinger" />
-
-    	<service interface="org.opennms.netmgt.icmp.Pinger" ref="jni6Pinger" ranking="110" >
-			<service-properties>
-				<entry key="type">
-					<value type="java.lang.String">jni6</value>
-				</entry>
-			</service-properties>
-        </service>
-
-        <bean id="pingerFactory" class="org.opennms.netmgt.icmp.jni6.Jni6PingerFactory" />
-        <service interface="org.opennms.netmgt.icmp.PingerFactory" ref="pingerFactory" ranking="110"/>
+        <bean id="pingerFactory" class="org.opennms.netmgt.icmp.PingerFactoryImpl" />
+        <service interface="org.opennms.netmgt.icmp.PingerFactory" ref="pingerFactory" ranking="1"/>
 
 </blueprint>

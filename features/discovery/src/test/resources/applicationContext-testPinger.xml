@@ -19,6 +19,7 @@
   <context:annotation-config />
   <tx:annotation-driven/>
 
+  <bean id="pingerFactory" class="org.opennms.netmgt.discovery.TestPingerFactory"/>
   <bean id="pinger" class="org.opennms.netmgt.discovery.TestPinger"/>
 
 </beans>

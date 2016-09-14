@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.icmp.jna;
 
+import java.io.IOException;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.icmp.EchoPacket;
@@ -108,5 +109,15 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
 	public void onPingReply(final InetAddress address, final EchoPacket packet) {
         m_callback.handleReply(new JnaPingReply(address, packet));
 	}
+
+        public void setTrafficClass(int tc) throws IOException {
+            m_v4.getPingSocket().setTrafficClass(tc);
+            m_v6.getPingSocket().setTrafficClass(tc);
+        }
+
+        public void setAllowFragmentation(boolean allow) throws IOException {
+            m_v4.getPingSocket().allowFragmentation(allow);
+            m_v6.getPingSocket().allowFragmentation(allow);
+        }
 
 }

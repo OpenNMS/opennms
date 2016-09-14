@@ -72,6 +72,8 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.icmp.PingerFactoryImpl;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
@@ -98,7 +100,13 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
     @SuppressWarnings( "rawtypes" )
     @Override
     protected void addServicesOnStartup( Map<String, KeyValueHolder<Object, Dictionary>> services ) {
-        services.put( Pinger.class.getName(), new KeyValueHolder<Object, Dictionary>(new TestPinger(), new Properties()));
+        final PingerFactoryImpl pingerFactory = new PingerFactoryImpl();
+        final Pinger pinger = new TestPinger();
+        pingerFactory.setInstance(0, true, pinger);
+
+        services.put( PingerFactory.class.getName(), new KeyValueHolder<Object, Dictionary>(pingerFactory, new Properties()));
+
+        services.put( Pinger.class.getName(), new KeyValueHolder<Object, Dictionary>(pinger, new Properties()));
 
         services.put( EventForwarder.class.getName(),
                 new KeyValueHolder<Object, Dictionary>( IPC_MANAGER_INSTANCE, new Properties() ) );
@@ -174,7 +182,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
         mockDiscoverer.start();
 
         final String ipAddress = "4.2.2.2";
-        final String foreignSource = "Bogus FS";
+        final String foreignSource = "testDiscover";
         final String location = LOCATION;
 
         EventAnticipator anticipator = IPC_MANAGER_INSTANCE.getEventAnticipator();
@@ -238,7 +246,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
 
                         Message out = exchange.getOut();
                         DiscoveryResults results = new DiscoveryResults(
-                            Collections.singletonMap(InetAddressUtils.addr("4.2.2.2"), 1000L),
+                            Collections.singletonMap(InetAddressUtils.addr("4.2.2.3"), 1000L),
                             foreignSource,
                             location
                         );
@@ -250,8 +258,8 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
 
         mockDiscoverer.start();
 
-        final String ipAddress = "4.2.2.2";
-        final String foreignSource = "Bogus FS";
+        final String ipAddress = "4.2.2.3";
+        final String foreignSource = "testDiscoverToTestTimeout";
         final String location = LOCATION;
 
         // Create the config aka job

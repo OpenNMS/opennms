@@ -29,12 +29,18 @@
 package org.opennms.core.test.camel;
 
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
+import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.icmp.PingerFactoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CamelBlueprintTest extends CamelBlueprintTestSupport {
+    private static final Logger LOG = LoggerFactory.getLogger(CamelBlueprintTest.class);
 
     /**
-     * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
-     * 
+     * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug. Also, make sure
+     * the PingerFactory is reset so DSCP/fragment bits are cleared.
+     *
      * @see https://issues.apache.org/jira/browse/ARIES-1051
      * @see https://access.redhat.com/site/solutions/640943
      */
@@ -42,6 +48,14 @@ public class CamelBlueprintTest extends CamelBlueprintTestSupport {
     public void doPreSetup() throws Exception {
         System.setProperty( "org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString() );
         System.setProperty( "de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString() );
+        try {
+            final PingerFactory pingerFactory = getOsgiService(PingerFactory.class, 2000);
+            if (pingerFactory instanceof PingerFactoryImpl) {
+                ((PingerFactoryImpl) pingerFactory).reset();
+            }
+        } catch (final Exception e) {
+            LOG.warn("Failed to get PingerFactory", e);
+        }
     }
 
     @Override

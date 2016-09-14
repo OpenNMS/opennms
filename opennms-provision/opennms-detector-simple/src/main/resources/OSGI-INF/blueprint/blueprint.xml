@@ -10,7 +10,7 @@
 ">
 
 	<!-- Pinger service -->
-	<reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
+	<reference id="pingerFactory" interface="org.opennms.netmgt.icmp.PingerFactory" />
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.netmgt.provision.detector.snmp.BgpSessionDetectorFactory" />
@@ -18,7 +18,7 @@
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.netmgt.provision.detector.icmp.IcmpDetectorFactory" >
-			<property name="pinger" ref="pinger"/>
+			<property name="pingerFactory" ref="pingerFactory"/>
 		</bean>
 	</service>
 

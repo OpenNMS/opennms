@@ -41,6 +41,12 @@ public class NullPinger implements Pinger {
     }
 
     @Override
+    public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval, int size) throws Exception {
+        LOG.trace("parallel-ping: host={}, count={}, timeout={}, interval={}, size={}", host, count, timeout, pingInterval, size);
+        throw UNSUPPORTED;
+    }
+
+    @Override
     public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception {
         LOG.trace("parallel-ping: host={}, count={}, timeout={}, interval={}", host, count, timeout, pingInterval);
         throw UNSUPPORTED;
@@ -66,6 +72,16 @@ public class NullPinger implements Pinger {
     public boolean isV6Available() {
         LOG.info("isV6Available() called, lying and saying 'true'");
         return true;
+    }
+
+    @Override
+    public void setTrafficClass(final int tc) throws Exception {
+        LOG.warn("NullPinger cannot set traffic class.  Ignoring.");
+    }
+
+    @Override
+    public void setAllowFragmentation(final boolean allow) throws Exception {
+        LOG.warn("NullPinger cannot set fragmentation.  Ignoring.");
     }
 
 }

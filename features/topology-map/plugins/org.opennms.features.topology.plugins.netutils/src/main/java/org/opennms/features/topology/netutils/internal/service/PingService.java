@@ -34,6 +34,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 
 /**
  * Helper class to execute ping operations using the {@link Pinger}.
@@ -48,12 +49,12 @@ public class PingService {
 
     private final ExecutorService executor = Executors.newFixedThreadPool(1);
 
-    private final Pinger pinger;
+    private final PingerFactory pingerFactory;
 
     private Future<Void> currentFuture;
 
-    public PingService(Pinger pinger) {
-        this.pinger = Objects.requireNonNull(pinger);
+    public PingService(final PingerFactory pingerFactory) {
+        this.pingerFactory = Objects.requireNonNull(pingerFactory);
     }
 
     public void cancel() {
@@ -70,6 +71,7 @@ public class PingService {
         final PingServiceResponseCallback callback = new PingServiceResponseCallback(pingRequest, uiCallback);
 
         currentFuture = executor.submit(() -> {
+            final Pinger pinger = pingerFactory.getInstance();
             for (int sequenceId = 1; sequenceId <= pingRequest.getNumberRequests(); sequenceId++) {
                 pinger.ping(
                         pingRequest.getInetAddress(),
