@@ -29,6 +29,7 @@
 package org.opennms.minion.heartbeat.consumer;
 
 import com.google.common.collect.Sets;
+
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -125,7 +126,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
             final Requisition prevRequisition = this.deployedForeignSourceRepository.getRequisition(prevForeignSource);
             if (prevRequisition != null && prevRequisition.getNode(minion.getId()) != null) {
                 prevRequisition.deleteNode(minion.getId());
-                prevRequisition.setDate(new Date());
+                prevRequisition.updateDateStamp();
 
                 deployedForeignSourceRepository.save(prevRequisition);
                 deployedForeignSourceRepository.flush();
@@ -137,7 +138,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
         Requisition nextRequisition = deployedForeignSourceRepository.getRequisition(nextForeignSource);
         if (nextRequisition == null) {
             nextRequisition = new Requisition(nextForeignSource);
-            nextRequisition.setDate(new Date());
+            nextRequisition.updateDateStamp();
 
             // We have to save the requisition before we can alter the according foreign source definition
             deployedForeignSourceRepository.save(nextRequisition);
