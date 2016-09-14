@@ -240,10 +240,7 @@
     <logmsg dest='logndisplay'>Generic AlarmChangeNotifier Alarm Raise %parm[testParam]%</logmsg>
     <severity>Minor</severity>
     <operinstruct></operinstruct>
-    <alarm-data reduction-key="%uei%:%nodeid%:%interface%:%parm[testParam]%" alarm-type="1" auto-clean="false">
-      <update-field field-name="severity" update-on-reduction="true" />
-      <update-field field-name="logmsg" update-on-reduction="true" />
-    </alarm-data>
+    <alarm-data reduction-key="%uei%:%nodeid%:%interface%:%parm[testParam]%" alarm-type="1" auto-clean="false" />
   </event>
 
   <event>
