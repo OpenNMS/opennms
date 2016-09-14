@@ -106,7 +106,11 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
      */
     public static boolean compareSnmpV3UsersMap(Map<String, SnmpV3User> existingSnmpV3UserMap, Map<String, SnmpV3User> updatedSnmpV3Usermap) {
 
-        if (existingSnmpV3UserMap.isEmpty() || updatedSnmpV3Usermap.isEmpty()) {
+        if ((existingSnmpV3UserMap.isEmpty() && updatedSnmpV3Usermap.isEmpty())
+                || (!existingSnmpV3UserMap.isEmpty() && updatedSnmpV3Usermap.isEmpty())) {
+            return false;
+        } else if (existingSnmpV3UserMap.isEmpty()
+                && !updatedSnmpV3Usermap.isEmpty()) {
             return true;
         }
 
@@ -138,7 +142,9 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
         if (m_trapdConfig.getSnmpTrapPort() != m_snmpTrapPort) {
             LOG.info("SNMP trap port has been updated from trapd-confguration.xml.");
             return true;
-        } else if (m_trapdConfig.getSnmpTrapAddress() != null && !m_trapdConfig.getSnmpTrapAddress().equalsIgnoreCase(m_snmpTrapAddress)) {
+        } else if (m_trapdConfig.getSnmpTrapAddress() != null
+                && !m_trapdConfig.getSnmpTrapAddress().equalsIgnoreCase("*")
+                && !m_trapdConfig.getSnmpTrapAddress().equalsIgnoreCase(m_snmpTrapAddress)) {
             LOG.info("SNMP trap address has been updated from trapd-confguration.xml.");
             return true;
         } else {
