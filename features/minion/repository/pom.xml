@@ -48,8 +48,10 @@
                                 <feature>opennms-trapd-listener</feature>
                                 <feature>opennms-trapd-handler-minion</feature>
                                 <feature>opennms-trapd-handler-kafka</feature>
-                                <feature>minion-heartbeat</feature>
+                                <feature>minion-shell</feature>
+                                <feature>minion-heartbeat-producer</feature>
                                 <feature>minion-snmp-proxy</feature>
+                                <feature>minion-provisiond-detectors</feature>
                             </features>
                             <repository>target/maven-repo</repository>
                         </configuration>
@@ -112,8 +114,79 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.core.rpc</groupId>
-            <artifactId>org.opennms.core.rpc.camel-impl</artifactId>
+            <groupId>org.opennms.features.minion.shell</groupId>
+            <artifactId>org.opennms.features.minion.shell.provision</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-bsf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-lineoriented</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-generic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-simple</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-datagram</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-jmx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-ssh</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-detector-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.protocols</groupId>
+            <artifactId>org.opennms.protocols.dhcp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.protocols</groupId>
+            <artifactId>org.opennms.protocols.radius</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.protocols</groupId>
+            <artifactId>org.opennms.protocols.xmp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.protocols</groupId>
+            <artifactId>org.opennms.protocols.nsclient</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>org.opennms.features.wsman</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.rpc</groupId>
+            <artifactId>org.opennms.core.ipc.rpc.camel-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.sink</groupId>
+            <artifactId>org.opennms.core.ipc.sink.camel-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -152,18 +225,39 @@
             <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
         </repository>
         <repository>
-            <snapshots><enabled>false</enabled></snapshots>
-            <releases><enabled>true</enabled></releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
             <id>sonatype-public-repo</id>
             <name>Sonatype Public Maven Repository</name>
             <url>http://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
         </repository>
         <repository>
-            <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-            <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>${updatePolicy}</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>${updatePolicy}</updatePolicy>
+            </releases>
             <id>oosnmp-repo</id>
             <name>OOSNMP Repository</name>
             <url>http://maven.opennms.org/content/repositories/oosnmp-repo</url>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <id>coova</id>
+            <name>Coova Repository</name>
+            <url>http://maven.opennms.org/content/repositories/coova/</url>
         </repository>
     </repositories>
 </project>

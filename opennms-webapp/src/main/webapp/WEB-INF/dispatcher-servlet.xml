@@ -465,7 +465,7 @@
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="KSC Reports"/>
-                                <property name="url" value="KSC/index.htm"/>
+                                <property name="url" value="KSC/index.jsp"/>
                                 <property name="locationMatch" value="ksc"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
@@ -521,15 +521,6 @@
         <property name="adminApplicationService" ref="adminApplicationService"/>
     </bean>
 
-    <!-- Graphing -->
-    <bean name="/graph/chooseresource.htm" class="org.opennms.web.controller.ChooseResourceController">
-        <property name="nodeDao" ref="nodeDao"/>
-        <property name="chooseResourceService" ref="chooseResourceService"/>
-        <property name="defaultEndUrl">
-            <value>graph/results.htm</value>
-        </property>
-    </bean>
-
     <!-- Database Reports -->
 
     <bean name="/report/database/index.htm"
@@ -558,14 +549,6 @@
     </bean>
 
     <!-- KSC reports -->
-    <bean name="/KSC/index.htm" class="org.opennms.web.controller.ksc.IndexController">
-        <property name="kscReportService" ref="kscReportService"/>
-        <property name="resourceService" ref="resourceService"/>
-    </bean>
-
-    <bean name="/KSC/include-box.htm" class="org.opennms.web.controller.ksc.IncludeBoxController">
-        <property name="kscReportService" ref="kscReportService"/>
-    </bean>
 
     <bean name="/KSC/formProcMain.htm" class="org.opennms.web.controller.ksc.FormProcMainController">
         <property name="kscReportFactory" ref="kscReportFactory"/>
@@ -596,16 +579,6 @@
     <bean name="/KSC/customReport.htm" class="org.opennms.web.controller.ksc.CustomReportController">
         <property name="kscReportFactory" ref="kscReportFactory"/>
         <property name="kscReportService" ref="kscReportService"/>
-        <property name="resourceService" ref="resourceService"/>
-    </bean>
-
-    <bean name="/KSC/customGraphChooseParentResource.htm"
-          class="org.opennms.web.controller.ksc.CustomGraphChooseParentResourceController">
-        <property name="resourceService" ref="resourceService"/>
-    </bean>
-
-    <bean name="/KSC/customGraphChooseResource.htm"
-          class="org.opennms.web.controller.ksc.CustomGraphChooseResourceController">
         <property name="resourceService" ref="resourceService"/>
     </bean>
 

@@ -45,6 +45,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.util.KeyValueHolder;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,14 +61,19 @@ import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.dao.DistPollerDaoMinion;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
+import org.opennms.netmgt.discovery.helper.LocationAwareTestRouteBuilder;
 import org.opennms.netmgt.discovery.messages.DiscoveryJob;
 import org.opennms.netmgt.discovery.messages.DiscoveryResults;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.icmp.PingerFactoryImpl;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
@@ -94,7 +100,13 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
     @SuppressWarnings( "rawtypes" )
     @Override
     protected void addServicesOnStartup( Map<String, KeyValueHolder<Object, Dictionary>> services ) {
-        services.put( Pinger.class.getName(), new KeyValueHolder<Object, Dictionary>(new TestPinger(), new Properties()));
+        final PingerFactoryImpl pingerFactory = new PingerFactoryImpl();
+        final Pinger pinger = new TestPinger();
+        pingerFactory.setInstance(0, true, pinger);
+
+        services.put( PingerFactory.class.getName(), new KeyValueHolder<Object, Dictionary>(pingerFactory, new Properties()));
+
+        services.put( Pinger.class.getName(), new KeyValueHolder<Object, Dictionary>(pinger, new Properties()));
 
         services.put( EventForwarder.class.getName(),
                 new KeyValueHolder<Object, Dictionary>( IPC_MANAGER_INSTANCE, new Properties() ) );
@@ -138,6 +150,13 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
         return "file:blueprint-discovery.xml";
     }
 
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+
+        InterfaceToNodeCacheDaoImpl.setInstance(new MockInterfaceToNodeCache());
+    }
+
     @Test(timeout=60000)
     public void testDiscover() throws Exception {
 
@@ -149,36 +168,21 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
         CamelContext mockDiscoverer = new DefaultCamelContext(registry);
         mockDiscoverer.addComponent("queuingservice", ActiveMQComponent.activeMQComponent("vm://localhost?create=false"));
 
-        mockDiscoverer.addRoutes(new RouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                JmsQueueNameFactory factory = new JmsQueueNameFactory("Discovery", "Discoverer", LOCATION);
-                String from = String.format("queuingservice:%s", factory.getName());
-
-                from(from)
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        DiscoveryJob job = exchange.getIn().getBody(DiscoveryJob.class);
-                        String foreignSource = job.getForeignSource();
-                        String location = job.getLocation();
-
-                        Message out = exchange.getOut();
-                        DiscoveryResults results = new DiscoveryResults(
-                            Collections.singletonMap(InetAddressUtils.addr("4.2.2.2"), 1000L),
-                            foreignSource,
-                            location
-                        );
-                        out.setBody(results);
-                    }
-                });
-            }
-        });
+        mockDiscoverer.addRoutes(new LocationAwareTestRouteBuilder(LOCATION, job -> {
+            final String foreignSource = job.getForeignSource();
+            final String location = job.getLocation();
+            final DiscoveryResults results = new DiscoveryResults(
+                    Collections.singletonMap(InetAddressUtils.addr("4.2.2.2"), 1000L),
+                    foreignSource,
+                    location
+            );
+            return results;
+        }));
 
         mockDiscoverer.start();
 
         final String ipAddress = "4.2.2.2";
-        final String foreignSource = "Bogus FS";
+        final String foreignSource = "testDiscover";
         final String location = LOCATION;
 
         EventAnticipator anticipator = IPC_MANAGER_INSTANCE.getEventAnticipator();
@@ -242,7 +246,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
 
                         Message out = exchange.getOut();
                         DiscoveryResults results = new DiscoveryResults(
-                            Collections.singletonMap(InetAddressUtils.addr("4.2.2.2"), 1000L),
+                            Collections.singletonMap(InetAddressUtils.addr("4.2.2.3"), 1000L),
                             foreignSource,
                             location
                         );
@@ -254,8 +258,8 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
 
         mockDiscoverer.start();
 
-        final String ipAddress = "4.2.2.2";
-        final String foreignSource = "Bogus FS";
+        final String ipAddress = "4.2.2.3";
+        final String foreignSource = "testDiscoverToTestTimeout";
         final String location = LOCATION;
 
         // Create the config aka job
@@ -291,4 +295,5 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
             mockDiscoverer.stop();
         }
     }
+
 }

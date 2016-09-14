@@ -45,8 +45,10 @@ import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
@@ -89,6 +91,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * Event handler
      */
     private volatile EventForwarder m_eventForwarder;
+
+    @Autowired
+    private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
     /**
      * <p>
@@ -579,4 +584,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             return m_linkdConfig.getRescanInterval(); 
     }
 
+    public LocationAwareSnmpClient getLocationAwareSnmpClient() {
+        return m_locationAwareSnmpClient;
+    }
+    
 }

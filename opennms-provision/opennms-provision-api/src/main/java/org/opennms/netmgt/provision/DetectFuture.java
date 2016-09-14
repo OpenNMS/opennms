@@ -35,15 +35,8 @@ package org.opennms.netmgt.provision;
  * @author thedesloge
  * @version $Id: $
  */
-public interface DetectFuture {
+public interface DetectFuture extends DetectResults {
 
-    /**
-     * <p>isServiceDetected</p>
-     *
-     * @return a boolean.
-     */
-    boolean isServiceDetected();
-    
     /**
      * <p>getException</p>
      *

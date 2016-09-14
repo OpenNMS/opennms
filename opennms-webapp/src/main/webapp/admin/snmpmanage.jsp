@@ -156,7 +156,7 @@
 	  row.append(nodeid);
           row.append("</td>\n");
           row.append("<td>");
-          row.append("<a href=\"admin/snmpGetInterfaces?node=");
+          row.append("<a href=\"admin/snmpInterfaces.jsp?node=");
 	  row.append(nodeid);
           row.append("&nodelabel=");
 	  row.append(nodelabel);

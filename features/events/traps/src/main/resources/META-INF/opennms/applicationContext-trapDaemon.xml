@@ -20,26 +20,17 @@
   <tx:annotation-driven/>
   
   <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd">
-    <property name="eventReader" ref="eventReader"/>
     <property name="trapReceiver" ref="trapReceiver"/>
-    <property name="trapdIpMgr" ref="trapdIpMgr"/>
   </bean>
   
   <bean id="trapNotificationDefaultImpl" class="org.opennms.netmgt.trapd.TrapNotificationHandlerDefaultImpl" >
-    <property name="trapdIpManager" ref="trapdIpMgr"/>
+    <property name="interfaceToNodeCache" ref="interfaceToNodeCache"/>
     <property name="processorFactory" ref="processorFactory"/>
   </bean>
   
   <bean id="trapReceiver" class="org.opennms.netmgt.trapd.TrapReceiverImpl">
     <constructor-arg ref="trapdConfig" />
     <property name="trapNotificationHandlers" ref="trapNotificationDefaultImpl"/>
-  </bean>
-  
-  <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.TrapdIpManagerDaoImpl"/>
-  
-  <bean id="eventReader" class="org.opennms.netmgt.trapd.BroadcastEventProcessor">
-    <constructor-arg ref="eventIpcManager" />
-    <constructor-arg ref="trapdIpMgr" />
   </bean>
   
   <bean id="processorFactory" class="org.opennms.netmgt.trapd.TrapQueueProcessorFactory">
@@ -51,7 +42,5 @@
   <bean id="snmpTrapAddress" factory-bean="trapdConfig" factory-method="getSnmpTrapAddress"/>
   
   <bean id="snmpTrapPort" factory-bean="trapdConfig" factory-method="getSnmpTrapPort"/>
-
-  <bean id="snmpV3Users" factory-bean="trapdConfig" factory-method="getSnmpV3Users"/>
   
 </beans>

@@ -549,7 +549,7 @@ public class NodeScan implements Scan {
                     final SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress());
                     m_provisionService.getLocationAwareSnmpClient().walk(agentConfig, tracker)
                         .withDescription("IP address tables")
-                        .atLocation(getLocationName())
+                        .withLocation(getLocationName())
                         .execute()
                         .get();
 
@@ -613,7 +613,7 @@ public class NodeScan implements Scan {
             try {
                 m_provisionService.getLocationAwareSnmpClient().walk(agentConfig, physIfTracker)
                     .withDescription("ifTable/ifXTable")
-                    .atLocation(getLocationName())
+                    .withLocation(getLocationName())
                     .execute()
                     .get();
                 LOG.debug("Finished phase {}", currentPhase);

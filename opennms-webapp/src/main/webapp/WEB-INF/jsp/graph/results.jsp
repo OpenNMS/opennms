@@ -48,6 +48,12 @@
     <c:param name="scrollSpy" value="#results-sidebar" />
     <c:param name="meta"       value="<meta http-equiv='X-UA-Compatible' content='IE=Edge' />"/>
     <c:param name="renderGraphs" value="true" />
+
+    <c:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' />
+    <c:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
+    <c:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
+    <c:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
+    <c:param name="script" value='<script type="text/javascript" src="js/onms-ksc/add-to-ksc.js"></script>' />
 </c:import>
 
 <div id="graph-results">
@@ -194,7 +200,8 @@
             </c:if>
         </h3>
      </div> <!-- panel-heading -->
-     <div class="panel-body">
+     <div class="panel-body" ng-app="onms-ksc" ng-controller="AddToKscCtrl">
+        <div growl></div>
         <!-- NRTG Starter script 'window'+resourceId+report -->
         <script type="text/javascript">
             function nrtgPopUp(resourceId, report) {
@@ -216,7 +223,11 @@
 
                     <div>
 	                    <div class="graph-aux-controls" style="padding-bottom: 5px" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
-		                    <opennms-addKscReport id="${resultSet.resource.id}.${graph.name}" reportName="${graph.name}" resourceId="${resultSet.resource.id}" graphTitle="${graph.title}" timespan="${results.relativeTime}"></opennms-addKscReport>
+                            <a style="padding-right: 3px" title="Add ${graph.title} to KSC Report">
+                                <button type="button" class="btn btn-default btn-xs" ng-click="open('${resultSet.resource.id}','${resultSet.resource.label}','${graph.name}','${graph.title}')">
+                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                </button>
+                            </a>
 		                    <c:if test="${fn:length(resultSet.graphs) > 1}">
 		                        <a href="${specificGraphUrl}" style="padding-right: 3px" title="Open ${graph.title}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-binoculars" aria-hidden="true"></i></span></button></a>
 		                    </c:if>

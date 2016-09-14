@@ -42,6 +42,8 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opennms.core.utils.DefaultSocketWrapper;
+import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -76,7 +78,7 @@ import org.opennms.netmgt.poller.PollStatus;
  * @version CVS 1.1.1.1
  */
 @Distributable
-final public class ImapMonitor extends AbstractServiceMonitor {
+public class ImapMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(ImapMonitor.class);
 
     /**
@@ -149,7 +151,7 @@ final public class ImapMonitor extends AbstractServiceMonitor {
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
         // Retries
         //
-        int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+	final int port = determinePort(parameters);
 
         // Get interface address from NetworkInterface
         //
@@ -175,6 +177,9 @@ final public class ImapMonitor extends AbstractServiceMonitor {
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
                 
+ 		// For SSL support
+                socket = getSocketWrapper().wrapSocket(socket);
+
                 BufferedReader rdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                 //
@@ -250,5 +255,21 @@ final public class ImapMonitor extends AbstractServiceMonitor {
         //
         return serviceStatus;
     }
+
+    protected int determinePort(final Map<String, Object> parameters) {
+        return ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+    }
+
+    /**
+     * <p>wrapSocket</p>
+     *
+     * @param socket a {@link java.net.Socket} object.
+     * @return a {@link java.net.Socket} object.
+     * @throws java.io.IOException if any.
+     */
+    protected SocketWrapper getSocketWrapper() {
+        return new DefaultSocketWrapper();
+    }
+
 
 }

@@ -29,29 +29,19 @@
 package org.opennms.netmgt.discovery;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.CamelContext;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.discovery.UnmanagedInterfaceFilter.LocationIpAddressKey;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -59,9 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.util.Assert;
 
 /**
@@ -87,16 +74,8 @@ public class Discovery extends AbstractServiceDaemon {
 
     private EventForwarder m_eventForwarder;
 
-    private UnmanagedInterfaceFilter m_interfaceFilter= null;
-
-    private NodeDao m_nodeDao;
-
-    private IpInterfaceDao m_ipInterfaceDao;
-
-    private TransactionOperations m_transactionOperations;
-
     @Autowired
-    @Qualifier ("discoveryCamelContext")
+    @Qualifier ("discoveryContext")
     private CamelContext m_camelContext;
 
     /**
@@ -133,44 +112,6 @@ public class Discovery extends AbstractServiceDaemon {
      */
     public DiscoveryConfigFactory getDiscoveryFactory() {
         return m_discoveryFactory;
-    }
-
-    public TransactionOperations getTransactionOperations() {
-        return m_transactionOperations;
-    }
-
-    public void setTransactionOperations(TransactionOperations transactionOperations) {
-        m_transactionOperations = transactionOperations;
-    }
-
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
-    public IpInterfaceDao getIpInterfaceDao() {
-        return m_ipInterfaceDao;
-    }
-
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
-    }
-
-    /**
-     * <p>setUnmanagedInterfaceFilter</p>
-     */
-    public void setUnmanagedInterfaceFilter(UnmanagedInterfaceFilter filter) {
-        m_interfaceFilter = filter;
-    }
-
-    /**
-     * <p>getUnmanagedInterfaceFilter</p>
-     */
-    public UnmanagedInterfaceFilter getUnmanagedInterfaceFilter() {
-        return m_interfaceFilter;
     }
 
     /**
@@ -215,7 +156,6 @@ public class Discovery extends AbstractServiceDaemon {
      */
     @Override
     protected void onStart() {
-        syncAlreadyDiscovered();
         try {
             m_camelContext.start();
         } catch (Exception e) {
@@ -257,39 +197,6 @@ public class Discovery extends AbstractServiceDaemon {
         } catch (Exception e) {
             LOG.error("Discovery resume failed: " + e.getMessage(), e);
         }
-    }
-
-    /**
-     * <p>syncAlreadyDiscovered</p>
-     */
-    protected void syncAlreadyDiscovered() {
-        m_transactionOperations.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                /**
-                 * Make a new list with which we'll replace the existing one, that way
-                 * if something goes wrong with the DB we won't lose whatever was already
-                 * in there
-                 */
-                Set<LocationIpAddressKey> newAlreadyDiscovered = Collections.synchronizedSet(new HashSet<>());
-                // Fetch all non-deleted nodes
-                CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
-                builder.ne("type", String.valueOf(NodeType.DELETED.value()));
-                for (OnmsNode node : m_nodeDao.findMatching(builder.toCriteria())) {
-                    for (OnmsIpInterface iface : node.getIpInterfaces()) {
-                        // Skip deleted interfaces
-                        // TODO: Refactor the 'D' value with an enumeration
-                        if ("D".equals(iface.getIsManaged())) {
-                            continue;
-                        }
-                        // TODO: Refactor this to use {@link InetAddress}
-                        newAlreadyDiscovered.add(new LocationIpAddressKey(node.getLocation().getLocationName(), iface.getIpAddressAsString()));
-                    }
-                }
-                m_interfaceFilter.setManagedAddresses(newAlreadyDiscovered);
-                LOG.info("syncAlreadyDiscovered initialized list of managed IP addresses with {} members", m_interfaceFilter.size());
-            }
-        });
     }
 
     /**
@@ -361,34 +268,6 @@ public class Discovery extends AbstractServiceDaemon {
     }
 
     /**
-     * <p>handleInterfaceDeleted</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.INTERFACE_DELETED_EVENT_UEI)
-    public void handleInterfaceDeleted(final Event event) {
-        // remove from known nodes
-        Long nodeId = event.getNodeid();
-        if (nodeId == null) {
-            LOG.error(EventConstants.INTERFACE_DELETED_EVENT_UEI + ": Event with no node ID: " + event.toString());
-            return;
-        }
-        OnmsNode node = m_nodeDao.get(nodeId.intValue());
-        if (node == null) {
-            LOG.warn(EventConstants.INTERFACE_DELETED_EVENT_UEI + ": Cannot find node in DB: " + nodeId);
-            return;
-        }
-
-        final String iface = event.getInterface();
-        if (iface != null && !"".equals(iface.trim())) {
-            // remove from known nodes
-            m_interfaceFilter.removeManagedAddress(node.getLocation().getLocationName(), iface);
-
-            LOG.debug("Removed {} from known interface list", iface);
-        }
-    }
-
-    /**
      * <p>handleDiscoveryResume</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
@@ -412,32 +291,6 @@ public class Discovery extends AbstractServiceDaemon {
             pause();
         } catch (IllegalStateException ex) {
         }
-    }
-
-    /**
-     * <p>handleNodeGainedInterface</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
-    public void handleNodeGainedInterface(Event event) {
-        // add to known nodes
-        Long nodeId = event.getNodeid();
-        if (nodeId == null) {
-            LOG.error(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Event with no node ID: " + event.toString());
-            return;
-        }
-        OnmsNode node = m_nodeDao.get(nodeId.intValue());
-        if (node == null) {
-            LOG.warn(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Cannot find node in DB: " + nodeId);
-            return;
-        }
-        final String iface = event.getInterface();
-        if (iface != null && !"".equals(iface.trim())) {
-            m_interfaceFilter.addManagedAddress(node.getLocation().getLocationName(), iface);
-        }
-
-        LOG.debug("Added interface {} as discovered", iface);
     }
 
     public static String getLoggingCategory() {

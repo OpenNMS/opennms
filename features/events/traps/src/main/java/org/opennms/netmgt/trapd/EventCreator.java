@@ -33,6 +33,8 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.snmp.SyntaxToEvent;
@@ -55,14 +57,23 @@ public class EventCreator implements TrapProcessor {
 	private static final Logger LOG = LoggerFactory.getLogger(EventCreator.class);
     
     private final EventBuilder m_eventBuilder;
-    private final TrapdIpMgr m_trapdIpMgr;
 
-    
-    public EventCreator(TrapdIpMgr trapdIpMgr) {
-        m_trapdIpMgr = trapdIpMgr;
+    private final InterfaceToNodeCache m_cache;
+
+    private String m_location;
+
+    private InetAddress m_trapAddress;
+
+    public EventCreator(InterfaceToNodeCache cache) {
+        m_cache = cache;
         m_eventBuilder = new EventBuilder(null, "trapd");
     }
-    
+
+    @Override
+    public void setLocation(String location) {
+        m_location = location;
+    }
+
     /** {@inheritDoc} */
     @Override
     public void setCommunity(String community) {
@@ -113,10 +124,7 @@ public class EventCreator implements TrapProcessor {
     public void setTrapAddress(InetAddress trapAddress) {
         m_eventBuilder.setSnmpHost(str(trapAddress));
         m_eventBuilder.setInterface(trapAddress);
-        long nodeId = m_trapdIpMgr.getNodeId(str(trapAddress));
-        if (nodeId != -1) {
-            m_eventBuilder.setNodeid(nodeId);
-        }
+        m_trapAddress = trapAddress;
     }
 
     /** {@inheritDoc} */
@@ -130,6 +138,17 @@ public class EventCreator implements TrapProcessor {
     }
 
     public Event getEvent() {
+        long nodeId = -1;
+        if (m_location == null) {
+            // If there was no location in the trap message, assume that
+            // it was generated in the default location
+            nodeId = m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, m_trapAddress);
+        } else {
+            nodeId = m_cache.getNodeId(m_location, m_trapAddress);
+        }
+        if (nodeId != -1) {
+            m_eventBuilder.setNodeid(nodeId);
+        }
         return m_eventBuilder.getEvent();
     }
 

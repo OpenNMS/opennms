@@ -47,6 +47,7 @@ import org.opennms.netmgt.discovery.actors.Discoverer;
 import org.opennms.netmgt.discovery.actors.EventWriter;
 import org.opennms.netmgt.discovery.actors.RangeChunker;
 import org.opennms.netmgt.icmp.NullPinger;
+import org.opennms.netmgt.icmp.PingerFactoryImpl;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith( OpenNMSJUnit4ClassRunner.class )
@@ -59,8 +60,10 @@ public class DiscoveryRoutingTest extends CamelTestSupport
     {
         JndiRegistry registry = super.createRegistry();
 
+        final PingerFactoryImpl pf = new PingerFactoryImpl();
+        pf.setInstance(0, true, new NullPinger());
         registry.bind( "rangeChunker", new RangeChunker() );
-        registry.bind( "discoverer", new Discoverer( new NullPinger() ) );
+        registry.bind( "discoverer", new Discoverer( pf ) );
         registry.bind( "eventWriter", new EventWriter( new MockEventIpcManager() ) );
 
         return registry;

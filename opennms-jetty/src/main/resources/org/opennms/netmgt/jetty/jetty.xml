@@ -1,149 +1,192 @@
 <?xml version="1.0"?>
 <!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
 
-<Configure id="FileServer" class="org.eclipse.jetty.server.Server">
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
 
-	<Call name="addConnector">
-		<Arg>
-			<New class="org.eclipse.jetty.server.nio.SelectChannelConnector">
-				<Set name="statsOn">true</Set>
-				<Set name="host"><SystemProperty name="org.opennms.netmgt.jetty.host" default="0.0.0.0" /></Set>
-				<Set name="port"><SystemProperty name="org.opennms.netmgt.jetty.port" default="8980" /></Set>
-				<Set name="requestHeaderSize"><SystemProperty name="org.opennms.netmgt.jetty.requestHeaderSize" default="4000" /></Set>
-			</New>
-		</Arg>
-	</Call>
+  <New id="httpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
+     <Set name="requestHeaderSize"><SystemProperty name="org.opennms.netmgt.jetty.requestHeaderSize" default="4000" /></Set>
+  </New>
 
-	<!-- Add AJP support -->
-	<!--
-	<Call name="addConnector">
-		<Arg>
-			<New class="org.eclipse.jetty.ajp.Ajp13SocketConnector">
-				<Set name="statsOn">true</Set>
-				<Set name="port">8981</Set>
-			</New>
-		</Arg>
-	</Call>
-	-->
+  <Call name="addConnector">
+    <Arg>
+      <New id="httpConnector" class="org.eclipse.jetty.server.ServerConnector">
+        <Arg name="server"><Ref refid="Server" /></Arg>
+        <Arg name="factories">
+          <Array type="org.eclipse.jetty.server.ConnectionFactory">
+            <Item>
+              <New class="org.eclipse.jetty.server.HttpConnectionFactory">
+                <Arg name="config"><Ref refid="httpConfig" /></Arg>
+                <Arg name="compliance"><Call class="org.eclipse.jetty.http.HttpCompliance" name="valueOf"><Arg><Property name="jetty.http.compliance" default="RFC7230"/></Arg></Call></Arg>
+              </New>
+            </Item>
+          </Array>
+        </Arg>
+        <Set name="host"><SystemProperty name="org.opennms.netmgt.jetty.host" default="0.0.0.0" /></Set>
+        <Set name="port"><SystemProperty name="org.opennms.netmgt.jetty.port" default="8980" /></Set>
+      </New>
+    </Arg>
+  </Call>
 
-	<!-- Add HTTPS support -->
-	<!--
-	<Call name="addConnector">
-		<Arg>
-			<New class="org.eclipse.jetty.server.ssl.SslSelectChannelConnector">
-				<Arg>
-					<New class="org.eclipse.jetty.http.ssl.SslContextFactory">
-						<Set name="keyStore"><SystemProperty name="org.opennms.netmgt.jetty.https-keystore" /></Set>
-						<Set name="keyStorePassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keystorepassword" default="changeit" /></Set>
-						<Set name="keyManagerPassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keypassword" default="changeit" /></Set>
-						<Set name="trustStore"><SystemProperty name="org.opennms.netmgt.jetty.https-keystore" /></Set>
-						<Set name="trustStorePassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keystorepassword" default="changeit" /></Set>
-						<Set name="ExcludeProtocols">
-							<Array type="java.lang.String">
-								<Item>SSLv3</Item>
-							</Array>
-						</Set>
-					</New>
-				</Arg>
-				<Set name="host"><SystemProperty name="org.opennms.netmgt.jetty.https-host" default="0.0.0.0" /></Set>
-				<Set name="port"><SystemProperty name="org.opennms.netmgt.jetty.https-port" default="8443" /></Set>
-				<Set name="maxIdleTime">30000</Set>
-				<Set name="ExcludeCipherSuites">
-					<Array type="java.lang.String">
-						<Item>SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA</Item>
-						<Item>SSL_DHE_DSS_WITH_DES_CBC_SHA</Item>
-						<Item>SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
-						<Item>SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA</Item>
-						<Item>SSL_DHE_RSA_WITH_DES_CBC_SHA</Item>
-						<Item>SSL_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
-						<Item>SSL_RSA_EXPORT_WITH_RC4_40_MD5</Item>
-						<Item>SSL_RSA_WITH_3DES_EDE_CBC_SHA</Item>
-						<Item>SSL_RSA_WITH_DES_CBC_SHA</Item>
-						<Item>TLS_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
-						<Item>TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA</Item>
-						<Item>TLS_DHE_RSA_WITH_AES_128_CBC_SHA</Item>
-						<Item>TLS_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
-						<Item>TLS_RSA_WITH_DES_CBC_SHA</Item>
-					</Array>
-				</Set>
-			</New>
-		</Arg>
-	</Call>
-	-->
+  <!-- Add AJP support -->
+  <!--
+  <Call name="addConnector">
+    <Arg>
+      <New class="org.eclipse.jetty.ajp.Ajp13SocketConnector">
+        <Set name="statsOn">true</Set>
+        <Set name="port">8981</Set>
+      </New>
+    </Arg>
+  </Call>
+  -->
 
+  <!-- Add HTTPS support -->
+  <!--
+  <New id="sslHttpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
+    <Arg><Ref refid="httpConfig"/></Arg>
+    <Call name="addCustomizer">
+      <Arg>
+        <New class="org.eclipse.jetty.server.SecureRequestCustomizer">
+          <Arg name="sniHostCheck" type="boolean"><Property name="jetty.ssl.sniHostCheck" default="true"/></Arg>
+          <Arg name="stsMaxAgeSeconds" type="int"><Property name="jetty.ssl.stsMaxAgeSeconds" default="-1"/></Arg>
+          <Arg name="stsIncludeSubdomains" type="boolean"><Property name="jetty.ssl.stsIncludeSubdomains" default="false"/></Arg>
+        </New>
+      </Arg>
+    </Call>
+  </New>
 
-    <!-- Note #1 To set X-Frame-Options uncomment here and uncomment #2 below  -->
-    <!-- Settings for X-Frame-Options to avoid clickjacking                    -->
-    <!-- 
-    <New id="RewriteHandler" class="org.eclipse.jetty.rewrite.handler.RewriteHandler">
-       <Set name="rules">
-        	<Array type="org.eclipse.jetty.rewrite.handler.Rule">
-        		<Item>
-                   <New id="header" class="org.eclipse.jetty.rewrite.handler.HeaderPatternRule">
-                      <Set name="pattern">*</Set>
-                      <Set name="name">X-Frame-Options</Set>
-                      <Set name="value">SAMEORIGIN</Set>
-                   </New>
-			    </Item>
-			  </Array>
-       </Set>
-     </New>
-    -->
+  <New id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory">
+    <Set name="KeyStorePath"><SystemProperty name="org.opennms.netmgt.jetty.https-keystore" /></Set>
+    <Set name="KeyStorePassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keystorepassword" default="changeit" /></Set>
+    <Set name="KeyStoreType"><SystemProperty name="org.opennms.netmgt.jetty.https-keystoretype" default="JKS" /></Set>
+    <Set name="KeyStoreProvider"><SystemProperty name="org.opennms.netmgt.jetty.https-keystoreprovider" /></Set>
+    <Set name="KeyManagerPassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keypassword" default="changeit" /></Set>
+    <Set name="TrustStorePath"><SystemProperty name="org.opennms.netmgt.jetty.https-keystore" /></Set>
+    <Set name="TrustStorePassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keystorepassword" default="changeit" /></Set>
+    <Set name="TrustStoreType"><SystemProperty name="org.opennms.netmgt.jetty.https-keystoretype" default="JKS" /></Set>
+    <Set name="TrustStoreProvider"><SystemProperty name="org.opennms.netmgt.jetty.https-keystoreprovider" /></Set>
+    <Set name="useCipherSuitesOrder"><Property name="jetty.sslContext.useCipherSuitesOrder" default="true"/></Set>
+    <Set name="sslSessionCacheSize"><Property name="jetty.sslContext.sslSessionCacheSize" default="-1"/></Set>
+    <Set name="sslSessionTimeout"><Property name="jetty.sslContext.sslSessionTimeout" default="-1"/></Set>
+    <Set name="ExcludeCipherSuites">
+      <Array type="java.lang.String">
+        <Item>SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA</Item>
+        <Item>SSL_DHE_DSS_WITH_DES_CBC_SHA</Item>
+        <Item>SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
+        <Item>SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA</Item>
+        <Item>SSL_DHE_RSA_WITH_DES_CBC_SHA</Item>
+        <Item>SSL_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
+        <Item>SSL_RSA_EXPORT_WITH_RC4_40_MD5</Item>
+        <Item>SSL_RSA_WITH_3DES_EDE_CBC_SHA</Item>
+        <Item>SSL_RSA_WITH_DES_CBC_SHA</Item>
+        <Item>TLS_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
+        <Item>TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA</Item>
+        <Item>TLS_DHE_RSA_WITH_AES_128_CBC_SHA</Item>
+        <Item>TLS_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
+        <Item>TLS_RSA_WITH_DES_CBC_SHA</Item>
+     </Array>
+    </Set>
+  </New>
 
-	<Set name="handler">
-		<New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
-			<Set name="handlers">
-			 <Array type="org.eclipse.jetty.server.Handler">
-			   <!-- Note #2 Uncomment to set X-Frame-Options with #1 above  -->
+  <Call name="addConnector">
+    <Arg>
+      <New id="sslConnector" class="org.eclipse.jetty.server.ServerConnector">
+        <Arg name="server"><Ref refid="Server" /></Arg>
+        <Arg name="factories">
+          <Array type="org.eclipse.jetty.server.ConnectionFactory">
+            <Item>
+              <New class="org.eclipse.jetty.server.SslConnectionFactory">
+                <Arg name="next">http/1.1</Arg>
+                <Arg name="sslContextFactory"><Ref refid="sslContextFactory"/></Arg>
+              </New>
+            </Item>
+            <Item>
+              <New class="org.eclipse.jetty.server.HttpConnectionFactory">
+                <Arg name="config"><Ref refid="sslHttpConfig" /></Arg>
+                <Arg name="compliance"><Call class="org.eclipse.jetty.http.HttpCompliance" name="valueOf"><Arg><Property name="jetty.http.compliance" default="RFC7230"/></Arg></Call></Arg>
+              </New>
+            </Item>
+          </Array>
+        </Arg>
+        <Set name="host"><SystemProperty name="org.opennms.netmgt.jetty.https-host" default="0.0.0.0" /></Set>
+        <Set name="port"><SystemProperty name="org.opennms.netmgt.jetty.https-port" default="8443" /></Set>
+      </New>
+    </Arg>
+  </Call>
+  -->
+
+  <!-- Note #1 To set X-Frame-Options uncomment here and uncomment #2 below  -->
+  <!-- Settings for X-Frame-Options to avoid clickjacking                    -->
+  <!-- 
+  <New id="RewriteHandler" class="org.eclipse.jetty.rewrite.handler.RewriteHandler">
+    <Set name="rules">
+      <Array type="org.eclipse.jetty.rewrite.handler.Rule">
+        <Item>
+          <New id="header" class="org.eclipse.jetty.rewrite.handler.HeaderPatternRule">
+            <Set name="pattern">*</Set>
+            <Set name="name">X-Frame-Options</Set>
+            <Set name="value">SAMEORIGIN</Set>
+          </New>
+        </Item>
+      </Array>
+    </Set>
+  </New>
+  -->
+
+  <!-- Enable statistics -->
+  <Call name="insertHandler">
+    <Arg>
+      <New id="StatsHandler" class="org.eclipse.jetty.server.handler.StatisticsHandler">
+      </New>
+    </Arg>
+  </Call>
+  <Call class="org.eclipse.jetty.server.ConnectorStatistics" name="addToAllConnectors">
+    <Arg><Ref refid="Server"/></Arg>
+  </Call>
+
+  <Set name="handler">
+        <New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
+            <Set name="handlers">
+             <Array type="org.eclipse.jetty.server.Handler">
+               <!-- Note #2 Uncomment to set X-Frame-Options with #1 above  -->
                <!-- 
                  <Item>
-                     <Ref id="RewriteHandler"/>
+                   <Ref id="RewriteHandler"/>
                  </Item>
                -->
-				 <Item>
-					 <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
-				 </Item>
-				 <Item>
-					 <New id="DefaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler"/>
-				 </Item>
-			 </Array>
-			</Set>
-		</New>
-	</Set>
+                 <Item>
+                     <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
+                 </Item>
+                 <Item>
+                     <New id="DefaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler"/>
+                 </Item>
+             </Array>
+            </Set>
+        </New>
+  </Set>
 
-	<Call name="addBean">
-		<Arg>
-			<New id="DeploymentManager" class="org.eclipse.jetty.deploy.DeploymentManager">
-				<Set name="contexts">
-					<Ref id="Contexts" />
-				</Set>
-				<Call name="setContextAttribute">
-					<Arg>org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern</Arg>
-					<Arg>.*/[^/]*\.jar$</Arg>
-				</Call>
-			</New>
-		</Arg>
-	</Call>
+  <New id="DeploymentManager" class="org.eclipse.jetty.deploy.DeploymentManager">
+    <Set name="contexts">
+      <Ref id="Contexts" />
+    </Set>
+    <Call name="setContextAttribute">
+      <Arg>org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern</Arg>
+      <Arg>.*/[^/]*\.jar$</Arg>
+    </Call>
+    <Call name="addAppProvider">
+      <Arg>
+        <New class="org.opennms.netmgt.jetty.OpenNMSWebAppProvider">
+          <Set name="monitoredDirName"><SystemProperty name="opennms.home" />/jetty-webapps</Set>
+          <Set name="scanInterval">10</Set>
+          <Set name="extractWars">false</Set>
+        </New>
+      </Arg>
+    </Call>
+  </New>
 
-	<Ref id="DeploymentManager">
-		<Call name="addAppProvider">
-			<Arg>
-				<New class="org.eclipse.jetty.deploy.providers.ContextProvider">
-					<Set name="monitoredDirName"><SystemProperty name="opennms.home" />/contexts</Set>
-					<Set name="scanInterval">10</Set>
-				</New>
-			</Arg>
-		</Call>
-		<Call id="webappprovider" name="addAppProvider">
-			<Arg>
-				<New class="org.eclipse.jetty.deploy.providers.WebAppProvider">
-					<Set name="monitoredDirName"><SystemProperty name="opennms.home" />/jetty-webapps</Set>
-					<Set name="scanInterval">10</Set>
-					<Set name="contextXmlDir"><SystemProperty name="opennms.home" />/contexts</Set>
-					<Set name="extractWars">false</Set>
-				</New>
-			</Arg>
-		</Call>
-	</Ref>
+  <Call name="addBean">
+    <Arg>
+      <Ref refid="DeploymentManager"/>
+    </Arg>
+  </Call>
 
 </Configure>

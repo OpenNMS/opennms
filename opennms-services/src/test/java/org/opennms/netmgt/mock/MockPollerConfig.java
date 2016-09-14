@@ -152,7 +152,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     
         outage.addTime(time);
     
-        getConfig().addOutage(outage);
+        getObject().addOutage(outage);
     
         pkg.addOutageCalendar(outageName);
     }
@@ -186,7 +186,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
         outage.addTime(time);
 
-        getConfig().addOutage(outage);
+        getObject().addOutage(outage);
 
         pkg.addOutageCalendar(outageName);
 
@@ -213,7 +213,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
         outage.addTime(time);
 
-        getConfig().addOutage(outage);
+        getObject().addOutage(outage);
 
         pkg.addOutageCalendar(outageName);
     }

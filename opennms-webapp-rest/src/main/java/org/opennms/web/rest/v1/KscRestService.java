@@ -35,7 +35,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Entity;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -53,11 +52,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
@@ -109,6 +105,21 @@ public class KscRestService extends OnmsRestService {
     @Transactional
     public String getCount() {
         return Integer.toString(m_kscReportService.getReportList().size());
+    }
+
+    @PUT
+    @Path("reloadConfig")
+    @Transactional
+    public Response reloadConfiguration() {
+        writeLock();
+        try {
+            KSC_PerformanceReportFactory.getInstance().reload();
+            return Response.noContent().build();
+        } catch (Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, e);
+        } finally {
+            writeUnlock();
+        }
     }
 
     @PUT
@@ -200,9 +211,7 @@ public class KscRestService extends OnmsRestService {
         }
     }
 
-    @Entity
     @XmlRootElement(name = "kscReports")
-    @JsonRootName("kscReports")
     public static final class KscReportCollection extends JaxbListWrapper<KscReport> {
 
         private static final long serialVersionUID = 1L;
@@ -227,13 +236,11 @@ public class KscRestService extends OnmsRestService {
         }
 
         @XmlElement(name = "kscReport")
-        @JsonProperty("kscReport")
         public List<KscReport> getObjects() {
             return super.getObjects();
         }
     }
 
-    @Entity
     @XmlRootElement(name = "kscReport")
     @XmlAccessorType(XmlAccessType.NONE)
     public static final class KscReport {
@@ -253,7 +260,7 @@ public class KscRestService extends OnmsRestService {
         @XmlAttribute(name = "graphs_per_line", required = false)
         private Integer m_graphs_per_line;
 
-        @XmlElements(@XmlElement(name = "kscGraph"))
+        @XmlElement(name = "kscGraph")
         private List<KscGraph> m_graphs = new ArrayList<KscGraph>();
 
         public KscReport() {
@@ -326,7 +333,6 @@ public class KscRestService extends OnmsRestService {
         }
     }
 
-    @Entity
     @XmlRootElement(name = "kscGraph")
     @XmlAccessorType(XmlAccessType.NONE)
     public static final class KscGraph {

@@ -604,25 +604,19 @@ Could not find an outage to edit because no outage name parameter was specified 
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
+    <jsp:param name="norequirejs" value="true" />
 	<jsp:param name="title" value="Edit Outage" />
 	<jsp:param name="headTitle" value="Edit" />
 	<jsp:param name="headTitle" value="Scheduled Outages" />
 	<jsp:param name="headTitle" value="Admin" />
 	<jsp:param name="location" value="admin" />
-	<jsp:param name="breadcrumb"
-		value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb"
-		value="<a href='admin/sched-outages/index.jsp'>Scheduled Outages</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/sched-outages/index.jsp'>Scheduled Outages</a>" />
 	<jsp:param name="breadcrumb" value="Edit" />
+    <jsp:param name="link" value='<link type="text/css" href="lib/jquery-ui/themes/base/all.css" rel="stylesheet" />' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/jquery-ui.js"></script>' />
 </jsp:include>
 
-<link type="text/css" href="js/jquery/themes/base/jquery.ui.all.css" rel="stylesheet" />
-<script type="text/javascript" src="js/jquery/jquery.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.core.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.widget.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.button.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.position.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.autocomplete.js"></script>
 <style type="text/css">
 	/* TODO shouldn't be necessary */
 	.ui-button { margin-left: -1px; }

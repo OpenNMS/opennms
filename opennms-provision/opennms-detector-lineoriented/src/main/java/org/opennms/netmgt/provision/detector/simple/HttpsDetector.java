@@ -28,17 +28,14 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>HttpsDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class HttpsDetector extends HttpDetector {
     
     

@@ -51,6 +51,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
 import org.opennms.web.api.OnmsHeaderProvider;
@@ -439,5 +440,20 @@ public class HttpServletRequestVaadinImpl implements HttpServletRequest {
     @Override
     public void logout() throws ServletException {
         throw new ServletException("Cannot log out");
+    }
+
+    @Override
+    public long getContentLengthLong() {
+        return m_request.getContentLength();
+    }
+
+    @Override
+    public String changeSessionId() {
+        throw new RuntimeException("Cannot change session id");
+    }
+
+    @Override
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
+        throw new RuntimeException("Cannot upgrade.");
     }
 }

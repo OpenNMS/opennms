@@ -4,7 +4,7 @@
 					http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
-
+    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory"/>
 
     <bean id="vmwareTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
@@ -12,26 +12,26 @@
         <property name="description" value="The VMware Topology Provider displays the infrastructure information gathered by the VMware Provisioning process."/>
     </bean>
 
-    <bean id="vmwareTopologyProvider" init-method="refresh"
-          class="org.opennms.features.topology.plugins.topo.vmware.internal.VmwareTopologyProvider">
-        <property name="nodeDao" ref="nodeDao"/>
-        <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+    <bean id="vmwareTopologyProvider" class="org.opennms.features.topology.plugins.topo.vmware.internal.VmwareTopologyProvider">
+        <argument ref="nodeDao"/>
+        <argument ref="ipInterfaceDao"/>
         <property name="topologyProviderInfo" ref="vmwareTopologyProviderInfo"/>
     </bean>
 
-    <service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="vmwareTopologyProvider">
+    <bean id="vmwareTopologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
+        <argument ref="vmwareTopologyProvider" />
+    </bean>
+    <service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="vmwareTopologyHopProvider">
         <service-properties>
             <entry key="label" value="VMware"/>
         </service-properties>
     </service>
-
-    <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="vmwareTopologyProvider">
+    <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="vmwareTopologyHopProvider">
         <service-properties>
             <entry key="label" value="VMware"/>
         </service-properties>
     </service>
-        
-    <service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="vmwareTopologyProvider">
+    <service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="vmwareTopologyHopProvider">
         <service-properties>
             <entry key="label" value="VMware"/>
         </service-properties>
@@ -39,7 +39,7 @@
 
     <!-- Meta topology provider -->
     <bean id="vmwareMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
-        <argument ref="vmwareTopologyProvider" />
+        <argument ref="vmwareTopologyHopProvider" />
     </bean>
 
     <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="vmwareMetaTopologyProvider">
@@ -48,6 +48,21 @@
         </service-properties>
     </service>
 
+    <!-- SearchProvider -->
+    <service interface="org.opennms.features.topology.api.topo.SearchProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.vmware.internal.VmwareTopologySearchProvider" >
+            <argument ref="vmwareTopologyProvider" /> <!-- use vmwareTopologyProvider, not the wrapped hop one -->
+        </bean>
+    </service>
+
+    <!-- StatusProvider -->
+    <service interface="org.opennms.features.topology.api.topo.StatusProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.vmware.internal.VmwareStatusProvider">
+            <argument ref="alarmDao" />
+        </bean>
+    </service>
+
+    <!-- Icon Repository -->
     <service>
         <interfaces>
             <value>org.opennms.features.topology.api.ConfigurableIconRepository</value>

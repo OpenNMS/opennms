@@ -34,8 +34,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.List;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -43,8 +41,10 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.netty.NettyComponent;
 import org.apache.camel.component.netty.NettyConstants;
 import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.impl.DefaultManagementNameStrategy;
 import org.apache.camel.impl.SimpleRegistry;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.opennms.core.camel.DispatcherWhiteboard;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
@@ -76,8 +76,12 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
     private DefaultCamelContext m_camel;
 
     private DistPollerDao m_distPollerDao = null;
-
-    private List<SyslogConnectionHandler> m_syslogConnectionHandlers = Collections.emptyList();
+    
+    /**
+     * {@link DispatcherWhiteboard} for broadcasting {@link SyslogConnection}
+     * objects to multiple channels such as AMQ and Kafka.
+     */
+    private DispatcherWhiteboard syslogDispatcher;
 
     /**
      * Construct a new receiver
@@ -127,15 +131,6 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         m_distPollerDao = distPollerDao;
     }
 
-    //Getter and setter for syslog handler
-    public SyslogConnectionHandler getSyslogConnectionHandlers() {
-        return m_syslogConnectionHandlers.get(0);
-    }
-
-    public void setSyslogConnectionHandlers(SyslogConnectionHandler handler) {
-        m_syslogConnectionHandlers = Collections.singletonList(handler);
-    }
-
     /**
      * The execution context.
      */
@@ -150,12 +145,20 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         Histogram packetSizeHistogram = METRICS.histogram(MetricRegistry.name(getClass(), "packetSize"));
 
         SimpleRegistry registry = new SimpleRegistry();
+        registry.put("syslogDispatcher", syslogDispatcher);
 
         //Adding netty component to camel inorder to resolve OSGi loading issues
         NettyComponent nettyComponent = new NettyComponent();
         m_camel = new DefaultCamelContext(registry);
+
         // Set the context name so that it shows up nicely in JMX
-        m_camel.setName("org.opennms.features.events.syslog.listener.camel-netty");
+        //
+        // @see org.apache.camel.management.DefaultManagementNamingStrategy
+        //
+        //m_camel.setManagementName("org.opennms.features.events.syslog.listener");
+        m_camel.setName("syslogdListenerCamelNettyContext");
+        m_camel.setManagementNameStrategy(new DefaultManagementNameStrategy(m_camel, "#name#", null));
+
         m_camel.addComponent("netty", nettyComponent);
 
         try {
@@ -170,6 +173,8 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                     );
                     
                     from(from)
+                    // Polled via JMX
+                    .routeId("syslogListen")
                     //.convertBodyTo(java.nio.ByteBuffer.class)
                     .process(new Processor() {
                         @Override
@@ -188,7 +193,10 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             // Create a metric for the syslog packet size
                             packetSizeHistogram.update(byteBuffer.remaining());
                             
-                            SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), byteBuffer, m_config, m_distPollerDao.whoami().getId());
+                            SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), byteBuffer, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
+                            exchange.getIn().setBody(connection, SyslogConnection.class);
+
+                            /*
                             try {
                                 for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {
                                     connectionMeter.mark();
@@ -197,9 +205,9 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             } catch (Throwable e) {
                                 LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
                             }
-
+                            */
                         }
-                    });
+                    }).to("bean:syslogDispatcher?method=dispatch");
                 }
             });
 
@@ -207,5 +215,13 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         } catch (Throwable e) {
             LOG.error("Could not configure Camel routes for syslog receiver", e);
         }
+    }
+
+    public DispatcherWhiteboard getSyslogDispatcher() {
+        return syslogDispatcher;
+    }
+
+    public void setSyslogDispatcher(DispatcherWhiteboard syslogDispatcher) {
+        this.syslogDispatcher = syslogDispatcher;
     }
 }

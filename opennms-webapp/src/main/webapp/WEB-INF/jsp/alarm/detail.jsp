@@ -106,7 +106,7 @@
     <jsp:param name="headTitle" value="Detail" />
     <jsp:param name="headTitle" value="Alarms" />
     <jsp:param name="breadcrumb" value="<a href='alarm/index.htm'>Alarms</a>" />
-    <jsp:param name="breadcrumb" value="<%="Alarm " + alarm.getId()%>" />
+    <jsp:param name="breadcrumb" value='<%="Alarm " + alarm.getId()%>' />
 </jsp:include>
 
 <div class="panel panel-default">

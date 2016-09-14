@@ -33,8 +33,8 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -55,6 +55,8 @@ import org.opennms.netmgt.model.ncs.NCSComponentVisitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
+
+import com.google.common.collect.Iterables;
 
 public class EventMappingRulesIT extends CorrelationRulesITCase {
 	
@@ -284,15 +286,15 @@ public class EventMappingRulesIT extends CorrelationRulesITCase {
         // Get engine
         DroolsCorrelationEngine engine = findEngineByName("eventMappingRules");
         
-        assertEquals("Expected nothing but got " + engine.getMemoryObjects(), 0, engine.getMemorySize());
+        assertEquals("Expected nothing but got " + engine.getKieSessionObjects(), 0, engine.getKieSessionObjects().size());
         
         engine.correlate( event );
-        
-        List<Object> memObjects = engine.getMemoryObjects();
+
+        Collection<? extends Object> memObjects = engine.getKieSessionObjects();
 
         assertEquals("Unexpected size of workingMemory " + memObjects, 1, memObjects.size());
 
-        Object eventObj = memObjects.get(0);
+        Object eventObj = Iterables.getFirst(memObjects, null);
 
         assertTrue( "expected " + eventObj + " to be an instance of " + componentEventClass, componentEventClass.isInstance(eventObj) );
         assertTrue( eventObj instanceof ComponentEvent );
@@ -311,11 +313,11 @@ public class EventMappingRulesIT extends CorrelationRulesITCase {
 		// Get engine
         DroolsCorrelationEngine engine = findEngineByName("eventMappingRules");
         
-        assertEquals("Expected nothing but got " + engine.getMemoryObjects(), 0, engine.getMemorySize());
+        assertEquals("Expected nothing but got " + engine.getKieSessionObjects(), 0, engine.getKieSessionObjects().size());
         
 		engine.correlate( event );
-		
-		List<Object> memObjects = engine.getMemoryObjects();
+
+		Collection<? extends Object> memObjects = engine.getKieSessionObjects();
 
 		// expect an ComponentX event for each component
 		assertEquals("Unexpected number of events added to memory " + memObjects, componentIds.size(), memObjects.size());
@@ -341,15 +343,15 @@ public class EventMappingRulesIT extends CorrelationRulesITCase {
 		// Get engine
         DroolsCorrelationEngine engine = findEngineByName("eventMappingRules");
         
-        assertEquals("Expected nothing but got " + engine.getMemoryObjects(), 0, engine.getMemorySize());
+		assertEquals("Expected nothing but got " + engine.getKieSessionObjects(), 0, engine.getKieSessionObjects().size());
         
 		engine.correlate( event );
 		
-		List<Object> memObjects = engine.getMemoryObjects();
+		Collection<? extends Object> memObjects = engine.getKieSessionObjects();
 
 		assertEquals("Unexpected size of workingMemory " + memObjects, 1, memObjects.size());
 
-		Object eventObj = memObjects.get(0);
+		Object eventObj = Iterables.getFirst(memObjects, null);
 
 		assertTrue( componentEventClass.isInstance(eventObj) );
 		assertTrue( eventObj instanceof ComponentEvent );
@@ -365,12 +367,12 @@ public class EventMappingRulesIT extends CorrelationRulesITCase {
 		
 		// Adding a copy of the event should not add to working memory
 		engine.correlate( event2 );
-		
-		memObjects = engine.getMemoryObjects();
+
+		memObjects = engine.getKieSessionObjects();
 
 		assertEquals("Unexpected size of workingMemory " + memObjects, 1, memObjects.size());
 
-		eventObj = memObjects.get(0);
+		eventObj = Iterables.getFirst(memObjects, null);
 
 		assertTrue( componentEventClass.isInstance(eventObj) );
 		assertTrue( eventObj instanceof ComponentEvent );

@@ -86,7 +86,8 @@ public abstract class ServletInitializer {
         
         Logging.putPrefix("web");
 
-        Properties properties = new Properties(System.getProperties());
+        Properties properties = new Properties();
+        properties.putAll(System.getProperties());
 
         /*
          * First, check if opennms.home is set, if so, we already have properties

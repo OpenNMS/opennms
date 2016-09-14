@@ -21,6 +21,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>!org.apache.bsf;!.org.apache.bsf.*;org.opennms.netmgt.provision.detector.bsf</Export-Package>
           </instructions>
         </configuration>
       </plugin>

@@ -29,6 +29,8 @@
 package org.opennms.features.topology.app.internal.info;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -147,6 +149,15 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
                         .append("@")
                         .append(error.getLineno())
                         .append("\n");
+
+                // NMS-8660: Retrieve the full stack trace from the underlying exception if available
+                if (error.getException() != null) {
+                    StringWriter stackTraceStringWriter = new StringWriter();
+                    PrintWriter stackTracePrintWriter = new PrintWriter(stackTraceStringWriter);
+                    error.getException().printStackTrace(stackTracePrintWriter);
+                    message.append(stackTraceStringWriter.toString());
+                    message.append("\n");
+                }
             }
 
             return new Label(message.toString(), ContentMode.PREFORMATTED);

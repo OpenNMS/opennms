@@ -35,6 +35,8 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
 import java.net.PortUnreachableException;
+import java.util.Collections;
+import java.util.Map;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
@@ -43,6 +45,9 @@ import javax.naming.NameNotFoundException;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+import org.opennms.netmgt.provision.DetectRequest;
+import org.opennms.netmgt.provision.DetectResults;
+import org.opennms.netmgt.provision.support.DetectResultsImpl;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,11 +90,19 @@ public abstract class JMXDetector extends SyncAbstractDetector {
         super(serviceName, port, timeout, retries);
     }
 
-    abstract protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) throws ConnectException, IOException, MalformedURLException;
+    abstract protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout, final Map<String, String> runtimeAttributes) throws ConnectException, IOException, MalformedURLException;
 
-    /** {@inheritDoc} */
+    @Override
+    public DetectResults detect(DetectRequest request) {
+        return new DetectResultsImpl(isServiceDetected(request.getAddress(), request.getRuntimeAttributes()));
+    }
+
     @Override
     public final boolean isServiceDetected(final InetAddress address) {
+        return isServiceDetected(address, Collections.emptyMap());
+    }
+
+    public final boolean isServiceDetected(final InetAddress address, Map<String, String> runtimeAttributes) {
         final String ipAddr = InetAddressUtils.str(address);
 
         final int port = getPort();
@@ -99,7 +112,7 @@ public abstract class JMXDetector extends SyncAbstractDetector {
 
         for (int attempts = 0; attempts < retries; attempts++) {
 
-            try (final JmxServerConnectionWrapper client = this.connect(address, port, timeout)) {
+            try (final JmxServerConnectionWrapper client = this.connect(address, port, timeout, runtimeAttributes)) {
                 LOG.info("isServiceDetected: {}: Attempting to connect to address: {}, port: {}, attempt: #{}", getServiceName(), ipAddr, port, attempts);
 
                 if (client.getMBeanServerConnection().getMBeanCount() <= 0) {

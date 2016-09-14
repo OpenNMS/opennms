@@ -29,7 +29,10 @@
 .marker-cluster-Normal div {
 	background-color:rgba(51,102,0,0.8);
 }
-
+.marker-cluster div {
+    position: absolute;
+    top: 0;
+}
 .node-marker-popup .leaflet-popup-content ul {
 	list-style-type:none;
 	padding-left:0;

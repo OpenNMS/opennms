@@ -16,9 +16,6 @@
 
   <context:annotation-config />
 
-  <!-- Pinger service -->
-  <!-- <onmsgi:reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" /> -->
-
   <!-- Event IPC manager service -->
   <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
 
@@ -66,7 +63,7 @@
 
   <!-- This processor performs ICMP pings and reports the results -->
   <bean id="discoverer" class="org.opennms.netmgt.discovery.actors.Discoverer">
-    <constructor-arg ref="pinger" />
+    <constructor-arg ref="pingerFactory" />
   </bean>
 
   <!-- This processor sends newSuspect events for IP addresses reported in a DiscoveryResult -->
@@ -84,10 +81,6 @@
   <bean id="daemon" class="org.opennms.netmgt.discovery.Discovery">
     <property name="discoveryFactory" ref="discoveryFactory" />
     <property name="eventForwarder" ref="eventForwarder" />
-    <property name="transactionOperations" ref="transactionTemplate" />
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
-    <property name="unmanagedInterfaceFilter" ref="unmanagedInterfaceFilter" />
   </bean>
 
   <!-- Create a Camel dispatcher that consumes DiscoveryConfiguration tasks -->
@@ -97,7 +90,7 @@
 
   <onmsgi:service interface="org.opennms.netmgt.discovery.DiscoveryTaskExecutor" ref="discoveryTaskExecutorCamel"/>
 
-  <camelContext id="discoveryCamelContext" xmlns="http://camel.apache.org/schema/spring">
+  <camelContext id="discoveryContext" xmlns="http://camel.apache.org/schema/spring">
 
     <!-- Bootstrap timer -->
     <route id="startDiscoveryTimer">

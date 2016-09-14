@@ -34,7 +34,6 @@ import javax.sql.XADataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public interface TemporaryDatabase extends DataSource, XADataSource {
-    public static final String TEST_DB_NAME_PREFIX = "opennms_test_";
     public static final String DRIVER_PROPERTY = "mock.db.driver";
     public static final String URL_PROPERTY = "mock.db.url";
     public static final String ADMIN_USER_PROPERTY = "mock.db.adminUser";
@@ -50,4 +49,7 @@ public interface TemporaryDatabase extends DataSource, XADataSource {
     public void drop() throws TemporaryDatabaseException;
     public int countRows(final String sql, Object... values);
     public JdbcTemplate getJdbcTemplate();
+    public void setClassName(String string);
+    public void setMethodName(String string);
+    public void setTestDetails(String string);
 }

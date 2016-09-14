@@ -40,7 +40,7 @@
                             <features>
                                 <!-- Minion Core Features -->
                                 <feature>minion-core</feature>
-                                <feature>minion-shell</feature>
+                                <feature>minion-core-shell</feature>
                             </features>
                             <repository>target/maven-repo</repository>
                         </configuration>

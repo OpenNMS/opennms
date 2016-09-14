@@ -357,12 +357,13 @@
       <bundle>wrap:mvn:org.springframework.webflow/spring-webflow/${springWebFlowVersion}</bundle>
     </feature>
 
-    <feature name="jicmp" description="jicmp" version="1.4.4">
-      <bundle>wrap:mvn:org.opennms/jicmp-api/1.4.4$Export-Package=org.opennms.protocols.icmp,org.opennms.protocols.ip</bundle>
+    <feature name="jicmp" description="jicmp" version="2.0.1">
+      <feature>guava</feature>
+      <bundle>mvn:org.opennms/jicmp-api/2.0.1</bundle>
     </feature>
 
-    <feature name="jicmp6" description="jicmp6" version="1.2.1">
-      <bundle>wrap:mvn:org.opennms/jicmp6-api/1.2.1$Export-Package=org.opennms.protocols.icmp6</bundle>
+    <feature name="jicmp6" description="jicmp6" version="2.0.1">
+      <bundle>mvn:org.opennms/jicmp6-api/2.0.1</bundle>
     </feature>
 
     <!-- OpenNMS features -->
@@ -516,6 +517,26 @@
       <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-core-ipc-sink" description="OpenNMS :: Core :: IPC :: Sink" version="${project.version}">
+      <feature>org.json</feature>
+      <feature>javax.mail</feature>
+      <feature>opennms-core-camel</feature>
+      <feature>camel-blueprint</feature>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.xml/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.camel-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-rpc" description="OpenNMS :: Core :: IPC :: RPC" version="${project.version}">
+      <feature>org.json</feature>
+      <feature>javax.mail</feature>
+      <feature>opennms-core-camel</feature>
+      <feature>camel-blueprint</feature>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.camel-impl/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-dao-api" description="OpenNMS :: DAO :: API" version="${project.version}">
       <feature>opennms-core</feature>
       <feature>opennms-model</feature>
@@ -642,10 +663,15 @@
     </feature>
 
     <feature name="opennms-provisioning" description="OpenNMS :: Provisioning" version="${project.version}">
+      <feature>opennms-provisioning-api</feature>
+      <feature>commons-lang</feature>
+      <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-provisioning-api" description="OpenNMS :: Provisioning :: API" version="${project.version}">
       <bundle dependency="true">mvn:org.apache.mina/mina-core/${minaVersion}</bundle>
       <bundle dependency="true">mvn:io.netty/netty/3.9.4.Final</bundle>
       <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
-      <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-reporting" description="OpenNMS :: Reporting" version="${project.version}">
@@ -884,4 +910,55 @@
       <!-- The main webapp WAR file -->
       <bundle>mvn:org.opennms/opennms-webapp/${project.version}/war</bundle>
     </feature>
+
+    <feature name="wsman-integration" version="${project.version}" description="OpenNMS :: Features :: WS-Man Integration">
+      <feature>opennms-collection-api</feature>
+      <feature>opennms-provisioning-api</feature>
+      <feature version="${cxfVersion}">cxf-jaxws</feature>
+      <feature version="${cxfVersion}">cxf-ws-addr</feature>
+      <bundle dependency="true">mvn:com.google.guava/guava/${guavaOldVersion}</bundle>
+      <bundle>mvn:org.opennms.core.wsman/org.opennms.core.wsman.api/${wsmanVersion}</bundle>
+      <bundle>mvn:org.opennms.core.wsman/org.opennms.core.wsman.cxf/${wsmanVersion}</bundle>
+      <bundle>mvn:org.opennms.features/org.opennms.features.wsman/${project.version}</bundle>
+    </feature>
+
+    <feature name="wmi-integration" version="${project.version}" description="OpenNMS :: Features :: WMI Integration">
+      <feature>opennms-collection-api</feature>
+      <feature>opennms-provisioning-api</feature>
+      <bundle>wrap:mvn:org.jinterop/j-interop/${jinteropVersion}</bundle>
+      <bundle>wrap:mvn:org.jinterop/j-interopdeps/${jinteropVersion}</bundle>
+      <bundle>mvn:org.opennms/opennms-wmi/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-provisioning-detectors" description="OpenNMS :: Provisioning :: Detectors" version="${project.version}">
+      <feature>opennms-provisioning-api</feature>
+      <bundle>wrap:mvn:com.novell.ldap/jldap/${jldapVersion}</bundle>
+      <bundle>wrap:mvn:org.samba.jcifs/jcifs/${jcifsVersion}</bundle>
+      <feature>opennms-icmp-api</feature>
+      <bundle>wrap:mvn:bsf/bsf/${bsfVersion}</bundle>
+      <feature>commons-cli</feature>
+      <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
+      <bundle>mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.impl/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detector-bsf/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detector-datagram/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detector-generic/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detector-jdbc/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detector-jmx/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detector-lineoriented/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detector-simple/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detector-ssh/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detector-web/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
+      <feature>wsman-integration</feature>
+      <feature>wmi-integration</feature>
+    </feature>
+    
+    <feature name="opennms-provisioning-shell" description="OpenNMS :: Provisioning :: Shell" version="${project.version}">
+      <!-- Dependencies should be available from the parent classloader and from the ONMSGi registry -->
+      <bundle>mvn:org.opennms/opennms-provision-shell/${project.version}</bundle>
+    </feature>
+
 </features>

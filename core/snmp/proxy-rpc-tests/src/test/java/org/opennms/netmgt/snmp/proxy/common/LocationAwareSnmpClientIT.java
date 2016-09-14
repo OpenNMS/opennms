@@ -239,7 +239,7 @@ public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
         final IPAddressGatheringTracker tracker = new IPAddressGatheringTracker();
         locationAwareSnmpClient.walk(agentConfig, tracker)
             .withDescription(tracker.getDescription())
-            .atLocation(REMOTE_LOCATION_NAME)
+            .withLocation(REMOTE_LOCATION_NAME)
             .execute().get();
         ExpectedResults.compareToKnownIpAddressList(tracker.getIpAddresses());
     }

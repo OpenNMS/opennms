@@ -36,6 +36,14 @@ import java.util.Properties;
 import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.Exchange;
+import org.apache.camel.Message;
+import org.apache.camel.Processor;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.kafka.KafkaConstants;
+import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.util.KeyValueHolder;
 import org.apache.curator.test.TestingServer;
 import org.junit.After;
@@ -46,16 +54,23 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager.EmptyEventConfDao;
+import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
+@ContextConfiguration(locations = {
+	"classpath:/META-INF/opennms/applicationContext-soa.xml",
+	"classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+})
+@JUnitConfigurationEnvironment
 public class TrapdHandlerKafkaDefaultIT extends CamelBlueprintTest {
 
 	private boolean mockInitialized = false;
@@ -131,6 +146,11 @@ public class TrapdHandlerKafkaDefaultIT extends CamelBlueprintTest {
 		);
 
 		services.put(
+			InterfaceToNodeCache.class.getName(),
+			new KeyValueHolder<Object, Dictionary>(new MockInterfaceToNodeCache(), new Properties())
+		);
+
+		services.put(
 			EventForwarder.class.getName(),
 			new KeyValueHolder<Object, Dictionary>(new EventForwarder() {
 				@Override
@@ -158,7 +178,58 @@ public class TrapdHandlerKafkaDefaultIT extends CamelBlueprintTest {
 
 	@Test
 	public void testTrapd() throws Exception {
-		// TODO: Implement tests
+		
+		SimpleRegistry registry = new SimpleRegistry();
+		CamelContext syslogd = new DefaultCamelContext(registry);
+		
+		syslogd.addRoutes(new RouteBuilder(){
+			@Override
+			public void configure() throws Exception {
+				from("direct:start").process(new Processor() {
+					@Override
+					public void process(Exchange exchange) throws Exception {
+						exchange.getIn().setBody("Test Message from Camel Kafka Component Final",String.class);
+						exchange.getIn().setHeader(KafkaConstants.PARTITION_KEY, 1);
+						exchange.getIn().setHeader(KafkaConstants.KEY, "1");
+					}
+				}).to("kafka:localhost:9092?topic=trapd&serializerClass=kafka.serializer.StringEncoder");
+			}
+		});
+
+		syslogd.addRoutes(new RouteBuilder() {
+			@Override
+			public void configure() throws Exception {
+
+				from("kafka:localhost:9092?topic=trapd&zookeeperHost=localhost&zookeeperPort=2181&groupId=testing")
+				.process(new Processor() {
+					@Override
+					public void process(Exchange exchange) throws Exception {
+						String messageKey = "";
+						if (exchange.getIn() != null) {
+							Message message = exchange.getIn();
+							Integer partitionId = (Integer)message.getHeader(KafkaConstants.PARTITION);
+							String topicName = (String)message.getHeader(KafkaConstants.TOPIC);
+							if (message.getHeader(KafkaConstants.KEY) != null) {
+								messageKey = (String)message.getHeader(KafkaConstants.KEY);
+							}
+
+							Object data = message.getBody();
+
+							System.out.println("topicName :: "
+									+ topicName + " partitionId :: "
+									+ partitionId + " messageKey :: "
+									+ messageKey + " message :: "
+									+ data + "\n");
+						}
+					}
+				}).to("log:input");
+
+			}
+		});
+
+		syslogd.start();
+
+		// TODO: Send messages and assert that they are processed correctly
 	}
 
 	@After

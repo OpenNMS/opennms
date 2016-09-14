@@ -80,8 +80,9 @@ import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
+import org.opennms.netmgt.provision.LocationAwareDetectorClient;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.provision.NodePolicy;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
@@ -176,7 +177,13 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Autowired
     private PlatformTransactionManager m_transactionManager;
 
-    private HostnameResolver m_hostnameResolver = new DefaultHostnameResolver();
+    private HostnameResolver m_hostnameResolver;
+
+    @Autowired
+    private LocationAwareDetectorClient m_locationAwareDetectorClient;
+    
+    @Autowired
+    private LocationAwareDnsLookupClient m_locationAwareDnsLookuClient;
 
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
@@ -188,6 +195,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
         RequisitionFileUtils.deleteAllSnapshots(m_pendingForeignSourceRepository);
+        m_hostnameResolver = new DefaultHostnameResolver(m_locationAwareDnsLookuClient);
     }
 
     /**
@@ -258,7 +266,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 LOG.debug("Node Label was set by hostname or address.  Re-resolving.");
                 final InetAddress addr = primary.getIpAddress();
                 final String ipAddress = str(addr);
-                final String hostname = m_hostnameResolver.getHostname(addr);
+                final String hostname = m_hostnameResolver.getHostname(addr, node.getLocation().getLocationName());
 
                 if (hostname == null || ipAddress.equals(hostname)) {
                     node.setLabel(ipAddress);
@@ -1180,33 +1188,14 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_ipInterfaceDao.flush();
 
         return iface;
-
     }
 
     /** {@inheritDoc} */
     @Override
-    public List<ServiceDetector> getDetectorsForForeignSource(final String foreignSourceName) {
+    public List<PluginConfig> getDetectorsForForeignSource(final String foreignSourceName) {
         final ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
-
-        final List<PluginConfig> detectorConfigs = foreignSource.getDetectors();
-        if (detectorConfigs == null) {
-            return new ArrayList<ServiceDetector>(m_pluginRegistry.getAllPlugins(ServiceDetector.class));
-        }
-
-        final List<ServiceDetector> detectors = new ArrayList<ServiceDetector>(detectorConfigs.size());
-        for(final PluginConfig detectorConfig : detectorConfigs) {
-            final ServiceDetector detector = m_pluginRegistry.getPluginInstance(ServiceDetector.class, detectorConfig);
-            if (detector == null) {
-                LOG.error("Configured plugin does not exist: {}", detectorConfig);
-            } else {
-                detector.setServiceName(detectorConfig.getName());
-                detector.init();
-                detectors.add(detector);
-            }
-        }
-
-        return detectors;
+        return foreignSource.getDetectors();
     }
 
     /** {@inheritDoc} */
@@ -1340,7 +1329,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource) {
+    public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource, final String locationString) {
 
         OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
 
@@ -1360,11 +1349,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             protected OnmsNode doInsert() {
                 final Date now = new Date();
 
-                OnmsMonitoringLocation location = createLocationIfNecessary(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+                OnmsMonitoringLocation location = createLocationIfNecessary(locationString);
                 // Associate the location with the node
                 final OnmsNode node = new OnmsNode(location);
 
-                final String hostname = m_hostnameResolver.getHostname(addr(ipAddress));
+                final String hostname = m_hostnameResolver.getHostname(addr(ipAddress), locationString);
                 if (hostname == null || ipAddress.equals(hostname)) {
                     node.setLabel(ipAddress);
                     node.setLabelSource(NodeLabelSource.ADDRESS);
@@ -1475,7 +1464,17 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
 
     @Override
+    public LocationAwareDetectorClient getLocationAwareDetectorClient() {
+        return m_locationAwareDetectorClient;
+    }
+    
+    @Override
     public LocationAwareSnmpClient getLocationAwareSnmpClient() {
         return m_locationAwareSnmpClient;
+    }
+
+    @Override
+    public LocationAwareDnsLookupClient getLocationAwareDnsLookupClient() {
+        return m_locationAwareDnsLookuClient;
     }
 }

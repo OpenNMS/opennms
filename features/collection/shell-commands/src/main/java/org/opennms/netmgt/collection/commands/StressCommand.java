@@ -371,6 +371,11 @@ public class StressCommand extends OsgiCommandSupport {
         }
 
         @Override
+        public String getLocationName() {
+            return null;
+        }
+
+        @Override
         public File getStorageDir() {
             // Copied from org.opennms.netmgt.collectd.org.opennms.netmgt.collectd#getStorageDir
             File dir = new File(Integer.toString(getNodeId()));

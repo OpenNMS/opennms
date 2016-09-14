@@ -14,20 +14,18 @@
 
 	<cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd.handler.kafka.default" update-strategy="reload">
 		<cm:default-properties>
-			<cm:property name="kafkahost" value="127.0.0.1" />
-			<cm:property name="kafkaport" value="9092" />
+			<cm:property name="kafkaAddress" value="127.0.0.1:9092" />
+			<!-- TODO: Use JmsQueueNameFactory to generate this name? -->
 			<cm:property name="kafkatopic" value="trapd" />
-			<cm:property name="zookeeperhost" value="127.0.0.1"/> 
+			<cm:property name="zookeeperhost" value="127.0.0.1"/>
 			<cm:property name="zookeeperport" value="2181"/>
-			<cm:property name="groupId" value="trapdconsumer"/>	
+			<cm:property name="groupId" value="trapdconsumer"/>
+			<cm:property name="consumerstreams" value="1"/>	
 		</cm:default-properties>
 	</cm:property-placeholder>
-	
-	<bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.TrapdIpManagerDaoImpl"/>
-	
-	<bean id="eventCreator" class="org.opennms.netmgt.trapd.EventCreator">
-		<argument ref="trapdIpMgr"/>
-	</bean>
+
+	<!-- Get a reference to the org.opennms.netmgt.dao.api.InterfaceToNodeCache -->
+	<reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory"/>
 
 	<!-- Get a reference to the org.opennms.netmgt.events.api.EventForwarder -->
 	<reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
@@ -47,22 +45,30 @@
 	</bean>
 
 	<bean id="trapNotificationHandlerDefault" class="org.opennms.netmgt.trapd.TrapNotificationHandlerDefaultImpl">
-		<property name="trapdIpManager" ref="trapdIpMgr"/>
+		<property name="interfaceToNodeCache" ref="interfaceToNodeCache"/>
 		<property name="processorFactory" ref="processorFactory"/>
 	</bean>
 
-	<camelContext id="trapNotificationHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
+	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
+		<argument value="org.opennms.netmgt.snmp.TrapNotification" />
+	</bean>
+
+	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
+	<camelContext id="trapdHandlerKafkaDefaultContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:trapHandlerDefaultProperties" />
-		
-		<route id="receiveTrapConnection">
-			<from uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}"/>
-			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/>
+
+		<route id="receiveTrapConnectionViaKafka">
+			<from uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}&amp;consumerStreams={{consumerstreams}}"/>
+
+			<!-- TODO: Implement this unmarshaller -->
+			<!-- <bean ref="kafkaDecoder" method="fromBytes"/> -->
+
+			<!-- <convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification"/> -->
 			<to uri="seda:trapHandler"/>
 		</route>
 
 		<route id="trapHandler">
 			<from uri="seda:trapHandler" />
-			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification" />
 			<!--
 				Pass the message to the default handler which will convert it into 
 				an event and broadcast the event.

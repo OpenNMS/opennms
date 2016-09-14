@@ -46,8 +46,10 @@ import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager.EmptyEventConfDao;
+import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
@@ -55,6 +57,7 @@ import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
@@ -67,7 +70,11 @@ import org.snmp4j.smi.VariableBinding;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
+@ContextConfiguration(locations = {
+	"classpath:/META-INF/opennms/applicationContext-soa.xml",
+	"classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+})
+@JUnitConfigurationEnvironment
 public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 
 	private boolean mockInitialized = false;
@@ -92,6 +99,11 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 		services.put(
 			TrapdConfig.class.getName(),
 			new KeyValueHolder<Object, Dictionary>(config, new Properties())
+		);
+
+		services.put(
+			InterfaceToNodeCache.class.getName(),
+			new KeyValueHolder<Object, Dictionary>(new MockInterfaceToNodeCache(), new Properties())
 		);
 
 		services.put(
@@ -136,10 +148,10 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 		trapHandler.setExpectedMessageCount(1);
 
 		/*
-		MockTrapdIpMgr m_trapdIpMgr=new MockTrapdIpMgr();
+		MockTrapdIpMgr m_cache=new MockTrapdIpMgr();
 
-		m_trapdIpMgr.clearKnownIpsMap();
-		m_trapdIpMgr.setNodeId("127.0.0.1", 1);
+		m_cache.clearKnownIpsMap();
+		m_cache.setNodeId("127.0.0.1", 1);
 		*/
 
 		// create instance of snmp4JV2cTrap
