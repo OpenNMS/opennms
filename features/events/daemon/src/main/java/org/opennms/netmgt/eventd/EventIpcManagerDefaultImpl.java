@@ -579,6 +579,10 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
     @Override
     public boolean hasEventListener(final String uei) {
-        return this.m_ueiListeners.containsKey(uei);
+        if (this.m_ueiListeners.containsKey(uei)) {
+            return this.m_ueiListeners.get(uei).size() > 0;
+        } else {
+            return false;
+        }
     }
 }
