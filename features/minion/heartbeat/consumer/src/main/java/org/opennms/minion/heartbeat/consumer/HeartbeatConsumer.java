@@ -29,6 +29,7 @@
 package org.opennms.minion.heartbeat.consumer;
 
 import com.google.common.collect.Sets;
+
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -38,6 +39,7 @@ import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -80,7 +82,11 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
 
     @Autowired
     @Qualifier("eventProxy")
-    private EventProxy m_eventProxy;
+    private EventProxy eventProxy;
+
+    @Autowired
+    @Qualifier("eventSubscriptionService")
+    private EventSubscriptionService eventSubscriptionService;
 
     @Override
     @Transactional
@@ -92,10 +98,14 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
         if (minion == null) {
             minion = new OnmsMinion();
             minion.setId(minionHandle.getId());
+
+            // The real location is filled in below, but we set this to null
+            // for now to detect requisition changes
+            minion.setLocation(null);
         }
 
-        String prevLocation = minion.getLocation();
-        String nextLocation = minionHandle.getLocation();
+        final String prevLocation = minion.getLocation();
+        final String nextLocation = minionHandle.getLocation();
 
         minion.setLocation(minionHandle.getLocation());
 
@@ -111,7 +121,13 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
     private void provision(final OnmsMinion minion,
                            final String prevLocation,
                            final String nextLocation) {
+        // Return fast if automatic provisioning is disabled
         if (!PROVISIONING) {
+            return;
+        }
+
+        // Return fast until the provisioner is running to pick up the events send below
+        if (!this.eventSubscriptionService.hasEventListener(EventConstants.RELOAD_IMPORT_UEI)) {
             return;
         }
 
@@ -125,7 +141,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
             final Requisition prevRequisition = this.deployedForeignSourceRepository.getRequisition(prevForeignSource);
             if (prevRequisition != null && prevRequisition.getNode(minion.getId()) != null) {
                 prevRequisition.deleteNode(minion.getId());
-                prevRequisition.setDate(new Date());
+                prevRequisition.updateDateStamp();
 
                 deployedForeignSourceRepository.save(prevRequisition);
                 deployedForeignSourceRepository.flush();
@@ -137,7 +153,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
         Requisition nextRequisition = deployedForeignSourceRepository.getRequisition(nextForeignSource);
         if (nextRequisition == null) {
             nextRequisition = new Requisition(nextForeignSource);
-            nextRequisition.setDate(new Date());
+            nextRequisition.updateDateStamp();
 
             // We have to save the requisition before we can alter the according foreign source definition
             deployedForeignSourceRepository.save(nextRequisition);
@@ -181,7 +197,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
             eventBuilder.addParam(EventConstants.PARM_URL, String.valueOf(deployedForeignSourceRepository.getRequisitionURL(alteredForeignSource)));
 
             try {
-                m_eventProxy.send(eventBuilder.getEvent());
+                eventProxy.send(eventBuilder.getEvent());
             } catch (final EventProxyException e) {
                 throw new DataAccessResourceFailureException("Unable to send event to import group " + alteredForeignSource, e);
             }
