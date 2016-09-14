@@ -42,6 +42,7 @@
     <module>mina</module>
     <module>netty</module>
     <module>newts</module>
+    <module>owasp-encoder</module>
     <module>pax-exam</module>
     <module>quartz</module>
     <module>rancid</module>
