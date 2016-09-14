@@ -553,6 +553,12 @@ public class EventToIndex {
 
 		}
 
+		// set alarm cleared / deleted time null if an alarm create event
+		if(ALARM_CREATED_EVENT.equals(event.getUei())){
+			body.put(ALARM_CLEAR_TIME, null);
+			body.put(ALARM_DELETED_TIME, null);
+		}
+		
 		// set alarm cleared time if an alarm clear event
 		if(ALARM_CLEARED_EVENT.equals(event.getUei())){
 			Calendar alarmClearCal=Calendar.getInstance();

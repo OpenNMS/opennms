@@ -238,8 +238,8 @@
     <event-label>Generic AlarmChangeNotifier Alarm Raise %parm[testParam]%</event-label>
     <descr>Generic AlarmChangeNotifier Alarm Raise %parm[testParam]%</descr>
     <logmsg dest='logndisplay'>Generic AlarmChangeNotifier Alarm Raise %parm[testParam]%</logmsg>
-    <operinstruct></operinstruct>
     <severity>Minor</severity>
+    <operinstruct></operinstruct>
     <alarm-data reduction-key="%uei%:%nodeid%:%interface%:%parm[testParam]%" alarm-type="1" auto-clean="false">
       <update-field field-name="severity" update-on-reduction="true" />
       <update-field field-name="logmsg" update-on-reduction="true" />
@@ -252,6 +252,7 @@
     <descr>Generic AlarmChangeNotifier Alarm Clear %parm[testParam]%</descr>
     <logmsg dest='logndisplay'>Generic AlarmChangeNotifier Alarm Clear %parm[testParam]%</logmsg>
     <severity>Cleared</severity>
+    <operinstruct></operinstruct>
     <alarm-data reduction-key="%uei%:%nodeid%:%interface%:%parm[testParam]%"
       clear-key="uei.opennms.org/plugin/AlarmChangeNotificationEvent/TestAlarm/genericAlarmRaise:%parm[testParam]%"
       alarm-type="2"
