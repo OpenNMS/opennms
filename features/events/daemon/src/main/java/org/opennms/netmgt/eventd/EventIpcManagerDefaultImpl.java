@@ -576,4 +576,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.state(m_eventHandlerPool == null, "handlerQueueLength property cannot be set after afterPropertiesSet() is called");
         m_handlerQueueLength = size;
     }
+
+    @Override
+    public boolean hasEventListener(final String uei) {
+        return this.m_ueiListeners.containsKey(uei);
+    }
 }
