@@ -137,7 +137,7 @@
 
 <script>
 $(document).ready(function(){
-	$('table.severity tr>td.bright:last-child').each(
+	$('table.severity tr>td.divider:last-child').each(
 		function(i,e){
 			try {
 				var td=$(e);
