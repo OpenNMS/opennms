@@ -120,14 +120,30 @@
             </mbean>
 
 
+            <!-- Route stats for RPC.Server.Detect -->
+            <mbean name="Provisioning Detectors RPC Server" objectname="org.apache.camel:context=org.opennms.core.ipc.rpc.camel-impl,type=routes,name=&quot;RPC.Server.Detect&quot;">
+                <attrib name="ExchangesCompleted" alias="DetectComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="DetectFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="DetectTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="DetectMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="DetectMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="DetectMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="DetectLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="DetectTotProc" type="counter"/>
+            </mbean>
+
+
             <!-- TODO: Collect route stats for RPC.Server.Discover (when available) -->
 
 
-            <!-- TODO: Collect route stats for RPC.Server.Detect -->
+            <!-- TODO: Collect route stats for RPC.Server.DNS (when available) -->
+
+
+            <!-- TODO: Collect route stats for RPC.Server.Poll (when available) -->
 
 
             <!-- Route stats for RPC.Server.SNMP -->
-            <mbean name="SNMP RPC Server" objectname="org.apache.camel:context=org.opennms.core.rpc.camel-impl,type=routes,name=&quot;RPC.Server.SNMP&quot;">
+            <mbean name="SNMP RPC Server" objectname="org.apache.camel:context=org.opennms.core.ipc.rpc.camel-impl,type=routes,name=&quot;RPC.Server.SNMP&quot;">
                 <attrib name="ExchangesCompleted" alias="SnmpComplete" type="counter"/>
                 <attrib name="ExchangesFailed" alias="SnmpFailed" type="counter"/>
                 <attrib name="ExchangesTotal" alias="SnmpTotal" type="counter"/>
@@ -137,9 +153,6 @@
                 <attrib name="LastProcessingTime" alias="SnmpLastProc" type="gauge"/>
                 <attrib name="TotalProcessingTime" alias="SnmpTotProc" type="counter"/>
             </mbean>
-
-
-            <!-- TODO: Collect route stats for RPC.Server.Poll (when available) -->
 
 
             <!--
