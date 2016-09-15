@@ -26,16 +26,14 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.owasp.encoder</groupId>
-      <artifactId>encoder-jsp</artifactId>
-      <version>${owaspEncoderVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>http://maven.opennms.org/content/repositories/central/</url>
+    </repository>
+  </repositories>
 </project>
