@@ -33,9 +33,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
-import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,8 +70,8 @@ import org.w3c.dom.NodeList;
  * If the databaseName attribute is set then the factory simply uses the relevant
  * field values rather than loading from opennms-datasources.xml
  */
-public class DbNotifierDataSourceFactory {
-	private static final Logger LOG = LoggerFactory.getLogger(DbNotifierDataSourceFactory.class);
+public class DbNotifierDataSourceFactoryOld {
+	private static final Logger LOG = LoggerFactory.getLogger(DbNotifierDataSourceFactoryOld.class);
 
 	private static final String OPENNMS_DATASOURCE_CONFIG_FILE_NAME="opennms-datasources.xml";
 
@@ -184,29 +181,31 @@ public class DbNotifierDataSourceFactory {
 					if(istream==null) throw new RuntimeException("could not load database config from classpath "+OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
 				}
 
-				DataSourceConfiguration dsconfig = CastorUtils.unmarshal(DataSourceConfiguration.class, istream);
-				JdbcDataSource[] datasourceArray = dsconfig.getJdbcDataSource();
-				
+
+				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder builder = factory.newDocumentBuilder();
+				Document document = builder.parse(istream);
+
+				document.getDocumentElement().normalize();
+
+				NodeList listOfDatasources = document.getElementsByTagName("jdbc-data-source");
+
 				String dataSourceName=null;
-				JdbcDataSource ds=null;
+				String urlStr=null;
 				int index = 0;
-				
-				while( ( ! OPENNMS_DATA_SOURCE_NAME.equals(dataSourceName) ) && (index<datasourceArray.length) ){
-					ds=datasourceArray[index];
-					dataSourceName= ds.getName();
+
+				while( ( ! OPENNMS_DATA_SOURCE_NAME.equals(dataSourceName) )
+						&& (index<listOfDatasources.getLength()) ){
+
+					Node n = listOfDatasources.item(index);
+					NamedNodeMap attrs = n.getAttributes();
+					dataSourceName = attrs.getNamedItem("name").getNodeValue();
+					userName = attrs.getNamedItem("user-name").getNodeValue();
+					passWord = attrs.getNamedItem("password").getNodeValue();
+					dataBaseName = attrs.getNamedItem("database-name").getNodeValue();
+					urlStr = attrs.getNamedItem("url").getNodeValue();
 					index++;
 				}
-				
-				if ( ! OPENNMS_DATA_SOURCE_NAME.equals(dataSourceName)){
-					throw new RuntimeException("no datasource "+OPENNMS_DATA_SOURCE_NAME
-							+ " found in "+OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
-				}
-				
-				userName = ds.getUserName();
-				passWord = ds.getPassword();
-				dataBaseName = ds.getDatabaseName();
-				
-				String urlStr = ds.getUrl();
 
 				// parse out the hostname and port by removing jdbc:postgresql:
 				String baseUrl=	urlStr.replace("jdbc:postgresql:","http:");

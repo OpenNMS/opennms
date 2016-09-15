@@ -213,6 +213,12 @@
       <artifactId>org.opennms.core.api</artifactId>
       <scope>provided</scope>
     </dependency>
+    
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.db</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
