@@ -257,6 +257,10 @@
       <bundle>wrap:mvn:org.json/json/20140107$Export-Package=org.json</bundle>
     </feature>
 
+    <feature name="owasp-encoder" description="owasp-encoder" version="${owaspEncoderVersion}">
+      <bundle>wrap:mvn:org.owasp.encoder/encoder/${owaspEncoderVersion}$Export-Package=org.owasp.encoder</bundle>
+    </feature>
+
     <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="${postgresqlVersion}">
       <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
       <bundle>wrap:mvn:org.postgresql/postgresql/${postgresqlVersion}</bundle>
@@ -293,6 +297,7 @@
       <feature>commons-io</feature>
       <feature>dnsjava</feature>
       <feature>jaxb</feature>
+      <feature>owasp-encoder</feature>
 
       <bundle>mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.criteria/${project.version}</bundle>

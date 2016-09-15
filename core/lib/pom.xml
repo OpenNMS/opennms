@@ -33,6 +33,12 @@
       <artifactId>org.opennms.core.api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>owasp-encoder-dependencies</artifactId>
+      <scope>compile</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
