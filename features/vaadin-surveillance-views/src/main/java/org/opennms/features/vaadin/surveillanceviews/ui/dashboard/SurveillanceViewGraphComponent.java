@@ -207,6 +207,7 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
         m_graphLayout = new VerticalLayout();
         m_graphLayout.setSizeUndefined();
         m_graphLayout.setWidth(100, Unit.PERCENTAGE);
+        m_graphLayout.setMargin(true);
 
         /**
          * create layout for selection boxes
