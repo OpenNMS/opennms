@@ -79,7 +79,7 @@
     </feature>
 
     <feature name="owasp-encoder" description="owasp-encoder" version="${owaspEncoderVersion}">
-      <bundle>wrap:mvn:org.owasp/encoder/${owaspEncoderVersion}$Export-Package=org.owasp.encoder</bundle>
+      <bundle>wrap:mvn:org.owasp.encoder/encoder/${owaspEncoderVersion}$Export-Package=org.owasp.encoder</bundle>
     </feature>
 
     <feature name="slf4j-api" description="slf4j :: API" version="${slf4jVersion}">
