@@ -30,6 +30,7 @@ package org.opennms.plugins.elasticsearch.rest.archive.cmd;
 
 import java.net.URL;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
@@ -111,7 +112,7 @@ public class SendEventsToEsCommand extends OsgiCommandSupport {
 			LOG.info(msg);
 			System.out.println(msg);
 		} catch (Exception e) {
-			System.err.println("Error Sending Historical Events to ES (see karaf log) "+e);
+			System.err.println("Error Sending Historical Events to ES (see karaf log) "+ExceptionUtils.getStackTrace(e));
 			LOG.error("Error Sending Historical Events to ES ",e);
 		}
 		return null;

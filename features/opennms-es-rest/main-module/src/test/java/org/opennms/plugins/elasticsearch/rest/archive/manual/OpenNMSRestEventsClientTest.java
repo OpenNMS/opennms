@@ -60,18 +60,17 @@ public class OpenNMSRestEventsClientTest {
 		onmsRestEventsClient.setOnmsUserName(userName);
 
 
-		List<Event> receivedEvents = onmsRestEventsClient.getEvents(1, 10);
+		List<Event> receivedEvents = onmsRestEventsClient.getEvents(1, 5);
 
 		if (receivedEvents.isEmpty()){
-			LOG.debug("\nNO RECEIVED EVENTS ----------------------------------------");
+			LOG.debug("\nNO TEST RECEIVED EVENTS ----------------------------------------");
 		} else {
 
-			LOG.debug("\nRECEIVED EVENTS ("+receivedEvents
-					+ ") ----------------------------------------");
+			LOG.debug("\nTEST RECEIVED EVENTS ----------------------------------------");
 			for(Event event : receivedEvents){
-				LOG.debug(event.toString());
+				LOG.debug("Event id: "+ event.getDbid()+" uei: "+ event.getUei());
 			}
-			LOG.debug("\nEND OF RECEIVED EVENTS ----------------------------------------");
+			LOG.debug("\nEND OF TEST RECEIVED EVENTS ----------------------------------------");
 		}
 		LOG.debug("finished getEventsTest");
 

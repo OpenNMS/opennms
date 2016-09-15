@@ -46,14 +46,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsEventCollection;
-import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Logmsg;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,11 +56,9 @@ import org.slf4j.LoggerFactory;
  * @author cgallen
  *
  */
-public class OnmsRestEventsClient {
-	
-	public static final String NODE_LABEL="nodelabel";
+public class OnmsRestEventsClientOld {
 
-	private static final Logger LOG = LoggerFactory.getLogger(OnmsRestEventsClient.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OnmsRestEventsClientOld.class);
 
 
 	public static final String EVENTS_URI="/opennms/rest/events";
@@ -206,33 +197,43 @@ public class OnmsRestEventsClient {
 				LOG.debug(response.getStatusLine().toString());
 
 				responseStr= EntityUtils.toString(response.getEntity());
-				LOG.debug("response String: "+responseStr);
+				LOG.debug(responseStr);
 				LOG.debug("----------------------------------------");
 			} finally {
 				response.close();
 			}
 
-			StringReader reader = new StringReader(responseStr);
-			
-			OnmsEventCollection eventCollection = JaxbUtils.unmarshal(OnmsEventCollection.class, reader);
-			
-			LOG.debug("received xml OnmsEvent's ----------------------------------------");
-			LOG.debug("eventCollection offset:"+eventCollection.getOffset()
-		 			+ " totalCount:"+eventCollection.getTotalCount()
-			         + " size"+eventCollection.size());
+			JAXBContext jc = JAXBContext.newInstance(XmlOnmsEventCollection.class);
 
-			for(int i=0 ; i< eventCollection.size(); i++){
-				LOG.debug("event:"+eventCollection.get(i));
+			Unmarshaller unmarshaller = jc.createUnmarshaller();
+			StringReader reader = new StringReader(responseStr);
+			XmlOnmsEventCollection eventCollection = (XmlOnmsEventCollection) unmarshaller.unmarshal(reader);
+			
+			eventCollection.getOffset();
+			eventCollection.getTotalCount();
+			
+			LOG.debug("received xml events ----------------------------------------");
+			for(XmlOnmsEvent xmlOnmsevent : eventCollection){
+				LOG.debug("event:"+xmlOnmsevent);
 			}
 
-			LOG.debug("converting to events ----------------------------------------");
+			//			JAXBContext jc = JAXBContext.newInstance(Events.class);
+			//
+			//	        Unmarshaller unmarshaller = jc.createUnmarshaller();
+			//	        StringReader reader = new StringReader(responseStr);
+			//	        Events eventCollection = (Events) unmarshaller.unmarshal(reader);
+			//			
+			//			for(Event event : eventCollection.getEventCollection()){
+			//				System.out.println("event:"+event);
+			//			}
 
-			for(int i=0 ; i< eventCollection.size(); i++){
-			    Event event= toEvent(eventCollection.get(i));
-			    LOG.debug(event.toString());
-			    retrievedEvents.add(event);
-		    }
-			
+			LOG.debug("converting to events ----------------------------------------");
+			for(XmlOnmsEvent xmlOnmsevent : eventCollection){
+				Event event= xmlOnmsevent.toEvent();
+				LOG.debug(event.toString());
+				retrievedEvents.add(event);
+			}
+
 		} catch (Exception e){
 			throw new RuntimeException("exception when getting event list",e);
 		} finally {
@@ -242,100 +243,4 @@ public class OnmsRestEventsClient {
 		}
 		return retrievedEvents;
 	}
-	
-	
-	public Event toEvent(OnmsEvent onmsEvent){
-		
-		
-
-		Event event = new Event();
-
-		/** used in EventToIndex
-		//event.getDbid();
-		//event.getUei();
-		//event.getCreationTime();
-		//event.getSource();
-		event.getInterfaceAddress();
-		event.getService();
-		//event.getSeverity();
-		//event.getDescr();
-		//event.getHost();
-		//event.getParmCollection();
-		event.getInterface();
-		//event.getLogmsg().getContent();
-		//event.getLogmsg().getDest();
-		event.getNodeid();
-		 **/
-
-		if (onmsEvent.getId()!=null) event.setDbid(onmsEvent.getId());
-		if (onmsEvent.getEventUei() !=null ) event.setUei(onmsEvent.getEventUei());
-		if (onmsEvent.getEventCreateTime() !=null ) event.setCreationTime(onmsEvent.getEventCreateTime());
-		//event.setSource(onmsEvent.getEventSource();
-		//event.setInterfaceAddress()
-		//event.setService()
-		if (onmsEvent.getSeverityLabel() !=null ) event.setSeverity(onmsEvent.getSeverityLabel());
-		if (onmsEvent.getEventDescr() !=null ) event.setDescr(onmsEvent.getEventDescr());
-		if (onmsEvent.getEventHost()!=null ) event.setHost(onmsEvent.getEventHost());
-		
-		List<Parm> parmColl=new ArrayList<Parm>();
-		if (onmsEvent.getEventParameters()!=null) {
-			List<OnmsEventParameter> params = onmsEvent.getEventParameters();
-			
-			for(OnmsEventParameter onmsEventParameter:params){
-				
-				String parmName = onmsEventParameter.getName();
-				String type = onmsEventParameter.getType();
-				String value = onmsEventParameter.getValue();
-				
-				Parm parm = new Parm();
-				parm.setParmName(parmName);
-				Value parmvalue = new Value();
-				parmvalue.setType(type);
-				parmvalue.setContent(value);
-				parm.setValue(parmvalue);
-				
-				parmColl.add(parm);
-			}
-			
-		}
-		
-		// add node label as param
-		if ( onmsEvent.getNodeLabel()!=null){
-			Parm parm = new Parm();
-			parm.setParmName(NODE_LABEL);
-			Value parmValue = new Value();
-			parm.setValue(parmValue);
-			parmValue.setType("string");
-			parmValue.setEncoding("text");
-			parmValue.setContent(onmsEvent.getNodeLabel());
-			parmColl.add(parm);
-		}
-		event.setParmCollection(parmColl);
-			
-		//event.getInterface(onmsEvent.getI)
-
-		if (onmsEvent.getEventLogMsg() !=null ) {
-			Logmsg logmsg = new Logmsg();
-			logmsg.setContent(onmsEvent.getEventLogMsg());
-			event.setLogmsg(logmsg );
-		}
-
-		if (onmsEvent.getNodeId() !=null ) {
-			Integer i = onmsEvent.getNodeId();
-			Long l = Long.valueOf(i.longValue());
-			event.setNodeid(l);
-		}
-
-		return event;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

@@ -160,7 +160,7 @@ public class OpenNMSHistoricEventsToEs {
 					List<Parm> parmCollection = event.getParmCollection();
 					ListIterator<Parm> iter = parmCollection.listIterator();
 					while(iter.hasNext()){
-					    if(XmlOnmsEvent.NODE_LABEL.equals(iter.next().getParmName())){
+					    if(OnmsRestEventsClient.NODE_LABEL.equals(iter.next().getParmName())){
 					        iter.remove();
 					    }
 					}
@@ -176,7 +176,9 @@ public class OpenNMSHistoricEventsToEs {
 		}
 
 		return "Sent "+eventsSent
-				+ " events to Elastic Search. First event id="+firstEvent.getDbid()+ " last event id="+lastEvent.getDbid();
+				+ " events to Elastic Search. First event "
+				+ "id="+((firstEvent!=null) ? firstEvent.getDbid() : "firstEvent null")
+				+ " last event id="+((lastEvent!=null) ? lastEvent.getDbid() : "lastEvent null");
 	}
 
 
