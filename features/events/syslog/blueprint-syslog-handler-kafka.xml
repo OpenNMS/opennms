@@ -31,7 +31,7 @@
 		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
 	</bean>
 	
-	<bean id="miniondtomapper" class="org.opennms.netmgt.syslogd.MinionDTOMapper"/>
+	<bean id="miniondtomapper" class="org.opennms.netmgt.syslogd.SyslogDTOMapper"/>
 	
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
 

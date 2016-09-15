@@ -69,7 +69,7 @@ public class SyslogMarshallerUnmarshallerTest {
 		SyslogConnection syslogConn = new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap(messageBytes), config, systemId.toString(), MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
 		
 		// Map from SyslogConnection to SyslogDTO object
-		MinionDTOMapper minionDtoMapper = new MinionDTOMapper();
+		SyslogDTOMapper minionDtoMapper = new SyslogDTOMapper();
 		SyslogDTO syslogDto = minionDtoMapper.object2dto(syslogConn);
 		
 		// Marshall SyslogDTO

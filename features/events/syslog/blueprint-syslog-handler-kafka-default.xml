@@ -36,7 +36,7 @@
 		<argument ref="syslogdConfig"/>
 	</bean>
 
-	<bean id="miniondtomapper" class="org.opennms.netmgt.syslogd.MinionDTOMapper"/>
+	<bean id="miniondtomapper" class="org.opennms.netmgt.syslogd.SyslogDTOMapper"/>
 
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
 	<camelContext id="syslogdHandlerKafkaDefaultContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">

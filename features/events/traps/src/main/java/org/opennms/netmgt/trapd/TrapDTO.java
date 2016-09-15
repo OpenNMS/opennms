@@ -53,99 +53,35 @@ public class TrapDTO extends MinionDTO {
     protected TrapDTO() {
         // No-arg constructor for JAXB
     	super();
-    }
-    
-    private String m_systemId;
-    
-    private String m_location;
-    
-    private InetAddress m_sourceAddress;
-	
-    private String m_community;
-	
-    private String m_pduLength;
-	
-    private String m_version;
-	
-    private Long m_timestamp;
-	
-    private InetAddress m_trapAddress;	
+    }	
 	
     @XmlElement(name="result")
     private List<SnmpResult> results = new ArrayList<>(0);
-    
-	public String getSystemId() {
-		return m_systemId;
-	}
-
-	public void setSystemId(String m_systemId) {
-		this.m_systemId = m_systemId;
-		super.getHeaders().put(MinionDTO.SYSTEM_ID, m_systemId);
-	}
-
-	public String getLocation() {
-		return m_location;
-	}
-
-	public void setLocation(String m_location) {
-		this.m_location = m_location;
-		super.getHeaders().put(MinionDTO.LOCATION, m_location);
-	}
-
-	public InetAddress getSourceAddress() {
-		return m_sourceAddress;
-	}
-
-	public void setSourceAddress(InetAddress m_sourceAddress) {
-		this.m_sourceAddress = m_sourceAddress;
-		super.getHeaders().put(MinionDTO.SOURCE_ADDRESS, m_sourceAddress.toString());
-	}
-
-	public String getCommunity() {
-		return m_community;
-	}
 
 	public void setCommunity(String m_community) {
-		this.m_community = m_community;
-		super.getHeaders().put(COMMUNITY, m_community);
-	}
-
-	public String getPduLength() {
-		return m_pduLength;
+		super.putIntoMap(COMMUNITY, m_community);
 	}
 
 	public void setPduLength(String m_pduLength) {
-		this.m_pduLength = m_pduLength;
-		super.getHeaders().put(PDU_LENGTH, m_pduLength);
-	}
-
-	public String getVersion() {
-		return m_version;
+		super.putIntoMap(PDU_LENGTH, m_pduLength);
 	}
 
 	public void setVersion(String m_version) {
-		this.m_version = m_version;
-		super.getHeaders().put(VERSION, m_version);
-	}
-
-	public Long getTimestamp() {
-		return m_timestamp;
+		super.putIntoMap(VERSION, m_version);
 	}
 
 	public void setTimestamp(Long m_timestamp) {
-		this.m_timestamp = m_timestamp;
-		super.getHeaders().put(TIMESTAMP, String.valueOf(m_timestamp));
-	}
-
-	public InetAddress getTrapAddress() {
-		return m_trapAddress;
+		super.putIntoMap(TIMESTAMP, String.valueOf(m_timestamp));
 	}
 
 	public void setTrapAddress(InetAddress m_trapAddress) {
-		this.m_trapAddress = m_trapAddress;
-		super.getHeaders().put(TRAP_ADDRESS, String.valueOf(m_trapAddress));
+		super.putIntoMap(TRAP_ADDRESS, String.valueOf(m_trapAddress));
 	}
 
+	public void setAgentAddress(InetAddress m_agentAddress) {
+		super.putIntoMap(SOURCE_ADDRESS, String.valueOf(m_agentAddress));
+	}
+	
 	public List<SnmpResult> getResults() {
 		return results;
 	}

@@ -3,7 +3,7 @@ package org.opennms.netmgt.syslogd;
 import org.opennms.core.camel.MinionDTO;
 import org.opennms.core.utils.InetAddressUtils;
 
-public class MinionDTOMapper {
+public class SyslogDTOMapper {
 
 	public SyslogDTO object2dto(Object obj){
 		

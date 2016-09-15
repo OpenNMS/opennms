@@ -81,22 +81,22 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
         }
 
         @Override
-        protected InetAddress getTrapAddress() {
+		public InetAddress getTrapAddress() {
             return m_pdu.getAgentAddress().getInetAddress();
         }
 
         @Override
-        protected String getVersion() {
+		public String getVersion() {
             return "v1";
         }
 
         @Override
-        protected int getPduLength() {
+		public int getPduLength() {
             return m_pdu.getVariableBindings().size();
         }
 
         @Override
-        protected long getTimeStamp() {
+		public long getTimeStamp() {
             return m_pdu.getTimestamp();
         }
 
@@ -180,17 +180,17 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
          * Returns the Protocol Data Unit that was encapsulated within the SNMP
          * Trap message
          */
-        private PDU getPdu() {
+        public PDU getPdu() {
             return m_pdu;
         }
         
         @Override
-        protected int getPduLength() {
+		public int getPduLength() {
             return getPdu().size();
         }
         
         @Override
-        protected long getTimeStamp() {
+		public long getTimeStamp() {
 
 		LOG.debug("V2 {} first varbind value: {}", m_pduTypeString, getVarBindAt(0).getVariable());
 
@@ -224,7 +224,7 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
         }
 
         @Override
-        protected String getVersion() {
+		public String getVersion() {
             return "v2";
         }
 

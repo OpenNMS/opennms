@@ -66,27 +66,27 @@ public abstract class TrapInformation implements TrapNotification, Serializable 
         m_trapProcessor = trapProcessor;
     }
 
-    protected abstract InetAddress getTrapAddress();
+    public abstract InetAddress getTrapAddress();
 
     /**
      * Returns the sending agent's internet address
      */
-    protected InetAddress getAgent() {
+    public InetAddress getAgent() {
         return m_agent;
     }
 
     /**
      * Returns the SNMP community string from the received packet.
      */
-    protected String getCommunity() {
+    public String getCommunity() {
         return m_community;
     }
 
     protected void validate() {
         // by default we do nothing;
     }
-
-    protected InetAddress getAgentAddress() {
+    
+    public InetAddress getAgentAddress() {
         return getAgent();
     }
 
@@ -105,16 +105,16 @@ public abstract class TrapInformation implements TrapNotification, Serializable 
         m_trapProcessor = trapProcessor;
     }
 
-    protected abstract String getVersion();
+    public abstract String getVersion();
 
-    protected abstract int getPduLength();
+    public abstract int getPduLength();
 
     /**
      * Get the SNMP TimeTicks value for the sysUpTime of the agent that
      * generated the trap. Note that the units for this value are 1/100ths
      * of a second instead of milliseconds.
      */
-    protected abstract long getTimeStamp();
+    public abstract long getTimeStamp();
 
     protected abstract TrapIdentity getTrapIdentity();
 

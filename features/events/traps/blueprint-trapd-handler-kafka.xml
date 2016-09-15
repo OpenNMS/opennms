@@ -28,8 +28,10 @@
 
 		<!-- Camel Event marshalling processor -->
 	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
-		<argument value="org.opennms.netmgt.snmp.TrapNotification" />
+		<argument value="org.opennms.netmgt.trapd.TrapDTO" />
 	</bean>
+	
+	<bean id="miniondtomapper" class="org.opennms.netmgt.trapd.TrapDTOMapper"/>
 	
 	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapNotificationHandlerCamel"/>
 
@@ -52,7 +54,15 @@
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
 			</setHeader>
-
+			<!-- TODO: Implement this marshaller -->
+			<!-- <bean ref="kafkaEncoder" method="toBytes"/> -->
+			<bean ref="miniondtomapper" method="object2dto"/>
+			<bean ref="marshaller"/>
+			<to uri="seda:trapHandler"/>
+		</route>
+		
+		<route id="sendTrapViaKafka">
+			<from uri="seda:trapHandler"/>
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
 			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>
