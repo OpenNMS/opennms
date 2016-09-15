@@ -43,7 +43,7 @@
     <argument value="seda:elasticsearchForwardAlarm"/>
   </bean>
 
-  <bean id="eventListener" class="org.opennms.features.elasticsearch.eventforwarder.ForwardingEventListener" init-method="init">
+  <bean id="eventListener" class="org.opennms.features.elasticsearch.eventforwarder.ForwardingEventListener" init-method="init" destroy-method="destroy">
     <property name="eventIpcManager" ref="eventIpcManager" />
     <property name="eventForwarder" ref="eventForwarder" />
   </bean>

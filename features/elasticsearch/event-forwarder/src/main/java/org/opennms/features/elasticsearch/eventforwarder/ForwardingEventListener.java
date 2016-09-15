@@ -100,6 +100,15 @@ public class ForwardingEventListener implements EventListener {
 		getEventIpcManager().addEventListener(this);
 	}
 
+	public void destroy() {
+		Assert.notNull(eventIpcManager, "eventIpcManager must not be null");
+		Assert.notNull(eventForwarder, "eventForwarder must not be null");
+
+		getEventIpcManager().removeEventListener(this);
+
+		LOG.info("Elasticsearch event forwarder uninstalled");
+	}
+
 	/**
 	 * {@inheritDoc}
 	 *

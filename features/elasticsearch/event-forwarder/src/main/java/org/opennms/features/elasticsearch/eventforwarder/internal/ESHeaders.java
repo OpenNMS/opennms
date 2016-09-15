@@ -9,6 +9,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.component.bean.BeanInvocation;
 import org.apache.camel.component.elasticsearch.ElasticsearchConfiguration;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
@@ -125,7 +126,7 @@ public class ESHeaders {
         body.put("hour", cal.get(Calendar.HOUR_OF_DAY));
         body.put("dom", cal.get(Calendar.DAY_OF_MONTH)); // this is not present in the original sql-based tool https://github.com/unicolet/opennms-events/blob/master/sql/opennms_events.sql#L26
         body.put("poller", alarm.getPoller());
-        body.put("ipaddr", alarm.getIpAddr()!=null ? alarm.getIpAddr().toString() : null );
+        body.put("ipaddr", alarm.getIpAddr()!=null ? alarm.getIpAddr() : null );
         body.put("servicename", alarm.getService());
         body.put("eventseverity_text", alarm.getSeverity().getLabel());
         body.put("eventseverity", alarm.getSeverity().getId());
@@ -168,7 +169,7 @@ public class ESHeaders {
         body.put("hour", cal.get(Calendar.HOUR_OF_DAY));
         body.put("dom", cal.get(Calendar.DAY_OF_MONTH)); // this is not present in the original sql-based tool https://github.com/unicolet/opennms-events/blob/master/sql/opennms_events.sql#L26
         body.put("eventsource", event.getSource());
-        body.put("ipaddr", event.getInterfaceAddress()!=null ? event.getInterfaceAddress().toString() : null );
+        body.put("ipaddr", event.getInterfaceAddress()!=null ? InetAddressUtils.str(event.getInterfaceAddress()) : null );
         body.put("servicename", event.getService());
         // params are exported as attributes, see below
         body.put("eventseverity_text", event.getSeverity());
