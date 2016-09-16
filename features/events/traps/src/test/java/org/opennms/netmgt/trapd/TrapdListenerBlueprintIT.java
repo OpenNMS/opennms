@@ -95,7 +95,6 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTest {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		// Register any mock OSGi services here
         RestClient client = new RestClient() {
             @Override
             public void ping() throws Exception {
@@ -105,7 +104,6 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTest {
 
             @Override
             public String getSnmpV3Users() throws Exception {
-                // TODO Auto-generated method stub
                 return trapConfiguration;
             }
         };
