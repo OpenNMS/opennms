@@ -63,7 +63,8 @@
 	<!-- ActiveMQ component from OpenNMS deamon context -->
 	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=onms.broker)"/>
 
-	<camelContext id="discoveryCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
+	<camelContext id="discoveryContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:discoveryProperties" />
 
 		<!-- Bootstrap timer -->

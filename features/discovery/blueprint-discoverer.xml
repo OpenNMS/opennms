@@ -11,7 +11,7 @@
 ">
 
 	<!-- Pinger service -->
-	<reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
+	<reference id="pingerFactory" interface="org.opennms.netmgt.icmp.PingerFactory" />
 
 	<!-- DistPollerDao -->
 	<reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
@@ -46,13 +46,14 @@
 
 	<!-- This processor performs ICMP pings and reports the results -->
 	<bean id="discoverer" class="org.opennms.netmgt.discovery.actors.Discoverer">
-		<argument ref="pinger" />
+		<argument ref="pingerFactory" />
 	</bean>
 
 	<!-- ActiveMQ component provided by minion-core -->
 	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)"/>
 
-	<camelContext id="discovererCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
+	<camelContext id="discovererContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:discovererProperties" />
 
 		<!-- Location queue -->

@@ -3,7 +3,6 @@
     <inherits name="com.google.gwt.user.User"/>
     <inherits name="com.google.gwt.i18n.I18N"/>
     <inherits name="org.gwtbootstrap3.GwtBootstrap3NoThemeNoJs"/>
-	<inherits name="org.opennms.features.gwt.graph.resource.list.GraphResourceList"/>
 	
 	<!-- Theme -->
 	<inherits name='org.opennms.features.gwt.theme.OpennmsTheme'/>

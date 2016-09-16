@@ -32,9 +32,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.poller.Distributable;
@@ -42,6 +41,8 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -58,6 +59,9 @@ import org.opennms.netmgt.poller.PollStatus;
 @Distributable
 final public class IcmpMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(IcmpMonitor.class);
+
+    private PingerFactory m_pingerFactory = null;
+
     /**
      * Constructs a new monitor.
      *
@@ -99,19 +103,28 @@ final public class IcmpMonitor extends AbstractServiceMonitor {
             int retries = ParameterMap.getKeyedInteger(parameters, "retry", PingConstants.DEFAULT_RETRIES);
             long timeout = ParameterMap.getKeyedLong(parameters, "timeout", PingConstants.DEFAULT_TIMEOUT);
             int packetSize = ParameterMap.getKeyedInteger(parameters, "packet-size", PingConstants.DEFAULT_PACKET_SIZE);
-            
-            rtt = PingerFactory.getInstance().ping(host, timeout, retries,packetSize);
+            final int dscp = ParameterMap.getKeyedDecodedInteger(parameters, "dscp", 0);
+            final boolean allowFragmentation = ParameterMap.getKeyedBoolean(parameters, "allow-fragmentation", true);
+
+            rtt = getPingerFactory().getInstance(dscp, allowFragmentation).ping(host, timeout, retries,packetSize);
         } catch (Throwable e) {
             LOG.debug("failed to ping {}", host, e);
+            return PollStatus.unavailable(e.getMessage());
         }
         
         if (rtt != null) {
             return PollStatus.available(rtt.doubleValue());
         } else {
             // TODO add a reason code for unavailability
-            return PollStatus.unavailable();
+            return PollStatus.unavailable(null);
         }
 
     }
 
+    private PingerFactory getPingerFactory() {
+        if (m_pingerFactory == null) {
+            m_pingerFactory = BeanUtils.getBean("daemonContext", "pingerFactory", PingerFactory.class);
+        }
+        return m_pingerFactory;
+    }
 }

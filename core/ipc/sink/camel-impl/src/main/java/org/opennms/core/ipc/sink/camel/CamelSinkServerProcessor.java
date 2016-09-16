@@ -55,8 +55,14 @@ public class CamelSinkServerProcessor implements AsyncProcessor {
     @Override
     public boolean process(Exchange exchange, AsyncCallback callback) {
         final String messageAsString = exchange.getIn().getBody(String.class);
-        final Message message = module.unmarshal(messageAsString);
-        consumerManager.dispatch(module, message);
+        try {
+            final Message message = module.unmarshal(messageAsString);
+            consumerManager.dispatch(module, message);
+        } catch (final Throwable t) {
+            exchange.setException(t);
+        } finally {
+            callback.done(false);
+        }
         return false;
     }
 }

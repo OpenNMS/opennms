@@ -345,6 +345,15 @@ td.onms { font-size: 100%; }
     height:1.5em;
     overflow:hidden;
 }
+ 
+.novscroll {
+    overflow-y: hidden;
+    overflow-x: auto;
+}
+.v-panel-content.v-panel-content-novscroll {
+    overflow-y: hidden !important;
+    overflow-x: auto;
+}
 
 .severity { color:#000000; padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
 .severity.Critical{ background-color: #F5CDCD; border-top: 2px solid #CC0000 !important; background-image: url(/opennms/images/bgCritical.png); }

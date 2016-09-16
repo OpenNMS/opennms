@@ -20,7 +20,7 @@
 
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h3 class="panel-title"><a href="KSC/index.htm">KSC Reports</a></h3>
+      <h3 class="panel-title"><a href="KSC/index.jsp">KSC Reports</a></h3>
     </div>
     <div class="panel-body">
       <onms-search-ksc />

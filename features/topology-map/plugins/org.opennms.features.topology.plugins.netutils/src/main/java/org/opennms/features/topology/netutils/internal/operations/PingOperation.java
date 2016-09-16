@@ -38,23 +38,23 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.netutils.internal.PingWindow;
 import org.opennms.features.topology.netutils.internal.service.PingService;
-import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 
 import com.google.common.base.Strings;
 
 public class PingOperation extends AbstractOperation {
 
-    private Pinger pinger;
+    private PingerFactory pingerFactory;
 
-    public PingOperation(Pinger pinger) {
-        this.pinger = Objects.requireNonNull(pinger);
+    public PingOperation(PingerFactory pingerFactory) {
+        this.pingerFactory = Objects.requireNonNull(pingerFactory);
     }
 
     @Override
     public void execute(final List<VertexRef> targets, final OperationContext operationContext) {
         final VertexRef target = targets.get(0);
         final Vertex vertex = getVertexItem(operationContext, target);
-        new PingWindow(vertex, new PingService(pinger)).open();
+        new PingWindow(vertex, new PingService(pingerFactory)).open();
     }
 
     @Override

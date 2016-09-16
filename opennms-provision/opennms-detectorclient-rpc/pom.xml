@@ -22,6 +22,7 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <Import-Package>
               org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
+              org.eclipse.persistence.internal.jaxb;resolution:=optional,
               *
             </Import-Package>
             <!--  don't export anything this is implementation only -->

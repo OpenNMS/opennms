@@ -32,9 +32,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Minion Systems" />
-	<jsp:param name="headTitle" value="Minion Systems" />
-	<jsp:param name="breadcrumb" value="Minion Systems" />
+	<jsp:param name="title" value="Manage Minions" />
+	<jsp:param name="headTitle" value="Manage Minions" />
+	<jsp:param name="breadcrumb" value="Manage Minions" />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
 

@@ -75,7 +75,7 @@ public class Discovery extends AbstractServiceDaemon {
     private EventForwarder m_eventForwarder;
 
     @Autowired
-    @Qualifier ("discoveryCamelContext")
+    @Qualifier ("discoveryContext")
     private CamelContext m_camelContext;
 
     /**
