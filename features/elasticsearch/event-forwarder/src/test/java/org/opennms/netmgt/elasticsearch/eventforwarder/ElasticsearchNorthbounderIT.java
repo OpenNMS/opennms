@@ -56,6 +56,7 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"
 })
+@JUnitConfigurationEnvironment
 public class ElasticsearchNorthbounderIT extends CamelBlueprintTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ElasticsearchNorthbounderIT.class);
