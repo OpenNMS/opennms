@@ -116,6 +116,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
                 if ("D".equals(iface.getIsManaged())) {
                     continue;
                 }
+                LOG.debug("Adding entry: {}:{} -> {}", node.getLocation().getLocationName(), iface.getIpAddress(), node.getId());
                 newAlreadyDiscovered.put(new LocationIpAddressKey(node.getLocation().getLocationName(), iface.getIpAddress()), node.getId());
             }
         }
@@ -182,6 +183,11 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         }
         LOG.debug("removeNodeId: removing IP address from cache: {}:{}", location, str(addr));
         return m_knownips.removeManagedAddress(location, addr);
+    }
+
+    @Override
+    public int size() {
+        return m_knownips.size();
     }
 
     @Override

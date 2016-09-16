@@ -49,6 +49,8 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.icmp.PingerFactoryImpl;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith( OpenNMSJUnit4ClassRunner.class )
@@ -66,7 +68,13 @@ public class DiscovererBlueprintIT extends CamelBlueprintTest {
     @SuppressWarnings( "rawtypes" )
     @Override
     protected void addServicesOnStartup( Map<String, KeyValueHolder<Object, Dictionary>> services ) {
-        services.put( Pinger.class.getName(), new KeyValueHolder<Object, Dictionary>(new TestPinger(), new Properties()));
+        final PingerFactoryImpl pingerFactory = new PingerFactoryImpl();
+        final Pinger pinger = new TestPinger();
+        pingerFactory.setInstance(0, true, pinger);
+
+        services.put( PingerFactory.class.getName(), new KeyValueHolder<Object, Dictionary>(pingerFactory, new Properties()));
+
+        services.put( Pinger.class.getName(), new KeyValueHolder<Object, Dictionary>(pinger, new Properties()));
 
         services.put( EventForwarder.class.getName(),
                 new KeyValueHolder<Object, Dictionary>( IPC_MANAGER_INSTANCE, new Properties() ) );

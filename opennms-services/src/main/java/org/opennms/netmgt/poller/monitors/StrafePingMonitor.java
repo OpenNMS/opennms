@@ -37,10 +37,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.ParameterMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.poller.Distributable;
@@ -48,6 +47,8 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -67,6 +68,8 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
     private static final int DEFAULT_MULTI_PING_COUNT = 20;
     private static final long DEFAULT_PING_INTERVAL = 50;
     private static final int DEFAULT_FAILURE_PING_COUNT = 20;
+
+    private PingerFactory m_pingerFactory = null;
 
     /**
      * Constructs a new monitor.
@@ -99,7 +102,7 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
         if (iface.getType() != NetworkInterface.TYPE_INET)
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
 
-        PollStatus serviceStatus = PollStatus.unavailable();
+        PollStatus serviceStatus = PollStatus.unavailable(null);
         InetAddress host = (InetAddress) iface.getAddress();
         List<Number> responseTimes = null;
 
@@ -111,8 +114,11 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
             int count = ParameterMap.getKeyedInteger(parameters, "ping-count", DEFAULT_MULTI_PING_COUNT);
             long pingInterval = ParameterMap.getKeyedLong(parameters, "wait-interval", DEFAULT_PING_INTERVAL);
             int failurePingCount = ParameterMap.getKeyedInteger(parameters, "failure-ping-count", DEFAULT_FAILURE_PING_COUNT);
-            
-            responseTimes = new ArrayList<Number>(PingerFactory.getInstance().parallelPing(host, count, timeout, pingInterval));
+            final int packetSize = ParameterMap.getKeyedInteger(parameters, "packet-size", PingConstants.DEFAULT_PACKET_SIZE);
+            final int dscp = ParameterMap.getKeyedDecodedInteger(parameters, "dscp", 0);
+            final boolean allowFragmentation = ParameterMap.getKeyedBoolean(parameters, "allow-fragmentation", true);
+
+            responseTimes = new ArrayList<Number>(getPingerFactory().getInstance(dscp, allowFragmentation).parallelPing(host, count, timeout, pingInterval, packetSize));
 
             if (CollectionMath.countNull(responseTimes) >= failurePingCount) {
 		LOG.debug("Service {} on interface {} is down, but continuing to gather latency data", svc.getSvcName(), svc.getIpAddr());
@@ -154,4 +160,10 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
         return serviceStatus;
     }
 
+    private PingerFactory getPingerFactory() {
+        if (m_pingerFactory == null) {
+            m_pingerFactory = BeanUtils.getBean("daemonContext", "pingerFactory", PingerFactory.class);
+        }
+        return m_pingerFactory;
+    }
 }

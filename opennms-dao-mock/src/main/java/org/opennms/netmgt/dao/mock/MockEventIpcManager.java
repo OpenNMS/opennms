@@ -411,4 +411,14 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         sendNow(eventLog);
     }
 
+    @Override
+    public boolean hasEventListener(final String uei) {
+        for (final ListenerKeeper keeper : this.m_listeners) {
+            if (keeper.m_ueiList.contains(uei)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

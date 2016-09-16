@@ -64,6 +64,12 @@ public class sockaddr_in extends Structure {
              new byte[] {(byte)(0xff & (port >> 8)), (byte)(0xff & port)});
     }
     
+    public sockaddr_in(final int port) {
+        this(NativeDatagramSocket.AF_INET,
+             new byte[4],
+             new byte[] {(byte)(0xff & (port >> 8)), (byte)(0xff & port)});
+    }
+
     @Override
     protected List<String> getFieldOrder() {
         return Arrays.asList(new String[] {"sin_family", "sin_port", "sin_addr", "sin_zero"});

@@ -1188,6 +1188,12 @@
     <argLine>-Xmx1g -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
     <skipITs>true</skipITs>
 
+    <!--
+      This is on by default now that root is not required for pinging.
+      If you have issues with this, see https://wiki.opennms.org/wiki/ICMP for enabling non-root ping.
+    -->
+    <runPingTests>true</runPingTests>
+
     <build.skip.tarball>false</build.skip.tarball>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -1359,6 +1365,7 @@
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>5.0.0</osgiVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
+    <owaspEncoderVersion>1.2</owaspEncoderVersion>
     <quartzVersion>1.6.5</quartzVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.21</slf4jVersion>
@@ -2740,6 +2747,12 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jmx-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>owasp-encoder-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>

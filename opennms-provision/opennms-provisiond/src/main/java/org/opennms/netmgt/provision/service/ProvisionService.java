@@ -42,6 +42,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -240,4 +241,6 @@ public interface ProvisionService {
     LocationAwareDetectorClient getLocationAwareDetectorClient();
 
     LocationAwareSnmpClient getLocationAwareSnmpClient();
+
+    LocationAwareDnsLookupClient getLocationAwareDnsLookupClient();
 }

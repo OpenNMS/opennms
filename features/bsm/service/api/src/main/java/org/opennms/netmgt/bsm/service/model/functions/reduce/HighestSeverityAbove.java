@@ -33,6 +33,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.StatusWithIndex;
+import org.opennms.netmgt.bsm.service.model.StatusWithIndices;
 import org.opennms.netmgt.bsm.service.model.functions.annotations.Function;
 import org.opennms.netmgt.bsm.service.model.functions.annotations.Parameter;
 
@@ -43,10 +45,22 @@ public class HighestSeverityAbove implements ReductionFunction {
     private Status threshold;
 
     @Override
-    public Optional<Status> reduce(List<Status> statuses) {
-        return statuses.stream()
+    public Optional<StatusWithIndices> reduce(List<StatusWithIndex> statuses) {
+        return reduceWithHighestSeverityAbove(statuses, threshold);
+    }
+
+    protected static Optional<StatusWithIndices> reduceWithHighestSeverityAbove(List<StatusWithIndex> statuses, Status threshold) {
+        final Status highestSeverity = statuses.stream()
+                .map(si -> si.getStatus())
                 .filter(s -> s.isGreaterThan(threshold))
-                .reduce((a, b) -> a.isGreaterThan(b) ? a : b);
+                .reduce((a, b) -> a.isGreaterThan(b) ? a : b)
+                .orElse(null);
+        if (highestSeverity == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(new StatusWithIndices(highestSeverity,
+                    StatusUtils.getIndicesWithStatusGe(statuses, highestSeverity)));
+        }
     }
 
     public void setThreshold(Status threshold) {

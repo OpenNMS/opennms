@@ -28,5 +28,23 @@
             </action>
         </command>
     </command-bundle>
+    
+   <reference id="locationAwareDnsLookupClient" interface="org.opennms.netmgt.provision.LocationAwareDnsLookupClient" availability="mandatory"/>
+    
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="dns/lookup">
+            <action class="org.opennms.netmgt.provision.dns.command.DnsLookup">
+              <property name="client" ref="locationAwareDnsLookupClient"/>
+            </action>
+        </command>
+    </command-bundle>
 
+	<command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+		<command name="dns/reverse-lookup">
+			<action class="org.opennms.netmgt.provision.dns.command.DnsReverseLookup">
+			  <property name="client" ref="locationAwareDnsLookupClient" />
+			</action>
+		</command>
+	</command-bundle>
+	
 </blueprint>

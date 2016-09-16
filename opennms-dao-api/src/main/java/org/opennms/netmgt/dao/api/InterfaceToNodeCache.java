@@ -40,6 +40,8 @@ public interface InterfaceToNodeCache {
 
 	int removeNodeId(String location, InetAddress ipAddr);
 
+	int size();
+
 	/**
 	 * Should only be used for testing.
 	 */

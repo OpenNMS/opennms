@@ -330,6 +330,10 @@
       <bundle>wrap:mvn:org.json/json/20140107$Export-Package=org.json</bundle>
     </feature>
 
+    <feature name="owasp-encoder" description="owasp-encoder" version="${owaspEncoderVersion}">
+      <bundle>wrap:mvn:org.owasp.encoder/encoder/${owaspEncoderVersion}$Export-Package=org.owasp.encoder</bundle>
+    </feature>
+
     <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="${postgresqlVersion}">
       <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
       <bundle>wrap:mvn:org.postgresql/postgresql/${postgresqlVersion}</bundle>
@@ -357,12 +361,13 @@
       <bundle>wrap:mvn:org.springframework.webflow/spring-webflow/${springWebFlowVersion}</bundle>
     </feature>
 
-    <feature name="jicmp" description="jicmp" version="1.4.4">
-      <bundle>wrap:mvn:org.opennms/jicmp-api/1.4.4$Export-Package=org.opennms.protocols.icmp,org.opennms.protocols.ip</bundle>
+    <feature name="jicmp" description="jicmp" version="2.0.1">
+      <feature>guava</feature>
+      <bundle>mvn:org.opennms/jicmp-api/2.0.1</bundle>
     </feature>
 
-    <feature name="jicmp6" description="jicmp6" version="1.2.1">
-      <bundle>wrap:mvn:org.opennms/jicmp6-api/1.2.1$Export-Package=org.opennms.protocols.icmp6</bundle>
+    <feature name="jicmp6" description="jicmp6" version="2.0.1">
+      <bundle>mvn:org.opennms/jicmp6-api/2.0.1</bundle>
     </feature>
 
     <!-- OpenNMS features -->
@@ -374,6 +379,7 @@
       <feature>commons-io</feature>
       <feature>dnsjava</feature>
       <feature>jaxb</feature>
+      <feature>owasp-encoder</feature>
 
       <!-- Used by org.opennms.core.xml -->
       <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
