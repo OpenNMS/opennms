@@ -9,6 +9,7 @@
             <rra>RRA:MIN:0.5:288:366</rra>
         </rrd>
         <mbeans>
+
             <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
                 <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>
                 <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
@@ -21,7 +22,7 @@
                 <attrib name="DaemonThreadCount" alias="DaemonThreadCount" type="gauge"/>
                 <attrib name="CurrentThreadCpuTime" alias="CurThreadCpuTime" type="gauge"/>
             </mbean>
-             <mbean name="JVM GarbageCollector:MarkSweepCompact" objectname="java.lang:type=GarbageCollector,name=MarkSweepCompact">
+            <mbean name="JVM GarbageCollector:MarkSweepCompact" objectname="java.lang:type=GarbageCollector,name=MarkSweepCompact">
                 <attrib name="CollectionCount" alias="MSCCollCnt" type="counter"/>
                 <attrib name="CollectionTime" alias="MSCCollTime" type="counter"/>
                 <comp-attrib name="LastGcInfo" type="Composite" alias="MSCLastGcInfo">
@@ -30,9 +31,24 @@
                     <comp-member name="endTime" type="gauge" alias="MSCEndTime"/>
                 </comp-attrib>
             </mbean>
+
+            <!-- TODO: NMS-8545: Add Kafka JMX metrics to this configuration -->
+            <mbean name="Syslog Bytes In per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec,topic=syslog">
+                <attrib name="Count" alias="syslogInBytesCount" type="gauge"/>
+            </mbean>
+
+            <mbean name="Syslog Bytes Out per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec,topic=syslog">
+                <attrib name="Count" alias="syslogOutBytesCount" type="gauge"/>
+            </mbean>
+
+            <mbean name="Trap Bytes In per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec,topic=trapd">
+                <attrib name="Count" alias="trapInBytesCount" type="gauge"/>
+            </mbean>
+
+            <mbean name="Trap Bytes Out per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec,topic=trapd">
+                <attrib name="Count" alias="trapOutBytesCount" type="gauge"/>
+            </mbean>
+
         </mbeans>
-
-        <!-- TODO: NMS-8545: Add Kafka JMX metrics to this configuration -->
-
     </jmx-collection>
 </jmx-datacollection-config>
