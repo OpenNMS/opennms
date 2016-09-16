@@ -38,25 +38,26 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.camel.MinionDTO;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpResult;
 
-@XmlRootElement(name="trap-dto")
+@XmlRootElement(name = "trap-dto")
 @XmlAccessorType(XmlAccessType.NONE)
 public class TrapDTO extends MinionDTO {
-    
+
 	public static String COMMUNITY = "community";
 	public static String PDU_LENGTH = "pduLength";
 	public static String VERSION = "version";
 	public static String TIMESTAMP = "timestamp";
 	public static String TRAP_ADDRESS = "trapAddress";
 
-    protected TrapDTO() {
-        // No-arg constructor for JAXB
-    	super();
-    }	
-	
-    @XmlElement(name="result")
-    private List<SnmpResult> results = new ArrayList<>(0);
+	protected TrapDTO() {
+		// No-arg constructor for JAXB
+		super();
+	}
+
+	@XmlElement(name = "result")
+	private List<SnmpResult> results = new ArrayList<>(0);
 
 	public void setCommunity(String m_community) {
 		super.putIntoMap(COMMUNITY, m_community);
@@ -71,17 +72,17 @@ public class TrapDTO extends MinionDTO {
 	}
 
 	public void setTimestamp(Long m_timestamp) {
-		super.putIntoMap(TIMESTAMP, String.valueOf(m_timestamp));
+		super.putIntoMap(TIMESTAMP, Long.toString(m_timestamp));
 	}
 
 	public void setTrapAddress(InetAddress m_trapAddress) {
-		super.putIntoMap(TRAP_ADDRESS, String.valueOf(m_trapAddress));
+		super.putIntoMap(TRAP_ADDRESS, InetAddrUtils.str(m_trapAddress));
 	}
 
 	public void setAgentAddress(InetAddress m_agentAddress) {
-		super.putIntoMap(SOURCE_ADDRESS, String.valueOf(m_agentAddress));
+		super.putIntoMap(SOURCE_ADDRESS, InetAddrUtils.str(m_agentAddress));
 	}
-	
+
 	public List<SnmpResult> getResults() {
 		return results;
 	}
@@ -89,5 +90,5 @@ public class TrapDTO extends MinionDTO {
 	public void setResults(List<SnmpResult> results) {
 		this.results = results;
 	}
-	
+
 }

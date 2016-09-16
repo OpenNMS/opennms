@@ -40,43 +40,43 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name="minion-dto")
+@XmlRootElement(name = "minion-dto")
 @XmlAccessorType(XmlAccessType.NONE)
-public class MinionDTO{
-    
+public class MinionDTO {
+
 	public static String SYSTEM_ID = "systemId";
 	public static String LOCATION = "location";
 	public static String SOURCE_ADDRESS = "sourceAddress";
 	public static String SOURCE_PORT = "sourcePort";
 
-	//@XmlElement(name="headers") // add another annotation here 
-	@XmlElementWrapper(name="headers")
-    final Map<String,String> m_headers = Collections.synchronizedMap(new HashMap<String, String>());
-    
-    @XmlElement(name="body")
-    private byte[] m_body;
+	@XmlElementWrapper(name = "headers")
+	final Map<String, String> m_headers = Collections
+			.synchronizedMap(new HashMap<String, String>());
 
-    public MinionDTO() {
-        // No-arg constructor for JAXB
-    }
+	@XmlElement(name = "body")
+	private byte[] m_body;
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(m_headers, m_body);
-    }
+	public MinionDTO() {
+		// No-arg constructor for JAXB
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final MinionDTO other = (MinionDTO) obj;
-        return Objects.equals(this.m_headers, other.m_headers)
-                && Arrays.equals(this.m_body, other.m_body);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(m_headers, m_body);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final MinionDTO other = (MinionDTO) obj;
+		return Objects.equals(this.m_headers, other.m_headers)
+				&& Arrays.equals(this.m_body, other.m_body);
+	}
 
 	public Map<String, String> getHeaders() {
 		return Collections.unmodifiableMap(m_headers);
@@ -89,18 +89,18 @@ public class MinionDTO{
 		}
 	}
 
-	public void putIntoMap(String key, String value){
+	public void putIntoMap(String key, String value) {
 		synchronized (m_headers) {
 			m_headers.put(key, value);
 		}
 	}
-	
-	public String getFromMap(String key){
+
+	public String getFromMap(String key) {
 		synchronized (m_headers) {
 			return m_headers.get(key);
 		}
 	}
-	
+
 	public byte[] getBody() {
 		return m_body;
 	}
@@ -108,5 +108,5 @@ public class MinionDTO{
 	public void setBody(byte[] m_body) {
 		this.m_body = m_body;
 	}
-	
+
 }

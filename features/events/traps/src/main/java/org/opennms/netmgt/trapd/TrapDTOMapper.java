@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -41,105 +42,165 @@ import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JUtils;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
+import org.snmp4j.PDUv1;
 import org.snmp4j.smi.OID;
-import org.snmp4j.smi.Variable;
+import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
 
 public class TrapDTOMapper {
 
-	public TrapDTO object2dto(Object obj){
-		
+	private static final Logger LOG = LoggerFactory.getLogger(TrapDTOMapper.class);
+
+	public TrapDTO object2dto(Object obj) {
+
 		TrapDTO trapDTO = new TrapDTO();
-		
-		TrapInformation trapInfo = (TrapInformation)obj;
-		
-       	String version = trapInfo.getVersion();
-		
-		//Snmp4JTrapNotifier.Snmp4JV1TrapInformation v1Trap = null;
+
+		TrapInformation trapInfo = (TrapInformation) obj;
+
+		String version = trapInfo.getVersion();
+
+		Snmp4JTrapNotifier.Snmp4JV1TrapInformation v1Trap = null;
 		Snmp4JTrapNotifier.Snmp4JV2TrapInformation v2Trap = null;
-		
-//		if(version.equalsIgnoreCase("v1")){
-//			
-//			v1Trap = (Snmp4JTrapNotifier.Snmp4JV1TrapInformation)obj;
-//			InetAddress agentAddress = v1Trap.getAgentAddress();
-//			String community = v1Trap.getCommunity();
-//			int pduLength = v1Trap.getPduLength();
-//			//String version = v1Trap.getVersion();
-//			InetAddress trapAddress = v1Trap.getTrapAddress();
-//			long timestamp = v1Trap.getTimeStamp();
-//			
-//			//trapDTO.setVersion(processor.);
-//			
-//		}else 
-		if(version.equalsIgnoreCase("v2") || version.equalsIgnoreCase("v3")){
-			
-			v2Trap = (Snmp4JTrapNotifier.Snmp4JV2TrapInformation)obj;
-			InetAddress agentAddress = v2Trap.getAgentAddress();
-			String community = v2Trap.getCommunity();
-			int pduLength = v2Trap.getPduLength();
-			//String version = v2Trap.getVersion();
-			InetAddress trapAddress = v2Trap.getTrapAddress();
-			long timestamp = v2Trap.getTimeStamp();
-			PDU pdu = v2Trap.getPdu();
+
+		if (version.equalsIgnoreCase("v1")) {
+
+			v1Trap = (Snmp4JTrapNotifier.Snmp4JV1TrapInformation) obj;
+			InetAddress agentAddress = v1Trap.getAgentAddress();
+			String community = v1Trap.getCommunity();
+			int pduLength = v1Trap.getPduLength();
+			// String version = v1Trap.getVersion();
+			InetAddress trapAddress = v1Trap.getTrapAddress();
+			long timestamp = v1Trap.getTimeStamp();
+			PDUv1 pdu = v1Trap.getPduv1();
 			byte[] byteArray = null;
 			try {
-				byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0, community, pdu);
+				byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0,
+						community, pdu);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.warn("unable to convertPdu inot Bytes {}", e.getMessage());
 			}
-			
+
 			trapDTO.setBody(byteArray);
-			
+
 			trapDTO.setCommunity(community);
 			trapDTO.setPduLength(String.valueOf(pduLength));
 			trapDTO.setAgentAddress(agentAddress);
 			trapDTO.setTimestamp(timestamp);
 			trapDTO.setTrapAddress(trapAddress);
 			trapDTO.setVersion(version);
-			
+
 			List<SnmpResult> results = new ArrayList<SnmpResult>();
-			
+
 			SnmpResult snmpResult = null;
-			
-			Vector<? extends VariableBinding> vector = pdu.getVariableBindings();
-			for(int i=0 ; i < vector.size() ; i++){
-				VariableBinding varBind = (VariableBinding)vector.get(i);
-				
-	            SnmpObjId oid = SnmpObjId.get(varBind.getOid().toString());
-	            SnmpValue value = new Snmp4JValue(varBind.getVariable());
-	            snmpResult = new SnmpResult(oid, null, value);
-	            results.add(snmpResult);
+
+			Vector<? extends VariableBinding> vector = pdu
+					.getVariableBindings();
+			for (int i = 0; i < vector.size(); i++) {
+				VariableBinding varBind = (VariableBinding) vector.get(i);
+
+				SnmpObjId oid = SnmpObjId.get(varBind.getOid().toString());
+				SnmpValue value = new Snmp4JValue(varBind.getVariable());
+				snmpResult = new SnmpResult(oid, null, value);
+				results.add(snmpResult);
+			}
+			trapDTO.setResults(results);
+
+		} else if (version.equalsIgnoreCase("v2")
+				|| version.equalsIgnoreCase("v3")) {
+
+			v2Trap = (Snmp4JTrapNotifier.Snmp4JV2TrapInformation) obj;
+			InetAddress agentAddress = v2Trap.getAgentAddress();
+			String community = v2Trap.getCommunity();
+			int pduLength = v2Trap.getPduLength();
+			// String version = v2Trap.getVersion();
+			InetAddress trapAddress = v2Trap.getTrapAddress();
+			long timestamp = v2Trap.getTimeStamp();
+			PDU pdu = v2Trap.getPdu();
+			byte[] byteArray = null;
+			try {
+				byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0,
+						community, pdu);
+			} catch (Exception e) {
+				LOG.warn("unable to convertPdu inot Bytes {}", e.getMessage());
+			}
+
+			trapDTO.setBody(byteArray);
+
+			trapDTO.setCommunity(community);
+			trapDTO.setPduLength(String.valueOf(pduLength));
+			trapDTO.setAgentAddress(agentAddress);
+			trapDTO.setTimestamp(timestamp);
+			trapDTO.setTrapAddress(trapAddress);
+			trapDTO.setVersion(version);
+
+			List<SnmpResult> results = new ArrayList<SnmpResult>();
+
+			SnmpResult snmpResult = null;
+
+			Vector<? extends VariableBinding> vector = pdu
+					.getVariableBindings();
+			for (int i = 0; i < vector.size(); i++) {
+				VariableBinding varBind = (VariableBinding) vector.get(i);
+
+				SnmpObjId oid = SnmpObjId.get(varBind.getOid().toString());
+				SnmpValue value = new Snmp4JValue(varBind.getVariable());
+				snmpResult = new SnmpResult(oid, null, value);
+				results.add(snmpResult);
 			}
 			trapDTO.setResults(results);
 
 		}
-						
+
 		return trapDTO;
 	}
-	
-	public TrapNotification dto2object(Object obj){
-//		TrapDTO trapDto = (TrapDTO)obj;
-//		Snmp4JTrapNotifier.Snmp4JV1TrapInformation v1Trap = null;
-//		Snmp4JTrapNotifier.Snmp4JV2TrapInformation v2Trap = null;
-//		
-//		if(trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase("v2") || trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase("v3")){
-//			PDU pdu = new PDU();
-//			for(SnmpResult snmpResult : trapDto.getResults()){
-//				OID oid = new OID();
-//				oid.se
-//				VariableBinding varBind = new VariableBinding();
-//				varBind.setOid(oid);
-//			}
-//			Snmp4JV2TrapInformation = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(trapDto.getFromMap(TrapDTO.SOURCE_ADDRESS), trapDto.getFromMap(TrapDTO.COMMUNITY), , null);
-//		
-//		}else if(trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase("v1")){
-//			// build snmpv1 object
-//		}
-		
+
+	public TrapNotification dto2object(Object obj) {
+		TrapDTO trapDto = (TrapDTO) obj;
+		Snmp4JTrapNotifier.Snmp4JV1TrapInformation v1Trap = null;
+
+		Snmp4JTrapNotifier.Snmp4JV2TrapInformation v2Trap = null;
+
+		if (trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase("v1")) {
+			PDUv1 snmp4JV1cTrapPdu = new PDUv1();
+			snmp4JV1cTrapPdu.setType(PDU.TRAP);
+
+			for (SnmpResult snmpResult : trapDto.getResults()) {
+				snmp4JV1cTrapPdu.add(new VariableBinding(new OID(snmpResult
+						.getBase().toString()), new OctetString(snmpResult
+						.getValue().toString())));
+
+			}
+
+			v1Trap = new Snmp4JTrapNotifier.Snmp4JV1TrapInformation(
+					InetAddrUtils.addr(trapDto
+							.getFromMap(TrapDTO.SOURCE_ADDRESS)),
+					trapDto.getFromMap(TrapDTO.COMMUNITY), snmp4JV1cTrapPdu,
+					null);
+			return v1Trap;
+		} else if (trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase("v2")
+				|| trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase("v3")) {
+			PDU snmp4JV2cTrapPdu = new PDU();
+			snmp4JV2cTrapPdu.setType(PDU.TRAP);
+
+			for (SnmpResult snmpResult : trapDto.getResults()) {
+				snmp4JV2cTrapPdu.add(new VariableBinding(new OID(snmpResult
+						.getBase().toString()), new OctetString(snmpResult
+						.getValue().toString())));
+
+			}
+
+			v2Trap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
+					InetAddrUtils.addr(trapDto
+							.getFromMap(TrapDTO.SOURCE_ADDRESS)),
+					trapDto.getFromMap(TrapDTO.COMMUNITY), snmp4JV2cTrapPdu,
+					null);
+			return v2Trap;
+		}
+
 		return null;
 	}
 
-	
 }

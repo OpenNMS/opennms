@@ -40,43 +40,25 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.camel.MinionDTO;
 import org.opennms.core.utils.InetAddressUtils;
 
-@XmlRootElement(name="syslog-dto")
+@XmlRootElement(name = "syslog-dto")
 @XmlAccessorType(XmlAccessType.NONE)
 public class SyslogDTO extends MinionDTO {
 
-    public SyslogDTO() {
-        super();
-    }
-	
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(super.getHeaders(), super.getBody());
-//    }
-//
-//    @Override
-//    public boolean equals(Object obj) {
-//        if (this == obj)
-//            return true;
-//        if (obj == null)
-//            return false;
-//        if (getClass() != obj.getClass())
-//            return false;
-//        final SyslogDTO other = (SyslogDTO) obj;
-//        return Objects.equals(super.getHeaders(), other.getHeaders())
-//                && Arrays.equals(super.getBody(), other.getBody());
-//    }
-    
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append("systemid", super.getHeaders().get(SYSTEM_ID))
-            .append("location", super.getHeaders().get(LOCATION))
-            .append("sourceaddress", super.getHeaders().get(SOURCE_ADDRESS))
-            .append("sourceport", super.getHeaders().get(SOURCE_PORT))
-            .append("body", super.getBody())
-            .toString();
-    }
-    
+	public SyslogDTO() {
+		// No-arg constructor for JAXB
+		super();
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this)
+				.append("systemid", super.getHeaders().get(SYSTEM_ID))
+				.append("location", super.getHeaders().get(LOCATION))
+				.append("sourceaddress", super.getHeaders().get(SOURCE_ADDRESS))
+				.append("sourceport", super.getHeaders().get(SOURCE_PORT))
+				.append("body", super.getBody()).toString();
+	}
+
 	public void setSystemId(String m_systemId) {
 		super.putIntoMap(MinionDTO.SYSTEM_ID, m_systemId);
 	}
@@ -86,11 +68,12 @@ public class SyslogDTO extends MinionDTO {
 	}
 
 	public void setSourceAddress(InetAddress m_sourceAddress) {
-		super.putIntoMap(MinionDTO.SOURCE_ADDRESS, InetAddressUtils.str(m_sourceAddress));
+		super.putIntoMap(MinionDTO.SOURCE_ADDRESS,
+				InetAddressUtils.str(m_sourceAddress));
 	}
 
 	public void setSourceport(int m_sourceport) {
-		super.putIntoMap(MinionDTO.SOURCE_PORT, String.valueOf(m_sourceport));
+		super.putIntoMap(MinionDTO.SOURCE_PORT, Integer.toString(m_sourceport));
 	}
-	
+
 }

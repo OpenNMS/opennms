@@ -79,6 +79,14 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
             super(agent, community, trapProcessor);
             m_pdu = pdu;
         }
+        
+        /**
+         * Returns the Protocol Data Unit that was encapsulated within the SNMP
+         * Trap message
+         */
+        public PDUv1 getPduv1() {
+            return m_pdu;
+        }
 
         @Override
 		public InetAddress getTrapAddress() {
