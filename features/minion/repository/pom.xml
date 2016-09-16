@@ -119,6 +119,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.minion.heartbeat</groupId>
+            <artifactId>org.opennms.features.minion.heartbeat.producer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-detector-bsf</artifactId>
         </dependency>
