@@ -111,7 +111,7 @@
 
 <div id="heatmap-box" class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title"><a href="heatmap/index.jsp?mode=<%=mode%>&heatmap=<%=heatmap%>&foreignSource=<%=foreignSource%>&category=<%=category%>&monitoredService=<%=monitoredService%>"><%=title%>
+        <h3 class="panel-title"><a href="heatmap/index.jsp?mode=<%=mode%>&amp;heatmap=<%=heatmap%>&amp;foreignSource=<%=foreignSource%>&amp;category=<%=category%>&amp;monitoredService=<%=monitoredService%>"><%=title%>
         </a></h3>
     </div>
 
@@ -201,11 +201,11 @@
                     <%
                         if ("outages".equals(mode)) {
                     %>
-                    <a href="<%=request.getRequestURI()%>?mode=alarms&heatmap=<%=heatmap%>&category=<%=category%>&foreignSource=<%=foreignSource%>&monitoredService=<%=monitoredService%>">Alarms</a> / <b>Outages</b>
+                    <a href="<%=request.getRequestURI()%>?mode=alarms&amp;heatmap=<%=heatmap%>&amp;category=<%=category%>&amp;foreignSource=<%=foreignSource%>&amp;monitoredService=<%=monitoredService%>">Alarms</a> / <b>Outages</b>
                     <%
                     } else {
                     %>
-                    <b>Alarms</b> / <a href="<%=request.getRequestURI()%>?mode=outages&heatmap=<%=heatmap%>&category=<%=category%>&foreignSource=<%=foreignSource%>&monitoredService=<%=monitoredService%>">Outages</a>
+                    <b>Alarms</b> / <a href="<%=request.getRequestURI()%>?mode=outages&amp;heatmap=<%=heatmap%>&amp;category=<%=category%>&amp;foreignSource=<%=foreignSource%>&amp;monitoredService=<%=monitoredService%>">Outages</a>
                     <%
                         }
                     %>
@@ -216,16 +216,16 @@
                     <%
                         if ("foreignSources".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
                     %>
-                    <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=categories">Categories</a> / <b>Foreign Sources</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=monitoredServices">Services</a>
+                    <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=categories">Categories</a> / <b>Foreign Sources</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=monitoredServices">Services</a>
                     <%
                     } else {
                         if ("categories".equals(heatmap) ||"nodesByCategory".equals(heatmap)) {
                     %>
-                    <b>Categories</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=foreignSources">Foreign Sources</a> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=monitoredServices">Services</a>
+                    <b>Categories</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=foreignSources">Foreign Sources</a> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=monitoredServices">Services</a>
                     <%
                     } else {
                     %>
-                    <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=categories">Categories</a> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=foreignSources">Foreign Sources</a> / <b>Services</b>
+                    <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=categories">Categories</a> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=foreignSources">Foreign Sources</a> / <b>Services</b>
                     <%
                             }
                         }
