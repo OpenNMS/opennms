@@ -134,6 +134,10 @@
             <parameter key="password" value="postgres"/>
             <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
         </service>
+        <service name="Elasticsearch-Stats" interval="300000" user-defined="false" status="on">
+            <parameter key="collection" value="elasticsearch-stats" />
+            <parameter key="handler-class" value="org.opennms.protocols.json.collector.DefaultJsonCollectionHandler"/>
+        </service>
     </package>
 
 
@@ -148,5 +152,6 @@
     <collector service="VMware-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
     <collector service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCimCollector"/>
     <collector service="PostgreSQL" class-name="org.opennms.netmgt.collectd.JdbcCollector"/>
+    <collector service="Elasticsearch-Stats" class-name="org.opennms.protocols.xml.collector.XmlCollector"/>
 </collectd-configuration>
 

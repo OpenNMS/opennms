@@ -708,6 +708,11 @@
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
     </dependency>
+    <dependency>
+   	  <groupId>org.opennms.protocols</groupId>
+  	  <artifactId>org.opennms.protocols.xml</artifactId>
+  	  <version>${project.version}</version>
+    </dependency>
     <!-- this is a runtime dependency we need at install time -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
