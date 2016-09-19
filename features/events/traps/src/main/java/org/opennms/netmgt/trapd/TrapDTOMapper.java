@@ -30,6 +30,7 @@ package org.opennms.netmgt.trapd;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Vector;
 
@@ -46,8 +47,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
+import org.snmp4j.smi.Integer32;
+import org.snmp4j.smi.IpAddress;
+import org.snmp4j.smi.Null;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
+import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.VariableBinding;
 
 public class TrapDTOMapper {
@@ -80,7 +85,7 @@ public class TrapDTOMapper {
 				byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0,
 						community, pdu);
 			} catch (Exception e) {
-				LOG.warn("unable to convertPdu inot Bytes {}", e.getMessage());
+				LOG.warn("unable to convert Pdu inot Bytes {}", e.getMessage());
 			}
 
 			trapDTO.setBody(byteArray);
@@ -124,10 +129,10 @@ public class TrapDTOMapper {
 				byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0,
 						community, pdu);
 			} catch (Exception e) {
-				LOG.warn("unable to convertPdu inot Bytes {}", e.getMessage());
+				LOG.warn("unable to convert Pdu inot Bytes {}", e.getMessage());
 			}
 
-			trapDTO.setBody(byteArray);
+			trapDTO.setBody(byteArray); // use configAttribute to set body
 
 			trapDTO.setCommunity(community);
 			trapDTO.setPduLength(String.valueOf(pduLength));
@@ -144,7 +149,6 @@ public class TrapDTOMapper {
 					.getVariableBindings();
 			for (int i = 0; i < vector.size(); i++) {
 				VariableBinding varBind = (VariableBinding) vector.get(i);
-
 				SnmpObjId oid = SnmpObjId.get(varBind.getOid().toString());
 				SnmpValue value = new Snmp4JValue(varBind.getVariable());
 				snmpResult = new SnmpResult(oid, null, value);
@@ -165,7 +169,7 @@ public class TrapDTOMapper {
 
 		if (trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase("v1")) {
 			PDUv1 snmp4JV1cTrapPdu = new PDUv1();
-			snmp4JV1cTrapPdu.setType(PDU.TRAP);
+			snmp4JV1cTrapPdu.setType(PDU.NOTIFICATION);
 
 			for (SnmpResult snmpResult : trapDto.getResults()) {
 				snmp4JV1cTrapPdu.add(new VariableBinding(new OID(snmpResult
@@ -183,12 +187,37 @@ public class TrapDTOMapper {
 		} else if (trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase("v2")
 				|| trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase("v3")) {
 			PDU snmp4JV2cTrapPdu = new PDU();
-			snmp4JV2cTrapPdu.setType(PDU.TRAP);
+			snmp4JV2cTrapPdu.setType(PDU.NOTIFICATION);
 
 			for (SnmpResult snmpResult : trapDto.getResults()) {
-				snmp4JV2cTrapPdu.add(new VariableBinding(new OID(snmpResult
-						.getBase().toString()), new OctetString(snmpResult
-						.getValue().toString())));
+				
+				int type = snmpResult.getValue().getType();
+				
+				OID oid = new OID(snmpResult
+						.getValue().toString());
+				
+		        switch (type) {
+	            case 2:  snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new Integer32(Integer.parseInt(snmpResult.getBase().toString()))));
+                		 break;
+	            case 4:  snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(new String(Base64.getDecoder().decode(snmpResult.getBase().toString())))));
+                		 break;
+	            case 5:  snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new Null()));
+                		 break;
+	            case 6:  snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(snmpResult.getBase().toString())));
+                		 break;
+	            case 64: snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new IpAddress(snmpResult.getBase().toString())));
+                		 break;
+	            case 67: snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new TimeTicks(Long.parseLong(snmpResult.getBase().toString()))));
+	                     break;
+	            case 128:snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new Null(128)));
+	                     break;
+	            case 129:snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new Null(129)));
+	                     break;
+	            case 130:snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new Null(130)));
+	                     break;
+	            default: snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(snmpResult.getBase().toString())));
+	                     break;
+	            }
 
 			}
 

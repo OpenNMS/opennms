@@ -17,6 +17,7 @@
 		<cm:default-properties>
 			<cm:property name="kafkaAddress" value="127.0.0.1:9092" />
 			<cm:property name="kafkatopic" value="syslog" />
+			<cm:property name="rawsyslogmessageflag" value="true" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -31,8 +32,10 @@
 		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
 	</bean>
 	
-	<bean id="miniondtomapper" class="org.opennms.netmgt.syslogd.SyslogDTOMapper"/>
-	
+	<bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogObjectToDTOProcessor">
+		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
+	</bean>
+		
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
 
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
@@ -53,7 +56,11 @@
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
 			</setHeader>
-			<bean ref="miniondtomapper" method="object2dto"/>
+			<setHeader headerName="syslogRawMessageFlag">
+				<simple resultType="java.lang.Boolean">properties:rawsyslogmessageflag</simple>
+			</setHeader>
+			
+			<bean ref="mapper"/>
 			<bean ref="marshaller"/>
 			
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->

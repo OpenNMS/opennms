@@ -28,6 +28,7 @@
 
 package org.opennms.core.camel;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,8 +43,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "minion-dto")
 @XmlAccessorType(XmlAccessType.NONE)
-public class MinionDTO {
+public class MinionDTO implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4204021063296911062L;
+	
 	public static String SYSTEM_ID = "systemId";
 	public static String LOCATION = "location";
 	public static String SOURCE_ADDRESS = "sourceAddress";

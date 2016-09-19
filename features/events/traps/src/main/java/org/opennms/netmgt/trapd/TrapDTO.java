@@ -35,8 +35,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.camel.MinionDTO;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -56,7 +58,22 @@ public class TrapDTO extends MinionDTO {
 		super();
 	}
 
-	@XmlElement(name = "result")
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this)
+				.append("systemid", super.getHeaders().get(SYSTEM_ID))
+				.append("location", super.getHeaders().get(LOCATION))
+				.append("sourceaddress", super.getHeaders().get(SOURCE_ADDRESS))
+				.append("sourceport", super.getHeaders().get(SOURCE_PORT))
+				.append("community", super.getHeaders().get(COMMUNITY))
+				.append("pduLength", super.getHeaders().get(PDU_LENGTH))
+				.append("version", super.getHeaders().get(VERSION))
+				.append("timestamp", super.getHeaders().get(TIMESTAMP))
+				.append("trapAddress", super.getHeaders().get(TRAP_ADDRESS))
+				.append("body", super.getBody()).toString();
+	}
+
+	@XmlElementWrapper(name = "results")
 	private List<SnmpResult> results = new ArrayList<>(0);
 
 	public void setCommunity(String m_community) {
