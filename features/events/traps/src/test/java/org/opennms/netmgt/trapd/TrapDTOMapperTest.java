@@ -60,13 +60,13 @@ public class TrapDTOMapperTest {
 				InetAddressUtils.ONE_TWENTY_SEVEN, "public",
 				snmp4JV2cTrapPdu, new BasicTrapProcessor());
 		
-		TrapDTOMapper mapper = new TrapDTOMapper();
-		TrapDTO trapDto = mapper.object2dto(snmp4JV2cTrap);
-		System.out.println("trapDto is : "+trapDto);
-		System.out.println("trapDto.getBody() is : "+trapDto.getBody());
-		System.out.println("trapDto.getCommunity() is : "+trapDto.getFromMap(TrapDTO.COMMUNITY));
+//		TrapDTOMapper mapper = new TrapDTOMapper();
+//		TrapDTO trapDto = mapper.object2dto(snmp4JV2cTrap);
+//		System.out.println("trapDto is : "+trapDto);
+//		System.out.println("trapDto.getBody() is : "+trapDto.getBody());
+//		System.out.println("trapDto.getCommunity() is : "+trapDto.getFromMap(TrapDTO.COMMUNITY));
 
-		TrapNotification snmp4JV2cTrap1 = mapper.dto2object(trapDto);
+		//TrapNotification snmp4JV2cTrap1 = mapper.dto2object(trapDto);
 		
 	}
 }
