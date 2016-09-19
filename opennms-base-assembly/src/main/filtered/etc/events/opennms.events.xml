@@ -909,16 +909,18 @@
     <uei>uei.opennms.org/nodes/pathOutage</uei>
     <event-label>OpenNMS-defined node event: pathOutage</event-label>
     <descr>
-                        &lt;p&gt;A path outage is ongoing. The status of one or several
-                        node(s) might therefore be unknown.&lt;/p&gt;
-                        &lt;p&gt;More information on the affected node(s) can be found at
-                        the &lt;a href="opennms/pathOutage/index.jsp"&gt;Path Outages&lt;/a&gt; page.&lt;/p&gt;
+                        &lt;p&gt;The state of node %parm[nodelabel]% is unknown
+                        because the critical path to the node is down.&lt;/p&gt;
+                        &lt;p&gt;This event is generated when node outage processing
+                        determines that the critical path IP address/service for
+                        this node is not responding..&lt;/p&gt;
                 </descr>
     <logmsg dest="logndisplay">
-                        path outage. Critical path = %parm[criticalPathIp]% %parm[criticalPathServiceName]%
+                        %parm[nodelabel]% path outage. Critical path =
+                        %parm[criticalPathIp]% %parm[criticalPathServiceName]%
                 </logmsg>
     <severity>Major</severity>
-    <alarm-data reduction-key="%uei%: %parm[criticalPathIp]%:%parm[criticalPathServiceName]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/nodeGainedInterface</uei>
