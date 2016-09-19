@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.elasticsearch.eventforwarder;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.awaitility.Awaitility.given;
 import static com.jayway.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.equalTo;
@@ -41,6 +39,8 @@ import java.util.Dictionary;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.util.KeyValueHolder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -57,10 +57,13 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.jayway.awaitility.core.ConditionTimeoutException;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -98,6 +101,33 @@ public class ElasticsearchNorthbounderIT extends CamelBlueprintTest {
 
         // Make sure that only the single Elasticsearch event listener is registered
         with().pollInterval(1, SECONDS).await().atMost(30, SECONDS).until(() -> m_eventIpcManager.getEventListenerCount(), equalTo(1));
+
+        // Do a very pendantic check to make sure that the Camel context has started up.
+        try {
+            with().pollInterval(1, SECONDS).await().atMost(30, SECONDS).until(() -> {
+                // Get all Camel contexts
+                ServiceReference<?>[] references = getBundleContext().getAllServiceReferences(CamelContext.class.getName(), null);
+                for (ServiceReference<?> reference : references) {
+                    CamelContext context = (CamelContext)getBundleContext().getService(reference);
+                    if (
+                         // If the context has started and contains the endpoints from
+                         // blueprint-event-forwarder.xml, then we've found the correct
+                         // context so return true.
+                         context.getStatus().isStarted() && 
+                         context.hasEndpoint("seda:elasticsearchForwardEvent") != null &&
+                         context.hasEndpoint("seda:elasticsearchForwardAlarm") != null &&
+                         context.hasEndpoint("seda:ES_PRE") != null &&
+                         context.hasEndpoint("seda:ES") != null
+                    ) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        } catch (ConditionTimeoutException e) {
+            LOG.error("Camel never started up. Test cannot continue.");
+            throw e;
+        }
 
         EventAnticipator anticipator = m_eventIpcManager.getEventAnticipator();
 
