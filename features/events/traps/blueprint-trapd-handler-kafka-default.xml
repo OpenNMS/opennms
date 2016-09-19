@@ -53,7 +53,9 @@
 		<argument value="org.opennms.netmgt.trapd.TrapDTO" />
 	</bean>
 
-	<bean id="miniondtomapper" class="org.opennms.netmgt.trapd.TrapDTOMapper"/>
+	<bean id="mapper" class="org.opennms.netmgt.trapd.TrapDTOToObjectProcessor">
+		<argument value="org.opennms.netmgt.trapd.TrapDTO" />
+	</bean>
 
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
 	<camelContext id="trapdHandlerKafkaDefaultContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
@@ -62,7 +64,7 @@
 		<route id="receiveTrapConnectionViaKafka">
 			<from uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}&amp;consumerStreams={{consumerstreams}}"/>
 			<process ref="unmarshaller"/>
-			<bean ref="miniondtomapper" method="dto2object"/>
+			<bean ref="mapper"/>
 			<!-- TODO: Implement this unmarshaller -->
 			<!-- <bean ref="kafkaDecoder" method="fromBytes"/> -->
 

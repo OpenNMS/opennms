@@ -17,6 +17,7 @@
 		<cm:default-properties>
 			<cm:property name="kafkaAddress" value="127.0.0.1:9092" />
 			<cm:property name="kafkatopic" value="trapd" />
+			<cm:property name="rawTrapmessageflag" value="true" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -31,7 +32,9 @@
 		<argument value="org.opennms.netmgt.trapd.TrapDTO" />
 	</bean>
 	
-	<bean id="miniondtomapper" class="org.opennms.netmgt.trapd.TrapDTOMapper"/>
+	<bean id="mapper" class="org.opennms.netmgt.trapd.TrapObjectToDTOProcessor">
+		<argument value="org.opennms.netmgt.snmp.TrapNotification" />
+	</bean>
 	
 	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapNotificationHandlerCamel"/>
 
@@ -54,9 +57,11 @@
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
 			</setHeader>
-			<!-- TODO: Implement this marshaller -->
-			<!-- <bean ref="kafkaEncoder" method="toBytes"/> -->
-			<bean ref="miniondtomapper" method="object2dto"/>
+			<setHeader headerName="trapRawMessageFlag">
+				<simple resultType="java.lang.Boolean">properties:rawTrapmessageflag</simple>
+			</setHeader>
+			
+			<bean ref="mapper"/>
 			<bean ref="marshaller"/>
 			<to uri="seda:trapHandler"/>
 		</route>
