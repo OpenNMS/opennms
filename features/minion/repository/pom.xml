@@ -52,6 +52,7 @@
                                 <feature>minion-heartbeat-producer</feature>
                                 <feature>minion-snmp-proxy</feature>
                                 <feature>minion-provisiond-detectors</feature>
+                                <feature>minion-poller</feature>
                             </features>
                             <repository>target/maven-repo</repository>
                         </configuration>
@@ -111,6 +112,11 @@
         <dependency>
             <groupId>org.opennms.features.minion</groupId>
             <artifactId>core-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion.shell</groupId>
+            <artifactId>org.opennms.features.minion.shell.poller</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -194,6 +200,15 @@
             <artifactId>org.opennms.core.ipc.sink.camel-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.poller</groupId>
+            <artifactId>org.opennms.features.poller.client-rpc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.poller.monitors</groupId>
+            <artifactId>org.opennms.features.poller.monitors.core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <pluginRepositories>
@@ -263,6 +278,17 @@
             <id>coova</id>
             <name>Coova Repository</name>
             <url>http://maven.opennms.org/content/repositories/coova/</url>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <id>jboss-repo</id>
+            <name>JBoss Repository</name>
+            <url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
         </repository>
     </repositories>
 </project>

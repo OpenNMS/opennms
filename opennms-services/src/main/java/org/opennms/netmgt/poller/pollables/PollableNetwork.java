@@ -38,9 +38,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-
 /**
  * Represents a PollableNetwork
  *
@@ -76,29 +73,30 @@ public class PollableNetwork extends PollableContainer {
      *
      * @param nodeId a int.
      * @param nodeLabel a {@link java.lang.String} object.
+     * @param nodeLocation a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableNode} object.
      */
-    public PollableNode createNode(int nodeId, String nodeLabel) {
-        PollableNode node = new PollableNode(this, nodeId, nodeLabel);
+    public PollableNode createNode(int nodeId, String nodeLabel, String nodeLocation) {
+        PollableNode node = new PollableNode(this, nodeId, nodeLabel, nodeLocation);
         addMember(node);
         return node;
     }
-    
+
     /**
      * <p>createNodeIfNecessary</p>
      *
      * @param nodeId a int.
      * @param nodeLabel a {@link java.lang.String} object.
+     * @param nodeLocation a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableNode} object.
      */
-    public PollableNode createNodeIfNecessary(int nodeId, String nodeLabel) {
+    public PollableNode createNodeIfNecessary(int nodeId, String nodeLabel, String nodeLocation) {
         synchronized (this) {
             PollableNode node = getNode(nodeId);
-            return (node != null ? node : createNode(nodeId, nodeLabel));
+            return (node != null ? node : createNode(nodeId, nodeLabel, nodeLocation));
         }
-
     }
-    
+
     /**
      * <p>getNode</p>
      *
@@ -132,11 +130,12 @@ public class PollableNetwork extends PollableContainer {
      *
      * @param nodeId a int.
      * @param nodeLabel a {@link java.lang.String} object.
+     * @param nodeLocation a {@link java.lang.String} object.
      * @param addr a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableInterface} object.
      */
-    public PollableInterface createInterface(int nodeId, String nodeLabel, InetAddress addr) {
-        return createNodeIfNecessary(nodeId, nodeLabel).createInterface(addr);
+    public PollableInterface createInterface(int nodeId, String nodeLabel, String nodeLocation, InetAddress addr) {
+        return createNodeIfNecessary(nodeId, nodeLabel, nodeLocation).createInterface(addr);
     }
 
     /**
@@ -156,12 +155,13 @@ public class PollableNetwork extends PollableContainer {
      *
      * @param nodeId a int.
      * @param nodeLabel a {@link java.lang.String} object.
+     * @param nodeLocation a {@link java.lang.String} object.
      * @param addr a {@link java.net.InetAddress} object.
      * @param svcName a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      */
-    public PollableService createService(int nodeId, String nodeLabel, InetAddress addr, String svcName) {
-        return createNodeIfNecessary(nodeId, nodeLabel).createService(addr, svcName);
+    public PollableService createService(int nodeId, String nodeLabel, String nodeLocation, InetAddress addr, String svcName) {
+        return createNodeIfNecessary(nodeId, nodeLabel, nodeLocation).createService(addr, svcName);
     }
 
     /**

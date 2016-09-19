@@ -1342,6 +1342,7 @@
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.3.11.v20160721</jettyVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
+    <jfreechartVersion>1.0.19</jfreechartVersion>
     <jinteropVersion>2.0.8</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
@@ -1373,6 +1374,7 @@
     <snmp4jagentVersion>2.4.2</snmp4jagentVersion>
     <smackVersion>4.0.6</smackVersion>
     <trackerVersion>0.7</trackerVersion>
+    <twitter4jVersion>3.0.6</twitter4jVersion>
     <xalanVersion>2.7.2</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
@@ -1897,6 +1899,16 @@
       <dependency>
         <groupId>org.opennms.features.poller</groupId>
         <artifactId>org.opennms.features.poller.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.poller</groupId>
+        <artifactId>org.opennms.features.poller.client-rpc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.poller</groupId>
+        <artifactId>org.opennms.features.poller.shell</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

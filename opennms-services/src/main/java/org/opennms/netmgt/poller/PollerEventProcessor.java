@@ -194,11 +194,17 @@ final class PollerEventProcessor implements EventListener {
         final String svcName = event.getService();
 
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
-
         try {
             nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
         } catch (final Exception e) {
             LOG.error("Unable to retrieve nodeLabel for node {}", nodeId, e);
+        }
+
+        String nodeLocation = null;
+        try {
+            nodeLocation = getPoller().getQueryManager().getNodeLocation(nodeId.intValue());
+        } catch (final Exception e) {
+            LOG.error("Unable to retrieve nodeLocation for node {}", nodeId, e);
         }
 
         final PollableNode pnode = getNetwork().getNode(nodeId.intValue());
@@ -209,7 +215,7 @@ final class PollerEventProcessor implements EventListener {
                 return;
             }
         }
-        getPoller().scheduleService(nodeId.intValue(), nodeLabel, ipAddr, svcName);
+        getPoller().scheduleService(nodeId.intValue(), nodeLabel, nodeLocation, ipAddr, svcName);
 
     }
 
@@ -627,20 +633,46 @@ final class PollerEventProcessor implements EventListener {
             return;
         }
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
+        try {
+            nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
+        } catch (final Exception e) {
+            LOG.error("Unable to retrieve nodeLabel for node {}", nodeId, e);
+        }
+
+        String nodeLocation = null;
+        try {
+            nodeLocation = getPoller().getQueryManager().getNodeLocation(nodeId.intValue());
+        } catch (final Exception e) {
+            LOG.error("Unable to retrieve nodeLocation for node {}", nodeId, e);
+        }
 
         getPollerConfig().rebuildPackageIpListMap();
-        serviceReschedule(nodeId, nodeLabel, event, rescheduleExisting);
+        serviceReschedule(nodeId, nodeLabel, nodeLocation, event, rescheduleExisting);
     }
 
     private void rescheduleAllServices(Event event) {
         LOG.info("Poller configuration has been changed, rescheduling services.");
         getPollerConfig().rebuildPackageIpListMap();
         for (Long nodeId : getNetwork().getNodeIds()) {
-            serviceReschedule(nodeId, null,  event, true);
+            String nodeLabel = null;
+            try {
+                nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
+            } catch (final Exception e) {
+                LOG.error("Unable to retrieve nodeLabel for node {}", nodeId, e);
+            }
+
+            String nodeLocation = null;
+            try {
+                nodeLocation = getPoller().getQueryManager().getNodeLocation(nodeId.intValue());
+            } catch (final Exception e) {
+                LOG.error("Unable to retrieve nodeLocation for node {}", nodeId, e);
+            }
+
+            serviceReschedule(nodeId, nodeLabel, nodeLocation, event, true);
         }
     }
 
-    private void serviceReschedule(Long nodeId, String nodeLabel, Event sourceEvent, boolean rescheduleExisting) {
+    private void serviceReschedule(Long nodeId, String nodeLabel, String nodeLocation, Event sourceEvent, boolean rescheduleExisting) {
         if (nodeId == null || nodeId <= 0) {
             LOG.warn("Invalid node ID for event, skipping service reschedule: {}", sourceEvent);
             return;
@@ -729,7 +761,7 @@ final class PollerEventProcessor implements EventListener {
             }
 
             LOG.debug("{} is being scheduled (or rescheduled) for polling.", databaseService);
-            getPoller().scheduleService(nodeId.intValue(),nodeLabel, databaseService.getAddress(), databaseService.getServiceName());
+            getPoller().scheduleService(nodeId.intValue(), nodeLabel, nodeLocation, databaseService.getAddress(), databaseService.getServiceName());
             if (!getPollerConfig().isPolled(databaseService.getAddress(), databaseService.getServiceName())) {
                 LOG.debug("{} is no longer polled.  Closing any pending outages.", databaseService);
                 closeOutagesForService(sourceEvent, nodeId, closeDate, databaseService);

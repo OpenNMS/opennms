@@ -12,5 +12,6 @@
 
     <modules>
         <module>provision</module>
+        <module>poller</module>
     </modules>
 </project>

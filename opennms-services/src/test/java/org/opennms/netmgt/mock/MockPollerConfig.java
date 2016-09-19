@@ -58,14 +58,18 @@ import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.poller.outages.Time;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.poller.DefaultServiceMonitorRegistry;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.springframework.core.io.ByteArrayResource;
 
 import com.google.common.collect.Maps;
 
 public class MockPollerConfig extends PollOutagesConfigManager implements PollerConfig {
+
+    private final ServiceMonitorRegistry m_serviceMonitorRegistry = new DefaultServiceMonitorRegistry();
 
     private String m_criticalSvcName;
 
@@ -516,10 +520,6 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     }
 
     @Override
-    public void releaseAllServiceMonitors() {
-    }
-
-    @Override
     public List<InetAddress> getIpList(final Package pkg) {
         return Collections.emptyList();
     }
@@ -554,7 +554,9 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         throw new UnsupportedOperationException("MockPollerConfig.isPolledLocally is not yet implemented");
     }
 
- 
-
+    @Override
+    public ServiceMonitorRegistry getServiceMonitorRegistry() {
+        return m_serviceMonitorRegistry;
+    }
 
 }
