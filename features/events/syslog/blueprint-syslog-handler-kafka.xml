@@ -17,7 +17,7 @@
 		<cm:default-properties>
 			<cm:property name="kafkaAddress" value="127.0.0.1:9092" />
 			<cm:property name="kafkatopic" value="syslog" />
-			<cm:property name="rawsyslogmessageflag" value="true" />
+			<cm:property name="rawsyslogmessageflag" value="false" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 

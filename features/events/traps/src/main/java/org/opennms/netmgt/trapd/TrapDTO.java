@@ -34,12 +34,12 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.camel.MinionDTO;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpResult;
 
@@ -47,6 +47,11 @@ import org.opennms.netmgt.snmp.SnmpResult;
 @XmlAccessorType(XmlAccessType.NONE)
 public class TrapDTO extends MinionDTO {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6023265128058526987L;
+	
 	public static String COMMUNITY = "community";
 	public static String PDU_LENGTH = "pduLength";
 	public static String VERSION = "version";
@@ -93,11 +98,11 @@ public class TrapDTO extends MinionDTO {
 	}
 
 	public void setTrapAddress(InetAddress m_trapAddress) {
-		super.putIntoMap(TRAP_ADDRESS, InetAddrUtils.str(m_trapAddress));
+		super.putIntoMap(TRAP_ADDRESS, InetAddressUtils.str(m_trapAddress));
 	}
 
 	public void setAgentAddress(InetAddress m_agentAddress) {
-		super.putIntoMap(SOURCE_ADDRESS, InetAddrUtils.str(m_agentAddress));
+		super.putIntoMap(SOURCE_ADDRESS, InetAddressUtils.str(m_agentAddress));
 	}
 
 	public List<SnmpResult> getResults() {

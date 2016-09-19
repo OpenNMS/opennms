@@ -29,9 +29,6 @@
 package org.opennms.netmgt.syslogd;
 
 import java.net.InetAddress;
-import java.util.Arrays;
-import java.util.Objects;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -43,6 +40,11 @@ import org.opennms.core.utils.InetAddressUtils;
 @XmlRootElement(name = "syslog-dto")
 @XmlAccessorType(XmlAccessType.NONE)
 public class SyslogDTO extends MinionDTO {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7014850780455600999L;
 
 	public SyslogDTO() {
 		// No-arg constructor for JAXB

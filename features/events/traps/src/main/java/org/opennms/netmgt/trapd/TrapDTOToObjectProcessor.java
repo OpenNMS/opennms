@@ -4,8 +4,6 @@ import java.util.Base64;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.opennms.core.camel.MinionDTO;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.TrapNotification;
