@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.dns;
+package org.opennms.netmgt.poller.monitors.support;
 
 import java.io.IOException;
 import java.net.InetAddress;
