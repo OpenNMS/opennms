@@ -47,11 +47,9 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager.EmptyEventConfDao;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
@@ -77,14 +75,10 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 
-	private boolean mockInitialized = false;
-
 	private static final Logger LOG = LoggerFactory.getLogger(TrapdHandlerDefaultIT.class);
 
 	@ClassRule
 	public static ActiveMQBroker s_broker = new ActiveMQBroker();
-
-	private EventIpcManager m_eventIpcManager = new MockEventIpcManager();
 
 	@SuppressWarnings("rawtypes")
 	@Override

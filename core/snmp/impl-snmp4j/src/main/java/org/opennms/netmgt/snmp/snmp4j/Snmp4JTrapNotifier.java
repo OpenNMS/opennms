@@ -89,22 +89,22 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
         }
 
         @Override
-		public InetAddress getTrapAddress() {
+        public InetAddress getTrapAddress() {
             return m_pdu.getAgentAddress().getInetAddress();
         }
 
         @Override
-		public String getVersion() {
+        public String getVersion() {
             return "v1";
         }
 
         @Override
-		public int getPduLength() {
+        public int getPduLength() {
             return m_pdu.getVariableBindings().size();
         }
 
         @Override
-		public long getTimeStamp() {
+        public long getTimeStamp() {
             return m_pdu.getTimestamp();
         }
 
@@ -193,14 +193,14 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
         }
         
         @Override
-		public int getPduLength() {
+        public int getPduLength() {
             return getPdu().size();
         }
         
         @Override
-		public long getTimeStamp() {
+        public long getTimeStamp() {
 
-		LOG.debug("V2 {} first varbind value: {}", m_pduTypeString, getVarBindAt(0).getVariable());
+            LOG.debug("V2 {} first varbind value: {}", m_pduTypeString, getVarBindAt(0).getVariable());
 
             switch (getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getVariable().getSyntax()) {
             case SMIConstants.SYNTAX_TIMETICKS:
@@ -232,7 +232,7 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
         }
 
         @Override
-		public String getVersion() {
+        public String getVersion() {
             return "v2";
         }
 
