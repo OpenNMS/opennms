@@ -38,12 +38,15 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.cxf.common.util.Base64Utility;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
+import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -124,9 +127,50 @@ public class RestClient {
         return getBuilder(target).get(OnmsNode.class);
     }
 
+    public OnmsMinion getMinion(String id) {      
+        final WebTarget target = getTarget().path("minions").path(id);
+        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsMinion.class);
+    }
+    
+    public List<OnmsMinion> getAllMinions() {
+        GenericType<List<OnmsMinion>> minions = new GenericType<List<OnmsMinion>>() {
+        };
+        final WebTarget target = getTargetV2().path("minions");
+        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(minions);
+    }
+    
+    public Response addMinion(OnmsMinion minion) {
+        final WebTarget target = getTargetV2().path("minions");
+        return getBuilder(target).post(Entity.entity(minion, MediaType.APPLICATION_XML));
+    }
+
+    public Response deleteMinion(String id) {
+        final WebTarget target = getTargetV2().path("minions").path(id);
+        return getBuilder(target).delete();
+    }
+
+    public List<OnmsEvent> getEvents() {
+        GenericType<List<OnmsEvent>> events = new GenericType<List<OnmsEvent>>() {
+        };
+        final WebTarget target = getTarget().path("events");
+        return getBuilder(target).get(events);
+    }
+
+    public List<OnmsEvent> getAllEvents() {
+        GenericType<List<OnmsEvent>> events = new GenericType<List<OnmsEvent>>() {
+        };
+        final WebTarget target = getTarget().path("events").queryParam("limit", 0);
+        return getBuilder(target).get(events);
+    }
+
     private WebTarget getTarget() {
         final Client client = ClientBuilder.newClient();
         return client.target(String.format("http://%s:%d/opennms/rest", addr.getHostString(), addr.getPort()));
+    }
+    
+    private WebTarget getTargetV2() {
+        final Client client = ClientBuilder.newClient();
+        return client.target(String.format("http://%s:%d/opennms/api/v2", addr.getHostString(), addr.getPort()));
     }
 
     private Invocation.Builder getBuilder(final WebTarget target) {
