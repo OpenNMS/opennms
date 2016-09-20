@@ -16,6 +16,9 @@
     <bean id="locationAwarePollerClient" class="org.opennms.netmgt.poller.client.rpc.LocationAwarePollerClientImpl" />
     <onmsgi:service interface="org.opennms.netmgt.poller.LocationAwarePollerClient" ref="locationAwarePollerClient"/>
 
+    <!-- This executor pool is implicitly limited by the size of the pollerd's scheduler pool.
+         When a poll is triggered, pollerd will use a thread to a hold the tree lock, and wait
+         while the monitor is executed in this pool. -->
     <bean id="pollerExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
 
 </beans>
