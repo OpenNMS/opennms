@@ -125,6 +125,14 @@ include::text/performance-data-collection/collectors/wsman/detector.adoc[]
 == Events
 include::text/events.adoc[]
 
+[[ga-notifications]]
+== Notifications
+include::text/notifications/introduction.adoc[]
+include::text/notifications/getting-started.adoc[]
+include::text/notifications/concepts.adoc[]
+include::text/notifications/strategies/mattermost.adoc[]
+include::text/notifications/strategies/slack.adoc[]
+
 [ga-provisioning]
 == Provisioning
 include::text/provisioning/introduction.adoc[]
