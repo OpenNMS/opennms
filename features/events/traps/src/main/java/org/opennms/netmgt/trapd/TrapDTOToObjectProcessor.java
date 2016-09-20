@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.trapd;
 
 import java.util.Base64;
@@ -24,7 +52,10 @@ public class TrapDTOToObjectProcessor implements Processor{
 	public static final Logger LOG = LoggerFactory.getLogger(TrapObjectToDTOProcessor.class);
 
 	private final Class<?> m_class;
-
+	private static final String SNMP_V1="v1";
+	private static final String SNMP_V2="v2";
+	private static final String SNMP_V3="v3";
+	
 	@SuppressWarnings("rawtypes") // Because Aries Blueprint cannot handle generics
 	public TrapDTOToObjectProcessor(Class clazz) {
 		m_class = clazz;
@@ -47,14 +78,39 @@ public class TrapDTOToObjectProcessor implements Processor{
 
 		Snmp4JTrapNotifier.Snmp4JV2TrapInformation v2Trap = null;
 
-		if (trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase("v1")) {
+		if (trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase(SNMP_V1)) {
 			PDUv1 snmp4JV1cTrapPdu = new PDUv1();
 			snmp4JV1cTrapPdu.setType(PDU.NOTIFICATION);
 
 			for (SnmpResult snmpResult : trapDto.getResults()) {
-				snmp4JV1cTrapPdu.add(new VariableBinding(new OID(snmpResult
-						.getBase().toString()), new OctetString(snmpResult
-						.getValue().toString())));
+				
+				int type = snmpResult.getValue().getType();
+				
+				OID oid = new OID(snmpResult
+						.getValue().toString());
+				
+		        switch (type) {
+	            case 2:  snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new Integer32(Integer.parseInt(snmpResult.getBase().toString()))));
+                		 break;
+	            case 4:  snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(new String(Base64.getDecoder().decode(snmpResult.getBase().toString())))));
+                		 break;
+	            case 5:  snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new Null()));
+                		 break;
+	            case 6:  snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(snmpResult.getBase().toString())));
+                		 break;
+	            case 64: snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new IpAddress(snmpResult.getBase().toString())));
+                		 break;
+	            case 67: snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new TimeTicks(Long.parseLong(snmpResult.getBase().toString()))));
+	                     break;
+	            case 128:snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new Null(128)));
+	                     break;
+	            case 129:snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new Null(129)));
+	                     break;
+	            case 130:snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new Null(130)));
+	                     break;
+	            default: snmp4JV1cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString(snmpResult.getBase().toString())));
+	                     break;
+	            }
 
 			}
 
@@ -64,8 +120,8 @@ public class TrapDTOToObjectProcessor implements Processor{
 					trapDto.getFromMap(TrapDTO.COMMUNITY), snmp4JV1cTrapPdu,
 					null);
 			return v1Trap;
-		} else if (trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase("v2")
-				|| trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase("v3")) {
+		} else if (trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase(SNMP_V2)
+				|| trapDto.getFromMap(TrapDTO.VERSION).equalsIgnoreCase(SNMP_V3)) {
 			PDU snmp4JV2cTrapPdu = new PDU();
 			snmp4JV2cTrapPdu.setType(PDU.NOTIFICATION);
 

@@ -32,11 +32,14 @@
 		<argument value="org.opennms.netmgt.trapd.TrapDTO" />
 	</bean>
 	
+	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapNotificationHandlerCamel"/>
+	
+	<reference id="minionIdentityService" interface="org.opennms.minion.core.api.MinionIdentity"/>				
+	
 	<bean id="mapper" class="org.opennms.netmgt.trapd.TrapObjectToDTOProcessor">
 		<argument value="org.opennms.netmgt.snmp.TrapNotification" />
+		<property name="minionIdentity" ref="minionIdentityService"/>
 	</bean>
-	
-	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapNotificationHandlerCamel"/>
 
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
 	<camelContext id="trapdHandlerKafkaContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
@@ -61,7 +64,7 @@
 				<simple resultType="java.lang.Boolean">properties:rawTrapmessageflag</simple>
 			</setHeader>
 			
-			<bean ref="mapper"/>
+			<bean ref="mapper"/>		
 			<bean ref="marshaller"/>
 			<to uri="seda:trapHandler"/>
 		</route>

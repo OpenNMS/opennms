@@ -112,5 +112,13 @@ public class TrapDTO extends MinionDTO {
 	public void setResults(List<SnmpResult> results) {
 		this.results = results;
 	}
+	
+	public void setSystemId(String m_systemId) {
+		super.putIntoMap(MinionDTO.SYSTEM_ID, m_systemId);
+	}
+
+	public void setLocation(String m_location) {
+		super.putIntoMap(MinionDTO.LOCATION, m_location);
+	}
 
 }

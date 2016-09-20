@@ -289,5 +289,10 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.minion</groupId>
+      <artifactId>core-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>
