@@ -1342,7 +1342,6 @@
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.3.11.v20160721</jettyVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
-    <jfreechartVersion>1.0.19</jfreechartVersion>
     <jinteropVersion>2.0.8</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
