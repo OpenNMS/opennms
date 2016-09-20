@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.plugins.dbnotifier.test.manual;
+package org.opennms.plugins.elasticsearch.test;
 
 import java.util.HashMap;
 import java.util.Map;

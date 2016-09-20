@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.plugins.dbnotifier.test.manual;
+package org.opennms.plugins.elasticsearch.test.manual;
 
 import static org.junit.Assert.*;
 import io.searchbox.client.JestClient;

@@ -29,9 +29,11 @@
 package org.opennms.plugins.elasticsearch.rest;
 
 import io.searchbox.client.JestClient;
+import io.searchbox.client.JestResult;
 import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Index;
 import io.searchbox.core.Update;
+import io.searchbox.indices.CreateIndex;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -243,11 +245,11 @@ public class EventToIndex {
 			// change alarm index and add event to alarm change event index
 			if(uei.startsWith(ALARM_NOTIFICATION_UEI_STEM)) {
 				if (STICKY_MEMO_EVENT.equals(uei)|| JOURNAL_MEMO_EVENT.equals(uei) ){
-                  // handle memo change events
-				  // TODO may want to create a sticky and journal memo field in alarms index and update accordingly
-				  // currently we just save the event as an event to ES with no other processing
-				  if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm MEMO Event to ES:"+event.toString());
-					
+					// handle memo change events
+					// TODO may want to create a sticky and journal memo field in alarms index and update accordingly
+					// currently we just save the event as an event to ES with no other processing
+					if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm MEMO Event to ES:"+event.toString());
+
 				} else {
 					// handle alarm change events
 
@@ -286,19 +288,44 @@ public class EventToIndex {
 					if(archiveAlarms){
 						// if an alarm change event, use the alarm change fields to update the alarm index
 						alarmUpdate = populateAlarmIndexBodyFromAlarmChangeEvent(event, ALARM_INDEX_NAME, ALARM_INDEX_TYPE);
-						if (alarmUpdate!=null){
-							alarmIndexresult = getJestClient().execute(alarmUpdate);
-						}
+						String alarmindexname=alarmUpdate.getIndex();
 
-						if(LOG.isDebugEnabled()) {
-							if (alarmIndexresult==null) {
-								LOG.debug("returned result==null");
-							} else{
-								LOG.debug("Alarm sent to es index:"+ALARM_INDEX_NAME+" type:"+ ALARM_INDEX_TYPE
+						alarmIndexresult = getJestClient().execute(alarmUpdate);
+
+						if(alarmIndexresult.getResponseCode()==404){
+							// index doesn't exist for upsert command so create new index and try again
+
+							if(LOG.isDebugEnabled()) {
+								LOG.debug("trying to update alarm"
 										+ "\n   received search result: "+alarmIndexresult.getJsonString()
 										+ "\n   response code:" +alarmIndexresult.getResponseCode() 
 										+ "\n   error message: "+alarmIndexresult.getErrorMessage());
+								LOG.debug("index name "+alarmindexname + " doesnt exist creating new index");
 							}
+
+							// create new index
+							CreateIndex createIndex = new CreateIndex.Builder(alarmindexname).build();
+							JestResult result = getJestClient().execute(createIndex);
+							if(LOG.isDebugEnabled()) {
+								LOG.debug("created new alarm index:"+alarmindexname+" type:"+ ALARM_INDEX_TYPE
+										+ "\n   received search result: "+result.getJsonString()
+										+ "\n   response code:" +result.getResponseCode() 
+										+ "\n   error message: "+result.getErrorMessage());
+							}
+							alarmIndexresult = getJestClient().execute(alarmUpdate);
+						}
+
+						if(alarmIndexresult.getResponseCode()!=200){
+							LOG.error("Problem sending alarm to es index:" +alarmindexname+ " type:"+ ALARM_INDEX_TYPE
+									+ "\n   received search result: "+alarmIndexresult.getJsonString()
+									+ "\n   response code:" +alarmIndexresult.getResponseCode() 
+									+ "\n   error message: "+alarmIndexresult.getErrorMessage());
+						} else if(LOG.isDebugEnabled()) {
+							LOG.debug("Alarm sent to es index:" +alarmindexname+ " type:"+ ALARM_INDEX_TYPE
+									+ "\n   received search result: "+alarmIndexresult.getJsonString()
+									+ "\n   response code:" +alarmIndexresult.getResponseCode() 
+									+ "\n   error message: "+alarmIndexresult.getErrorMessage());
+
 						}
 					}
 				}
@@ -306,48 +333,95 @@ public class EventToIndex {
 				// save all Alarm Change Events including memo change events
 				if(archiveAlarmChangeEvents){
 					eventIndex = populateEventIndexBodyFromEvent(event, ALARM_EVENT_INDEX_NAME, EVENT_INDEX_TYPE);
+					String alarmeventindexname=eventIndex.getIndex();
 					eventIndexresult = getJestClient().execute(eventIndex);
 
-					if(LOG.isDebugEnabled()) {
-						if (alarmIndexresult==null) {
-							LOG.debug("returned result==null");
-						} else{
-							LOG.debug("Event sent to es index:"+ALARM_EVENT_INDEX_NAME+" type:"+ EVENT_INDEX_TYPE
+					if(eventIndexresult.getResponseCode()==404){
+						// index doesn't exist for upsert command so create new index first
+
+						if(LOG.isDebugEnabled()) {
+							LOG.debug("trying to update alarm event index"
 									+ "\n   received search result: "+eventIndexresult.getJsonString()
 									+ "\n   response code:" +eventIndexresult.getResponseCode() 
 									+ "\n   error message: "+eventIndexresult.getErrorMessage());
+							LOG.debug("index name "+alarmeventindexname + " doesnt exist creating new index");
 						}
+
+						// create new index
+						CreateIndex createIndex = new CreateIndex.Builder(alarmeventindexname).build();
+						JestResult result = getJestClient().execute(createIndex);
+						if(LOG.isDebugEnabled()) {
+							LOG.debug("created new alarm change event index:"+alarmeventindexname+" type:"+ EVENT_INDEX_TYPE
+									+ "\n   received search result: "+result.getJsonString()
+									+ "\n   response code:" +result.getResponseCode() 
+									+ "\n   error message: "+result.getErrorMessage());
+						}
+						eventIndexresult = getJestClient().execute(eventIndex);
+					}
+
+
+					if(eventIndexresult.getResponseCode()!=200){
+						LOG.error("Problem sending Alarm Event to es index:" +alarmeventindexname+ " type:"+ EVENT_INDEX_TYPE
+								+ "\n   received search result: "+alarmIndexresult.getJsonString()
+								+ "\n   response code:" +alarmIndexresult.getResponseCode() 
+								+ "\n   error message: "+alarmIndexresult.getErrorMessage());
+					} else if(LOG.isDebugEnabled()) {
+						LOG.debug("Alarm Event sent to es index:"+alarmeventindexname+" type:"+ EVENT_INDEX_TYPE
+								+ "\n   received search result: "+eventIndexresult.getJsonString()
+								+ "\n   response code:" +eventIndexresult.getResponseCode() 
+								+ "\n   error message: "+eventIndexresult.getErrorMessage());
+
 					}
 				}
 
 			} else {
 				// else handle all other event types
-				
+
 				if(archiveRawEvents){
 					// only send events to ES which are persisted to database
 					if(event.getDbid()!=null && event.getDbid()!=0) {
 						if (LOG.isDebugEnabled()) LOG.debug("Sending Event to ES:"+event.toString());
 						// Send the event to the event forwarder
 						eventIndex = populateEventIndexBodyFromEvent(event, EVENT_INDEX_NAME, EVENT_INDEX_TYPE);
+						String eventindexname=eventIndex.getIndex();
 						eventIndexresult = getJestClient().execute(eventIndex);
 
-						if(LOG.isDebugEnabled()) {
-							if (eventIndexresult==null) {
-								LOG.debug("returned result==null");
-							} else{
-								LOG.debug("Event sent to es index:"+EVENT_INDEX_NAME+" type:"+ EVENT_INDEX_TYPE
+						if(eventIndexresult.getResponseCode()==404){
+							// index doesn't exist for upsert command so create new index first
+
+							if(LOG.isDebugEnabled()) {
+								LOG.debug("trying to update event index"
 										+ "\n   received search result: "+eventIndexresult.getJsonString()
 										+ "\n   response code:" +eventIndexresult.getResponseCode() 
 										+ "\n   error message: "+eventIndexresult.getErrorMessage());
+								LOG.debug("index name "+eventindexname + " doesnt exist creating new index");
 							}
+
+							// create new index
+							CreateIndex createIndex = new CreateIndex.Builder(eventindexname).build();
+							JestResult result = getJestClient().execute(createIndex);
+							if(LOG.isDebugEnabled()) {
+								LOG.debug("created new event index:"+eventindexname+" type:"+ EVENT_INDEX_TYPE
+										+ "\n   received search result: "+result.getJsonString()
+										+ "\n   response code:" +result.getResponseCode() 
+										+ "\n   error message: "+result.getErrorMessage());
+							}
+							eventIndexresult = getJestClient().execute(eventIndex);
 						}
 
-					} else {
-						if (LOG.isDebugEnabled()) LOG.debug("Not Sending Event to ES: null event.getDbid()="+event.getDbid()+ " Event="+event.toString());
+						if(LOG.isDebugEnabled()) {
+							LOG.debug("Event sent to es index:"+eventindexname+" type:"+ EVENT_INDEX_TYPE
+									+ "\n   received search result: "+eventIndexresult.getJsonString()
+									+ "\n   response code:" +eventIndexresult.getResponseCode() 
+									+ "\n   error message: "+eventIndexresult.getErrorMessage());
+						}
 					}
-				}
 
+				} else {
+					if (LOG.isDebugEnabled()) LOG.debug("Not Sending Event to ES: null event.getDbid()="+event.getDbid()+ " Event="+event.toString());
+				}
 			}
+
 
 
 		} catch (Exception ex){
@@ -558,7 +632,7 @@ public class EventToIndex {
 			body.put(ALARM_CLEAR_TIME, null);
 			body.put(ALARM_DELETED_TIME, null);
 		}
-		
+
 		// set alarm cleared time if an alarm clear event
 		if(ALARM_CLEARED_EVENT.equals(event.getUei())){
 			Calendar alarmClearCal=Calendar.getInstance();

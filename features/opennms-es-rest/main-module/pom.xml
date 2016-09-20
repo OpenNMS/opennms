@@ -44,6 +44,65 @@
         </configuration>
       </plugin>
 
+      <!-- ElasticSearch maven plugin goals -->
+      <!-- elasticsearch:help Display help information on elasticsearch-maven-plugin. -->
+      <!-- Call mvn elasticsearch:help -Ddetail=true -Dgoal=<goal-name> to display parameter details. -->
+      <!-- elasticsearch:load (phase: pre-integration-test) -->
+      <!-- elasticsearch:stop (phase: post-integration-test) Goal which stops the local Elasticsearch node. -->
+      <!-- elasticsearch:start (phase: pre-integration-test) Goal which starts a local Elasticsearch node. -->
+      <!-- elasticsearch:run (phase: pre-integration-test) Starts a local instance of ElasticSearch indefinitely. -->
+      <!-- In order to kill it a CTRL+C has to be made. -->
+      <plugin>
+        <groupId>com.github.alexcojocaru</groupId>
+        <artifactId>elasticsearch-maven-plugin</artifactId>
+        <!-- REPLACE THE FOLLOWING WITH THE PLUGIN VERSION YOU REQUIRE -->
+        <version>2.2</version>
+        <configuration>
+          <clusterName>test</clusterName>
+          <!-- set not to clash with normal ES ports 9300 9200 -->
+          <tcpPort>9300</tcpPort>
+          <httpPort>9200</httpPort>
+        </configuration>
+        <executions>
+          <!-- The elasticsearch plugin is by default bound to the pre-integration-test and post-integration-test phases -->
+          <execution>
+            <id>start-elasticsearch</id>
+            <!-- <phase>pre-integration-test</phase> -->
+            <phase>test-compile</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>deploy-json</id>
+            <!-- <phase>pre-integration-test</phase> -->
+            <phase>test-compile</phase>
+            <goals>
+              <goal>load</goal>
+            </goals>
+            <configuration>
+              <scriptFile>src/test/resources/elasticsearch.script</scriptFile>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-elasticsearch</id>
+            <!-- <phase>post-integration-test</phase> -->
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <!-- REPLACE THE FOLLOWING WITH THE VERSION OF YOUR DESIRE -->
+            <version>2.4.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -174,21 +233,56 @@
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore-nio</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpasyncclient</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
 
 
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore-osgi</artifactId>
+      <!-- <version>4.4.4</version> --><!-- jest version -->
+      <version>${httpcoreVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient-osgi</artifactId>
+      <!-- <version>4.5.2</version> --><!-- jest version -->
+      <version>${httpclientVersion}</version> <!-- best match -->
+      <scope>provided</scope>
+    </dependency>
+
     <!-- <dependency> -->
-    <!-- <groupId>org.glassfish.jersey.core</groupId> -->
-    <!-- <artifactId>jersey-client</artifactId> -->
-    <!-- <version>2.22.1</version> -->
+    <!-- <groupId>org.apache.httpcomponents</groupId> -->
+    <!-- <artifactId>httpasyncclient-osgi</artifactId> -->
+    <!-- <version>${httpclientVersion}</version> -->
     <!-- </dependency> -->
-    <!-- <dependency> -->
-    <!-- <groupId>com.fasterxml.jackson.jaxrs</groupId> -->
-    <!-- <artifactId>jackson-jaxrs-json-provider</artifactId> -->
-    <!-- <version>2.5.4</version> -->
-    <!-- </dependency> -->
+
+    <!-- best match derived from httpasyncclient 4.0.2 compiled against httpclient 4.3.5 httpcore 4.3.2 -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpasyncclient-osgi</artifactId>
+      <!-- <version>4.1.1</version> -->
+      <version>${httpasyncclientVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
+
+
 
   </dependencies>
 

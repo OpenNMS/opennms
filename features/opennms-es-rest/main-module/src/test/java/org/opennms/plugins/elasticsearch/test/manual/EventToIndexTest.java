@@ -26,12 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.plugins.dbnotifier.test.manual;
+package org.opennms.plugins.elasticsearch.test.manual;
 
 import java.net.InetAddress;
 import java.util.Date;
 
 import org.opennms.plugins.elasticsearch.rest.EventToIndex;
+import org.opennms.plugins.elasticsearch.test.MockNodeCache;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -106,11 +107,13 @@ public class EventToIndexTest {
 		LOG.debug("***************** start of test jestClientAlarmToESTest");
 
 		try {
-
 			
 			// Get Jest client
+			String esusername="";
+			String espassword="";
+			
 			HttpClientConfig clientConfig = new HttpClientConfig.Builder(
-					"http://localhost:9200").multiThreaded(true).build();
+					"http://localhost:9200").multiThreaded(true).defaultCredentials(esusername, espassword).build();
 			JestClientFactory factory = new JestClientFactory();
 			factory.setHttpClientConfig(clientConfig);
 			JestClient jestClient = factory.getObject();
@@ -118,9 +121,10 @@ public class EventToIndexTest {
 			try {
 				// create alarm event send to index
 				Update update = alarmEventToUpdate();
-				DocumentResult dresult = jestClient.execute(update);
-
 				String actualindex = update.getIndex();
+				LOG.debug("actualindex: "+actualindex);
+				
+				DocumentResult dresult = jestClient.execute(update);
 				LOG.debug("received dresult: "+dresult.getJsonString()+ "\n   response code:" +dresult.getResponseCode() +"\n   error message: "+dresult.getErrorMessage());
 
 				// search for resulting alarm
@@ -183,9 +187,13 @@ public class EventToIndexTest {
 		LOG.debug("***************** start of test jestClientEventToESTest");
 
 		try {
+			
 			// Get Jest client
+			String esusername="";
+			String espassword="";
+			
 			HttpClientConfig clientConfig = new HttpClientConfig.Builder(
-					"http://localhost:9200").multiThreaded(true).build();
+					"http://localhost:9200").multiThreaded(true).defaultCredentials(esusername, espassword).build();
 			JestClientFactory factory = new JestClientFactory();
 			factory.setHttpClientConfig(clientConfig);
 			JestClient jestClient = factory.getObject();
