@@ -946,15 +946,20 @@
     </feature>
 
     <feature name="opennms-provisioning-detectors" description="OpenNMS :: Provisioning :: Detectors" version="${project.version}">
+      <feature>commons-cli</feature>
+      <feature>spring-security32</feature>
+
+      <feature>opennms-collection-api</feature>
+      <feature>opennms-core-web</feature>
+      <feature>opennms-icmp-api</feature>
       <feature>opennms-provisioning-api</feature>
+      <feature>wsman-integration</feature>
+      <feature>wmi-integration</feature>
+
+      <bundle>wrap:mvn:bsf/bsf/${bsfVersion}</bundle>
       <bundle>wrap:mvn:com.novell.ldap/jldap/${jldapVersion}</bundle>
       <bundle>wrap:mvn:org.samba.jcifs/jcifs/${jcifsVersion}</bundle>
-      <feature>opennms-icmp-api</feature>
-      <bundle>wrap:mvn:bsf/bsf/${bsfVersion}</bundle>
-      <feature>commons-cli</feature>
-      <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
-      <bundle>mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
-      <bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
+
       <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.impl/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-bsf/${project.version}</bundle>
@@ -967,8 +972,6 @@
       <bundle>mvn:org.opennms/opennms-detector-ssh/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-web/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
-      <feature>wsman-integration</feature>
-      <feature>wmi-integration</feature>
     </feature>
     
     <feature name="opennms-provisioning-shell" description="OpenNMS :: Provisioning :: Shell" version="${project.version}">
