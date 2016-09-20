@@ -125,7 +125,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, nextLocation);
             try {
-                m_eventProxy.send(eventBuilder.getEvent());
+                eventProxy.send(eventBuilder.getEvent());
             } catch (final EventProxyException e) {
                 throw new DataAccessResourceFailureException("Unable to send event", e);
             }
@@ -138,7 +138,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_PREV_LOCATION, prevLocation);
             eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, nextLocation);
             try {
-                m_eventProxy.send(eventBuilder.getEvent());
+                eventProxy.send(eventBuilder.getEvent());
             } catch (final EventProxyException e) {
                 throw new DataAccessResourceFailureException("Unable to send event", e);
             }
