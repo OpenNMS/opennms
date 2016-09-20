@@ -31,13 +31,13 @@ package org.opennms.netmgt.syslogd;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
@@ -45,10 +45,12 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 final class BroadcastEventProcessor implements EventListener {
+
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
-    
+
     @Autowired
     private SyslogdIPMgr m_syslogdIPMgr;
+
     /**
      * Create message selector to set to the subscription
      */
@@ -62,6 +64,9 @@ final class BroadcastEventProcessor implements EventListener {
 
         // interfaceDeleted
         ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
+
+        // interfaceReparented
+        ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
 
         EventIpcManagerFactory.init();
         EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
@@ -113,6 +118,10 @@ final class BroadcastEventProcessor implements EventListener {
             }
             LOG.debug("Reparented {} to known node list", event.getInterface());
         }
+    }
+
+    public void setSyslogdIPMgr(SyslogdIPMgr manager) {
+        m_syslogdIPMgr = manager;
     }
 
     /**

@@ -29,7 +29,7 @@
 package org.opennms.upgrade.implementations;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -70,6 +70,7 @@ import org.slf4j.LoggerFactory;
  * <li>NMS-5247</li>
  * <li>NMS-5279</li>
  * <li>NMS-5824</li>
+ * <li>NMS-8507</li>
  * </ul>
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
@@ -448,18 +449,22 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 if (!dsName.equals(newName)) {
                     Properties meta = new Properties();
                     Properties newMeta = new Properties();
-                    meta.load(new FileInputStream(metaFile));
-                    for (Object k : meta.keySet()) {
-                        String key = (String) k;
-                        String newKey = key.replaceAll(dsName, newName);
-                        newMeta.put(newKey, newName);
-                    }
-                    File newFile = new File(metaFile.getParentFile(), newName + metaExt);
-                    log("Re-creating META into %s\n", newFile);
-                    newMeta.store(new FileWriter(newFile), null);
-                    if (!metaFile.equals(newFile)) {
-                        if (!metaFile.delete()) {
+                    try (FileReader fr = new FileReader(metaFile);) {
+                        meta.load(fr);
+                        for (Object k : meta.keySet()) {
+                            String key = (String) k;
+                            String newKey = key.replaceAll(dsName, newName);
+                            newMeta.put(newKey, newName);
+                        }
+                        File newFile = new File(metaFile.getParentFile(), newName + metaExt);
+                        log("Re-creating META into %s\n", newFile);
+                        try (FileWriter fw = new FileWriter(newFile);) {
+                            newMeta.store(fw, null);
+                        }
+                        if (!metaFile.equals(newFile)) {
+                            if (!metaFile.delete()) {
                         	LOG.warn("Could not delete file {}", metaFile.getPath());
+                            }
                         }
                     }
                 }
@@ -506,15 +511,19 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
         if (dsFile.exists()) {
             Properties dsProperties = new Properties();
             Properties newDsProperties = new Properties();
-            dsProperties.load(new FileInputStream(dsFile));
-            for (Object key : dsProperties.keySet()) {
-                String oldName = (String) key;
-                String newName = getFixedDsName(oldName);
-                String oldFile = dsProperties.getProperty(oldName);
-                String newFile = getFixedFileName(oldFile);
-                newDsProperties.put(newName, newFile);
+            try (FileReader fr = new FileReader(dsFile);) {
+                dsProperties.load(fr);
+                for (Object key : dsProperties.keySet()) {
+                    String oldName = (String) key;
+                    String newName = getFixedDsName(oldName);
+                    String oldFile = dsProperties.getProperty(oldName);
+                    String newFile = getFixedFileName(oldFile);
+                    newDsProperties.put(newName, newFile);
+                }
+                try (FileWriter fw = new FileWriter(dsFile);) {
+                    newDsProperties.store(new FileWriter(dsFile), null);
+                }
             }
-            newDsProperties.store(new FileWriter(dsFile), null);
         }
         // META
         final String metaExt = ".meta";
@@ -526,21 +535,25 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 log("Processing META %s\n", metaFile);
                 Properties meta = new Properties();
                 Properties newMeta = new Properties();
-                meta.load(new FileInputStream(metaFile));
-                for (Object k : meta.keySet()) {
-                    String key = (String) k;
-                    String dsName = meta.getProperty(key);
-                    String newName = getFixedDsName(dsName);
-                    String newKey = key.replaceAll(dsName, newName);
-                    newMeta.put(newKey, newName);
-                }
-                File newFile = new File(metaFile.getParentFile(), getFixedFileName(metaFile.getName().replaceFirst(metaExt, "")) + metaExt);
-                log("Recreating META into %s\n", newFile);
-                newMeta.store(new FileWriter(newFile), null);
-                if (!metaFile.equals(newFile)) {
-                   if(!metaFile.delete()) {
-                	   LOG.warn("Could not delete file: {}", metaFile.getPath());
-                   }
+                try (FileReader fr = new FileReader(metaFile);) {
+                    meta.load(fr);
+                    for (Object k : meta.keySet()) {
+                        String key = (String) k;
+                        String dsName = meta.getProperty(key);
+                        String newName = getFixedDsName(dsName);
+                        String newKey = key.replaceAll(dsName, newName);
+                        newMeta.put(newKey, newName);
+                    }
+                    File newFile = new File(metaFile.getParentFile(), getFixedFileName(metaFile.getName().replaceFirst(metaExt, "")) + metaExt);
+                    log("Recreating META into %s\n", newFile);
+                    try (FileWriter fw = new FileWriter(newFile);) {
+                        newMeta.store(fw, null);
+                    }
+                    if (!metaFile.equals(newFile)) {
+                       if (!metaFile.delete()) {
+                           LOG.warn("Could not delete file: {}", metaFile.getPath());
+                       }
+                    }
                 }
             }
         }

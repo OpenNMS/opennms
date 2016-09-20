@@ -113,6 +113,7 @@ public class Syslogd extends AbstractServiceDaemon {
 
         try {
             m_broadcastEventProcessor = new BroadcastEventProcessor();
+            m_broadcastEventProcessor.setSyslogdIPMgr(SyslogdIPMgrJDBCImpl.getInstance());
         } catch (Throwable e) {
             LOG.error("Failed to setup event reader", e);
             throw new UndeclaredThrowableException(e);

@@ -378,10 +378,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                         ndbt.clearTopologyForBridge(domain.getBridge(nodeid));
                         LOG.info("deleteNode: node: {}, end: merging topology for domain",nodeid);
                         LOG.info("deleteNode: node: {}, start: save topology for domain",nodeid);
-                        m_queryMgr.store(domain);
+                        m_queryMgr.store(domain,now);
                         m_queryMgr.save(ndbt.getDomain().getRootBridgeId(),ndbt.getRootBridgeBFT());
-                        m_queryMgr.reconcileBridgeTopology(ndbt.getDomain().getRootBridgeId(), now);
                         LOG.info("deleteNode: node: {}, end: save topology for domain",nodeid);
+                        domain.removeBridge(nodeid);
                         domain.releaseLock(this);
                     }
                     rr.unschedule();
