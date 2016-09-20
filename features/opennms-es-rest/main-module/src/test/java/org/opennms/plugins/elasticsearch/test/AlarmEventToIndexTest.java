@@ -30,6 +30,7 @@ package org.opennms.plugins.elasticsearch.test;
 
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.plugins.elasticsearch.rest.EventToIndex;
 import org.opennms.plugins.elasticsearch.rest.IndexNameFunction;
@@ -157,6 +158,11 @@ public class AlarmEventToIndexTest {
 
 			// forward event to elastic search
 			eventToIndex.forwardEvent(event);
+			
+			// waiting 5 seconds for index 
+            try {
+            	TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) { }
 
 			// send query to check that alarm has been created
 			jestClient = restClientFactory.getJestClient();
@@ -194,6 +200,11 @@ public class AlarmEventToIndexTest {
 
 			assertEquals(Long.valueOf(1), hits.get("total"));
 			
+			
+			// waiting 5 seconds for index 
+            try {
+            	TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) { }
 			
 			// search for resulting alarm change event
 			String eventquery = "{\n" 

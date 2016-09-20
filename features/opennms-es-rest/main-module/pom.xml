@@ -19,10 +19,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <target>1.8</target>
-          <source>1.8</source>
-        </configuration>
       </plugin>
 
       <plugin>
@@ -55,7 +51,6 @@
       <plugin>
         <groupId>com.github.alexcojocaru</groupId>
         <artifactId>elasticsearch-maven-plugin</artifactId>
-        <!-- REPLACE THE FOLLOWING WITH THE PLUGIN VERSION YOU REQUIRE -->
         <version>2.2</version>
         <configuration>
           <clusterName>test</clusterName>
@@ -64,7 +59,9 @@
           <httpPort>9200</httpPort>
         </configuration>
         <executions>
-          <!-- The elasticsearch plugin is by default bound to the pre-integration-test and post-integration-test phases -->
+          <!-- The elasticsearch plugin is by default bound to the -->
+          <!-- pre-integration-test and post-integration-test phases -->
+          <!-- here we are binding into the normal unit test phases -->
           <execution>
             <id>start-elasticsearch</id>
             <!-- <phase>pre-integration-test</phase> -->
@@ -97,7 +94,7 @@
           <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <!-- REPLACE THE FOLLOWING WITH THE VERSION OF YOUR DESIRE -->
+            <!-- REPLACE THE FOLLOWING WITH THE ES VERSION USED IN TESTS -->
             <version>2.4.0</version>
           </dependency>
         </dependencies>
@@ -114,7 +111,6 @@
           </excludes>
         </configuration>
       </plugin>
-
     </plugins>
     <testResources>
       <testResource>
@@ -126,7 +122,39 @@
         <directory>src/main/resources</directory>
       </resource>
     </resources>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>com.github.alexcojocaru</groupId>
+                    <artifactId>elasticsearch-maven-plugin</artifactId>
+                    <versionRange>[1.0,)</versionRange>
+                    <goals>
+                      <goal>start</goal>
+                      <goal>load</goal>
+                      <goal>stop</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore />
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+
+    </pluginManagement>
   </build>
+
   <dependencies>
     <dependency>
       <groupId>org.opennms.plugins</groupId>
@@ -183,7 +211,6 @@
       <artifactId>log4j-slf4j-impl</artifactId>
       <scope>test</scope>
     </dependency>
-
 
     <dependency>
       <groupId>junit</groupId>
@@ -248,41 +275,27 @@
       </exclusions>
     </dependency>
 
-
-
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore-osgi</artifactId>
       <!-- <version>4.4.4</version> --><!-- jest version -->
-      <version>${httpcoreVersion}</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-osgi</artifactId>
-      <!-- <version>4.5.2</version> --><!-- jest version -->
-      <version>${httpclientVersion}</version> <!-- best match -->
+      <!-- <version>4.5.2</version> --><!-- jest version --> <!-- 4.3.6 best match -->
       <scope>provided</scope>
     </dependency>
-
-    <!-- <dependency> -->
-    <!-- <groupId>org.apache.httpcomponents</groupId> -->
-    <!-- <artifactId>httpasyncclient-osgi</artifactId> -->
-    <!-- <version>${httpclientVersion}</version> -->
-    <!-- </dependency> -->
 
     <!-- best match derived from httpasyncclient 4.0.2 compiled against httpclient 4.3.5 httpcore 4.3.2 -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpasyncclient-osgi</artifactId>
-      <!-- <version>4.1.1</version> -->
-      <version>${httpasyncclientVersion}</version>
+      <!-- <version>4.1.1</version> --><!-- jest version -->
       <scope>provided</scope>
     </dependency>
-
-
-
 
   </dependencies>
 

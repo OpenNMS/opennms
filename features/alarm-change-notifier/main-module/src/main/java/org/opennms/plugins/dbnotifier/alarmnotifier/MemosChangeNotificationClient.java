@@ -42,7 +42,6 @@ import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.core.network.IPAddress;
 import org.opennms.plugins.com.impossibl.postgres.jdbc.TimestampUtils;
 import org.opennms.plugins.dbnotifier.DbNotification;
 import org.opennms.plugins.dbnotifier.NotificationClient;

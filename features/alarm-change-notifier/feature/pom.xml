@@ -19,7 +19,6 @@
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
-        <version>1.2.0</version>
         <executions>
           <execution>
             <id>features.xml</id>

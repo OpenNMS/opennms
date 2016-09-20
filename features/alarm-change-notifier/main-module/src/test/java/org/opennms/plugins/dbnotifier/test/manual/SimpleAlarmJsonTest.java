@@ -41,7 +41,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class SimpleJsonTest {
+public class SimpleAlarmJsonTest {
 
 	@Test
 	public void test() {
@@ -244,6 +244,7 @@ public class SimpleJsonTest {
 
 		} catch (ParseException e) {
 			e.printStackTrace();
+			throw new RuntimeException("test failed parsing of alarm",e);
 		}
 
 		System.out.println(this.getClass().getName()+" end of test");
