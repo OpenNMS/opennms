@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<jmx-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
+<jmx-datacollection-config rrdRepository="/Users/ps044221/Desktop/workspace/jira-HZN-776/opennms/target/opennms-19.0.0-SNAPSHOT/share/rrd/snmp/">
     <jmx-collection name="jmx-kafka">
         <rrd step="300">
             <rra>RRA:AVERAGE:0.5:1:2016</rra>
@@ -48,8 +48,136 @@
         <mbean name="Trap Bytes Out PerSecond Metrics" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec,topic=trapd">
             <attrib name="Count" alias="trapOutBytesCount" type="gauge"/>
         </mbean>
-            
-      </mbeans>
+
+        <mbean name="Syslog Message InPerSec" objectname="kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec,topic=syslog">
+            <attrib name="Count" alias="smsgCount" type="gauge"/>
+        </mbean>
+
+        <mbean name="Trap Message InPerSec" objectname="kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec,topic=trapd">
+            <attrib name="Count" alias="tmsgCount" type="gauge"/>
+        </mbean>
+
+        <mbean name="UnderReplicatedPartitions" objectname="kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions">
+            <attrib name="Value" alias="ReplicValue" type="gauge"/>
+        </mbean>
+        
+        <mbean name="ReplicaManager LeaderCount" objectname="kafka.server:type=ReplicaManager,name=LeaderCount">
+            <attrib name="Value" alias="lcCount" type="gauge"/>
+        </mbean>
+
+        <mbean name="Produce Count" objectname="kafka.network:type=RequestMetrics,name=LocalTimeMs,request=Produce">
+            <attrib name="Count" alias="pCount" type="gauge"/>
+        </mbean>
+
+        <mbean name="Fetch Consumer" objectname="kafka.network:type=RequestMetrics,name=LocalTimeMs,request=FetchConsumer">
+            <attrib name="Count" alias="fcCount" type="gauge"/>
+        </mbean>
+
+        <mbean name="Fetch Follower" objectname="kafka.network:type=RequestMetrics,name=LocalTimeMs,request=FetchFollower">
+            <attrib name="Count" alias="ffCount" type="gauge"/>
+        </mbean>
+        
+        <mbean name="Active ControllerCount" objectname="kafka.controller:type=KafkaController,name=ActiveControllerCount">
+            <attrib name="Value" alias="accValue" type="gauge"/>
+        </mbean>
+
+        <mbean name="Leader ElectionRate And TimeMs" objectname="kafka.controller:type=ControllerStats,name=LeaderElectionRateAndTimeMs">
+            <attrib name="Count" alias="leCount" type="gauge"/>
+        </mbean>
+        
+        <mbean name="Unclean LeaderElectionsPerSec" objectname="kafka.controller:type=ControllerStats,name=UncleanLeaderElectionsPerSec">
+            <attrib name="Count" alias="uleCount" type="gauge"/>
+        </mbean>
+        
+        <mbean name="Partition Count" objectname="kafka.server:type=ReplicaManager,name=PartitionCount">
+            <attrib name="Value" alias="pcValue" type="gauge"/>
+        </mbean>
+        
+        <mbean name="Leader Count" objectname="kafka.server:type=ReplicaManager,name=LeaderCount">
+            <attrib name="Value" alias="lcValue" type="gauge"/>
+        </mbean>
+                
+        <mbean name="Isr ShrinksPerSec" objectname="kafka.server:type=ReplicaManager,name=IsrShrinksPerSec">
+            <attrib name="Count" alias="isCount" type="gauge"/>
+        </mbean>
+        
+        <mbean name="Isr ExpandsPerSec" objectname="kafka.server:type=ReplicaManager,name=IsrExpandsPerSec">
+            <attrib name="Count" alias="iseCount" type="gauge"/>
+        </mbean>
+        
+        <mbean name="Replica Fetcher Manager" objectname="kafka.server:type=ReplicaFetcherManager,name=MaxLag,clientId=Replica">
+            <attrib name="Value" alias="rfmValue" type="gauge"/>
+        </mbean>
+        
+        <mbean name="Fetch PurgatorySize" objectname="kafka.server:type=DelayedOperationPurgatory,name=PurgatorySize,delayedOperation=Fetch">
+            <attrib name="Value" alias="fpsValue" type="gauge"/>
+        </mbean>
+        
+        <mbean name="Produce PurgatorySize" objectname="kafka.server:type=DelayedOperationPurgatory,name=PurgatorySize,delayedOperation=Produce">
+            <attrib name="Value" alias="ppsValue" type="gauge"/>
+        </mbean>
+        
+       <mbean name="Produce Request total time" objectname="kafka.network:type=RequestMetrics,name=TotalTimeMs,request=Produce">
+            <attrib name="Count" alias="psttCount" type="gauge"/>
+        </mbean>
+        
+       <mbean name="FetchConsumer Request total time" objectname="kafka.network:type=RequestMetrics,name=TotalTimeMs,request=FetchConsumer">
+            <attrib name="Count" alias="fcrttCount" type="gauge"/>
+       </mbean>
+        
+       <mbean name="FetchFollower Request total time" objectname="kafka.network:type=RequestMetrics,name=TotalTimeMs,request=FetchFollower">
+            <attrib name="Count" alias="ffrttCount" type="gauge"/>
+       </mbean>
+        
+        <mbean name="Produce Request Queue time" objectname="kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=Produce">
+            <attrib name="Count" alias="psqtCount" type="gauge"/>
+        </mbean>
+        
+        <mbean name="FetchConsumer Queue time" objectname="kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=FetchConsumer">
+            <attrib name="Count" alias="fcqtCount" type="gauge"/>
+        </mbean>
+        
+       <mbean name="FetchFollower Queue time" objectname="kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=FetchFollower">
+            <attrib name="Count" alias="ffqtCount" type="gauge"/>
+       </mbean> 
+        
+       <mbean name="Produce Local time" objectname="kafka.network:type=RequestMetrics,name=LocalTimeMs,request=Produce">
+            <attrib name="Count" alias="pltCount" type="gauge"/>
+       </mbean>
+      
+       <mbean name="FetchConsumer Local time" objectname="kafka.network:type=RequestMetrics,name=LocalTimeMs,request=FetchConsumer">
+            <attrib name="Count" alias="fcltCount" type="gauge"/>
+       </mbean>
+      
+       <mbean name="FetchFollower Local time" objectname="kafka.network:type=RequestMetrics,name=LocalTimeMs,request=FetchFollower">
+            <attrib name="Count" alias="ffltCount" type="gauge"/>
+       </mbean>      
+       
+       <mbean name="Produce Remote time" objectname="kafka.network:type=RequestMetrics,name=RemoteTimeMs,request=Produce">
+            <attrib name="Count" alias="prtCount" type="gauge"/>
+       </mbean>
+      
+       <mbean name="FetchConsumer Remote time" objectname="kafka.network:type=RequestMetrics,name=RemoteTimeMs,request=FetchConsumer">
+            <attrib name="Count" alias="fcrtCount" type="gauge"/>
+       </mbean>
+      
+       <mbean name="FetchFollower Remote time" objectname="kafka.network:type=RequestMetrics,name=RemoteTimeMs,request=FetchFollower">
+            <attrib name="Count" alias="ffrtCount" type="gauge"/>
+       </mbean> 
+       
+      <mbean name="Produce ResponseSendTime" objectname="kafka.network:type=RequestMetrics,name=ResponseSendTimeMs,request=Produce">
+            <attrib name="Count" alias="prstCount" type="gauge"/>
+       </mbean>
+      
+       <mbean name="FetchConsumer ResponseSendTime" objectname="kafka.network:type=RequestMetrics,name=ResponseSendTimeMs,request=FetchConsumer">
+            <attrib name="Count" alias="fcrstCount" type="gauge"/>
+       </mbean>
+      
+       <mbean name="FetchFollower ResponseSendTime" objectname="kafka.network:type=RequestMetrics,name=ResponseSendTimeMs,request=FetchFollower">
+            <attrib name="Count" alias="ffrstCount" type="gauge"/>
+       </mbean> 
+        
+     </mbeans>
         
     </jmx-collection>
 </jmx-datacollection-config>
