@@ -134,5 +134,7 @@
 
     <!-- OpenNMS Plugin Manager -->
     <module>vaadin-opennms-pluginmanager</module>
+
+    <module>eif-adapter</module>
   </modules>
 </project>
