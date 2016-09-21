@@ -1,6 +1,24 @@
 [releasenotes-2015]
 === OpenNMS Meridian 2015
 
+[releasenotes-changelog-2015.1.3]
+==== Release Meridian-2015.1.3
+
+Release 2015.1.3 is the fourth release of OpenNMS Meridian 2015.  It contains a few bug fixes, including a fix to a XSS vulnerability in the web UI.
+The codename for 2015.1.3 is _LHST_.
+
+===== Bug
+
+* Syslogd may not associate messages with new nodes without a restart (Issue http://issues.opennms.org/browse/NMS-7236[NMS-7236])
+* No event for Informational syslog (Issue http://issues.opennms.org/browse/NMS-7934[NMS-7934])
+* The categories ReST end point returns HTTP 500 when querying it with a browser. (Issue http://issues.opennms.org/browse/NMS-8637[NMS-8637])
+* Database Reports Are Emailed When "Email report" is Unchecked (Issue http://issues.opennms.org/browse/NMS-8654[NMS-8654])
+* Custom Resource graphs draw magenta lines if "Blue" is selected (Issue http://issues.opennms.org/browse/NMS-8655[NMS-8655])
+* SVG maps shows minimum alarm severity color instead of maximum (Issue http://issues.opennms.org/browse/NMS-8658[NMS-8658])
+* Site status view gives a 400 error for aggregate view for node downs (Issue http://issues.opennms.org/browse/NMS-8700[NMS-8700])
+* XSS vulnerability in display of SNMP sysName and trap varbind values (Issue http://issues.opennms.org/browse/NMS-8722[NMS-8722])
+* Trapd JMX trap counters don't count traps (Issue http://issues.opennms.org/browse/NMS-8744[NMS-8744])
+
 [releasenotes-changelog-2015.1.2]
 ==== Release Meridian-2015.1.2
 
