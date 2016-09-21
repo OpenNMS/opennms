@@ -60,6 +60,7 @@
     </feature>
 
     <feature name="minion-heartbeat-producer" description="OpenNMS :: Minion :: Heartbeat Producer" version="${project.version}">
+      <feature version="${guavaVersion}">guava</feature>
       <feature>minion-core-api</feature>
       <feature>opennms-core-ipc-sink</feature>
       <bundle>mvn:org.opennms.features.minion.heartbeat/org.opennms.features.minion.heartbeat.common/${project.version}</bundle>
@@ -80,6 +81,8 @@
     </feature>
 
     <feature name="minion-provisiond-detectors" description="Minion :: Provisond :: Detectors" version="${project.version}">
+      <feature>opennms-config</feature>
+      <feature>opennms-dao-api</feature>
       <feature>opennms-icmp-jna</feature>
       <feature>opennms-provisioning-detectors</feature>
       <feature>minion-rpc-server</feature>
@@ -93,7 +96,9 @@
     </feature>
 
     <feature name="minion-shell-provision" description="Minion :: Shell :: Provision" version="${project.version}">
+      <feature>commons-lang</feature>
       <feature>opennms-core</feature>
+      <feature>opennms-model</feature>
       <feature>opennms-provisioning-api</feature>
       <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.provision/${project.version}</bundle>

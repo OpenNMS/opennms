@@ -1,3 +1,17 @@
+opennms (18.0.2-1) stable; urgency=high
+
+  * New stable release.  This release contains a few bug fixes and enhancements.
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/18.0.2/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 20 Sep 2016 12:29:50 -0500
+
+opennms (18.0.1-2) stable; urgency=medium
+
+  * Fix a bash-ism in the install script.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 28 Jul 2016 12:27:20 -0500
+
 opennms (18.0.1-1) stable; urgency=low
 
   * New stable release.  This release contains a large number of bug fixes and

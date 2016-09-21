@@ -32,7 +32,7 @@
 <%@page language="java" contentType="text/html" session="true" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="norequirejs" value="true" />
+    <jsp:param name="norequirejs" value="false" />
     <jsp:param name="title" value="Heatmap"/>
 </jsp:include>
 

@@ -20,7 +20,7 @@ public class ElasticsearchNorthbounder extends AbstractNorthbounder {
 
     private volatile DefaultAlarmForwarder alarmForwarder;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ForwardingEventListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ElasticsearchNorthbounder.class);
 
     public ElasticsearchNorthbounder() {
         super("ElasticsearchNorthbounder");
