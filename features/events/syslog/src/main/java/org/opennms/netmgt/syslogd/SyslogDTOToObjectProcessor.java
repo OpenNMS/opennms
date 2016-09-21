@@ -43,20 +43,22 @@ public class SyslogDTOToObjectProcessor implements Processor{
 	@Override
 	public void process(final Exchange exchange) throws Exception {
 		final SyslogDTO object = exchange.getIn().getBody(SyslogDTO.class);
-		exchange.getIn().setBody(dto2object(object), SyslogConnection.class);
+		boolean syslogRawMessageFlag = (boolean)exchange.getIn().getHeader(INCLUDE_RAW_MESSAGE);
+		exchange.getIn().setBody(dto2object(object, syslogRawMessageFlag), SyslogConnection.class);
 	}
 
-	public static SyslogConnection dto2object(SyslogDTO syslogDto) {
+	public static SyslogConnection dto2object(SyslogDTO syslogDto, boolean syslogRawMessageFlag) {
 		SyslogConnection syslog = new SyslogConnection();
 
 		syslog.setLocation(syslogDto.getFromMap(MinionDTO.LOCATION));
 		syslog.setSourceAddress(InetAddressUtils.getInetAddress(syslogDto.getFromMap(MinionDTO.SOURCE_ADDRESS)));
 		syslog.setPort(Integer.parseInt(syslogDto.getFromMap(MinionDTO.SOURCE_PORT)));
 		syslog.setSystemId(syslogDto.getFromMap(MinionDTO.SYSTEM_ID));
-
-		// TODO: Honor INCLUDE_RAW_MESSAGE header
-		if(syslogDto != null && syslogDto.getBody() != null && syslogDto.getBody().length > 0){
-			syslog.setBytes(syslogDto.getBody());
+		
+		if(syslogRawMessageFlag){
+			if(syslogDto!=null && syslogDto.getBody()!=null && syslogDto.getBody().length > 0){
+				syslog.setBytes(syslogDto.getBody());
+			}
 		}
 		return syslog;
 	}
