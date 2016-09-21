@@ -135,6 +135,9 @@ public class TrapdHandlerMinionIT extends CamelBlueprintTest {
 		assertNotNull(trapDtoXml);
 		TrapDTO trapDto = JaxbUtils.unmarshal(TrapDTO.class, trapDtoXml);
 		TrapNotification received = TrapDTOToObjectProcessor.dto2object(trapDto);
+		// Reset the trap processor since it is a non-serializable, transient field
+		received.setTrapProcessor(new BasicTrapProcessor());
+
 		BasicTrapProcessor receivedProcessor = (BasicTrapProcessor)received.getTrapProcessor();
 		assertEquals("public", receivedProcessor.getCommunity());
 		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, receivedProcessor.getTrapAddress());

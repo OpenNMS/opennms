@@ -35,31 +35,27 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SyslogDTOToObjectProcessor implements Processor{
-	public static final Logger LOG = LoggerFactory.getLogger(SyslogObjectToDTOProcessor.class);
-
-	public static final String INCLUDE_RAW_MESSAGE = "includeRawMessage";
+public class SyslogDTOToObjectProcessor implements Processor {
+	public static final Logger LOG = LoggerFactory.getLogger(SyslogDTOToObjectProcessor.class);
 
 	@Override
 	public void process(final Exchange exchange) throws Exception {
 		final SyslogDTO object = exchange.getIn().getBody(SyslogDTO.class);
-		boolean syslogRawMessageFlag = (boolean)exchange.getIn().getHeader(INCLUDE_RAW_MESSAGE);
-		exchange.getIn().setBody(dto2object(object, syslogRawMessageFlag), SyslogConnection.class);
+		exchange.getIn().setBody(dto2object(object), SyslogConnection.class);
 	}
 
-	public static SyslogConnection dto2object(SyslogDTO syslogDto, boolean syslogRawMessageFlag) {
+	public static SyslogConnection dto2object(SyslogDTO syslogDto) {
 		SyslogConnection syslog = new SyslogConnection();
 
 		syslog.setLocation(syslogDto.getFromMap(MinionDTO.LOCATION));
 		syslog.setSourceAddress(InetAddressUtils.getInetAddress(syslogDto.getFromMap(MinionDTO.SOURCE_ADDRESS)));
 		syslog.setPort(Integer.parseInt(syslogDto.getFromMap(MinionDTO.SOURCE_PORT)));
 		syslog.setSystemId(syslogDto.getFromMap(MinionDTO.SYSTEM_ID));
-		
-		if(syslogRawMessageFlag){
-			if(syslogDto!=null && syslogDto.getBody()!=null && syslogDto.getBody().length > 0){
-				syslog.setBytes(syslogDto.getBody());
-			}
+
+		if(syslogDto.getBody() != null && syslogDto.getBody().length > 0){
+			syslog.setBytes(syslogDto.getBody());
 		}
+
 		return syslog;
 	}
 }

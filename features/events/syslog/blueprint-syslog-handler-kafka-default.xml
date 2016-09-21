@@ -21,7 +21,6 @@
 			<cm:property name="zookeeperport" value="2181"/>
 			<cm:property name="groupId" value="syslogconsumer"/>
 			<cm:property name="consumerstreams" value="1"/>
-			<cm:property name="includeRawMessage" value="true" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -46,11 +45,7 @@
 		<route id="receiveSyslogConnectionViaKafka">
 			<from uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}&amp;consumerStreams={{consumerstreams}}"/>
 			<process ref="unmarshaller"/>
-			<setHeader headerName="includeRawMessage">
-				<simple resultType="java.lang.Boolean">properties:includeRawMessage</simple>
-			</setHeader>
 			<process ref="mapper"/>
-			
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>
 			<to uri="seda:syslogkafkaHandler"/>

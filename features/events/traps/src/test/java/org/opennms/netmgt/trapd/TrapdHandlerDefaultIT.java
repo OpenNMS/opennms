@@ -179,12 +179,10 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 		assertMockEndpointsSatisfied();
 
 		// Check that the input for the seda:trapHandler endpoint matches
-		// the TrapQProcessor that we simulated via ActiveMQ
-		String trapDtoXml = trapHandler.getReceivedExchanges().get(0).getIn().getBody(String.class);
-		assertNotNull(trapDtoXml);
-		TrapDTO trapDto = JaxbUtils.unmarshal(TrapDTO.class, trapDtoXml);
-		TrapNotification result = TrapDTOToObjectProcessor.dto2object(trapDto);
-		LOG.info("Result: " + result);
+		// the TrapNotification that we simulated via ActiveMQ
+		TrapNotification result = trapHandler.getReceivedExchanges().get(0).getIn().getBody(TrapNotification.class);
+		// Reset the trap processor since it is a non-serializable, transient field
+		result.setTrapProcessor(new BasicTrapProcessor());
 
 		// Assert that the trap's content is correct
 		BasicTrapProcessor processor = (BasicTrapProcessor)result.getTrapProcessor();

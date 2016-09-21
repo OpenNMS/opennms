@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.trapd;
 
+import java.io.File;
 import java.net.ServerSocket;
 import java.util.Dictionary;
 import java.util.Map;
@@ -36,17 +37,9 @@ import java.util.Properties;
 import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.Component;
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
-import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.kafka.KafkaComponent;
-import org.apache.camel.component.kafka.KafkaConstants;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.util.KeyValueHolder;
+import org.apache.commons.io.FileUtils;
 import org.apache.curator.test.TestingServer;
 import org.junit.After;
 import org.junit.Test;
@@ -99,14 +92,18 @@ public class TrapdHandlerKafkaIT extends CamelBlueprintTest {
 	public void doPreSetup() throws Exception {
 		super.doPreSetup();
 
+		// Delete any existing Kafka log directory
+		FileUtils.deleteDirectory(new File("target/kafka-log"));
+
 		zkTestServer = new TestingServer(zookeeperPort);
 		Properties properties = new Properties();
-		properties.put("port", String.valueOf(kafkaPort));
-		properties.put("host.name", "localhost");
 		properties.put("broker.id", "5001");
 		properties.put("enable.zookeeper", "false");
+		properties.put("host.name", "localhost");
+		properties.put("log.dir", "target/kafka-log");
+		properties.put("port", String.valueOf(kafkaPort));
 		properties.put("zookeeper.connect",zkTestServer.getConnectString());
-		try{
+		try {
 			kafkaConfig = new KafkaConfig(properties);
 			kafkaServer = new KafkaServer(kafkaConfig, null);
 			kafkaServer.startup();
@@ -209,6 +206,9 @@ public class TrapdHandlerKafkaIT extends CamelBlueprintTest {
 		assertNotNull(trapDtoXml);
 		TrapDTO trapDto = JaxbUtils.unmarshal(TrapDTO.class, trapDtoXml);
 		TrapNotification received = TrapDTOToObjectProcessor.dto2object(trapDto);
+		// Reset the trap processor since it is a non-serializable, transient field
+		received.setTrapProcessor(new BasicTrapProcessor());
+
 		BasicTrapProcessor receivedProcessor = (BasicTrapProcessor)received.getTrapProcessor();
 		assertEquals("public", receivedProcessor.getCommunity());
 		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, receivedProcessor.getTrapAddress());

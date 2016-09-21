@@ -34,13 +34,13 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.camel.MinionDTO;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpResult;
 
 @XmlRootElement(name = "trap-dto")
@@ -79,6 +79,7 @@ public class TrapDTO extends MinionDTO {
 	}
 
 	@XmlElementWrapper(name = "results")
+	@XmlElement(name = "result")
 	private List<SnmpResult> results = new ArrayList<>(0);
 
 	public void setCommunity(String m_community) {
