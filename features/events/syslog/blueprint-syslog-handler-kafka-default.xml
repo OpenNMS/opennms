@@ -30,14 +30,12 @@
 		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
 	</bean>
 
+	<bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogDTOToObjectProcessor"/>
+
 	<reference id="syslogdConfig" interface="org.opennms.netmgt.config.SyslogdConfig" />
 
 	<bean id="syslogdConfigProcessor" class="org.opennms.netmgt.syslogd.SyslogdConfigProcessor">
 		<argument ref="syslogdConfig"/>
-	</bean>
-
-	<bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogDTOToObjectProcessor">
-		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
 	</bean>
 
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
@@ -47,7 +45,7 @@
 		<route id="receiveSyslogConnectionViaKafka">
 			<from uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}&amp;consumerStreams={{consumerstreams}}"/>
 			<process ref="unmarshaller"/>
-			<bean ref="mapper"/>
+			<process ref="mapper"/>
 			
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>

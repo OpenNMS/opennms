@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.netmgt.syslogd;
 
 import org.apache.camel.Exchange;
@@ -37,38 +38,25 @@ import org.slf4j.LoggerFactory;
 public class SyslogDTOToObjectProcessor implements Processor{
 	public static final Logger LOG = LoggerFactory.getLogger(SyslogObjectToDTOProcessor.class);
 
-	private final Class<?> m_class;
-
-	@SuppressWarnings("rawtypes") // Because Aries Blueprint cannot handle generics
-	public SyslogDTOToObjectProcessor(Class clazz) {
-		m_class = clazz;
-	}
-
-	public SyslogDTOToObjectProcessor(String className) throws ClassNotFoundException {
-		m_class = Class.forName(className);
-	}
+	public static final String INCLUDE_RAW_MESSAGE = "includeRawMessage";
 
 	@Override
 	public void process(final Exchange exchange) throws Exception {
-		final Object object = exchange.getIn().getBody(m_class);
+		final SyslogDTO object = exchange.getIn().getBody(SyslogDTO.class);
 		exchange.getIn().setBody(dto2object(object), SyslogConnection.class);
 	}
-	
-	public SyslogConnection dto2object(Object obj) {
 
-		SyslogDTO syslogDTO = (SyslogDTO) obj;
-
+	public static SyslogConnection dto2object(SyslogDTO syslogDto) {
 		SyslogConnection syslog = new SyslogConnection();
 
-		syslog.setLocation(syslogDTO.getFromMap(MinionDTO.LOCATION));
-		syslog.setSourceAddress(InetAddressUtils.getInetAddress(syslogDTO
-				.getFromMap(MinionDTO.SOURCE_ADDRESS)));
-		syslog.setPort(Integer.parseInt(syslogDTO
-				.getFromMap(MinionDTO.SOURCE_PORT)));
-		syslog.setSystemId(syslogDTO.getFromMap(MinionDTO.SYSTEM_ID));
+		syslog.setLocation(syslogDto.getFromMap(MinionDTO.LOCATION));
+		syslog.setSourceAddress(InetAddressUtils.getInetAddress(syslogDto.getFromMap(MinionDTO.SOURCE_ADDRESS)));
+		syslog.setPort(Integer.parseInt(syslogDto.getFromMap(MinionDTO.SOURCE_PORT)));
+		syslog.setSystemId(syslogDto.getFromMap(MinionDTO.SYSTEM_ID));
 
-		if(syslogDTO!=null && syslogDTO.getBody()!=null && syslogDTO.getBody().length>0){
-			syslog.setBytes(syslogDTO.getBody());
+		// TODO: Honor INCLUDE_RAW_MESSAGE header
+		if(syslogDto != null && syslogDto.getBody() != null && syslogDto.getBody().length > 0){
+			syslog.setBytes(syslogDto.getBody());
 		}
 		return syslog;
 	}

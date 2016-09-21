@@ -35,7 +35,7 @@ import java.util.Vector;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -49,53 +49,40 @@ import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
 import org.snmp4j.smi.VariableBinding;
 
-public class TrapObjectToDTOProcessor implements Processor{
+public class TrapObjectToDTOProcessor implements Processor {
 	public static final Logger LOG = LoggerFactory.getLogger(TrapObjectToDTOProcessor.class);
 
-	private final Class<?> m_class;
-	private MinionIdentity minionIdentity;
+	private DistPollerDao m_distPollerDao;
+
 	private static final String SNMP_V1="v1";
 	private static final String SNMP_V2="v2";
 	private static final String SNMP_V3="v3";
 
+	public static final String INCLUDE_RAW_MESSAGE = "includeRawMessage";
 
-	public void setMinionIdentity(MinionIdentity minionIdentity) {
-        this.minionIdentity = minionIdentity;
-    }
-    
-	@SuppressWarnings("rawtypes") // Because Aries Blueprint cannot handle generics
-	public TrapObjectToDTOProcessor(Class clazz) {
-		m_class = clazz;
-	}
-
-	public TrapObjectToDTOProcessor(String className) throws ClassNotFoundException {
-		m_class = Class.forName(className);
+	public void setDistPollerDao(DistPollerDao minionIdentity) {
+		this.m_distPollerDao = minionIdentity;
 	}
 
 	@Override
 	public void process(final Exchange exchange) throws Exception {
-		final Object object = exchange.getIn().getBody(m_class);
-		boolean trapRawMessageFlag = (boolean)exchange.getIn().getHeader("trapRawMessageFlag");
+		final TrapInformation object = exchange.getIn().getBody(TrapInformation.class);
+		boolean trapRawMessageFlag = (boolean)exchange.getIn().getHeader(INCLUDE_RAW_MESSAGE);
 		exchange.getIn().setBody(object2dto(object, trapRawMessageFlag), TrapDTO.class);
 	}
-	
-	public TrapDTO object2dto(Object obj, boolean trapRawMessageFlag) {
+
+	public TrapDTO object2dto(TrapInformation trapInfo, boolean trapRawMessageFlag) {
 
 		TrapDTO trapDTO = new TrapDTO();
 
-		TrapInformation trapInfo = (TrapInformation) obj;
-
 		String version = trapInfo.getVersion();
-		
-		String id = minionIdentity.getId();
-		String location = minionIdentity.getLocation();
 
-		Snmp4JTrapNotifier.Snmp4JV1TrapInformation v1Trap = null;
-		Snmp4JTrapNotifier.Snmp4JV2TrapInformation v2Trap = null;
-		
+		String id = m_distPollerDao.whoami().getId();
+		String location = m_distPollerDao.whoami().getLocation();
+
 		if (version.equalsIgnoreCase(SNMP_V1)) {
 
-			v1Trap = (Snmp4JTrapNotifier.Snmp4JV1TrapInformation) obj;
+			Snmp4JTrapNotifier.Snmp4JV1TrapInformation v1Trap = (Snmp4JTrapNotifier.Snmp4JV1TrapInformation)trapInfo;
 			InetAddress agentAddress = v1Trap.getAgentAddress();
 			String community = v1Trap.getCommunity();
 			int pduLength = v1Trap.getPduLength();
@@ -105,10 +92,9 @@ public class TrapObjectToDTOProcessor implements Processor{
 			PDUv1 pdu = v1Trap.getPduv1();
 			byte[] byteArray = null;
 			try {
-				byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0,
-						community, pdu);
-			} catch (Exception e) {
-				LOG.warn("unable to convert Pdu inot Bytes {}", e.getMessage());
+				byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0, community, pdu);
+			} catch (Throwable e) {
+				LOG.warn("Unable to convert PDU into bytes: {}", e.getMessage());
 			}
 
 			trapDTO.setSystemId(id);
@@ -128,8 +114,7 @@ public class TrapObjectToDTOProcessor implements Processor{
 
 			SnmpResult snmpResult = null;
 
-			Vector<? extends VariableBinding> vector = pdu
-					.getVariableBindings();
+			Vector<? extends VariableBinding> vector = pdu.getVariableBindings();
 			for (int i = 0; i < vector.size(); i++) {
 				VariableBinding varBind = (VariableBinding) vector.get(i);
 
@@ -140,10 +125,12 @@ public class TrapObjectToDTOProcessor implements Processor{
 			}
 			trapDTO.setResults(results);
 
-		} else if (version.equalsIgnoreCase(SNMP_V2)
-				|| version.equalsIgnoreCase(SNMP_V3)) {
+		} else if (
+			version.equalsIgnoreCase(SNMP_V2) ||
+			version.equalsIgnoreCase(SNMP_V3)
+		) {
 
-			v2Trap = (Snmp4JTrapNotifier.Snmp4JV2TrapInformation) obj;
+			Snmp4JTrapNotifier.Snmp4JV2TrapInformation v2Trap = (Snmp4JTrapNotifier.Snmp4JV2TrapInformation)trapInfo;
 			InetAddress agentAddress = v2Trap.getAgentAddress();
 			String community = v2Trap.getCommunity();
 			int pduLength = v2Trap.getPduLength();
@@ -153,10 +140,9 @@ public class TrapObjectToDTOProcessor implements Processor{
 			PDU pdu = v2Trap.getPdu();
 			byte[] byteArray = null;
 			try {
-				byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0,
-						community, pdu);
-			} catch (Exception e) {
-				LOG.warn("unable to convert Pdu inot Bytes {}", e.getMessage());
+				byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0, community, pdu);
+			} catch (Throwable e) {
+				LOG.warn("Unable to convert PDU into bytes: {}", e.getMessage());
 			}
 
 			trapDTO.setSystemId(id);
@@ -176,8 +162,7 @@ public class TrapObjectToDTOProcessor implements Processor{
 
 			SnmpResult snmpResult = null;
 
-			Vector<? extends VariableBinding> vector = pdu
-					.getVariableBindings();
+			Vector<? extends VariableBinding> vector = pdu.getVariableBindings();
 			for (int i = 0; i < vector.size(); i++) {
 				VariableBinding varBind = (VariableBinding) vector.get(i);
 				SnmpObjId oid = SnmpObjId.get(varBind.getOid().toString());

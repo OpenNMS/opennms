@@ -43,19 +43,33 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.kafka.KafkaComponent;
 import org.apache.camel.component.kafka.KafkaConstants;
+import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.util.KeyValueHolder;
 import org.apache.curator.test.TestingServer;
 import org.junit.After;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.DistPollerDaoMinion;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.TrapNotification;
+import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.snmp4j.PDU;
+import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.smi.IpAddress;
+import org.snmp4j.smi.OID;
+import org.snmp4j.smi.OctetString;
+import org.snmp4j.smi.TimeTicks;
+import org.snmp4j.smi.VariableBinding;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -102,16 +116,6 @@ public class TrapdHandlerKafkaIT extends CamelBlueprintTest {
 		}
 	}
 
-	@BeforeClass
-	public static void startKafka() throws Exception {
-
-	}
-
-	@BeforeClass
-	public static void startActiveMQ() throws Exception {
-
-	}
-
 	@Override
 	protected String setConfigAdminInitialConfiguration(Properties props) {
 		zookeeperPort = getAvailablePort(2181, 2281);
@@ -126,6 +130,15 @@ public class TrapdHandlerKafkaIT extends CamelBlueprintTest {
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
 		// Register any mock OSGi services here
+		OnmsDistPoller distPoller = new OnmsDistPoller();
+		distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+		distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+		distPoller.setLocation("localhost");
+		DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
+
+		services.put(DistPollerDao.class.getName(), new KeyValueHolder<Object, Dictionary>(distPollerDao, new Properties()));
+
+		/*
 		services.put( TrapNotificationHandler.class.getName(), new KeyValueHolder<Object, Dictionary>(new TrapNotificationHandlerCamelImpl("seda:handleMessage"), new Properties()));
 
 		//creating kafka component
@@ -136,6 +149,7 @@ public class TrapdHandlerKafkaIT extends CamelBlueprintTest {
 		kafka.createComponentConfiguration().setBaseUri("kafka://localhost:" + kafkaPort);
 		services.put( Component.class.getName(),
 				new KeyValueHolder<Object, Dictionary>( kafka, props ) );
+		*/
 	}
 
 	// The location of our Blueprint XML files to be used for testing
@@ -147,6 +161,7 @@ public class TrapdHandlerKafkaIT extends CamelBlueprintTest {
 	@Test
 	public void testTrapd() throws Exception {
 
+		/*
 		SimpleRegistry registry = new SimpleRegistry();
 		CamelContext trapd = new DefaultCamelContext(registry);
 		trapd.addComponent("kafka", new KafkaComponent());
@@ -166,6 +181,41 @@ public class TrapdHandlerKafkaIT extends CamelBlueprintTest {
 		});
 
 		trapd.start();
+		*/
+
+		MockEndpoint broadcastTrap = getMockEndpoint("mock:kafka:127.0.0.1:" + kafkaPort, false);
+		broadcastTrap.setExpectedMessageCount(1);
+
+		PDU snmp4JV2cTrapPdu = new PDU();
+
+		OID oid = new OID(".1.3.6.1.2.1.1.3.0");
+		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.sysUpTime, new TimeTicks(5000)));
+		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(oid)));
+		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapAddress,
+				new IpAddress("127.0.0.1")));
+
+		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString("Major")));
+		snmp4JV2cTrapPdu.setType(PDU.NOTIFICATION);
+
+		TrapNotification snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
+				InetAddressUtils.ONE_TWENTY_SEVEN, "public",
+				snmp4JV2cTrapPdu, new BasicTrapProcessor());
+
+		template.requestBody("seda:handleMessage", snmp4JV2cTrap);
+
+		assertMockEndpointsSatisfied();
+
+		String trapDtoXml = broadcastTrap.getReceivedExchanges().get(0).getIn().getBody(String.class);
+		assertNotNull(trapDtoXml);
+		TrapDTO trapDto = JaxbUtils.unmarshal(TrapDTO.class, trapDtoXml);
+		TrapNotification received = TrapDTOToObjectProcessor.dto2object(trapDto);
+		BasicTrapProcessor receivedProcessor = (BasicTrapProcessor)received.getTrapProcessor();
+		assertEquals("public", receivedProcessor.getCommunity());
+		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, receivedProcessor.getTrapAddress());
+		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, receivedProcessor.getAgentAddress());
+		assertEquals(".1.3.6.1.2.1.1.3", receivedProcessor.getTrapIdentity().getEnterpriseId());
+		assertEquals(6, receivedProcessor.getTrapIdentity().getGeneric());
+		assertEquals(0, receivedProcessor.getTrapIdentity().getSpecific());
 	}
 
 	@After

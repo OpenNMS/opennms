@@ -74,7 +74,7 @@ public class SyslogDTO extends MinionDTO {
 				InetAddressUtils.str(m_sourceAddress));
 	}
 
-	public void setSourceport(int m_sourceport) {
+	public void setSourcePort(int m_sourceport) {
 		super.putIntoMap(MinionDTO.SOURCE_PORT, Integer.toString(m_sourceport));
 	}
 

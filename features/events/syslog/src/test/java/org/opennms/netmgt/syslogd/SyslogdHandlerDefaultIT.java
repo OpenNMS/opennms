@@ -115,7 +115,10 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTest {
 		// Send a SyslogConnection
 		template.sendBody(
 			"queuingservice:" + factory.getName(),
-			JaxbUtils.marshal(new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap(messageBytes), config, systemId.toString(), MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))
+			JaxbUtils.marshal(SyslogObjectToDTOProcessor.object2dto(
+				new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap(messageBytes), config, systemId.toString(), MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID),
+				true
+			))
 		);
 
 		assertMockEndpointsSatisfied();

@@ -35,11 +35,13 @@
 
 	<!-- Camel Event marshalling processor -->
 	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
-		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
+		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
 	</bean>
 
+	<bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogDTOToObjectProcessor"/>
+
 	<reference id="syslogdConfig" interface="org.opennms.netmgt.config.SyslogdConfig" />
-	
+
 	<bean id="syslogdConfigProcessor" class="org.opennms.netmgt.syslogd.SyslogdConfigProcessor">
 		<argument ref="syslogdConfig"/>
 	</bean>
@@ -60,6 +62,7 @@
 		<route id="unmarshalSyslogConnection">
 			<from uri="seda:unmarshalMessage?concurrentConsumers=8"/>
 			<process ref="unmarshaller"/>
+			<process ref="mapper"/>
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>
 			<to uri="seda:syslogHandler"/>
