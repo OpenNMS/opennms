@@ -262,6 +262,14 @@
       <parameter key="port" value="3389" />
       <parameter key="timeout" value="3000" />
     </service>
+    <service name="Elasticsearch" interval="300000" user-defined="true" status="on">
+       <parameter key="retry" value="1"/>
+       <parameter key="timeout" value="3000"/>
+       <parameter key="port" value="9200"/>
+       <parameter key="url" value="/_cluster/stats"/>
+       <parameter key="response" value="200-202,299"/>
+       <parameter key="response-text" value="~.*status.:.green.*"/>
+    </service>
  
     <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
     <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
@@ -329,4 +337,5 @@
   <monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
   <monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
   <monitor service="MS-RDP" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="Elasticsearch" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
 </poller-configuration>

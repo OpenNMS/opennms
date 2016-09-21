@@ -1,6 +1,6 @@
 <xml-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/"
                            xmlns="http://xmlns.opennms.org/xsd/config/xml-datacollection">
-    <xml-collection name="elasticsearch-stats">
+    <xml-collection name="elasticsearch-cluster-stats">
         <rrd step="300">
             <rra>RRA:AVERAGE:0.5:1:2016</rra>
             <rra>RRA:AVERAGE:0.5:12:1488</rra>
@@ -9,7 +9,7 @@
             <rra>RRA:MIN:0.5:288:366</rra>
         </rrd>
         <xml-source url="http://localhost:9200/_cluster/stats">
-            <import-groups>xml-datacollection/elasticsearch-stats.xml</import-groups>
+            <import-groups>xml-datacollection/elasticsearch-cluster-stats.xml</import-groups>
         </xml-source>
     </xml-collection>
 </xml-datacollection-config>
