@@ -172,9 +172,10 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 		mapper.setDistPollerDao(distPollerDao);
 
 		// Send the TrapNotification
-		template.sendBody("queuingservice:" + factory.getName() + "?disableReplyTo=true", JaxbUtils.marshal(
-				mapper.object2dto(snmp4JV2cTrap, false)
-		));
+		template.sendBody(
+			"queuingservice:" + factory.getName() + "?disableReplyTo=true",
+			JaxbUtils.marshal(mapper.object2dto(snmp4JV2cTrap))
+		);
 
 		assertMockEndpointsSatisfied();
 

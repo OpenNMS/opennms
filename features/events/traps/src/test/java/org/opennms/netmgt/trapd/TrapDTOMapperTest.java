@@ -28,12 +28,15 @@
 
 package org.opennms.netmgt.trapd;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.DistPollerDaoMinion;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
+import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
 import org.snmp4j.PDU;
@@ -51,8 +54,6 @@ public class TrapDTOMapperTest {
 	@Test
 	public void object2dtoTest() throws UnknownHostException {
 
-		InetAddress inetAddress = InetAddress.getByName("127.0.0.1");
-		
 		PDU snmp4JV2cTrapPdu = new PDU();
 
 		OID oid = new OID(".1.3.6.1.2.1.1.3.0");
@@ -70,28 +71,38 @@ public class TrapDTOMapperTest {
 		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(".1.3.6.1.6.3.1.1.4.1.1"), 
 				new OctetString("Trap v1 msg-3")));
 		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(".1.3.6.1.4.1.733.6.3.18.1.5.0"),
-		new Integer32(1))); 
+				new Integer32(1))); 
 		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.0"),
-		new Null())); 
+				new Null())); 
 		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.1"),
-		new Null(128)));
+				new Null(128)));
 		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.2"),
-		new Null(129)));
+				new Null(129)));
 		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.3"),
-		new Null(130)));
+				new Null(130)));
 		snmp4JV2cTrapPdu.setType(PDU.NOTIFICATION);
 
-		TrapNotification snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
+		TrapInformation snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
 				InetAddressUtils.ONE_TWENTY_SEVEN, "public",
-				snmp4JV2cTrapPdu, new BasicTrapProcessor());
-		
-//		TrapDTOMapper mapper = new TrapDTOMapper();
-//		TrapDTO trapDto = mapper.object2dto(snmp4JV2cTrap);
-//		System.out.println("trapDto is : "+trapDto);
-//		System.out.println("trapDto.getBody() is : "+trapDto.getBody());
-//		System.out.println("trapDto.getCommunity() is : "+trapDto.getFromMap(TrapDTO.COMMUNITY));
+				snmp4JV2cTrapPdu, new BasicTrapProcessor()
+		);
 
-		//TrapNotification snmp4JV2cTrap1 = mapper.dto2object(trapDto);
-		
+		OnmsDistPoller distPoller = new OnmsDistPoller();
+		distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+		distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+		distPoller.setLocation("localhost");
+		DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
+
+		TrapObjectToDTOProcessor mapper = new TrapObjectToDTOProcessor();
+		mapper.setDistPollerDao(distPollerDao);
+
+		TrapDTO trapDto = mapper.object2dto(snmp4JV2cTrap);
+		System.out.println("trapDto is : " + trapDto);
+		System.out.println("trapDto.getBody() is : " + trapDto.getBody());
+		System.out.println("trapDto.getCommunity() is : " + trapDto.getHeader(TrapDTO.COMMUNITY));
+
+		TrapNotification snmp4JV2cTrap1 = TrapDTOToObjectProcessor.dto2object(trapDto);
+
+		// TODO: Add assertions to make sure that conversion worked
 	}
 }

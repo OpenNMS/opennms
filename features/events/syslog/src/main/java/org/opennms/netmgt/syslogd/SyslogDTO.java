@@ -41,9 +41,6 @@ import org.opennms.core.utils.InetAddressUtils;
 @XmlAccessorType(XmlAccessType.NONE)
 public class SyslogDTO extends MinionDTO {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7014850780455600999L;
 
 	public SyslogDTO() {
@@ -54,28 +51,27 @@ public class SyslogDTO extends MinionDTO {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this)
-				.append("systemid", super.getHeaders().get(SYSTEM_ID))
+				.append("systemId", super.getHeaders().get(SYSTEM_ID))
 				.append("location", super.getHeaders().get(LOCATION))
-				.append("sourceaddress", super.getHeaders().get(SOURCE_ADDRESS))
-				.append("sourceport", super.getHeaders().get(SOURCE_PORT))
+				.append("sourceAddress", super.getHeaders().get(SOURCE_ADDRESS))
+				.append("sourcePort", super.getHeaders().get(SOURCE_PORT))
 				.append("body", super.getBody()).toString();
 	}
 
 	public void setSystemId(String m_systemId) {
-		super.putIntoMap(MinionDTO.SYSTEM_ID, m_systemId);
+		super.putHeader(MinionDTO.SYSTEM_ID, m_systemId);
 	}
 
 	public void setLocation(String m_location) {
-		super.putIntoMap(MinionDTO.LOCATION, m_location);
+		super.putHeader(MinionDTO.LOCATION, m_location);
 	}
 
 	public void setSourceAddress(InetAddress m_sourceAddress) {
-		super.putIntoMap(MinionDTO.SOURCE_ADDRESS,
-				InetAddressUtils.str(m_sourceAddress));
+		super.putHeader(MinionDTO.SOURCE_ADDRESS, InetAddressUtils.str(m_sourceAddress));
 	}
 
 	public void setSourcePort(int m_sourceport) {
-		super.putIntoMap(MinionDTO.SOURCE_PORT, Integer.toString(m_sourceport));
+		super.putHeader(MinionDTO.SOURCE_PORT, Integer.toString(m_sourceport));
 	}
 
 }

@@ -45,19 +45,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public class MinionDTO implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -4204021063296911062L;
-	
-	public static String SYSTEM_ID = "systemId";
-	public static String LOCATION = "location";
-	public static String SOURCE_ADDRESS = "sourceAddress";
-	public static String SOURCE_PORT = "sourcePort";
+
+	public static final String SYSTEM_ID = "systemId";
+	public static final String LOCATION = "location";
+	public static final String SOURCE_ADDRESS = "sourceAddress";
+	public static final String SOURCE_PORT = "sourcePort";
 
 	@XmlElementWrapper(name = "headers")
-	final Map<String, String> m_headers = Collections
-			.synchronizedMap(new HashMap<String, String>());
+	final Map<String, String> m_headers = Collections.synchronizedMap(new HashMap<String, String>());
 
 	@XmlElement(name = "body")
 	private byte[] m_body;
@@ -79,7 +75,7 @@ public class MinionDTO implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		final MinionDTO other = (MinionDTO) obj;
+		final MinionDTO other = (MinionDTO)obj;
 		return Objects.equals(this.m_headers, other.m_headers)
 				&& Arrays.equals(this.m_body, other.m_body);
 	}
@@ -95,13 +91,13 @@ public class MinionDTO implements Serializable{
 		}
 	}
 
-	public void putIntoMap(String key, String value) {
+	public void putHeader(String key, String value) {
 		synchronized (m_headers) {
 			m_headers.put(key, value);
 		}
 	}
 
-	public String getFromMap(String key) {
+	public String getHeader(String key) {
 		synchronized (m_headers) {
 			return m_headers.get(key);
 		}

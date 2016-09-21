@@ -54,14 +54,15 @@ public class TrapObjectToDTOProcessor implements Processor {
 
 	private DistPollerDao m_distPollerDao;
 
-	private static final String SNMP_V1="v1";
-	private static final String SNMP_V2="v2";
-	private static final String SNMP_V3="v3";
+	private static final String SNMP_V1 = "v1";
+	private static final String SNMP_V2 = "v2";
+	private static final String SNMP_V3 = "v3";
 
 	public static final String INCLUDE_RAW_MESSAGE = "includeRawMessage";
+	public static final boolean INCLUDE_RAW_MESSAGE_DEFAULT = Boolean.FALSE;
 
-	public void setDistPollerDao(DistPollerDao minionIdentity) {
-		this.m_distPollerDao = minionIdentity;
+	public void setDistPollerDao(DistPollerDao distPollerDao) {
+		this.m_distPollerDao = distPollerDao;
 	}
 
 	@Override
@@ -69,6 +70,10 @@ public class TrapObjectToDTOProcessor implements Processor {
 		final TrapInformation object = exchange.getIn().getBody(TrapInformation.class);
 		boolean trapRawMessageFlag = (boolean)exchange.getIn().getHeader(INCLUDE_RAW_MESSAGE);
 		exchange.getIn().setBody(object2dto(object, trapRawMessageFlag), TrapDTO.class);
+	}
+
+	public TrapDTO object2dto(TrapInformation trapInfo) {
+		return object2dto(trapInfo, INCLUDE_RAW_MESSAGE_DEFAULT);
 	}
 
 	public TrapDTO object2dto(TrapInformation trapInfo, boolean trapRawMessageFlag) {
@@ -86,10 +91,9 @@ public class TrapObjectToDTOProcessor implements Processor {
 			InetAddress agentAddress = v1Trap.getAgentAddress();
 			String community = v1Trap.getCommunity();
 			int pduLength = v1Trap.getPduLength();
-			// String version = v1Trap.getVersion();
 			InetAddress trapAddress = v1Trap.getTrapAddress();
 			long timestamp = v1Trap.getTimeStamp();
-			PDUv1 pdu = v1Trap.getPduv1();
+			PDUv1 pdu = v1Trap.getPdu();
 			byte[] byteArray = null;
 			try {
 				byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0, community, pdu);
@@ -99,7 +103,6 @@ public class TrapObjectToDTOProcessor implements Processor {
 
 			trapDTO.setSystemId(id);
 			trapDTO.setLocation(location);
-			
 			if(trapRawMessageFlag){
 				trapDTO.setBody(byteArray);
 			}
@@ -112,19 +115,14 @@ public class TrapObjectToDTOProcessor implements Processor {
 
 			List<SnmpResult> results = new ArrayList<SnmpResult>();
 
-			SnmpResult snmpResult = null;
-
-			Vector<? extends VariableBinding> vector = pdu.getVariableBindings();
-			for (int i = 0; i < vector.size(); i++) {
-				VariableBinding varBind = (VariableBinding) vector.get(i);
-
-				SnmpObjId oid = SnmpObjId.get(varBind.getOid().toString());
-				SnmpValue value = new Snmp4JValue(varBind.getVariable());
-				snmpResult = new SnmpResult(oid, null, value);
+			for (final VariableBinding varBind : pdu.getVariableBindings()) {
+				final SnmpObjId oid = SnmpObjId.get(varBind.getOid().toString());
+				final SnmpValue value = new Snmp4JValue(varBind.getVariable());
+				final SnmpResult snmpResult = new SnmpResult(oid, null, value);
 				results.add(snmpResult);
 			}
-			trapDTO.setResults(results);
 
+			trapDTO.setResults(results);
 		} else if (
 			version.equalsIgnoreCase(SNMP_V2) ||
 			version.equalsIgnoreCase(SNMP_V3)
@@ -147,7 +145,6 @@ public class TrapObjectToDTOProcessor implements Processor {
 
 			trapDTO.setSystemId(id);
 			trapDTO.setLocation(location);
-			
 			if(trapRawMessageFlag){
 				trapDTO.setBody(byteArray);
 			}
@@ -160,18 +157,14 @@ public class TrapObjectToDTOProcessor implements Processor {
 
 			List<SnmpResult> results = new ArrayList<SnmpResult>();
 
-			SnmpResult snmpResult = null;
-
-			Vector<? extends VariableBinding> vector = pdu.getVariableBindings();
-			for (int i = 0; i < vector.size(); i++) {
-				VariableBinding varBind = (VariableBinding) vector.get(i);
-				SnmpObjId oid = SnmpObjId.get(varBind.getOid().toString());
-				SnmpValue value = new Snmp4JValue(varBind.getVariable());
-				snmpResult = new SnmpResult(oid, null, value);
+			for (final VariableBinding varBind : pdu.getVariableBindings()) {
+				final SnmpObjId oid = SnmpObjId.get(varBind.getOid().toString());
+				final SnmpValue value = new Snmp4JValue(varBind.getVariable());
+				final SnmpResult snmpResult = new SnmpResult(oid, null, value);
 				results.add(snmpResult);
 			}
-			trapDTO.setResults(results);
 
+			trapDTO.setResults(results);
 		}
 
 		return trapDTO;

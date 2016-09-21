@@ -33,16 +33,21 @@ import org.apache.camel.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SyslogObjectToDTOProcessor implements Processor{
+public class SyslogObjectToDTOProcessor implements Processor {
 	public static final Logger LOG = LoggerFactory.getLogger(SyslogObjectToDTOProcessor.class);
 
 	public static final String INCLUDE_RAW_MESSAGE = "includeRawMessage";
+	public static final boolean INCLUDE_RAW_MESSAGE_DEFAULT = Boolean.TRUE;
 
 	@Override
 	public void process(final Exchange exchange) throws Exception {
 		final SyslogConnection object = exchange.getIn().getBody(SyslogConnection.class);
 		boolean syslogRawMessageFlag = (boolean)exchange.getIn().getHeader(INCLUDE_RAW_MESSAGE);
 		exchange.getIn().setBody(object2dto(object, syslogRawMessageFlag), SyslogDTO.class);
+	}
+
+	public static SyslogDTO object2dto(SyslogConnection syslog) {
+		return object2dto(syslog, INCLUDE_RAW_MESSAGE_DEFAULT);
 	}
 
 	public static SyslogDTO object2dto(SyslogConnection syslog, boolean syslogRawMessageFlag) {

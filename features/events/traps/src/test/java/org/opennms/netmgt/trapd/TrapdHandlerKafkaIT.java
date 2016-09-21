@@ -134,19 +134,6 @@ public class TrapdHandlerKafkaIT extends CamelBlueprintTest {
 		DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
 
 		services.put(DistPollerDao.class.getName(), new KeyValueHolder<Object, Dictionary>(distPollerDao, new Properties()));
-
-		/*
-		services.put( TrapNotificationHandler.class.getName(), new KeyValueHolder<Object, Dictionary>(new TrapNotificationHandlerCamelImpl("seda:handleMessage"), new Properties()));
-
-		//creating kafka component
-		Properties props = new Properties();
-		props.setProperty("alias", "opennms.broker");
-
-		KafkaComponent kafka = new KafkaComponent();
-		kafka.createComponentConfiguration().setBaseUri("kafka://localhost:" + kafkaPort);
-		services.put( Component.class.getName(),
-				new KeyValueHolder<Object, Dictionary>( kafka, props ) );
-		*/
 	}
 
 	// The location of our Blueprint XML files to be used for testing
@@ -157,29 +144,6 @@ public class TrapdHandlerKafkaIT extends CamelBlueprintTest {
 
 	@Test
 	public void testTrapd() throws Exception {
-
-		/*
-		SimpleRegistry registry = new SimpleRegistry();
-		CamelContext trapd = new DefaultCamelContext(registry);
-		trapd.addComponent("kafka", new KafkaComponent());
-		trapd.addRoutes(new RouteBuilder() {
-			@Override
-			public void configure() throws Exception {
-
-				from("seda:handleMessage").convertBodyTo(TrapNotification.class).process(new Processor() {
-					@Override
-					public void process(Exchange exchange) throws Exception {
-						exchange.getIn().setBody("Test Message from Camel Kafka Component Final",String.class);
-						exchange.getIn().setHeader(KafkaConstants.PARTITION_KEY,simple("${body.hostname}"));
-					}
-				}).log("address:${body.sourceAddress}").log("port: ${body.port}").transform(simple("${body.byteBuffer}")).convertBodyTo(String.class).log(body().toString()).to("kafka:localhost:" + kafkaPort + "?topic=trapd;serializerClass=kafka.serializer.StringEncoder");
-
-			}
-		});
-
-		trapd.start();
-		*/
-
 		MockEndpoint broadcastTrap = getMockEndpoint("mock:kafka:127.0.0.1:" + kafkaPort, false);
 		broadcastTrap.setExpectedMessageCount(1);
 

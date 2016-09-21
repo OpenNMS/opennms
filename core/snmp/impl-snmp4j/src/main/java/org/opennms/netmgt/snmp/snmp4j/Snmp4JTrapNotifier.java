@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.snmp.snmp4j;
 
-import java.io.Serializable;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -55,9 +54,7 @@ import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
-public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
-
-    private static final long serialVersionUID = 8889136314276990017L;
+public class Snmp4JTrapNotifier implements CommandResponder {
 
     public static final transient Logger LOG = LoggerFactory.getLogger(Snmp4JTrapNotifier.class);
 
@@ -69,9 +66,7 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
         m_trapProcessorFactory = processorFactory;
     }
     
-    public static class Snmp4JV1TrapInformation extends TrapInformation implements Serializable {
-
-        private static final long serialVersionUID = -5130592972765964504L;
+    public static class Snmp4JV1TrapInformation extends TrapInformation {
 
         private PDUv1 m_pdu;
 
@@ -84,7 +79,7 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
          * Returns the Protocol Data Unit that was encapsulated within the SNMP
          * Trap message
          */
-        public PDUv1 getPduv1() {
+        public PDUv1 getPdu() {
             return m_pdu;
         }
 
@@ -125,9 +120,7 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
         }
     }
 
-    public static class Snmp4JV2TrapInformation extends TrapInformation implements Serializable {
-
-        private static final long serialVersionUID = 2961743197092484906L;
+    public static class Snmp4JV2TrapInformation extends TrapInformation {
 
         /**
          * The received PDU

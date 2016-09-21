@@ -49,7 +49,7 @@ import org.snmp4j.smi.UnsignedInteger32;
 import org.snmp4j.smi.Variable;
 
 public class Snmp4JValue extends AbstractSnmpValue {
-    Variable m_value;
+    private final Variable m_value;
     
     public Snmp4JValue(final Variable value) {
         if (value == null) {

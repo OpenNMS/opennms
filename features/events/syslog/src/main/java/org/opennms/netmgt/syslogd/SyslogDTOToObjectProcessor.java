@@ -47,10 +47,10 @@ public class SyslogDTOToObjectProcessor implements Processor {
 	public static SyslogConnection dto2object(SyslogDTO syslogDto) {
 		SyslogConnection syslog = new SyslogConnection();
 
-		syslog.setLocation(syslogDto.getFromMap(MinionDTO.LOCATION));
-		syslog.setSourceAddress(InetAddressUtils.getInetAddress(syslogDto.getFromMap(MinionDTO.SOURCE_ADDRESS)));
-		syslog.setPort(Integer.parseInt(syslogDto.getFromMap(MinionDTO.SOURCE_PORT)));
-		syslog.setSystemId(syslogDto.getFromMap(MinionDTO.SYSTEM_ID));
+		syslog.setLocation(syslogDto.getHeader(MinionDTO.LOCATION));
+		syslog.setSourceAddress(InetAddressUtils.getInetAddress(syslogDto.getHeader(MinionDTO.SOURCE_ADDRESS)));
+		syslog.setPort(Integer.parseInt(syslogDto.getHeader(MinionDTO.SOURCE_PORT)));
+		syslog.setSystemId(syslogDto.getHeader(MinionDTO.SYSTEM_ID));
 
 		if(syslogDto.getBody() != null && syslogDto.getBody().length > 0){
 			syslog.setBytes(syslogDto.getBody());

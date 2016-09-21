@@ -57,7 +57,7 @@ public class TrapDTOToObjectProcessor implements Processor {
 	}
 
 	public static TrapNotification dto2object(TrapDTO trapDto) {
-		if (SNMP_V1.equalsIgnoreCase(trapDto.getFromMap(TrapDTO.VERSION))) {
+		if (SNMP_V1.equalsIgnoreCase(trapDto.getHeader(TrapDTO.VERSION))) {
 			PDUv1 pdu = new PDUv1();
 			pdu.setType(PDU.NOTIFICATION);
 
@@ -70,14 +70,14 @@ public class TrapDTOToObjectProcessor implements Processor {
 			}
 
 			return new Snmp4JTrapNotifier.Snmp4JV1TrapInformation(
-				InetAddrUtils.addr(trapDto.getFromMap(TrapDTO.SOURCE_ADDRESS)),
-				trapDto.getFromMap(TrapDTO.COMMUNITY),
+				InetAddrUtils.addr(trapDto.getHeader(TrapDTO.SOURCE_ADDRESS)),
+				trapDto.getHeader(TrapDTO.COMMUNITY),
 				pdu,
 				null
 			);
 		} else if (
-			SNMP_V2.equalsIgnoreCase(trapDto.getFromMap(TrapDTO.VERSION)) ||
-			SNMP_V3.equalsIgnoreCase(trapDto.getFromMap(TrapDTO.VERSION))
+			SNMP_V2.equalsIgnoreCase(trapDto.getHeader(TrapDTO.VERSION)) ||
+			SNMP_V3.equalsIgnoreCase(trapDto.getHeader(TrapDTO.VERSION))
 		) {
 			PDU pdu = new PDU();
 			pdu.setType(PDU.NOTIFICATION);
@@ -91,13 +91,13 @@ public class TrapDTOToObjectProcessor implements Processor {
 			}
 
 			return new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
-				InetAddrUtils.addr(trapDto.getFromMap(TrapDTO.SOURCE_ADDRESS)),
-				trapDto.getFromMap(TrapDTO.COMMUNITY),
+				InetAddrUtils.addr(trapDto.getHeader(TrapDTO.SOURCE_ADDRESS)),
+				trapDto.getHeader(TrapDTO.COMMUNITY),
 				pdu,
 				null
 			);
 		} else {
-			throw new IllegalArgumentException("Unrecognized trap version in DTO: " + trapDto.getFromMap(TrapDTO.VERSION));
+			throw new IllegalArgumentException("Unrecognized trap version in DTO: " + trapDto.getHeader(TrapDTO.VERSION));
 		}
 	}
 }
