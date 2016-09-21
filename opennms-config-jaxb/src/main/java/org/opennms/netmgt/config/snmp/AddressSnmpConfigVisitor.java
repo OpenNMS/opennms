@@ -67,11 +67,17 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     private Definition m_currentDefinition;
     private Definition m_matchedDefinition;
     private Definition m_generatedDefinition = null;
+    private String m_location = null;
+    private Definition m_definitionWithLocation = null;
 
     public AddressSnmpConfigVisitor(final InetAddress addr) {
         m_address = addr;
     }
 
+    public AddressSnmpConfigVisitor(final InetAddress addr, String location) {
+        m_address = addr;
+        m_location = location;
+    }
     public void visitSnmpConfig(final SnmpConfig config) {
         m_currentConfig = config;
     }
@@ -136,6 +142,9 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
 
     public void visitDefinitionFinished() {
         //LOG.debug("matched = {}", m_matchedDefinition);
+        if ((m_location != null) && m_location.equals(m_currentDefinition.getLocation())) {
+            m_definitionWithLocation = m_matchedDefinition;
+        }
         m_currentDefinition = null;
     }
 
@@ -143,7 +152,9 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
         final Definition ret = new Definition();
 
         final Configuration sourceConfig;
-        if (m_matchedDefinition != null) {
+        if (m_definitionWithLocation != null) {
+            sourceConfig = m_definitionWithLocation;
+        } else if (m_matchedDefinition != null) {
             sourceConfig = m_matchedDefinition;
         } else {
             sourceConfig = m_currentConfig;
@@ -323,6 +334,7 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
 
         //LOG.debug("generated: {}", ret);
         m_generatedDefinition = ret;
+
     }
 
     public Definition getDefinition() {
