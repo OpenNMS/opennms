@@ -8,7 +8,7 @@
             <rra>RRA:MAX:0.5:288:366</rra>
             <rra>RRA:MIN:0.5:288:366</rra>
         </rrd>
-        <xml-source url="http://localhost:9200/_cluster/stats">
+        <xml-source url="http://{ipaddr}:9200/_cluster/stats">
             <import-groups>xml-datacollection/elasticsearch-cluster-stats.xml</import-groups>
         </xml-source>
     </xml-collection>
