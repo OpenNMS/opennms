@@ -150,12 +150,6 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
     private void registerWithOnmsRegistry(final ServiceReference<?> reference) {
         LOG.debug("registerWithOnmsRegistry: {}", reference.getBundle());
 
-        final BundleContext bundleContext = m_bundleContext.get();
-        if (bundleContext == null) {
-            LOG.warn("No BundleContext found, skipping registration of services: {}", reference);
-            return;
-        }
-
         // skip this service if this should not be exported
         if (!isOnmsExported(reference)) return;
 
@@ -164,6 +158,12 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
 
         // if this service is already registered then skip it
         if (m_osgiReference2onmsRegistrationMap.containsKey(reference)) return;
+
+        final BundleContext bundleContext = m_bundleContext.get();
+        if (bundleContext == null) {
+            LOG.warn("No BundleContext found, skipping registration of services: {}", reference);
+            return;
+        }
 
         final String[] classNames = (String[]) reference.getProperty(Constants.OBJECTCLASS);
 
