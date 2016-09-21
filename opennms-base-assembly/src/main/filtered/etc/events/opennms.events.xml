@@ -922,7 +922,7 @@
                         %parm[criticalPathIp]% %parm[criticalPathServiceName]%
                 </logmsg>
     <severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%parm[criticalPathIp]%:%parm[criticalPathServiceName]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data reduction-key="%uei%:%dpname%:%parm[criticalPathIp]%:%parm[criticalPathServiceName]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/nodeGainedInterface</uei>
