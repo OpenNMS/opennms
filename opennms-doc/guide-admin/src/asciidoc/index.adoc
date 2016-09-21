@@ -136,6 +136,15 @@ include::text/performance-data-collection/collectors/wsman/detector.adoc[]
 include::text/events/events.adoc[]
 include::text/events/forward-elasticsearch.adoc[]
 
+[[ga-notifications]]
+== Notifications
+include::text/notifications/introduction.adoc[]
+include::text/notifications/getting-started.adoc[]
+include::text/notifications/concepts.adoc[]
+include::text/notifications/bonus-strategies.adoc[]
+include::text/notifications/strategies/mattermost.adoc[]
+include::text/notifications/strategies/slack.adoc[]
+
 [[ga-provisioning]]
 == Provisioning
 include::text/provisioning/introduction.adoc[]
