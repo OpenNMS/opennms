@@ -130,6 +130,7 @@ include::text/events.adoc[]
 include::text/notifications/introduction.adoc[]
 include::text/notifications/getting-started.adoc[]
 include::text/notifications/concepts.adoc[]
+include::text/notifications/bonus-strategies.adoc[]
 include::text/notifications/strategies/mattermost.adoc[]
 include::text/notifications/strategies/slack.adoc[]
 
