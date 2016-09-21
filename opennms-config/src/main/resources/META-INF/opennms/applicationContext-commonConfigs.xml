@@ -54,6 +54,13 @@
 
 	<onmsgi:service interface="org.opennms.netmgt.config.PollerConfig" ref="pollerConfig" />
 
+	<bean id="serviceMonitorRegistry" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="pollerConfig"/>
+		<property name="targetMethod" value="getServiceMonitorRegistry"/>
+	</bean>
+
+	<onmsgi:service interface="org.opennms.netmgt.poller.ServiceMonitorRegistry" ref="serviceMonitorRegistry" />
+
 	<!--  collectd config factory is now init'd in the dao context -->
 
     <bean id="init-wmiPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

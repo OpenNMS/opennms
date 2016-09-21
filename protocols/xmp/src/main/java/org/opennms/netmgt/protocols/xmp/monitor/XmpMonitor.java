@@ -46,7 +46,6 @@ import org.krupczak.xmp.XmpSession;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 import org.opennms.netmgt.protocols.xmp.XmpUtil;
@@ -60,8 +59,6 @@ import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
  * @version $Id: $
  */
 public class XmpMonitor extends AbstractServiceMonitor {
-
-
 
     /**
      * The default port to use for XMP
@@ -142,11 +139,8 @@ public class XmpMonitor extends AbstractServiceMonitor {
     /** {@inheritDoc} */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String,Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
         PollStatus status = PollStatus.unavailable();
-        InetAddress ipaddr = (InetAddress) iface.getAddress();
-
+        InetAddress ipaddr = svc.getAddress();
 
         XmpConfig protoConfig = XmpConfigFactory.getInstance().getXmpConfig();
         XmpSession session;

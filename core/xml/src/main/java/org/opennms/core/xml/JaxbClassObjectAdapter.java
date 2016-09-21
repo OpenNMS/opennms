@@ -29,7 +29,10 @@
 package org.opennms.core.xml;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,10 +46,20 @@ import org.w3c.dom.ls.LSSerializer;
 
 public class JaxbClassObjectAdapter extends XmlAdapter<Object, Object> {
     private static final Logger LOG = LoggerFactory.getLogger(JaxbClassObjectAdapter.class);
+    private final Map<String,Class<?>> m_knownElementClasses = new HashMap<>();
 
     public JaxbClassObjectAdapter() {
-        super();
         LOG.debug("Initializing JaxbClassObjectAdapter.");
+    }
+
+    public JaxbClassObjectAdapter(Class<?>... clazzes) {
+        LOG.debug("Initializing JaxbClassObjectAdapter with {} classes.", clazzes.length);
+        for (Class<?> clazz : clazzes) {
+            final XmlRootElement annotation = clazz.getAnnotation(XmlRootElement.class);
+            if (annotation != null) {
+                m_knownElementClasses.put(annotation.name().toLowerCase(), clazz);
+            }
+        }
     }
 
     @Override
@@ -58,13 +71,12 @@ public class JaxbClassObjectAdapter extends XmlAdapter<Object, Object> {
             final Node e = (Node)from;
             e.normalize();
             final String nodeName = e.getNodeName();
-            final Class<?> clazz = JaxbUtils.getClassForElement(nodeName);
-
+            final Class<?> clazz = getClassForElement(nodeName);
             LOG.trace("class type = {} (node name = {})", clazz, nodeName);
             // JAXB has already turned this into an element, but we need to re-parse the XML.
 
             if (clazz == null) {
-                LOG.warn("Unable to determine object type for node name {}", nodeName);
+                LOG.warn("Unable to determine object type for node name {}. Known elements include: {}", nodeName, m_knownElementClasses);
                 return from;
             }
 
@@ -99,4 +111,11 @@ public class JaxbClassObjectAdapter extends XmlAdapter<Object, Object> {
         }
     }
 
+    public Class<?> getClassForElement(String nodeName) {
+        final Class<?> clazz = m_knownElementClasses.get(nodeName.toLowerCase());
+        if (clazz != null) {
+            return clazz;
+        }
+        return JaxbUtils.getClassForElement(nodeName);
+    }
 }

@@ -35,10 +35,10 @@
 package org.opennms.netmgt.config;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 
 public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Serializable {
 
@@ -62,28 +62,14 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
         m_serviceClass = serviceClass;
     }
 
-    /*
-     * FIXME The use of CastorObjectRetrievalFailureException doesn't seem
-     * appropriate below, as I don't see Castor being used at all. - dj@opennms.org
-     */
-    /**
-     * <p>getServiceMonitor</p>
-     *
-     * @return a {@link org.opennms.netmgt.poller.ServiceMonitor} object.
-     */
     @Override
-    public ServiceMonitor getServiceMonitor() {
-        try {
-            ServiceMonitor mon = m_serviceClass.newInstance();
-            mon.initialize((Map<String,Object>)null);
-            return mon;
-        } catch (InstantiationException e) {
-            throw new ConfigObjectRetrievalFailureException("Unable to instantiate monitor for service "
-                    +m_serviceName+" with class-name "+m_serviceClass.getName(), e);
-        } catch (IllegalAccessException e) {
-            throw new ConfigObjectRetrievalFailureException("Illegal access trying to instantiate monitor for service "
-                    +m_serviceName+" with class-name "+m_serviceClass.getName(), e);
+    public ServiceMonitor getServiceMonitor(ServiceMonitorRegistry registry) {
+        final ServiceMonitor sm = registry.getMonitorByClassName(m_serviceClass.getCanonicalName());
+        if (sm == null) {
+            throw new ConfigObjectRetrievalFailureException("Could not find monitor for service "
+                    +m_serviceName+" with class-name "+m_serviceClass.getName(), null);
         }
+        return sm;
     }
 
     /**
@@ -105,5 +91,5 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
     public String getServiceLocatorKey() {
         return m_serviceClass.getName();
     }
-    
+
 }

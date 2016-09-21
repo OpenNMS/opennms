@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<features 
+<features
   name="opennms-${project.version}"
   xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -152,6 +152,10 @@
       <bundle>wrap:mvn:org.apache.xmlgraphics/batik-xml/1.7</bundle>
     </feature>
 
+    <feature name="bsf" description="Apache :: Bean Scripting Framework" version="${bsfVersion}">
+      <bundle>wrap:mvn:bsf/bsf/${bsfVersion}</bundle>
+    </feature>
+
     <feature name="c3p0" description="c3p0" version="${c3p0Version}">
       <feature>postgresql</feature>
 
@@ -285,6 +289,7 @@
       <bundle>wrap:mvn:javax.mail/mail/1.4.5</bundle>
     </feature>
 
+
     <!-- This feature contains all of the dependencies from the dependencies/jaxb/pom.xml -->
     <feature name="jaxb" description="EclipseLink :: MOXy" version="${eclipselinkVersion}">
       <feature>javax.mail</feature>
@@ -307,9 +312,17 @@
       -->
     </feature>
 
+    <feature name="jcifs" description="jcifs" version="${jcifsVersion}">
+      <bundle>wrap:mvn:org.samba.jcifs/jcifs/${jcifsVersion}</bundle>
+    </feature>
+
     <feature name="jfreechart" description="JFree :: JFreeChart" version="1.0.13">
       <bundle>wrap:mvn:jfree/jfreechart/1.0.13</bundle>
       <bundle>wrap:mvn:jfree/jcommon/1.0.16</bundle>
+    </feature>
+
+    <feature name="jldap" description="OpenLDAP :: JLDAP" version="4.3">
+      <bundle>wrap:mvn:com.novell.ldap/jldap/4.3</bundle>
     </feature>
 
     <feature name="jolokia" description="Jolokia" version="1.2.3">
@@ -317,6 +330,10 @@
       <bundle>mvn:org.jolokia/jolokia-osgi/1.2.3</bundle>
     </feature>
 
+    <feature name="jolokia-client" description="Jolokia-Client" version="1.1.5">
+      <bundle>mvn:org.jolokia/jolokia-client-java/1.1.5</bundle>
+    </feature>
+    
     <feature name="jrobin" description="JRobin" version="1.6.0-SNAPSHOT">
       <bundle>mvn:org.jrobin/jrobin/1.6.0-SNAPSHOT</bundle>
     </feature>
@@ -333,6 +350,10 @@
 
     <feature name="org.json" description="org.json" version="20140107">
       <bundle>wrap:mvn:org.json/json/20140107$Export-Package=org.json</bundle>
+    </feature>
+    
+    <feature name="json-simple" description="json-simple" version="1.1.1">
+      <bundle>wrap:mvn:com.googlecode.json-simple/json-simple/1.1.1</bundle>
     </feature>
 
     <feature name="owasp-encoder" description="owasp-encoder" version="${owaspEncoderVersion}">
@@ -374,8 +395,23 @@
     <feature name="jicmp6" description="jicmp6" version="2.0.1">
       <bundle>mvn:org.opennms/jicmp6-api/2.0.1</bundle>
     </feature>
-
+    
+    <feature name="quartz" description="quartz" version="1.6.5">
+      <bundle>wrap:mvn:org.opensymphony.quartz/quartz/1.6.5</bundle>
+    </feature>
+    
+    <feature name="twitter4j" description="twitter4j" version="3.0.6">
+      <bundle>wrap:mvn:org.twitter4j/twitter4j-core/3.0.6</bundle>
+    </feature>
+    
     <!-- OpenNMS features -->
+    
+    
+    <feature name="opennms-bootstrap" description="opennms-bootstrap" version="${project.version}">
+      <bundle>wrap:mvn:org.opennms/opennms-bootstrap/${project.version}</bundle>
+    </feature>
+    
+    
     <feature name="opennms-core" description="OpenNMS :: Core" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
       <feature version="[4.0,4.1)">spring-orm</feature>
@@ -667,7 +703,6 @@
       <feature>hibernate36</feature>
 
       <feature>opennms-core</feature>
-
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
     </feature>
 
@@ -931,9 +966,18 @@
       <bundle>mvn:org.opennms/opennms-webapp/${project.version}/war</bundle>
     </feature>
 
+    <feature name="smack" description="smack-dependencies" version="4.0.6">
+      <bundle>wrap:mvn:org.igniterealtime.smack/smack-core/4.0.6</bundle>
+      <bundle>wrap:mvn:org.igniterealtime.smack/smack-tcp/4.0.6</bundle>
+      <bundle>wrap:mvn:org.igniterealtime.smack/smack-extensions/4.0.6</bundle>
+      <bundle>wrap:mvn:org.igniterealtime.smack/smack-resolver-javax/4.0.6</bundle>
+      <bundle>wrap:mvn:xmlpull/xmlpull/1.1.3.1</bundle>
+    </feature>
+    
     <feature name="wsman-integration" version="${project.version}" description="OpenNMS :: Features :: WS-Man Integration">
       <feature>opennms-collection-api</feature>
       <feature>opennms-provisioning-api</feature>
+      <feature>opennms-dao-api</feature>
       <feature version="${cxfVersion}">cxf-jaxws</feature>
       <feature version="${cxfVersion}">cxf-ws-addr</feature>
       <bundle dependency="true">mvn:com.google.guava/guava/${guavaOldVersion}</bundle>
@@ -950,6 +994,7 @@
       <bundle>mvn:org.opennms/opennms-wmi/${project.version}</bundle>
     </feature>
 
+
     <feature name="opennms-provisioning-detectors" description="OpenNMS :: Provisioning :: Detectors" version="${project.version}">
       <feature>commons-cli</feature>
       <feature>spring-security32</feature>
@@ -961,9 +1006,9 @@
       <feature>wsman-integration</feature>
       <feature>wmi-integration</feature>
 
-      <bundle>wrap:mvn:bsf/bsf/${bsfVersion}</bundle>
-      <bundle>wrap:mvn:com.novell.ldap/jldap/${jldapVersion}</bundle>
-      <bundle>wrap:mvn:org.samba.jcifs/jcifs/${jcifsVersion}</bundle>
+      <feature>bsf</feature>
+      <feature>jcifs</feature>
+      <feature>jldap</feature>
 
       <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.impl/${project.version}</bundle>
@@ -978,10 +1023,41 @@
       <bundle>mvn:org.opennms/opennms-detector-web/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
     </feature>
-    
+
     <feature name="opennms-provisioning-shell" description="OpenNMS :: Provisioning :: Shell" version="${project.version}">
       <!-- Dependencies should be available from the parent classloader and from the ONMSGi registry -->
       <bundle>mvn:org.opennms/opennms-provision-shell/${project.version}</bundle>
     </feature>
+    
+    <feature name="opennms-poller-monitors-core" description="OpenNMS :: Poller :: Monitors :: Core" version="${project.version}">
+      <feature>camel-core</feature>
+      <feature>camel-http</feature>
+      <feature>commons-io</feature>
+      <feature>commons-jexl</feature>
+      <feature>commons-lang</feature>
+      <feature>commons-net</feature>
+      <feature>dnsjava</feature>
+      <feature>hibernate36</feature>
+      <feature>jldap</feature>
+      <feature>jolokia-client</feature>
+      <feature>json-simple</feature>
+      <feature>jcifs</feature>
+      <feature>bsf</feature>
 
+      <!-- We really just need org.apache.httpcomponents out of here -->
+      <feature>opennms-core-web</feature>
+      <feature>opennms-icmp-api</feature> 
+      <feature>opennms-poller-api</feature>
+      <feature>opennms-dao-api</feature>
+      <feature>opennms-config</feature>
+      <feature>opennms-javamail</feature>
+
+      <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.impl/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.poller.monitors/org.opennms.features.poller.monitors.core/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-poller-shell" description="OpenNMS :: Poller :: Shell" version="${project.version}">
+      <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
+    </feature>
 </features>

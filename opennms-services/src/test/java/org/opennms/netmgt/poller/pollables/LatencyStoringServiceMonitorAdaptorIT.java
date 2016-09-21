@@ -239,11 +239,11 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         expect(m_pollerConfig.getStep(pkg)).andReturn(step).anyTimes();
 
         m_mocks.replayAll();
-        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(service, m_pollerConfig, pkg, m_persisterFactory, m_resourceStorageDao);
+        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(m_pollerConfig, pkg, m_persisterFactory, m_resourceStorageDao);
         // Make sure that the ThresholdingSet initializes with test settings
         String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
         for (int i=0; i<rtValues.length; i++) {
-            adaptor.poll(svc, parameters);
+            adaptor.handlePollResult(svc, parameters, service.poll(svc, parameters));
             Thread.sleep(1000 * step); // Emulate the appropriate wait time prior inserting another value into the RRD files.
         }
         System.setProperty("opennms.home", previousOpennmsHome);
