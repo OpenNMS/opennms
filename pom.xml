@@ -742,6 +742,19 @@
                   <ignore></ignore>
                 </action>
               </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>exec-maven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>java</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                    <execute></execute>
+                </action>
+              </pluginExecution>
             </pluginExecutions>
           </lifecycleMappingMetadata>
         </configuration>
@@ -1277,6 +1290,7 @@
     <hikaricpVersion>2.4.6</hikaricpVersion>
     <httpcoreVersion>4.3.3</httpcoreVersion>
     <httpclientVersion>4.3.6</httpclientVersion>
+    <httpasyncclientVersion>4.0.2</httpasyncclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>6.1.1</jasperreportsVersion>
     <jettyVersion>8.1.10.v20130312</jettyVersion>
@@ -1323,6 +1337,11 @@
     <vaadinVersion>7.2.7</vaadinVersion>
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
     <vaadinExtenderVersion>1.0.0</vaadinExtenderVersion>
+    
+    <!-- moved here from opennms-pluginmanger -->
+    <pluginmanagerVersion>1.0.1</pluginmanagerVersion>
+    <licencemanagerVersion>1.0.1</licencemanagerVersion>
+    <featuremanagerVersion>1.0.1</featuremanagerVersion>
 
   </properties>
 
@@ -2912,6 +2931,17 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpasyncclient-osgi</artifactId>
+        <version>${httpasyncclientVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+     </dependency>
+     <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>${commonsIoVersion}</version>

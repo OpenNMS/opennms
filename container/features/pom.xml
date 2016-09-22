@@ -94,6 +94,16 @@
 
             <!-- OpenNMS Plugin Manager Feature -->
             <repository>mvn:org.opennms.plugins/vaadin-opennms-pluginmanager/${project.version}/xml/features</repository>
+            
+            <!-- Alarm Change Notifier -->
+            <repository>mvn:org.opennms.plugins/alarm-change-notifier/${project.version}/xml/features</repository> 
+    
+            <!-- ReST Elastic Search Integration -->
+            <repository>mvn:org.opennms.plugins/opennms-es-rest/${project.version}/xml/features</repository>
+            
+            <!-- Internal Plugins Descriptor -->
+            <repository>mvn:org.opennms.plugins/internal-plugins-descriptor/${project.version}/xml/features</repository>
+
           </repositories>
 
           <!-- 
@@ -235,7 +245,12 @@
             <feature>vaadin-surveillance-views</feature>
             <feature>jira-troubleticketer</feature>
             <feature>datachoices</feature>
+            
+            <!-- features defined as internal opennms plugins -->
             <feature>vaadin-opennms-pluginmanager</feature>
+            <feature>alarm-change-notifier</feature>
+            <feature>opennms-es-rest</feature>
+            <feature>internal-plugins-descriptor</feature>
           </features>
         </configuration>
       </plugin>
@@ -438,6 +453,27 @@
           <artifactId>jsr311-api</artifactId>
         </exclusion>
       </exclusions> 
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>alarm-change-notifier</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>opennms-es-rest</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>internal-plugins-descriptor</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
