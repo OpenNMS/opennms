@@ -20,6 +20,11 @@ NAME="minion"
 DESC="Minion"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 MINION_HOME="@INSTPREFIX@"
+SYSCONFDIR="@SYSCONFDIR@"
+
+if [ -e "${SYSCONFDIR}/minion" ]; then
+	. "${SYSCONFDIR}/minion"
+fi
 
 is_running() {
 	"$MINION_HOME"/bin/status >/dev/null 2>&1
