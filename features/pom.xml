@@ -119,5 +119,15 @@
 
     <!-- OpenNMS Plugin Manager -->
     <module>vaadin-opennms-pluginmanager</module>
+    
+    <!-- ReST Elastic Search Integration -->
+    <module>opennms-es-rest</module>
+    
+    <!-- Alarm Change Notifier -->
+    <module>alarm-change-notifier</module>
+    
+    <!-- Internal Plugins Descriptor -->
+    <module>internal-plugins-descriptor</module>
+    
   </modules>
 </project>
