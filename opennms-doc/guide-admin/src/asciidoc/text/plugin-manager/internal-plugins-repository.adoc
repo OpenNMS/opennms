@@ -1,0 +1,16 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Installing Internal Plugins
+
+_{opennms-product-name}_ is packaged with an internal repository of plugins which are can be installed in _Karaf_ 
+and activated by a user using the _Plugin Manager_ in the same way it could be used to download external plugins.
+The _internal-plugin-descriptor_ feature maintains a list of internal plugins which are packaged with _{opennms-product-name}_. 
+
+The list of internal plugins can be accessed by setting the Available Plugins Server Plugin Server URL
+ to the address of the local _{opennms-product-name}_ (i.e. http:\\localhost:8980\opennms) and clicking 'reload available plugins'. 
+The available internal plugins will then be added to the Available Plugins Tab and can be installed and started by the user as described previously. 
+(You should use the _{opennms-product-name}_ rest or admin username and password to access the local available plugins).
+
+Example internal plugins included with _{opennms-product-name}_ are the _Alarm Change Notifier_ and the _Elasticsearch ReST Interface_.

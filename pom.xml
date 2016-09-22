@@ -755,6 +755,19 @@
                   <ignore></ignore>
                 </action>
               </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>exec-maven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>java</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                    <execute></execute>
+                </action>
+              </pluginExecution>
             </pluginExecutions>
           </lifecycleMappingMetadata>
         </configuration>
@@ -1335,6 +1348,7 @@
     <hikaricpVersion>2.4.6</hikaricpVersion>
     <httpcoreVersion>4.3.3</httpcoreVersion>
     <httpclientVersion>4.3.6</httpclientVersion>
+    <httpasyncclientVersion>4.0.2</httpasyncclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
@@ -1398,6 +1412,11 @@
     <vaadinAddonConfirmDialogVersion>2.0.4</vaadinAddonConfirmDialogVersion>
     <skipPdfGeneration>true</skipPdfGeneration>
     <skipSignJar>true</skipSignJar>
+
+    <!-- moved here from opennms-pluginmanger -->
+    <pluginmanagerVersion>1.0.1</pluginmanagerVersion>
+    <licencemanagerVersion>1.0.1</licencemanagerVersion>
+    <featuremanagerVersion>1.0.1</featuremanagerVersion>
   </properties>
 
   <profiles>
@@ -2994,6 +3013,17 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpasyncclient-osgi</artifactId>
+        <version>${httpasyncclientVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+     </dependency>
+     <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>${commonsIoVersion}</version>
