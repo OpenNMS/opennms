@@ -31,6 +31,7 @@ package org.opennms.netmgt.trapd;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
+import java.util.Date;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
@@ -84,6 +85,8 @@ public class EventCreator implements TrapProcessor {
     @Override
     public void setTimeStamp(long timeStamp) {
         m_eventBuilder.setSnmpTimeStamp(timeStamp);
+        Date date = new Date(timeStamp);
+        m_eventBuilder.setTime(date);
     }
 
     /** {@inheritDoc} */
