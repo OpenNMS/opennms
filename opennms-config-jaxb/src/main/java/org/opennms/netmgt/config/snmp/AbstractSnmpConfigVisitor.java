@@ -45,4 +45,7 @@ public abstract class AbstractSnmpConfigVisitor implements SnmpConfigVisitor {
     
     @Override public void visitIpMatches(List<String> ipMatches) {}
     @Override public void visitIpMatchesFinished() {}
+
+    @Override public void visitLocation(String location) {}
+    @Override public void visitLocationFinished() {}
 }

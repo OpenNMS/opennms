@@ -51,6 +51,7 @@ import static org.opennms.netmgt.snmp.SnmpConfiguration.versionToString;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
@@ -69,6 +70,7 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     private Definition m_generatedDefinition = null;
     private String m_location = null;
     private Definition m_definitionWithLocation = null;
+    private Definition m_prevMatchedDefinition = null;
 
     public AddressSnmpConfigVisitor(final InetAddress addr) {
         m_address = addr;
@@ -140,11 +142,33 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
         }
     }
 
+    @Override
+    public void visitLocation(String location) {
+        if (m_matchedDefinition != null) {
+
+            // Save Definition with location in case of a valid location match
+            if (StringUtils.isNotEmpty(m_location) && m_location.equals(location)) {
+                m_definitionWithLocation = m_matchedDefinition;
+            }
+            // Matched definition but location doesn't match, retrieve saved Definition
+            if (StringUtils.isNotEmpty(location) && !location.equals(m_location)) {
+                m_matchedDefinition = m_prevMatchedDefinition;
+            }
+
+        }
+
+    }
+
+    @Override
+    public void visitLocationFinished() {
+        // Save matched Definition to retrieve it in case of another match with location
+        if (m_matchedDefinition != null) {
+            m_prevMatchedDefinition = m_matchedDefinition;
+        }
+    }
+
     public void visitDefinitionFinished() {
         //LOG.debug("matched = {}", m_matchedDefinition);
-        if ((m_location != null) && m_location.equals(m_currentDefinition.getLocation())) {
-            m_definitionWithLocation = m_matchedDefinition;
-        }
         m_currentDefinition = null;
     }
 
