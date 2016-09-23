@@ -46,11 +46,9 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.NullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -72,12 +70,6 @@ public class QueryManagerDaoImpl implements QueryManager {
     private NodeDao m_nodeDao;
 
     @Autowired
-    private IpInterfaceDao m_ipInterfaceDao;
-
-    @Autowired
-    private ServiceTypeDao m_serviceTypeDao;
-
-    @Autowired
     private EventDao m_eventDao;
 
     @Autowired
@@ -94,6 +86,16 @@ public class QueryManagerDaoImpl implements QueryManager {
             return null;
         }
         return onmsNode.getLabel();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getNodeLocation(int nodeId) {
+        final OnmsNode onmsNode = m_nodeDao.get(nodeId);
+        if (onmsNode == null) {
+            return null;
+        }
+        return onmsNode.getLocation().getLocationName();
     }
 
     /** {@inheritDoc} */
@@ -316,4 +318,5 @@ public class QueryManagerDaoImpl implements QueryManager {
                     serviceName, nodeId,  ipAddr, status, e);
         }
     }
+
 }

@@ -12,7 +12,10 @@
   <name>OpenNMS :: Features :: Poller</name>
   <modules>
     <module>api</module>
+    <module>client-rpc</module>
+    <module>monitors</module>
     <module>remote</module>
     <module>runtime</module>
+    <module>shell</module>
   </modules>
 </project>

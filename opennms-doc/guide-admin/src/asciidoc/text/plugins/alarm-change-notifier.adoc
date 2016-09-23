@@ -1,0 +1,20 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Alarm Change Notifier Plugin
+
+The _Alarm Change Notifier Plugin_ generates new OpenNMS events corresponding to changes in alarms
+The new events are defined in the <opennms home>/etc/events/AlarmChangeNotifierEvents.xml file
+
+These events contain a json copy of the database table before changes in %parm[oldalarmvalues]%
+and after changes in %parm[newalarmvalues]%
+
+%parm[alarmid]% contains the alarmid of the alarm which has changed
+
+The generated event itself references copies of the nodeid, interface and service contained in the original alarm. 
+This way the alarm change events are associated with the original source of the alarm.
+
+Alarm change events have a severity of normal since they only reflect changes to the alarm.
+
+Events from the alarm-change-notifier are also used by the opennms-es-rest plugin to send alarm history to Elastic Search

@@ -213,8 +213,9 @@ function main()
         run rsync -aqr --exclude=.git --exclude=.svn --exclude=target --delete --delete-excluded "$TOPDIR/" "$WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE/"
 
         echo "=== Creating a tar.gz archive of the Source in /usr/src/redhat/SOURCES ==="
-        SPECS="tools/packages/opennms/opennms.spec tools/packages/minion/minion.spec"
         run tar zcf "$WORKDIR/SOURCES/${PACKAGE_NAME}-source-$VERSION-$RELEASE.tar.gz" -C "$WORKDIR/tmp" "${PACKAGE_NAME}-$VERSION-$RELEASE"
+
+        SPECS="tools/packages/opennms/opennms.spec tools/packages/minion/minion.spec"
         if [ "$PACKAGE_NAME" = "opennms" ]; then
                 run tar zcf "$WORKDIR/SOURCES/centric-troubleticketer.tar.gz" -C "$WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE/opennms-tools" "centric-troubleticketer"
                 SPECS="$SPECS opennms-tools/centric-troubleticketer/src/main/rpm/opennms-plugin-ticketer-centric.spec"
@@ -234,7 +235,7 @@ function main()
                 --define "releasenumber $RELEASE" \
                 --define "_name $PACKAGE_NAME" \
                 --define "_descr $PACKAGE_DESCRIPTION" \
-                $spec
+                $spec || die "failed to build $spec"
         done
     fi
 

@@ -14,9 +14,6 @@
     This module is used to provide a single artifact that the opennms project
     can depend on to use Twitter4J
   </description>
-  <properties>
-    <twitter4jVersion>[3.0,4.0)</twitter4jVersion>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.twitter4j</groupId>
