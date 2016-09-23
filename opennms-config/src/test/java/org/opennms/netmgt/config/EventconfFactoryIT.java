@@ -594,7 +594,11 @@ public class EventconfFactoryIT {
         File eventsDirFile = new File(eventConfFile.getParentFile(), "events");
         assertTrue("events directory exists at " + eventsDirFile.getAbsolutePath(), eventsDirFile.exists());
         assertTrue("events directory is a directory at " + eventsDirFile.getAbsolutePath(), eventsDirFile.isDirectory());
-        
+
+        // Exclude files which we know are on disk, but are not included in the default eventconf.xml
+        Set<File> onDiskNotIncludedExcludes = new HashSet<>();
+        onDiskNotIncludedExcludes.add(new File(eventsDirFile, "AlarmChangeNotifierEvents.xml"));
+
         File[] eventFilesOnDiskArray = eventsDirFile.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String name) {
@@ -619,6 +623,7 @@ public class EventconfFactoryIT {
         
         Set<File> onDiskNotIncluded = new HashSet<File>(eventFilesOnDisk);
         onDiskNotIncluded.removeAll(eventFilesIncluded);
+        onDiskNotIncluded.removeAll(onDiskNotIncludedExcludes);
         if (!onDiskNotIncluded.isEmpty()) {
             fail("Events directory " + eventsDirFile.getAbsolutePath() + " contains event files that are not referenced in event configuration file " + eventConfFile.getAbsolutePath() + ":\n\t"
                     + StringUtils.collectionToDelimitedString(onDiskNotIncluded, "\n\t"));
