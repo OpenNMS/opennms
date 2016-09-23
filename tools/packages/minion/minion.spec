@@ -155,8 +155,11 @@ rm -rf %{buildroot}%{minioninstprefix}/demos
 
 # Copy over the run script
 mkdir -p %{buildroot}%{_initrddir}
-sed -e 's,@INSTPREFIX@,%{minioninstprefix},g' %{_builddir}/%{_name}-%{version}-%{release}/tools/packages/minion/minion.init > "%{buildroot}%{_initrddir}"/minion
+sed -e 's,@INSTPREFIX@,%{minioninstprefix},g' -e 's,@SYSCONFDIR@,%{_sysconfdir}/sysconfig,g'  %{_builddir}/%{_name}-%{version}-%{release}/tools/packages/minion/minion.init > "%{buildroot}%{_initrddir}"/minion
 chmod 755 "%{buildroot}%{_initrddir}"/minion
+
+install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
+install -m 644 "%{_builddir}/%{_name}-%{version}-%{release}/tools/packages/minion/minion.sysconfig" "%{buildroot}%{_sysconfdir}/sysconfig/minion"
 
 # Extract the core repository
 mkdir -p %{buildroot}%{minionrepoprefix}/core
@@ -195,6 +198,7 @@ rm -rf %{buildroot}
 %files container -f %{_tmppath}/files.container
 %defattr(664 root root 775)
 %attr(755,root,root) %{_initrddir}/minion
+%attr(644,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/minion
 %attr(644,root,root) %{minioninstprefix}/etc/featuresBoot.d/.readme
 
 %post container
