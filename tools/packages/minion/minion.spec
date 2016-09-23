@@ -224,3 +224,19 @@ rm -rf %{minionrepoprefix}/.local
 %post features-default
 # Remove the directory used as the local Maven repo cache
 rm -rf %{minionrepoprefix}/.local
+
+%preun -p /bin/bash container
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
+if [ "$1" = 0 ] && [ -x "%{_initrddir}/minion" ]; then
+	%{_initrddir}/minion stop || :
+fi
+
+%postun -p /bin/bash container
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
+if [ "$1" = 0 ] && [ -n "${ROOT_INST}" ] && [ -d "${ROOT_INST}" ]; then
+	rm -rf "${ROOT_INST}" || echo "WARNING: failed to delete ${ROOT_INST}. You may have to clean it up yourself."
+fi
