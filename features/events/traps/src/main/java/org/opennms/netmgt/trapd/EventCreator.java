@@ -83,10 +83,14 @@ public class EventCreator implements TrapProcessor {
 
     /** {@inheritDoc} */
     @Override
+    public void setCreationTime(long creationTime) {
+        m_eventBuilder.setTime(new Date(creationTime));
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void setTimeStamp(long timeStamp) {
         m_eventBuilder.setSnmpTimeStamp(timeStamp);
-        Date date = new Date(timeStamp);
-        m_eventBuilder.setTime(date);
     }
 
     /** {@inheritDoc} */
