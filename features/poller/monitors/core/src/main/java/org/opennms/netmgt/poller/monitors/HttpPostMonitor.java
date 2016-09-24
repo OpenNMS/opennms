@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -222,7 +222,7 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
                 LOG.debug("HttpPostMonitor: responseTime= " + responseTime + "ms");
 
                 //Could it be a regex?
-                if (strBannerMatch.charAt(0)=='~'){
+                if (strBannerMatch != null && strBannerMatch.length() > 0 && strBannerMatch.charAt(0)=='~'){
                     if (!Strresponse.matches(strBannerMatch.substring(1))) {
                         serviceStatus = PollStatus.unavailable("Banner does not match Regex '"+strBannerMatch+"'");
                         break;
