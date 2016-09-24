@@ -446,11 +446,11 @@ public class EventToIndex {
 		body.put("eventuei",event.getUei());
 
 		Calendar cal=Calendar.getInstance();
-		if (event.getCreationTime()==null) {
+		if (event.getTime()==null) {
 			if(LOG.isDebugEnabled()) LOG.debug("using local time because no event creation time for event.toString: "+ event.toString());
 			cal.setTime(new Date());
 
-		} else 	cal.setTime(event.getCreationTime()); // javax.xml.bind.DatatypeConverter.parseDateTime("2010-01-01T12:00:00Z");
+		} else 	cal.setTime(event.getTime()); // javax.xml.bind.DatatypeConverter.parseDateTime("2010-01-01T12:00:00Z");
 
 
 		body.put("@timestamp", DatatypeConverter.printDateTime(cal));
@@ -636,14 +636,14 @@ public class EventToIndex {
 		// set alarm cleared time if an alarm clear event
 		if(ALARM_CLEARED_EVENT.equals(event.getUei())){
 			Calendar alarmClearCal=Calendar.getInstance();
-			alarmClearCal.setTime(event.getCreationTime());
+			alarmClearCal.setTime(event.getTime());
 			body.put(ALARM_CLEAR_TIME, DatatypeConverter.printDateTime(alarmClearCal));
 		}
 
 		// set alarm deleted time if an alarm clear event
 		if(ALARM_DELETED_EVENT.equals(event.getUei())){
 			Calendar alarmDeletionCal=Calendar.getInstance();
-			alarmDeletionCal.setTime(event.getCreationTime());
+			alarmDeletionCal.setTime(event.getTime());
 			body.put(ALARM_DELETED_TIME, DatatypeConverter.printDateTime(alarmDeletionCal));
 		}
 

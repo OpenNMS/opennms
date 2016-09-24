@@ -162,9 +162,10 @@ public class ESHeaders {
     private void populateBodyFromEvent(Map<String,Object> body, Event event) {
         body.put("id",event.getDbid());
         body.put("eventuei",event.getUei());
-        body.put("@timestamp", event.getCreationTime());
+        Date eventTime = event.getTime();
+        body.put("@timestamp", eventTime);
         Calendar cal=Calendar.getInstance();
-        cal.setTime(event.getCreationTime());
+        cal.setTime(eventTime);
         body.put("dow", cal.get(Calendar.DAY_OF_WEEK));
         body.put("hour", cal.get(Calendar.HOUR_OF_DAY));
         body.put("dom", cal.get(Calendar.DAY_OF_MONTH)); // this is not present in the original sql-based tool https://github.com/unicolet/opennms-events/blob/master/sql/opennms_events.sql#L26
