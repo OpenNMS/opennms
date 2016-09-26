@@ -50,6 +50,9 @@ public class GraphMLVertex extends AbstractVertex implements LevelAware {
         if (graphMLNode.getProperty(GraphMLProperties.NODE_ID) != null) {
             setNodeID(graphMLNode.getProperty(GraphMLProperties.NODE_ID));
         }
+        if (graphMLNode.getProperty(GraphMLProperties.EDGE_PATH_OFFSET) != null) {
+            setEdgePathOffset(graphMLNode.getProperty(GraphMLProperties.EDGE_PATH_OFFSET));
+        }
 
         level = graphMLNode.getProperty(GraphMLProperties.LEVEL, 0);
         properties = graphMLNode.getProperties();
