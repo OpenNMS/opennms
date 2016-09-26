@@ -143,8 +143,10 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
                     continue;
                 }
                 LOG.debug("Found script: path={}, extension={}, engine={}", path, extension, scriptEngine);
-                final String source = Files.lines(path, Charset.defaultCharset()).collect(Collectors.joining("\n"));
-                scripts.add(new StatusScript(scriptEngine, source));
+                try (final Stream<String> lines = Files.lines(path, Charset.defaultCharset())) {
+                    final String source = lines.collect(Collectors.joining("\n"));
+                    scripts.add(new StatusScript(scriptEngine, source));
+                }
             }
         } catch (final IOException e) {
             LOG.error("Failed to walk template directory: {}", getScriptPath());
