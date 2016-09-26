@@ -79,11 +79,11 @@ public class SnmpConfigAccessService {
         submitAndWait(new SaveCallable());
     }
 
-    public SnmpAgentConfig getAgentConfig(final InetAddress addr) {
+    public SnmpAgentConfig getAgentConfig(final InetAddress addr, String location) {
         flushAll();
         return submitAndWait(new Callable<SnmpAgentConfig>() {
             @Override public SnmpAgentConfig call() throws Exception {
-                return SnmpPeerFactory.getInstance().getAgentConfig(addr);
+                return SnmpPeerFactory.getInstance().getAgentConfig(addr, location);
             }
         });
     }
