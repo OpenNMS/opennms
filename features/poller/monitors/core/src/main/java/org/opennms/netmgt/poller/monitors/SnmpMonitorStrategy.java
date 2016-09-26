@@ -79,7 +79,7 @@ public abstract class SnmpMonitorStrategy extends AbstractServiceMonitor {
         } catch (IOException e) {
             LOG.error("SnmpPeerFactory initialization failed.", e);
         }
-        return ImmutableMap.of("agent", SnmpPeerFactory.getInstance().getAgentConfig(svc.getAddress()));
+        return ImmutableMap.of("agent", SnmpPeerFactory.getInstance().getAgentConfig(svc.getAddress(), svc.getNodeLocation()));
     }
 
     public SnmpAgentConfig getAgentConfig(MonitoredService svc, Map<String, Object> parameters) {
