@@ -300,16 +300,13 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTest {
         });
         camelContext.start();
         
-    
+        for (int i = 0; i < 10; i++) {
         mockEndPoint = camelContext.getEndpoint("mock:result", MockEndpoint.class);
         mockEndPoint.expectedMessageCount(1);
-        for(int i=0;i<10;i++)
-        {
+            producerTemplate = camelContext.createProducerTemplate();
+            producerTemplate.start();
 
-        producerTemplate = camelContext.createProducerTemplate();
-        producerTemplate.start();
-       
-        mockEndPoint.assertIsSatisfied();
+            mockEndPoint.assertIsSatisfied();
         }
         producerTemplate.stop();
         camelContext.stop();
