@@ -139,7 +139,6 @@ public class ElasticsearchNorthbounderIT extends CamelBlueprintTest {
 
         final EventBuilder eb = new EventBuilder( EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "OpenNMS.Discovery" );
         eb.setTime(date);
-        eb.setCreationTime(date);
         eb.setInterface( InetAddress.getByName( ipAddress ) );
         eb.setHost( InetAddressUtils.getLocalHostName() );
         eb.addParam("RTT", 0);

@@ -179,7 +179,6 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
     private void sendNodeUpEvent(long nodeId) {
         EventBuilder builder = new EventBuilder(EventConstants.NODE_UP_EVENT_UEI, "test");
         Date currentTime = new Date();
-        builder.setCreationTime(currentTime);
         builder.setTime(currentTime);
         builder.setNodeid(nodeId);
         builder.setSeverity("Normal");
@@ -199,7 +198,6 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
     private void sendNodeDownEvent(long nodeId) {
         EventBuilder builder = new EventBuilder(EventConstants.NODE_DOWN_EVENT_UEI, "test");
         Date currentTime = new Date();
-        builder.setCreationTime(currentTime);
         builder.setTime(currentTime);
         builder.setNodeid(nodeId);
         builder.setSeverity("Major");

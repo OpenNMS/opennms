@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -268,8 +269,9 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     public void writeEvent(Event e) {
         Integer eventId = getNextEventId();
         
-        if (e.getCreationTime() == null) 
-            e.setCreationTime(e.getTime());
+        if (e.getCreationTime() == null) {
+            e.setCreationTime(new Date());
+        }
         
         Object[] values = {
                 eventId,

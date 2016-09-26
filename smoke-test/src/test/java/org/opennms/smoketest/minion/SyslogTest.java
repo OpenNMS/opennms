@@ -131,7 +131,9 @@ public class SyslogTest {
         // Parsing the message correctly relies on the customized syslogd-configuration.xml that is part of the OpenNMS image
         Criteria criteria = new CriteriaBuilder(OnmsEvent.class)
                 .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
-                .ge("eventTime", startOfTest)
+                // eventCreateTime is the storage time of the event in the database so 
+                // it should be after the start of this test
+                .ge("eventCreateTime", startOfTest)
                 .toCriteria();
 
         await().atMost(1, MINUTES).pollInterval(5, SECONDS).until(DaoUtils.countMatchingCallable(eventDao, criteria), greaterThan(0));
