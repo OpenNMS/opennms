@@ -21,7 +21,7 @@ DESC="Minion"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 MINION_HOME="@INSTPREFIX@"
 SYSCONFDIR="@SYSCONFDIR@"
-STOP_TIMEOUT=10
+STOP_RETRIES=10
 STOP_WAIT=5
 
 export NAME DESC PATH
@@ -75,7 +75,7 @@ case "$1" in
 		if is_running; then
 			printf "Stopping %s: " "$DESC"
 			STOP_ATTEMPTS=0
-			while [ $STOP_ATTEMPTS -lt $STOP_TIMEOUT ]; do
+			while [ $STOP_ATTEMPTS -lt $STOP_RETRIES ]; do
 				stop_minion
 				if is_running; then
 					STOP_ATTEMPTS="$((STOP_ATTEMPTS + 1))"
