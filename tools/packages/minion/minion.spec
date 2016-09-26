@@ -153,6 +153,10 @@ rm -rf %{buildroot}%{minioninstprefix}/data
 # Remove the demos directory
 rm -rf %{buildroot}%{minioninstprefix}/demos
 
+# Copy over the find-java.sh script
+install -d -m 755 %{buildroot}%{minioninstprefix}/bin
+install -c -m 755 %{_builddir}/%{_name}-%{version}-%{release}/opennms-base-assembly/src/main/filtered/bin/find-java.sh %{buildroot}%{minioninstprefix}/bin/find-java.sh
+
 # Copy over the run script
 mkdir -p %{buildroot}%{_initrddir}
 sed -e 's,@INSTPREFIX@,%{minioninstprefix},g' -e 's,@SYSCONFDIR@,%{_sysconfdir}/sysconfig,g'  %{_builddir}/%{_name}-%{version}-%{release}/tools/packages/minion/minion.init > "%{buildroot}%{_initrddir}"/minion
