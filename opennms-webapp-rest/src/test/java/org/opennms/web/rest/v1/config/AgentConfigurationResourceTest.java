@@ -164,5 +164,11 @@ public class AgentConfigurationResourceTest {
             config.setPort(1161);
             return config;
         }
+
+        @Override
+        public SnmpAgentConfig getAgentConfig(InetAddress address, String location) {
+            // TODO Auto-generated method stub
+            return null;
+        }
     }
 }
