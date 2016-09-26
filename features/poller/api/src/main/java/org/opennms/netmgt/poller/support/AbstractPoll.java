@@ -26,12 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller;
+package org.opennms.netmgt.poller.support;
 
 import java.util.Collections;
 import java.util.Map;
 
 import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.InsufficientParametersException;
+import org.opennms.netmgt.poller.Poll;
 import org.opennms.netmgt.poller.PollStatus;
 
 /**

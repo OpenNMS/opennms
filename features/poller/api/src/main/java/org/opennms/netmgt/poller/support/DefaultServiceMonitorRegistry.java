@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller;
+package org.opennms.netmgt.poller.support;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,6 +35,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
