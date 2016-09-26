@@ -47,7 +47,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.protocols.xmp.XmpUtil;
 import org.opennms.netmgt.protocols.xmp.XmpUtilException;
 import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;

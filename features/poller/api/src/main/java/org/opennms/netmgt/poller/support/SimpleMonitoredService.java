@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.poller.support;
 
 import java.net.InetAddress;
 

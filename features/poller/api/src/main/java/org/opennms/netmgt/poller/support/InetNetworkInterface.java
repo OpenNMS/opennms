@@ -26,12 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller;
+package org.opennms.netmgt.poller.support;
 
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.opennms.netmgt.poller.NetworkInterface;
 
 
 /**
