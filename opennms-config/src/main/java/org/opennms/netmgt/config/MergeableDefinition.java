@@ -133,8 +133,7 @@ final class MergeableDefinition {
         		&& areEquals(getConfigDef().getProxyHost(), other.getConfigDef().getProxyHost())
         		&& areEquals(getConfigDef().getSecurityLevel(), other.getConfigDef().getSecurityLevel())
         		&& areEquals(getConfigDef().getSecurityName(), other.getConfigDef().getSecurityName()) 
-                && areEquals(getConfigDef().getWriteCommunity(), other.getConfigDef().getWriteCommunity())
-                && areEquals(getConfigDef().getLocation(), other.getConfigDef().getLocation());
+        		&& areEquals(getConfigDef().getWriteCommunity(), other.getConfigDef().getWriteCommunity());
     }
     
     boolean isEmpty(String s) {
@@ -161,7 +160,6 @@ final class MergeableDefinition {
         && isEmpty(getConfigDef().getSecurityName())
         && isEmpty(getConfigDef().getWriteCommunity())
         && isEmpty(getConfigDef().getProxyHost())
-        && isEmpty(getConfigDef().getLocation())
         && !getConfigDef().hasPort()
         && !getConfigDef().hasRetry()
         && !getConfigDef().hasTimeout()

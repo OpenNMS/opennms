@@ -218,9 +218,6 @@ public class Definition extends Configuration implements Serializable {
         visitor.visitIpMatches(this.getIpMatches());
         visitor.visitIpMatchesFinished();
 
-        visitor.visitLocation(m_location);
-        visitor.visitLocationFinished();
-
         visitor.visitDefinitionFinished();
     }
 

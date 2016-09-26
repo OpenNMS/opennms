@@ -142,8 +142,9 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
         }
     }
 
-    @Override
-    public void visitLocation(String location) {
+    public void visitDefinitionFinished() {
+        //LOG.debug("matched = {}", m_matchedDefinition);
+        String location = m_currentDefinition.getLocation();
         if (m_matchedDefinition != null) {
 
             // Save Definition with location in case of a valid location match
@@ -156,19 +157,9 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
             }
 
         }
-
-    }
-
-    @Override
-    public void visitLocationFinished() {
-        // Save matched Definition to retrieve it in case of another match with location
         if (m_matchedDefinition != null) {
             m_prevMatchedDefinition = m_matchedDefinition;
         }
-    }
-
-    public void visitDefinitionFinished() {
-        //LOG.debug("matched = {}", m_matchedDefinition);
         m_currentDefinition = null;
     }
 
