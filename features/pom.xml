@@ -87,10 +87,6 @@
     <module>newts</module>
     <module>newts-repository-converter</module>
 
-    <!-- GWT UI plugins -->
-    <module>opennms-gwt-theme</module>
-    <module>gwt-bootstrap</module>
-
     <!-- OpenNMS Notifications -->
     <module>notifications</module>
 
