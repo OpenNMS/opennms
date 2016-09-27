@@ -28,8 +28,10 @@
 
 package org.opennms.features.topology.api.info;
 
-import com.google.common.base.Throwables;
-import com.google.gwt.thirdparty.guava.common.primitives.Doubles;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.measurements.api.exceptions.MeasurementException;
 import org.opennms.netmgt.measurements.model.Expression;
@@ -41,9 +43,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import com.google.common.primitives.Doubles;
 
 public class MeasurementsWrapper {
     private final static Logger LOG = LoggerFactory.getLogger(MeasurementsWrapper.class);
@@ -66,7 +66,7 @@ public class MeasurementsWrapper {
     }
 
     /**
-     * Queries the Measuement Api for the last value found in a given timeframe.
+     * Queries the Measurement Api for the last value found in a given timeframe.
      *
      * @param resource the resource to be used
      * @param attribute the attribute to query for
@@ -74,10 +74,14 @@ public class MeasurementsWrapper {
      * @return the last known value
      */
     public double getLastValue(final String resource, final String attribute, final String aggregation) throws MeasurementException {
+        return getLastValue(resource, attribute, aggregation, true);
+    }
+
+    public double getLastValue(final String resource, final String attribute, final String aggregation, boolean relaxed) throws MeasurementException {
         long end = System.currentTimeMillis();
         long start = end - (15 * 60 * 1000);
 
-        QueryResponse.WrappedPrimitive[] columns = queryInt(resource, attribute, start, end, 300000, aggregation).getColumns();
+        QueryResponse.WrappedPrimitive[] columns = queryInt(resource, attribute, start, end, 300000, aggregation, relaxed).getColumns();
 
         if (columns.length > 0) {
             double[] values = columns[0].getList();
@@ -103,8 +107,8 @@ public class MeasurementsWrapper {
      * @param aggregation the aggregation method
      * @return the list of double values
      */
-    public List<Double> query(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation) throws MeasurementException {
-        QueryResponse.WrappedPrimitive[] columns = queryInt(resource, attribute, start, end, step, aggregation).getColumns();
+    public List<Double> query(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation, final boolean relaxed) throws MeasurementException {
+        QueryResponse.WrappedPrimitive[] columns = queryInt(resource, attribute, start, end, step, aggregation, relaxed).getColumns();
 
         if (columns.length > 0) {
             return Doubles.asList(columns[0].getList());
@@ -199,9 +203,9 @@ public class MeasurementsWrapper {
         return measurementsService.query(request);
     }
 
-    private QueryResponse queryInt(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation) throws MeasurementException {
+    private QueryResponse queryInt(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation, final boolean relaxed) throws MeasurementException {
         QueryRequest request = new QueryRequest();
-        request.setRelaxed(true);
+        request.setRelaxed(relaxed);
         request.setStart(start);
         request.setEnd(end);
         request.setStep(step);
