@@ -12,6 +12,7 @@ The following operations are supported:
 |===
 | Parameter                 | Description
 | `/snmpConfig/{ipAddress}` | Get the SNMP configuration for a given IP address.
+| `/snmpConfig/{ipAddress}?location={minionLocation}` | Get the SNMP configuration for a given IP address at a given minion location. 
 |===
 
 ===== PUTs (Modifying Data)
