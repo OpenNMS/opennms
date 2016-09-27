@@ -34,7 +34,6 @@
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="norequirejs" value="true" />
-  <jsp:param name="disableCoreWeb" value="true" />
   <jsp:param name="title" value="Modify Asset" />
   <jsp:param name="headTitle" value="Modify" />
   <jsp:param name="headTitle" value="Asset" />

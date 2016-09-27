@@ -31,6 +31,15 @@ package org.opennms.protocols.radius.monitor;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.jradius.client.RadiusClient;
 import net.jradius.client.auth.CHAPAuthenticator;
 import net.jradius.client.auth.EAPMD5Authenticator;
@@ -48,16 +57,6 @@ import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.attribute.AttributeList;
 
-import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 /**
  * This Monitor is used to poll hosts supporting Radius Authentication.
@@ -69,7 +68,6 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-
 @Distributable
 public final class RadiusAuthMonitor extends AbstractServiceMonitor {
 	
@@ -154,8 +152,6 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-    	final NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
     	// Assume that the service is down
         PollStatus status = PollStatus.unavailable();
 
@@ -172,7 +168,7 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
         String secret = ParameterMap.getKeyedString(parameters, "secret", DEFAULT_SECRET);
         String authType = ParameterMap.getKeyedString(parameters, "authtype", DEFAULT_AUTH_TYPE);
         String nasid = ParameterMap.getKeyedString(parameters, "nasid", DEFAULT_NASID);
-        InetAddress addr = iface.getAddress();
+        InetAddress addr = svc.getAddress();
 
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
         int timeout = convertTimeoutToSeconds(ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT));

@@ -160,6 +160,11 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTest {
 			}
 
 			@Override
+			public void setCreationTime(long creationTime) {
+				// TODO: Assert something?
+			}
+
+			@Override
 			public void setTimeStamp(long timeStamp) {
 				// TODO: Assert something?
 			}

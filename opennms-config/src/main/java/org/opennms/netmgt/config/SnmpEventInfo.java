@@ -79,6 +79,7 @@ public class SnmpEventInfo {
     private String m_contextName = null;
     private String m_enterpriseId = null;
     private String m_proxyHost = null;
+    private String m_location = null;
     
     private static int computeIntValue(String parmContent) throws IllegalArgumentException {
         int val = 0;
@@ -456,6 +457,14 @@ public class SnmpEventInfo {
     	m_proxyHost = proxyHost;
     }
     
+    public String getLocation() {
+        return m_location;
+    }
+
+    public void setLocation(String location) {
+        this.m_location = location;
+    }
+
     /**
      * <p>getRange</p>
      *
@@ -537,7 +546,8 @@ public class SnmpEventInfo {
     	if (getMaxVarsPerPdu() != 0) definition.setMaxVarsPerPdu(Integer.valueOf(getMaxVarsPerPdu()));
     	if (getMaxRequestSize() != 0) definition.setMaxRequestSize(Integer.valueOf(getMaxRequestSize()));
     	if (StringUtils.isNotEmpty(getProxyHost())) definition.setProxyHost(getProxyHost());
-    	
+        if (StringUtils.isNotEmpty(getLocation())) definition.setLocation(getLocation());
+
         // version dependend parameters
         if (getVersion() != null && getVersion().equals("v3")) {
         	if (StringUtils.isNotEmpty(getAuthPassphrase())) definition.setAuthPassphrase(getAuthPassphrase());

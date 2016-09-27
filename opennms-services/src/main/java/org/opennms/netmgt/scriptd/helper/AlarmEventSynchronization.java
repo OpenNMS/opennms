@@ -94,6 +94,9 @@ public class AlarmEventSynchronization implements EventSynchronization {
 
         // alarm creation time
         if (alarm.getFirstEventTime() != null) {
+        	// TODO: This is incorrect. The creation time represents
+        	// the time that the event was stored in the database, not
+        	// the original timestamp of the event.
         	event.setCreationTime(alarm.getFirstEventTime());
         }
 

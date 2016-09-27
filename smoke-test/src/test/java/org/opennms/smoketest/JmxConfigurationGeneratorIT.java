@@ -30,7 +30,7 @@ import com.google.common.collect.Collections2;
  */
 public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(JmxConfigurationGeneratorIT.class);
-    private static final String MBEANS_VIEW_TREE_WAIT_NAME = "com.mchange.v2.c3p0";
+    private static final String MBEANS_VIEW_TREE_WAIT_NAME = "com.zaxxer.hikari";
 
     @Before
     public void before() throws InterruptedException {
@@ -70,9 +70,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
     public void testNavigation() throws Exception {
         configureJMXConnection(true);
 
-        // on the 2nd page we have to deselect the PooledDataSource MBean,
-        // because the name is too long and results in a validation error
-        selectNodeByName("PooledDataSource", false);
+        selectNodeByName("Pool (opennms)", false);
         findElementById("next").click();
 
         // configuration summary

@@ -46,6 +46,7 @@ public class BasicTrapProcessor implements TrapProcessor, Serializable {
 
     private String m_location;
     private String m_community;
+    private long m_creationTime;
     private long m_timeStamp;
     private String m_version;
     private InetAddress m_agentAddress;
@@ -69,6 +70,15 @@ public class BasicTrapProcessor implements TrapProcessor, Serializable {
     @Override
     public void setCommunity(String community) {
         m_community = community;
+    }
+
+    public long getCreationTime() {
+        return m_creationTime;
+    }
+
+    @Override
+    public void setCreationTime(long creationTime) {
+        m_creationTime = creationTime;
     }
 
     public long getTimeStamp() {

@@ -171,7 +171,7 @@ public class ConvertToEvent {
 
         bldr.setDistPoller(systemId);
 
-        bldr.setCreationTime(message.getDate());
+        bldr.setTime(message.getDate());
 
         // Set event host
         bldr.setHost(InetAddressUtils.getLocalHostName());

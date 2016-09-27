@@ -58,7 +58,7 @@ public class GWTVertex extends JavaScriptObject {
     	        "iconUrl":"", "svgIconId":"", "semanticZoomLevel":0, "group":null,
     	        "status":"", "statusCount":"", "iconHeight":48, "iconWidth":48, "tooltipText":"", 
     	        "severityArray":[], "total": 0, "isGroup": true, "stylename":"vertex", "isIconNormalized": false,
-                "targets": false};
+                "targets": false, "edgePathOffset": 20};
 	}-*/;
 
     public final native boolean hasTargets()/*-{
@@ -236,6 +236,14 @@ public class GWTVertex extends JavaScriptObject {
 
     public final native String getStyleName() /*-{
         return this.stylename;
+    }-*/;
+
+    public final native void setEdgePathOffset(int edgePathOffset) /*-{
+        this.edgePathOffset = edgePathOffset;
+    }-*/;
+
+    public final native int getEdgePathOffset() /*-{
+        return this.edgePathOffset;
     }-*/;
 
     protected static Func<String, GWTVertex> selectionFilter() {
