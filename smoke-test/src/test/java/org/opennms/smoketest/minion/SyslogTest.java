@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.smoketest.minion;
 
+import com.google.common.collect.Iterables;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -34,9 +35,12 @@ import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.MinionDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
@@ -157,7 +161,7 @@ public class SyslogTest {
     public void testNewSuspect() throws Exception {
         final Date startOfTest = new Date();
 
-        final String sender = "127.0.0.1";
+        final String sender = "127.0.0.2";
 
         // Wait for the minion to show up
         await().atMost(90, SECONDS).pollInterval(5, SECONDS)
@@ -185,12 +189,19 @@ public class SyslogTest {
                                                      new CriteriaBuilder(OnmsEvent.class)
                                                              .eq("eventUei", "uei.opennms.org/internal/discovery/newSuspect")
                                                              .ge("eventTime", startOfTest)
-                                                             .eq("ipAddr", Inet4Address.getByName("127.0.0.1"))
+                                                             .eq("ipAddr", Inet4Address.getByName(sender))
                                                              .isNull("node")
                                                              .toCriteria()),
                        notNullValue());
 
-        assertThat(event.getDistPoller().getId(), is("MINION"));
+        assertThat(event.getDistPoller().getLocation(), is("MINION"));
+
+        final OnmsNode node = Iterables.getOnlyElement(this.daoFactory.getDao(NodeDaoHibernate.class)
+                                                                      .findMatching(new CriteriaBuilder(OnmsNode.class)
+                                                                                            .eq("label", "127.0.0.2")
+                                                                                            .toCriteria()));
+        assertThat(node, notNullValue());
+        assertThat(node.getLocation().getLocationName(), is("MINION"));
     }
 
     private void sendMessage(final String host) throws IOException {
