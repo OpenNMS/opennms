@@ -40,10 +40,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Seth
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class BasicTrapProcessor implements TrapProcessor, Serializable {
+public class BasicTrapProcessor implements TrapProcessor {
 
-    private static final long serialVersionUID = 2984468105508032607L;
-
+    private String m_systemId;
     private String m_location;
     private String m_community;
     private long m_creationTime;
@@ -53,6 +52,15 @@ public class BasicTrapProcessor implements TrapProcessor, Serializable {
     private Map<SnmpObjId,SnmpValue> m_varBinds = new ConcurrentHashMap<>();
     private InetAddress m_trapAddress;
     private TrapIdentity m_trapIdentity;
+
+    public String getSystemId() {
+        return m_systemId;
+    }
+
+    @Override
+    public void setSystemId(String systemId) {
+        m_systemId = systemId;
+    }
 
     public String getLocation() {
         return m_location;

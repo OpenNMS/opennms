@@ -31,7 +31,6 @@ package org.opennms.netmgt.trapd;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -88,29 +87,28 @@ public class TrapObjectToDTOProcessor implements Processor {
 		if (version.equalsIgnoreCase(SNMP_V1)) {
 
 			Snmp4JTrapNotifier.Snmp4JV1TrapInformation v1Trap = (Snmp4JTrapNotifier.Snmp4JV1TrapInformation)trapInfo;
-			InetAddress agentAddress = v1Trap.getAgentAddress();
 			String community = v1Trap.getCommunity();
-			int pduLength = v1Trap.getPduLength();
 			InetAddress trapAddress = v1Trap.getTrapAddress();
-			long timestamp = v1Trap.getTimeStamp();
 			PDUv1 pdu = v1Trap.getPdu();
-			byte[] byteArray = null;
-			try {
-				byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0, community, pdu);
-			} catch (Throwable e) {
-				LOG.warn("Unable to convert PDU into bytes: {}", e.getMessage());
+
+			if(trapRawMessageFlag){
+				try {
+					byte[] byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0, community, pdu);
+					trapDTO.setBody(byteArray);
+				} catch (Throwable e) {
+					LOG.warn("Unable to convert PDU into bytes: {}", e.getMessage());
+				}
 			}
 
-			trapDTO.setSystemId(id);
-			trapDTO.setLocation(location);
-			if(trapRawMessageFlag){
-				trapDTO.setBody(byteArray);
-			}
+			trapDTO.setAgentAddress(v1Trap.getAgentAddress());
 			trapDTO.setCommunity(community);
-			trapDTO.setPduLength(Integer.toString(pduLength));
-			trapDTO.setAgentAddress(agentAddress);
-			trapDTO.setTimestamp(timestamp);
-			trapDTO.setTrapAddress(trapAddress);
+			trapDTO.setCreationTime(v1Trap.getCreationTime());
+			trapDTO.setLocation(location);
+			trapDTO.setPduLength(v1Trap.getPduLength());
+			trapDTO.setSourceAddress(trapAddress);
+			trapDTO.setSystemId(id);
+			// NOTE: This value is an SNMP TimeTicks value, not an epoch timestamp
+			trapDTO.setTimestamp(v1Trap.getTimeStamp());
 			trapDTO.setVersion(version);
 
 			List<SnmpResult> results = new ArrayList<SnmpResult>();
@@ -129,30 +127,28 @@ public class TrapObjectToDTOProcessor implements Processor {
 		) {
 
 			Snmp4JTrapNotifier.Snmp4JV2TrapInformation v2Trap = (Snmp4JTrapNotifier.Snmp4JV2TrapInformation)trapInfo;
-			InetAddress agentAddress = v2Trap.getAgentAddress();
 			String community = v2Trap.getCommunity();
-			int pduLength = v2Trap.getPduLength();
-			// String version = v2Trap.getVersion();
 			InetAddress trapAddress = v2Trap.getTrapAddress();
-			long timestamp = v2Trap.getTimeStamp();
 			PDU pdu = v2Trap.getPdu();
-			byte[] byteArray = null;
-			try {
-				byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0, community, pdu);
-			} catch (Throwable e) {
-				LOG.warn("Unable to convert PDU into bytes: {}", e.getMessage());
+
+			if(trapRawMessageFlag){
+				try {
+					byte[] byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0, community, pdu);
+					trapDTO.setBody(byteArray);
+				} catch (Throwable e) {
+					LOG.warn("Unable to convert PDU into bytes: {}", e.getMessage());
+				}
 			}
 
-			trapDTO.setSystemId(id);
-			trapDTO.setLocation(location);
-			if(trapRawMessageFlag){
-				trapDTO.setBody(byteArray);
-			}
+			trapDTO.setAgentAddress(v2Trap.getAgentAddress());
 			trapDTO.setCommunity(community);
-			trapDTO.setPduLength(Integer.toString(pduLength));
-			trapDTO.setAgentAddress(agentAddress);
-			trapDTO.setTimestamp(timestamp);
-			trapDTO.setTrapAddress(trapAddress);
+			trapDTO.setCreationTime(v2Trap.getCreationTime());
+			trapDTO.setLocation(location);
+			trapDTO.setPduLength(v2Trap.getPduLength());
+			trapDTO.setSourceAddress(trapAddress);
+			trapDTO.setSystemId(id);
+			// NOTE: This value is an SNMP TimeTicks value, not an epoch timestamp
+			trapDTO.setTimestamp(v2Trap.getTimeStamp());
 			trapDTO.setVersion(version);
 
 			List<SnmpResult> results = new ArrayList<SnmpResult>();

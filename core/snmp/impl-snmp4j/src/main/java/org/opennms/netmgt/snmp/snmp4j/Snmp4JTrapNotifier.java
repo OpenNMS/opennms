@@ -83,6 +83,11 @@ public class Snmp4JTrapNotifier implements CommandResponder {
             return m_pdu;
         }
 
+        /**
+         * @return The {@link InetAddress} of the agent that generated the trap
+         * as found in the SNMPv1 AgentAddress field. This can vary from the value
+         * of {@link #getAgentAddress()} if the SNMPv1 trap has been forwarded.
+         */
         @Override
         public InetAddress getTrapAddress() {
             return m_pdu.getAgentAddress().getInetAddress();
@@ -215,6 +220,9 @@ public class Snmp4JTrapNotifier implements CommandResponder {
             return new TrapIdentity(SnmpObjId.get(snmpTrapOid.getValue()), SnmpObjId.get(lastVarBindOid.getValue()), new Snmp4JValue(lastVarBindValue));
         }
 
+        /**
+         *  For SNMPv2 traps, this returns the same value as {@link #getAgentAddress()}.
+         */
         @Override
         public InetAddress getTrapAddress() {
             return getAgentAddress();

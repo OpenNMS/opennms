@@ -47,13 +47,12 @@ import org.opennms.netmgt.snmp.SnmpResult;
 @XmlAccessorType(XmlAccessType.NONE)
 public class TrapDTO extends MinionDTO {
 
-	private static final long serialVersionUID = -6023265128058526987L;
-
 	public static final String COMMUNITY = "community";
+	public static final String CREATION_TIME = "creationTime";
 	public static final String PDU_LENGTH = "pduLength";
 	public static final String VERSION = "version";
 	public static final String TIMESTAMP = "timestamp";
-	public static final String TRAP_ADDRESS = "trapAddress";
+	public static final String AGENT_ADDRESS = "agentAddress";
 
 	protected TrapDTO() {
 		// No-arg constructor for JAXB
@@ -67,11 +66,12 @@ public class TrapDTO extends MinionDTO {
 				.append("location", super.getHeaders().get(LOCATION))
 				.append("sourceAddress", super.getHeaders().get(SOURCE_ADDRESS))
 				.append("sourcePort", super.getHeaders().get(SOURCE_PORT))
+				.append("agentAddress", super.getHeaders().get(AGENT_ADDRESS))
 				.append("community", super.getHeaders().get(COMMUNITY))
+				.append("creationTime", super.getHeaders().get(CREATION_TIME))
 				.append("pduLength", super.getHeaders().get(PDU_LENGTH))
-				.append("version", super.getHeaders().get(VERSION))
 				.append("timestamp", super.getHeaders().get(TIMESTAMP))
-				.append("trapAddress", super.getHeaders().get(TRAP_ADDRESS))
+				.append("version", super.getHeaders().get(VERSION))
 				.append("body", super.getBody()).toString();
 	}
 
@@ -83,8 +83,12 @@ public class TrapDTO extends MinionDTO {
 		super.putHeader(COMMUNITY, m_community);
 	}
 
-	public void setPduLength(String m_pduLength) {
-		super.putHeader(PDU_LENGTH, m_pduLength);
+	public void setCreationTime(long m_creationTime) {
+		super.putHeader(CREATION_TIME, String.valueOf(m_creationTime));
+	}
+
+	public void setPduLength(int m_pduLength) {
+		super.putHeader(PDU_LENGTH, String.valueOf(m_pduLength));
 	}
 
 	public void setVersion(String m_version) {
@@ -95,12 +99,8 @@ public class TrapDTO extends MinionDTO {
 		super.putHeader(TIMESTAMP, Long.toString(m_timestamp));
 	}
 
-	public void setTrapAddress(InetAddress m_trapAddress) {
-		super.putHeader(TRAP_ADDRESS, InetAddressUtils.str(m_trapAddress));
-	}
-
 	public void setAgentAddress(InetAddress m_agentAddress) {
-		super.putHeader(SOURCE_ADDRESS, InetAddressUtils.str(m_agentAddress));
+		super.putHeader(AGENT_ADDRESS, InetAddressUtils.str(m_agentAddress));
 	}
 
 	public List<SnmpResult> getResults() {
@@ -109,14 +109,6 @@ public class TrapDTO extends MinionDTO {
 
 	public void setResults(List<SnmpResult> results) {
 		this.results = results;
-	}
-	
-	public void setSystemId(String m_systemId) {
-		super.putHeader(MinionDTO.SYSTEM_ID, m_systemId);
-	}
-
-	public void setLocation(String m_location) {
-		super.putHeader(MinionDTO.LOCATION, m_location);
 	}
 
 }
