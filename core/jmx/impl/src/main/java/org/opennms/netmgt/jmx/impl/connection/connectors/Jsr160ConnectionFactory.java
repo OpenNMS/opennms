@@ -33,6 +33,13 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
@@ -57,6 +64,9 @@ public abstract class Jsr160ConnectionFactory {
     
     private static final Logger LOG = LoggerFactory.getLogger(Jsr160ConnectionFactory.class);
 
+    // Assuming default timeout to be 30 secs.
+    private static final long DEFAULT_TIMEOUT = 30000;
+
     /**
      * <p>getMBeanServerConnection</p>
      *
@@ -72,18 +82,33 @@ public abstract class Jsr160ConnectionFactory {
         String urlPath  = ParameterMap.getKeyedString( propertiesMap, "urlPath",  "/jmxrmi");
         String username = ParameterMap.getKeyedString(propertiesMap, "username", null);
         String password = ParameterMap.getKeyedString(propertiesMap, "password", null);
+        long timeout     = ParameterMap.getKeyedLong(propertiesMap, "timeout", DEFAULT_TIMEOUT);
         
         Jsr160ConnectionWrapper connectionWrapper = null;
-        JMXServiceURL url = null;
         
         final String hostAddress = InetAddressUtils.str(address);
         LOG.debug("JMX: {} - service:{}//{}:{}{}", factory, protocol, hostAddress, port, urlPath);
 
         if (factory == null || factory.equals("STANDARD")) {
-                url = getUrl(address, port, protocol, urlPath);
+                final JMXServiceURL url = getUrl(address, port, protocol, urlPath);
                 
                 // Connect a JSR 160 JMXConnector to the server side
-                JMXConnector connector = JMXConnectorFactory.connect(url);
+                ExecutorService executor = Executors.newCachedThreadPool();
+                Callable<JMXConnector> task = new Callable<JMXConnector>() {
+                    public JMXConnector call() throws IOException {
+                       return JMXConnectorFactory.connect(url);
+                    }
+                 };
+                 Future<JMXConnector> future = executor.submit(task);
+                 JMXConnector connector = null;
+                 try {
+                     connector = future.get(timeout, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                    LOG.error("Exception connecting JMXConnectorFactory url {} , Error: {}", url, e.getMessage());
+                } finally {
+                    future.cancel(true);
+                }
+
                 MBeanServerConnection connection = connector.getMBeanServerConnection();
                 
                 return new Jsr160ConnectionWrapper(connector, connection);
@@ -100,13 +125,28 @@ public abstract class Jsr160ConnectionFactory {
                 // Create an RMI connector client and
                 // connect it to the RMI connector server
                 //
-                url = getUrl(address, port, protocol, urlPath);
+                JMXServiceURL url = getUrl(address, port, protocol, urlPath);
                 
                 // Connect a JSR 160 JMXConnector to the server side
                 JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
                 
-                // Connect and invoke an operation on the remote MBeanServer
-                connector.connect(env);
+                ExecutorService executor = Executors.newCachedThreadPool();
+                Callable<Void> task = new Callable<Void>() {
+                    public Void call() throws IOException {
+                       connector.connect(env);
+                       return null;
+                    }
+                 };
+
+                 Future<Void> future = executor.submit(task);
+
+                 try {
+                     future.get(timeout, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                    LOG.error("Exception connecting JMXConnectorFactory url {} , Error: {}", url, e.getMessage());
+                } finally {
+                    future.cancel(true);
+                }
 
                 MBeanServerConnection connection = connector.getMBeanServerConnection();
 
