@@ -28,11 +28,26 @@
 
 package org.opennms.features.newts.converter;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Throwables;
-import org.cassandraunit.JUnitNewtsCassandra;
-import org.cassandraunit.JUnitNewtsCassandraExecutionListener;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
@@ -43,6 +58,7 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.TemporaryDatabaseExecutionListener;
 import org.opennms.core.test.db.TemporaryDatabasePostgreSQL;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.newts.support.NewtsUtils;
@@ -55,38 +71,35 @@ import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.Timestamp;
 import org.opennms.newts.api.query.ResultDescriptor;
 import org.opennms.newts.api.query.StandardAggregationFunctions;
+import org.opennms.newts.cassandra.NewtsInstance;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import com.google.common.base.Optional;
+import com.google.common.base.Throwables;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@TestExecutionListeners({JUnitNewtsCassandraExecutionListener.class,
-                         TemporaryDatabaseExecutionListener.class})
+@TestExecutionListeners({TemporaryDatabaseExecutionListener.class})
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/applicationContext-soa.xml",
                                  "classpath:/META-INF/opennms/applicationContext-newts.xml"})
-@JUnitConfigurationEnvironment(systemProperties={"org.opennms.newts.config.hostname=" + NewtsConverterIT.CASSANDRA_HOST,
-                                                 "org.opennms.newts.config.port=" + NewtsConverterIT.CASSANDRA_PORT,
-                                                 "org.opennms.newts.config.keyspace=" + NewtsConverterIT.CASSANDRA_KEYSPACE,
-                                                 "org.opennms.newts.config.max_batch_delay=0", // No delay
-                                                 "org.opennms.timeseries.strategy=newts"})
-@JUnitTemporaryDatabase()
-@JUnitNewtsCassandra(keyspace=NewtsConverterIT.CASSANDRA_KEYSPACE)
-public class NewtsConverterIT implements TemporaryDatabaseAware {
-    protected final static String CASSANDRA_HOST = "localhost";
-    protected final static int CASSANDRA_PORT = 9043;
-    protected final static String CASSANDRA_KEYSPACE = "newts";
+@JUnitConfigurationEnvironment(systemProperties={
+        "org.opennms.rrd.storeByForeignSource=true",
+        "org.opennms.timeseries.strategy=newts"
+})
+@JUnitTemporaryDatabase
+public class NewtsConverterIT implements TemporaryDatabaseAware<TemporaryDatabase> {
+
+    @ClassRule
+    public static NewtsInstance s_newtsInstance = new NewtsInstance();
+
+    @BeforeClass
+    public static void setUpClass() {
+        System.setProperty("org.opennms.newts.config.hostname", s_newtsInstance.getHost());
+        System.setProperty("org.opennms.newts.config.port", Integer.toString(s_newtsInstance.getPort()));
+        System.setProperty("org.opennms.newts.config.keyspace", s_newtsInstance.getKeyspace());
+    }
 
     private final static Path OPENNMS_HOME;
 
@@ -100,6 +113,13 @@ public class NewtsConverterIT implements TemporaryDatabaseAware {
         private Data(final long timestamp, final double value) {
             this.timestamp = timestamp;
             this.value = value;
+        }
+    }
+
+    private static Path RRD_BINARY = Paths.get("/usr/bin/rrdtool");
+    static {
+        if (!Files.exists(RRD_BINARY) || !Files.isExecutable(RRD_BINARY)) {
+             RRD_BINARY = Paths.get("/usr/local/bin/rrdtool");
         }
     }
 
@@ -491,8 +511,8 @@ public class NewtsConverterIT implements TemporaryDatabaseAware {
     @Before
     public void setupDatabase() throws Exception {
         if (!NewtsConverterIT.populated) {
-            this.database.getJdbcTemplate().execute("INSERT INTO node (nodeid, nodecreatetime, nodelabel, foreignsource, foreignid) " +
-                                               "VALUES (1, NOW(), 'my-node-1', 'fs1', 'fid1')");
+            this.database.getJdbcTemplate().execute("INSERT INTO node (location, nodeid, nodecreatetime, nodelabel, foreignsource, foreignid) " +
+                                               "VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', 1, NOW(), 'my-node-1', 'fs1', 'fid1')");
 
 
             try (final BufferedReader r = Files.newBufferedReader(OPENNMS_HOME.resolve("etc")
@@ -582,6 +602,7 @@ public class NewtsConverterIT implements TemporaryDatabaseAware {
         NewtsConverter.main("-o", OPENNMS_HOME.toString(),
                             "-r", data.toString(),
                             "-t", Boolean.toString(useRrdTool),
+                            "-T", RRD_BINARY.toAbsolutePath().toString(),
                             "-s", Boolean.toString(storeByGroup));
     }
 

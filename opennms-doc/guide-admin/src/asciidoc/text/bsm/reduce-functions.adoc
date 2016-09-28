@@ -1,0 +1,60 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+=== Reduce Functions
+
+A _Reduce Function_ is used to aggregate the _Operational Status_ for the _BS_.
+The _Alarm Severity_ from the _Edges_ are used as input for the _Reduce Function_.
+For this operation the following _Reduce Functions_ are available:
+
+.Status calculation _Reduce Functions_
+[options="header, autowidth"]
+|===
+| Name                      | Description
+| `Highest Severity`        | Uses the value of the highest severity, _Weight_ is ignored.
+| `Threshold`               | Uses the highest severity found more often than the given threshold, e.g. 0.26 can also be seen as 26%, which means at least 2 of 4 _Alarms_ need to be raised to change the _BS_.
+| `Highest Severity Above`  | Uses the highest severity greater than the given threshold severity.
+| `Exponential Propagation` | This reduce function computes the sum of the given child severities based on a base number. For this computation the severities are mapped to
+                              numbers:
+
+                              asciimath:[WARNING=0, MINOR=1, MAJOR=2, CRITICAL=3]
+
+                              All other severities are ignored.
+
+                              For the aggregation the following formula will be used to compute the resulting Business Service severity from its _n_ child entities based on the base number _b_:
+
+                              asciimath:[severity = \|__log_{b}( sum_(i=1)^n b^(ch\ildSeverity_{i}) )__\|]
+
+                              In summary the base value defines how many items of a severity _x_ will result in a severity _x+1_.
+                              Results lower as _0_ are treated as _NORMAL_ and results higher than _3_ are treated as _CRITICAL_.
+                              If all input values are of severity _INDETERMINATE_, the result is _INDETERMINATE_.
+
+                              For example if the Business Service depends on four child entities with the severities _WARNING_, _WARNING_, _NORMAL_ and _NORMAL_ and the base defined by the number 2 the following computation will be made:
+
+                              asciimath:[severity = \|__log_{2}( 2^{0} + 2^{0} + 0 + 0 )__\| = \|__log_{2}( 1 + 1 + 0 + 0)__\| = \|__log_{2}( 2 )__\| = \|__1__\| = 1]
+
+                              which corresponds to the severity _MINOR_. The same computation with the base value of 3 results in:
+
+                              asciimath:[severity = \|__log_{3}( 3^{0} + 3^{0} + 0 + 0 )__\| = \|__log_{3}( 1 + 1 + 0 + 0)__\| = \|__log_{3}( 2 )__\| = \|__0.63__\| = 0]
+
+                              which means _WARNING_.
+|===
+
+The following table shows the status calculation with _Edges_ assigned to an _IP Service_.
+The _IP-Service_ is driven by the monitoring of the _ICMP_ service for three Web Server.
+In the table below you find a configuration where _Web Server 3_ is weighted 3 times higher than the other and a threshold of 0.33 (33%) is configured.
+
+.Example for status calculation using the Threshold function
+[options="header, autowidth"]
+|===
+| Name       | Weight | Weight Factor | Input Severity | Operational Status | Critical | Major | Minor | Warning | Normal
+| Web-ICMP-1 |   1    |     0.2       |    Critical    |      Critical      |    0.2   |  0.2  |  0.2  |   0.2   |  0.2
+| Web-ICMP-2 |   1    |     0.2       |     Normal     |       Normal       |    0     |  0    |  0    |   0     |  0.2
+| Web-ICMP-3 |   3    |     0.6       |    Warning     |      Warning       |    0     |  0    |  0    |   0.6   |  0.6
+| Total      |        |     1.0       |                |                    |    0.2   |  0.2  |  0.2  |   0.8   |  1
+| Percentage |        |     100%      |                |                    |    20%   |  20%  |  20%  |   80%   |  100%
+|===
+
+The _Operational Status Severity_ is evaluated from left to right, the first value higher then the configured _Threshold_ is used.
+In this case the _Operational Status_ is set to _Warning_ because the first threshold which exceeds _33%_ is _Warning_ with _80%_.

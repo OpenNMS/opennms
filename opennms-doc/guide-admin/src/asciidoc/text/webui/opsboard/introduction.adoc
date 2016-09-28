@@ -19,7 +19,7 @@ image::webui/opsboard/02_opsboard-concept.png[]
 ==== Configuration
 
 To create and configure _Ops Boards_ administration permissions are required.
-The configuration section is in admin area of OpenNMS and named _Ops Board Config Web Ui_.
+The configuration section is in admin area of {opennms-product-name} and named _Ops Board Config Web Ui_.
 
 .Navigation to the _Ops Board_ configuration
 image::webui/opsboard/03_admin-configure-opsboard.png[]
@@ -31,7 +31,7 @@ image::webui/opsboard/04_add-dashlet.png[]
 
  1. Create a new _Ops Board_ to organize and arrange different _Dashlets_
  2. The name to identify the _Ops Board_
- 3. Add a _Dashlet_ to show OpenNMS monitoring information
+ 3. Add a _Dashlet_ to show {opennms-product-name} monitoring information
  4. Show a preview of the whole _Ops Board_
  5. List of available _Dashlets_
  6. _Priority_ for this _Dashlet_ in _Ops Board_ rotation, lower priority means it will be displayed more often

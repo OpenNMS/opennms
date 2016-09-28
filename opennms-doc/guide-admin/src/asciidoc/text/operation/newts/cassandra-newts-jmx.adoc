@@ -1,0 +1,118 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+==== Newts Monitoring
+
+This section describes the metrics _{opennms-product-name}_ collects for monitoring the _Newts_ keyspace from `org.apache.cassandra.metrics.Keyspace` on an _Cassandra_ node.
+
+TIP: JMX must be enabled on the _Cassandra_ nodes and made accessible from __{opennms-product-name}_ in order to collect these metrics.
+     See link:https://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/secureJmxAuthentication.html[Enabling JMX authentication] for details.
+
+The data collection is bound to the agent IP interface with the service name _JMX-Cassandra-Newts_.
+The _JMXCollector_ is used to retrieve the _MBean_ entities from the _Cassandra_ node.
+
+===== All Memory Table Data Size
+
+[options="header, autowidth"]
+|===
+| Name                          | Description
+| `AllMemtablesLiveDataSize`    | Total amount of live data stored in the memtables (2i and pending flush memtables included) that resides off-heap, excluding any data structure overhead
+| `AllMemtablesOffHeapDataSize` | Total amount of data stored in the memtables (2i and pending flush memtables included) that resides off-heap.
+| `AllMemtablesOnHeapDataSize`  | Total amount of data stored in the memtables (2i and pending flush memtables included) that resides on-heap.
+|===
+
+===== Memtable Switch Count
+
+[options="header, autowidth"]
+|===
+| Name                  | Description
+| `MemtableSwitchCount` | Number of times flush has resulted in the memtable being switched out.
+|===
+
+===== Memtable Columns Count
+
+[options="header, autowidth"]
+|===
+| Name                   | Description
+| `MemtableColumnsCount` | Total number of columns present in the memtable.
+|===
+
+===== Memory Table Data Size
+
+[options="header, autowidth"]
+|===
+| Name                      | Description
+| `MemtableLiveDataSize`    | Total amount of live data stored in the memtable, excluding any data structure overhead
+| `MemtableOffHeapDataSize` | Total amount of data stored in the memtable that resides off-heap, including column related overhead and partitions overwritten.
+| `MemtableOnHeapDataSize`  | Total amount of data stored in the memtable that resides on-heap, including column related overhead and partitions overwritten.
+|===
+
+===== Read and Write Latency
+
+[options="header, autowidth"]
+|===
+| Name                | Description
+| `ReadTotalLatency`  | Local read metrics.
+| `WriteTotalLatency` | Local write metrics.
+|===
+
+===== Range Latency
+
+[options="header, autowidth"]
+|===
+| Name                           | Description
+| `RangeLatency 99th Percentile` | Local range slice metrics 99th percentile.
+|===
+
+====== Latency
+
+[options="header, autowidth"]
+|===
+| Name                     | Description
+| `CasCommitTotalLatency`  |
+| `CasPrepareTotalLatency` |
+| `CasProposeTotalLatency` |
+|===
+
+===== Bloom Filter Disk Space
+
+[options="header, autowidth"]
+|===
+| Name                       | Description
+| `BloomFilterDiskSpaceUsed` | Disk space used by bloom filter
+|===
+
+===== Bloom Filter Off Heap Memory
+
+[options="header, autowidth"]
+|===
+| Name                           | Description
+| `BloomFilterOffHeapMemoryUsed` | Off heap memory used by bloom filter
+|===
+
+===== Newts Memory Used
+
+[options="header, autowidth"]
+|===
+| Name                                   | Description
+| `CompressionMetadataOffHeapMemoryUsed` | Off heap memory used by compression meta data
+| `IndexSummaryOffHeapMemoryUsed`        | Off heap memory used by index summary
+|===
+
+===== Pending
+
+[options="header, autowidth"]
+|===
+| Name                 | Description
+| `PendingCompactions` | Estimate of number of pending compactions for this column family
+| `PendingFlushes`     | Estimated number of tasks pending for this column family
+|===
+
+===== Disk Space
+
+[options="header, autowidth"]
+|===
+| Name                 | Description
+| `TotalDiskSpaceUsed` | Total disk space used by _SSTables_ belonging to this column family including obsolete ones waiting to be garbage collected.
+| `LiveDiskSpaceUsed`  | Disk space used by _SSTables_ belonging to this column family
+|===

@@ -96,10 +96,10 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
          * All search queries can be done solely with
          * criteria, so we build a common criteria object with common
          * restrictions and sort options.  Each specific search query
-         * adds its own crtieria restrictions (if any).
+         * adds its own criteria restrictions (if any).
          * 
          * A set of booleans is maintained for aliases that might be
-         * added in muliple places to ensure we don't add the same alias
+         * added in multiple places to ensure we don't add the same alias
          * multiple times.
          */
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class, "node");
@@ -198,7 +198,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         */
         
         // This SQL restriction does work fine, however 
-        criteria.add(Restrictions.sqlRestriction("{alias}.nodeId in (select o.nodeId from outages o where o.ifregainedservice is null and o.suppresstime is null or o.suppresstime < now())"));
+        criteria.add(Restrictions.sqlRestriction("{alias}.nodeId in (select ip.nodeId from outages o, ifservices if, ipinterface ip where if.id = o.ifserviceid and ip.id = if.ipinterfaceid and o.ifregainedservice is null and o.suppresstime is null or o.suppresstime < now())"));
     }
 
     private static void addCriteriaForNodename(OnmsCriteria criteria, String nodeName) {
@@ -231,14 +231,12 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         criteria.add(Restrictions.ne("monitoredService.status", "D"));
     }
 
-    private static void addCriteriaForMaclike(OnmsCriteria criteria, String macLike) {
-        String macLikeStripped = macLike.replaceAll("[:-]", "");
+    private static void addCriteriaForMaclike(final OnmsCriteria criteria, final String macLike) {
+        final String macLikeStripped = macLike.replaceAll("[:-]", "");
         
         criteria.createAlias("node.snmpInterfaces", "snmpInterface", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("node.arpInterfaces", "arpInterface", OnmsCriteria.LEFT_JOIN);
-        Disjunction physAddrDisjunction = Restrictions.disjunction();
+        final Disjunction physAddrDisjunction = Restrictions.disjunction();
         physAddrDisjunction.add(Restrictions.ilike("snmpInterface.physAddr", macLikeStripped, MatchMode.ANYWHERE));
-        physAddrDisjunction.add(Restrictions.ilike("arpInterface.physAddr", macLikeStripped, MatchMode.ANYWHERE));
         criteria.add(physAddrDisjunction);
   
         // This is an alternative to the above code if we need to use the out-of-the-box DetachedCriteria which doesn't let us specify the join type 
@@ -248,7 +246,6 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         
         Disjunction physAddrDisjuction = Restrictions.disjunction();
         physAddrDisjuction.add(Restrictions.sqlRestriction("{alias}." + propertyName + " IN (SELECT nodeid FROM snmpinterface WHERE snmpphysaddr LIKE ? )", value, new StringType()));
-        physAddrDisjuction.add(Restrictions.sqlRestriction("{alias}." + propertyName + " IN (SELECT nodeid FROM atinterface WHERE atphysaddr LIKE ? )", value, new StringType()));
         criteria.add(physAddrDisjuction);
         */
     }

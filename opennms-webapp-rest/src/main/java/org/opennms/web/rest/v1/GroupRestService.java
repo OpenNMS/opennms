@@ -41,7 +41,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -80,9 +79,6 @@ public class GroupRestService extends OnmsRestService {
     @Autowired
     private GroupService m_groupService;
 
-    @Autowired
-    private CategoryRestService m_categoryRestService;
-
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public OnmsGroupList getGroups() {
@@ -99,8 +95,6 @@ public class GroupRestService extends OnmsRestService {
             });
             list.setGroups(groups);
             return list;
-        } catch (final Throwable t) {
-            throw getException(Status.BAD_REQUEST, t);
         } finally {
             readUnlock();
         }
@@ -113,12 +107,7 @@ public class GroupRestService extends OnmsRestService {
         readLock();
         
         try {
-            final OnmsGroup group =  getOnmsGroup(groupName);
-            if (group != null) return group;
-            throw getException(Status.NOT_FOUND, groupName + " does not exist");
-        } catch (final Throwable t) {
-            if (t instanceof WebApplicationException) throw (WebApplicationException)t;
-            throw getException(Status.BAD_REQUEST, t);
+            return getOnmsGroup(groupName);
         } finally {
             readUnlock();
         }
@@ -132,9 +121,7 @@ public class GroupRestService extends OnmsRestService {
         try {
             LOG.debug("addGroup: Adding group {}", group);
             m_groupService.saveGroup(group);
-            return Response.seeOther(getRedirectUri(uriInfo, group.getName())).build();
-        } catch (final Throwable t) {
-            throw getException(Status.BAD_REQUEST, t);
+            return Response.created(getRedirectUri(uriInfo, group.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -143,33 +130,28 @@ public class GroupRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{groupName}")
-    public Response updateGroup(@Context final UriInfo uriInfo, @PathParam("groupName") final String groupName, final MultivaluedMapImpl params) {
+    public Response updateGroup(@PathParam("groupName") final String groupName, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
-            OnmsGroup group = null;
-            try {
-                group = m_groupService.getOnmsGroup(groupName);
-            } catch (final Throwable t) {
-                throw getException(Status.BAD_REQUEST, t);
-            }
-            if (group == null) throw getException(Status.BAD_REQUEST, "updateGroup: Group does not exist: " + groupName);
+            OnmsGroup group = getOnmsGroup(groupName);
             LOG.debug("updateGroup: updating group {}", group);
+            boolean modified = false;
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(group);
             for(final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
                     final String stringValue = params.getFirst(key);
                     final Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
+                    modified = true;
                 }
             }
-            LOG.debug("updateGroup: group {} updated", group);
-            try {
+            if (modified) {
+                LOG.debug("updateGroup: group {} updated", group);
                 m_groupService.saveGroup(group);
-            } catch (final Throwable t) {
-                throw getException(Status.INTERNAL_SERVER_ERROR, t);
+                return Response.noContent().build();
             }
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.notModified().build();
         } finally {
             writeUnlock();
         }
@@ -183,9 +165,7 @@ public class GroupRestService extends OnmsRestService {
             final OnmsGroup group = getOnmsGroup(groupName);
             LOG.debug("deleteGroup: deleting group {}", group);
             m_groupService.deleteGroup(groupName);
-            return Response.ok().build();
-        } catch (final Throwable t) {
-            throw getException(Status.BAD_REQUEST, t);
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -193,16 +173,14 @@ public class GroupRestService extends OnmsRestService {
 
     @PUT
     @Path("{groupName}/users/{userName}")
-    public Response addUser(@Context final UriInfo uriInfo, @PathParam("groupName") final String groupName, @PathParam("userName") final String userName) {
+    public Response addUser(@PathParam("groupName") final String groupName, @PathParam("userName") final String userName) {
         writeLock();
         try {
             getOnmsGroup(groupName); // just ensure that group exists
             boolean success = m_groupService.addUser(groupName, userName);
             if (success) {
-                return Response.seeOther(getRedirectUri(uriInfo)).build();    
+                return Response.noContent().build();
             }
-        } catch (final Throwable t) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, t);
         } finally {
             writeUnlock();
         }
@@ -218,13 +196,10 @@ public class GroupRestService extends OnmsRestService {
             if (group.getUsers().contains(userName)) {
                 group.removeUser(userName);
                 m_groupService.saveGroup(group);
-                return Response.ok().build();
+                return Response.noContent().build();
             } else {
-                throw getException(Status.BAD_REQUEST, "User is not in the group '" + groupName + "': " + userName);
+                throw getException(Status.BAD_REQUEST, "User with name '{}' does not exist in group '{}'", userName, groupName);
             }
-        } catch (final Throwable t) {
-            if (t instanceof WebApplicationException) throw (WebApplicationException)t;
-            throw getException(Status.INTERNAL_SERVER_ERROR, t);
         } finally {
             writeUnlock();
         }
@@ -233,38 +208,30 @@ public class GroupRestService extends OnmsRestService {
     @GET
     @Path("{groupName}/users/")
     public OnmsUserList listUsersOfGroup(@PathParam("groupName") final String groupName) {
-        OnmsGroup group = getOnmsGroup(groupName);
-        if (group != null) {
-            return m_groupService.getUsersOfGroup(groupName);
-        }
-        throw getException(Status.BAD_REQUEST, "Group with name '{}' does not exist.", groupName);
+        getOnmsGroup(groupName); // check if group exists.
+        return m_groupService.getUsersOfGroup(groupName);
     }
     
     @GET
     @Path("{groupName}/users/{userName}")
     public OnmsUser getUser(@PathParam("groupName") final String groupName, @PathParam("userName") final String userName) {
-        OnmsGroup group = getOnmsGroup(groupName);
-        if (group != null) {
-            OnmsUser user = m_groupService.getUserForGroup(groupName,  userName);
-            if (user != null) return user;
-            throw getException(Status.NOT_FOUND, "User with name '{}' does not exist in group '{}'", userName, groupName);
-        }
+        getOnmsGroup(groupName); // check if group exists.
+        OnmsUser user = m_groupService.getUserForGroup(groupName,  userName);
+        if (user != null) return user;
         throw getException(Status.NOT_FOUND, "User with name '{}' does not exist in group '{}'", userName, groupName);
     }
 
     @PUT
     @Path("{groupName}/categories/{categoryName}")
-    public OnmsCategory addCategory(@PathParam("groupName") final String groupName, @PathParam("categoryName") final String categoryName) {
+    public Response addCategory(@PathParam("groupName") final String groupName, @PathParam("categoryName") final String categoryName) {
         writeLock();
         try {
+            getOnmsGroup(groupName); // check if group exists.
             boolean success = m_groupService.addCategory(groupName, categoryName);
             if (success) {
-                return m_categoryRestService.getCategory(categoryName);
+                return Response.noContent().build();
             }
             throw getException(Status.BAD_REQUEST, "Category with name '{}' already added or does not exist.", categoryName);
-        } catch (final Throwable t) {
-            if (t instanceof WebApplicationException) throw (WebApplicationException)t;
-            throw getException(Status.INTERNAL_SERVER_ERROR, t);
         } finally {
             writeUnlock();
         }
@@ -275,14 +242,12 @@ public class GroupRestService extends OnmsRestService {
     public Response removeCategory(@PathParam("groupName") final String groupName, @PathParam("categoryName") final String categoryName) {
         writeLock();
         try {
+            getOnmsGroup(groupName); // check if group exists.
             boolean success = m_groupService.removeCategory(groupName, categoryName);
             if (success) {
-                return Response.ok().build();
+                return Response.noContent().build();
             }
             throw getException(Status.BAD_REQUEST, "Category with name '{}' does not exist. Remove failed.", categoryName);
-        } catch (final Throwable t) {
-            if (t instanceof WebApplicationException) throw (WebApplicationException)t;
-            throw getException(Status.INTERNAL_SERVER_ERROR, t);
         } finally {
             writeUnlock();
         }
@@ -304,23 +269,16 @@ public class GroupRestService extends OnmsRestService {
     public OnmsCategoryCollection listCategories(@PathParam("groupName") final String groupName) {
         writeLock();
         try {
+            getOnmsGroup(groupName); // check if group exists.
             return new OnmsCategoryCollection(m_groupService.getAuthorizedCategories(groupName));
-        } catch (final Throwable t) {
-            if (t instanceof WebApplicationException) throw (WebApplicationException)t;
-            throw getException(Status.INTERNAL_SERVER_ERROR, t);
         } finally {
             writeUnlock();
         }
     }
     
     protected OnmsGroup getOnmsGroup(final String groupName) {
-        OnmsGroup group = null;
-        try {
-            group = m_groupService.getOnmsGroup(groupName);
-        } catch (final Throwable t) {
-            throw getException(Status.BAD_REQUEST, t);
-        }
-        if (group == null) throw getException(Status.NOT_FOUND, "Group does not exist: " + groupName);
+        OnmsGroup group = m_groupService.getOnmsGroup(groupName);
+        if (group == null) throw getException(Status.NOT_FOUND, "Group with name '{}' does not exist.", groupName);
         return group;
     }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,6 +38,7 @@ import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +69,13 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 			m_name = m_engine.getClass().getSimpleName() + '-' + m_engine.getName() ;
 			Map<String,String> mdc = Logging.getCopyOfContextMap();
 			Logging.putPrefix(m_name);
-			m_eventIpcManager.addEventListener(this, m_engine.getInterestingEvents());
+			final List<String> interesting = m_engine.getInterestingEvents();
+			if (interesting.contains(EventHandler.ALL_UEIS)) {
+				LOG.warn("Registering engine {} for ALL events", m_engine.getName());
+				m_eventIpcManager.addEventListener(this);
+			} else {
+				m_eventIpcManager.addEventListener(this, interesting);
+			}
 			Logging.setContextMap(mdc);
 		}
 

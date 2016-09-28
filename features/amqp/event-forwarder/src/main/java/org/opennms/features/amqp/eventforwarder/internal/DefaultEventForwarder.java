@@ -28,14 +28,12 @@
 
 package org.opennms.features.amqp.eventforwarder.internal;
 
-import org.apache.camel.InOnly;
 import org.apache.camel.Produce;
 import org.opennms.core.camel.DefaultDispatcher;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
-@InOnly
 public class DefaultEventForwarder extends DefaultDispatcher implements EventForwarder {
 
 	@Produce(property="endpointUri")

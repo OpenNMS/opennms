@@ -32,11 +32,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.web.svclayer.DistributedPollerService;
 import org.opennms.web.svclayer.model.LocationMonitorIdCommand;
 import org.opennms.web.svclayer.model.LocationMonitorListModel;
@@ -73,7 +73,7 @@ public class DefaultDistributedPollerService implements DistributedPollerService
         
         LocationMonitorListModel model = new LocationMonitorListModel();
         for (OnmsLocationMonitor monitor : monitors) {
-            LocationDef def = m_monitoringLocationDao.get(monitor.getLocation());
+            OnmsMonitoringLocation def = m_monitoringLocationDao.get(monitor.getLocation());
             model.addLocationMonitor(new LocationMonitorModel(monitor, def));
         }
         
@@ -118,8 +118,8 @@ public class DefaultDistributedPollerService implements DistributedPollerService
                 implements Comparator<OnmsLocationMonitor> {
         @Override
         public int compare(OnmsLocationMonitor o1, OnmsLocationMonitor o2) {
-            LocationDef def1 = null;
-            LocationDef def2 = null;
+            OnmsMonitoringLocation def1 = null;
+            OnmsMonitoringLocation def2 = null;
             
             if (o1.getLocation() != null) {
                 def1 = m_monitoringLocationDao.get(o1.getLocation());
@@ -160,7 +160,7 @@ public class DefaultDistributedPollerService implements DistributedPollerService
         }
         
         OnmsLocationMonitor monitor = m_locationMonitorDao.load(cmd.getMonitorId());
-        LocationDef def = m_monitoringLocationDao.get(monitor.getLocation());
+        OnmsMonitoringLocation def = m_monitoringLocationDao.get(monitor.getLocation());
         model.addLocationMonitor(new LocationMonitorModel(monitor, def));
 
         return model;

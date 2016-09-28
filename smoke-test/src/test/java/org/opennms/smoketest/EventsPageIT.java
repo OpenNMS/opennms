@@ -38,7 +38,7 @@ import org.openqa.selenium.By;
 public class EventsPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        m_driver.get(BASE_URL + "opennms/event/list");
+        m_driver.get(getBaseUrl() + "opennms/event/list");
     }
 
     @Test
@@ -67,7 +67,7 @@ public class EventsPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testNodeIdNotFoundPage() throws InterruptedException {
-        m_driver.get(BASE_URL + "opennms/event/detail.jsp?id=999999999");
+        m_driver.get(getBaseUrl() + "opennms/event/detail.jsp?id=999999999");
         m_driver.findElement(By.xpath("//p[text()='Event not found in database.']"));
     }
 

@@ -100,7 +100,7 @@ public class NewtsFetchStrategyTest {
         sourceToBeFetched.setAggregation("AVERAGE");
         sourceToBeFetched.setLabel("icmp");
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched));
+        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
         assertEquals(1, fetchResults.getTimestamps().length);
@@ -118,7 +118,7 @@ public class NewtsFetchStrategyTest {
         sourceToBeFetched.setAggregation("AVERAGE");
         sourceToBeFetched.setLabel("icmp");
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched));
+        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
         assertEquals(1, fetchResults.getTimestamps().length);
@@ -136,7 +136,7 @@ public class NewtsFetchStrategyTest {
         sourceToBeFetched.setAggregation("AVERAGE");
         sourceToBeFetched.setLabel("icmp");
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched));
+        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
         assertNull(fetchResults);
     }
 
@@ -149,7 +149,7 @@ public class NewtsFetchStrategyTest {
         );
         replay();
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, sources);
+        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, sources, false);
         assertEquals(3, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
         assertTrue(fetchResults.getColumns().containsKey("snmplocalhost"));
@@ -165,7 +165,7 @@ public class NewtsFetchStrategyTest {
         );
         replay();
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, sources);
+        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, sources, false);
         // It's not possible to fetch multiple resources with the same label, we should only get 1 ICMP result
         assertEquals(1, fetchResults.getColumns().keySet().size());
     }

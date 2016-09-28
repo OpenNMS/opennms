@@ -30,6 +30,8 @@ package org.opennms.features.topology.plugins.ncs;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Maps;
+
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -42,7 +44,7 @@ import java.util.regex.Pattern;
 
 public class NCSEdgeStatusProvider implements EdgeStatusProvider{
 
-    public class NCSLinkStatus implements Status{
+    public class NCSLinkStatus implements Status {
 
         private final String m_status;
 
@@ -60,6 +62,11 @@ public class NCSEdgeStatusProvider implements EdgeStatusProvider{
             return null;
         }
 
+        @Override
+        public Map<String, String> getStyleProperties() {
+            return Maps.newHashMap();
+        }
+
     }
 
     private AlarmDao m_alarmDao;
@@ -72,7 +79,7 @@ public class NCSEdgeStatusProvider implements EdgeStatusProvider{
     }
 
     @Override
-    public String getNameSpace() {
+    public String getNamespace() {
         return NCSPathEdgeProvider.PATH_NAMESPACE + "::NCS";
     }
 

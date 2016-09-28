@@ -37,7 +37,7 @@ import junit.framework.TestCase;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.protocols.ssh.Ssh;
+import org.opennms.netmgt.poller.monitors.support.Ssh;
 
 /**
  * 

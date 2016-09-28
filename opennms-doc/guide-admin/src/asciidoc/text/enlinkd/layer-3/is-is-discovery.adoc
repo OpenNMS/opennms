@@ -9,7 +9,7 @@ In this table is found the information needed to find the Adjacency Intermediate
 The information about IS-IS is stored into two tables: _isisElement_ and _isisLink_.
 _isisElement_ contains the _ISISSysID_, a unique identifier of the "Intermediate System" (the name for the Router in ISO protocols).
 Each entry in this SNMP MIB table represents a unidirectional link from the _Intermediate System_ that is queried to the _Adjacent Intermediate Systems_ running IS-IS and "peering" with the source router.
-If two routers _IS-A_ and _IS-B_ support _ISIS-MIB_, then _EnLinkd_ will create two link entries in OpenNMS: one from _IS-A_ to _IS-B_ (from the _adjtable_ of _IS-A_) the complementary link back from _IS-B_ to _IS-A_ (from the _adjTable of _IS-B_).
+If two routers _IS-A_ and _IS-B_ support _ISIS-MIB_, then _EnLinkd_ will create two link entries in {opennms-product-name}: one from _IS-A_ to _IS-B_ (from the _adjtable_ of _IS-A_) the complementary link back from _IS-B_ to _IS-A_ (from the _adjTable of _IS-B_).
 IS-IS links are represented in the _ISIS-MIB_ as follows:
 
 .Supported OIDs from ISIS-MIB

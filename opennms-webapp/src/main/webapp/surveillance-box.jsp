@@ -31,24 +31,6 @@
 
 <%@page language="java" contentType="text/html" session="true" %>
 
-<%--
-/*******************************************************************************
- * Check org.opennms.dashboard.implementation for selected implementation      *
- *******************************************************************************/
---%>
-
-<%
-    String dashboardImplementation = System.getProperty("org.opennms.dashboard.implementation", "vaadin").trim();
-
-    if (!"gwt".equals(dashboardImplementation)) {
-%>
-
-    <%--
-    /*******************************************************************************
-     * Include VAADIN implementation                                               *
-     *******************************************************************************/
-    --%>
-
     <%
         String viewName = "";
 
@@ -88,24 +70,3 @@
     <div id="surveillance-view">
     <iframe id="surveillance-iframe" src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
     </div>
-
-<% } else { %>
-
-    <%--
-    /*******************************************************************************
-     * Include GWT implementation                                                  *
-     *******************************************************************************/
-    --%>
-
-    <meta name='gwt:module' content='org.opennms.dashboard.Dashboard' />
-    <link media="screen" href="css/dashboard.css" type="text/css" rel="stylesheet">
-    <script type="text/javascript" src='dashboard/dashboard.nocache.js'></script>
-    <table class="dashboard" cellspacing="5" width="100%">
-        <tbody>
-        <tr>
-            <td class="dashletCell"id="surveillanceView"></td>
-        </tr>
-        </tbody>
-    </table>
-
-<% } %>

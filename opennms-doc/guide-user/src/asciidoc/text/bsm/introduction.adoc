@@ -1,0 +1,25 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+While OpenNMS detects issues in your network by device, interface or service, the _Business Service Monitoring (BSM)_ takes it one step further.
+The _BSM_ components allows you to monitor and model high level _Business Services (BS)_ and helps quickly identify the most critical problems affecting these.
+With the _BSM_ feature it is possible to model a high level _BS_ context around the technical _Service Monitors_ provided in _OpenNMS_.
+To indicate which _BS_ is effected an _Operational Status_ is calculated.
+
+As an example, let's assume a company runs an online store.
+Customers enter through a login system, select items, place them in the shopping cart and checkout using a payment system.
+The whole service is provided by a few web servers and access data from databases.
+To monitor the status of the databases, a _SQL_ service monitor on each database server is configured.
+For testing the web servers a _HTTP_ service monitor is used for each of them.
+Covering the overall functionality a _Page Sequence Monitor (PSM)_ is used to test the login, shop and payment workflow through the provided web portal.
+A possible representation of the whole system hierarchy is shown in figure <<gu-bsm-example-web-shop,Example scenario for a web shop>>.
+
+[[gu-bsm-example-web-shop]]
+.Example scenario for a web shop
+image:bsm/01_bsm-example-scenario.png[]
+
+To be able to model this scenarios the _BSM_ functions can be used.
+The following section describes the components, concepts and functions.
+For configuration and changing the behavior please go to the section _Business Service Monitoring_ in the _Administration Guide_.
+

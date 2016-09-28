@@ -37,8 +37,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import junit.framework.AssertionFailedError;
-
 import org.apache.commons.io.FileUtils;
 import org.exolab.castor.util.LocalConfiguration;
 import org.junit.Before;
@@ -53,8 +51,8 @@ import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
 import org.opennms.netmgt.alarmd.northbounder.email.EmailNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfig;
-import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfig;
+import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
@@ -121,6 +119,8 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * This is an integration test checking if all provided example XML files can be
@@ -281,14 +281,17 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "vmware-datacollection-config.xml", VmwareDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "vmware-cim-datacollection-config.xml", VmwareCimDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "jvm-datacollection/collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
-        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-config.xml", JmxDatacollectionConfig.class, Impl.JAXB);
-        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/ActiveMQ/5.6/ActiveMQBasic0.xml", Mbeans.class, Impl.JAXB);
-        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/Cassandra/1.1.2/CassandraBasic0.xml", Mbeans.class, Impl.JAXB);
-        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/JBoss/4/JBossBasic0.xml", Mbeans.class, Impl.JAXB);
-        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/Jvm/1.6/JvmBasic0.xml", Mbeans.class, Impl.JAXB);
-        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/Jvm/1.6/JvmLegacy.xml", Mbeans.class, Impl.JAXB);
-        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSBasic0.xml", Mbeans.class, Impl.JAXB);
-        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSLegacy.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-config.d/opennms.xml", JmxDatacollectionConfig.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-config.d/jboss4.xml", JmxDatacollectionConfig.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-config.d/activemq.xml", JmxDatacollectionConfig.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-config.d/cassandra.xml", JmxDatacollectionConfig.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-mbeans/ActiveMQ/5.6/ActiveMQBasic0.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-mbeans/Cassandra/1.1.2/CassandraBasic0.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-mbeans/JBoss/4/JBossBasic0.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-mbeans/Jvm/1.6/JvmBasic0.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-mbeans/Jvm/1.6/JvmLegacy.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-mbeans/OpenNMS/1.10/OpenNMSBasic0.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-mbeans/OpenNMS/1.10/OpenNMSLegacy.xml", Mbeans.class, Impl.JAXB);
         addFile(Source.CONFIG, "snmp-hardware-inventory-adapter-configuration.xml", HwInventoryAdapterConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "wsman-config.xml", WsmanConfig.class, Impl.JAXB);
 
@@ -334,6 +337,16 @@ public class WillItUnmarshalIT {
             addFile(Source.ABSOLUTE,
                     file.getPath(),
                     ResourceTypes.class,
+                    Impl.JAXB);
+        }
+
+        // Add all jmx-datacollection configuration files
+        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "jmx-datacollection-config.d"),
+                                                   new String[] { "xml" },
+                                                   true)) {
+            addFile(Source.ABSOLUTE,
+                    file.getPath(),
+                    JmxDatacollectionConfig.class,
                     Impl.JAXB);
         }
     }
@@ -431,7 +444,7 @@ public class WillItUnmarshalIT {
                 assertEquals(this.exception, exception.toString());
 
             } else {
-                fail("Unexpected exception: " + ex);
+                throw new RuntimeException(ex);
             }
         }
     }

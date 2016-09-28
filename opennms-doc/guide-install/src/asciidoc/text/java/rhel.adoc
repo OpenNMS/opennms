@@ -3,9 +3,9 @@
 :imagesdir: ../../images
 
 [[gi-install-oracle-java-rhel]]
-=== Setup on RHEL-based systems
+=== RHEL
 
-This section describes how to install _Oracle Java 8_ on a _RPM-based_ system like _Red Hat Enterprise Linux 7_ or _CentOS 7.1_.
+This section describes how to install _Oracle Java SE Development Kit 8_ on a _RPM-based_ system like _Red Hat Enterprise Linux 7_ or _CentOS 7.1_.
 
 .Download Oracle JDK RPM
 [source, bash]

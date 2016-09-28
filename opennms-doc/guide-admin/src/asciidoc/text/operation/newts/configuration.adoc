@@ -5,7 +5,7 @@
 
 ===== Enabling Newts
 
-_OpenNMS_ can be configured to use Newts by setting the following property in in `${OPENNMS_HOME}/etc/opennms.properties`:
+_{opennms-product-name}_ can be configured to use Newts by setting the following property in in `${OPENNMS_HOME}/etc/opennms.properties`:
 
 [source]
 ----
@@ -20,7 +20,7 @@ To this end, the following property should also be set in the same file:
 org.opennms.rrd.storeByForeignSource=true
 ----
 
-With these set, _OpenNMS_ will begin persisting metrics using the _Newts_ engine when restarted.
+With these set, _{opennms-product-name}_ will begin persisting metrics using the _Newts_ engine when restarted.
 
 Additional configuration options are presented in the next section.
 
@@ -36,8 +36,9 @@ The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can
 | `org.opennms.newts.config.keyspace`             | `newts`              | Name of the keyspace to use.
 | `org.opennms.newts.config.hostname`             | `localhost`          | IP address or hostnames of the Cassandra nodes. Multiple hosts can be separated by a comma.
 | `org.opennms.newts.config.port`                 | `9042`               | CQL port used to connect to the Cassandra nodes.
-| `org.opennms.newts.config.username`             | `cassandra`          | Username to use when connceting to Cassandra via CQL.
-| `org.opennms.newts.config.password`             | `cassandra`          | Password to use when connceting to Cassandra via CQL.
+| `org.opennms.newts.config.username`             | `cassandra`          | Username to use when connecting to Cassandra via CQL.
+| `org.opennms.newts.config.password`             | `cassandra`          | Password to use when connecting to Cassandra via CQL.
+| `org.opennms.newts.config.ssl`                  | `false`              | Enable/disable SSL when connecting to Cassandra.
 | `org.opennms.newts.config.read_consistency`     | `ONE`                | Consistency level used for _read_ operations.
                                                                            See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html[Configuring data consistency] for a list of available options.
 | `org.opennms.newts.config.write_consistency`    | `ANY`                | Consistency level used for _write_ operations.
@@ -49,7 +50,7 @@ The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can
 | `org.opennms.newts.config.resource_shard`       | `604800`             | Duration in seconds for which samples will be stored at the same key. Defaults to 7 days in seconds.
 | `org.opennms.newts.query.minimum_step`          | `30000`              | Minimum step size in milliseconds. Used to prevent large queries.
 | `org.opennms.newts.query.interval_divider`      | `2`                  | If no interval is specified in the query, the step will be divided into this many intervals when aggregating values.
-| `org.opennms.newts.query.heartbeat`             | `450000`             | Duration in milliseconds. Used when no heartbeat is specified. Should generally be 1.5x your smallest collection interval.
+| `org.opennms.newts.query.heartbeat`             | `450000`             | Duration in milliseconds. Used when no heartbeat is specified. Should generally be 1.5x your largest collection interval.
 | `org.opennms.newts.query.parallelism`           | Number of cores      | Maximum number of threads that can be used to compute aggregates. Defaults to the number of available cores.
 | `org.opennms.newts.config.cache.strategy`       | See bellow           | Canonical name of the class used for resource level caching. See the table bellow for all of the available options.
 | `org.opennms.newts.config.cache.max_entries`    | `8192`               | Maximum number of records to keep in the cache when using an in-memory caching strategy.

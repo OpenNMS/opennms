@@ -87,7 +87,7 @@ public class FormProcMainController extends AbstractController implements Initia
                 return new ModelAndView("redirect:/KSC/customReport.htm");
             } else if (Actions.Delete.toString().equals(action)) {
                 getKscReportFactory().deleteReportAndSave(getReportIndex(request)); 
-                return new ModelAndView("redirect:/KSC/index.htm");
+                return new ModelAndView("redirect:/KSC/index.jsp");
             } else if (Actions.Create.toString().equals(action)) {
                 editor.loadNewWorkingReport();
                return new ModelAndView("redirect:/KSC/customReport.htm");

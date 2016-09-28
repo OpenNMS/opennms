@@ -30,7 +30,6 @@ package org.opennms.core.db;
 
 import java.io.IOException;
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -105,12 +104,7 @@ public abstract class XADataSourceFactory {
 
 			if (pool != null) {
 				if (pool.getLoginTimeout() > 0) {
-					try {
-						xaDataSource.setLoginTimeout(pool.getLoginTimeout());
-					} catch (SQLException e) {
-						// This should never be thrown
-						throw new UnsupportedOperationException("Cannot set login timeout on PGXADataSource", e);
-					}
+					xaDataSource.setLoginTimeout(pool.getLoginTimeout());
 				}
 
 				if (pool.getIdleTimeout() > 0) {

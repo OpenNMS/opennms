@@ -36,8 +36,6 @@ import org.opennms.netmgt.provision.support.ConversationExchange;
 import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.codec.TcpCodecFactory;
 import org.opennms.netmgt.provision.support.codec.TcpLineDecoder;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>TcpDetector class.</p>
@@ -45,8 +43,7 @@ import org.springframework.stereotype.Component;
  * @author ranger
  * @version $Id: $
  */
-@Component
-@Scope("prototype")
+
 public class TcpDetector extends AsyncLineOrientedDetectorMinaImpl {
     
     private static final String DEFAULT_SERVICE_NAME = "TCP";

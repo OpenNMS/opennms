@@ -98,10 +98,11 @@ public class EmailNorthbounderTest {
     @Test
     public void testNorthbounderForServers() throws Exception {
         // Setup test node
-        OnmsNode node = new OnmsNode("my-test-server");
+        OnmsNode node = new OnmsNode();
         node.setForeignSource("Servers-MacOS");
         node.setForeignId("1");
         node.setId(1);
+        node.setLabel("my-test-server");
         OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
         snmpInterface.setId(1);
         snmpInterface.setIfAlias("Connection to OpenNMS Wifi");
@@ -145,10 +146,11 @@ public class EmailNorthbounderTest {
     @Test
     public void testNorthbounderForRouters() throws Exception {
         // Setup test node
-        OnmsNode node = new OnmsNode("my-test-router");
+        OnmsNode node = new OnmsNode();
         node.setForeignSource("Routers-Cisco");
         node.setForeignId("1");
         node.setId(1);
+        node.setLabel("my-test-router");
         OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
         snmpInterface.setId(1);
         snmpInterface.setIfAlias("Connection to OpenNMS Wifi");

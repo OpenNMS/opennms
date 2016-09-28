@@ -29,56 +29,23 @@
 package org.opennms.netmgt.discovery;
 
 import java.net.InetAddress;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
 
 /**
  * Given a list of managed IP addresses, this filter will match IP addresses not in that
  * list, hence it is an unmanaged IP address filter.
  */
 public class UnmanagedInterfaceFilter implements IpAddressFilter {
-    /**
-     * a set of addresses to skip discovery on
-     */
-    private Set<String> m_managedAddresses = Collections.synchronizedSet(new HashSet<String>());
 
-    public void addManagedAddress(String address) {
-        synchronized(m_managedAddresses) {
-            m_managedAddresses.add(address);
-        }
-    }
-
-    public void removeManagedAddress(String address) {
-        synchronized(m_managedAddresses) {
-            m_managedAddresses.remove(address);
-        }
-    }
-
-    public int size() {
-        synchronized(m_managedAddresses) {
-            return m_managedAddresses.size();
-        }
-    }
-
-    public void setManagedAddresses(Set<String> addresses) {
-        synchronized(m_managedAddresses) {
-            m_managedAddresses.clear();
-            m_managedAddresses.addAll(addresses);
-        }
+    @Override
+    public boolean matches(String location, InetAddress address) {
+        return AbstractInterfaceToNodeCache.getInstance().getNodeId(location, address) < 1;
     }
 
     @Override
-    public boolean matches(InetAddress address) {
-        return matches(InetAddressUtils.str(address));
-    }
-
-    @Override
-    public boolean matches(String address) {
-        synchronized(m_managedAddresses) {
-            return !m_managedAddresses.contains(address);
-        }
+    public boolean matches(String location, String address) {
+        return matches(location, InetAddressUtils.addr(address));
     }
 }

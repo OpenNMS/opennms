@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+
+<!--
+
+OpenWrt (the Linux distribution) and other OpenWrt software package syslog messages
+
+-->
+
+<syslogd-configuration-group>
+    <ueiList>
+
+        <!-- core OS syslog messages -->
+
+        <!-- system startup -->
+        <ueiMatch>
+            <!-- OpenWrt 12.09 version: this ifup message is used as proxy for system startup as the more relevant system startup log messages appear before remote syslogging is working -->
+            <severity>Notice</severity>
+            <process-match expression="^ifup$" />
+            <match type="substr" expression="Enabling Router Solicitations on loopback" />
+            <uei>uei.opennms.org/vendor/openwrt/syslog/SystemStarting</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <!-- OpenWrt 14.07 version: this logread message is used as proxy for system startup as the more relevant system startup log messages appear before remote syslogging has started -->
+            <severity>Emergency</severity>
+            <process-match expression="logread" />
+            <match type="substr" expression="Logread connected to" />
+            <uei>uei.opennms.org/vendor/openwrt/syslog/SystemStarting</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <!-- OpenWrt 15.05 version -->
+            <severity>Informational</severity>
+            <process-match expression="^procd$" />
+            <match type="substr" expression="init complete" />
+            <uei>uei.opennms.org/vendor/openwrt/syslog/SystemStarting</uei>
+        </ueiMatch>
+
+        <!-- system shutdown -->
+        <ueiMatch>
+            <!-- OpenWrt 12.09 version -->
+            <severity>Informational</severity>
+            <process-match expression="^init$" />
+            <match type="substr" expression="/etc/init.d/rcS K shutdown" />
+            <uei>uei.opennms.org/vendor/openwrt/syslog/SystemStopping</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <!-- OpenWrt 14.07 version: this syslog shutdown message is used as proxy for system shutdown as the more relevant system shutdown log messages appear after remote syslogging h
+as stopped -->
+            <severity>Emergency</severity>
+            <process-match expression="^syslog$" />
+            <match type="substr" expression="shutdown" />
+            <uei>uei.opennms.org/vendor/openwrt/syslog/SystemStopping</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <!-- OpenWrt 15.05 version -->
+            <severity>Informational</severity>
+            <process-match expression="^procd$" />
+            <match type="substr" expression="shutdown" />
+            <uei>uei.opennms.org/vendor/openwrt/syslog/SystemStopping</uei>
+        </ueiMatch>
+
+        <!-- package ddns-scripts syslog messages -->
+        <ueiMatch>
+            <process-match expression="^ddns-scripts-.*$" />
+            <match type="substr" expression="failed" />
+            <uei>uei.opennms.org/vendor/openwrt/syslog/ddns-scripts/DDNSIPUpdateFailed</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <process-match expression="^ddns-scripts-.*$" />
+            <match type="substr" expression="successful" />
+            <uei>uei.opennms.org/vendor/openwrt/syslog/ddns-scripts/DDNSIPUpdateSuccessful</uei>
+        </ueiMatch>
+
+        <!-- package mwan3 syslog messages -->
+        <ueiMatch>
+            <severity>Informational</severity>
+            <process-match expression="^mwan3track$" />
+            <match type="regex" expression="^Lost [0-9]+ ping\(s\) on interface (.*)$" />
+            <uei>uei.opennms.org/vendor/openwrt/syslog/mwan3/LostPingsOnInterface</uei>
+            <parameter-assignment matching-group="1" parameter-name="interfaceName" />
+        </ueiMatch>
+        <ueiMatch>
+            <severity>Informational</severity>
+            <process-match expression="^mwan3track" />
+            <match type="regex" expression="^Interface (.*) is online$" />
+            <uei>uei.opennms.org/vendor/openwrt/syslog/mwan3/OnlineInterface</uei>
+            <parameter-assignment matching-group="1" parameter-name="interfaceName" />
+        </ueiMatch>
+        <ueiMatch>
+            <severity>Informational</severity>
+            <process-match expression="^mwan3track$" />
+            <match type="regex" expression="^Interface (.*) is offline$" />
+            <uei>uei.opennms.org/vendor/openwrt/syslog/mwan3/OfflineInterface</uei>
+            <parameter-assignment matching-group="1" parameter-name="interfaceName" />
+        </ueiMatch>
+
+        <!-- The only syslog sending mechanism OpenWrt has is to send ALL syslog messages to a remote syslog server. This results in a high
+             volume of syslog messages being received and stored in OpenNMS. To avoid this, the statement below will discard (and not save)
+             all syslog messages received from the specified devices below (other than those already captured above).
+               OpenWrt 12.09: list the device by its hostname (lowercase)
+               OpenWrt 14.07 and later: list the device by the source IP address it uses to send the syslog packet -->
+        <ueiMatch>
+            <hostname-match expression="(openwrt01|192\.0\.2\.1).*" />
+            <match type="regex" expression=".*" />
+            <uei>DISCARD-MATCHING-MESSAGES</uei>
+        </ueiMatch>
+
+    </ueiList>
+</syslogd-configuration-group>

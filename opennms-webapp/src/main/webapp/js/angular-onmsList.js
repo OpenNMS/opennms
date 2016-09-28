@@ -207,7 +207,7 @@ function parseContentRange(contentRange) {
 			if (
 				typeof input !== 'undefined' &&
 				input !== null &&
-				input.trim() !== ''
+				(typeof input === 'String' ? input.trim() !== '' : true)
 			) {
 				return true;
 			} else {
@@ -272,6 +272,8 @@ function parseContentRange(contentRange) {
 				item: '=',
 				value: '=',
 				valueType: '=',
+				// Optional step attribute for number fields
+				step: '=',
 				onSubmit: '&onSubmit'
 			},
 			templateUrl: 'js/angular-onmsListEditInPlace.html',
@@ -326,6 +328,8 @@ function parseContentRange(contentRange) {
 			scope: {
 				values: '=',
 				valueType: '=',
+				// Optional step attribute for number fields
+				step: '=',
 				onEdit: '&onEdit'
 			},
 			templateUrl: 'js/angular-onmsListEditListInPlace.html',
@@ -381,6 +385,8 @@ function parseContentRange(contentRange) {
 				values: '=',
 				keyType: '=',
 				valueType: '=',
+				// Optional step attribute for number fields
+				step: '=',
 				onEdit: '&onEdit'
 			},
 			templateUrl: 'js/angular-onmsListEditMapInPlace.html',
@@ -458,19 +464,35 @@ function parseContentRange(contentRange) {
 			}
 
 			// Make sure the clause isn't already in the list of search clauses
-			for (var i = 0; i < $scope.query.searchClauses.length; i++) {
-				if (
-					clause.property === $scope.query.searchClauses[i].property &&
-					clause.operator === $scope.query.searchClauses[i].operator &&
-					clause.value === $scope.query.searchClauses[i].value
-				) {
-					return;
-				}
+			if ($scope.getSearchClause(clause) != null) {
+				return;
 			}
+
 			// TODO: Add validation?
 			$scope.query.searchClauses.push(angular.copy(clause));
 			$scope.query.searchParam = toFiql($scope.query.searchClauses);
 			$scope.refresh();
+		}
+
+		$scope.getSearchClause = function(clause) {
+			for (var i = 0; i < $scope.query.searchClauses.length; i++) {
+				if ($scope.clauseEquals(clause, $scope.query.searchClauses[i])) {
+					return $scope.query.searchClauses[i];
+				}
+			}
+			return null;
+		}
+
+		$scope.clauseEquals = function(a, b) {
+			if (
+				a.property === b.property &&
+				a.operator === b.operator &&
+				a.value === b.value
+			) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		// Convert an epoch timestamp into String format before adding the search clause
@@ -485,6 +507,58 @@ function parseContentRange(contentRange) {
 			$scope.query.searchClauses.splice($scope.query.searchClauses.indexOf(clause), 1);
 			$scope.query.searchParam = toFiql($scope.query.searchClauses);
 			$scope.refresh();
+		}
+
+		$scope.removeSearchClauses = function(clauses) {
+			for (var i = 0; i < clauses.length; i++) {
+				var index = $scope.query.searchClauses.indexOf(clauses[i]);
+				if (index >= 0) {
+					$scope.query.searchClauses.splice(index, 1);
+				}
+			}
+			$scope.query.searchParam = toFiql($scope.query.searchClauses);
+			$scope.refresh();
+		}
+
+		// Replace a search clause with a new clause
+		$scope.replaceSearchClause = function(oldClause, newClause) {
+			if(angular.isDate(newClause.value)) {
+				// Returns a value in yyyy-MM-ddTHH:mm:ss.sssZ format
+				// Unfortunately, I don't think CXF will like this because
+				// it includes the millisecond portion of the date.
+				//clause.value = new Date(clause.value).toISOString();
+
+				newClause.value = $filter('date')(new Date(newClause.value), ISO_8601_DATE_FORMAT);
+			}
+
+			// TODO: Add validation?
+			var scopeOldClause = $scope.getSearchClause(oldClause);
+			var scopeNewClause = $scope.getSearchClause(newClause);
+			if (scopeOldClause == null) {
+				if (scopeNewClause == null) {
+					// If the old clause is not present, simply add the new clause
+					$scope.addSearchClause(newClause);
+				} else {
+					// If the old clause is not present and the new clause is already
+					// present, then do nothing
+				}
+			} else {
+				if (scopeNewClause == null) {
+					// If the old clause is present and the new clause is not, replace
+					// the values inside the old clause and then refresh
+					scopeOldClause.property = newClause.property;
+					scopeOldClause.operator = newClause.operator;
+					scopeOldClause.value = newClause.value;
+
+					$scope.query.searchParam = toFiql($scope.query.searchClauses);
+					$scope.refresh();
+				} else {
+					// If the old clause is present and the new clause is present,
+					// then just remove the old clause (as if it had been replaced by
+					// the already-existing new clause)
+					$scope.removeSearchClause(oldClause);
+				}
+			}
 		}
 
 		// Clear the current search

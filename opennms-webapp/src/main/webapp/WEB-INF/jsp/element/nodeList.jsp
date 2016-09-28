@@ -69,7 +69,7 @@
   </c:when>
   
   <c:otherwise>
-    <h3 class="panel-title"><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><i class="fa fa-database fa-lg icon-black" title="Toggle database IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><i class="fa fa-list-alt fa-lg icon-black" title="Toggle requisition names"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><i class="fa fa-qrcode fa-lg icon-black" title="Toggle foreign IDs"></i></a></span></h3>
+    <h3 class="panel-title"><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><i class="fa fa-database fa-lg icon-black" title="Toggle database IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><i class="fa fa-list-alt fa-lg icon-black" title="Toggle requisition names"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><i class="fa fa-qrcode fa-lg icon-black" title="Toggle foreign IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLloc', '', 'inline');"><i class="fa fa-map-marker fa-lg icon-black" title="Toggle locations"></i></a></span></h3>
   </c:otherwise>
 </c:choose>
   </div> <!-- panel-heading -->
@@ -136,6 +136,11 @@
     </c:if>
     <c:if test="${command.service != null}">
       <c:param name="service" value="${command.service}"/>
+    </c:if>
+    <c:if test="${command.mib2Parm != null}">
+      <c:param name="mib2Parm" value="${command.mib2Parm}"/>
+      <c:param name="mib2ParmValue" value="${command.mib2ParmValue}"/>
+      <c:param name="mib2ParmMatchType" value="${command.mib2ParmMatchType}"/>
     </c:if>
     <c:if test="${command.snmpParm != null}">
       <c:param name="snmpParm" value="${command.snmpParm}"/>

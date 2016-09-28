@@ -5,8 +5,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
-  <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.MockTrapdIpMgr"/>
-  
   <bean id="newSuspectOnTrap" class="java.lang.Boolean">
     <constructor-arg><value>true</value></constructor-arg>
   </bean>
@@ -19,6 +17,4 @@
     <property name="configResource"><value>classpath:/org/opennms/netmgt/trapd/eventconf.xml</value></property>
   </bean>
 
-  <!--  Make the tx:annotation-driven element in applicationContext-trapDaemon happy -->
-  <bean id="transactionManager" class="org.opennms.core.test.MockPlatformTransactionManager"/>
 </beans>

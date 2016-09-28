@@ -28,30 +28,42 @@
 
 package org.opennms.netmgt.snmp;
 
+import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class TrapInformation implements TrapNotification {
-	
-	private static final transient Logger LOG = LoggerFactory.getLogger(TrapInformation.class);
+public abstract class TrapInformation implements TrapNotification, Serializable {
+
+    private static final long serialVersionUID = -730398590817240290L;
+
+    private static final transient Logger LOG = LoggerFactory.getLogger(TrapInformation.class);
 
     /**
-     * The internet address of the sending agent
+     * The internet address of the sending agent.
      */
-    private InetAddress m_agent;
+    private final InetAddress m_agent;
+
     /**
-     * The community string from the actual SNMP packet
+     * The community string from the actual SNMP packet.
      */
-    private String m_community;
+    private final String m_community;
+
+    /**
+     * The initial creation time of this object. This is used to track the reception
+     * time of the event.
+     */
+    private final long m_creationTime;
+
     private TrapProcessor m_trapProcessor;
 
     protected TrapInformation(InetAddress agent, String community, TrapProcessor trapProcessor) {
+        m_creationTime = new Date().getTime();
         m_agent = agent;
         m_community = community;
         m_trapProcessor = trapProcessor;
-        
     }
 
     protected abstract InetAddress getTrapAddress();
@@ -73,45 +85,61 @@ public abstract class TrapInformation implements TrapNotification {
     protected void validate() {
         // by default we do nothing;
     }
-    
+
     protected InetAddress getAgentAddress() {
         return getAgent();
     }
 
+    protected final long getCreationTime() {
+        return m_creationTime;
+    }
+
     @Override
-    public TrapProcessor getTrapProcessor() {
+    public final TrapProcessor getTrapProcessor() {
         // We do this here to processing of the data is delayed until it is requested.
-        processTrap();
-        return m_trapProcessor;
+        return processTrap(this, m_trapProcessor);
+    }
+
+    @Override
+    public final void setTrapProcessor(TrapProcessor trapProcessor) {
+        m_trapProcessor = trapProcessor;
     }
 
     protected abstract String getVersion();
 
     protected abstract int getPduLength();
 
+    /**
+     * Get the SNMP TimeTicks value for the sysUpTime of the agent that
+     * generated the trap. Note that the units for this value are 1/100ths
+     * of a second instead of milliseconds.
+     */
     protected abstract long getTimeStamp();
 
     protected abstract TrapIdentity getTrapIdentity();
 
-    protected void processTrap() {
+    protected static TrapProcessor processTrap(TrapInformation trap, TrapProcessor trapProcessor) {
         
-        validate();
+        trap.validate();
         
-        m_trapProcessor.setVersion(getVersion());
-        m_trapProcessor.setCommunity(getCommunity());
-        m_trapProcessor.setAgentAddress(getAgentAddress());
-        m_trapProcessor.setTrapAddress(getTrapAddress());
+        trapProcessor.setCreationTime(trap.getCreationTime());
+        trapProcessor.setVersion(trap.getVersion());
+        trapProcessor.setCommunity(trap.getCommunity());
+        trapProcessor.setAgentAddress(trap.getAgentAddress());
+        trapProcessor.setTrapAddress(trap.getTrapAddress());
     
-        LOG.debug("{} trap - trapInterface: ()", getVersion(), getTrapAddress());
+        LOG.debug("{} trap - trapInterface: ()", trap.getVersion(), trap.getTrapAddress());
         
         // time-stamp
-        m_trapProcessor.setTimeStamp(getTimeStamp());
+        trapProcessor.setTimeStamp(trap.getTimeStamp());
     
-        m_trapProcessor.setTrapIdentity(getTrapIdentity());
+        trapProcessor.setTrapIdentity(trap.getTrapIdentity());
         
-        for (int i = 0; i < getPduLength(); i++) {
-            processVarBindAt(i);
+        for (int i = 0; i < trap.getPduLength(); i++) {
+            trap.processVarBindAt(i);
         } // end for loop
+    
+        return trapProcessor;
     }
 
     protected abstract void processVarBindAt(int i);

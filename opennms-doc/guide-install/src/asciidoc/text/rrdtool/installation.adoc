@@ -3,16 +3,16 @@
 :imagesdir: ../../images
 
 [[gi-rrdtool-time-series-database]]
-== RRDtool as Time Series Database
+== RRDtool
 
-In most _Open Source_ application link:http://oss.oetiker.ch/rrdtool[RRDtool] is often used and is the de-facto open standard for _Time Series Data_.
-The basic installation of _OpenNMS_ comes with _JRobin_ enabled and it is possible to persist _Time Series Data_ in _RRDtool_.
+In most _Open Source_ applications, link:http://oss.oetiker.ch/rrdtool[RRDtool] is often used and is the de-facto open standard for _Time Series Data_.
+The basic installation of _OpenNMS_ comes with _JRobin_ but it is simple to switch the system to use _RRDtool_ to persist _Time Series Data_.
 This section describes how to install _RRDtool_, the _jrrd2_ _OpenNMS Java Interface_ and how to configure _OpenNMS_ to use it.
+_RRDtool_ can be installed from the official package repositories provided by _RHEL_ and _Debian_ based _Linux_ distributions.
+
 
 [[gi-rrdtool-install]]
-=== RRDtool Installation
-
-_RRDtool_ can be installed from the official package repositories provided by _RHEL_ and _Debian_ based _Linux_ distributions.
+=== RHEL
 
 .Installation on RHEL/CentOS
 [source, shell]
@@ -20,14 +20,28 @@ _RRDtool_ can be installed from the official package repositories provided by _R
 yum install rrdtool
 ----
 
+[[gi-rrdtool-install-debian]]
+=== Debian
+
 .Installation of RRDtool on Debian/Ubuntu
 [source, shell]
 ----
 apt-get install rrdtool
 ----
 
+[[gi-rrdtool-install-source]]
+=== Source
+
+If you want the latest version of RRDtool, you may want to compile it from source. Instructions for doing so are at 
+link:https://oss.oetiker.ch/rrdtool/doc/rrdbuild.en.html[rrdbuild].
+
+IMPORTANT: The latest version of RRDtool may not always be compatible with the version of _OpenNMS_ that you want to run.
+           Please ask about RRDtool support on the discussion lists or chat rooms if you have any problems running a
+           new version of RRDtool.
+
 NOTE: If you want to install the latest _RRDtool_ from source, make sure the `rrdtool` binary is in search path.
-      To make the setup easier, you can link the binary to `/usr/bin/rrdtool` which is the location _OpenNMS_ will expect the executable binary.
+      To make the setup easier, you can link the binary to `/usr/bin/rrdtool` which is the location where _OpenNMS_ will expect
+      to find the executable binary.
 
 [[gi-jrrd2-install]]
 === Install jrrd2 Interface
@@ -51,7 +65,7 @@ NOTE: With OpenNMS 17.0.0 it is preferred to use _jrrd2_ instead of _jrrd_.
       The _jrrd2_ module is improved for performance by adding multithreading capabilities.
 
 [[gi-rrdtool-configure-opennms]]
-=== Configuration of OpenNMS
+=== Configure {opennms-product-name}
 
 To configure _OpenNMS_ to use _RRDtool_ instead of _JRobin_ configure the following properties in `rrd-configuration.properties`.
 

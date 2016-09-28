@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -73,6 +73,7 @@ import org.opennms.netmgt.model.OnmsUserList;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  */
 public abstract class UserManager implements UserConfig {
     private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -961,6 +962,9 @@ public abstract class UserManager implements UserConfig {
                 // Delete the user in the user map.
                 m_users.remove(name);
         
+                // Refresh the groups config first
+                m_groupManager.update();
+                
                 // Delete the user in the group.
                 m_groupManager.deleteUser(name);
         
@@ -1039,6 +1043,9 @@ public abstract class UserManager implements UserConfig {
                     data.setUserId(newName);
                     m_users.put(newName, data);
         
+                    // Refresh the groups config first
+                    m_groupManager.update();
+                    
                     // Rename the user in the group.
                     m_groupManager.renameUser(oldName, newName);
         

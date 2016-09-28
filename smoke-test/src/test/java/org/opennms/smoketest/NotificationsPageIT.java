@@ -28,10 +28,13 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.FixMethodOrder;
+import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.openqa.selenium.By;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NotificationsPageIT extends OpenNMSSeleniumTestCase {
@@ -42,8 +45,10 @@ public class NotificationsPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
+        assertEquals(3, countElementsMatchingCss("h3.panel-title"));
         findElementByXpath("//h3[text()='Notification queries']");
         findElementByXpath("//h3[text()='Outstanding and Acknowledged Notices']");
+        findElementByXpath("//h3[text()='Notification Escalation']");
     }
 
     @Test
@@ -72,12 +77,14 @@ public class NotificationsPageIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//p//strong[text()='outstanding']");
         findElementByLink("[Show acknowledged]");
         findElementByLink("Respond Time");
+        assertElementDoesNotHaveText(By.xpath("//span[@class='label label-default']"), "admin was notified [-]");
 
         notificationsPage();
         findElementByLink("All acknowledged notices").click();
         findElementByXpath("//p//strong[text()='acknowledged']");
         findElementByLink("[Show outstanding]");
         findElementByLink("Respond Time");
+        assertElementDoesNotHaveText(By.xpath("//span[@class='label label-default']"), "admin was notified [-]");
     }
 
 }

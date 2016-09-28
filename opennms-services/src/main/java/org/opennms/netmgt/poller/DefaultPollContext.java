@@ -32,20 +32,18 @@ import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.capsd.plugins.IcmpPlugin;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
@@ -85,10 +83,11 @@ public class DefaultPollContext implements PollContext, EventListener {
     private volatile PollerConfig m_pollerConfig;
     private volatile QueryManager m_queryManager;
     private volatile EventIpcManager m_eventManager;
+    private volatile PingerFactory m_pingerFactory;
     private volatile String m_name;
     private volatile String m_localHostName;
     private volatile boolean m_listenerAdded = false;
-    private final List<PendingPollEvent> m_pendingPollEvents = new LinkedList<PendingPollEvent>();
+    private final Queue<PendingPollEvent> m_pendingPollEvents = new ConcurrentLinkedQueue<PendingPollEvent>();
 
     /**
      * <p>getEventManager</p>
@@ -181,6 +180,14 @@ public class DefaultPollContext implements PollContext, EventListener {
         m_queryManager = queryManager;
     }
 
+    public PingerFactory getPingerFactory() {
+        return m_pingerFactory;
+    }
+
+    public void setPingerFactory(final PingerFactory pingerFactory) {
+        m_pingerFactory = pingerFactory;
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#getCriticalServiceName()
      */
@@ -231,9 +238,8 @@ public class DefaultPollContext implements PollContext, EventListener {
             m_listenerAdded = true;
         }
         PendingPollEvent pollEvent = new PendingPollEvent(event);
-        synchronized (m_pendingPollEvents) {
-            m_pendingPollEvents.add(pollEvent);
-        }
+        m_pendingPollEvents.add(pollEvent);
+
         //log().info("Sending "+event.getUei()+" for element "+event.getNodeid()+":"+event.getInterface()+":"+event.getService(), new Exception("StackTrace"));
         getEventManager().sendNow(event);
         return pollEvent;
@@ -262,7 +268,7 @@ public class DefaultPollContext implements PollContext, EventListener {
             String[] criticalPath = PathOutageManagerDaoImpl.getInstance().getCriticalPath(nodeId);
             
             if (criticalPath[0] != null && !"".equals(criticalPath[0].trim())) {
-                if (!this.testCriticalPath(criticalPath)) {
+                if (! testCriticalPath(criticalPath)) {
                     LOG.debug("Critical path test failed for node {}", nodeId);
                     
                     // add eventReason, criticalPathIp, criticalPathService
@@ -385,58 +391,83 @@ public class DefaultPollContext implements PollContext, EventListener {
      */
     /** {@inheritDoc} */
     @Override
-    public void onEvent(final Event e) {
-        LOG.debug("onEvent: Waiting to process event: {} uei: {}, dbid: {}", e, e.getUei(), e.getDbid());
-        synchronized (m_pendingPollEvents) {
-            LOG.debug("onEvent: Received event: {} uei: {}, dbid: {}, pendingEventCount: {}", e, e.getUei(), e.getDbid(), m_pendingPollEvents.size());
-            for (final Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext();) {
-                final PendingPollEvent pollEvent = it.next();
-                LOG.trace("onEvent: comparing events to poll event: {}", pollEvent);
-                if (e.equals(pollEvent.getEvent())) {
-                    LOG.trace("onEvent: completing pollevent: {}", pollEvent);
-                    pollEvent.complete(e);
-                }
-            }
+    public void onEvent(final Event event) {
+        if (LOG.isDebugEnabled()) {
+            // CAUTION: m_pendingPollEvents.size() is not a constant-time operation
+            LOG.debug("onEvent: Received event: {} uei: {}, dbid: {}, pendingEventCount: {}", event, event.getUei(), event.getDbid(), m_pendingPollEvents.size());
+        }
 
-            for (Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
-                PendingPollEvent pollEvent = it.next();
-                LOG.trace("onEvent: determining if pollEvent is pending: {}", pollEvent);
-                if (pollEvent.isPending()) continue;
-
-                LOG.trace("onEvent: processing pending pollEvent...: {}", pollEvent);
-                pollEvent.processPending();
-                it.remove();
-                LOG.trace("onEvent: processing of pollEvent completed.: {}", pollEvent);
+        for (final PendingPollEvent pollEvent : m_pendingPollEvents) {
+            LOG.trace("onEvent: comparing event to pollEvent: {}", pollEvent);
+            // TODO: This equals comparison is more like a '==' operation because
+            // I think that both events would have to be identical instances to
+            // have the same event ID. This will probably cause problems if we
+            // cluster event processing and the event instances are ever not 
+            // identical.
+            if (event.equals(pollEvent.getEvent())) {
+                LOG.trace("onEvent: found matching pollEvent, completing pollEvent: {}", pollEvent);
+                // Thread-safe and idempotent
+                pollEvent.complete(event);
+                // TODO: Can we break here? I think there should only be one 
+                // instance of any given event in m_pendingPollEvents
+                // break;
             }
         }
-        LOG.debug("onEvent: Finished processing event: {} uei: {}, dbid: {}", e, e.getUei(), e.getDbid());
-        
+
+        for (final Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext();) {
+            final PendingPollEvent pollEvent = it.next();
+            LOG.trace("onEvent: determining if pollEvent is pending: {}", pollEvent);
+            if (!pollEvent.isPending()) {
+                try {
+                    // Thread-safe and idempotent
+                    processPending(pollEvent);
+                } catch (Throwable e) {
+                    LOG.error("Unexpected exception while processing pollEvent: " + pollEvent, e);
+                }
+                // TODO: Should we remove the task before processing it? This would
+                // reduce the chances that two threads could process the same event
+                // simultaneously, although since the call is now thread-safe and
+                // idempotent, that's not really a problem.
+                it.remove();
+                continue;
+            }
+
+            // If the event was not completed and it is still pending, then don't do anything to it
+        }
+        LOG.debug("onEvent: Finished processing event: {} uei: {}, dbid: {}", event, event.getUei(), event.getDbid());
+    }
+
+    private static void processPending(final PendingPollEvent pollEvent) {
+        LOG.trace("onEvent: pollEvent is no longer pending, processing pollEvent: {}", pollEvent);
+        // Thread-safe and idempotent
+        pollEvent.processPending();
+        LOG.trace("onEvent: processing of pollEvent completed: {}", pollEvent);
     }
 
     boolean testCriticalPath(String[] criticalPath) {
-        // TODO: Generalize the service
-        InetAddress addr = null;
-        boolean result = true;
-    
-        LOG.debug("Test critical path IP {}", criticalPath[0]);
-        addr = InetAddressUtils.addr(criticalPath[0]);
-        if (addr == null) {
-            LOG.error("failed to convert string address to InetAddress {}", criticalPath[0]);
+        if (criticalPath == null || criticalPath.length < 2) {
+            LOG.error("testCriticalPath: illegal arguments, ignoring.");
             return true;
         }
-        IcmpPlugin p = new IcmpPlugin();
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put(
-                "retry",
-                Long.valueOf(
-                         OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries()));
-        map.put(
-                "timeout",
-                Long.valueOf(
-                         OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout()));
-
-        result = p.isProtocolSupported(addr, map);
-        return result;
+        final InetAddress ipAddress = InetAddressUtils.addr(criticalPath[0]);
+        if (ipAddress == null) {
+            LOG.error("testCriticalPath: failed to convert string address to InetAddress {}", criticalPath[0]);
+            return true;
+        }
+        boolean available = false;
+        try {
+            int retries = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries();
+            int timeout = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout();
+            Number retval = m_pingerFactory.getInstance().ping(ipAddress, timeout, retries);
+            if (retval != null) {
+                available = true;
+            }
+        } catch (Throwable e) {
+            LOG.warn("Pinger failed to ping {}", ipAddress, e);
+            available = false;
+        }
+        LOG.debug("testCriticalPath: checking {}@{}, available ? {}", criticalPath[1], criticalPath[0], available);
+        return available;
     }
 
     String getNodeLabel(int nodeId) {

@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>18.0.0-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.remote-poller</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Features Remote Poller</name>
+  <name>OpenNMS :: Features :: Remote Poller</name>
   <url>http://maven.apache.org</url>
   <properties>
     <migVersion>5.0</migVersion>
@@ -278,11 +278,6 @@ groovy.compiler.output.path=target/classes
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

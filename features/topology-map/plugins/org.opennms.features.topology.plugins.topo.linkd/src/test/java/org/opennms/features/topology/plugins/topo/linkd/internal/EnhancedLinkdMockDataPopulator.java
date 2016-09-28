@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,23 +47,60 @@ import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
+import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
+import org.opennms.netmgt.dao.api.BridgeTopologyDao;
+import org.opennms.netmgt.dao.api.CdpElementDao;
+import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.IpNetToMediaDao;
+import org.opennms.netmgt.dao.api.IsIsLinkDao;
+import org.opennms.netmgt.dao.api.LldpElementDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.model.BridgeBridgeLink;
+import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpLink;
+import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
+import org.opennms.netmgt.model.topology.BroadcastDomain;
+import org.opennms.netmgt.model.topology.IsisTopologyLink;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EnhancedLinkdMockDataPopulator {
 
     @Autowired
+    private BridgeTopologyDao m_bridgeTopologyDao;
+
+    @Autowired
+    private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
+
+    @Autowired
+    private BridgeMacLinkDao m_bridgeMacLinkDao;
+
+    @Autowired
+    private CdpLinkDao m_cdpLinkDao;
+
+    @Autowired
+    private CdpElementDao m_cdpElementDao;
+
+    @Autowired
+    private IsIsLinkDao m_isisLinkDao;
+
+    @Autowired
     private LldpLinkDao m_lldpLinkDao;
+
+    @Autowired
+    private LldpElementDao m_lldpElementDao;
 
     @Autowired
     private OspfLinkDao m_ospfLinkDao;
@@ -75,6 +113,9 @@ public class EnhancedLinkdMockDataPopulator {
 
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
+
+    @Autowired
+    private IpNetToMediaDao m_ipNetToMediaDao;
 
     @Autowired
     private OperationContext m_operationContext;
@@ -369,24 +410,54 @@ public class EnhancedLinkdMockDataPopulator {
     }
 
     public void setUpMock() {
+        EasyMock.expect(m_bridgeBridgeLinkDao.findAll()).andReturn(new ArrayList<BridgeBridgeLink>()).anyTimes();
+        EasyMock.expect(m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes()).andReturn(new ArrayList<BridgeMacTopologyLink>()).anyTimes();
+        EasyMock.expect(m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()).andReturn(new ArrayList<BridgeMacTopologyLink>()).anyTimes();
+        EasyMock.expect(m_cdpLinkDao.findAll()).andReturn(new ArrayList<CdpLink>()).anyTimes();
+        EasyMock.expect(m_cdpElementDao.findAll()).andReturn(new ArrayList<CdpElement>()).anyTimes();
+        EasyMock.expect(m_bridgeTopologyDao.getAllPersisted(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao)).andReturn(new HashSet<BroadcastDomain>()).anyTimes();
+        EasyMock.expect(m_isisLinkDao.getLinksForTopology()).andReturn(new ArrayList<IsisTopologyLink>()).anyTimes();
+
+        EasyMock.expect(m_nodeDao.findAll()).andReturn(getNodes()).anyTimes();
+        EasyMock.expect(m_ipInterfaceDao.findAll()).andReturn(getOnmsIpInterfaces()).anyTimes();
+        EasyMock.expect(m_ipNetToMediaDao.findAll()).andReturn(new ArrayList<IpNetToMedia>()).anyTimes();
+        EasyMock.expect(m_snmpInterfaceDao.findAll()).andReturn(getOnmsSnmpInterfaces()).anyTimes();
+        EasyMock.expect(m_lldpElementDao.findAll()).andReturn(getLldpElements()).anyTimes();
         EasyMock.expect(m_lldpLinkDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_ospfLinkDao.findAll()).andReturn(getOspfLinks()).anyTimes();
         EasyMock.expect(m_nodeDao.getAllLabelsById());
         EasyMock.expectLastCall().andReturn(getNodeLabelsById()).anyTimes();
-
+        
         for (int i=1;i<9;i++) {
             EasyMock.expect(m_nodeDao.get(i)).andReturn(getNode(i)).anyTimes();
             EasyMock.expect(m_snmpInterfaceDao.findByNodeIdAndIfIndex(i, -1)).andReturn(null).anyTimes();
             EasyMock.expect(m_ipInterfaceDao.findPrimaryInterfaceByNodeId(i)).andReturn(getNode(i).getPrimaryInterface()).anyTimes();
             EasyMock.expect(m_ipInterfaceDao.findByNodeId(i)).andReturn(getList(getNode(i).getIpInterfaces())).anyTimes();
         }
-
+        
+        EasyMock.replay(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, m_cdpLinkDao, m_isisLinkDao,m_bridgeTopologyDao);
+        EasyMock.replay(m_cdpElementDao);
         EasyMock.replay(m_lldpLinkDao);
+        EasyMock.replay(m_lldpElementDao);
         EasyMock.replay(m_ospfLinkDao);
         EasyMock.replay(m_nodeDao);
         EasyMock.replay(m_snmpInterfaceDao);
         EasyMock.replay(m_ipInterfaceDao);
+        EasyMock.replay(m_ipNetToMediaDao);
     }
+
+    public void tearDown() {
+        EasyMock.reset(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, m_cdpLinkDao, m_isisLinkDao,m_bridgeTopologyDao);
+        EasyMock.reset(m_cdpElementDao);
+        EasyMock.reset(m_lldpElementDao);
+        EasyMock.reset(m_lldpLinkDao);
+        EasyMock.reset(m_ospfLinkDao);
+        EasyMock.reset(m_nodeDao);
+        EasyMock.reset(m_snmpInterfaceDao);
+        EasyMock.reset(m_ipInterfaceDao);
+        EasyMock.reset(m_ipNetToMediaDao);
+    }
+
 
     public OnmsNode getNode(Integer id) {
         OnmsNode node= null;
@@ -410,14 +481,6 @@ public class EnhancedLinkdMockDataPopulator {
         }
 
         return node;
-    }
-
-    public void tearDown() {
-        EasyMock.reset(m_lldpLinkDao);
-        EasyMock.reset(m_ospfLinkDao);
-        EasyMock.reset(m_nodeDao);
-        EasyMock.reset(m_snmpInterfaceDao);
-        EasyMock.reset(m_ipInterfaceDao);
     }
 
     public OnmsNode getNode1() {
@@ -524,6 +587,7 @@ public class EnhancedLinkdMockDataPopulator {
         this.m_nodeDao = nodeDao;
     }
 
+    @SuppressWarnings("deprecation")
     public void check(GraphProvider topologyProvider) {
         String vertexNamespace = topologyProvider.getVertexNamespace();
         Assert.assertEquals(8, topologyProvider.getVertices().size());
@@ -613,6 +677,29 @@ public class EnhancedLinkdMockDataPopulator {
         return m_nodes;
     }
 
+    public List<LldpElement> getLldpElements() {
+        List<LldpElement> lldpelements = new ArrayList<LldpElement>();
+        for (OnmsNode node: m_nodes) 
+            lldpelements.add(node.getLldpElement());
+        return lldpelements;
+    }
+    
+    public List<OnmsIpInterface> getOnmsIpInterfaces() {
+        List<OnmsIpInterface> elements = new ArrayList<OnmsIpInterface>();
+        for (OnmsNode node: m_nodes) 
+            elements.addAll(node.getIpInterfaces());
+        return elements;
+        
+    }
+    
+    public List<OnmsSnmpInterface> getOnmsSnmpInterfaces() {
+        List<OnmsSnmpInterface> elements = new ArrayList<OnmsSnmpInterface>();
+        for (OnmsNode node: m_nodes) 
+            elements.addAll(node.getSnmpInterfaces());
+        return elements;
+        
+    }
+
     public void setNodes(List<OnmsNode> nodes) {
         m_nodes = nodes;
     }
@@ -656,4 +743,13 @@ public class EnhancedLinkdMockDataPopulator {
     public OspfLinkDao getOspfLinkDao() {
         return m_ospfLinkDao;
     }
+    
+    public LldpElementDao getLldpElementDao() {
+        return m_lldpElementDao;
+    }
+
+    public void setLldpElementDao(LldpElementDao lldpElementDao) {
+        m_lldpElementDao = lldpElementDao;
+    }
+
 }

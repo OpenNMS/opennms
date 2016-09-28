@@ -34,7 +34,9 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
-public interface GraphProvider extends VertexProvider, EdgeProvider {
+import org.opennms.features.topology.api.browsers.SelectionAware;
+
+public interface GraphProvider extends VertexProvider, EdgeProvider, SelectionAware {
 
 	void save();
 
@@ -75,5 +77,7 @@ public interface GraphProvider extends VertexProvider, EdgeProvider {
 
 	Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId);
 
-    Criteria getDefaultCriteria();
+	Defaults getDefaults();
+
+	TopologyProviderInfo getTopologyProviderInfo();
 }

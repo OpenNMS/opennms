@@ -29,20 +29,12 @@
 package org.opennms.netmgt.discovery;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.CamelContext;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -56,6 +48,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.Assert;
 
 /**
@@ -77,18 +70,12 @@ public class Discovery extends AbstractServiceDaemon {
 
     private static final String LOG4J_CATEGORY = "discovery";
 
-    /**
-     * The SQL query used to get the list of managed IP addresses from the database
-     */
-    private static final String ALL_IP_ADDRS_SQL = "SELECT DISTINCT ipAddr FROM ipInterface WHERE isManaged <> 'D'";
-
     private DiscoveryConfigFactory m_discoveryFactory;
 
     private EventForwarder m_eventForwarder;
 
-    private UnmanagedInterfaceFilter m_interfaceFilter= null;
-
     @Autowired
+    @Qualifier ("discoveryContext")
     private CamelContext m_camelContext;
 
     /**
@@ -128,20 +115,6 @@ public class Discovery extends AbstractServiceDaemon {
     }
 
     /**
-     * <p>setUnmanagedInterfaceFilter</p>
-     */
-    public void setUnmanagedInterfaceFilter(UnmanagedInterfaceFilter filter) {
-    	m_interfaceFilter = filter;
-    }
-
-    /**
-     * <p>getUnmanagedInterfaceFilter</p>
-     */
-    public UnmanagedInterfaceFilter getUnmanagedInterfaceFilter() {
-        return m_interfaceFilter;
-    }
-
-    /**
      * Constructs a new discovery instance.
      */
     public Discovery() {
@@ -172,6 +145,10 @@ public class Discovery extends AbstractServiceDaemon {
             LOG.debug("onInit: initialization failed", e);
             throw new IllegalStateException("Could not initialize discovery configuration.", e);
         }
+
+        // Reduce the shutdown timeout for the Camel context
+        m_camelContext.getShutdownStrategy().setTimeout(5);
+        m_camelContext.getShutdownStrategy().setTimeUnit(TimeUnit.SECONDS);
     }
 
     /**
@@ -179,7 +156,6 @@ public class Discovery extends AbstractServiceDaemon {
      */
     @Override
     protected void onStart() {
-        syncAlreadyDiscovered();
         try {
             m_camelContext.start();
         } catch (Exception e) {
@@ -221,42 +197,6 @@ public class Discovery extends AbstractServiceDaemon {
         } catch (Exception e) {
             LOG.error("Discovery resume failed: " + e.getMessage(), e);
         }
-    }
-
-    /**
-     * <p>syncAlreadyDiscovered</p>
-     */
-    protected void syncAlreadyDiscovered() {
-    	/**
-    	 * Make a new list with which we'll replace the existing one, that way
-    	 * if something goes wrong with the DB we won't lose whatever was already
-    	 * in there
-    	 */
-    	Set<String> newAlreadyDiscovered = Collections.synchronizedSet(new HashSet<String>());
-    	Connection conn = null;
-        final DBUtils d = new DBUtils(getClass());
-
-    	try {
-    		conn = DataSourceFactory.getInstance().getConnection();
-    		d.watch(conn);
-    		PreparedStatement stmt = conn.prepareStatement(ALL_IP_ADDRS_SQL);
-    		d.watch(stmt);
-    		ResultSet rs = stmt.executeQuery();
-    		d.watch(rs);
-    		if (rs != null) {
-    			while (rs.next()) {
-    				newAlreadyDiscovered.add(rs.getString(1));
-    			}
-    		} else {
-    			LOG.warn("Got null ResultSet from query for all IP addresses");
-    		}
-    		m_interfaceFilter.setManagedAddresses(newAlreadyDiscovered);
-    	} catch (SQLException sqle) {
-		LOG.warn("Caught SQLException while trying to query for all IP addresses: {}", sqle.getMessage());
-    	} finally {
-    	    d.cleanUp();
-    	}
-    	LOG.info("syncAlreadyDiscovered initialized list of managed IP addresses with {} members", m_interfaceFilter.size());
     }
 
     /**
@@ -328,22 +268,6 @@ public class Discovery extends AbstractServiceDaemon {
     }
 
     /**
-     * <p>handleInterfaceDeleted</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.INTERFACE_DELETED_EVENT_UEI)
-    public void handleInterfaceDeleted(final Event event) {
-        if(event.getInterface() != null) {
-            // remove from known nodes
-            final String iface = event.getInterface();
-            m_interfaceFilter.removeManagedAddress(iface);
-
-            LOG.debug("Removed {} from known interface list", iface);
-        }
-    }
-
-    /**
      * <p>handleDiscoveryResume</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
@@ -367,20 +291,6 @@ public class Discovery extends AbstractServiceDaemon {
             pause();
         } catch (IllegalStateException ex) {
         }
-    }
-
-    /**
-     * <p>handleNodeGainedInterface</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
-    public void handleNodeGainedInterface(Event event) {
-        // add to known nodes
-        final String iface = event.getInterface();
-        m_interfaceFilter.addManagedAddress(iface);
-
-        LOG.debug("Added interface {} as discovered", iface);
     }
 
     public static String getLoggingCategory() {

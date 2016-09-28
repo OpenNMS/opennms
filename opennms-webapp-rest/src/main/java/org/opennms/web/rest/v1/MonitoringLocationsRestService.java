@@ -42,10 +42,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.joda.time.Duration;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.v1.support.OnmsMonitoringLocationDefinitionList;
@@ -69,7 +70,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 	@GET
 	@Path("default")
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-	public LocationDef getDefaultMonitoringLocation() throws ParseException {
+	public OnmsMonitoringLocation getDefaultMonitoringLocation() throws ParseException {
 		return m_monitoringLocationDao.findAll().get(0);
 	}
 
@@ -89,19 +90,23 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 	@GET
 	@Path("{monitoringLocation}")
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-	public LocationDef getMonitoringLocation(@PathParam("monitoringLocation") String monitoringLocation) {
-		return m_monitoringLocationDao.get(monitoringLocation);
+	public OnmsMonitoringLocation getMonitoringLocation(@PathParam("monitoringLocation") String monitoringLocation) {
+	    final OnmsMonitoringLocation loc = m_monitoringLocationDao.get(monitoringLocation);
+            if (loc == null) {
+                throw getException(Status.NOT_FOUND, "Monitoring location {} was not found.", monitoringLocation);
+            }
+            return loc;
 	}
 
 	@POST
 	@Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 	@Transactional
-	public Response addMonitoringLocation(@Context final UriInfo uriInfo, LocationDef monitoringLocation) {
+	public Response addMonitoringLocation(@Context final UriInfo uriInfo, OnmsMonitoringLocation monitoringLocation) {
 		writeLock();
 		try {
 			LOG.debug("addMonitoringLocation: Adding monitoringLocation {}", monitoringLocation.getLocationName());
 			m_monitoringLocationDao.save(monitoringLocation);
-			return Response.seeOther(getRedirectUri(uriInfo, monitoringLocation.getLocationName())).build();
+			return Response.created(getRedirectUri(uriInfo, monitoringLocation.getLocationName())).build();
 		} finally {
 			writeUnlock();
 		}
@@ -111,14 +116,15 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 	@Path("{monitoringLocation}")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
-	public Response updateMonitoringLocation(@Context final UriInfo uriInfo, @PathParam("monitoringLocation") String monitoringLocation, MultivaluedMapImpl params) {
+	public Response updateMonitoringLocation(@PathParam("monitoringLocation") String monitoringLocation, MultivaluedMapImpl params) {
 		writeLock();
 		try {
-			LocationDef def = m_monitoringLocationDao.get(monitoringLocation);
+			OnmsMonitoringLocation def = m_monitoringLocationDao.get(monitoringLocation);
 			LOG.debug("updateMonitoringLocation: updating monitoring location {}", monitoringLocation);
 
-			if (params.isEmpty()) return Response.seeOther(getRedirectUri(uriInfo)).build();
+			if (params.isEmpty()) return Response.notModified().build();
 
+			boolean modified = false;
 			final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(def);
 			wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
 			for(final String key : params.keySet()) {
@@ -127,11 +133,15 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 					String stringValue = params.getFirst(key);
 					value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
 					wrapper.setPropertyValue(key, value);
+					modified = true;
 				}
 			}
-			LOG.debug("updateMonitoringLocation: monitoring location {} updated", monitoringLocation);
-			m_monitoringLocationDao.save(def);
-			return Response.seeOther(getRedirectUri(uriInfo)).build();
+			if (modified) {
+			    LOG.debug("updateMonitoringLocation: monitoring location {} updated", monitoringLocation);
+			    m_monitoringLocationDao.save(def);
+			    return Response.noContent().build();
+			}
+			return Response.notModified().build();
 		} finally {
 			writeUnlock();
 		}
@@ -145,7 +155,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 		try {
 			LOG.debug("deleteMonitoringLocation: deleting monitoring location {}", monitoringLocation);
 			m_monitoringLocationDao.delete(monitoringLocation);
-			return Response.ok().build();
+			return Response.noContent().build();
 		} finally {
 			writeUnlock();
 		}

@@ -61,6 +61,13 @@
           </documentation>
         </annotation>
       </attribute>
+      <attribute name="location" type="string" use="optional" >
+        <annotation>
+          <documentation>
+          This optional attribute can be used to associate a node with a location.
+          </documentation>
+        </annotation>
+      </attribute>
       <attribute name="city" type="string" use="optional" >
         <annotation>
           <documentation>

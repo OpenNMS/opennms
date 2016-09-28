@@ -29,9 +29,36 @@
 package org.opennms.netmgt.provision.service;
 
 import java.net.InetAddress;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
+import org.opennms.netmgt.snmp.InetAddrUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class DefaultHostnameResolver implements HostnameResolver {
-    @Override public String getHostname(final InetAddress addr) {
-        return addr.getCanonicalHostName();
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultHostnameResolver.class);
+
+    private final LocationAwareDnsLookupClient m_locationAwareDnsLookupClient;
+
+    public DefaultHostnameResolver(LocationAwareDnsLookupClient locationAwareDnsLookupClient) {
+        m_locationAwareDnsLookupClient = Objects.requireNonNull(locationAwareDnsLookupClient);
+    }
+
+    @Override
+    public String getHostname(final InetAddress addr, final String location) {
+        LOG.debug("Performing reverse lookup on {} at location {}", addr, location);
+        final CompletableFuture<String> future = m_locationAwareDnsLookupClient.reverseLookup(addr, location);
+        try {
+            final String result = future.get();
+            LOG.debug("Reverse lookup returned {} for {} at location {}", result, addr, location);
+            return result;
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn("Reverse lookup failed for {} at location {}. Using IP address as hostname.", addr, location);
+            return InetAddrUtils.str(addr);
+        }
     }
 }

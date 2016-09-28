@@ -1,11 +1,43 @@
-[releasenotes-17]
-=== OpenNMS 17
+[[release-17-changelog]]
+=== Changelog
 
-[releasenotes-changelog-17.1.0]
+[[releasenotes-changelog-17.1.1]]
+==== Release 17.1.1
+
+Release 17.1.1 is the latest stable release of OpenNMS.  It contains a number of bug fixes and a few other changes.
+For a high-level overview of what's changed in OpenNMS 17, see <<releasenotes-17, major changes in OpenNMS 17>>.
+
+The codename for 17.1.1 is _Glenmorangie_.
+
+===== Enhancement
+
+* Allow send events through ReST (Issue http://issues.opennms.org/browse/NMS-6404[NMS-6404])
+* Create pull request and contribution template to GitHub project (Issue http://issues.opennms.org/browse/NMS-8148[NMS-8148])
+
+===== Task
+
+* Remove all jersey artifacts from lib classpath (Issue http://issues.opennms.org/browse/NMS-8151[NMS-8151])
+
+===== Bug
+
+* Chart Servlet Outages model exception (Issue http://issues.opennms.org/browse/NMS-7936[NMS-7936])
+* Groups config rolled back after deleting a user in web UI (Issue http://issues.opennms.org/browse/NMS-8010[NMS-8010])
+* Adding com.sun.management.jmxremote.authenticate=true on opennms.conf is ignored by the opennms script (Issue http://issues.opennms.org/browse/NMS-8034[NMS-8034])
+* org.hibernate.exception.SQLGrammarException with ACLs on V17 (Issue http://issues.opennms.org/browse/NMS-8048[NMS-8048])
+* vacuumd-configuration.xml -- Database error executing statement (Issue http://issues.opennms.org/browse/NMS-8075[NMS-8075])
+* Overview about major releases in the release notes (Issue http://issues.opennms.org/browse/NMS-8113[NMS-8113])
+* Can't modify the Foreign ID on the Requisitions UI when adding a new node (Issue http://issues.opennms.org/browse/NMS-8153[NMS-8153])
+* When altering the SNMP Trap NBI config, the externally referenced mapping groups are persisted into the main file. (Issue http://issues.opennms.org/browse/NMS-8159[NMS-8159])
+* Tooltips are not working on the new Requisitions UI (Issue http://issues.opennms.org/browse/NMS-8161[NMS-8161])
+* OutageDao ACL support is broken causing web UI failures (Issue http://issues.opennms.org/browse/NMS-8165[NMS-8165])
+* Install guide should use postgres admin for schema updates (Issue http://issues.opennms.org/browse/NMS-8177[NMS-8177])
+* Allows state names to be configured in the JIRA Ticketer Plugin (Issue http://issues.opennms.org/browse/NMS-8199[NMS-8199])
+
+[[releasenotes-changelog-17.1.0]]
 ==== Release 17.1.0
 
 Release 17.1.0 is the latest stable release of OpenNMS.  It contains a number of important bug fixes and a few new features.
-For a high-level overview of what's changed in OpenNMS 17, see https://github.com/OpenNMS/opennms/blob/opennms-17.0.0-1/WHATSNEW.md[What's New in OpenNMS 17].
+For a high-level overview of what's changed in OpenNMS 17, see <<releasenotes-17, major changes in OpenNMS 17>>.
 
 The codename for 17.1.0 is _Talisker_.
 
@@ -75,7 +107,7 @@ The codename for 17.1.0 is _Talisker_.
 * Synchronizing a requisition fails (Issue http://issues.opennms.org/browse/NMS-8133[NMS-8133])
 * Add all the services declared on Collectd and Pollerd configuration as available services on /opennms/rest/foreignSourceConfig/services (Issue http://issues.opennms.org/browse/NMS-8147[NMS-8147])
 
-[releasenotes-changelog-17.0.0]
+[[releasenotes-changelog-17.0.0]]
 ==== Release 17.0.0
 
 Release 17.0.0 is the latest stable release of OpenNMS.  It contains a large number of bug fixes and new features.

@@ -23,7 +23,10 @@ export BUILDDEFINES=\
 	-Dmaven.test.skip.exec=true \
 	-DskipITs=true \
 	-Dproduct.release=1 \
-	-Dproduct.snapshot=true
+	-Dproduct.snapshot=true \
+	-Daether.connector.basic.threads=1 \
+	-Daether.connector.resumeDownloads=false \
+	-Prun-expensive-tasks
 
 configure:
 
@@ -224,11 +227,11 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/rt.properties                        debian/opennms-plugin-ticketer-rt/var/lib/opennms/etc-pristine/
 	
 	# NCS
-	mv debian/temp/lib/ncs-*.jar                                                               debian/opennms-ncs/usr/share/java/opennms/
+	mv debian/temp/lib/org.opennms.features.ncs.ncs-*.jar                                      debian/opennms-ncs/usr/share/java/opennms/
 	mv debian/temp/etc/drools-engine.d/ncs                                                     debian/opennms-ncs/etc/opennms/drools-engine.d/
 	mv debian/temp/etc/ncs-northbounder-configuration.xml                                      debian/opennms-ncs/etc/opennms/
 	mv debian/temp/share/xsds/ncs-*.xsd                                                        debian/opennms-ncs/var/lib/opennms/xsds/
-	mv debian/temp/jetty-webapps/opennms/WEB-INF/lib/ncs-*.jar                                 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/lib/
+	mv debian/temp/jetty-webapps/opennms/WEB-INF/lib/org.opennms.features.ncs.ncs-*.jar        debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/lib/
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/ncs*.xml                                      debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/alarm/ncs-*                               debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/alarm/
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/ncs                                       debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/
@@ -313,14 +316,28 @@ install: build
 	rm -rf debian/temp/contrib/remote-poller
 
 	##
+	## Setup the opennms-source package
+	##
+	install -d -m 755 debian/opennms-source/usr/share/opennms/jetty-webapps/opennms
+	mv debian/temp/jetty-webapps/opennms/source debian/opennms-source/usr/share/opennms/jetty-webapps/opennms/
+	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
+
+	##
 	## Setup the opennms-webapp-jetty package
 	##
 	install -m 644 debian/opennms-webapp-jetty.overrides debian/opennms-webapp-jetty/usr/share/lintian/overrides/opennms-webapp-jetty
-	install -d -m 755 debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/{opennms,opennms-remoting,ROOT}
+	install -d -m 755 debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/{opennms,ROOT}
 	mv debian/temp/jetty-webapps/opennms/*          debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms/
-	mv debian/temp/jetty-webapps/opennms-remoting/* debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms-remoting/
 	mv debian/temp/jetty-webapps/ROOT/*             debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/ROOT/
 	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
+
+	##
+	## Setup the opennms-webapp-remoting package
+	##
+	install -m 644 debian/opennms-webapp-remoting.overrides debian/opennms-webapp-remoting/usr/share/lintian/overrides/opennms-webapp-remoting
+	install -d -m 755 debian/opennms-webapp-remoting/usr/share/opennms/jetty-webapps/opennms-remoting
+	mv debian/temp/jetty-webapps/opennms-remoting/* debian/opennms-webapp-remoting/usr/share/opennms/jetty-webapps/opennms-remoting/
+	find debian/opennms-webapp-remoting/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
 
 	##
 	## Setup the opennms-doc package

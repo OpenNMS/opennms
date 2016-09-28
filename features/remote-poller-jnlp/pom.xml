@@ -3,14 +3,41 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>18.0.0-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Features Remote Poller (JNLP)</name>
+  <name>OpenNMS :: Features :: Remote Poller :: JNLP</name>
   <url>http://maven.apache.org</url>
+  <properties>
+    <webstartPluginVersion>1.0-beta-7-ONMS-20140424</webstartPluginVersion>
+  </properties>
+  <profiles>
+    <profile>
+      <id>run-expensive-tasks</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>webstart-maven-plugin</artifactId>
+            <version>${webstartPluginVersion}</version>
+            <configuration>
+              <sign>
+                <keystore>${webstart.keystore}</keystore>
+                <keypass>${webstart.keypass}</keypass>
+                <storepass>${webstart.storepass}</storepass>
+                <alias>${webstart.keyalias}</alias>
+                <dnameCn>${webstart.dnameCn}</dnameCn>
+                <verify>true</verify>
+              </sign>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <build>
     <plugins>
        <plugin>
@@ -101,7 +128,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>webstart-maven-plugin</artifactId>
-        <version>1.0-beta-7-ONMS-20140424</version>
+        <version>${webstartPluginVersion}</version>
         <executions>
           <execution>
             <id>gui-app</id>
@@ -180,18 +207,27 @@
           <verifyjar>true</verifyjar>
           <canUnsign>true</canUnsign>
           <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
-          <sign>
-            <keystore>${webstart.keystore}</keystore>
-            <keypass>${webstart.keypass}</keypass>
-            <storepass>${webstart.storepass}</storepass>
-            <alias>${webstart.keyalias}</alias>
-            <dnameCn>${webstart.dnameCn}</dnameCn>
-            <dnameCn>${webstart.dnameCn}</dnameCn>
-            <verify>true</verify>
-          </sign>
           <updateManifestEntries>
-            <Permissions>all-permissions</Permissions>
+            <!--
+              Application name that is displayed on the Security Warning
+              when first starting the application
+            -->
+            <Application-Name>OpenNMS Remote Poller</Application-Name>
+
+            <!-- Allow libraries loaded from any source -->
+            <!-- <Application-Library-Allowable-Codebase>*</Application-Library-Allowable-Codebase> -->
+
+            <!-- Allow loading the application from any URL -->
             <Codebase>*</Codebase>
+
+            <!-- Run in all-permissions mode instead of sandboxed mode -->
+            <Permissions>all-permissions</Permissions>
+
+            <!-- Don't load any unsigned classes -->
+            <!-- <Trusted-Only>true</Trusted-Only> -->
+
+            <!-- Allow loading classes from sandboxed libraries -->
+            <!-- <Trusted-Library>true</Trusted-Library> -->
           </updateManifestEntries>
         </configuration>
         <dependencies>
@@ -233,6 +269,51 @@
             <version>1.4</version>
           </dependency>
         </dependencies>
+      </plugin>
+      <!-- Export the certificate that was used to sign the JNLP app in PEM format -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>keytool-maven-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>exportCertificate</id>
+            <goals>
+              <goal>exportCertificate</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <keystore>${webstart.keystore}</keystore>
+              <storepass>${webstart.storepass}</storepass>
+              <alias>${webstart.keyalias}</alias>
+              <rfc>true</rfc>
+              <file>${project.build.directory}/jnlp/jnlp.pem</file>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin> 
+        <artifactId>maven-clean-plugin</artifactId> 
+        <executions> 
+          <execution> 
+            <id>cleanup-assembly</id> 
+            <phase>post-integration-test</phase> 
+            <goals> 
+              <goal>clean</goal> 
+            </goals> 
+            <configuration> 
+              <excludeDefaultDirectories>true</excludeDefaultDirectories> 
+              <filesets> 
+                <fileset> 
+                  <directory>${project.build.directory}/jnlp</directory> 
+                </fileset> 
+                <fileset> 
+                  <directory>${project.build.directory}/${project.build.finalName}</directory> 
+                </fileset> 
+              </filesets> 
+            </configuration> 
+          </execution> 
+        </executions> 
       </plugin>
     </plugins>
   </build>

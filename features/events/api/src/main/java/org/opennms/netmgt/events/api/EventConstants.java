@@ -653,6 +653,14 @@ public abstract class EventConstants {
     public static final String PARAM_REPORT_TITLE = "reportTitle";
     public static final String PARAM_REPORT_GRAPH_COUNT = "graphCount";
 
+
+    public static final String MONITORING_SYSTEM_ADDED_UEI = "uei.opennms.org/internal/monitoringSystemAdded";
+    public static final String MONITORING_SYSTEM_LOCATION_CHANGED_UEI = "uei.opennms.org/internal/monitoringSystemLocationChanged";
+    public static final String MONITORING_SYSTEM_DELETED_UEI = "uei.opennms.org/internal/monitoringSystemDeleted";
+    public static final String PARAM_MONITORING_SYSTEM_TYPE = "monitoringSystemType";
+    public static final String PARAM_MONITORING_SYSTEM_ID = "monitoringSystemId";
+    public static final String PARAM_MONITORING_SYSTEM_LOCATION = "monitoringSystemLocation";
+    public static final String PARAM_MONITORING_SYSTEM_PREV_LOCATION = "monitoringSystemPreviousLocation";
     //
     // end eventUEIs
     //
@@ -934,6 +942,16 @@ public abstract class EventConstants {
     public static final String PARM_CAT_LABEL = "catlabel";
 
     /**
+     * Used to indicate categories added on a {@link #NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI} event.
+     */
+    public static final String PARM_CATEGORIES_ADDED = "categoriesAdded";
+
+    /**
+     * Used to indicate categories deleted on a {@link #NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI} event.
+     */
+    public static final String PARM_CATEGORIES_DELETED = "categoriesDeleted";
+
+    /**
      * The username when sent as a parameter(like for the RTC subscribe)
      */
     public static final String PARM_USER = "user";
@@ -1071,6 +1089,35 @@ public abstract class EventConstants {
      * Used for indication the second endpoint to a map link.
      */
     public static final String PARM_ENDPOINT2 = "endPoint2";
+
+    //
+    // for Alarmd
+    //
+
+    // Sent when an alarm is created
+    public static final String ALARM_CREATED_UEI   = "uei.opennms.org/alarms/alarmCreated";
+    // Sent when an alarm is escalated, either by a user action or an automation
+    public static final String ALARM_ESCALATED_UEI   = "uei.opennms.org/alarms/alarmEscalated";
+    // Sent when an alarm is cleared, either by a user action or an automation
+    public static final String ALARM_CLEARED_UEI = "uei.opennms.org/alarms/alarmCleared";
+    // Sent when an alarm is un-cleared, either by a user action or an automation
+    public static final String ALARM_UNCLEARED_UEI = "uei.opennms.org/alarms/alarmUncleared";
+    // Sent when an alarm is updated with a reduce event
+    public static final String ALARM_UPDATED_WITH_REDUCED_EVENT_UEI = "uei.opennms.org/alarms/alarmUpdatedWithReducedEvent";
+
+    //
+    // for Bsmd
+    //
+    public static final String BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI = "uei.opennms.org/bsm/serviceOperationalStatusChanged";
+    public static final String BUSINESS_SERVICE_PROBLEM_UEI = "uei.opennms.org/bsm/serviceProblem";
+    public static final String BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI = "uei.opennms.org/bsm/serviceProblemResolved";
+
+    public static final String PARM_BUSINESS_SERVICE_ID = "businessServiceId";
+    public static final String PARM_BUSINESS_SERVICE_NAME = "businessServiceName";
+    public static final String PARM_NEW_SEVERITY_ID = "newSeverityId";
+    public static final String PARM_NEW_SEVERITY_LABEL = "newSeverityLabel";
+    public static final String PARM_PREV_SEVERITY_ID = "prevSeverityId";
+    public static final String PARM_PREV_SEVERITY_LABEL = "prevSeverityLabel";
 
     //
     // for NCS service

@@ -40,7 +40,7 @@ import org.opennms.netmgt.discovery.messages.DiscoveryJob;
 import org.opennms.netmgt.discovery.messages.DiscoveryResults;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +49,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.RateLimiter;
 
 /**
  * <p>This class processes a {@link DiscoveryJob} by executing ICMP pings against
@@ -64,10 +65,10 @@ public class Discoverer {
 
     private static final Logger LOG = LoggerFactory.getLogger(Discoverer.class);
 
-    final Pinger m_pinger;
+    private final PingerFactory m_pingerFactory;
 
-    public Discoverer(Pinger pinger) {
-        m_pinger = Preconditions.checkNotNull(pinger, "pinger argument");
+    public Discoverer(final PingerFactory pingerFactory) {
+        m_pingerFactory = Preconditions.checkNotNull(pingerFactory, "pingerFactory argument");
     }
 
     public DiscoveryResults discover(DiscoveryJob job) {
@@ -84,9 +85,14 @@ public class Discoverer {
             .map(a -> a.getAddress())
             .forEach(a -> tracker.expectCallbackFor(a));
 
+        // Use a RateLimiter to limit the ping packets per second that we send
+        RateLimiter limiter = RateLimiter.create(job.getPacketsPerSecond());
+
         // Issue all of the pings
-        // TODO: Add delay of {@link DiscoveryConfigFactory#getIntraPacketDelay()}
-        addresses.stream().forEach(a -> ping(a, tracker));
+        addresses.stream().forEach(a -> {
+            limiter.acquire();
+            ping(a, tracker);
+        });
 
         // Don't bother waiting if there aren't any addresses
         if (!addresses.isEmpty()) {
@@ -105,7 +111,7 @@ public class Discoverer {
     private void ping(IPPollAddress pollAddress, PingResponseTracker tracker) {
         InetAddress address = pollAddress.getAddress();
         try {
-            m_pinger.ping(address, pollAddress.getTimeout(), pollAddress.getRetries(), (short) 1, tracker);
+            m_pingerFactory.getInstance().ping(address, pollAddress.getTimeout(), pollAddress.getRetries(), (short) 1, tracker);
         } catch (Throwable e) {
             LOG.debug("Error pinging {}", address.getAddress(), e);
             tracker.handleError(address, null, e);

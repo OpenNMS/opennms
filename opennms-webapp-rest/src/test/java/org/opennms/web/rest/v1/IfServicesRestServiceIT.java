@@ -38,6 +38,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -55,7 +56,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -80,9 +80,6 @@ public class IfServicesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private DatabasePopulator m_databasePopulator;
 
     @Autowired
-    private TransactionTemplate m_template;
-
-    @Autowired
     private ServletContext m_servletContext;
 
     @Override
@@ -101,13 +98,24 @@ public class IfServicesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         }
 
         // Mark all services as forced unmanaged
-        sendPut(url, "status=F", 303, null);
+        sendPut(url, "status=F", 204);
 
         // Verify that all statuses were updated
         list = getXmlObject(JaxbUtils.getContextFor(OnmsMonitoredServiceDetailList.class), url, 200, OnmsMonitoredServiceDetailList.class);
         for(OnmsMonitoredServiceDetail detail : list.getObjects()) {
             assertEquals("F", detail.getStatusCode());
         }
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetById() throws Exception {
+        OnmsMonitoredServiceDetail service = getXmlObject(JaxbUtils.getContextFor(OnmsMonitoredServiceDetail.class), "/ifservices/2", 200, OnmsMonitoredServiceDetail.class);
+        Assert.assertNotNull(service);
+        Assert.assertEquals("2", service.getId());
+
+        // verify that 404 is implemented correctly
+        sendRequest(GET, "/ifservices/-2", 404);
     }
 
     @Test

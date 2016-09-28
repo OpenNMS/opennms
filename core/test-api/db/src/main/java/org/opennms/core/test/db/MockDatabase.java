@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -71,23 +72,25 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     public MockDatabase() throws Exception {
         this(true);
     }
-    
+
+    public MockDatabase(boolean createNow) throws Exception {
+        this(null, createNow);
+    }
+
     public MockDatabase(String name, boolean createNow) throws Exception {
         super(name);
+
         setPopulateSchema(true);
+
+        setClassName(MockDatabase.class.getName());
+        setMethodName("MockDatabase constructor");
+        setTestDetails("I do not know who called me.... which is sad. Will you be my friend?");
+
         if (createNow) {
             create();
         }
     }
-    
-    public MockDatabase(boolean createNow) throws Exception {
-        super();
-        setPopulateSchema(true);
-        if (createNow) {
-            create();
-        }
-    }
-    
+
     public void populate(MockNetwork network) {
 
         MockVisitor dbCreater = new MockVisitorAdapter() {
@@ -121,9 +124,8 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     
     public void writeNode(MockNode node) {
         LOG.info("Inserting node \"{}\" into database with ID {}", node.getLabel(), node.getNodeId());
-        Object[] values = { Integer.valueOf(node.getNodeId()), node.getLabel(), new Timestamp(System.currentTimeMillis()), "A" };
-        // TODO: Add location column
-        update("insert into node (nodeID, nodeLabel, nodeCreateTime, nodeType) values (?, ?, ?, ?);", values);
+        Object[] values = { node.getLocation(), Integer.valueOf(node.getNodeId()), node.getLabel(), new Timestamp(System.currentTimeMillis()), "A" };
+        update("insert into node (location, nodeID, nodeLabel, nodeCreateTime, nodeType) values (?, ?, ?, ?, ?);", values);
     }
 
     public void writeInterface(MockInterface iface) {
@@ -267,8 +269,9 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     public void writeEvent(Event e) {
         Integer eventId = getNextEventId();
         
-        if (e.getCreationTime() == null) 
-            e.setCreationTime(e.getTime());
+        if (e.getCreationTime() == null) {
+            e.setCreationTime(new Date());
+        }
         
         Object[] values = {
                 eventId,

@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.network.IPAddress;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
@@ -68,7 +69,7 @@ public final class IPAddrRange implements Iterable<InetAddress>, Serializable {
     /**
      * The ending address for the object.
      */
-    private final byte[] m_end;
+    private byte[] m_end;
 
     /**
      * <P>
@@ -270,6 +271,18 @@ public final class IPAddrRange implements Iterable<InetAddress>, Serializable {
         }
     }
 
+    public byte[] getBegin() {
+        return m_begin;
+    }
+
+    public byte[] getEnd() {
+        return m_end;
+    }
+
+    public void incrementEnd() {
+        m_end = new IPAddress(m_end).incr().toOctets();
+    }
+
     /**
      * This method may be used to determine if the specified IP address is
      * contained within the IP address range.
@@ -343,4 +356,14 @@ public final class IPAddrRange implements Iterable<InetAddress>, Serializable {
             .append("end", InetAddressUtils.getInetAddress(m_end))
             .toString();
     }
+
+    /**
+     * <P>
+     * Returns the size of this range.
+     * </P>
+     */
+    public BigInteger size() {
+        return InetAddressUtils.difference(InetAddressUtils.getInetAddress(m_end) , InetAddressUtils.getInetAddress(m_begin)).add(BigInteger.ONE);
+    }
+
 }

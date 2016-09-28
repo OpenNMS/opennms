@@ -36,6 +36,13 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +56,14 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class SyslogConnection implements Callable<Callable<?>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogConnection.class);
 
+    private String m_systemId;
+    private String m_location;
     private InetAddress m_sourceAddress;
     private int m_port;
     private ByteBuffer m_bytes;
@@ -60,19 +71,21 @@ public class SyslogConnection implements Callable<Callable<?>> {
 
     /**
      * No-arg constructor so that we can preallocate this object for use with
-     * an LMAX Disruptor.
+     * an LMAX Disruptor or use it with JAXB.
      */
-    /*
     public SyslogConnection() {
     }
-    */
 
-    public SyslogConnection(final DatagramPacket packet, final SyslogdConfig config) {
-        this(packet.getAddress(), packet.getPort(), ByteBuffer.wrap(packet.getData()), config);
+    public SyslogConnection(final DatagramPacket packet, final SyslogdConfig config, final String systemId, final String location) {
+        this(packet.getAddress(), packet.getPort(), ByteBuffer.wrap(packet.getData(), 0, packet.getLength()), config, systemId, location);
     }
 
-    public SyslogConnection(final InetAddress sourceAddress, final int port, final ByteBuffer bytes, final SyslogdConfig config) {
-        if (sourceAddress == null) {
+    public SyslogConnection(final InetAddress sourceAddress, final int port, final ByteBuffer bytes, final SyslogdConfig config, final String systemId, final String location) {
+        if (systemId == null) {
+            throw new IllegalArgumentException("System ID cannot be null");
+        } else if (location == null) {
+            throw new IllegalArgumentException("Location cannot be null");
+        } else if (sourceAddress == null) {
             throw new IllegalArgumentException("Source address cannot be null");
         } else if (bytes == null) {
             throw new IllegalArgumentException("Bytes cannot be null");
@@ -80,12 +93,34 @@ public class SyslogConnection implements Callable<Callable<?>> {
             throw new IllegalArgumentException("Config cannot be null");
         }
 
+        m_systemId = systemId;
+        m_location = location;
         m_sourceAddress = sourceAddress;
         m_port = port;
         m_bytes = bytes;
         m_config = config;
     }
 
+    @XmlAttribute
+    public String getSystemId() {
+        return m_systemId;
+    }
+
+    public void setSystemId(String systemId) {
+        m_systemId = systemId;
+    }
+
+    @XmlAttribute
+    public String getLocation() {
+        return m_location;
+    }
+
+    public void setLocation(String location) {
+        m_location = location;
+    }
+
+    @XmlAttribute
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     public InetAddress getSourceAddress() {
         return m_sourceAddress;
     }
@@ -94,6 +129,7 @@ public class SyslogConnection implements Callable<Callable<?>> {
         m_sourceAddress = sourceAddress;
     }
 
+    @XmlAttribute
     public int getPort() {
         return m_port;
     }
@@ -110,6 +146,19 @@ public class SyslogConnection implements Callable<Callable<?>> {
         m_bytes = bytes;
     }
 
+    @XmlAttribute
+    public byte[] getBytes() {
+        m_bytes.rewind();
+        byte[] retval = new byte[m_bytes.remaining()];
+        m_bytes.get(retval);
+        m_bytes.rewind();
+        return retval;
+    }
+
+    public void setBytes(byte[] bytes) {
+        m_bytes = ByteBuffer.wrap(bytes);
+    }
+
     public SyslogdConfig getConfig() {
         return m_config;
     }
@@ -122,10 +171,12 @@ public class SyslogConnection implements Callable<Callable<?>> {
     public SyslogProcessor call() {
 
         try {
-            LOG.debug("Converting syslog message into event");
+            LOG.debug("Converting syslog message into event ({} bytes)", m_bytes.remaining());
 
             // TODO: Change to a static call?
             ConvertToEvent re = new ConvertToEvent(
+                m_systemId,
+                m_location,
                 m_sourceAddress,
                 m_port,
                 // Decode the packet content as ASCII
@@ -138,10 +189,12 @@ public class SyslogConnection implements Callable<Callable<?>> {
 
             return new SyslogProcessor(re.getEvent(), m_config.getNewSuspectOnMessage());
 
-        } catch (final UnsupportedEncodingException e1) {
-            LOG.debug("Failure to convert package", e1);
+        } catch (final UnsupportedEncodingException e) {
+            LOG.info("Failure to convert package", e);
         } catch (final MessageDiscardedException e) {
-            LOG.debug("Message discarded, returning without enqueueing event.", e);
+            LOG.info("Message discarded, returning without enqueueing event.", e);
+        } catch (final Throwable e) {
+            LOG.error("Unexpected exception while processing SyslogConnection", e);
         }
         return null;
     }

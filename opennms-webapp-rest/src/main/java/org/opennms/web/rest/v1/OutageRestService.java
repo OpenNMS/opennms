@@ -39,6 +39,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.Alias.JoinType;
@@ -94,10 +95,10 @@ public class OutageRestService extends OnmsRestService {
                 limit = Integer.parseInt(parms.getFirst("limit"));
             }
             final List<OutageSummary> collection = m_outageDao.getNodeOutageSummaries(limit);
-            return collection == null ? Response.noContent().build() : Response.ok(new OutageSummaryCollection(collection)).build();
+            return collection == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(new OutageSummaryCollection(collection)).build();
         } else {
             final OnmsOutage outage = m_outageDao.get(Integer.valueOf(outageId));
-            return outage == null ? Response.noContent().build() : Response.ok(outage).build();
+            return outage == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(outage).build();
         }
     }
 
@@ -129,6 +130,8 @@ public class OutageRestService extends OnmsRestService {
         builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
         builder.alias("ipInterface.snmpInterface", "snmpInterface", JoinType.LEFT_JOIN);
         builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.alias("serviceLostEvent", "serviceLostEvent", JoinType.LEFT_JOIN);
+        builder.alias("serviceRegainedEvent", "serviceRegainedEvent", JoinType.LEFT_JOIN);
 
         applyQueryFilters(uriInfo.getQueryParameters(), builder);
 

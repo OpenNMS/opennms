@@ -34,6 +34,7 @@ import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -117,11 +118,21 @@ public class IfServicesRestService extends OnmsRestService {
         return servicesList;
     }
 
+    @GET
+    @Path("/{id}")
+    public Response getServiceById(@PathParam("id") Integer monitoredServiceId) {
+        OnmsMonitoredService monitoredService = m_serviceDao.get(monitoredServiceId);
+        if (monitoredService == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        return Response.ok().entity(new OnmsMonitoredServiceDetail(monitoredService)).build();
+    }
+
     @PUT
     public Response updateServices(@Context final UriInfo uriInfo, final MultivaluedMapImpl params) {
         final String status = params.getFirst("status");
         if (status == null || !status.matches("(A|R|S|F)")) {
-            throw getException(Status.BAD_REQUEST, "updateServices: parameter status must be specified. Possible values: A (Managed), F (Forced Unmanaged), R (Rescan to Resume), S (Rescan to Suspend)");
+            throw getException(Status.BAD_REQUEST, "Parameter status must be specified. Possible values: A (Managed), F (Forced Unmanaged), R (Rescan to Resume), S (Rescan to Suspend)");
         }
         final String services_csv = params.getFirst("services");
         final List<String> serviceList = new ArrayList<String>();
@@ -135,7 +146,7 @@ public class IfServicesRestService extends OnmsRestService {
         c.setOffset(null);
         final OnmsMonitoredServiceList services = new OnmsMonitoredServiceList(m_serviceDao.findMatching(c));
         if (services.isEmpty()) {
-            throw getException(Status.BAD_REQUEST, "updateServices: can't find any service matching the provided criteria: " + uriInfo.getQueryParameters());
+            throw getException(Status.BAD_REQUEST, "Can't find any service matching the provided criteria: {}.", uriInfo.getQueryParameters().toString());
         }
         boolean modified = false;
         for (OnmsMonitoredService svc : services) {
@@ -163,11 +174,7 @@ public class IfServicesRestService extends OnmsRestService {
                 }
             }
         }
-        if (!modified && !serviceList.isEmpty()) {
-            throw getException(Status.BAD_REQUEST, "updateServices: the supplied list of services (" + services_csv + ") doesn't match any service based on the provided criteria: " + uriInfo.getQueryParameters());
-        }
-
-        return Response.seeOther(getRedirectUri(uriInfo)).build();
+        return modified ? Response.noContent().build() : Response.notModified().build();
     }
 
     private static Criteria getCriteria(final MultivaluedMap<String, String> params) {
@@ -184,14 +191,14 @@ public class IfServicesRestService extends OnmsRestService {
     }
 
     private void sendEvent(String eventUEI, OnmsMonitoredService dbObj) {
-        final EventBuilder bldr = new EventBuilder(eventUEI, getClass().getName());
+        final EventBuilder bldr = new EventBuilder(eventUEI, "ReST");
         bldr.setNodeid(dbObj.getNodeId());
         bldr.setInterface(dbObj.getIpAddress());
         bldr.setService(dbObj.getServiceName());
         try {
             m_eventProxy.send(bldr.getEvent());
         } catch (EventProxyException ex) {
-            throw getException(Status.BAD_REQUEST, ex.getMessage());
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", eventUEI, ex.getMessage());
         }
     }
 

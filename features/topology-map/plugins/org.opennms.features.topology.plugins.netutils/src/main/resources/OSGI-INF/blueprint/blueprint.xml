@@ -6,24 +6,21 @@ http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v
 http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
 http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd">
 
+    <reference id="pingerFactory" interface="org.opennms.netmgt.icmp.PingerFactory" availability="mandatory" />
+
     <cm:property-placeholder persistent-id="org.opennms.features.topology.netutils" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="pingURL" value="ExecCommand.map?command=ping"/>
-            <cm:property name="tracerouteURL" value="ExecCommand.map?command=traceroute"/>
             <cm:property name="eventsURL" value="event/list"/>
             <cm:property name="alarmsURL" value="alarm/list.htm"/>
         	<cm:property name="nodeListURL" value="element/nodeList.htm"/>
         	<cm:property name="nodePageURL" value="element/node.jsp?node="/>
         	<cm:property name="resourceGraphListURL" value="graph/index.jsp"/>
-        	<cm:property name="resourceGraphNodeURL" value="graph/chooseresource.htm?reports=all&amp;parentResourceId=node"/> 
+        	<cm:property name="resourceGraphNodeURL" value="graph/chooseresource.jsp?reports=all&amp;parentResourceId=node"/> 
         </cm:default-properties>
     </cm:property-placeholder>
     
     <bean id="pingOperation" class="org.opennms.features.topology.netutils.internal.operations.PingOperation" >
-        <property name="pingURL" value="${pingURL}"/>
-    </bean>
-    <bean id="tracerouteOperation" class="org.opennms.features.topology.netutils.internal.operations.TracerouteOperation" >
-        <property name="tracerouteURL" value="${tracerouteURL}"/>
+        <argument ref="pingerFactory" />
     </bean>
     <bean id="eventsAlarmsOperation" class="org.opennms.features.topology.netutils.internal.operations.EventsAlarmsOperation" >
         <property name="eventsURL" value="${eventsURL}"/>
@@ -45,14 +42,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
             <entry key="operation.contextMenuLocation" value=""/> <!-- SPC-360 -->
         </service-properties>
     </service>
-    
-<!--     <service interface="org.opennms.features.topology.api.Operation" ref="tracerouteOperation"> -->
-<!--         <service-properties> -->
-<!--             <entry key="operation.label" value="Traceroute"/> -->
-<!--             <entry key="operation.menuLocation" value="Device"/> -->
-<!--             <entry key="operation.contextMenuLocation" value=""/> -->
-<!--         </service-properties> -->
-<!--     </service> -->
     
     <service interface="org.opennms.features.topology.api.Operation" ref="eventsAlarmsOperation">
         <service-properties>

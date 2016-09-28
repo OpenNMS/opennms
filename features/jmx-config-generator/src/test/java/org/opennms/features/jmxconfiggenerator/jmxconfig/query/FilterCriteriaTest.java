@@ -28,7 +28,7 @@
 
 package org.opennms.features.jmxconfiggenerator.jmxconfig.query;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class FilterCriteriaTest {
@@ -38,7 +38,6 @@ public class FilterCriteriaTest {
         validateAttributeNameIsNull("org.eclipse.jetty.server.session:type=sessionhandler,context=opennms-remoting,id=0");
         validateAttributeNameIsNull("org.eclipse.jetty.servlet:type=filtermapping,name=springSecurityFilterChain,id=1");
         validateAttributeNameIsNull("org.eclipse.jetty.servlet:type=servletmapping,name=__org.eclipse.jetty.servlet.JspPropertyGroupServlet__,id=0");
-        validateAttributeNameIsNull("org.eclipse.jetty.servlet:type=servletmapping,name=snmpGetInterfaces,id=0");
         validateAttributeNameIsNull("org.eclipse.jetty.servlet:type=servletmapping,name=dispatcher,id=8");
 
         validateFullParsing("org.eclipse.jetty.servlet:type=filtermapping,name=springSecurityFilterChain,id=1", "abc");

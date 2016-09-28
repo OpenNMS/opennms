@@ -38,10 +38,13 @@ import com.vaadin.shared.AbstractComponentState;
  * @author Marcus Hellberg (marcus@vaadin.com)
  */
 public class NodeMapState extends AbstractComponentState {
-    private static final long serialVersionUID = -476104177779046228L;
+    private static final long serialVersionUID = 7166424509065088284L;
     public String searchString;
     public List<MapNode> nodes = new LinkedList<MapNode>();
     public List<Integer> nodeIds = new ArrayList<Integer>();
     public int minimumSeverity;
     public boolean groupByState = true;
+    public int maxClusterRadius = 350;
+    public List<Option> tileLayerOptions = new ArrayList<>();
+    public String tileServerUrl;
 }

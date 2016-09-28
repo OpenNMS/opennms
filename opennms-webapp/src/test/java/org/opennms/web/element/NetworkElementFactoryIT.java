@@ -42,6 +42,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -108,7 +109,7 @@ public class NetworkElementFactoryIT implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase
     public void testGetIpPrimaryAddress() throws SQLException {
-        m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType, nodeLabel) VALUES (12, now(), 'A', 'nodeLabel')");
+        m_jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeType, nodeLabel) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', 12, now(), 'A', 'nodeLabel')");
         m_jdbcTemplate.update("INSERT INTO ipinterface (nodeid, ipaddr, iplastcapsdpoll, issnmpprimary) VALUES (12, '172.168.1.1', now(), 'P')");
         
         String ipAddr = NetworkElementFactory.getInstance(m_appContext).getIpPrimaryAddress(12);
@@ -126,7 +127,7 @@ public class NetworkElementFactoryIT implements InitializingBean {
         }
         m_nodeDao.flush();
 
-        m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType) VALUES (12, now(), 'A')");
+        m_jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeType) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', 12, now(), 'A')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
         
         final List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithIpLike("*.*.*.*");
@@ -143,7 +144,7 @@ public class NetworkElementFactoryIT implements InitializingBean {
         }
         m_nodeDao.flush();
 
-        m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType) VALUES (12, now(), 'A')");
+        m_jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeType) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', 12, now(), 'A')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.2', 'M')");
         
@@ -182,5 +183,28 @@ public class NetworkElementFactoryIT implements InitializingBean {
         m_jdbcTemplate.update("UPDATE ifservices SET status='A' WHERE id=2;");
         Service[] svc = NetworkElementFactory.getInstance(m_appContext).getServicesOnInterface(1, "192.168.1.1");
         assertEquals(2, svc.length);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetNodeByPhysAddr() {
+        List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesFromPhysaddr("34:E4:56:04:BB:69");
+        assertEquals(1, nodes.size());
+        // try without :
+        nodes = NetworkElementFactory.getInstance(m_appContext).getNodesFromPhysaddr("34E45604BB69");
+        assertEquals(1, nodes.size());
+        // try with -
+        nodes = NetworkElementFactory.getInstance(m_appContext).getNodesFromPhysaddr("34-E4-56-04-BB-69");
+        assertEquals(1, nodes.size());
+        // try with lower-case
+        nodes = NetworkElementFactory.getInstance(m_appContext).getNodesFromPhysaddr("34:e4:56:04:bb:69");
+        assertEquals(1, nodes.size());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetNodesWithPhysAddr() {
+        List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithPhysAddr("34:E4:56:04:BB:69");
+        assertEquals(1, nodes.size());
     }
 }

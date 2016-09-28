@@ -1,0 +1,1 @@
+mvn:org.opennms.karaf/opennms/${project.version}/xml/minion

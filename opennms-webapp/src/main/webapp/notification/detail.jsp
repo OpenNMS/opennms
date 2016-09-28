@@ -82,7 +82,7 @@
   <jsp:param name="title" value="Notice Detail" />
   <jsp:param name="headTitle" value="Notice Detail" />
   <jsp:param name="breadcrumb" value="<a href='notification/index.jsp'>Notifications</a>" />
-  <jsp:param name="breadcrumb" value="<%="Notice " + notice.getId()%>" />
+  <jsp:param name="breadcrumb" value='<%="Notice " + notice.getId()%>' />
 </jsp:include>
 
 <div class="panel panel-default">
@@ -163,7 +163,7 @@
     <tr class="severity-<%=eventSeverity.toLowerCase()%>">
       <td colspan="6">
         <c:url var="outageLink" value="outage/list.htm">
-          <c:param name="filter" value="<%="node=" + notice.getNodeId()%>"/>
+          <c:param name="filter" value='<%="node=" + notice.getNodeId()%>'/>
         </c:url>
         <a href="${outageLink}">Current outages for <c:out value="<%=nodeLabel%>"/></a>
       </td>

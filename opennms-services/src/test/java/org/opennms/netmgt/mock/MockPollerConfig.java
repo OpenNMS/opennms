@@ -61,11 +61,15 @@ import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.ServiceMonitorRegistry;
+import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
 import org.springframework.core.io.ByteArrayResource;
 
 import com.google.common.collect.Maps;
 
 public class MockPollerConfig extends PollOutagesConfigManager implements PollerConfig {
+
+    private final ServiceMonitorRegistry m_serviceMonitorRegistry = new DefaultServiceMonitorRegistry();
 
     private String m_criticalSvcName;
 
@@ -82,6 +86,8 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     private long m_defaultPollInterval = 7654L;
 
     private boolean m_pollAll = true;
+
+    private boolean m_pathOutageEnabled = false;
 
     private boolean m_serviceUnresponsiveEnabled = false;
 
@@ -150,7 +156,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     
         outage.addTime(time);
     
-        getConfig().addOutage(outage);
+        getObject().addOutage(outage);
     
         pkg.addOutageCalendar(outageName);
     }
@@ -184,7 +190,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
         outage.addTime(time);
 
-        getConfig().addOutage(outage);
+        getObject().addOutage(outage);
 
         pkg.addOutageCalendar(outageName);
 
@@ -211,7 +217,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
         outage.addTime(time);
 
-        getConfig().addOutage(outage);
+        getObject().addOutage(outage);
 
         pkg.addOutageCalendar(outageName);
     }
@@ -506,11 +512,11 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     @Override
     public boolean isPathOutageEnabled() {
-        return false;
+        return m_pathOutageEnabled;
     }
 
-    @Override
-    public void releaseAllServiceMonitors() {
+    public void setPathOutageEnabled(boolean pathOutageEnabled) {
+        m_pathOutageEnabled = pathOutageEnabled;
     }
 
     @Override
@@ -548,7 +554,9 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         throw new UnsupportedOperationException("MockPollerConfig.isPolledLocally is not yet implemented");
     }
 
- 
-
+    @Override
+    public ServiceMonitorRegistry getServiceMonitorRegistry() {
+        return m_serviceMonitorRegistry;
+    }
 
 }

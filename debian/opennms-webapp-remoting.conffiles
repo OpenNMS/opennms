@@ -1,0 +1,4 @@
+/usr/share/opennms/jetty-webapps/opennms-remoting/WEB-INF/applicationContext-common.xml
+/usr/share/opennms/jetty-webapps/opennms-remoting/WEB-INF/applicationContext-spring-security.xml
+/usr/share/opennms/jetty-webapps/opennms-remoting/WEB-INF/applicationContext-svclayer.xml
+/usr/share/opennms/jetty-webapps/opennms-remoting/WEB-INF/web.xml

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>18.0.0-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -50,7 +50,7 @@
             </overlay>
             <overlay>
               <groupId>org.opennms.features.ncs</groupId>
-              <artifactId>ncs-alarm-gui</artifactId>
+              <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
               <excludes>
                 <exclude>META-INF/MANIFEST.MF</exclude>
                 <exclude>WEB-INF/web.xml</exclude>
@@ -102,8 +102,35 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.rest.api</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- The bsm.rest.api uses org.reflections, manually copy it to the web app -->
+    <dependency>
+      <groupId>org.reflections</groupId>
+      <artifactId>reflections</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.rest.impl</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-alarm-gui</artifactId>
+      <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
       <type>war</type>
       <version>${project.version}</version>
       <scope>runtime</scope>
@@ -135,7 +162,7 @@
       <scope>runtime</scope>
     </dependency>
   </dependencies>
-    
+
   <pluginRepositories>
     <pluginRepository>
       <snapshots><enabled>false</enabled></snapshots>

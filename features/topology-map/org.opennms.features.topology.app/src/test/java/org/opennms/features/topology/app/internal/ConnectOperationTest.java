@@ -41,48 +41,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.SimpleGraphProvider;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.operations.ConnectOperation;
-import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
-
-import com.vaadin.ui.UI;
 
 public class ConnectOperationTest {
-
-    private static class TestOperationContext implements OperationContext {
-        
-        private GraphContainer m_graphContainer;
-
-        public TestOperationContext(GraphContainer graphContainer) {
-            m_graphContainer = graphContainer;
-        }
-        
-        @Override
-        public UI getMainWindow() {
-            return EasyMock.createMock(UI.class);
-        }
-
-        @Override
-        public GraphContainer getGraphContainer() {
-            return m_graphContainer;
-        }
-
-        @Override
-        public boolean isChecked() {
-            // TODO Auto-generated method stub
-            return false;
-        }
-
-		@Override
-		public DisplayLocation getDisplayLocation() {
-			return DisplayLocation.MENUBAR;
-		}
-        
-    }
 
     private static TestOperationContext getOperationContext(GraphContainer mockedContainer) {
         return new TestOperationContext(mockedContainer);

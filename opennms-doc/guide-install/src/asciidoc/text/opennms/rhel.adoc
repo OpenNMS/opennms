@@ -2,29 +2,24 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+[[gi-install-opennms]]
+== OpenNMS
+
+After configuring the package repository, you are ready to install the _OpenNMS_ packages,
+configure the database, and initialize the _OpenNMS_ platform.
+
 [[gi-install-opennms-rhel]]
-=== Installing on RHEL-based system
+=== RHEL
 
 This section describes how to install the _OpenNMS_ platform on _CentOS 7.1_.
 The setup process is described in the following steps:
 
-. Install _OpenNMS_ _YUM_ repository server with GPG key to verify packages
 . Installation of the _opennms_ meta package which handles all dependencies
 . Initialize _PostgreSQL_ database and configure access
 . Initialize _OpenNMS_ and first start of the application
 
-[[gi-install-opennms-yum-repo]]
-==== Setup OpenNMS YUM repository
-
-.Installation of stable repository and GPG key
-[source, shell]
-----
-rpm -Uvh http://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
-rpm --import http://yum.opennms.org/OPENNMS-GPG-KEY
-----
-
 [[gi-install-opennms-rhel-package]]
-==== Install OpenNMS package
+==== Install OpenNMS
 
 .Installation of the full application with all dependencies like PostgreSQL and Java
 [source, shell]
@@ -38,9 +33,11 @@ The following packages will be automatically installed:
 * _jicmp6_ and _jicmp_: _Java_ bridge to allow sending _ICMP messages_ from _OpenNMS_ repository.
 * _opennms-core_: _OpenNMS_ core services, e.g. _Provisiond_, _Pollerd_ and _Collectd_ from _OpenNMS_ repository.
 * _opennms-webapp-jetty_: _OpenNMS_ web application from _OpenNMS_ repository
-* _jdk1.8_: _Oracle Java 8_ environment from _OpenNMS_ respository
+* _jdk1.8_: _Oracle Java SE Development Kit 8_ environment from _OpenNMS_ respository
 * _postgresql_: _PostgreSQL_ database server from distribution repository
 * _postgresql-libs_: _PostgreSQL_ database from distribution repository
+
+TIP: Verify the version of the _OpenNMS_ packages that was installed with `yum info opennms`.
 
 With the successful installed packages the _OpenNMS_ platform is installed in the following directory structure:
 

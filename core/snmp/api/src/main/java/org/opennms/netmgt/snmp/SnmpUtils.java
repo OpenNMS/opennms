@@ -37,6 +37,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,6 +85,10 @@ public abstract class SnmpUtils {
     
     public static SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
         return getStrategy().get(agentConfig, oids);
+    }
+
+    public static CompletableFuture<SnmpValue[]> getAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
+        return getStrategy().getAsync(agentConfig, oids);
     }
 
     public static SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid) {
@@ -159,6 +164,10 @@ public abstract class SnmpUtils {
     
     public static void setStrategyResolver(StrategyResolver strategyResolver) {
     	s_strategyResolver = strategyResolver;
+    }
+    
+    public static void unsetStrategyResolver() {
+    	s_strategyResolver = null;
     }
     
     private static class DefaultStrategyResolver implements StrategyResolver {

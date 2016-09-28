@@ -43,6 +43,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.MemcachedDetector;
+import org.opennms.netmgt.provision.detector.simple.MemcachedDetectorFactory;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
 import org.springframework.beans.factory.InitializingBean;
@@ -55,6 +56,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class MemcachedDetectorTest implements InitializingBean {
 
     @Autowired
+    private MemcachedDetectorFactory m_detectorFactory;
+    
     private MemcachedDetector m_detector;
 
     private SimpleServer m_server = null;
@@ -67,6 +70,7 @@ public class MemcachedDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws Exception{
         MockLogAppender.setupLogging();
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setServiceName("Memcached");
         m_detector.setPort(1000);
         m_detector.setIdleTime(3000);

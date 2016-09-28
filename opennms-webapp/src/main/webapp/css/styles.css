@@ -786,17 +786,17 @@ div .alert-warning {
     :: spans in the node list and node details pages
     -------------------------------------------------- */
 
-span.NLdbid, span.NLfs, span.NLfid, span.NPdbid, span.NPfs, span.NPfid {
+span.NLdbid, span.NLfs, span.NLfid, span.NPdbid, span.NPfs, span.NPfid, span.NPloc {
 	background-repeat: no-repeat;
 	padding-left: 17px;
 	padding-right: 4px;
 }
 
-span.NLdbid, span.NLfs, span.NLfid {
+span.NLdbid, span.NLfs, span.NLfid, span.NLloc {
 	display: none;
 }
 
-div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.NLfid {
+div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.NLfid, div.NLnode:hover span.NLloc {
 	display: inline;
 }
 

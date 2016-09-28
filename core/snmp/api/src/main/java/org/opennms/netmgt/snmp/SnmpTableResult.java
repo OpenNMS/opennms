@@ -105,7 +105,7 @@ public class SnmpTableResult implements RowResultFactory {
         }
     }
 
-    void tableFinished() {
+    public void tableFinished() {
         setFinished(true);
         handleCompleteRows();
     }

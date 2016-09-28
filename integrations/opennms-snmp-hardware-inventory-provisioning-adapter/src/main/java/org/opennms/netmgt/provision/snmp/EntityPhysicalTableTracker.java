@@ -101,12 +101,10 @@ public class EntityPhysicalTableTracker extends TableTracker {
         OnmsHwEntity entity = ((EntityPhysicalTableRow) row).getOnmsHwEntity(vendorAttributes, replacementMap);
         LOG.debug("rowCompleted: found entity {}, index: {}, parent: {}", entity.getEntPhysicalName(), entity.getEntPhysicalIndex(), entity.getEntPhysicalContainedIn());
         if (entity.getEntPhysicalContainedIn() != null && entity.getEntPhysicalContainedIn() > 0) {
-            for (OnmsHwEntity e : entities) {
-                if (e.getEntPhysicalIndex() == entity.getEntPhysicalContainedIn()) {
-                    LOG.debug("rowCompleted: adding child index {} to parent index {}", entity.getEntPhysicalIndex(), e.getEntPhysicalIndex());
-                    e.addChildEntity(entity);
-                    break;
-                }
+            OnmsHwEntity parent = getParent(entity.getEntPhysicalContainedIn().intValue());
+            if (parent != null) {
+                LOG.debug("rowCompleted: adding child index {} to parent index {}", entity.getEntPhysicalIndex(), parent.getEntPhysicalIndex());
+                parent.addChildEntity(entity);
             }
         }
         entities.add(entity);
@@ -121,6 +119,21 @@ public class EntityPhysicalTableTracker extends TableTracker {
         for (OnmsHwEntity entity : entities) {
             if (entity.isRoot()) {
                 return entity;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets the parent.
+     *
+     * @param parentId the parent ID
+     * @return the parent
+     */
+    private OnmsHwEntity getParent(int parentId) {
+        for (OnmsHwEntity e : entities) {
+            if (e.getEntPhysicalIndex() != null && e.getEntPhysicalIndex().intValue() == parentId) {
+                return e;
             }
         }
         return null;

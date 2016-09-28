@@ -50,7 +50,7 @@ import org.opennms.netmgt.poller.LatencyCollectionAttributeType;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.LatencyThresholdingSet;
 import org.opennms.netmgt.threshd.ThresholdingEventProxy;
@@ -64,16 +64,12 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  */
-public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
+public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdaptor {
 
     private static final Logger LOG = LoggerFactory.getLogger(LatencyStoringServiceMonitorAdaptor.class);
 
-    /** Constant <code>DEFAULT_BASENAME="response-time"</code> */
-    public static final String DEFAULT_BASENAME = "response-time";
-
     public static final int HEARTBEAT_STEP_MULTIPLIER = 2;
 
-    private ServiceMonitor m_serviceMonitor;
     private PollerConfig m_pollerConfig;
     private Package m_pkg;
     private final PersisterFactory m_persisterFactory;
@@ -88,58 +84,30 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
      * @param config a {@link org.opennms.netmgt.config.PollerConfig} object.
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      */
-    public LatencyStoringServiceMonitorAdaptor(ServiceMonitor monitor, PollerConfig config, Package pkg, PersisterFactory persisterFactory, ResourceStorageDao resourceStorageDao) {
-        m_serviceMonitor = monitor;
+    public LatencyStoringServiceMonitorAdaptor(PollerConfig config, Package pkg, PersisterFactory persisterFactory, ResourceStorageDao resourceStorageDao) {
         m_pollerConfig = config;
         m_pkg = pkg;
         m_persisterFactory = persisterFactory;
         m_resourceStorageDao = resourceStorageDao;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public void initialize(Map<String, Object> parameters) {
-        m_serviceMonitor.initialize(parameters);
-    }
-
-    /**
-     * <p>initialize</p>
-     *
-     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
-     */
-    @Override
-    public void initialize(MonitoredService svc) {
-        m_serviceMonitor.initialize(svc);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        PollStatus status = m_serviceMonitor.poll(svc, parameters);
-
+    public PollStatus handlePollResult(MonitoredService svc, Map<String, Object> parameters, PollStatus status) {
         if (!status.getProperties().isEmpty()) {
             storeResponseTime(svc, new LinkedHashMap<String, Number>(status.getProperties()), parameters);
-        }
-
-        if ("true".equals(ParameterMap.getKeyedString(parameters, "invert-status", "false"))) {
-            if (status.isAvailable()) {
-                return PollStatus.unavailable("This is an inverted service and the underlying service has started responding");
-            } else {
-                return PollStatus.available();
-            }
         }
         return status;
     }
 
     private void storeResponseTime(MonitoredService svc, Map<String, Number> entries, Map<String,Object> parameters) {
         String rrdPath     = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", DEFAULT_BASENAME);
+        String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", PollStatus.PROPERTY_RESPONSE_TIME);
         String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
         String thresholds  = ParameterMap.getKeyedString(parameters, "thresholding-enabled", "false");
 
-        if (!entries.containsKey(dsName) && entries.containsKey(DEFAULT_BASENAME)) {
-            entries.put(dsName, entries.get(DEFAULT_BASENAME));
-            entries.remove(DEFAULT_BASENAME);
+        if (!entries.containsKey(dsName) && entries.containsKey(PollStatus.PROPERTY_RESPONSE_TIME)) {
+            entries.put(dsName, entries.get(PollStatus.PROPERTY_RESPONSE_TIME));
+            entries.remove(PollStatus.PROPERTY_RESPONSE_TIME);
         }
 
         if (thresholds.equalsIgnoreCase("true")) {
@@ -216,20 +184,6 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         SingleResourceCollectionSet collectionSet = new SingleResourceCollectionSet(latencyResource, new Date());
         collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
         collectionSet.visit(persister);
-    }
-
-    /**
-     * <p>release</p>
-     */
-    @Override
-    public void release() {
-        m_serviceMonitor.release();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void release(MonitoredService svc) {
-        m_serviceMonitor.release(svc);
     }
 
     /**

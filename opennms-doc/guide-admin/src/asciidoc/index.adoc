@@ -6,13 +6,18 @@
 :toc: left
 :toclevels: 3
 :numbered:
+:stem:
 
 [[ga]]
 = Administrators Guide
-:author: Copyright (c) 2015 The OpenNMS Group, Inc.
-:revnumber: OpenNMS {opennms-version}
+:author: Copyright (c) 2015-2016 The OpenNMS Group, Inc.
+:revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
+
+[[ga-admin-datachoices]]
+== Data Choices
+include::text/datachoices.adoc[]
 
 [[ga-admin-ui]]
 == Administrative Webinterface
@@ -83,6 +88,7 @@ include::text/service-assurance/monitors/HttpPostMonitor.adoc[]
 include::text/service-assurance/monitors/HttpsMonitor.adoc[]
 include::text/service-assurance/monitors/IcmpMonitor.adoc[]
 include::text/service-assurance/monitors/ImapMonitor.adoc[]
+include::text/service-assurance/monitors/ImapsMonitor.adoc[]
 include::text/service-assurance/monitors/JCifsMonitor.adoc[]
 include::text/service-assurance/monitors/JDBCMonitor.adoc[]
 include::text/service-assurance/monitors/JDBCStoredProcedureMonitor.adoc[]
@@ -96,6 +102,7 @@ include::text/service-assurance/monitors/NrpeMonitor.adoc[]
 include::text/service-assurance/monitors/NtpMonitor.adoc[]
 include::text/service-assurance/monitors/OmsaStorageMonitor.adoc[]
 include::text/service-assurance/monitors/OpenManageChassisMonitor.adoc[]
+include::text/service-assurance/monitors/PageSequenceMonitor.adoc[]
 include::text/service-assurance/monitors/PercMonitor.adoc[]
 include::text/service-assurance/monitors/Pop3Monitor.adoc[]
 include::text/service-assurance/monitors/PrTableMonitor.adoc[]
@@ -116,6 +123,7 @@ include::text/service-assurance/monitors/XmpMonitor.adoc[]
 [[ga-performance-mgmt]]
 == Performance Management
 include::text/performance-data-collection/introduction.adoc[]
+include::text/performance-data-collection/stress-testing.adoc[]
 
 [[ga-performance-mgmt-collectors]]
 === Collectors
@@ -128,7 +136,16 @@ include::text/performance-data-collection/collectors/wsman/detector.adoc[]
 include::text/events/events.adoc[]
 include::text/events/forward-elasticsearch.adoc[]
 
-[ga-provisioning]
+[[ga-notifications]]
+== Notifications
+include::text/notifications/introduction.adoc[]
+include::text/notifications/getting-started.adoc[]
+include::text/notifications/concepts.adoc[]
+include::text/notifications/bonus-strategies.adoc[]
+include::text/notifications/strategies/mattermost.adoc[]
+include::text/notifications/strategies/slack.adoc[]
+
+[[ga-provisioning]]
 == Provisioning
 include::text/provisioning/introduction.adoc[]
 include::text/provisioning/concepts.adoc[]
@@ -142,6 +159,23 @@ include::text/provisioning/integration.adoc[]
 include::text/provisioning/single-node.adoc[]
 include::text/provisioning/fine-grained.adoc[]
 include::text/provisioning/api-examples.adoc[]
+
+[[ga-provisioning-detectors]]
+=== Service Detectors
+include::text/provisioning/detectors/SnmpDetector.adoc[]
+
+[[ga-bsm]]
+== Business Service Monitoring
+include::text/bsm/introduction.adoc[]
+include::text/bsm/business-service-definition.adoc[]
+include::text/bsm/edges.adoc[]
+include::text/bsm/map-functions.adoc[]
+include::text/bsm/reduce-functions.adoc[]
+include::text/bsm/bsmd.adoc[]
+
+[[ga-topology]]
+== Topology Map
+include::text/topology/topology.adoc[]
 
 [[ga-database-reports]]
 == Database Reports
@@ -172,8 +206,12 @@ include::text/operation/newts-repository-converter.adoc[]
 === Newts
 include::text/operation/newts/introduction.adoc[]
 include::text/operation/newts/configuration.adoc[]
-include::text/operation/newts/cassandra21x.adoc[]
-include::text/operation/newts/newts.adoc[]
+include::text/operation/newts/cassandra-jmx.adoc[]
+include::text/operation/newts/cassandra-newts-jmx.adoc[]
+
+[[ga-opennms-operation-daemon-config-files]]
+=== Daemon Configuration Files
+include::text/operation/daemon-config-files/notifd.adoc[]
 
 [[ga-opennms-system-properties]]
 == System Properties
@@ -185,3 +223,23 @@ include::text/ticketing/introduction.adoc[]
 
 // JIRA Ticketer
 include::text/ticketing/jira.adoc[]
+
+// TSRM Ticketer
+include::text/ticketing/tsrm.adoc[]
+
+[[ga-rmi]]
+== Enabling RMI
+include::text/rmi.adoc[]
+
+[[ga-opennms-plugin-manager]]
+== Plugin Manager
+include::text/plugin-manager/introduction.adoc[]
+include::text/plugin-manager/setting-karaf-instance-data.adoc[]
+include::text/plugin-manager/installing-available-plugins.adoc[]
+include::text/plugin-manager/installing-licences.adoc[]
+include::text/plugin-manager/internal-plugins-repository.adoc[]
+
+== Internal Plugins
+include::text/plugins/introduction.adoc[]
+include::text/plugins/alarm-change-notifier.adoc[]
+include::text/plugins/opennms-es-rest.adoc[]

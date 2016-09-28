@@ -104,7 +104,6 @@ public class SimpleConnector implements Connector {
 	/**
 	 * @param namespace
 	 * @param id
-	 * @param label
 	 * @param vertex
 	 * @param edge
 	 */

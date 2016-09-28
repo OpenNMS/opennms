@@ -18,10 +18,11 @@
             <!-- Output to the root directory -->
             <outputDirectory></outputDirectory>
             <useProjectArtifact>false</useProjectArtifact>
+            <useStrictFiltering>true</useStrictFiltering>
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <scope>provided</scope>
             <includes>
-                <include>org.opennms.container:standalone:tar.gz:${project.version}</include>
+                <include>org.opennms.container:org.opennms.container.standalone:tar.gz:${project.version}</include>
             </includes>
             <unpackOptions>
                 <excludes>

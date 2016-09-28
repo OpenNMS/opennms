@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.opennms.netmgt.model.OnmsResource;
@@ -47,7 +48,10 @@ public abstract class AbstractTopLevelResourceType implements OnmsResourceType {
 
     @Override
     public List<OnmsResource> getResourcesForParent(OnmsResource parent) {
-        return getTopLevelResources();
+        if (parent == null) {
+            return getTopLevelResources();
+        }
+        return Collections.emptyList();
     }
 
     @Override

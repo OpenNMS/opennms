@@ -35,7 +35,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.capsd.Plugin;
+import org.opennms.netmgt.poller.monitors.support.LoopPlugin;
 public class LoopPluginTest extends TestCase {
 
     @Override
@@ -52,7 +52,7 @@ public class LoopPluginTest extends TestCase {
      * Test method for 'org.opennms.netmgt.capsd.plugins.LoopPlugin.getProtocolName()'
      */
     public void testGetProtocolName() {
-        Plugin plugin = new LoopPlugin();
+        LoopPlugin plugin = new LoopPlugin();
         assertEquals("LOOP", plugin.getProtocolName());
     }
 
@@ -60,7 +60,7 @@ public class LoopPluginTest extends TestCase {
      * Test method for 'org.opennms.netmgt.capsd.plugins.LoopPlugin.isProtocolSupported(InetAddress)'
      */
     public void testIsProtocolSupportedInetAddress() throws UnknownHostException {
-        Plugin plugin = new LoopPlugin();
+        LoopPlugin plugin = new LoopPlugin();
         assertFalse(plugin.isProtocolSupported(InetAddressUtils.addr("127.0.0.1")));
     }
 
@@ -71,7 +71,7 @@ public class LoopPluginTest extends TestCase {
         Map<String, Object> qualifiers = new HashMap<String, Object>();
         qualifiers.put("ip-match", "127.*.*.1-2");
         qualifiers.put("is-supported", "true");
-        Plugin plugin = new LoopPlugin();
+        LoopPlugin plugin = new LoopPlugin();
         assertTrue(plugin.isProtocolSupported(InetAddressUtils.addr("127.0.0.1"), qualifiers));
         assertFalse(plugin.isProtocolSupported(InetAddressUtils.addr("127.0.0.3"), qualifiers));
 

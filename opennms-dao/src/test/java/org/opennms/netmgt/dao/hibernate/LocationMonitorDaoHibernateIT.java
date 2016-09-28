@@ -69,7 +69,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
@@ -109,8 +108,9 @@ public class LocationMonitorDaoHibernateIT implements InitializingBean {
     	mon.setLocation("RDU");
     	
     	m_locationMonitorDao.save(mon);
-    	
     	m_locationMonitorDao.flush();
+
+        // We clear the cache to get a new element and not the same as above
     	m_locationMonitorDao.clear();
 
     	OnmsLocationMonitor mon2 = m_locationMonitorDao.get(mon.getId());
