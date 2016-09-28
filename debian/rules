@@ -6,8 +6,7 @@
 export DH_VERBOSE=1
 export SHELL=/bin/bash
 
-# Maven requires JAVA_HOME to be set properly
-export JAVA_HOME=$(shell debian/getjava)
+export JAVA_HOME=$(shell opennms-base-assembly/src/main/filtered/bin/find-java.sh 1.8 1.8.9999)
 
 export BUILDDEFINES=\
 	-Dopennms.home=/usr/share/opennms \
