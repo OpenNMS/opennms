@@ -35,11 +35,12 @@ import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.MinionDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.smoketest.NullTestEnvironment;
@@ -161,7 +162,7 @@ public class SyslogTest {
     public void testNewSuspect() throws Exception {
         final Date startOfTest = new Date();
 
-        final String sender = "127.0.0.2";
+        final String sender = minionSystem.getContainerInfo(ContainerAlias.SNMPD).networkSettings().ipAddress();
 
         // Wait for the minion to show up
         await().atMost(90, SECONDS).pollInterval(5, SECONDS)
@@ -172,9 +173,10 @@ public class SyslogTest {
                                                              .toCriteria()),
                       is(1));
 
-        // Send the initial message - ensure this host is not used somewhere else in this test class
+        // Send the initial message
         this.sendMessage(sender);
 
+        // Wait for the syslog message
         await().atMost(1, MINUTES).pollInterval(5, SECONDS)
                .until(DaoUtils.countMatchingCallable(this.daoFactory.getDao(EventDaoHibernate.class),
                                                      new CriteriaBuilder(OnmsEvent.class)
@@ -183,6 +185,7 @@ public class SyslogTest {
                                                              .toCriteria()),
                       is(1));
 
+        //Wait for the new suspect
         final OnmsEvent event = await()
                 .atMost(1, MINUTES).pollInterval(5, SECONDS)
                 .until(DaoUtils.findMatchingCallable(this.daoFactory.getDao(EventDaoHibernate.class),
@@ -196,12 +199,30 @@ public class SyslogTest {
 
         assertThat(event.getDistPoller().getLocation(), is("MINION"));
 
+        // Check if the node was detected
         final OnmsNode node = Iterables.getOnlyElement(this.daoFactory.getDao(NodeDaoHibernate.class)
                                                                       .findMatching(new CriteriaBuilder(OnmsNode.class)
-                                                                                            .eq("label", "127.0.0.2")
+                                                                                            .eq("label", "snmpd")
                                                                                             .toCriteria()));
         assertThat(node, notNullValue());
         assertThat(node.getLocation().getLocationName(), is("MINION"));
+
+        // Check if the service was decovered
+        final OnmsMonitoredService service = this.daoFactory.getDao(MonitoredServiceDaoHibernate.class).getPrimaryService(node.getId(), "SNMP");
+        assertThat(service, notNullValue());
+
+        // Send the second message
+        this.sendMessage(sender);
+
+        // Wait for the second message with the node assigned
+        await().atMost(1, MINUTES).pollInterval(5, SECONDS)
+               .until(DaoUtils.countMatchingCallable(this.daoFactory.getDao(EventDaoHibernate.class),
+                                                     new CriteriaBuilder(OnmsEvent.class)
+                                                             .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
+                                                             .ge("eventTime", startOfTest)
+                                                             .eq("node", node)
+                                                             .toCriteria()),
+                      is(1));
     }
 
     private void sendMessage(final String host) throws IOException {
