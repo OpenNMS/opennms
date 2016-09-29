@@ -198,4 +198,16 @@ public class MockPollContext implements PollContext, EventListener {
             }
         }
     }
+
+	@Override
+	public void updateLastGood(PollableService psvc) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateLastFail(PollableService psvc) {
+		// TODO Auto-generated method stub
+		
+	}
 }

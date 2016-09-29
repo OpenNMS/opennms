@@ -526,6 +526,8 @@ public abstract class PollableElement {
             // I have no cause but my parent is down.. mark me as down as well
             // I already have a cause that's larger than myself then inherit as well
             setCause(parentalCause);
+            if (getStatus().isUp())
+            	createOutage(parentalCause);
             updateStatus(parentalStatus);
         }
         
