@@ -105,4 +105,8 @@ public interface PollContext {
      */
     public boolean isServiceUnresponsiveEnabled();
 
+    public void updateLastGood(PollableService psvc);
+    
+    public void updateLastFail(PollableService psvc);
+
 }

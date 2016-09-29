@@ -318,4 +318,29 @@ public class QueryManagerDaoImpl implements QueryManager {
                     serviceName, nodeId,  ipAddr, status, e);
         }
     }
+    
+    @Override
+    public void updateServiceLastGood(int nodeId, String ipAddr, String serviceName, Date updateTime) {
+        try {
+            OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddress.getByName(ipAddr), serviceName);
+            service.setLastGood(updateTime);;
+            m_monitoredServiceDao.saveOrUpdate(service);
+        } catch (UnknownHostException e) {
+            LOG.error("Failed to set the last good for service named {} on node id {} and interface {} to {}.",
+                    serviceName, nodeId,  ipAddr, updateTime, e);
+        }
+    }
+
+    @Override
+    public void updateServiceLastFail(int nodeId, String ipAddr, String serviceName, Date updateTime) {
+        try {
+            OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddress.getByName(ipAddr), serviceName);
+            service.setLastFail(updateTime);;
+            m_monitoredServiceDao.saveOrUpdate(service);
+        } catch (UnknownHostException e) {
+            LOG.error("Failed to set the last fail for service named {} on node id {} and interface {} to {}.",
+                    serviceName, nodeId,  ipAddr, updateTime, e);
+        }
+    }
+
 }

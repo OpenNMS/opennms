@@ -189,6 +189,10 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     @Override
     public PollStatus poll() {
         PollStatus newStatus = m_pollConfig.poll();
+        if (newStatus.isUp() || newStatus.isAvailable())
+        	getContext().updateLastGood(this);
+        else if (newStatus.isDown() || newStatus.isUnavailable() || newStatus.isUnresponsive())
+        	getContext().updateLastFail(this);
         if (!newStatus.isUnknown()) { 
             updateStatus(newStatus);
         }
