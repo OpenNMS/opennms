@@ -31,7 +31,7 @@ package org.opennms.netmgt.provision.detector.icmp;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.icmp.PingConstants;
-import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,10 +43,11 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public class IcmpDetector extends SyncAbstractDetector {
-    
     private static final Logger LOG = LoggerFactory.getLogger(IcmpDetector.class);
 
-    private Pinger pinger;
+    private PingerFactory pingerFactory;
+    private int m_dscp;
+    private boolean m_allowFragmentation;
 
     /**
      * <p>Constructor for IcmpDetector.</p>
@@ -56,6 +57,22 @@ public class IcmpDetector extends SyncAbstractDetector {
         init();
     }
     
+    public void setDscp(final int dscp) {
+        m_dscp = dscp;
+    }
+
+    public int getDscp() {
+        return m_dscp;
+    }
+
+    public boolean isAllowFragmentation() {
+        return m_allowFragmentation;
+    }
+
+    public void setAllowFragmentation(final boolean allowFragmentation) {
+        m_allowFragmentation = allowFragmentation;
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean isServiceDetected(InetAddress address) {
@@ -64,8 +81,7 @@ public class IcmpDetector extends SyncAbstractDetector {
         boolean found = false;
         try {
             for(int i = 0; i < getRetries() && !found; i++) {
-                Number retval = pinger.ping(address, getTimeout(), getRetries());
-                
+                final Number retval = pingerFactory.getInstance(m_dscp, m_allowFragmentation).ping(address, getTimeout(), getRetries());
                 LOG.debug("isServiceDetected: Response time for address: {} is: {}.", address, retval);
                 
                 if (retval != null) {
@@ -96,7 +112,7 @@ public class IcmpDetector extends SyncAbstractDetector {
         // pass
     }
 
-    public void setPinger(Pinger pinger) {
-        this.pinger = pinger;
+    public void setPingerFactory(PingerFactory pingerFactory) {
+        this.pingerFactory = pingerFactory;
     }
 }

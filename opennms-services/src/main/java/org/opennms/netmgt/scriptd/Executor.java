@@ -222,9 +222,7 @@ public class Executor {
                 if (m_event.hasNodeid()) {
                     Long nodeLong = m_event.getNodeid();
                     Integer nodeInt = Integer.valueOf(nodeLong.intValue());
-                    // NMS-8294: Initialize the entire node hierarchy so that
-                    // BSF scripts can execute outside of a transaction
-                    node = m_nodeDao.getHierarchy(nodeInt);
+                    node = m_nodeDao.get(nodeInt);
                     m_scriptManager.registerBean("node", node);
                 }
 

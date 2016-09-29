@@ -53,5 +53,8 @@ public class MockInterfaceToNodeCache implements InterfaceToNodeCache {
     public void dataSourceSync() {}
 
     @Override
+    public int size() { return 1; }
+
+    @Override
     public void clear() {}
 }

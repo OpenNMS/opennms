@@ -16,9 +16,6 @@
 
   <context:annotation-config />
 
-  <!-- Pinger service -->
-  <!-- <onmsgi:reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" /> -->
-
   <!-- Event IPC manager service -->
   <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
 
@@ -66,7 +63,7 @@
 
   <!-- This processor performs ICMP pings and reports the results -->
   <bean id="discoverer" class="org.opennms.netmgt.discovery.actors.Discoverer">
-    <constructor-arg ref="pinger" />
+    <constructor-arg ref="pingerFactory" />
   </bean>
 
   <!-- This processor sends newSuspect events for IP addresses reported in a DiscoveryResult -->

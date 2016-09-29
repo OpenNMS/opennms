@@ -18,4 +18,7 @@
 			</service-properties>
         </service>
 
+        <bean id="pingerFactory" class="org.opennms.netmgt.icmp.jna.JnaPingerFactory" />
+        <service interface="org.opennms.netmgt.icmp.PingerFactory" ref="pingerFactory" ranking="10"/>
+
 </blueprint>

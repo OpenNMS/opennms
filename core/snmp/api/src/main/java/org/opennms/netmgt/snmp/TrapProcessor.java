@@ -34,10 +34,17 @@ import org.opennms.netmgt.snmp.SnmpValue;
 
 public interface TrapProcessor {
 
+    void setCreationTime(long creationTime);
+
     void setLocation(String location);
 
     void setCommunity(String community);
 
+    /**
+     * Set the SNMP TimeTicks value to the sysUpTime of the agent that
+     * generated the trap. Note that the units for this value are 1/100ths
+     * of a second instead of milliseconds.
+     */
     void setTimeStamp(long timeStamp);
 
     void setVersion(String version);

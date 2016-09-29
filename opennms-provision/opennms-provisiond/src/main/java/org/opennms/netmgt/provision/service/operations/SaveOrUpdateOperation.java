@@ -35,11 +35,11 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.provision.service.ProvisionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,23 +95,25 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 			return;
 		}
 
+        final InetAddress addr = InetAddressUtils.addr(ipAddr);
+        if (addr == null) {
+            LOG.error("Unable to resolve address of snmpPrimary interface for node {} with address '{}'", m_node.getLabel(), ipAddr);
+        }
+
         m_currentInterface = new OnmsIpInterface(ipAddr, m_node);
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
         m_currentInterface.setIsSnmpPrimary(primaryType);
-        
-        if (System.getProperty("org.opennms.provisiond.reverseResolveRequisitionIpInterfaceHostnames", "true").equalsIgnoreCase("true")) {
-        	m_currentInterface.setIpHostName(reverseResolveHostname(ipAddr));
+
+        if (addr != null && System.getProperty("org.opennms.provisiond.reverseResolveRequisitionIpInterfaceHostnames", "true").equalsIgnoreCase("true")) {
+            m_currentInterface.setIpHostName(getProvisionService().getHostnameResolver().getHostname(addr, m_node.getLocation().getLocationName()));
         }
-        
+
         if (PrimaryType.PRIMARY.equals(primaryType)) {
-        	final InetAddress addr = InetAddressUtils.addr(ipAddr);
-        	if (addr == null) {
-        		LOG.error("Unable to resolve address of snmpPrimary interface for node {} with address '{}'", m_node.getLabel(), ipAddr);
-        	} else {
-        		m_scanManager = new ScanManager(getProvisionService().getLocationAwareSnmpClient(), addr);
-        	}
+            if (addr != null) {
+                m_scanManager = new ScanManager(getProvisionService().getLocationAwareSnmpClient(), addr);
+            }
         }
-        
+
         //FIXME: verify this doesn't conflict with constructor.  The constructor already adds this
         //interface to the node.
         m_node.addIpInterface(m_currentInterface);
@@ -188,9 +190,4 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         }
     }
 
-	private String reverseResolveHostname(String ipAddr) {
-		InetAddress addr = InetAddressUtils.addr(ipAddr);
-		return addr.getCanonicalHostName();
-	}
-    
 }

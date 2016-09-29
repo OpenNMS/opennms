@@ -409,9 +409,6 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
             for (int i = 0; i < services.length; i++) {
                 PolledService service = services[i];
 
-                // Initialize the monitor for the service
-                m_pollService.initialize(service);
-
                 try {
                     final PollStatus result = doPoll(service);
                     if (result == null) {

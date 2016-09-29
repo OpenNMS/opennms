@@ -102,6 +102,7 @@ include::text/service-assurance/monitors/NrpeMonitor.adoc[]
 include::text/service-assurance/monitors/NtpMonitor.adoc[]
 include::text/service-assurance/monitors/OmsaStorageMonitor.adoc[]
 include::text/service-assurance/monitors/OpenManageChassisMonitor.adoc[]
+include::text/service-assurance/monitors/PageSequenceMonitor.adoc[]
 include::text/service-assurance/monitors/PercMonitor.adoc[]
 include::text/service-assurance/monitors/Pop3Monitor.adoc[]
 include::text/service-assurance/monitors/PrTableMonitor.adoc[]
@@ -134,6 +135,15 @@ include::text/performance-data-collection/collectors/wsman/detector.adoc[]
 == Events
 include::text/events/events.adoc[]
 include::text/events/forward-elasticsearch.adoc[]
+
+[[ga-notifications]]
+== Notifications
+include::text/notifications/introduction.adoc[]
+include::text/notifications/getting-started.adoc[]
+include::text/notifications/concepts.adoc[]
+include::text/notifications/bonus-strategies.adoc[]
+include::text/notifications/strategies/mattermost.adoc[]
+include::text/notifications/strategies/slack.adoc[]
 
 [[ga-provisioning]]
 == Provisioning
@@ -199,13 +209,13 @@ include::text/operation/newts/configuration.adoc[]
 include::text/operation/newts/cassandra-jmx.adoc[]
 include::text/operation/newts/cassandra-newts-jmx.adoc[]
 
-[[ga-opennms-system-properties]]
-== System Properties
-include::text/system-properties/introduction.adoc[]
-
 [[ga-opennms-operation-daemon-config-files]]
 === Daemon Configuration Files
 include::text/operation/daemon-config-files/notifd.adoc[]
+
+[[ga-opennms-system-properties]]
+== System Properties
+include::text/system-properties/introduction.adoc[]
 
 [[ga-ticketing]]
 == Ticketing
@@ -227,3 +237,9 @@ include::text/plugin-manager/introduction.adoc[]
 include::text/plugin-manager/setting-karaf-instance-data.adoc[]
 include::text/plugin-manager/installing-available-plugins.adoc[]
 include::text/plugin-manager/installing-licences.adoc[]
+include::text/plugin-manager/internal-plugins-repository.adoc[]
+
+== Internal Plugins
+include::text/plugins/introduction.adoc[]
+include::text/plugins/alarm-change-notifier.adoc[]
+include::text/plugins/opennms-es-rest.adoc[]

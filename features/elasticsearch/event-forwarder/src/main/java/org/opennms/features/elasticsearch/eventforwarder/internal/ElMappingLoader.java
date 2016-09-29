@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * This processor bean replaces the mesage body with the content of the elmapping.json file
- * which is a template mapping for Elasicsearch. The file is loaded from classpath.
+ * This processor bean replaces the message body with the content of the elmapping.json file
+ * which is a template mapping for Elasticsearch. The file is loaded from the classpath.
  *
  * Elasticsearch documentation:
  *

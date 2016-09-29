@@ -1,21 +1,21 @@
 package org.opennms.features.elasticsearch.eventforwarder.internal;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
-import org.apache.camel.component.elasticsearch.ElasticsearchConfiguration;
 import org.apache.camel.component.bean.BeanInvocation;
+import org.apache.camel.component.elasticsearch.ElasticsearchConfiguration;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This bean is camel processor that translates the incoming OpenNMS event into a HashMap
@@ -36,15 +36,15 @@ public class ESHeaders {
     private boolean logEventDescription=false;
     private NodeCache cache;
 
-    IndexNameFunction idxName = new IndexNameFunction();
+    private IndexNameFunction idxName = new IndexNameFunction();
 
-    String remainder="opennms";
+    private String remainder = "opennms";
 
     public void process(Exchange exchange) {
         Message in = exchange.getIn();
         String indexName=null;
         String indexType=null;
-        final Map body=new HashMap();
+        final Map<String,Object> body=new HashMap<>();
 
         try {
             Object incoming=in.getBody();
@@ -115,7 +115,7 @@ public class ESHeaders {
         exchange.getOut().setBody(body);
     }
 
-    private void populateBodyFromAlarm(Map body, NorthboundAlarm alarm) {
+    private void populateBodyFromAlarm(Map<String,Object> body, NorthboundAlarm alarm) {
         body.put("id",alarm.getId());
         body.put("eventuei", alarm.getUei());
         body.put("@timestamp", alarm.getLastOccurrence());
@@ -126,7 +126,7 @@ public class ESHeaders {
         body.put("hour", cal.get(Calendar.HOUR_OF_DAY));
         body.put("dom", cal.get(Calendar.DAY_OF_MONTH)); // this is not present in the original sql-based tool https://github.com/unicolet/opennms-events/blob/master/sql/opennms_events.sql#L26
         body.put("poller", alarm.getPoller());
-        body.put("ipaddr", alarm.getIpAddr()!=null ? alarm.getIpAddr().toString() : null );
+        body.put("ipaddr", alarm.getIpAddr()!=null ? alarm.getIpAddr() : null );
         body.put("servicename", alarm.getService());
         body.put("eventseverity_text", alarm.getSeverity().getLabel());
         body.put("eventseverity", alarm.getSeverity().getId());
@@ -159,17 +159,18 @@ public class ESHeaders {
      * @param body the map
      * @param event the event object
      */
-    private void populateBodyFromEvent(Map body, Event event) {
+    private void populateBodyFromEvent(Map<String,Object> body, Event event) {
         body.put("id",event.getDbid());
         body.put("eventuei",event.getUei());
-        body.put("@timestamp", event.getCreationTime());
+        Date eventTime = event.getTime();
+        body.put("@timestamp", eventTime);
         Calendar cal=Calendar.getInstance();
-        cal.setTime(event.getCreationTime());
+        cal.setTime(eventTime);
         body.put("dow", cal.get(Calendar.DAY_OF_WEEK));
         body.put("hour", cal.get(Calendar.HOUR_OF_DAY));
         body.put("dom", cal.get(Calendar.DAY_OF_MONTH)); // this is not present in the original sql-based tool https://github.com/unicolet/opennms-events/blob/master/sql/opennms_events.sql#L26
         body.put("eventsource", event.getSource());
-        body.put("ipaddr", event.getInterfaceAddress()!=null ? event.getInterfaceAddress().toString() : null );
+        body.put("ipaddr", event.getInterfaceAddress()!=null ? InetAddressUtils.str(event.getInterfaceAddress()) : null );
         body.put("servicename", event.getService());
         // params are exported as attributes, see below
         body.put("eventseverity_text", event.getSeverity());

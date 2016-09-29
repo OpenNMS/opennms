@@ -28,11 +28,14 @@
 
 package org.opennms.jicmp.jna;
 
+import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 import com.sun.jna.LastErrorException;
 import com.sun.jna.Native;
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
 
 /**
  * UnixNativeSocketFactory
@@ -45,15 +48,20 @@ public class SunV4NativeSocket extends NativeDatagramSocket {
         Native.register((String)null);
     }
 
+    private static final int IP_TOS = 3;
     private final int m_sock;
 
-    public SunV4NativeSocket(int family, int type, int protocol) throws Exception {
+    public SunV4NativeSocket(int family, int type, int protocol, int listenPort) throws Exception {
         m_sock = socket(family, type, protocol);
+        final sockaddr_in addr_in = new sockaddr_in(listenPort);
+        bind(m_sock, addr_in, addr_in.size());
     }
 
     public native int bind(int socket, sockaddr_in address, int address_len) throws LastErrorException;
 
     public native int socket(int domain, int type, int protocol) throws LastErrorException;
+
+    public native int setsockopt(int socket, int level, int option_name, Pointer value, int option_len);
 
     public native int sendto(int socket, Buffer buffer, int buflen, int flags, sockaddr_in dest_addr, int dest_addr_len) throws LastErrorException;
 
@@ -61,8 +69,24 @@ public class SunV4NativeSocket extends NativeDatagramSocket {
 
     public native int close(int socket) throws LastErrorException;
 
-    private int getSock() {
+    @Override
+    public int getSock() {
         return m_sock;
+    }
+
+    @Override
+    public void setTrafficClass(final int tc) throws IOException {
+        final IntByReference tc_ptr = new IntByReference(tc);
+        try {
+            setsockopt(getSock(), IPPROTO_IP, IP_TOS, tc_ptr.getPointer(), Pointer.SIZE);
+        } catch (final LastErrorException e) {
+            throw new IOException("setsockopt: " + strerror(e.getErrorCode()));
+        }
+    }
+
+    @Override
+    public void allowFragmentation(final boolean frag) throws IOException {
+        allowFragmentation(IPPROTO_IP, IP_MTU_DISCOVER, frag);
     }
 
     @Override
@@ -88,8 +112,8 @@ public class SunV4NativeSocket extends NativeDatagramSocket {
     }
 
     @Override
-    public int close() {
-        return close(getSock());
+    public void close() {
+        close(getSock());
     }
 
 }

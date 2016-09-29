@@ -347,6 +347,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
 
     @Test(timeout=300000)
     public void testRescanWithChangingDns() throws Exception {
+        final HostnameResolver originalHostnameResolver = m_provisionService.getHostnameResolver();
         try {
             final int nextNodeId = m_nodeDao.getNextNodeId();
 
@@ -359,7 +360,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             assertEquals(0, getSnmpInterfaceDao().countAll());
 
             m_provisionService.setHostnameResolver(new HostnameResolver() {
-                @Override public String getHostname(final InetAddress addr) {
+                @Override public String getHostname(final InetAddress addr, final String location) {
                     return "oldNodeLabel";
                 }
             });
@@ -399,7 +400,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             assertEquals(0, getSnmpInterfaceDao().countAll());
 
             m_provisionService.setHostnameResolver(new HostnameResolver() {
-                @Override public String getHostname(final InetAddress addr) {
+                @Override public String getHostname(final InetAddress addr, final String location) {
                     return "newNodeLabel";
                 }
             });
@@ -411,7 +412,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             assertEquals("newNodeLabel", getNodeDao().findAll().iterator().next().getLabel());
             assertEquals(NodeLabelSource.HOSTNAME, getNodeDao().findAll().iterator().next().getLabelSource());
         } finally {
-            m_provisionService.setHostnameResolver(new DefaultHostnameResolver());
+            m_provisionService.setHostnameResolver(originalHostnameResolver);
         }
     }
 

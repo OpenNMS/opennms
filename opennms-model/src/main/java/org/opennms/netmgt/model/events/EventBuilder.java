@@ -81,7 +81,6 @@ public class EventBuilder {
         m_event = new Event();
         setUei(uei);
         setTime(date);
-        setCreationTime(date);
         setSource(source);
     }
 
@@ -94,7 +93,6 @@ public class EventBuilder {
         m_event = event;
         Date now = new Date();
         setTime(now);
-        setCreationTime(now);
     }
 
     /**
@@ -103,6 +101,10 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event getEvent() {
+        // The creation time has been used as the time when the event
+        // is stored in the database so update it right before we return
+        // the event object.
+        m_event.setCreationTime(new Date());
         return m_event;
     }
 
@@ -121,17 +123,6 @@ public class EventBuilder {
     public EventBuilder setTime(final Date date) {
        m_event.setTime(date);
        return this;
-    }
-    
-    /**
-     * <p>setCreationTime</p>
-     *
-     * @param date a {@link java.util.Date} object.
-     * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
-     */
-    public EventBuilder setCreationTime(final Date date) {
-        m_event.setCreationTime(date);
-        return this;
     }
 
     /**

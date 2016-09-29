@@ -244,10 +244,19 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     /** {@inheritDoc} */
     public SnmpAgentConfig getAgentConfig(final InetAddress agentAddress) {
-        return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
+        return getAgentConfig(agentAddress, null, VERSION_UNSPECIFIED);
+    }
+
+    public SnmpAgentConfig getAgentConfig(final InetAddress agentAddress, String location) {
+        return getAgentConfig(agentAddress, location, VERSION_UNSPECIFIED);
     }
 
     public SnmpAgentConfig getAgentConfig(final InetAddress agentInetAddress, final int requestedSnmpVersion) {
+
+        return getAgentConfig(agentInetAddress, null, requestedSnmpVersion);
+    }
+
+    public SnmpAgentConfig getAgentConfig(final InetAddress agentInetAddress, String location, final int requestedSnmpVersion) {
         getReadLock().lock();
         try {
             if (getSnmpConfig() == null) {
@@ -266,7 +275,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             // Now set the defaults from the getSnmpConfig()
             setSnmpAgentConfig(agentConfig, new Definition(), requestedSnmpVersion);
 
-            final AddressSnmpConfigVisitor visitor = new AddressSnmpConfigVisitor(agentInetAddress);
+            final AddressSnmpConfigVisitor visitor = new AddressSnmpConfigVisitor(agentInetAddress, location);
             getSnmpConfig().visit(visitor);
             final Definition matchingDef = visitor.getDefinition();
             if (matchingDef != null) {

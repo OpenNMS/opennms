@@ -47,7 +47,7 @@ import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.opennms.netmgt.icmp.Pinger;
-import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.icmp.PingerFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -239,7 +239,7 @@ public class Manager implements ManagerMBean {
     }
 
     private void testPinger() {
-        final Pinger pinger = PingerFactory.getInstance();
+        final Pinger pinger = new PingerFactoryImpl().getInstance();
 
         boolean hasV4 = pinger.isV4Available();
         boolean hasV6 = pinger.isV6Available();

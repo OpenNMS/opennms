@@ -105,6 +105,10 @@ public class ForeignSourceConfigRestServiceIT extends AbstractSpringJerseyRestTe
         Assert.assertNotNull(list);
         Assert.assertFalse(list.isEmpty());
         Assert.assertTrue(list.getElements().contains("address1"));
+        Assert.assertFalse(list.getElements().contains("id"));
+        Assert.assertFalse(list.getElements().contains("class"));
+        Assert.assertFalse(list.getElements().contains("node"));
+        Assert.assertFalse(list.getElements().contains("geolocation"));
     }
 
     /**

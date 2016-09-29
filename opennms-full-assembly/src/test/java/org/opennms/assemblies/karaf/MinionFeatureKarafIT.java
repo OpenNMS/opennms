@@ -104,8 +104,32 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 	}
 
 	@Test
-	public void testInstallFeatureMinionHeartbeat() {
-		installFeature("minion-heartbeat");
+	public void testInstallFeatureMinionHeartbeatProducer() {
+		installFeature("minion-heartbeat-producer");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionProvisiondDetectors() {
+		installFeature("minion-provisiond-detectors");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionRpcServer() {
+		installFeature("minion-rpc-server");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionShellProvision() {
+		installFeature("minion-shell-provision");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionShell() {
+		installFeature("minion-shell");
 		System.out.println(executeCommand("features:list -i"));
 	}
 

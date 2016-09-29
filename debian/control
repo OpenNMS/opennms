@@ -166,7 +166,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Common Fi
 
 Package: libopennms-java
 Architecture: all
-Depends: oracle-java8-installer | openjdk-8-jre | java8-runtime | java8-runtime-headless, jicmp, jicmp6
+Depends: oracle-java8-installer | openjdk-8-jre | java8-runtime | java8-runtime-headless, jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
 Replaces: opennms-common (<< 1.3.0), libicmp-jni (<< 1.3.0)
 Description: Enterprise-grade Open-source Network Management Platform (OpenNMS Libraries)
  OpenNMS is an enterprise-grade network management system written in Java.

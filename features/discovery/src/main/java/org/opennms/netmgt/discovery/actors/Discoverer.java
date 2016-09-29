@@ -40,7 +40,7 @@ import org.opennms.netmgt.discovery.messages.DiscoveryJob;
 import org.opennms.netmgt.discovery.messages.DiscoveryResults;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,10 +65,10 @@ public class Discoverer {
 
     private static final Logger LOG = LoggerFactory.getLogger(Discoverer.class);
 
-    private final Pinger m_pinger;
+    private final PingerFactory m_pingerFactory;
 
-    public Discoverer(Pinger pinger) {
-        m_pinger = Preconditions.checkNotNull(pinger, "pinger argument");
+    public Discoverer(final PingerFactory pingerFactory) {
+        m_pingerFactory = Preconditions.checkNotNull(pingerFactory, "pingerFactory argument");
     }
 
     public DiscoveryResults discover(DiscoveryJob job) {
@@ -111,7 +111,7 @@ public class Discoverer {
     private void ping(IPPollAddress pollAddress, PingResponseTracker tracker) {
         InetAddress address = pollAddress.getAddress();
         try {
-            m_pinger.ping(address, pollAddress.getTimeout(), pollAddress.getRetries(), (short) 1, tracker);
+            m_pingerFactory.getInstance().ping(address, pollAddress.getTimeout(), pollAddress.getRetries(), (short) 1, tracker);
         } catch (Throwable e) {
             LOG.debug("Error pinging {}", address.getAddress(), e);
             tracker.handleError(address, null, e);

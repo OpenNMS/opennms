@@ -28,6 +28,7 @@
 
 package org.opennms.core.utils;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -46,24 +47,27 @@ public class WebSecurityUtilsTest {
 	@Test
 	public void testBasicSanitizeString() {
 		String script = "<script>foo</script>";
+		String imgXss = "<img src=/ onerror=\"alert('XSS');\"></img>";
 		String html = "<table>";
 		script = WebSecurityUtils.sanitizeString(script);
+		imgXss = WebSecurityUtils.sanitizeString(imgXss);
 		html = WebSecurityUtils.sanitizeString(html);
-		assertTrue("Script is sanitized",
-				script.equals("&lt;&#x73;cript&gt;foo&lt;/&#x73;cript&gt;"));
-		assertTrue("Html is sanitized", html.equals("&lt;table&gt;"));
+		assertEquals("Script is sanitized", "&lt;script&gt;foo&lt;/script&gt;", script);
+		assertEquals("IMG XSS is sanitized", "&lt;img src=/ onerror=\"alert('XSS');\"&gt;&lt;/img&gt;", imgXss);
+		assertEquals("Html is sanitized", "&lt;table&gt;", html);
 	}
 
 	@Test
 	public void testHTMLallowedSanitizeString() {
 		String script = "<script>foo</script>";
+		String imgXss = "<img src=/ onerror=\"alert('XSS');\"></img>";
 		String html = "<table>";
 		script = WebSecurityUtils.sanitizeString(script, true);
+		imgXss = WebSecurityUtils.sanitizeString(imgXss, true);
 		html = WebSecurityUtils.sanitizeString(html, true);
-		assertTrue("Script is sanitized with HTML allowed",
-				script.equals("<&#x73;cript>foo</&#x73;cript>"));
-		assertTrue("HtmlTable is sanitized with HTML allowed, so unchanged",
-				html.equals("<table>"));
+		assertEquals("Script is sanitized with HTML allowed", "<&#x73;cript>foo</&#x73;cript>", script);
+                assertEquals("IMG XSS is sanitized with HTML allowed", "<img src=/ &#x6f;nerror=\"alert('XSS');\"></img>", imgXss);
+		assertEquals("HtmlTable is sanitized with HTML allowed, so unchanged", "<table>", html);
 	}
 
 }

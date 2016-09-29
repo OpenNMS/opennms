@@ -38,5 +38,9 @@
       <type>pom</type>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-api</artifactId>
+    </dependency>
   </dependencies>
 </project>

@@ -11,7 +11,7 @@
 ">
 
 	<!-- Pinger service -->
-	<reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
+	<reference id="pingerFactory" interface="org.opennms.netmgt.icmp.PingerFactory" />
 
 	<!-- DistPollerDao -->
 	<reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
@@ -46,7 +46,7 @@
 
 	<!-- This processor performs ICMP pings and reports the results -->
 	<bean id="discoverer" class="org.opennms.netmgt.discovery.actors.Discoverer">
-		<argument ref="pinger" />
+		<argument ref="pingerFactory" />
 	</bean>
 
 	<!-- ActiveMQ component provided by minion-core -->

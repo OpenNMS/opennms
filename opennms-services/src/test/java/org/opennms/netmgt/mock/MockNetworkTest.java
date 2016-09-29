@@ -405,7 +405,6 @@ public class MockNetworkTest extends TestCase {
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor("ICMP");
         monitor.poll(svc, Collections.emptyMap());
         assertEquals(1, m_network.getInvalidPollCount());
-
     }
 
     public void testLookupNotThere() {

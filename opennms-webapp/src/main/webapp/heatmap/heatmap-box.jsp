@@ -40,7 +40,7 @@
 <%@page language="java"
         contentType="text/html"
         session="true"
-        %>
+%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
@@ -111,140 +111,148 @@
 
 <div id="heatmap-box" class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title"><a href="heatmap/index.jsp?mode=<%=mode%>&heatmap=<%=heatmap%>&foreignSource=<%=foreignSource%>&category=<%=category%>&monitoredService=<%=monitoredService%>"><%=title%>
+        <h3 class="panel-title"><a href="heatmap/index.jsp?mode=<%=mode%>&amp;heatmap=<%=heatmap%>&amp;foreignSource=<%=foreignSource%>&amp;category=<%=category%>&amp;monitoredService=<%=monitoredService%>"><%=title%>
         </a></h3>
     </div>
-
-    <script type="text/javascript" src="lib/jquery-ui/jquery-ui.js"></script>
-    <script type="text/javascript" src="js/jquery.ui.treemap.js"></script>
 
     <div id="treemap"></div>
 
     <script type="text/javascript">
-        var mouseclickHandler = function (e, data) {
-            var nodes = data.nodes;
-            var ids = data.ids;
-            <%
-              if ("foreignSources".equals(heatmap)) {
-            %>
-            location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByForeignSource&foreignSource=" + nodes[0].id;
-            <%
-              }
+        require(['jquery', 'jquery-ui/jquery-ui', '../js/jquery.ui.treemap'], function( $ ) {
+            var mouseclickHandler = function (e, data) {
+                var nodes = data.nodes;
+                var ids = data.ids;
+                <%
+                  if ("foreignSources".equals(heatmap)) {
+                %>
+                location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByForeignSource&foreignSource=" + nodes[0].id;
+                <%
+                  }
 
-              if ("categories".equals(heatmap)) {
-            %>
-            location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByCategory&category=" + nodes[0].id;
-            <%
-              }
+                  if ("categories".equals(heatmap)) {
+                %>
+                location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByCategory&category=" + nodes[0].id;
+                <%
+                  }
 
-              if ("monitoredServices".equals(heatmap)) {
-            %>
-            location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByMonitoredService&monitoredService=" + nodes[0].id;
-            <%
-              }
+                  if ("monitoredServices".equals(heatmap)) {
+                %>
+                location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByMonitoredService&monitoredService=" + nodes[0].id;
+                <%
+                  }
 
-              if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap) || "nodesByMonitoredService".equals(heatmap)) {
-            %>
-            location.href = "/opennms/element/node.jsp?node=" + nodes[0].elementId
-            <%
-              }
-            %>
-        };
+                  if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap) || "nodesByMonitoredService".equals(heatmap)) {
+                %>
+                location.href = "/opennms/element/node.jsp?node=" + nodes[0].elementId
+                <%
+                  }
+                %>
+            };
 
-        var url = "<%=url%>";
-        var children;
+            var url = "<%=url%>";
+            var children;
 
-        function refresh() {
-            var height = $(window).height() - 105 - $("#treemap").offset().top;
+            function refresh() {
+                var height = $(window).height() - 105 - $("#treemap").offset().top;
 
-            if (height < 0) {
-                height = $(window).width();
+                if (height < 0) {
+                    height = $(window).width();
+                }
+
+                height = Math.min(height, $(window).width());
+
+                $("#treemap").treemap({
+                    "dimensions": [
+                        $("#treemap").width(),
+                        height
+                    ],
+                    "colorStops": [
+                        {"val": 1.0, "color": "#CC0000"},
+                        {"val": 0.4, "color": "#FF3300"},
+                        {"val": 0.2, "color": "#FF9900"},
+                        {"val": 0.1, "color": "#FFCC00"},
+                        {"val": 0.0, "color": "#336600"}
+                    ],
+                    "labelsEnabled": true,
+                    "nodeData": {
+                        "id": "<%=heatmap%>",
+                        "children": children
+                    }
+                }).bind('treemapclick', mouseclickHandler);
             }
 
-            height = Math.min(height, $(window).width());
-
-            $("#treemap").treemap({
-                "dimensions": [
-                    $("#treemap").width(),
-                    height
-                ],
-                "colorStops": [
-                    {"val": 1.0, "color": "#CC0000"},
-                    {"val": 0.4, "color": "#FF3300"},
-                    {"val": 0.2, "color": "#FF9900"},
-                    {"val": 0.1, "color": "#FFCC00"},
-                    {"val": 0.0, "color": "#336600"}
-                ],
-                "labelsEnabled": true,
-                "nodeData": {
-                    "id": "<%=heatmap%>",
-                    "children": children
-                }
-            }).bind('treemapclick', mouseclickHandler);
-        }
-
-        $( window ).resize(function() {
-            refresh();
-        });
-
-        $(document).ready(function () {
-            $.getJSON(url, function (data) {
-                children = data.children;
+            $(window).resize(function() {
                 refresh();
+            });
+
+            $(document).ready(function () {
+                $.getJSON(url, function (data) {
+                    children = data.children;
+                    refresh();
+                });
             });
         });
     </script>
     <div class="panel-footer">
-        <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>&nbsp;
-        <%
-            if ("outages".equals(mode)) {
-        %>
-        <a href="<%=request.getRequestURI()%>?mode=alarms&heatmap=<%=heatmap%>&category=<%=category%>&foreignSource=<%=foreignSource%>&monitoredService=<%=monitoredService%>">Alarms</a> / <b>Outages</b>
-        <%
-            } else {
-        %>
-        <b>Alarms</b> / <a href="<%=request.getRequestURI()%>?mode=outages&heatmap=<%=heatmap%>&category=<%=category%>&foreignSource=<%=foreignSource%>&monitoredService=<%=monitoredService%>">Outages</a>
-        <%
-            }
-        %>
-        &nbsp;<span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>&nbsp;
-        <%
-            if ("foreignSources".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
-        %>
-        <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=categories">Categories</a> / <b>Foreign Sources</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=monitoredServices">Services</a>
-        <%
-            } else {
-                if ("categories".equals(heatmap) ||"nodesByCategory".equals(heatmap)) {
-        %>
-        <b>Categories</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=foreignSources">Foreign Sources</a> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=monitoredServices">Services</a>
-        <%
+        <div class="row">
+            <div class="col-sm-7 col-md-7" style="padding-right: 0 !important">
+                <span class="text-nowrap">
+                    <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>&nbsp;
+                    <%
+                        if ("outages".equals(mode)) {
+                    %>
+                    <a href="<%=request.getRequestURI()%>?mode=alarms&amp;heatmap=<%=heatmap%>&amp;category=<%=category%>&amp;foreignSource=<%=foreignSource%>&amp;monitoredService=<%=monitoredService%>">Alarms</a> / <b>Outages</b>
+                    <%
+                    } else {
+                    %>
+                    <b>Alarms</b> / <a href="<%=request.getRequestURI()%>?mode=outages&amp;heatmap=<%=heatmap%>&amp;category=<%=category%>&amp;foreignSource=<%=foreignSource%>&amp;monitoredService=<%=monitoredService%>">Outages</a>
+                    <%
+                        }
+                    %>
+                </span>
+                &nbsp;
+                <span class="text-nowrap">
+                    <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>&nbsp;
+                    <%
+                        if ("foreignSources".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
+                    %>
+                    <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=categories">Categories</a> / <b>Foreign Sources</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=monitoredServices">Services</a>
+                    <%
+                    } else {
+                        if ("categories".equals(heatmap) ||"nodesByCategory".equals(heatmap)) {
+                    %>
+                    <b>Categories</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=foreignSources">Foreign Sources</a> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=monitoredServices">Services</a>
+                    <%
+                    } else {
+                    %>
+                    <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=categories">Categories</a> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=foreignSources">Foreign Sources</a> / <b>Services</b>
+                    <%
+                            }
+                        }
+                    %>
+                </span>
+            </div>
+            <div class="col-sm-5 col-md-5 text-right" style="padding-left: 0 !important">
+                <%
+                    if ("outages".equals(mode)) {
+                %>
+                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#336600"></span>&nbsp;0% down</span>
+                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#FFCC00"></span>&nbsp;10% down</span>
+                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#FF9900"></span>&nbsp;20% down</span>
+                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#FF3300"></span>&nbsp;40% down</span>
+                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#CC0000"></span>&nbsp;100% down</span>
+                <%
                 } else {
-        %>
-        <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=categories">Categories</a> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=foreignSources">Foreign Sources</a> / <b>Services</b>
-        <%
-                }
-            }
-        %>
-        <div style="float:right;">
-            <%
-                if ("outages".equals(mode)) {
-            %>
-            <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;0% down
-            <font color="#FFCC00"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;10% down
-            <font color="#FF9900"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;20% down
-            <font color="#FF3300"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;40% down
-            <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;100% down
-            <%
-                } else {
-            %>
-            <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Normal
-            <font color="#FFCC00"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Warning
-            <font color="#FF9900"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Minor
-            <font color="#FF3300"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Major
-            <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Critical
-            <%
-                }
-            %>
+                %>
+                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#336600"></span>&nbsp;Normal</span>
+                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#FFCC00"></span>&nbsp;Warning</span>
+                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#FF9900"></span>&nbsp;Minor</span>
+                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#FF3300"></span>&nbsp;Major</span>
+                <span class="text-nowrap"><span class="glyphicon glyphicon-th-large" aria-hidden="true" style="color:#CC0000"></span>&nbsp;Critical</span>
+                <%
+                    }
+                %>
+            </div>
         </div>
     </div>
 </div>
