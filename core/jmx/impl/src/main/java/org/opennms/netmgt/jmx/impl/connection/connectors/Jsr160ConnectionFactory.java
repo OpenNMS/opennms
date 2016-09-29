@@ -29,6 +29,7 @@
 package org.opennms.netmgt.jmx.impl.connection.connectors;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.util.HashMap;
@@ -64,7 +65,7 @@ public abstract class Jsr160ConnectionFactory {
     
     private static final Logger LOG = LoggerFactory.getLogger(Jsr160ConnectionFactory.class);
 
-    // Assuming default timeout to be 30 secs.
+    // Set default timeout to be 30 secs.
     private static final long DEFAULT_TIMEOUT = 30000;
 
     /**
@@ -84,7 +85,7 @@ public abstract class Jsr160ConnectionFactory {
         String password = ParameterMap.getKeyedString(propertiesMap, "password", null);
         long timeout     = ParameterMap.getKeyedLong(propertiesMap, "timeout", DEFAULT_TIMEOUT);
         
-        Jsr160ConnectionWrapper connectionWrapper = null;
+        //Jsr160ConnectionWrapper connectionWrapper = null;
         
         final String hostAddress = InetAddressUtils.str(address);
         LOG.debug("JMX: {} - service:{}//{}:{}{}", factory, protocol, hostAddress, port, urlPath);
@@ -103,15 +104,15 @@ public abstract class Jsr160ConnectionFactory {
                  JMXConnector connector = null;
                  try {
                      connector = future.get(timeout, TimeUnit.MILLISECONDS);
+                     MBeanServerConnection connection = connector.getMBeanServerConnection();
+                     return new Jsr160ConnectionWrapper(connector, connection);
                 } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    LOG.error("Exception connecting JMXConnectorFactory url {} , Error: {}", url, e.getMessage());
+                    LOG.info("Exception connecting JMXConnectorFactory url {} , Error: {}", url, e.getMessage());
+                    throw new ConnectException("Error connecting JMXConnectionFactory  " + url);
                 } finally {
                     future.cancel(true);
                 }
 
-                MBeanServerConnection connection = connector.getMBeanServerConnection();
-                
-                return new Jsr160ConnectionWrapper(connector, connection);
         }
         else if (factory.equals("PASSWORD-CLEAR")) {
                 HashMap<String, String[]> env = new HashMap<String, String[]>();
@@ -142,15 +143,15 @@ public abstract class Jsr160ConnectionFactory {
 
                  try {
                      future.get(timeout, TimeUnit.MILLISECONDS);
+                     MBeanServerConnection connection = connector.getMBeanServerConnection();
+                     return new Jsr160ConnectionWrapper(connector, connection);
                 } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    LOG.error("Exception connecting JMXConnectorFactory url {} , Error: {}", url, e.getMessage());
+                    LOG.info("Exception connecting JMXConnectorFactory url {} , Error: {}", url, e.getMessage());
+                    throw new ConnectException("Error connecting JMXConnectionFactory  " + url);
                 } finally {
                     future.cancel(true);
                 }
 
-                MBeanServerConnection connection = connector.getMBeanServerConnection();
-
-                return new Jsr160ConnectionWrapper(connector, connection);
         }
         /*
         else if (factory.equals("PASSWORD-OBFUSCATED")) {
