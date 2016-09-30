@@ -28,18 +28,46 @@
 
 package org.opennms.web.api;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
+
+import org.opennms.core.utils.BundleLists;
+import org.opennms.core.utils.ConfigFileConstants;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An uninstantiatable class that provides a servlet container-independent
  * interface to the authentication system and a list of useful constants.
+ * 
+ * A predefined list of roles will be used. Optionally, it is possible to
+ * define additional roles by creating a file called security-roles.proeprties.
+ * 
+ * Here is an example for adding 2 additional roles:
+ * 
+ * roles=operator,manager
+ * 
+ * The 'default' roles are always going to be added, so the above list is
+ * equivalent to:
+ * 
+ * roles=user,admin,operator,manager
+ * 
+ * The role names will be translated to upper case, prefixing it with 'ROLE_'.
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="mailto:agalue@opennms.org">Alejandro Galue</A>
  */
 public final class Authentication extends Object {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Authentication.class);
+
+    public static final String ROLE_CONFIGURATION_FILE = "security-roles.properties";
+
     public static final String ROLE_USER = "ROLE_USER";
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final String ROLE_READONLY = "ROLE_READONLY";
@@ -53,6 +81,7 @@ public final class Authentication extends Object {
     public static final String ROLE_JMX = "ROLE_JMX";
 
     private static List<String> s_availableRoles = new ArrayList<String>();
+    private static long lastModified = 0;
 
     static {
         s_availableRoles.add(ROLE_USER);
@@ -73,11 +102,36 @@ public final class Authentication extends Object {
     }
 
     public static List<String> getAvailableRoles() {
+        loadRoles();
         return Collections.unmodifiableList(s_availableRoles);
     }
 
     public static boolean isValidRole(String role) {
+        loadRoles();
         return s_availableRoles.contains(role);
     }
 
+    private static void loadRoles() {
+        File configFile = new File(ConfigFileConstants.getHome(), "etc" + File.separator + ROLE_CONFIGURATION_FILE);
+        if (configFile.exists() && configFile.lastModified() > lastModified) {
+            lastModified = configFile.lastModified();
+            Properties p = new Properties();
+            try {
+                LOG.info("Loading security roles from {}", configFile);
+                p.load(new FileInputStream(configFile));
+                String roleList = p.getProperty("roles");
+                if (roleList != null) {
+                    for (String role : BundleLists.parseBundleList(roleList)) {
+                        String securityRole = "ROLE_" + role.toUpperCase();
+                        if (!s_availableRoles.contains(securityRole)) {
+                            LOG.info("Adding role {}", securityRole);
+                            s_availableRoles.add(securityRole);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                LOG.warn("Can't load security roles from {}, because: {}", configFile, e.getMessage());
+            }
+        }
+    }
 }
