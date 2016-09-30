@@ -28,20 +28,16 @@
 
 package org.opennms.netmgt.syslogd;
 
-import java.net.InetAddress;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.camel.MinionDTO;
-import org.opennms.core.utils.InetAddressUtils;
 
 @XmlRootElement(name = "syslog-dto")
 @XmlAccessorType(XmlAccessType.NONE)
 public class SyslogDTO extends MinionDTO {
-
-	private static final long serialVersionUID = 7014850780455600999L;
 
 	public SyslogDTO() {
 		// No-arg constructor for JAXB
@@ -56,22 +52,6 @@ public class SyslogDTO extends MinionDTO {
 				.append("sourceAddress", super.getHeaders().get(SOURCE_ADDRESS))
 				.append("sourcePort", super.getHeaders().get(SOURCE_PORT))
 				.append("body", super.getBody()).toString();
-	}
-
-	public void setSystemId(String m_systemId) {
-		super.putHeader(MinionDTO.SYSTEM_ID, m_systemId);
-	}
-
-	public void setLocation(String m_location) {
-		super.putHeader(MinionDTO.LOCATION, m_location);
-	}
-
-	public void setSourceAddress(InetAddress m_sourceAddress) {
-		super.putHeader(MinionDTO.SOURCE_ADDRESS, InetAddressUtils.str(m_sourceAddress));
-	}
-
-	public void setSourcePort(int m_sourceport) {
-		super.putHeader(MinionDTO.SOURCE_PORT, Integer.toString(m_sourceport));
 	}
 
 }

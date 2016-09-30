@@ -28,12 +28,12 @@
 
 package org.opennms.core.camel;
 
-import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -41,11 +41,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.utils.InetAddressUtils;
+
 @XmlRootElement(name = "minion-dto")
 @XmlAccessorType(XmlAccessType.NONE)
-public class MinionDTO implements Serializable{
-
-	private static final long serialVersionUID = -4204021063296911062L;
+public class MinionDTO {
 
 	public static final String SYSTEM_ID = "systemId";
 	public static final String LOCATION = "location";
@@ -53,7 +53,7 @@ public class MinionDTO implements Serializable{
 	public static final String SOURCE_PORT = "sourcePort";
 
 	@XmlElementWrapper(name = "headers")
-	final Map<String, String> m_headers = Collections.synchronizedMap(new HashMap<String, String>());
+	private final Map<String, String> m_headers = Collections.synchronizedMap(new TreeMap<String, String>());
 
 	@XmlElement(name = "body")
 	private byte[] m_body;
@@ -84,7 +84,7 @@ public class MinionDTO implements Serializable{
 		return Collections.unmodifiableMap(m_headers);
 	}
 
-	public void setHeaders(Map<String, String> newHeaders) {
+	public void setHeaders(final Map<String, String> newHeaders) {
 		synchronized (m_headers) {
 			m_headers.clear();
 			m_headers.putAll(newHeaders);
@@ -109,6 +109,22 @@ public class MinionDTO implements Serializable{
 
 	public void setBody(byte[] m_body) {
 		this.m_body = m_body;
+	}
+
+	public final void setSystemId(String m_systemId) {
+		this.putHeader(SYSTEM_ID, m_systemId);
+	}
+
+	public final void setLocation(String m_location) {
+		this.putHeader(LOCATION, m_location);
+	}
+
+	public final void setSourceAddress(InetAddress m_sourceAddress) {
+		this.putHeader(SOURCE_ADDRESS, InetAddressUtils.str(m_sourceAddress));
+	}
+
+	public final void setSourcePort(int m_sourceport) {
+		this.putHeader(SOURCE_PORT, Integer.toString(m_sourceport));
 	}
 
 }

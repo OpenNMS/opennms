@@ -52,7 +52,17 @@ public abstract class TrapInformation implements TrapNotification {
      * The initial creation time of this object. This is used to track the reception
      * time of the event.
      */
-    private final long m_creationTime;
+    private long m_creationTime;
+
+    /**
+     * Optional system ID of the monitoring system that received this trap
+     */
+    private String systemId;
+
+    /**
+     * Optional location of the monitoring system that received this trap
+     */
+    private String location;
 
     private TrapProcessor m_trapProcessor;
 
@@ -63,42 +73,64 @@ public abstract class TrapInformation implements TrapNotification {
         m_trapProcessor = trapProcessor;
     }
 
+    /**
+     * @return The source IP address of the trap. For SNMPv2 traps, this value
+     * is always the same as the value of {@link #getAgentAddress()} but for SNMPv1
+     * traps, the value can be different if the trap has been forwarded. It then
+     * represents the true source IP address of the trap event.
+     */
     public abstract InetAddress getTrapAddress();
 
-    /**
-     * Returns the sending agent's internet address
-     */
-    public InetAddress getAgent() {
-        return m_agent;
+    public final String getSystemId() {
+        return systemId;
+    }
+
+    public final void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
+    public final String getLocation() {
+        return location;
+    }
+
+    public final void setLocation(String location) {
+        this.location = location;
     }
 
     /**
      * Returns the SNMP community string from the received packet.
      */
-    public String getCommunity() {
+    public final String getCommunity() {
         return m_community;
     }
 
     protected void validate() {
         // by default we do nothing;
     }
-    
-    public InetAddress getAgentAddress() {
-        return getAgent();
+
+    /**
+     * Returns the sending agent's internet address
+     */
+    public final InetAddress getAgentAddress() {
+        return m_agent;
     }
 
-    protected final long getCreationTime() {
+    public final long getCreationTime() {
         return m_creationTime;
+    }
+
+    public final void setCreationTime(long creationTime) {
+        m_creationTime = creationTime;
     }
 
     @Override
     public final TrapProcessor getTrapProcessor() {
-        // We do this here to processing of the data is delayed until it is requested.
+        // We do this here so that processing of the data is delayed until it is requested.
         return processTrap(this, m_trapProcessor);
     }
 
     @Override
-    public final void setTrapProcessor(TrapProcessor trapProcessor) {
+    public final void setTrapProcessor(final TrapProcessor trapProcessor) {
         m_trapProcessor = trapProcessor;
     }
 
@@ -119,6 +151,8 @@ public abstract class TrapInformation implements TrapNotification {
         
         trap.validate();
         
+        trapProcessor.setSystemId(trap.getSystemId());
+        trapProcessor.setLocation(trap.getLocation());
         trapProcessor.setCreationTime(trap.getCreationTime());
         trapProcessor.setVersion(trap.getVersion());
         trapProcessor.setCommunity(trap.getCommunity());

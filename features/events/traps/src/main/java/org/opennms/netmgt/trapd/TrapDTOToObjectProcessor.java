@@ -30,9 +30,11 @@ package org.opennms.netmgt.trapd;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.opennms.core.camel.MinionDTO;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValue;
@@ -40,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
+import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 
@@ -60,6 +63,15 @@ public class TrapDTOToObjectProcessor implements Processor {
 		if (SNMP_V1.equalsIgnoreCase(trapDto.getHeader(TrapDTO.VERSION))) {
 			PDUv1 pdu = new PDUv1();
 			pdu.setType(PDU.NOTIFICATION);
+			pdu.setAgentAddress(new IpAddress(trapDto.getHeader(TrapDTO.SOURCE_ADDRESS)));
+			pdu.setTimestamp(Long.parseLong(trapDto.getHeader(TrapDTO.TIMESTAMP)));
+
+			// TODO: Fill in these values
+			/*
+			pdu.setEnterprise(enterprise);
+			pdu.setGenericTrap(genericTrap);
+			pdu.setSpecificTrap(specificTrap);
+			*/
 
 			for (SnmpResult snmpResult : trapDto.getResults()) {
 				final int type = snmpResult.getValue().getType();
@@ -69,12 +81,16 @@ public class TrapDTOToObjectProcessor implements Processor {
 				pdu.add(new VariableBinding(oid, ((Snmp4JValue)SnmpUtils.getValueFactory().getValue(type, value)).getVariable()));
 			}
 
-			return new Snmp4JTrapNotifier.Snmp4JV1TrapInformation(
-				InetAddrUtils.addr(trapDto.getHeader(TrapDTO.SOURCE_ADDRESS)),
+			TrapInformation retval = new Snmp4JTrapNotifier.Snmp4JV1TrapInformation(
+				InetAddrUtils.addr(trapDto.getHeader(TrapDTO.AGENT_ADDRESS)),
 				trapDto.getHeader(TrapDTO.COMMUNITY),
 				pdu,
 				null
 			);
+			retval.setCreationTime(Long.parseLong(trapDto.getHeader(TrapDTO.CREATION_TIME)));
+			retval.setLocation(trapDto.getHeader(MinionDTO.LOCATION));
+			retval.setSystemId(trapDto.getHeader(MinionDTO.SYSTEM_ID));
+			return retval;
 		} else if (
 			SNMP_V2.equalsIgnoreCase(trapDto.getHeader(TrapDTO.VERSION)) ||
 			SNMP_V3.equalsIgnoreCase(trapDto.getHeader(TrapDTO.VERSION))
@@ -90,12 +106,16 @@ public class TrapDTOToObjectProcessor implements Processor {
 				pdu.add(new VariableBinding(oid, ((Snmp4JValue)SnmpUtils.getValueFactory().getValue(type, value)).getVariable()));
 			}
 
-			return new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
+			TrapInformation retval = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
 				InetAddrUtils.addr(trapDto.getHeader(TrapDTO.SOURCE_ADDRESS)),
 				trapDto.getHeader(TrapDTO.COMMUNITY),
 				pdu,
 				null
 			);
+			retval.setCreationTime(Long.parseLong(trapDto.getHeader(TrapDTO.CREATION_TIME)));
+			retval.setLocation(trapDto.getHeader(MinionDTO.LOCATION));
+			retval.setSystemId(trapDto.getHeader(MinionDTO.SYSTEM_ID));
+			return retval;
 		} else {
 			throw new IllegalArgumentException("Unrecognized trap version in DTO: " + trapDto.getHeader(TrapDTO.VERSION));
 		}
