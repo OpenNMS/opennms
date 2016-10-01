@@ -29,13 +29,16 @@
 package org.opennms.netmgt.trapd;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -50,6 +53,11 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
 
+/**
+ * This test used to test that the objects were {@link Serializable} but
+ * now it makes sure that they are not {@link Serializable} since we are
+ * using JAXB serialization for these objects.
+ */
 public class TrapNotificationSerializationTest {
 	
 	private InetAddress inetAddress;
@@ -117,19 +125,20 @@ public class TrapNotificationSerializationTest {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(bos);
 			objectOutputStream.writeObject(object);
-			
+
 			ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
 			TrapNotification notification = (TrapNotification)in.readObject();
+		} catch (NotSerializableException e) {
 			return true;
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			fail(e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			fail(e.getMessage());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			fail(e.getMessage());
 		}
 		return false;
 	}
