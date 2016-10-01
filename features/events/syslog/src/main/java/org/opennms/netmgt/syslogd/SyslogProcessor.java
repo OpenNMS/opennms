@@ -108,7 +108,7 @@ public final class SyslogProcessor implements Callable<Void> {
 
             if (m_NewSuspectOnMessage && !m_event.hasNodeid()) {
                 LOG.trace("Syslogd: Found a new suspect {}", m_event.getInterface());
-                sendNewSuspectEvent(m_localAddr, m_event.getInterface());
+                sendNewSuspectEvent(m_localAddr, m_event.getInterface(), m_event.getDistPoller());
             }
 
         } catch (Throwable t) {
@@ -119,10 +119,11 @@ public final class SyslogProcessor implements Callable<Void> {
         return null;
     }
 
-    private static void sendNewSuspectEvent(String localAddr, String trapInterface) {
+    private static void sendNewSuspectEvent(String localAddr, String trapInterface, String distPoller) {
         EventBuilder bldr = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "syslogd");
         bldr.setInterface(addr(trapInterface));
         bldr.setHost(localAddr);
+        bldr.setDistPoller(distPoller);
         EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());
     }
 }

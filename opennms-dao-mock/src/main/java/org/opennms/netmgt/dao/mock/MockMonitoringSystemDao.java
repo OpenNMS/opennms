@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,36 +25,24 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.smoketest.utils;
 
-import java.util.concurrent.Callable;
+package org.opennms.netmgt.dao.mock;
 
-import com.google.common.collect.Iterables;
-import org.opennms.core.criteria.Criteria;
-import org.opennms.netmgt.dao.api.OnmsDao;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringSystemDao;
+import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 
-/**
- * DAO utility thingies.
- *
- * @author jwhite
- */
-public class DaoUtils {
+import java.util.UUID;
 
-    private static final Logger LOG = LoggerFactory.getLogger(DaoUtils.class);
-
-    public static Callable<Integer> countMatchingCallable(OnmsDao<?,?> dao, Criteria criteria) {
-        return new Callable<Integer>() {
-              public Integer call() throws Exception {
-                  Integer count = dao.countMatching(criteria);
-                  LOG.info("Count: {}", count);
-                  return count;
-              }
-        };
+public class MockMonitoringSystemDao extends AbstractMockDao<OnmsMonitoringSystem, String> implements MonitoringSystemDao {
+    @Override
+    protected void generateId(final OnmsMonitoringSystem ms) {
+        ms.setId(UUID.randomUUID().toString());
     }
 
-    public static <T> Callable<T> findMatchingCallable(OnmsDao<?,?> dao, Criteria criteria) {
-        return () -> (T) Iterables.getFirst(dao.findMatching(criteria), null);
+    @Override
+    protected String getId(final OnmsMonitoringSystem ms) {
+        return ms == null? null : ms.getId();
     }
 }
