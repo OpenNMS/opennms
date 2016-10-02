@@ -27,10 +27,26 @@
  *******************************************************************************/
 package org.opennms.smoketest.minion;
 
-import com.google.common.collect.Iterables;
+import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.InetSocketAddress;
+import java.util.Date;
+
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -54,19 +70,7 @@ import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Inet4Address;
-import java.net.InetSocketAddress;
-import java.util.Date;
-
-import static com.jayway.awaitility.Awaitility.await;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import com.google.common.collect.Iterables;
 
 /**
  * Verifies that syslog messages sent to the Minion generate
@@ -153,6 +157,7 @@ public class SyslogTest {
     }
 
     @Test
+    @Ignore
     public void testNewSuspect() throws Exception {
         final Date startOfTest = new Date();
 
