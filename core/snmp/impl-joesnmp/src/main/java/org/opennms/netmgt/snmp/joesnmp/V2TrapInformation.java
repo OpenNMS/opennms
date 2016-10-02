@@ -97,12 +97,12 @@ public class V2TrapInformation extends TrapInformation {
 	}
 
     @Override
-	protected int getPduLength() {
+	public int getPduLength() {
         return m_pdu.getLength();
     }
     
     @Override
-    protected long getTimeStamp() {
+    public long getTimeStamp() {
 
         LOG.debug("V2 trap first varbind value: {}", m_pdu.getVarBindAt(0).getValue().toString());
 
@@ -128,7 +128,7 @@ public class V2TrapInformation extends TrapInformation {
     }
 
     @Override
-    protected InetAddress getTrapAddress() {
+    public InetAddress getTrapAddress() {
         return getAgentAddress();
     }
 
@@ -137,7 +137,7 @@ public class V2TrapInformation extends TrapInformation {
     }
 
     @Override
-    protected String getVersion() {
+    public String getVersion() {
         return "v2";
     }
 
