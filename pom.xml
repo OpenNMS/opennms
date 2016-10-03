@@ -712,8 +712,9 @@
         <version>2.2</version>
         <dependencies>
           <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <version>${postgresqlVersion}</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -911,9 +912,9 @@
         <artifactId>sonar-maven-plugin</artifactId>
         <dependencies>
           <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.1-901-1.jdbc4</version>
+            <version>${postgresqlVersion}</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -1135,6 +1136,7 @@
     <log4j2Version>2.1</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <paxExamVersion>2.6.0</paxExamVersion>
+    <postgresqlVersion>9.3.1103-jdbc41</postgresqlVersion>
     <powermockVersion>1.5.5</powermockVersion>
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>4.3.1</osgiVersion>
@@ -3248,7 +3250,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>9.3-1100-jdbc4</version>
+	<version>${postgresqlVersion}</version>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
