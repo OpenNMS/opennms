@@ -65,8 +65,8 @@ public abstract class Jsr160ConnectionFactory {
     
     private static final Logger LOG = LoggerFactory.getLogger(Jsr160ConnectionFactory.class);
 
-    // Set default timeout to 2 secs as specified in AbstractDetector
-    private static final long DEFAULT_TIMEOUT = 2000;
+    // Set default timeout to 30 secs.
+    private static final long DEFAULT_TIMEOUT = 30000;
 
     private static final ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -85,7 +85,7 @@ public abstract class Jsr160ConnectionFactory {
         String urlPath  = ParameterMap.getKeyedString( propertiesMap, "urlPath",  "/jmxrmi");
         String username = ParameterMap.getKeyedString(propertiesMap, "username", null);
         String password = ParameterMap.getKeyedString(propertiesMap, "password", null);
-        long timeout     = ParameterMap.getKeyedLong(propertiesMap, "timeout", DEFAULT_TIMEOUT);
+        long timeout    = ParameterMap.getKeyedLong(propertiesMap, "timeout", DEFAULT_TIMEOUT);
         
         //Jsr160ConnectionWrapper connectionWrapper = null;
         
