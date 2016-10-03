@@ -135,7 +135,7 @@
             <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
         </service>
         <service name="Elasticsearch" interval="300000" user-defined="false" status="on">
-            <parameter key="collection" value="elasticsearch-cluster-stats" />
+            <parameter key="collection" value="xml-elasticsearch-cluster-stats" />
             <parameter key="handler-class" value="org.opennms.protocols.json.collector.DefaultJsonCollectionHandler"/>
         </service>
     </package>
