@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,37 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.snmp;
+package org.opennms.netmgt.syslogd;
 
-import java.net.InetAddress;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.camel.MinionDTO;
 
-public interface TrapProcessor {
+@XmlRootElement(name = "syslog-dto")
+@XmlAccessorType(XmlAccessType.NONE)
+public class SyslogDTO extends MinionDTO {
 
-    void setCreationTime(long creationTime);
+	public SyslogDTO() {
+		// No-arg constructor for JAXB
+		super();
+	}
 
-    void setLocation(String location);
-
-    void setCommunity(String community);
-
-    void setSystemId(String systemId);
-
-    /**
-     * Set the SNMP TimeTicks value to the sysUpTime of the agent that
-     * generated the trap. Note that the units for this value are 1/100ths
-     * of a second instead of milliseconds.
-     */
-    void setTimeStamp(long timeStamp);
-
-    void setVersion(String version);
-
-    void setAgentAddress(InetAddress agentAddress);
-
-    void processVarBind(SnmpObjId name, SnmpValue value);
-
-    void setTrapAddress(InetAddress trapAddress);
-
-    void setTrapIdentity(TrapIdentity trapIdentity);
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this)
+				.append("systemId", super.getHeaders().get(SYSTEM_ID))
+				.append("location", super.getHeaders().get(LOCATION))
+				.append("sourceAddress", super.getHeaders().get(SOURCE_ADDRESS))
+				.append("sourcePort", super.getHeaders().get(SOURCE_PORT))
+				.append("body", super.getBody()).toString();
+	}
 
 }

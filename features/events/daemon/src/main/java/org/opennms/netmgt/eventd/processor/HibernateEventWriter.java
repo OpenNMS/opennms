@@ -199,6 +199,7 @@ public class HibernateEventWriter implements EventWriter {
 
         // If available, use the header's distPoller
         if (eventHeader != null && eventHeader.getDpName() != null && !"".equals(eventHeader.getDpName().trim())) {
+            // TODO: Should we also try a look up the value in the MinionDao and LocationMonitorDao here?
             ovent.setDistPoller(distPollerDao.get(eventHeader.getDpName()));
         }
         // Otherwise, use the event's distPoller
@@ -225,7 +226,9 @@ public class HibernateEventWriter implements EventWriter {
         ovent.setEventParms(EventDatabaseConstants.format(parametersString, 0));
 
         // eventCreateTime
-        // TODO: Should we use event.getCreationTime() here?
+        // TODO: We are overriding the 'eventcreatetime' field of the event with a new Date
+        // representing the storage time of the event. 'eventcreatetime' should really be
+        // renamed to something like 'eventpersisttime' since that is closer to its meaning.
         ovent.setEventCreateTime(new Date());
 
         // eventDescr
