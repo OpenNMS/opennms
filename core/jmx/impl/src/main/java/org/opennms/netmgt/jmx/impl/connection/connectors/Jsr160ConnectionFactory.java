@@ -65,8 +65,10 @@ public abstract class Jsr160ConnectionFactory {
     
     private static final Logger LOG = LoggerFactory.getLogger(Jsr160ConnectionFactory.class);
 
-    // Set default timeout to be 30 secs.
-    private static final long DEFAULT_TIMEOUT = 30000;
+    // Set default timeout to 2 secs as specified in AbstractDetector
+    private static final long DEFAULT_TIMEOUT = 2000;
+
+    private static final ExecutorService executor = Executors.newCachedThreadPool();
 
     /**
      * <p>getMBeanServerConnection</p>
@@ -94,7 +96,7 @@ public abstract class Jsr160ConnectionFactory {
                 final JMXServiceURL url = getUrl(address, port, protocol, urlPath);
                 
                 // Connect a JSR 160 JMXConnector to the server side
-                ExecutorService executor = Executors.newCachedThreadPool();
+
                 Callable<JMXConnector> task = new Callable<JMXConnector>() {
                     public JMXConnector call() throws IOException {
                        return JMXConnectorFactory.connect(url);
@@ -131,7 +133,6 @@ public abstract class Jsr160ConnectionFactory {
                 // Connect a JSR 160 JMXConnector to the server side
                 JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
                 
-                ExecutorService executor = Executors.newCachedThreadPool();
                 Callable<Void> task = new Callable<Void>() {
                     public Void call() throws IOException {
                        connector.connect(env);
