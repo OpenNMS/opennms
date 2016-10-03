@@ -44,7 +44,11 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.dao.DistPollerDaoMinion;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
@@ -79,6 +83,14 @@ public class TrapdHandlerMinionIT extends CamelBlueprintTest {
 		config.setNewSuspectOnTrap(false);
 
 		services.put(TrapdConfig.class.getName(), new KeyValueHolder<Object, Dictionary>(config, new Properties()));
+
+		OnmsDistPoller distPoller = new OnmsDistPoller();
+		distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+		distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+		distPoller.setLocation("localhost");
+		DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
+
+		services.put(DistPollerDao.class.getName(), new KeyValueHolder<Object, Dictionary>(distPollerDao, new Properties()));
 
 		//creating the Active MQ component and service
 		ActiveMQComponent queueingservice = new ActiveMQComponent();
@@ -119,7 +131,13 @@ public class TrapdHandlerMinionIT extends CamelBlueprintTest {
 
 		assertMockEndpointsSatisfied();
 
-		TrapNotification received = broadcastTrap.getExchanges().get(0).getIn().getBody(TrapNotification.class);
+		String trapDtoXml = broadcastTrap.getReceivedExchanges().get(0).getIn().getBody(String.class);
+		assertNotNull(trapDtoXml);
+		TrapDTO trapDto = JaxbUtils.unmarshal(TrapDTO.class, trapDtoXml);
+		TrapNotification received = TrapDTOToObjectProcessor.dto2object(trapDto);
+		// Reset the trap processor since it is a non-serializable, transient field
+		received.setTrapProcessor(new BasicTrapProcessor());
+
 		BasicTrapProcessor receivedProcessor = (BasicTrapProcessor)received.getTrapProcessor();
 		assertEquals("public", receivedProcessor.getCommunity());
 		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, receivedProcessor.getTrapAddress());

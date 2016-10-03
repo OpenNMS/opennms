@@ -37,6 +37,9 @@ elif [ -e "${SYSCONFDIR}/minion.conf" ]; then
 	. "${SYSCONFDIR}/minion.conf"
 fi
 
+# always dump heap if we OOM
+JAVA_OPTS="-XX:+HeapDumpOnOutOfMemoryError"
+
 # export any default configurable variables from sysconf
 export JAVA_HOME JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA JAVA_DEBUG_OPTS JAVA_DEBUG_PORT JAVA_OPTS CLASSPATH KARAF_DEBUG LD_LIBRARY_PATH
 

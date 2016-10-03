@@ -40,6 +40,8 @@ public interface TrapProcessor {
 
     void setCommunity(String community);
 
+    void setSystemId(String systemId);
+
     /**
      * Set the SNMP TimeTicks value to the sysUpTime of the agent that
      * generated the trap. Note that the units for this value are 1/100ths

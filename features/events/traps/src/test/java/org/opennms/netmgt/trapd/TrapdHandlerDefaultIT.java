@@ -44,15 +44,18 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.DistPollerDaoMinion;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager.EmptyEventConfDao;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
+import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
 import org.opennms.netmgt.xml.event.Event;
@@ -77,14 +80,10 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 
-	private boolean mockInitialized = false;
-
 	private static final Logger LOG = LoggerFactory.getLogger(TrapdHandlerDefaultIT.class);
 
 	@ClassRule
 	public static ActiveMQBroker s_broker = new ActiveMQBroker();
-
-	private EventIpcManager m_eventIpcManager = new MockEventIpcManager();
 
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -147,38 +146,44 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 		MockEndpoint trapHandler = getMockEndpoint("mock:seda:trapHandler", false);
 		trapHandler.setExpectedMessageCount(1);
 
-		/*
-		MockTrapdIpMgr m_cache=new MockTrapdIpMgr();
+		// create a trap PDU
+		PDU pdu = new PDU();
 
-		m_cache.clearKnownIpsMap();
-		m_cache.setNodeId("127.0.0.1", 1);
-		*/
-
-		// create instance of snmp4JV2cTrap
-		PDU snmp4JV2cTrapPdu = new PDU();
-		
 		OID oid = new OID(".1.3.6.1.2.1.1.3.0");
-		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.sysUpTime, new TimeTicks(5000)));
-		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(oid)));
-		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapAddress,
+		pdu.add(new VariableBinding(SnmpConstants.sysUpTime, new TimeTicks(5000)));
+		pdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(oid)));
+		pdu.add(new VariableBinding(SnmpConstants.snmpTrapAddress,
 				new IpAddress("127.0.0.1")));
 
-		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(oid), new OctetString("Major")));
-		snmp4JV2cTrapPdu.setType(PDU.NOTIFICATION);
+		pdu.add(new VariableBinding(new OID(oid), new OctetString("Major")));
+		pdu.setType(PDU.NOTIFICATION);
 
-		TrapNotification snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
-				InetAddressUtils.ONE_TWENTY_SEVEN, new String("public"),
-				snmp4JV2cTrapPdu, new BasicTrapProcessor());
+		TrapInformation snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
+				InetAddressUtils.ONE_TWENTY_SEVEN, "public",
+				pdu, new BasicTrapProcessor());
+
+		OnmsDistPoller distPoller = new OnmsDistPoller();
+		distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+		distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+		distPoller.setLocation("localhost");
+		DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
+
+		TrapObjectToDTOProcessor mapper = new TrapObjectToDTOProcessor();
+		mapper.setDistPollerDao(distPollerDao);
 
 		// Send the TrapNotification
-		template.sendBody("queuingservice:" + factory.getName() + "?disableReplyTo=true", snmp4JV2cTrap);
+		template.sendBody(
+			"queuingservice:" + factory.getName() + "?disableReplyTo=true",
+			JaxbUtils.marshal(mapper.object2dto(snmp4JV2cTrap))
+		);
 
 		assertMockEndpointsSatisfied();
 
 		// Check that the input for the seda:trapHandler endpoint matches
-		// the TrapQProcessor that we simulated via ActiveMQ
+		// the TrapNotification that we simulated via ActiveMQ
 		TrapNotification result = trapHandler.getReceivedExchanges().get(0).getIn().getBody(TrapNotification.class);
-		LOG.info("Result: " + result);
+		// Reset the trap processor since it is a non-serializable, transient field
+		result.setTrapProcessor(new BasicTrapProcessor());
 
 		// Assert that the trap's content is correct
 		BasicTrapProcessor processor = (BasicTrapProcessor)result.getTrapProcessor();
