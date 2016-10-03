@@ -34,27 +34,27 @@
 
             <!-- TODO: These metrics are specific to the topic names and should be moved into a separate configuration -->
             <mbean name="Syslog Bytes In Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec,topic=syslog">
-                <attrib name="Count" alias="syslogInBytesCount" type="gauge"/>
+                <attrib name="Count" alias="syslogInBps" type="gauge"/>
             </mbean>
 
             <mbean name="Syslog Bytes Out Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec,topic=syslog">
-                <attrib name="Count" alias="syslogOutBytesCount" type="gauge"/>
+                <attrib name="Count" alias="syslogOutBps" type="gauge"/>
             </mbean>
 
-            <mbean name="Syslog Message In Per Sec" objectname="kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec,topic=syslog">
-                <attrib name="Count" alias="smsgCount" type="gauge"/>
+            <mbean name="Syslog Messages In Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec,topic=syslog">
+                <attrib name="Count" alias="syslogMps" type="gauge"/>
             </mbean>
 
             <mbean name="Trap Bytes In Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec,topic=trapd">
-                <attrib name="Count" alias="trapInBytesCount" type="gauge"/>
+                <attrib name="Count" alias="trapsInBps" type="gauge"/>
             </mbean>
 
             <mbean name="Trap Bytes Out Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec,topic=trapd">
-                <attrib name="Count" alias="trapOutBytesCount" type="gauge"/>
+                <attrib name="Count" alias="trapsOutBps" type="gauge"/>
             </mbean>
 
-            <mbean name="Trap Message In Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec,topic=trapd">
-                <attrib name="Count" alias="tmsgCount" type="gauge"/>
+            <mbean name="Trap Messages In Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec,topic=trapd">
+                <attrib name="Count" alias="trapsMps" type="gauge"/>
             </mbean>
 
 
