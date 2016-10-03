@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates;
+import org.quartz.JobBuilder;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
@@ -150,14 +151,20 @@ public class Poller implements InitializingBean, ConfigurationChangedListener, P
 
             m_pollerFrontEnd.setInitialPollTime(polledService.getServiceId(), initialPollTime);
 
-            SimpleTriggerFactoryBean triggerFactory = new PolledServiceTrigger(polledService); 
-            triggerFactory.setStartTime(initialPollTime);
-            Trigger pollTrigger = triggerFactory.getObject();
+            /*
+            JobBuilder.newJob(PollJob.class)
+                .withIdentity(jobName)
+                .usingJobData(PollJobDetail.JOB_DATA_MAP_KEY_POLLEDSERVICE, polledService)
+                .usingJobData(PollJobDetail.JOB_DATA_MAP_KEY_POLLERFRONTEND, m_pollerFrontEnd);
+            */
 
             PollJobDetail jobDetail = new PollJobDetail(jobName, PollJob.class);
             jobDetail.setPolledService(polledService);
             jobDetail.setPollerFrontEnd(m_pollerFrontEnd);
 
+            SimpleTriggerFactoryBean triggerFactory = new PolledServiceTrigger(jobDetail); 
+            triggerFactory.setStartTime(initialPollTime);
+            Trigger pollTrigger = triggerFactory.getObject();
 
             m_scheduler.scheduleJob(jobDetail, pollTrigger);
 

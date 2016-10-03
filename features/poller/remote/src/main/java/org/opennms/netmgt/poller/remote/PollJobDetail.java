@@ -40,6 +40,9 @@ public class PollJobDetail extends JobDetailImpl {
     
     /** Constant <code>GROUP="pollJobGroup"</code> */
     public static final String GROUP = "pollJobGroup";
+    public static final String JOB_DATA_MAP_KEY_POLLSERVICE = "pollService";
+    public static final String JOB_DATA_MAP_KEY_POLLEDSERVICE = "polledService";
+    public static final String JOB_DATA_MAP_KEY_POLLERFRONTEND = "pollerFrontEnd";
 
 	private static final long serialVersionUID = -6499411861193543030L;
 	
@@ -59,7 +62,7 @@ public class PollJobDetail extends JobDetailImpl {
 	 * @param pollService a {@link org.opennms.netmgt.poller.remote.PollService} object.
 	 */
 	public void setPollService(PollService pollService) {
-		getJobDataMap().put("pollService", pollService);
+		getJobDataMap().put(JOB_DATA_MAP_KEY_POLLSERVICE, pollService);
 	}
 	
 	/**
@@ -68,7 +71,7 @@ public class PollJobDetail extends JobDetailImpl {
 	 * @param polledService a {@link org.opennms.netmgt.poller.remote.PolledService} object.
 	 */
 	public void setPolledService(PolledService polledService) {
-		getJobDataMap().put("polledService", polledService);
+		getJobDataMap().put(JOB_DATA_MAP_KEY_POLLEDSERVICE, polledService);
 	}
 	
 	/**
@@ -77,7 +80,7 @@ public class PollJobDetail extends JobDetailImpl {
 	 * @param pollerFrontEnd a {@link org.opennms.netmgt.poller.remote.PollerFrontEnd} object.
 	 */
 	public void setPollerFrontEnd(PollerFrontEnd pollerFrontEnd) {
-		getJobDataMap().put("pollerFrontEnd", pollerFrontEnd);
+		getJobDataMap().put(JOB_DATA_MAP_KEY_POLLERFRONTEND, pollerFrontEnd);
 	}
 	
 }
