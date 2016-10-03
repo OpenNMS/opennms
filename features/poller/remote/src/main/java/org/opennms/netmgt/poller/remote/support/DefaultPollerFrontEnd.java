@@ -687,7 +687,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
                 m_pollState.clear();
                 // Initialize the monitor for the service
                 for (final PolledService service : getPolledServices()) {
-                    m_pollService.initialize(service);
                     m_pollState.put(service.getServiceId(), new ServicePollState(service, i++));
                 }
             }

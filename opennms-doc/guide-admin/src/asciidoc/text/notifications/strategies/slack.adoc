@@ -1,0 +1,42 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+[[ga-notifications-strategy-slack]]
+==== Slack Notifications
+
+If your organization uses the Slack team communications platform, you can configure {opennms-product-name} to send notices to any Slack channel via an incoming webhook.
+You must configure an incoming webhook in your Slack team and do a bit of manual configuration to your {opennms-product-name} instance.
+
+First, add the following bit of XML to the `notificationCommands.xml` configuration file (no customization should be needed):
+
+[source, xml]
+----
+<command binary="false">
+  <name>slack</name>
+  <execute>org.opennms.netmgt.notifd.SlackNotificationStrategy</execute>
+  <comment>class for sending messages to a Slack team channel for notifications</comment>
+  <argument streamed="false">
+    <switch>-subject</switch>
+  </argument>    
+  <argument streamed="false">
+    <switch>-tm</switch>
+  </argument>
+</command>
+----
+
+Then create a new file called `slack.properties` in the `opennms.properties.d` directory with the following contents (customizing values as appropriate):
+
+[source, properties]
+----
+org.opennms.netmgt.notifd.slack.webhookURL= https://hooks.slack.com/services/AEJ7IIYAI/XOOTH3EOD/c3fc4a662c8e07fe072aeeec
+org.opennms.netmgt.notifd.slack.username=OpenNMS_Bot
+
+org.opennms.netmgt.notifd.slack.iconURL=https://assets.example.com/icons/opennmsbot.png
+# or:
+# org.opennms.netmgt.notifd.slack.iconEmoji=:metal:
+
+org.opennms.netmgt.notifd.slack.channel=NetOps
+----
+
+Restart OpenNMS so that the `slack.properties` file will be loaded. Your new `slack` notification command is now available for use in a destination path.

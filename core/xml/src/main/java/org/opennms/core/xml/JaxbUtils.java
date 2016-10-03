@@ -42,9 +42,12 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.xml.bind.JAXBContext;
@@ -376,10 +379,11 @@ public abstract class JaxbUtils {
         return unmarshaller;
     }
 
-    private static List<Class<?>> getAllRelatedClasses(final Class<?> clazz) {
-        final List<Class<?>> classes = new ArrayList<Class<?>>();
+    private static Collection<Class<?>> getAllRelatedClasses(final Class<?> clazz) {
+        final Set<Class<?>> classes = new HashSet<Class<?>>();
         classes.add(clazz);
 
+        // Get any XmlSeeAlsos on the class
         final XmlSeeAlso seeAlso = clazz.getAnnotation(XmlSeeAlso.class);
         if (seeAlso != null && seeAlso.value() != null) {
             for (final Class<?> c : seeAlso.value()) {
@@ -397,7 +401,7 @@ public abstract class JaxbUtils {
         if (m_contexts.containsKey(clazz)) {
             context = m_contexts.get(clazz);
         } else {
-            final List<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
+            final Collection<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
             LOG.trace("Creating new context for classes: {}", allRelatedClasses);
             context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(allRelatedClasses.toArray(EMPTY_CLASS_LIST), null);
             LOG.trace("Context for {}: {}", allRelatedClasses, context);

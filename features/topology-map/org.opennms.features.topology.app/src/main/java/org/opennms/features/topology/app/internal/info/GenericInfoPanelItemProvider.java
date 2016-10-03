@@ -45,6 +45,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.info.InfoPanelItemProvider;
@@ -247,9 +248,9 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
                                 final GraphContainer container) throws IOException {
         final Map<String, Object> context = this.createContext(container);
 
-        final String template = Files.lines(path, Charset.defaultCharset())
-                .collect(Collectors.joining("\n"));
-
-        return withClassLoaderFix(() -> jinjava.renderForResult(template, context));
+        try (final Stream<String> lines = Files.lines(path, Charset.defaultCharset())) {
+            final String template = lines.collect(Collectors.joining("\n"));
+            return withClassLoaderFix(() -> jinjava.renderForResult(template, context));
+        }
     }
 }

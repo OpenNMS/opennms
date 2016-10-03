@@ -67,7 +67,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -239,11 +239,11 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         expect(m_pollerConfig.getStep(pkg)).andReturn(step).anyTimes();
 
         m_mocks.replayAll();
-        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(service, m_pollerConfig, pkg, m_persisterFactory, m_resourceStorageDao);
+        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(m_pollerConfig, pkg, m_persisterFactory, m_resourceStorageDao);
         // Make sure that the ThresholdingSet initializes with test settings
         String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
         for (int i=0; i<rtValues.length; i++) {
-            adaptor.poll(svc, parameters);
+            adaptor.handlePollResult(svc, parameters, service.poll(svc, parameters));
             Thread.sleep(1000 * step); // Emulate the appropriate wait time prior inserting another value into the RRD files.
         }
         System.setProperty("opennms.home", previousOpennmsHome);

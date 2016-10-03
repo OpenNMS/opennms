@@ -249,6 +249,13 @@
               </annotation>
             </element>
           </sequence>
+
+          <attribute name="location" use="optional">
+            <annotation>
+              <documentation>Minion location</documentation>
+            </annotation>
+          </attribute>
+
         </extension>
       </complexContent>
     </complexType>

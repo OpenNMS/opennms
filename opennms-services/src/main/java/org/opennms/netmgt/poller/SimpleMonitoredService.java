@@ -44,7 +44,9 @@ public class SimpleMonitoredService implements MonitoredService {
     
     /** The node label. */
     private String nodeLabel;
-    
+
+    private String nodeLocation;
+
     /** The service name. */
     private String svcName;
 
@@ -74,16 +76,23 @@ public class SimpleMonitoredService implements MonitoredService {
         this.svcName = svcName;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.MonitoredService#getSvcUrl()
+    /**
+     * Instantiates a new simple monitored service.
+     *
+     * @param location the location
+     * @param ipAddress the IP address
+     * @param svcName the service name
      */
-    public String getSvcUrl() {
-        return null;
+    public SimpleMonitoredService(final String location, final InetAddress ipAddress, final String svcName) {
+        this.nodeLocation = location;
+        this.ipAddress = ipAddress;
+        this.svcName = svcName;
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.MonitoredService#getSvcName()
      */
+    @Override
     public String getSvcName() {
         return svcName;
     }
@@ -91,6 +100,7 @@ public class SimpleMonitoredService implements MonitoredService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.MonitoredService#getIpAddr()
      */
+    @Override
     public String getIpAddr() {
         return ipAddress.getHostAddress();
     }
@@ -98,6 +108,7 @@ public class SimpleMonitoredService implements MonitoredService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.MonitoredService#getNodeId()
      */
+    @Override
     public int getNodeId() {
         return nodeId;
     }
@@ -105,20 +116,20 @@ public class SimpleMonitoredService implements MonitoredService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.MonitoredService#getNodeLabel()
      */
+    @Override
     public String getNodeLabel() {
         return nodeLabel;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.MonitoredService#getNetInterface()
-     */
-    public NetworkInterface<InetAddress> getNetInterface() {
-        return new InetNetworkInterface(getAddress());
+    @Override
+    public String getNodeLocation() {
+        return nodeLocation;
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.MonitoredService#getAddress()
      */
+    @Override
     public InetAddress getAddress() {
         return ipAddress;
     }

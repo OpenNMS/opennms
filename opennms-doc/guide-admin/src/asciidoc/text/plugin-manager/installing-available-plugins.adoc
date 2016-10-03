@@ -31,11 +31,19 @@ image::plugin-manager/05_installedPlugins.png[]
 
 === Available Plugins Server
 
-The _Plugin Manager_ obtains a list of available plugins from the 'Available Plugin's server'.
-This may also host a maven repo used to download the features if feature download from maven is enabled in _Karaf_.
+The _Plugin Manager_ obtains a list of available plugins from the _Available Plugin's server_.
 
-Alternatively the _Plugin Manager_ can list the available plugins which have been installed as bundled Plugin Kar/RPM's on the local machine.
-In this case, the _Plugin Server URL_ should be pointed at the localhost.
+_Available Plugin's server_ can be part of an externally hosted plugin shopping cart or it can simply be a url serving the
+internal list of available plugins as described in the section on Internal Plugins.
+ 
+In order for externally downloaded plugins to be installed, the _Available Plugin's server_ must have a related maven repository from which
+_Karaf_ can download the feature. By default feature download is not enabled in _{opennms-product-name}_. To enable _Karaf_ external
+feature download, the address of the maven repository should be entered in the org.ops4j.pax.url.mvn.cfg file in the 
+_{opennms-product-name}_ /etc directory.
+
+Alternatively the _Plugin Manager_ can list the available plugins which have been installed on the local machine as bundled Plugin Kar's 
+(using the _Karaf_ Kar deploy mechanism) along with any internal plugins bundled with _{opennms-product-name}_.
+In this case, the _Plugin Server URL_ should be pointed at http:\\localhost:8980\opennms.
 
 The admin username and passwords are used to access the _Available Plugins Server_.
 If a shopping cart is provided for obtaining licences, the URL of the shopping cart should be filled in.

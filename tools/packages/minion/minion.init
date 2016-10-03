@@ -20,9 +20,55 @@ NAME="minion"
 DESC="Minion"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 MINION_HOME="@INSTPREFIX@"
+SYSCONFDIR="@SYSCONFDIR@"
+STOP_RETRIES=10
+STOP_WAIT=5
+
+export NAME DESC PATH
+
+if [ -z "$JAVA_HOME" ]; then
+	JAVA_HOME="$("${MINION_HOME}/bin/find-java.sh" 1.8.0 1.8.9999)"
+fi
+
+if [ -e "${SYSCONFDIR}/minion" ]; then
+	# shellcheck disable=SC1090,SC1091
+	. "${SYSCONFDIR}/minion"
+elif [ -e "${SYSCONFDIR}/minion.conf" ]; then
+	. "${SYSCONFDIR}/minion.conf"
+fi
+
+# always dump heap if we OOM
+JAVA_OPTS="-XX:+HeapDumpOnOutOfMemoryError"
+
+# export any default configurable variables from sysconf
+export JAVA_HOME JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA JAVA_DEBUG_OPTS JAVA_DEBUG_PORT JAVA_OPTS CLASSPATH KARAF_DEBUG LD_LIBRARY_PATH
 
 is_running() {
 	"$MINION_HOME"/bin/status >/dev/null 2>&1
+}
+
+get_root_pid() {
+	ROOT_INSTANCE_PID=0
+	if [ -f "${MINION_HOME}/instances/instance.properties" ];
+	then
+		ROOT_INSTANCE_PID=$(sed -n -e '/item.0.pid/ s/.*\= *//p' "${MINION_HOME}/instances/instance.properties")
+	fi
+	echo "$ROOT_INSTANCE_PID"
+}
+
+stop_minion() {
+	"$MINION_HOME"/bin/stop >/dev/null
+}
+
+kill_minion() {
+	SIGNAL="$1"
+	if [ -z "$SIGNAL" ]; then
+		SIGNAL="-15"
+	fi
+	PID=$(get_root_pid)
+	if [ "$PID" -gt 0 ]; then
+		kill $SIGNAL "$PID"
+	fi
 }
 
 case "$1" in
@@ -39,20 +85,40 @@ case "$1" in
 
 	stop)
 		if is_running; then
-			echo -n "Stopping $DESC: "
-			"$MINION_HOME"/bin/stop >/dev/null
-			RETVAL="$?"
-			if [ $RETVAL -eq 0 ]; then
-				echo "OK"
+			printf "Stopping %s: " "$DESC"
+			STOP_ATTEMPTS=0
+			while [ $STOP_ATTEMPTS -lt $STOP_RETRIES ]; do
+				stop_minion
+				if is_running; then
+					STOP_ATTEMPTS="$((STOP_ATTEMPTS + 1))"
+					sleep $STOP_WAIT
+				else
+					echo "OK"
+					exit 0
+				fi
+			done
+			echo "FAILED"
+
+			printf "Killing %s: " "$DESC"
+			kill_minion
+			if is_running; then
+				echo "FAILED"
 			else
+				echo "OK"
+				exit 0
+			fi
+
+			printf "Force-killing %s: " "$DESC"
+			kill_minion -9
+			if is_running; then
 				echo "FAILED"
 				exit 1
 			fi
-
+			echo "OK"
 			exit 0
 		else
 			echo "$DESC is not running."
-			exit 1
+			exit 0 # LSB specifies calling "stop" on a stopped service is still a success
 		fi
 		;;
 

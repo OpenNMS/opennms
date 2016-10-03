@@ -38,6 +38,7 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.util.AutoAction;
@@ -90,19 +91,10 @@ public class HibernateEventWriter implements EventWriter {
     private NodeDao nodeDao;
     
     @Autowired
-    private IpInterfaceDao ipInterfaceDao;
-    
-    @Autowired
-    private MonitoredServiceDao monitoredServiceDao;
-    
+    private MonitoringSystemDao monitoringSystemDao;
+
     @Autowired
     private DistPollerDao distPollerDao;
-    
-    @Autowired
-    private MinionDao minionDao;
-    
-    @Autowired
-    private LocationMonitorDao locationMonitorDao;
     
     @Autowired
     private EventDao eventDao;
@@ -207,25 +199,13 @@ public class HibernateEventWriter implements EventWriter {
 
         // If available, use the header's distPoller
         if (eventHeader != null && eventHeader.getDpName() != null && !"".equals(eventHeader.getDpName().trim())) {
+            // TODO: Should we also try a look up the value in the MinionDao and LocationMonitorDao here?
             ovent.setDistPoller(distPollerDao.get(eventHeader.getDpName()));
         }
         // Otherwise, use the event's distPoller
         if (ovent.getDistPoller() == null && event.getDistPoller() != null && !"".equals(event.getDistPoller().trim())) {
-            // Look the ID up with the DistPollerDao
-            OnmsMonitoringSystem system = distPollerDao.get(event.getDistPoller());
-            if (system == null) {
-                // Look the ID up with the MinionDao
-                system = minionDao.get(event.getDistPoller());
-                if (system == null) {
-                    // Look the ID up with the LocationMonitorDao
-                    ovent.setDistPoller(locationMonitorDao.get(event.getDistPoller()));
-                } else {
-                    ovent.setDistPoller(system);
-                }
-            } else {
-                ovent.setDistPoller(system);
-            }
-        } 
+            ovent.setDistPoller(monitoringSystemDao.get(event.getDistPoller()));
+        }
         // And if both are unavailable, use the local system as the event's source system
         if (ovent.getDistPoller() == null) {
             ovent.setDistPoller(distPollerDao.whoami());
@@ -246,7 +226,9 @@ public class HibernateEventWriter implements EventWriter {
         ovent.setEventParms(EventDatabaseConstants.format(parametersString, 0));
 
         // eventCreateTime
-        // TODO: Should we use event.getCreationTime() here?
+        // TODO: We are overriding the 'eventcreatetime' field of the event with a new Date
+        // representing the storage time of the event. 'eventcreatetime' should really be
+        // renamed to something like 'eventpersisttime' since that is closer to its meaning.
         ovent.setEventCreateTime(new Date());
 
         // eventDescr

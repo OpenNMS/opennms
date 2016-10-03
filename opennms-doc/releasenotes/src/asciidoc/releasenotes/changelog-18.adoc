@@ -1,6 +1,33 @@
 [[release-18-changelog]]
 === Changelog
 
+[releasenotes-changelog-18.0.2]
+==== Release 18.0.2
+
+Release 18.0.2 is the latest stable release of OpenNMS.  It contains a few bug fixes and a enhancements.
+For a high-level overview of what's changed in OpenNMS 18, see <<whatsnew-18.adoc#releasenotes-18,What's New in OpenNMS 18>>.
+
+The codename for 18.0.2 is _link:https://en.wikipedia.org/wiki/Muskrat[Muskrat]_.
+
+===== Bug
+
+* IE11 and Firefox Browsers Display Double Scroll Bars for the RTC: Service Monitoring Table in the Ops Panel (Issue http://issues.opennms.org/browse/NMS-8035[NMS-8035])
+* Null Pointer Exception in bridge discovery (Issue http://issues.opennms.org/browse/NMS-8390[NMS-8390])
+* Overwriting opennms.properties for storeByForeignSource does not work (Issue http://issues.opennms.org/browse/NMS-8406[NMS-8406])
+* upgrade error: too many open files (Issue http://issues.opennms.org/browse/NMS-8507[NMS-8507])
+* The ReST end point /foreignSourcesConfig/assets contains invalid fields (Issue http://issues.opennms.org/browse/NMS-8690[NMS-8690])
+* Site status view gives a 400 error for aggregate view for node downs (Issue http://issues.opennms.org/browse/NMS-8700[NMS-8700])
+* View current Site outages does not filter for "building" (Issue http://issues.opennms.org/browse/NMS-8702[NMS-8702])
+* The Vaddin version of the dashboard shows negative availability sometimes (Issue http://issues.opennms.org/browse/NMS-8705[NMS-8705])
+* Scriptd is not working at all for events that have nodes associated. (Issue http://issues.opennms.org/browse/NMS-8716[NMS-8716])
+* vmwarecimquery and vmwareconfigbuilder tools is not working (Issue http://issues.opennms.org/browse/NMS-8718[NMS-8718])
+* XSS vulnerability in display of SNMP sysName and trap varbind values (Issue http://issues.opennms.org/browse/NMS-8722[NMS-8722])
+* IllegalStateException when using the RrdSummaryController (Issue http://issues.opennms.org/browse/NMS-8743[NMS-8743])
+
+===== Enhancement
+
+* Add Mattermost and Slack notification strategies (Issue http://issues.opennms.org/browse/NMS-8346[NMS-8346])
+
 [releasenotes-changelog-18.0.1]
 ==== Release 18.0.1
 

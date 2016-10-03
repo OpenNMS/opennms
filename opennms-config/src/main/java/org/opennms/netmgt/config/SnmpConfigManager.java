@@ -134,6 +134,7 @@ public class SnmpConfigManager {
 		removeDefaults(eventDef); 
 		MergeableDefinition eventToMerge = new MergeableDefinition(eventDef);
 
+        removeDefinitionsthatDontMatchLocation(eventDef);
 		// remove pass
 		purgeRangesFromDefinitions(eventToMerge);
 
@@ -149,7 +150,19 @@ public class SnmpConfigManager {
 
 	}
 
-	/**
+    private void removeDefinitionsthatDontMatchLocation(Definition eventToDef) {
+
+        for (Iterator<MergeableDefinition> iter = getDefinitions().iterator(); iter.hasNext();) {
+            MergeableDefinition def = iter.next();
+            String location = def.getConfigDef().getLocation();
+            if ((location != null) && (!location.equals(eventToDef.getLocation()))) {
+                iter.remove();
+            }
+        }
+
+    }
+
+    /**
 	 * This method purges specifics and ranges from definitions that don't match
 	 * the attributes specified in the event (the updateDef)
 	 * 
