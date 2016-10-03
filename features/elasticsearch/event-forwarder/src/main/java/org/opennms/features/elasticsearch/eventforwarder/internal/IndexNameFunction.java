@@ -18,16 +18,18 @@ import java.util.Date;
  */
 public class IndexNameFunction implements PropertiesFunction {
 
-    Logger logger = LoggerFactory.getLogger(IndexNameFunction.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IndexNameFunction.class);
 
-    private SimpleDateFormat df=null;
+    public static final String DEFAULT_INDEX_DATE_FORMAT = "yyyy.MM";
+
+    private final SimpleDateFormat m_df;
 
     public IndexNameFunction() {
-        df=new SimpleDateFormat("yyyy.MM");
+        this(DEFAULT_INDEX_DATE_FORMAT);
     }
 
     public IndexNameFunction(String dateFormat) {
-        df=new SimpleDateFormat(dateFormat == null ? "yyyy.MM" : dateFormat);
+        m_df = new SimpleDateFormat(dateFormat == null ? DEFAULT_INDEX_DATE_FORMAT : dateFormat);
     }
 
     @Override
@@ -37,23 +39,20 @@ public class IndexNameFunction implements PropertiesFunction {
 
     @Override
     public String apply(String remainder) {
-        String result=null;
-        result=remainder.toLowerCase()+"-"+df.format(new Date());
-
-        if(logger.isTraceEnabled()) {
-            logger.trace("IndexNameFunction.apply=" + result);
-        }
-        return result;
+        return apply(m_df, remainder, new Date());
     }
 
     public String apply(String remainder, Date date) {
-            String result=null;
-            result=remainder.toLowerCase()+"-"+df.format(date);
+        return apply(m_df, remainder, date);
+    }
 
-            if(logger.isTraceEnabled()) {
-                logger.trace("IndexNameFunction.apply=" + result);
-            }
+    public static String apply(SimpleDateFormat df, String remainder, Date date) {
+        String result = remainder.toLowerCase() + "-" + df.format(date);
 
-            return result;
+        if(LOG.isTraceEnabled()) {
+            LOG.trace("IndexNameFunction.apply=" + result);
         }
+
+        return result;
+    }
 }

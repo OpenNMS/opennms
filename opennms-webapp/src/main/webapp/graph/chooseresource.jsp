@@ -42,13 +42,14 @@
     } 
   }
   String reports = request.getParameter("reports");
-  pageContext.setAttribute("node", node == null ? "null" : node);
-  pageContext.setAttribute("reports", reports == null ? "null" : reports);
+  String endUrl = request.getParameter("endUrl");
+  pageContext.setAttribute("node", node == null ? "null" : "'" + node + "'");
+  pageContext.setAttribute("reports", reports == null ? "null" : "'" + reports + "'");
+  pageContext.setAttribute("endUrl", endUrl == null ? "null" : "'" + endUrl + "'");
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="norequirejs" value="true" />
-  <jsp:param name="disableCoreWeb" value="true" />
   <jsp:param name="title" value="Choose Resource" />
   <jsp:param name="headTitle" value="Choose" />
   <jsp:param name="headTitle" value="Resource Graphs" />
@@ -64,7 +65,7 @@
   <jsp:param name="script" value='<script type="text/javascript" src="js/onms-resources/app.js"></script>' />
 </jsp:include>
 
-<div class="container-fluid" ng-app="onms-resources" ng-controller="NodeResourcesCtrl" ng-init="init(${node},${reports})">
+<div class="container-fluid" ng-app="onms-resources" ng-controller="NodeResourcesCtrl" ng-init="init(${node},${reports},${endUrl})">
 
   <div growl></div>
 

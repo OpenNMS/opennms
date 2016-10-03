@@ -18,7 +18,13 @@
 
   <context:annotation-config />
 
-  <bean id="pinger" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.icmp.PingerFactory.getInstance</value></property>
+  <bean id="pingerFactory" class="org.opennms.netmgt.icmp.PingerFactoryImpl" />
+  <onmsgi:service interface="org.opennms.netmgt.icmp.PingerFactory" ref="pingerFactory" />
+
+  <bean id="pinger" factory-bean="pingerFactory" factory-method="getInstance">
+    <constructor-arg value="0" />
+    <constructor-arg value="true" />
   </bean>
+  <onmsgi:service interface="org.opennms.netmgt.icmp.Pinger" ref="pinger" />
+
 </beans>

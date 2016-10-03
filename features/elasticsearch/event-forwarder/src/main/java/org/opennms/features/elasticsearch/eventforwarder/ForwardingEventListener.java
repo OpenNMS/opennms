@@ -28,6 +28,7 @@
 
 package org.opennms.features.elasticsearch.eventforwarder;
 
+import org.opennms.features.elasticsearch.eventforwarder.internal.CamelEventForwarder;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -46,16 +47,16 @@ public class ForwardingEventListener implements EventListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ForwardingEventListener.class);
 
-	private volatile EventForwarder eventForwarder;
+	private volatile CamelEventForwarder eventForwarder;
 	private volatile EventIpcManager eventIpcManager;
 	private volatile NodeDao nodeDao;
 	private volatile TransactionTemplate transactionTemplate;
 
-	public EventForwarder getEventForwarder() {
+	public CamelEventForwarder getEventForwarder() {
 		return eventForwarder;
 	}
 
-	public void setEventForwarder(EventForwarder eventForwarder) {
+	public void setEventForwarder(CamelEventForwarder eventForwarder) {
 		this.eventForwarder = eventForwarder;
 	}
 
@@ -97,6 +98,15 @@ public class ForwardingEventListener implements EventListener {
 
 	private void installMessageSelectors() {
 		getEventIpcManager().addEventListener(this);
+	}
+
+	public void destroy() {
+		Assert.notNull(eventIpcManager, "eventIpcManager must not be null");
+		Assert.notNull(eventForwarder, "eventForwarder must not be null");
+
+		getEventIpcManager().removeEventListener(this);
+
+		LOG.info("Elasticsearch event forwarder uninstalled");
 	}
 
 	/**

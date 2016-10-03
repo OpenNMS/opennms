@@ -81,6 +81,7 @@ import org.opennms.netmgt.model.events.UpdateEventVisitor;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -176,10 +177,13 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Autowired
     private PlatformTransactionManager m_transactionManager;
 
-    private HostnameResolver m_hostnameResolver = new DefaultHostnameResolver();
+    private HostnameResolver m_hostnameResolver;
 
     @Autowired
     private LocationAwareDetectorClient m_locationAwareDetectorClient;
+    
+    @Autowired
+    private LocationAwareDnsLookupClient m_locationAwareDnsLookuClient;
 
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
@@ -191,6 +195,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
         RequisitionFileUtils.deleteAllSnapshots(m_pendingForeignSourceRepository);
+        m_hostnameResolver = new DefaultHostnameResolver(m_locationAwareDnsLookuClient);
     }
 
     /**
@@ -261,7 +266,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 LOG.debug("Node Label was set by hostname or address.  Re-resolving.");
                 final InetAddress addr = primary.getIpAddress();
                 final String ipAddress = str(addr);
-                final String hostname = m_hostnameResolver.getHostname(addr);
+                final String hostname = m_hostnameResolver.getHostname(addr, node.getLocation().getLocationName());
 
                 if (hostname == null || ipAddress.equals(hostname)) {
                     node.setLabel(ipAddress);
@@ -1348,7 +1353,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 // Associate the location with the node
                 final OnmsNode node = new OnmsNode(location);
 
-                final String hostname = m_hostnameResolver.getHostname(addr(ipAddress));
+                final String hostname = m_hostnameResolver.getHostname(addr(ipAddress), locationString);
                 if (hostname == null || ipAddress.equals(hostname)) {
                     node.setLabel(ipAddress);
                     node.setLabelSource(NodeLabelSource.ADDRESS);
@@ -1466,5 +1471,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public LocationAwareSnmpClient getLocationAwareSnmpClient() {
         return m_locationAwareSnmpClient;
+    }
+
+    @Override
+    public LocationAwareDnsLookupClient getLocationAwareDnsLookupClient() {
+        return m_locationAwareDnsLookuClient;
     }
 }

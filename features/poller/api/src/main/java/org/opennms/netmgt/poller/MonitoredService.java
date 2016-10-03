@@ -40,11 +40,6 @@ import java.net.InetAddress;
 public interface MonitoredService {
 
     /**
-     * Returns a URL representation of the service to monitor and its parameters.
-     */
-    String getSvcUrl();
-
-    /**
      * Returns the svcName associated with this monitored service.
      *
      * @return the svcName
@@ -73,12 +68,11 @@ public interface MonitoredService {
     String getNodeLabel();
 
     /**
-     * Returns the {@link NetworkInterface} object for this service.  This {@link NetworkInterface} object is
-     * guaranteed to be the same each time init or poll is called.
+     * Returns the name of the location of the node that this service is associated with.
      *
-     * @return the {@link NetworkInterface}
+     * @return the nodelocation
      */
-    NetworkInterface<InetAddress> getNetInterface();
+    String getNodeLocation();
 
     /**
      * Returns the {@link InetAddress} associated with the service

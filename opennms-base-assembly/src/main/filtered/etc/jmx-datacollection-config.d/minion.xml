@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<jmx-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
+    <jmx-collection name="jmx-minion">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+            <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
+                <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>
+                <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
+                <attrib name="FreeSwapSpaceSize" alias="FreeSwapSpace" type="gauge"/>
+                <attrib name="TotalSwapSpaceSize" alias="TotalSwapSpace" type="gauge"/>
+            </mbean>
+            <mbean name="JVM Threading" objectname="java.lang:type=Threading">
+                <attrib name="ThreadCount" alias="ThreadCount" type="gauge"/>
+                <attrib name="PeakThreadCount" alias="PeakThreadCount" type="gauge"/>
+                <attrib name="DaemonThreadCount" alias="DaemonThreadCount" type="gauge"/>
+                <attrib name="CurrentThreadCpuTime" alias="CurThreadCpuTime" type="gauge"/>
+            </mbean>
+            <mbean name="JVM GarbageCollector:MarkSweepCompact" objectname="java.lang:type=GarbageCollector,name=MarkSweepCompact">
+                <attrib name="CollectionCount" alias="MSCCollCnt" type="counter"/>
+                <attrib name="CollectionTime" alias="MSCCollTime" type="counter"/>
+                <comp-attrib name="LastGcInfo" type="Composite" alias="MSCLastGcInfo">
+                    <comp-member name="GcThreadCount" type="gauge" alias="MSCGcThreadCnt"/>
+                    <comp-member name="duration" type="gauge" alias="MSCDuration"/>
+                    <comp-member name="endTime" type="gauge" alias="MSCEndTime"/>
+                </comp-attrib>
+            </mbean>
+
+
+            <!-- Route/seda stats for syslogListen -->
+            <mbean name="Syslog Listener" objectname="org.apache.camel:context=syslogdListenerCamelNettyContext,type=routes,name=&quot;syslogListen&quot;">
+                <attrib name="ExchangesCompleted" alias="SlogListComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="SlogListFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="SlogListTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="SlogListMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="SlogListMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="SlogListMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="SlogListLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="SlogListTotProc" type="counter"/>
+            </mbean>
+
+            <!-- Route/seda stats for syslogMarshal -->
+            <mbean name="Syslog Marshaller" objectname="org.apache.camel:context=syslogdHandlerMinionContext,type=routes,name=&quot;syslogMarshal&quot;">
+                <attrib name="ExchangesCompleted" alias="SlogMarComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="SlogMarFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="SlogMarTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="SlogMarMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="SlogMarMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="SlogMarMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="SlogMarLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="SlogMarTotProc" type="counter"/>
+            </mbean>
+
+            <!-- Route/seda stats for syslogSendJms -->
+            <mbean name="Syslog JMS Sender" objectname="org.apache.camel:context=syslogdHandlerMinionContext,type=routes,name=&quot;syslogSendJms&quot;">
+                <attrib name="ExchangesCompleted" alias="SlogJmsComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="SlogJmsFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="SlogJmsTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="SlogJmsMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="SlogJmsMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="SlogJmsMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="SlogJmsLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="SlogJmsTotProc" type="counter"/>
+            </mbean>
+
+            <!-- Route/seda stats for syslogSendKafka -->
+            <mbean name="Syslog Kafka Sender" objectname="org.apache.camel:context=syslogdHandlerKafkaContext,type=routes,name=&quot;syslogSendKafka&quot;">
+                <attrib name="ExchangesCompleted" alias="SlogKafComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="SlogKafFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="SlogKafTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="SlogKafMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="SlogKafMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="SlogKafMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="SlogKafLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="SlogKafTotProc" type="counter"/>
+            </mbean>
+
+
+            <!-- Route/seda stats for trapMarshal -->
+            <mbean name="Trap Marshaller" objectname="org.apache.camel:context=trapdHandlerMinionContext,type=routes,name=&quot;trapMarshal&quot;">
+                <!-- TODO: Make aliases unique -->
+                <attrib name="ExchangesCompleted" alias="TrapMarComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="TrapMarFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="TrapMarTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="TrapMarMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="TrapMarMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="TrapMarMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="TrapMarLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="TrapMarTotProc" type="counter"/>
+            </mbean>
+
+            <!-- Route/seda stats for trapSendJms -->
+            <mbean name="Trap JMS Sender" objectname="org.apache.camel:context=trapdHandlerMinionContext,type=routes,name=&quot;trapSendJms&quot;">
+                <!-- TODO: Make aliases unique -->
+                <attrib name="ExchangesCompleted" alias="TrapJmsComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="TrapJmsFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="TrapJmsTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="TrapJmsMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="TrapJmsMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="TrapJmsMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="TrapJmsLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="TrapJmsTotProc" type="counter"/>
+            </mbean>
+
+            <!-- Route/seda stats for trapSendKafka -->
+            <mbean name="Trap Kafka Sender" objectname="org.apache.camel:context=trapdHandlerKafkaContext,type=routes,name=&quot;trapSendKafka&quot;">
+                <attrib name="ExchangesCompleted" alias="TrapKafComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="TrapKafFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="TrapKafTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="TrapKafMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="TrapKafMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="TrapKafMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="TrapKafLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="TrapKafTotProc" type="counter"/>
+            </mbean>
+
+
+            <!-- Route stats for RPC.Server.Detect -->
+            <mbean name="Provisioning Detectors RPC Server" objectname="org.apache.camel:context=org.opennms.core.ipc.rpc.camel-impl,type=routes,name=&quot;RPC.Server.Detect&quot;">
+                <attrib name="ExchangesCompleted" alias="DetectComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="DetectFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="DetectTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="DetectMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="DetectMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="DetectMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="DetectLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="DetectTotProc" type="counter"/>
+            </mbean>
+
+
+            <!-- TODO: Collect route stats for RPC.Server.Discover (when available) -->
+
+
+            <!-- TODO: Collect route stats for RPC.Server.DNS (when available) -->
+
+
+            <!-- TODO: Collect route stats for RPC.Server.Poll (when available) -->
+
+
+            <!-- Route stats for RPC.Server.SNMP -->
+            <mbean name="SNMP RPC Server" objectname="org.apache.camel:context=org.opennms.core.ipc.rpc.camel-impl,type=routes,name=&quot;RPC.Server.SNMP&quot;">
+                <attrib name="ExchangesCompleted" alias="SnmpComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="SnmpFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="SnmpTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="SnmpMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="SnmpMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="SnmpMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="SnmpLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="SnmpTotProc" type="counter"/>
+            </mbean>
+
+
+            <!--
+            Example of SEDA endpoint collection that won't work well because the objectname is based on the URI which might change
+
+            <mbean name="Syslog Marshaller Queue" objectname="org.apache.camel:context=syslogdHandlerMinionContext,type=endpoints,name=&quot;seda://handleMessage?concurrentConsumers=4&quot;">
+                <attrib name="CurrentQueueSize" alias="SlogMarQueue" type="gauge"/>
+            </mbean>
+            -->
+        </mbeans>
+    </jmx-collection>
+</jmx-datacollection-config>

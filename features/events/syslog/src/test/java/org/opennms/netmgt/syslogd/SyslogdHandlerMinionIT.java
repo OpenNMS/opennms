@@ -55,10 +55,10 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
 public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
 
-    private static Logger LOG = LoggerFactory.getLogger(SyslogdHandlerMinionIT.class);
+	private static Logger LOG = LoggerFactory.getLogger(SyslogdHandlerMinionIT.class);
 
-    @ClassRule
-    public static ActiveMQBroker s_broker = new ActiveMQBroker();
+	@ClassRule
+	public static ActiveMQBroker s_broker = new ActiveMQBroker();
 
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -104,7 +104,7 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
 		// Warm up (open JMS connections, etc)
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < numberOfMessages; i++) {
-			template.asyncSendBody("seda:handleMessageBlueprint", conns[i]);
+			template.asyncSendBody("seda:handleMessage", conns[i]);
 		}
 		long endTime = System.currentTimeMillis();
 		LOG.info("Warm-up messages took {}ms", endTime - startTime);
@@ -123,7 +123,7 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
 		// Send a SyslogConnection to seda:handleMessage
 		startTime = System.currentTimeMillis();
 		for (int i = 0; i < numberOfMessages; i++) {
-			template.asyncSendBody("seda:handleMessageBlueprint", conns[i]);
+			template.asyncSendBody("seda:handleMessage", conns[i]);
 		}
 		endTime = System.currentTimeMillis();
 		LOG.info("Test messages took {}ms", endTime - startTime);

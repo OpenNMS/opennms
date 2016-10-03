@@ -31,24 +31,6 @@
 
 <%@page language="java" contentType="text/html" session="true" %>
 
-<%--
-/*******************************************************************************
- * Check org.opennms.dashboard.implementation for selected implementation      *
- *******************************************************************************/
---%>
-
-<%
-    String dashboardImplementation = System.getProperty("org.opennms.dashboard.implementation", "vaadin").trim();
-
-    if (!"gwt".equals(dashboardImplementation)) {
-%>
-
-<%--
-/*******************************************************************************
- * Include VAADIN implementation                                               *
- *******************************************************************************/
---%>
-
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
     <jsp:param name="title" value="Dashboard" />
     <jsp:param name="headTitle" value="Dashboard" />
@@ -68,77 +50,3 @@
 <iframe name="dashboard" id="surveillance-view-ui" src="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>" frameborder="0" style="height:100%; width:100%;"></iframe>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
-
-<% } else { %>
-
-<%--
-/*******************************************************************************
- * Include GWT implementation                                                  *
- *******************************************************************************/
---%>
-
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="Dashboard" />
-    <jsp:param name="headTitle" value="Dashboard" />
-    <jsp:param name="location" value="dashboard" />
-    <jsp:param name="breadcrumb" value="Dashboard" />
-    <jsp:param name="meta">
-            <jsp:attribute name="value">
-    	        <meta name='gwt:module' content='org.opennms.dashboard.Dashboard' />
-	        </jsp:attribute>
-    </jsp:param>
-    <jsp:param name="meta">
-	        <jsp:attribute name="value">
-                <link media="screen" href="css/dashboard.css" type="text/css" rel="stylesheet">
-	        </jsp:attribute>
-    </jsp:param>
-
-</jsp:include>
-
-<script type="text/javascript" src='dashboard/dashboard.nocache.js'></script>
-
-<div class="row">
-    <div class="col-md-12">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="dashletCell"id="surveillanceView"></div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="dashletCell" id="alarms"></div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="dashletCell" id="notifications"></div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="dashletCell" id="nodeStatus"></div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="dashletCell" id="graphs"></div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="dashletCell" id="outages"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
-
-<% } %>
-
-

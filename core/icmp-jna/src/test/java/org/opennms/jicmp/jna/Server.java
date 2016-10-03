@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,7 @@ package org.opennms.jicmp.jna;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -41,7 +42,8 @@ class Server implements Runnable {
     private CountDownLatch m_latch = new CountDownLatch(1);
     private Thread m_thread;
     private int m_port;
-    
+    private DatagramSocket m_socket = null;
+
     Server(int port) {
         m_port = port;
     }
@@ -64,20 +66,30 @@ class Server implements Runnable {
         m_thread.join();
     }
 
+    public int getPort() {
+        return m_socket == null ? 0 : m_socket.getLocalPort();
+    }
+
+    public InetAddress getInetAddress() {
+        return m_socket.getLocalAddress();
+    }
+
     @Override
     public void run() {
-        DatagramSocket socket = null;
         try {
-            socket = new DatagramSocket(m_port);
-            socket.setSoTimeout(500);
+            m_socket = new DatagramSocket(m_port);
+            m_socket.setSoTimeout(500);
             m_latch.countDown();
-            
+            if (m_port == 0) {
+                m_port = m_socket.getLocalPort();
+            }
+
             while (!m_stopped.get()) {
                 DatagramPacket p = new DatagramPacket(new byte[128], 128);
-                socket.receive(p);
+                m_socket.receive(p);
                 String cmd = new String(p.getData(), p.getOffset(), p.getLength(), "UTF-8");
                 System.err.print(String.format("SERVER: %s\n", cmd));
-                socket.send(p);
+                m_socket.send(p);
                 if (cmd.startsWith("quit")) {
                     m_stopped.set(true);
                 }
@@ -86,9 +98,11 @@ class Server implements Runnable {
         } catch (Exception e) {
             m_exception.set(e);
         } finally {
-            if (socket != null) socket.close();
+            if (m_socket != null) {
+                m_socket.close();
+            }
         }
     }
-    
+
     
 }

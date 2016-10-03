@@ -23,33 +23,45 @@
 			<cm:property name="queueName">
 				<bean factory-ref="queueNameFactory" factory-method="getName"/>
 			</cm:property>
+			<cm:property name="includeRawMessage" value="true" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
 	<bean id="syslogConnectionHandlerCamel" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerCamelImpl">
-		<argument value="seda:handleMessageBlueprint"/>
+		<argument value="seda:handleMessage"/>
 	</bean>
 
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
 
 	<!-- Camel Event marshalling processor -->
 	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
-		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
+		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
 	</bean>
+
+	<bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogObjectToDTOProcessor"/>
 
 	<!-- ActiveMQ component provided by minion-core -->
 	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)"/>
 
-	<camelContext id="syslogConnectionHandlerMinion" xmlns="http://camel.apache.org/schema/blueprint">
+	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
+	<camelContext id="syslogdHandlerMinionContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerMinionProperties" />
 
-		<route id="syslogReceiveMessageViaActiveMQ">
-			<from uri="seda:handleMessageBlueprint?concurrentConsumers=4" />
+		<route id="syslogMarshal">
+			<from uri="seda:handleMessage?concurrentConsumers=4" />
+
+			<setHeader headerName="includeRawMessage">
+				<simple resultType="java.lang.Boolean">properties:includeRawMessage</simple>
+			</setHeader>
+
 			<!-- Marshal the message to XML -->
-			<bean ref="marshaller"/>
+			<process ref="mapper"/>
+			<process ref="marshaller"/>
+
 			<to uri="seda:sendMessage"/>
 		</route>
-		<route id="syslogSendMessageActiveMQ">
+
+		<route id="syslogSendJms">
 			<!-- Concurrent consumers gives a performance boost here because we have pooled connections to the JMS broker -->
 			<from uri="seda:sendMessage?concurrentConsumers=4"/>
 			<!-- Broadcast the message over ActiveMQ -->

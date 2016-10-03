@@ -747,6 +747,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
             vertex.setStyleName(sharedVertex.getStyleName());
 
+            vertex.setEdgePathOffset(sharedVertex.getEdgePathOffset());
+
             graph.addVertex(vertex);
 		}
 
@@ -771,26 +773,36 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		
 		JsArray<GWTEdge> edges = graph.getEdges();
 		sortEdges(edges);
-		
-		
-        for( int i = 0; i < edges.length(); i++) {
-            if(i != 0) {
-		        GWTEdge edge1 = edges.get(i-1);
-		        GWTEdge edge2 = edges.get(i);
-		        
-		        String edge1Source = minEndPoint(edge1);
-		        String edge2Source = minEndPoint(edge2);
-		        String edge1Target = maxEndPoint(edge1);
-		        String edge2Target = maxEndPoint(edge2);
-		        
-		        if((edge1Source.equals(edge2Source) && edge1Target.equals(edge2Target))) {
-		            edge2.setLinkNum(edge1.getLinkNum() + 1);
-		        }else {
-		            edge2.setLinkNum(1);
-		        }
-		    }
+		consoleLog(edges);
+
+		// Determine edges with same source/target and set link num/count accordingly
+		List<GWTEdge> sameEdges = new ArrayList<>();
+		for(int i = 1; i < edges.length(); i++) {
+			GWTEdge edge1 = edges.get(i-1);
+			GWTEdge edge2 = edges.get(i);
+
+			String edge1Source = minEndPoint(edge1);
+			String edge2Source = minEndPoint(edge2);
+			String edge1Target = maxEndPoint(edge1);
+			String edge2Target = maxEndPoint(edge2);
+
+			consoleLog(i + ". Comparing " + edge1 + " and " + edge2 + " resulted in edge1Source/edge2Source, edge1Target/edge1Target: "
+					+ edge1Source + "/" + edge2Source + ", " + edge1Target + "/" + edge2Target);
+
+			if((edge1Source.equals(edge2Source) && edge1Target.equals(edge2Target))) {
+				if (!sameEdges.contains(edge1)) {
+					sameEdges.add(edge1);
+				}
+				if (!sameEdges.contains(edge2)) {
+					sameEdges.add(edge2);
+				}
+			} else {
+				updateEdges(sameEdges);
+				sameEdges.clear();
+			}
 		}
-        
+		updateEdges(sameEdges);
+
         int x = componentState.getBoundX();
         int y = componentState.getBoundY();
         int width = componentState.getBoundWidth();
@@ -799,6 +811,19 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
         GWTBoundingBox oldBBox = m_graph.getBoundingBox();
         graph.setBoundingBox(GWTBoundingBox.create(x, y, width, height));
 		setGraph(graph, oldBBox);
+	}
+
+	/**
+	 * Updates the link number and link count properties of the edges in the provided list.
+	 *
+	 * @param edges The edges to update.
+	 */
+	private void updateEdges(List<GWTEdge> edges) {
+		for (int a=0; a<edges.size(); a++) {
+			GWTEdge eachEdge = edges.get(a);
+			eachEdge.setLinkCount(edges.size());
+			eachEdge.setLinkNum(a);
+		}
 	}
 
 	private void sendPhysicalDimensions() {

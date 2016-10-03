@@ -79,7 +79,7 @@ public class SyslogMessageTest {
         final SyslogMessage message = parser.parse();
 
         assertEquals(SyslogFacility.KERNEL, message.getFacility());
-        assertEquals(SyslogSeverity.INFORMATIONAL, message.getSeverity());
+        assertEquals(SyslogSeverity.INFO, message.getSeverity());
         assertEquals("test", message.getMessageID());
         assertEquals("127.0.0.1", message.getHostName());
         assertEquals("OpenNMS", message.getProcessName());
@@ -188,7 +188,7 @@ public class SyslogMessageTest {
         final Date date = new Date(1167609600000L);
 
         assertEquals(SyslogFacility.KERNEL, message.getFacility());
-        assertEquals(SyslogSeverity.INFORMATIONAL, message.getSeverity());
+        assertEquals(SyslogSeverity.INFO, message.getSeverity());
         assertEquals("test", message.getMessageID());
         assertEquals(date, message.getDate());
         assertEquals("127.0.0.1", message.getHostName());
@@ -205,7 +205,7 @@ public class SyslogMessageTest {
         final Date date = new Date(1167609600000L);
 
         assertEquals(SyslogFacility.KERNEL, message.getFacility());
-        assertEquals(SyslogSeverity.INFORMATIONAL, message.getSeverity());
+        assertEquals(SyslogSeverity.INFO, message.getSeverity());
         assertEquals("test", message.getMessageID());
         assertEquals(date, message.getDate());
         assertEquals("127.0.0.1", message.getHostName());

@@ -37,12 +37,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.icmp.PingerFactoryImpl;
 
 /**
  * <P>
@@ -69,6 +71,12 @@ final public class CLIPinger {
     @Option(name = "--count", aliases = {"-c"}, required = false, usage = "number of pings (default 5)")
     private static int s_count = 5;
     
+    @Option(name = "--dscp", aliases = {"-d"}, required = false, usage = "the DSCP traffic control value")
+    private static String s_dscp = "0";
+
+    @Option(name = "--allow-fragmentation", aliases = {"-a"}, required = false, usage = "whether to allow fragmentation")
+    private static boolean s_allowFragmentation = true;
+
     @Argument
     private static List<String> s_arguments = new ArrayList<String>();
     
@@ -76,7 +84,6 @@ final public class CLIPinger {
         new CLIPinger().doMain(args);
     }
     
-    @SuppressWarnings("SleepWhileInLoop")
     public void doMain(String[] args) throws CmdLineException {
         setPropertiesIfPossible();
         
@@ -99,7 +106,8 @@ final public class CLIPinger {
         
         try {
             host = InetAddress.getByName(s_arguments.get(0));
-            Pinger p = PingerFactory.getInstance();
+            final PingerFactory pf = new PingerFactoryImpl();
+            final Pinger p = pf.getInstance(Integer.decode(s_dscp), s_allowFragmentation);
             for (int i = 0; i < s_count; i++) {
                 Number rtt = p.ping(host, s_timeout, s_retries);
                 if (rtt == null) {
@@ -115,8 +123,9 @@ final public class CLIPinger {
         } catch (UnknownHostException ex) {
             System.out.println("Unknown host " + args[0]);
             System.exit(1);
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             System.out.println("Unexpected exception while pinging " + args[0] + ": " + ex.getMessage());
+            ex.printStackTrace();
             System.exit(1);
         } finally {
             System.exit(0);

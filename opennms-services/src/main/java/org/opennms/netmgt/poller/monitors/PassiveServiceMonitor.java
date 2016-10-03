@@ -35,68 +35,26 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+
 /**
  * <p>PassiveServiceMonitor class.</p>
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-
-// this retrieves data from the deamon so it is not Distribuable
+// this retrieves data from the deamon so it is not Distributable
 @Distributable(DistributionContext.DAEMON)
-public class PassiveServiceMonitor implements ServiceMonitor {
+public class PassiveServiceMonitor extends AbstractServiceMonitor {
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#initialize(org.opennms.netmgt.config.PollerConfig, java.util.Map)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void initialize(Map<String, Object> parameters) {
-        return;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#release()
-     */
-    /**
-     * <p>release</p>
-     */
-    @Override
-    public void release() {
-        return;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#initialize(org.opennms.netmgt.poller.MonitoredService)
-     */
-    /**
-     * <p>initialize</p>
-     *
-     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
-     */
-    @Override
-    public void initialize(MonitoredService svc) {
-        return;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#release(org.opennms.netmgt.poller.MonitoredService)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void release(MonitoredService svc) {
-        return;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#poll(org.opennms.netmgt.poller.MonitoredService, java.util.Map, org.opennms.netmgt.config.poller.Package)
-     */
-    /** {@inheritDoc} */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-    	PollStatus status = PassiveStatusKeeper.getInstance().getStatus(svc.getNodeLabel(), svc.getIpAddr(), svc.getSvcName());
-        return status;
+    	return PassiveStatusKeeper.getInstance().getStatus(svc.getNodeLabel(), svc.getIpAddr(), svc.getSvcName());
     }
 
+    @Override
+    public String getEffectiveLocation(String location) {
+        // Always run the PSK in the same JVM
+        return null;
+    }
 }

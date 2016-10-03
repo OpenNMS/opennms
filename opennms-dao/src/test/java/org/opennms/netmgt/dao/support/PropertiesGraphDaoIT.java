@@ -175,6 +175,11 @@ public class PropertiesGraphDaoIT extends PropertiesGraphDaoITCase {
     public void testLoadSnmpGraphProperties() throws Exception {
         PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadProperties("foo", new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("snmp-graph.properties")));
+        for (PrefabGraph graph : dao.getAllPrefabGraphs()) {
+            if (!graph.getCommand().trim().equals(graph.getCommand())) {
+                fail("Prefab graph contains extra whitespace: " + graph.getCommand());
+            }
+        }
     }
 
     @Test

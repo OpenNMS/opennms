@@ -159,7 +159,7 @@ public class FormProcViewController extends AbstractController implements Initia
         } else if (Actions.Customize.toString().equals(reportAction)) { 
             return new ModelAndView("redirect:/KSC/customReport.htm");
         } else if (Actions.Exit.toString().equals(reportAction)) {
-            return new ModelAndView("redirect:/KSC/index.htm");
+            return new ModelAndView("redirect:/KSC/index.jsp");
         } else {
             throw new IllegalArgumentException("Parameter action of '" + reportAction + "' is not supported.  Must be one of: Update, Customize, or Exit");
         }

@@ -23,28 +23,57 @@
 			<cm:property name="queueName">
 				<bean factory-ref="queueNameFactory" factory-method="getName"/>
 			</cm:property>
+			<cm:property name="includeRawMessage" value="false" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
 	<bean id="trapdNotificationHandlerCamel" class="org.opennms.netmgt.trapd.TrapNotificationHandlerCamelImpl">
-		<argument value="seda:handleMessage" />
+		<argument value="seda:handleMessage"/>
 	</bean>
 
-	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapdNotificationHandlerCamel" />
+	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapdNotificationHandlerCamel"/>
+
+	<!-- Camel Event marshalling processor -->
+	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
+		<argument value="org.opennms.netmgt.trapd.TrapDTO" />
+	</bean>
+
+	<reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+
+	<bean id="mapper" class="org.opennms.netmgt.trapd.TrapObjectToDTOProcessor">
+		<property name="distPollerDao" ref="distPollerDao"/>
+	</bean>
 
 	<!-- ActiveMQ component provided by minion-core -->
 	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)"/>
 
-	<camelContext id="trapdNotificationHandlerMinion" xmlns="http://camel.apache.org/schema/blueprint">
+	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
+	<camelContext id="trapdHandlerMinionContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:trapHandlerMinionProperties" />
 
-		<route id="trapdHandlerMinion">
-			<from uri="seda:handleMessage" />
-			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification" />
-			<!-- TODO: Use marshalling instead of serialization when transmitting object? -->
-			<!-- Broadcast message over ActiveMQ -->
-			<to uri="queuingservice:{{queueName}}?disableReplyTo=true" />
+		<route id="trapMarshal">
+			<from uri="seda:handleMessage?concurrentConsumers=4"/>
+
+			<setHeader headerName="includeRawMessage">
+				<simple resultType="java.lang.Boolean">properties:includeRawMessage</simple>
+			</setHeader>
+
+			<!-- Marshal the message to XML -->
+			<process ref="mapper"/>
+			<process ref="marshaller"/>
+
+			<to uri="seda:sendMessage"/>
+		</route>
+
+		<route id="trapSendJms">
+			<from uri="seda:sendMessage?concurrentConsumers=4"/>
+
+			<!-- Broadcast the message over ActiveMQ -->
+			<!--
+				Turn off persistent messages to avoid the latency penalty: 
+				http://activemq.apache.org/async-sends.html
+			-->
+			<to uri="queuingservice:{{queueName}}?deliveryPersistent=false&amp;disableReplyTo=true"/>
 		</route>
 	</camelContext>
-
 </blueprint>

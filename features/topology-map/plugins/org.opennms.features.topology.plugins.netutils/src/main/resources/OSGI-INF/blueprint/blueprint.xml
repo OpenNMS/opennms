@@ -6,7 +6,7 @@ http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v
 http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
 http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd">
 
-    <reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" availability="mandatory" />
+    <reference id="pingerFactory" interface="org.opennms.netmgt.icmp.PingerFactory" availability="mandatory" />
 
     <cm:property-placeholder persistent-id="org.opennms.features.topology.netutils" update-strategy="reload">
         <cm:default-properties>
@@ -20,7 +20,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </cm:property-placeholder>
     
     <bean id="pingOperation" class="org.opennms.features.topology.netutils.internal.operations.PingOperation" >
-        <argument ref="pinger" />
+        <argument ref="pingerFactory" />
     </bean>
     <bean id="eventsAlarmsOperation" class="org.opennms.features.topology.netutils.internal.operations.EventsAlarmsOperation" >
         <property name="eventsURL" value="${eventsURL}"/>

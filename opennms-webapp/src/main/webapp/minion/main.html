@@ -216,11 +216,9 @@
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
-						<!-- TODO: Figure out how to handle null/blank location, it should still be editable -->
-						<onms-list-edit-in-place item="item" value="item.location" value-type="'text'" on-submit="update(item)">
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o fa-lg"/></a>
-						</onms-list-edit-in-place>
+						{{item.location}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						{{item.type}}

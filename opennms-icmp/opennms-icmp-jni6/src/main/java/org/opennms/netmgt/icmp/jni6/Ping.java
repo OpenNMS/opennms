@@ -31,6 +31,7 @@ package org.opennms.netmgt.icmp.jni6;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -70,7 +71,7 @@ public abstract class Ping {
                     if (reply.isEchoReply()
                             && reply.getThreadId() == m_icmpId) {
                         double rtt = reply.elapsedTime(TimeUnit.MILLISECONDS);
-                        System.out.println(ICMPEchoPacket.getNetworkSize()
+                        System.out.println(pkt.getData().length
                                 + " bytes from "
                                 + InetAddressUtils.str(pkt.getAddress())
                                 + ": icmp_seq="
@@ -100,11 +101,12 @@ public abstract class Ping {
         }
 
         String host = argv[0];
+        short icmpId = (short) new Random().nextInt(Short.MAX_VALUE);
 
         ICMPv6Socket m_socket = null;
 
         try {
-            m_socket = new ICMPv6Socket();
+            m_socket = new ICMPv6Socket(icmpId);
         } catch (UnsatisfiedLinkError e) {
             System.err.println("UnsatisfiedLinkError while creating an "
                     + "IcmpSocket.  Most likely failed to load "
@@ -140,16 +142,14 @@ public abstract class Ping {
 
         System.out.println("PING " + host + " (" + InetAddressUtils.str(addr) + "): 56 data bytes");
 
-        short m_icmpId = 2;
-
-        Ping.Stuff s = new Ping.Stuff(m_socket, m_icmpId);
+        Ping.Stuff s = new Ping.Stuff(m_socket, icmpId);
         Thread t = new Thread(s, Ping.class.getSimpleName());
         t.start();
 
         for (long m_fiberId = 0; true; m_fiberId++) {
             // build a packet
             ICMPEchoPacket pingPkt = new ICMPEchoPacket(m_fiberId);
-            pingPkt.setIdentity(m_icmpId);
+            pingPkt.setIdentity(icmpId);
             pingPkt.computeChecksum();
 
             // convert it to a datagram to be sent
