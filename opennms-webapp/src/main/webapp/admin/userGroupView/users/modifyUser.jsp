@@ -37,7 +37,8 @@
 <%@page import="java.text.*"%>
 <%@page import="org.opennms.netmgt.config.*"%>
 <%@page import="org.opennms.netmgt.config.users.*"%>
-<%@page import="org.opennms.web.api.Util" %>
+<%@page import="org.opennms.web.api.Util"%>
+<%@page import="org.opennms.web.api.Authentication"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <%!
@@ -282,8 +283,7 @@
         String microblog = null;
         String fullName = null;
         String comments = null;
-        Boolean isReadOnly = false;
-        List<String> availableRoles = new ArrayList<String>(org.opennms.web.api.Authentication.getAvailableRoles());
+        List<String> availableRoles = new ArrayList<String>(Authentication.getAvailableRoles());
         Collections.sort(availableRoles);
         List<String> configuredRoles = new ArrayList<String>();
         try {
@@ -327,7 +327,7 @@
             fullName = user.getFullName();
             comments = user.getUserComments();
             tuiPin = user.getTuiPin();
-            isReadOnly = user.isReadOnly();
+
             configuredRoles = user.getRoleCollection();
             for (String role : configuredRoles) {
                 if (availableRoles.contains(role)) {

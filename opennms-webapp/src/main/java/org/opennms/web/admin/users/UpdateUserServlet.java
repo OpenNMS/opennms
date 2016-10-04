@@ -77,10 +77,6 @@ public class UpdateUserServlet extends HttpServlet {
             // get the rest of the user information from the form
             newUser.setFullName(request.getParameter("fullName"));
             newUser.setUserComments(request.getParameter("userComments"));
-            newUser.setReadOnly(false);
-            if (request.getParameter("readOnly") != null && (request.getParameter("readOnly").equalsIgnoreCase("true") || request.getParameter("readOnly").equalsIgnoreCase("on"))) {
-                newUser.setReadOnly(true);
-            }
 
             String password = request.getParameter("password");
             if (password != null && !password.trim().equals("")) {
