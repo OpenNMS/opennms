@@ -19,8 +19,8 @@
 NAME="minion"
 DESC="Minion"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-MINION_HOME="@INSTPREFIX@"
-SYSCONFDIR="@SYSCONFDIR@"
+MINION_HOME="/opt/minion"
+SYSCONFDIR="${MINION_HOME}/etc"
 STOP_RETRIES=10
 STOP_WAIT=5
 
@@ -33,8 +33,10 @@ fi
 if [ -e "${SYSCONFDIR}/minion" ]; then
 	# shellcheck disable=SC1090,SC1091
 	. "${SYSCONFDIR}/minion"
-elif [ -e "${SYSCONFDIR}/minion.conf" ]; then
-	. "${SYSCONFDIR}/minion.conf"
+fi
+
+if [ -e "${MINION_HOME}/minion.conf" ]; then
+	. "${MINION_HOME}/minion.conf"
 fi
 
 # always dump heap if we OOM

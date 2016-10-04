@@ -8,6 +8,9 @@ export SHELL=/bin/bash
 
 export JAVA_HOME=$(shell opennms-base-assembly/src/main/filtered/bin/find-java.sh 1.8 1.8.9999)
 
+export OPTS_ASSEMBLIES=-Passemblies
+export OPTS_PROFILES=-Prun-expensive-tasks
+
 export BUILDDEFINES=\
 	-Dopennms.home=/usr/share/opennms \
 	-Ddist.dir=$(CURDIR)/debian -Ddist.name=temp \
@@ -25,7 +28,7 @@ export BUILDDEFINES=\
 	-Dproduct.snapshot=true \
 	-Daether.connector.basic.threads=1 \
 	-Daether.connector.resumeDownloads=false \
-	-Prun-expensive-tasks
+	$(OPTS_PROFILES)
 
 configure:
 
@@ -38,33 +41,33 @@ $(STAMP_BUILD):
 		echo "using $$OPENNMS_SETTINGS_XML"; \
 		if [ -z "$$OPENNMS_SKIP_COMPILE" ] || [ "$$OPENNMS_SKIP_COMPILE" = 0 ]; then \
 			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./compile.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install && \
-				./assemble.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+				./compile.pl -Denable.snapshots=true -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install && \
+				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 			else \
-				./compile.pl -Dbuild=all -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install && \
-				./assemble.pl -Dbuild=all -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+				./compile.pl -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install && \
+				./assemble.pl -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 			fi; \
 		else \
 			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./assemble.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 			else \
-				./assemble.pl -Dbuild=all -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+				./assemble.pl -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 			fi; \
 		fi; \
 	else \
 		if [ -z "$$OPENNMS_SKIP_COMPILE" ] || [ "$$OPENNMS_SKIP_COMPILE" = 0 ]; then \
 			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./compile.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) install && \
-				./assemble.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
+				./compile.pl -Denable.snapshots=true -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) install && \
+				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
 			else \
-				./compile.pl -Dbuild=all -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) install && \
-				./assemble.pl -Dbuild=all -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
+				./compile.pl -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) install && \
+				./assemble.pl -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
 			fi; \
 		else \
 			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./assemble.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
+				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
 			else \
-				./assemble.pl -Dbuild=all -DupdatePolicy=always -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
+				./assemble.pl -DupdatePolicy=always -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
 			fi; \
 		fi; \
 	fi
@@ -75,8 +78,7 @@ $(STAMP_BUILD):
 clean:
 	dh_testdir
 	dh_testroot
-	./compile.pl -Dbuild=all -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
-	./assemble.pl -Dbuild=all -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
+	./compile.pl $(OPTS_PROFILES) $(OPTS_ASSEMBLIES) -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
 	rm -f opennms-remote-poller.{init,default}
 	dh_clean
 	rm -f $(STAMP_BUILD)
