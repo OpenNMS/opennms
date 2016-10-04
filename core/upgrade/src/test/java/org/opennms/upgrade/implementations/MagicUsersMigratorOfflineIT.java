@@ -113,6 +113,12 @@ public class MagicUsersMigratorOfflineIT {
         final User operator = getUser(userInfo, "operator");
         Assert.assertNotNull(operator);
         Assert.assertEquals(0, operator.getRoleCount());
+
+        final User manager = getUser(userInfo, "manager");
+        Assert.assertNotNull(manager);
+        Assert.assertEquals(2, manager.getRoleCount());
+        Assert.assertTrue(manager.getRoleCollection().contains(Authentication.ROLE_USER));
+        Assert.assertTrue(manager.getRoleCollection().contains(Authentication.ROLE_READONLY));
     }
 
     /**

@@ -31,9 +31,13 @@ package org.opennms.upgrade.implementations;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -58,9 +62,6 @@ import org.opennms.web.api.Authentication;
  */
 public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
 
-    /** The user manager. */
-    private UserManager userManager;
-
     /** The magic users file. */
     private File magicUsersFile;
 
@@ -77,10 +78,6 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
         try {
             magicUsersFile = ConfigFileConstants.getConfigFileByName("magic-users.properties");
             usersFile = ConfigFileConstants.getFile(ConfigFileConstants.USERS_CONF_FILE_NAME);
-            if (magicUsersFile.exists()) {
-                UserFactory.init();
-                userManager =  UserFactory.getInstance();
-            }
         } catch (Exception e) {
             log("Error: cannot execute task because: %s", e.getMessage());
         }
@@ -115,7 +112,7 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void preExecute() throws OnmsUpgradeException {
-        if (userManager == null) return;
+        if (!canRun()) return;
 
         try {
             File[] files = { magicUsersFile, usersFile };
@@ -133,7 +130,7 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void postExecute() throws OnmsUpgradeException {
-        if (userManager == null) return;
+        if (!canRun()) return;
 
         // Delete the original configuration file so that it doesn't get re-migrated later
         if (magicUsersFile.exists()) {
@@ -147,7 +144,8 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void rollback() throws OnmsUpgradeException {
-        if (userManager == null) return;
+        if (!canRun()) return;
+
         File[] files = { magicUsersFile, usersFile };
         for (File file : files) {
             log("Restoring backup %s\n", file);
@@ -162,11 +160,45 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void execute() throws OnmsUpgradeException {
-        if (userManager == null) return;
+        if (!canRun()) return;
 
+        // Parse read-only attributes
+        final List<String> readOnlyUsers = new ArrayList<String>();
+        try {
+            boolean readOnly = false;
+            for (String line : Files.readAllLines(usersFile.toPath())) {
+                if (line.contains("read-only")) {
+                    Matcher m = Pattern.compile("read-only=\"(.+)\"").matcher(line);
+                    if (m.find()) {
+                        readOnly = Boolean.parseBoolean(m.group(1));
+                    }
+                }
+                if (line.contains("user-id")) {
+                    if (readOnly) {
+                        Matcher m = Pattern.compile("user-id[>](.+)[<][/]user-id").matcher(line);
+                        if (m.find()) {
+                            log("Warning: User %s has read-only flag\n", m.group(1));
+                            readOnlyUsers.add(m.group(1));
+                        }
+                    }
+                    readOnly = false;
+                }
+            }
+            if (!readOnlyUsers.isEmpty()) {
+                log("Removing the read-only flags from users.xml\n");
+                String content = new String(Files.readAllBytes(usersFile.toPath()), StandardCharsets.UTF_8);
+                content = content.replaceAll(" read-only=\".+\"", "");
+                Files.write(usersFile.toPath(), content.getBytes(StandardCharsets.UTF_8));
+            }
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't fix configuration because " + e.getMessage(), e);
+        }
 
         log("Moving security roles into users.xml...\n");
         try {
+            UserFactory.init();
+            UserManager userManager = UserFactory.getInstance();
+
             // Retrieve all the currently configured users.
             final List<OnmsUser> users = new ArrayList<OnmsUser>();
             for (final String userName : userManager.getUserNames()) {
@@ -234,6 +266,12 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
 
             // Update users.xml
             for (final OnmsUser user : users) {
+                if (readOnlyUsers.contains(user.getUsername())) {
+                    addRole(user, Authentication.ROLE_READONLY);
+                    if (!user.getRoles().contains(Authentication.ROLE_USER)) {
+                        addRole(user, Authentication.ROLE_USER);
+                    }
+                }
                 userManager.save(user);
             }
         } catch (Throwable e) {
@@ -266,5 +304,14 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
     private void addRole(OnmsUser onmsUser, String securityRole) {
         log("Adding role %s to user %s\n", securityRole, onmsUser.getUsername());
         onmsUser.addRole(securityRole);
+    }
+
+    /**
+     * Can run.
+     *
+     * @return true, if successful
+     */
+    private boolean canRun() {
+        return magicUsersFile != null && magicUsersFile.exists();
     }
 }
