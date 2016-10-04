@@ -35,6 +35,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
@@ -55,6 +56,7 @@ public class MagicUsersMigratorOfflineIT {
      */
     @Before
     public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
         FileUtils.copyDirectory(new File("src/test/resources/etc"), new File("target/home/etc"));
         System.setProperty("opennms.home", "target/home");
     }
@@ -67,6 +69,7 @@ public class MagicUsersMigratorOfflineIT {
     @After
     public void tearDown() throws Exception {
         FileUtils.deleteDirectory(new File("target/home"));
+        MockLogAppender.assertNoWarningsOrGreater();
     }
 
     /**
@@ -103,7 +106,13 @@ public class MagicUsersMigratorOfflineIT {
 
         final User agalue = getUser(userInfo, "agalue");
         Assert.assertNotNull(agalue);
-        Assert.assertEquals(0, agalue.getRoleCount());
+        Assert.assertEquals(2, agalue.getRoleCount());
+        Assert.assertTrue(agalue.getRoleCollection().contains(Authentication.ROLE_USER));
+        Assert.assertTrue(agalue.getRoleCollection().contains("ROLE_MEASUREMENTS"));
+
+        final User operator = getUser(userInfo, "operator");
+        Assert.assertNotNull(operator);
+        Assert.assertEquals(0, operator.getRoleCount());
     }
 
     /**

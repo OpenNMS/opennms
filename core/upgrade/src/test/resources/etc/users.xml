@@ -19,6 +19,12 @@
             <password>21232F297A57A5A743894A0E4A801FC3</password>
         </user>
         <user>
+            <user-id>operator</user-id>
+            <full-name>Operator</full-name>
+            <user-comments></user-comments>
+            <password>21232F297A57A5A743894A0E4A801FC3</password>
+        </user>
+        <user>
             <user-id>jmx_operator</user-id>
             <full-name>JMX Operator (for JMX Remote Access Only)</full-name>
             <user-comments></user-comments>

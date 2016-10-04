@@ -248,11 +248,10 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
      * @param securityRole the security role
      */
     private void addRole(OnmsUser onmsUser, String securityRole) {
-        if (Authentication.isValidRole(securityRole)) {
-            log("Adding role %s to user %s\n", securityRole, onmsUser.getUsername());
-            onmsUser.addRole(securityRole);
-        } else {
-            log("Warning: Invalid role {}. Ignoring...", securityRole);
+        if (!Authentication.isValidRole(securityRole)) {
+            log("Warning: %s is a custom role.\n", securityRole);
         }
+        log("Adding role %s to user %s\n", securityRole, onmsUser.getUsername());
+        onmsUser.addRole(securityRole);
     }
 }
