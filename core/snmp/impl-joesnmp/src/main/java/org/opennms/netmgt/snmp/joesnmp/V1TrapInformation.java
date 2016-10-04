@@ -68,12 +68,12 @@ public class V1TrapInformation extends TrapInformation {
     }
 
     @Override
-    protected int getPduLength() {
+    public int getPduLength() {
         return m_pdu.getLength();
     }
 
     @Override
-    protected long getTimeStamp() {
+    public long getTimeStamp() {
         return m_pdu.getTimeStamp();
     }
 
@@ -83,7 +83,7 @@ public class V1TrapInformation extends TrapInformation {
     }
 
     @Override
-    protected InetAddress getTrapAddress() {
+    public InetAddress getTrapAddress() {
         return SnmpIPAddress.toInetAddress(m_pdu.getAgentAddress());
     }
 
@@ -92,7 +92,7 @@ public class V1TrapInformation extends TrapInformation {
     }
 
     @Override
-    protected String getVersion() {
+    public String getVersion() {
         return "v1";
     }
 

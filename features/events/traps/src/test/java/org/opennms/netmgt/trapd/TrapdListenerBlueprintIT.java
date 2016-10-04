@@ -149,6 +149,11 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTest {
 		notification.setTrapProcessor(new TrapProcessor() {
 
 			@Override
+			public void setSystemId(String systemId) {
+				// TODO: Assert something?
+			}
+
+			@Override
 			public void setLocation(String location) {
 				// TODO: Assert something?
 			}
