@@ -66,7 +66,7 @@
             <!-- https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ -->
 
             <mbean name="Messages In Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec">
-                <attrib name="Count" alias="bytesInPerSec" type="gauge"/>
+                <attrib name="Count" alias="msgInPerSec" type="gauge"/>
             </mbean>
 
             <mbean name="Bytes In Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec">
@@ -84,26 +84,26 @@
             <!-- https://kafka.apache.org/090/ops.html -->
 
             <!-- https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ -->
-            <mbean name="Under Replicated Partitions" objectname="kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions">
-                <attrib name="Value" alias="ReplicValue" type="gauge"/>
+            <mbean name="Under-Replicated Partitions" objectname="kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions">
+                <attrib name="Value" alias="underReplPart" type="gauge"/>
             </mbean>
 
-            <mbean name="Partition Count" objectname="kafka.server:type=ReplicaManager,name=PartitionCount">
-                <attrib name="Value" alias="pcValue" type="gauge"/>
+            <mbean name="Partitions" objectname="kafka.server:type=ReplicaManager,name=PartitionCount">
+                <attrib name="Value" alias="partitions" type="gauge"/>
             </mbean>
 
-            <mbean name="Leader Count" objectname="kafka.server:type=ReplicaManager,name=LeaderCount">
-                <attrib name="Value" alias="lcValue" type="gauge"/>
+            <mbean name="Leaders" objectname="kafka.server:type=ReplicaManager,name=LeaderCount">
+                <attrib name="Value" alias="leaders" type="gauge"/>
             </mbean>
 
             <!-- https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ -->
             <mbean name="In-Sync Replica Shrinks Per Second" objectname="kafka.server:type=ReplicaManager,name=IsrShrinksPerSec">
-                <attrib name="Count" alias="isCount" type="gauge"/>
+                <attrib name="Count" alias="isrShrinksPerSec" type="gauge"/>
             </mbean>
 
             <!-- https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ -->
             <mbean name="In-Sync Replica Expands Per Second" objectname="kafka.server:type=ReplicaManager,name=IsrExpandsPerSec">
-                <attrib name="Count" alias="iseCount" type="gauge"/>
+                <attrib name="Count" alias="isrExpandsPerSec" type="gauge"/>
             </mbean>
 
 
@@ -112,8 +112,8 @@
             <!-- ===================== -->
             <!-- https://kafka.apache.org/090/ops.html -->
 
-            <mbean name="Replica Fetcher Manager" objectname="kafka.server:type=ReplicaFetcherManager,name=MaxLag,clientId=Replica">
-                <attrib name="Value" alias="rfmValue" type="gauge"/>
+            <mbean name="Maximum Lag Between Replicas" objectname="kafka.server:type=ReplicaFetcherManager,name=MaxLag,clientId=Replica">
+                <attrib name="Value" alias="replicaMaxLag" type="gauge"/>
             </mbean>
 
 
@@ -139,11 +139,11 @@
             <!-- https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ -->
 
             <mbean name="Leader Election Rate and Time (ms)" objectname="kafka.controller:type=ControllerStats,name=LeaderElectionRateAndTimeMs">
-                <attrib name="Count" alias="leCount" type="gauge"/>
+                <attrib name="Count" alias="leaderEps" type="gauge"/>
             </mbean>
 
             <mbean name="Unclean Leader Elections Per Second" objectname="kafka.controller:type=ControllerStats,name=UncleanLeaderElectionsPerSec">
-                <attrib name="Count" alias="uleCount" type="gauge"/>
+                <attrib name="Count" alias="uncleanLeaderEps" type="gauge"/>
             </mbean>
 
 
