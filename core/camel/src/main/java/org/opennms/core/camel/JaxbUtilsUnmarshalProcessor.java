@@ -70,7 +70,7 @@ public class JaxbUtilsUnmarshalProcessor implements Processor {
 	 */
 	@Override
 	public void process(final Exchange exchange) throws Exception {
-		Unmarshaller unmarshaller = m_unmarshaller.get(); 
+		Unmarshaller unmarshaller = m_unmarshaller.get();
 		if (unmarshaller == null) {
 			unmarshaller = JaxbUtils.getUnmarshallerFor(m_class, null, false);
 			m_unmarshaller.set(unmarshaller);
