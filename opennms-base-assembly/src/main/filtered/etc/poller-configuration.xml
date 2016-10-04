@@ -91,6 +91,14 @@
       <parameter key="rrd-base-name" value="dns" />
       <parameter key="ds-name" value="dns" />
     </service>
+    <service name="Elasticsearch" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1"/>
+      <parameter key="timeout" value="3000"/>
+      <parameter key="port" value="9200"/>
+      <parameter key="url" value="/_cluster/stats"/>
+      <parameter key="response" value="200-202,299"/>
+      <parameter key="response-text" value="~.*status.:.green.*"/>
+    </service>
     <service name="SMTP" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="1" />
       <parameter key="timeout" value="3000" />
@@ -328,10 +336,12 @@
   <monitor service="HypericHQ" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor" />
   <monitor service="SMTP" class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor" />
   <monitor service="DNS" class-name="org.opennms.netmgt.poller.monitors.DnsMonitor" />
+  <monitor service="Elasticsearch" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
   <monitor service="FTP" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor" />
   <monitor service="SNMP" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
   <monitor service="Oracle" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
   <monitor service="Postgres" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="Minion-Heartbeat" class-name="org.opennms.netmgt.poller.monitors.MinionHeartbeatMonitor" />
   <monitor service="MySQL" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
   <monitor service="SQLServer" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
   <monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.SshMonitor" />
@@ -346,5 +356,4 @@
   <monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
   <monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
   <monitor service="MS-RDP" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
-  <monitor service="Minion-Heartbeat" class-name="org.opennms.netmgt.poller.monitors.MinionHeartbeatMonitor" />
 </poller-configuration>
