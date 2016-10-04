@@ -30,11 +30,13 @@ package org.opennms.upgrade.implementations;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.UserFactory;
@@ -203,6 +205,7 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
                 boolean notInDefaultGroup = "true".equals(properties.getProperty("role." + role + ".notInDefaultGroup"));
                 String securityRole = "ROLE_" + role.toUpperCase();
 
+                List<String> customRoles = new ArrayList<String>();
                 for (final String username : authUsers) {
                     OnmsUser onmsUser = getUser(users, username);
                     if (onmsUser == null) {
@@ -212,7 +215,20 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
                         if (!notInDefaultGroup && !securityRole.equals(Authentication.ROLE_ADMIN)) {
                             addRole(onmsUser, Authentication.ROLE_USER);
                         }
+                        if (!Authentication.isValidRole(securityRole)) {
+                            log("Warning: %s is a custom role.\n", securityRole);
+                            customRoles.add(role);
+                        }
                     }
+                }
+
+                if (!customRoles.isEmpty()) {
+                    String roleList = StringUtils.join(customRoles, ',');
+                    log("Creating %s with roles: %s\n", Authentication.ROLE_CONFIGURATION_FILE, roleList);
+                    Properties p = new Properties();
+                    p.put("roles", roleList);
+                    File configFile = new File(ConfigFileConstants.getHome(), "etc" + File.separator + Authentication.ROLE_CONFIGURATION_FILE);
+                    p.store(new FileWriter(configFile), "Custom Roles");
                 }
             }
 
@@ -248,9 +264,6 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
      * @param securityRole the security role
      */
     private void addRole(OnmsUser onmsUser, String securityRole) {
-        if (!Authentication.isValidRole(securityRole)) {
-            log("Warning: %s is a custom role.\n", securityRole);
-        }
         log("Adding role %s to user %s\n", securityRole, onmsUser.getUsername());
         onmsUser.addRole(securityRole);
     }
