@@ -85,8 +85,6 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 
 	private Date m_collectionTimestamp;
 
-	private boolean m_counterReset = false;
-
     /**
      * Static method create must be used to create new ThresholdingVisitor instance.
      * Is static because successful creation depends on thresholding-enabled parameter.
@@ -125,7 +123,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     }
     
     public void setCounterReset(boolean counterReset) {
-        m_counterReset = counterReset;
+        m_thresholdingSet.setCounterReset(counterReset);
     }
 
     public boolean hasThresholds() {
