@@ -104,7 +104,7 @@ Minion Default Features
 
 %prep
 
-tar -xvzf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
+tar zxf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -149,7 +149,7 @@ fi
 
 # Extract the minion assembly
 mkdir -p %{buildroot}%{minioninstprefix}
-tar zxvf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz -C %{buildroot}%{minioninstprefix} --strip-components=1
+tar zxf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz -C %{buildroot}%{minioninstprefix} --strip-components=1
 
 # Remove the data directory
 rm -rf %{buildroot}%{minioninstprefix}/data
