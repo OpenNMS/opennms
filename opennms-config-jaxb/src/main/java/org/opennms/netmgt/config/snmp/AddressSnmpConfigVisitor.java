@@ -50,6 +50,7 @@ import static org.opennms.netmgt.snmp.SnmpConfiguration.versionToString;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.ByteArrayComparator;
@@ -143,23 +144,25 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     }
 
     public void visitDefinitionFinished() {
-        //LOG.debug("matched = {}", m_matchedDefinition);
-        String location = m_currentDefinition.getLocation();
-        if (m_matchedDefinition != null) {
+        // LOG.debug("matched = {}", m_matchedDefinition);
 
+        if (m_matchedDefinition != null && Objects.equals(m_currentDefinition, m_matchedDefinition)) {
+
+            String location = m_matchedDefinition.getLocation();
+            // If location doesn't match, it's not a matched definition
+            if (!Objects.equals(location, m_location)) {
+                // Retrieve if there is a matched Definition before
+                m_matchedDefinition = m_prevMatchedDefinition;
+                m_currentDefinition = null;
+                return;
+            }
             // Save Definition with location in case of a valid location match
-            if (StringUtils.isNotEmpty(m_location) && m_location.equals(location)) {
+            if (StringUtils.isNotBlank(m_location) && m_location.equals(location)) {
                 m_definitionWithLocation = m_matchedDefinition;
             }
-            // Matched definition but location doesn't match, retrieve saved Definition
-            if (StringUtils.isNotEmpty(location) && !location.equals(m_location)) {
-                m_matchedDefinition = m_prevMatchedDefinition;
-            }
-
-        }
-        if (m_matchedDefinition != null) {
             m_prevMatchedDefinition = m_matchedDefinition;
         }
+
         m_currentDefinition = null;
     }
 
