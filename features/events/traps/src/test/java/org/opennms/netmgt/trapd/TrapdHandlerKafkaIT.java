@@ -50,6 +50,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.DistPollerDaoMinion;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.TrapNotification;
@@ -130,7 +131,7 @@ public class TrapdHandlerKafkaIT extends CamelBlueprintTest {
 		OnmsDistPoller distPoller = new OnmsDistPoller();
 		distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
 		distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
-		distPoller.setLocation("localhost");
+		distPoller.setLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
 		DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
 
 		services.put(DistPollerDao.class.getName(), new KeyValueHolder<Object, Dictionary>(distPollerDao, new Properties()));

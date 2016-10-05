@@ -75,7 +75,8 @@ public class NetworkBuilder {
      * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
      */
     public NetworkBuilder(final OnmsDistPoller distPoller) {
-        m_location = new OnmsMonitoringLocation("localhost", "localhost");
+        // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
+        m_location = new OnmsMonitoringLocation("Default", "Default");
 
         m_distPoller = distPoller;
     }
@@ -86,11 +87,14 @@ public class NetworkBuilder {
      * @param distPollerId a {@link java.lang.String} object.
      */
     public NetworkBuilder() {
-        m_location = new OnmsMonitoringLocation("localhost", "localhost");
+        // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
+        m_location = new OnmsMonitoringLocation("Default", "Default");
 
+        // org.opennms.netmgt.dao.api.DistPollerDao.DEFAULT_DIST_POLLER_ID
         m_distPoller = new OnmsDistPoller("00000000-0000-0000-0000-000000000000");
         m_distPoller.setLabel("localhost");
-        m_distPoller.setLocation("localhost");
+        // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
+        m_distPoller.setLocation("Default");
         m_distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
     }
 
