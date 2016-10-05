@@ -45,6 +45,7 @@ import org.opennms.netmgt.config.wsman.WsmanAgentConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.w3c.dom.Node;
 
 import com.google.common.collect.ListMultimap;

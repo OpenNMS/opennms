@@ -23,6 +23,7 @@
 			<cm:property name="queueName">
 				<bean factory-ref="queueNameFactory" factory-method="getName"/>
 			</cm:property>
+			<cm:property name="includeRawMessage" value="true" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -34,8 +35,10 @@
 
 	<!-- Camel Event marshalling processor -->
 	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
-		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
+		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
 	</bean>
+
+	<bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogObjectToDTOProcessor"/>
 
 	<!-- ActiveMQ component provided by minion-core -->
 	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)"/>
@@ -46,8 +49,15 @@
 
 		<route id="syslogMarshal">
 			<from uri="seda:handleMessage?concurrentConsumers=4" />
+
+			<setHeader headerName="includeRawMessage">
+				<simple resultType="java.lang.Boolean">properties:includeRawMessage</simple>
+			</setHeader>
+
 			<!-- Marshal the message to XML -->
-			<bean ref="marshaller"/>
+			<process ref="mapper"/>
+			<process ref="marshaller"/>
+
 			<to uri="seda:sendMessage"/>
 		</route>
 

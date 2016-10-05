@@ -37,6 +37,7 @@ import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
 import org.opennms.netmgt.config.mailtransporttest.ReadmailHost;
 import org.opennms.netmgt.config.mailtransporttest.ReadmailTest;
 import org.opennms.netmgt.config.mailtransporttest.SendmailTest;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 
 /**
  * This is a wrapper class for handling JavaMail configurations.

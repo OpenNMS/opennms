@@ -28,25 +28,21 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.io.File;
 import java.net.ServerSocket;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.Exchange;
-import org.apache.camel.Message;
-import org.apache.camel.Processor;
-import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.kafka.KafkaComponent;
-import org.apache.camel.component.kafka.KafkaConstants;
-import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.impl.SimpleRegistry;
+import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.util.KeyValueHolder;
+import org.apache.commons.io.FileUtils;
 import org.apache.curator.test.TestingServer;
 import org.junit.After;
 import org.junit.BeforeClass;
@@ -55,6 +51,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
@@ -87,14 +85,18 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTest {
 	public void doPreSetup() throws Exception {
 		super.doPreSetup();
 
+		// Delete any existing Kafka log directory
+		FileUtils.deleteDirectory(new File("target/kafka-log"));
+
 		zkTestServer = new TestingServer(zookeeperPort);
 		Properties properties = new Properties();
-		properties.put("port", String.valueOf(kafkaPort));
-		properties.put("host.name", "localhost");
 		properties.put("broker.id", "5001");
 		properties.put("enable.zookeeper", "false");
+		properties.put("host.name", "localhost");
+		properties.put("log.dir", "target/kafka-log");
+		properties.put("port", String.valueOf(kafkaPort));
 		properties.put("zookeeper.connect",zkTestServer.getConnectString());
-		try{
+		try {
 			kafkaConfig = new KafkaConfig(properties);
 			kafkaServer = new KafkaServer(kafkaConfig, null);
 			kafkaServer.startup();
@@ -113,7 +115,7 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTest {
 		zookeeperPort = getAvailablePort(2181, 2281);
 		kafkaPort = getAvailablePort(9092, 9192);
 
-		props.put("kafkaAddress", String.valueOf("localhost:" + kafkaPort));
+		props.put("kafkaAddress", String.valueOf("127.0.0.1:" + kafkaPort));
 		return "org.opennms.netmgt.syslog.handler.kafka";
 	}
 
@@ -132,60 +134,43 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTest {
 	@Test
 	public void testSyslogd() throws Exception {
 
-		SimpleRegistry registry = new SimpleRegistry();
-		CamelContext syslogd = new DefaultCamelContext(registry);
-		syslogd.addComponent("kafka", new KafkaComponent());
-		syslogd.addRoutes(new RouteBuilder() {
-			@Override
-			public void configure() throws Exception {
+		final MockEndpoint broadcastSyslog = getMockEndpoint("mock:kafka:127.0.0.1:" + kafkaPort, false);
+		broadcastSyslog.setExpectedMessageCount(1);
 
-				from("seda:handleMessage").convertBodyTo(SyslogConnection.class).process(new Processor() {
-					@Override
-					public void process(Exchange exchange) throws Exception {
-						SyslogConnection connection = new SyslogConnection();
-						connection.setSourceAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
-						exchange.getIn().setBody(connection);
-						exchange.getIn().setHeader(KafkaConstants.PARTITION_KEY,simple("${body.hostname}"));
-					}
-				}).log("address:${body.sourceAddress}").log("port: ${body.port}").transform(simple("${body.byteBuffer}")).convertBodyTo(String.class).log(body().toString()).to("kafka:localhost:" + kafkaPort + "?topic=syslog;serializerClass=kafka.serializer.StringEncoder");
+		// Create a mock SyslogdConfig
+		final SyslogConfigBean config = new SyslogConfigBean();
+		config.setSyslogPort(10514);
+		config.setNewSuspectOnMessage(false);
 
-			}
-		});
+		final byte[] messageBytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes("US-ASCII");
 
-		syslogd.addRoutes(new RouteBuilder(){
-			@Override
-			public void configure() throws Exception {
-				from("kafka:localhost:" + kafkaPort + "?topic=syslog&zookeeperHost=localhost&zookeeperPort=" + zookeeperPort + "&groupId=group1")
-				.process(new Processor() {
-					@Override
-					public void process(Exchange exchange) throws Exception {
-						String messageKey = "";
-						if (exchange.getIn() != null) {
-							Message message = exchange.getIn();
-							Integer partitionId = (Integer) message.getHeader(KafkaConstants.PARTITION);
-							String topicName = (String) message.getHeader(KafkaConstants.TOPIC);
-							if (message.getHeader(KafkaConstants.KEY) != null) {
-								messageKey = (String) message.getHeader(KafkaConstants.KEY);
-							}
-							Object data = message.getBody();
+		final UUID systemId = UUID.randomUUID();
 
-							System.out.println("topicName :: "
-									+ topicName + " partitionId :: "
-									+ partitionId + " messageKey :: "
-									+ messageKey + " message :: "
-									+ data + "\n");
-						}
-					}
-				}).to("log:input");
-			}
-		});
-
-		syslogd.start();
-
-		ProducerTemplate template = syslogd.createProducerTemplate();
-		SyslogConnection connection = new SyslogConnection();
-		connection.setSourceAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
+		//ProducerTemplate template = syslogd.createProducerTemplate();
+		final SyslogConnection connection = new SyslogConnection(
+			InetAddressUtils.ONE_TWENTY_SEVEN,
+			2000,
+			ByteBuffer.wrap(messageBytes),
+			config,
+			systemId.toString(),
+			MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
+		);
 		template.sendBody( "seda:handleMessage", connection);
+
+		assertMockEndpointsSatisfied();
+
+		// Check that the input for the Kafka endpoint matches
+		// the SyslogConnection that we created
+		final String trapDtoXml = broadcastSyslog.getReceivedExchanges().get(0).getIn().getBody(String.class);
+		assertNotNull(trapDtoXml);
+
+		final SyslogConnection result = SyslogDTOToObjectProcessor.dto2object(
+			JaxbUtils.unmarshal(SyslogDTO.class, trapDtoXml)
+		);
+		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, result.getSourceAddress());
+		assertEquals(2000, result.getPort());
+		assertTrue(Arrays.equals(result.getBytes(), messageBytes));
+		assertEquals(systemId.toString(), result.getSystemId());
 	}
 
 	@After

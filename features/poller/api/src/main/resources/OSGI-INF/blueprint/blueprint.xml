@@ -10,7 +10,7 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <bean id="serviceMonitorRegistry" class="org.opennms.netmgt.poller.DefaultServiceMonitorRegistry" />
+    <bean id="serviceMonitorRegistry" class="org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry" />
     <service interface="org.opennms.netmgt.poller.ServiceMonitorRegistry" ref="serviceMonitorRegistry" />
 
     <reference-list interface="org.opennms.netmgt.poller.ServiceMonitor" availability="optional">

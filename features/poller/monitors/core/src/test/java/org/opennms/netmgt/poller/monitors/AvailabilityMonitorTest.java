@@ -38,6 +38,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
@@ -45,7 +46,7 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 public class AvailabilityMonitorTest {
 
     /**
-     * Test method for {@link org.opennms.netmgt.poller.monitors.AvailabilityMonitor#poll(org.opennms.netmgt.poller.MonitoredService, Map)}.
+     * Test method for {@link org.opennms.netmgt.poller.support.AvailabilityMonitor#poll(org.opennms.netmgt.poller.MonitoredService, Map)}.
      */
     @Test
     public final void testPoll() {

@@ -13,19 +13,12 @@
   <description>Feature definition for opennms-es-rest</description>
   <packaging>pom</packaging>
 
-  <properties>
-    <!-- opennms versions -->
-    <httpcoreVersion>4.3.3</httpcoreVersion>
-    <httpclientVersion>4.3.6</httpclientVersion>
-    <httpasyncclientVersion>4.0.2</httpasyncclientVersion>
-  </properties>
   <build>
 
     <plugins>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
-        <version>1.2.0</version>
         <executions>
           <execution>
             <id>features.xml</id>
@@ -90,7 +83,6 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>19.0</version>
     </dependency>
 
     <dependency>
@@ -117,7 +109,6 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-osgi</artifactId>
       <!-- <version>4.5.2</version> --><!-- jest version -->
-      <version>${httpclientVersion}</version> <!-- best match -->
       <scope>provided</scope>
     </dependency>
 
@@ -132,7 +123,6 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpasyncclient-osgi</artifactId>
       <!-- <version>4.1.1</version> -->
-      <version>${httpasyncclientVersion}</version> 
        <scope>provided</scope>
     </dependency>
 

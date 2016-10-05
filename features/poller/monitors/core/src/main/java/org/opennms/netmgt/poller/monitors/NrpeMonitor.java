@@ -50,6 +50,7 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.nrpe.CheckNrpe;
 import org.opennms.netmgt.poller.monitors.nrpe.NrpeException;
 import org.opennms.netmgt.poller.monitors.nrpe.NrpePacket;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

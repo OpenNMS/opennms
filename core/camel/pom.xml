@@ -26,13 +26,15 @@
               JaxbUtilsMarshalProcessor or JaxbUtilsUnmarshalProcessor
             -->
             <Import-Package>
+              org.eclipse.persistence.internal.jaxb;resolution:=optional,
+              org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
               org.opennms.netmgt.config.trapd;resolution:=optional,
-              org.opennms.netmgt.syslogd;resolution:=optional,
-              org.opennms.minion.core.api;resolution:=optional,
               org.opennms.netmgt.snmp;resolution:=optional,
+              org.opennms.netmgt.syslogd;resolution:=optional,
+              org.opennms.netmgt.trapd;resolution:=optional,
+              org.opennms.minion.core.api;resolution:=optional,
               *
             </Import-Package>
-            <Export-Package>org.opennms.core.camel.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>

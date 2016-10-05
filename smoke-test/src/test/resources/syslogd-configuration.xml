@@ -2,7 +2,7 @@
 <syslogd-configuration>
     <configuration
             syslog-port="10514"
-            new-suspect-on-message="false"
+            new-suspect-on-message="true"
             parser="org.opennms.netmgt.syslogd.CustomSyslogParser"
             forwarding-regexp="^((.+?) (.*))\r?\n?$"
             matching-group-host="2"

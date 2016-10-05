@@ -44,7 +44,7 @@ import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
-import org.opennms.netmgt.poller.monitors.SimpleMonitoredService;
+import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 
 @Command(scope = "poller", name = "poll", description = "Used to invoke a monitor against a host at a specified location")
 public class Poll extends OsgiCommandSupport {

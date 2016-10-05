@@ -32,11 +32,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.poller.DefaultServiceMonitorRegistry;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
+import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
 import org.springframework.util.Assert;
 
 /**

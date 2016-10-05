@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.snmp.snmp4j;
 
-import java.io.Serializable;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -55,9 +54,7 @@ import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
-public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
-
-    private static final long serialVersionUID = 8889136314276990017L;
+public class Snmp4JTrapNotifier implements CommandResponder {
 
     public static final transient Logger LOG = LoggerFactory.getLogger(Snmp4JTrapNotifier.class);
 
@@ -69,9 +66,7 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
         m_trapProcessorFactory = processorFactory;
     }
     
-    public static class Snmp4JV1TrapInformation extends TrapInformation implements Serializable {
-
-        private static final long serialVersionUID = -5130592972765964504L;
+    public static class Snmp4JV1TrapInformation extends TrapInformation {
 
         private PDUv1 m_pdu;
 
@@ -79,24 +74,37 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
             super(agent, community, trapProcessor);
             m_pdu = pdu;
         }
+        
+        /**
+         * Returns the Protocol Data Unit that was encapsulated within the SNMP
+         * Trap message
+         */
+        public PDUv1 getPdu() {
+            return m_pdu;
+        }
 
+        /**
+         * @return The {@link InetAddress} of the agent that generated the trap
+         * as found in the SNMPv1 AgentAddress field. This can vary from the value
+         * of {@link #getAgentAddress()} if the SNMPv1 trap has been forwarded.
+         */
         @Override
-        protected InetAddress getTrapAddress() {
+        public InetAddress getTrapAddress() {
             return m_pdu.getAgentAddress().getInetAddress();
         }
 
         @Override
-        protected String getVersion() {
+        public String getVersion() {
             return "v1";
         }
 
         @Override
-        protected int getPduLength() {
+        public int getPduLength() {
             return m_pdu.getVariableBindings().size();
         }
 
         @Override
-        protected long getTimeStamp() {
+        public long getTimeStamp() {
             return m_pdu.getTimestamp();
         }
 
@@ -117,9 +125,7 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
         }
     }
 
-    public static class Snmp4JV2TrapInformation extends TrapInformation implements Serializable {
-
-        private static final long serialVersionUID = 2961743197092484906L;
+    public static class Snmp4JV2TrapInformation extends TrapInformation {
 
         /**
          * The received PDU
@@ -180,19 +186,19 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
          * Returns the Protocol Data Unit that was encapsulated within the SNMP
          * Trap message
          */
-        private PDU getPdu() {
+        public PDU getPdu() {
             return m_pdu;
         }
         
         @Override
-        protected int getPduLength() {
+        public int getPduLength() {
             return getPdu().size();
         }
         
         @Override
-        protected long getTimeStamp() {
+        public long getTimeStamp() {
 
-		LOG.debug("V2 {} first varbind value: {}", m_pduTypeString, getVarBindAt(0).getVariable());
+            LOG.debug("V2 {} first varbind value: {}", m_pduTypeString, getVarBindAt(0).getVariable());
 
             switch (getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getVariable().getSyntax()) {
             case SMIConstants.SYNTAX_TIMETICKS:
@@ -214,6 +220,9 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
             return new TrapIdentity(SnmpObjId.get(snmpTrapOid.getValue()), SnmpObjId.get(lastVarBindOid.getValue()), new Snmp4JValue(lastVarBindValue));
         }
 
+        /**
+         *  For SNMPv2 traps, this returns the same value as {@link #getAgentAddress()}.
+         */
         @Override
         public InetAddress getTrapAddress() {
             return getAgentAddress();
@@ -224,7 +233,7 @@ public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
         }
 
         @Override
-        protected String getVersion() {
+        public String getVersion() {
             return "v2";
         }
 

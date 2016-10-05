@@ -55,10 +55,10 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
 public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
 
-    private static Logger LOG = LoggerFactory.getLogger(SyslogdHandlerMinionIT.class);
+	private static Logger LOG = LoggerFactory.getLogger(SyslogdHandlerMinionIT.class);
 
-    @ClassRule
-    public static ActiveMQBroker s_broker = new ActiveMQBroker();
+	@ClassRule
+	public static ActiveMQBroker s_broker = new ActiveMQBroker();
 
 	@SuppressWarnings("rawtypes")
 	@Override

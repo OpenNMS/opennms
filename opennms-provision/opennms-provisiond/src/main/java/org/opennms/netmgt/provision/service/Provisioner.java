@@ -50,6 +50,8 @@ import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
@@ -104,6 +106,9 @@ public class Provisioner implements SpringServiceDaemon {
     
     @Autowired
     private ProvisioningAdapterManager m_manager;
+
+    @Autowired
+    private MonitoringSystemDao monitoringSystemDao;
     
     private ImportScheduler m_importSchedule;
 
@@ -587,6 +592,7 @@ public class Provisioner implements SpringServiceDaemon {
     
     @EventHandler(uei = EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
     public void handleNewSuspectEvent(Event e) {
+        final Event event = e;
         final String uei = e.getUei();
         final String ip = e.getInterface();
         final Map<String, String> paramMap = Maps.newHashMap();
@@ -611,7 +617,15 @@ public class Provisioner implements SpringServiceDaemon {
                     	LOG.error("Unable to convert {} to an InetAddress.", ip);
                     	return;
                     }
-                    NewSuspectScan scan = createNewSuspectScan(addr, paramMap.get("foreignSource"), paramMap.get("location"));
+
+                    final String location;
+                    if (paramMap.containsKey("location")) {
+                        location = paramMap.get("location");
+                    } else {
+                        location = monitoringSystemDao.get(event.getDistPoller()).getLocation();
+                    }
+
+                    NewSuspectScan scan = createNewSuspectScan(addr, paramMap.get("foreignSource"), location);
                     Task t = scan.createTask();
                     t.schedule();
                     t.waitFor();

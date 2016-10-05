@@ -67,9 +67,9 @@ public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
             LOG.debug(
                     "No agent address mapping found for {}!  Try adding a @JUnitSnmpAgent(host=\"{}\", resource=\"...\" entry...",
                     addressString, addressString);
-            return super.getAgentConfig(address);
-            // throw new IllegalArgumentException("No agent address mapping
-            // found for " + addressString);
+
+            return super.getAgentConfig(address, location);
+
         }
 
         final SnmpAgentConfig config = new SnmpAgentConfig(agentAddress.getAddress());
