@@ -12,6 +12,10 @@
       <specific>10.0.0.3</specific>
     </definition>
     
+    <!-- Sample Version for having a location specific config -->
+    <definition version="v2c" location="MINION" proxy-host="192.168.0.3" port="1161" >
+      <specific>10.0.0.3</specific>
+    </definition>
     
     <!-- Sample Version 2c configuration -->
 	<definition version="v2c">
