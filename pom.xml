@@ -1308,7 +1308,7 @@
     <newtsVersion>1.4.1</newtsVersion>
     <paxExamVersion>4.6.0</paxExamVersion>
     <paxSwissboxVersion>1.8.1</paxSwissboxVersion>
-    <postgresqlVersion>9.4.1208</postgresqlVersion>
+    <postgresqlVersion>9.4.1211</postgresqlVersion>
     <powermockVersion>1.5.5</powermockVersion>
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>5.0.0</osgiVersion>
