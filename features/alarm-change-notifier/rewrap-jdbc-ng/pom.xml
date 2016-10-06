@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <parent>
+    <groupId>org.opennms.plugins</groupId>
+    <artifactId>alarm-change-notifier.parent</artifactId>
+    <version>17.0.1-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>alarm-change-notifier.rewrap-pgjdbc-ng</artifactId>
+  <name>alarm-change-notifier.rewrap-pgjdbc-ng</name>
+  <description>installs a version of pgjdbc-ng 0.6 with correct OSGi Manifest </description>
+  <packaging>pom</packaging>
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.5.2</version>
+
+        <executions>
+          <execution>
+            <id>execution1</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>install-file</goal>
+            </goals>
+            <configuration>
+              <file>${basedir}/lib/pgjdbc-ng-0.6.osgi.jar</file>
+              <groupId>com.impossibl.pgjdbc-ng</groupId>
+              <artifactId>pgjdbc-ng</artifactId>
+              <name>pgjdbc-ng</name>
+              <version>0.6.osgi-wrap</version>
+              <packaging>jar</packaging>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>

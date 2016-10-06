@@ -1,0 +1,186 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.opennms.plugins</groupId>
+    <artifactId>opennms-es-rest.parent</artifactId>
+    <version>17.0.1-SNAPSHOT</version>
+  </parent>
+
+  <!-- Feature Definition -->
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>opennms-es-rest</artifactId>
+  <name>opennms-es-rest</name>
+  <description>Feature definition for opennms-es-rest</description>
+  <packaging>pom</packaging>
+
+  <properties>
+    <!-- opennms versions -->
+    <httpcoreVersion>4.3.3</httpcoreVersion>
+    <httpclientVersion>4.3.6</httpclientVersion>
+    <httpasyncclientVersion>4.0.2</httpasyncclientVersion>
+  </properties>
+  <build>
+
+    <plugins>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <version>1.2.0</version>
+        <executions>
+          <execution>
+            <id>features.xml</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate-features-xml</goal>
+            </goals>
+            <configuration>
+              <bundles>
+                <!-- <bundle>wrap:mvn:io.searchbox/jest-common/${jestVersion}</bundle> -->
+                <!-- <bundle>wrap:mvn:io.searchbox/jest/${jestVersion}</bundle> -->
+                <!-- <bundle>wrap:mvn:io.searchbox/jest-complete-osgi/${jestVersion}</bundle> -->
+
+<!--                 <bundle>wrap:mvn:org.apache.httpcomponents/httpcore-nio/${httpcoreVersion}</bundle> -->
+                <!-- <bundle>wrap:mvn:org.apache.httpcomponents/httpasyncclient/4.1.1</bundle> -->
+                <!-- <bundle>wrap:mvn:org.apache.httpcomponents/httpasyncclient/${httpclientVersion}</bundle> -->
+
+              </bundles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+
+  </build>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>${productName}.main-module</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>${productName}.product-descriptor</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+    <groupId>com.googlecode.json-simple</groupId>
+    <artifactId>json-simple</artifactId>
+    <version>${json-simpleVersion}</version>
+    </dependency>
+
+    <!-- <dependency> -->
+    <!-- <groupId>io.searchbox</groupId> -->
+    <!-- <artifactId>jest</artifactId> -->
+    <!-- </dependency> -->
+    <dependency>
+      <groupId>io.searchbox</groupId>
+      <artifactId>jest-complete-osgi</artifactId>
+      <version>2.0.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.6.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>19.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.4</version> <!-- opennms 3.3.2 -->
+    </dependency>
+
+    <!-- <dependency> -->
+    <!-- <groupId>org.apache.httpcomponents</groupId> -->
+    <!-- <artifactId>httpcore-nio</artifactId> -->
+    <!-- <version>4.4.4</version> -->
+    <!-- </dependency> -->
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore-osgi</artifactId>
+      <!-- <version>4.4.4</version> --><!-- jest version -->
+      <version>${httpcoreVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient-osgi</artifactId>
+      <!-- <version>4.5.2</version> --><!-- jest version -->
+      <version>${httpclientVersion}</version> <!-- best match -->
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- <dependency> -->
+    <!-- <groupId>org.apache.httpcomponents</groupId> -->
+    <!-- <artifactId>httpasyncclient-osgi</artifactId> -->
+    <!-- <version>${httpclientVersion}</version> -->
+    <!-- </dependency> -->
+
+    <!-- best match derived from httpasyncclient 4.0.2 compiled against httpclient 4.3.5 httpcore 4.3.2  -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpasyncclient-osgi</artifactId>
+      <!-- <version>4.1.1</version> -->
+      <version>${httpasyncclientVersion}</version> 
+       <scope>provided</scope>
+    </dependency>
+
+    <!-- <dependency> -->
+    <!-- <groupId>org.apache.httpcomponents</groupId> -->
+    <!-- <artifactId>httpasyncclient</artifactId> -->
+    <!-- <version>4.1.1</version> -->
+    <!-- </dependency> -->
+
+
+<!--     <dependency> -->
+<!--       <groupId>commons-logging</groupId> -->
+<!--       <artifactId>commons-logging</artifactId> -->
+<!--       <version>1.2</version> -->
+<!--     </dependency> -->
+
+<!--     <dependency> -->
+<!--       <groupId>commons-codec</groupId> -->
+<!--       <artifactId>commons-codec</artifactId> -->
+<!--       <version>1.9</version> -->
+<!--     </dependency> -->
+
+
+
+    <!-- [INFO] \- io.searchbox:jest:jar:2.0.3:provided -->
+    <!-- [INFO] +- io.searchbox:jest-common:jar:2.0.3:provided -->
+    <!-- [INFO] | +- com.google.code.gson:gson:jar:2.6.2:provided -->
+    <!-- [INFO] | \- org.apache.commons:commons-lang3:jar:3.4:provided -->
+    <!-- [INFO] +- org.apache.httpcomponents:httpcore-nio:jar:4.4.4:provided -->
+    <!-- [INFO] | \- org.apache.httpcomponents:httpcore:jar:4.4.4:provided -->
+    <!-- [INFO] +- org.apache.httpcomponents:httpclient:jar:4.5.2:provided -->
+    <!-- [INFO] | +- commons-logging:commons-logging:jar:1.2:provided -->
+    <!-- [INFO] | \- commons-codec:commons-codec:jar:1.9:provided -->
+    <!-- [INFO] \- org.apache.httpcomponents:httpasyncclient:jar:4.1.1:provided -->
+
+  </dependencies>
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+</project>
