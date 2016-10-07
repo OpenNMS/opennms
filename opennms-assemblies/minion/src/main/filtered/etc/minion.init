@@ -16,11 +16,14 @@
 # Description:       Distributed client for OpenNMS
 ### END INIT INFO
 
+ME="$0"
+
 NAME="minion"
 DESC="Minion"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 MINION_HOME="/opt/minion"
 SYSCONFDIR="${MINION_HOME}/etc"
+RUNAS=minion
 STOP_RETRIES=10
 STOP_WAIT=5
 
@@ -30,17 +33,44 @@ if [ -z "$JAVA_HOME" ]; then
 	JAVA_HOME="$("${MINION_HOME}/bin/find-java.sh" 1.8.0 1.8.9999)"
 fi
 
-if [ -e "${SYSCONFDIR}/minion" ]; then
+if [ -r "${SYSCONFDIR}/minion" ]; then
 	# shellcheck disable=SC1090,SC1091
 	. "${SYSCONFDIR}/minion"
 fi
 
-if [ -e "${MINION_HOME}/minion.conf" ]; then
+if [ -r "${MINION_HOME}/minion.conf" ]; then
 	. "${MINION_HOME}/minion.conf"
 fi
 
+validate_icmp() {
+	if [ "$RUNAS" != "root" ]; then
+		if [ `uname -s` = "Linux" ]; then
+			# validate that we have permissions to ping as non-root
+			_group_range="$(sysctl net.ipv4.ping_group_range 2>/dev/null | cut -d= -f2 | sed -e 's,^ *,,' -e 's, *$,,' -e 's,\t, ,g')"
+			if [ -n "${_group_range}" ]; then
+				_group_range_start="$(echo "${_group_range}" | cut -d' ' -f1)"
+				_group_range_end="$(echo "${_group_range}" | cut -d' ' -f2)"
+				_minion_group="$(id -g minion)"
+				if [ -z "${_minion_group}" ]; then
+					>&2 printf 'ERROR: minion group does not exist!'
+					exit 6 # program is not configured
+				fi
+				if [ "${_minion_group}" -lt "${_group_range_start}" ]; then
+					>&2 printf 'ERROR: minion gid %d is not in the range of valid groups for ping (%d-%d)\n' "${_minion_group}" "${_group_range_start}" "${_group_range_end}"
+					exit 4 # insufficient privilege
+				elif [ "${_minion_group}" -gt "${_group_range_end}" ]; then
+					>&2 printf 'ERROR: minion gid %d is not in the range of valid groups for ping (%d-%d)\n' "${_minion_group}" "${_group_range_start}" "${_group_range_end}"
+					exit 4 # insufficient privilege
+				fi
+			else
+				>&2 printf 'ERROR: `sysctl net.ipv4.ping_group_range` gave no output! Unable to validate non-root ping support.\n'
+			fi
+		fi
+	fi
+}
+
 # always dump heap if we OOM
-JAVA_OPTS="-XX:+HeapDumpOnOutOfMemoryError"
+JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
 
 # export any default configurable variables from sysconf
 export JAVA_HOME JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA JAVA_DEBUG_OPTS JAVA_DEBUG_PORT JAVA_OPTS CLASSPATH KARAF_DEBUG LD_LIBRARY_PATH
@@ -81,8 +111,13 @@ case "$1" in
 			exit 0
 		fi
 
-		"$MINION_HOME"/bin/start
-		exit $?
+		validate_icmp
+		if [ "$(id -un)" = "${RUNAS}" ]; then
+			"$MINION_HOME"/bin/start
+			exit $?
+		else
+			exec /usr/bin/sudo -u "${RUNAS}" "${ME}" start
+		fi
 		;;
 
 	stop)

@@ -221,6 +221,7 @@ function main()
                 SPECS="$SPECS opennms-tools/centric-troubleticketer/src/main/rpm/opennms-plugin-ticketer-centric.spec"
         fi
 
+        #SPECS="tools/packages/minion/minion.spec"
         echo "=== Building RPMs ==="
         for spec in $SPECS
         do

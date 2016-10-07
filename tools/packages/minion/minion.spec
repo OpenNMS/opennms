@@ -65,10 +65,16 @@ http://www.opennms.org/wiki/Minion
 %package container
 Summary:       Minion Container
 Group:         Applications/System
+Requires:      openssh
 Requires(pre): %{jdk}
 Requires:      %{jdk}
-Requires(pre): openssh
-Requires:      openssh
+Requires(pre): /usr/bin/getent
+Requires(pre): /sbin/groupadd
+Requires(pre): /sbin/useradd
+Requires(pre): /sbin/nologin
+Requires:      /sbin/nologin
+Requires:      /usr/bin/id
+Requires:      /usr/bin/sudo
 
 %description container
 Minion Container
@@ -77,12 +83,12 @@ Minion Container
 %{extrainfo2}
 
 %package features-core
-Summary:       Minion Core Features
-Group:         Applications/System
-Requires(pre): %{name}-container = %{version}-%{release}
-Requires:      %{name}-container = %{version}-%{release}
-Requires(pre): util-linux
-Requires:      util-linux
+Summary:        Minion Core Features
+Group:          Applications/System
+Requires(pre):  %{name}-container = %{version}-%{release}
+Requires:       %{name}-container = %{version}-%{release}
+Requires(post): util-linux
+Requires:       util-linux
 
 %description features-core
 Minion Core Features
@@ -162,7 +168,7 @@ echo "id = 00000000-0000-0000-0000-000000ddba11" >> %{buildroot}%{minioninstpref
 
 # fix the init script for RedHat/CentOS layout
 mkdir -p "%{buildroot}%{_initrddir}"
-sed -e "s,/opt/minion/etc,%{_sysconfdir}/sysconfig,g" -e "s,/opt/minion,%{minioninstprefix},g" "%{buildroot}%{minioninstprefix}/etc/minion.init" > "%{buildroot}%{_initrddir}"/minion
+sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" -e "s,^MINION_HOME[ \t]*=.*$,MINION_HOME=%{minioninstprefix},g" "%{buildroot}%{minioninstprefix}/etc/minion.init" > "%{buildroot}%{_initrddir}"/minion
 chmod 755 "%{buildroot}%{_initrddir}"/minion
 rm -f '%{buildroot}%{minioninstprefix}/etc/minion.init'
 
@@ -176,10 +182,10 @@ find %{buildroot}%{minioninstprefix} ! -type d | \
     grep -v %{minionrepoprefix} | \
     grep -v %{minioninstprefix}/etc/featuresBoot.d | \
     grep -v %{minioninstprefix}/etc/org.opennms.minion.controller.cfg | \
-    sed -e "s|^%{buildroot}|%attr(644,root,root) |" | \
+    sed -e "s|^%{buildroot}|%attr(644,minion,minion) |" | \
     sort > %{_tmppath}/files.container
 find %{buildroot}%{minioninstprefix}/bin ! -type d | \
-    sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
+    sed -e "s|^%{buildroot}|%attr(755,minion,minion) |" | \
     sort >> %{_tmppath}/files.container
 # Exclude subdirs of the repository directory
 find %{buildroot}%{minioninstprefix} -type d | \
@@ -194,21 +200,29 @@ rm -rf %{buildroot}
 %defattr(664 root root 775)
 
 %files container -f %{_tmppath}/files.container
-%defattr(664 root root 775)
-%attr(755,root,root) %{_initrddir}/minion
-%attr(644,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/minion
-%attr(644,root,root) %{minioninstprefix}/etc/featuresBoot.d/.readme
+%defattr(664 minion minion 775)
+%attr(755,minion,minion) %{_initrddir}/minion
+%attr(644,minion,minion) %config(noreplace) %{_sysconfdir}/sysconfig/minion
+%attr(644,minion,minion) %{minioninstprefix}/etc/featuresBoot.d/.readme
+
+%pre container
+getent group minion >/dev/null || groupadd -r minion
+getent passwd minion >/dev/null || \
+	useradd -r -g minion -d "%{minioninstprefix}" -s /sbin/nologin \
+	-c "OpenNMS Minion" minion
+exit 0
 
 %post container
 # Clean out the data directory
-rm -rf %{minioninstprefix}/data
+rm -rf "%{minioninstprefix}/data"
 # Generate an SSH key if necessary
-if [ ! -f %{minioninstprefix}/etc/host.key ]; then
-    /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f %{minioninstprefix}/etc/host.key
+if [ ! -f "%{minioninstprefix}/etc/host.key" ]; then
+    /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f "%{minioninstprefix}/etc/host.key"
+    chown minion:minion "%{minioninstprefix}/etc/"host.key*
 fi
 
 %files features-core
-%defattr(644 root root 755)
+%defattr(644 minion minion 755)
 %{minionrepoprefix}/core
 %config(noreplace) %{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
@@ -220,7 +234,7 @@ sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "%{minioninstp
 rm -rf %{minionrepoprefix}/.local
 
 %files features-default
-%defattr(644 root root 755)
+%defattr(644 minion minion 755)
 %{minionrepoprefix}/default
 
 %post features-default
