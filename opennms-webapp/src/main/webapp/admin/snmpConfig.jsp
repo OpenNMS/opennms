@@ -78,9 +78,9 @@
 		//validate retryCount
 		var retryCount = new String(document.snmpConfigForm.retryCount.value);
 		if (retryCount != ""
-				&& (!isNumber(retryCount) || parseInt(retryCount) <= 0)) {
+				&& (!isNumber(retryCount) || parseInt(retryCount) < 0)) {
 			alert(retryCount
-					+ " is not a valid Retry Count. Please enter a number greater than 0 or leave it empty.");
+					+ " is not a valid Retry Count. Please enter a number greater than or equal to 0, or leave it empty.");
 			return false;
 		}
 
