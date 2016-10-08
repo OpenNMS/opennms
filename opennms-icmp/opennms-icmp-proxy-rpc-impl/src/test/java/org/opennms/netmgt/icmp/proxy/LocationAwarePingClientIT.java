@@ -39,7 +39,7 @@ import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.rpc.api.RpcModule;
@@ -48,8 +48,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.minion.core.api.MinionIdentity;
-import org.opennms.netmgt.icmp.NullPinger;
 import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.jna.JnaPinger;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,13 +71,13 @@ public class LocationAwarePingClientIT extends CamelBlueprintTest {
 
     @Bean
     public Pinger createPinger() {
-        return new NullPinger();
+        return new JnaPinger();
     }
 
     private static final String REMOTE_LOCATION_NAME = "remote";
 
-    @Rule
-    public ActiveMQBroker broker = new ActiveMQBroker();
+    @ClassRule
+    public static ActiveMQBroker broker = new ActiveMQBroker();
 
     @Autowired
     private OnmsDistPoller identity;
@@ -161,7 +161,8 @@ public class LocationAwarePingClientIT extends CamelBlueprintTest {
                 .withProgressCallback((newSequence, summary) -> {
                     invoked[0]++;
                 }).execute().get(), 10);
-        Assert.assertEquals(Integer.valueOf(11), invoked[0]);
+        // Since the default retries are 2 for every invocation
+        Assert.assertEquals(Integer.valueOf(20), invoked[0]);
     }
 
     private void verify(PingSummary pingSummary, int numberSequences) {
