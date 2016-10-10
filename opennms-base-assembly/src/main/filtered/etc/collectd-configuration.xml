@@ -150,9 +150,15 @@
             <parameter key="password" value="postgres"/>
             <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
         </service>
+
+        <service name="Elasticsearch" interval="300000" user-defined="false" status="on">
+            <parameter key="collection" value="xml-elasticsearch-cluster-stats" />
+            <parameter key="handler-class" value="org.opennms.protocols.json.collector.DefaultJsonCollectionHandler"/>
+        </service>
     </package>
 
 
+    <collector service="Elasticsearch" class-name="org.opennms.protocols.xml.collector.XmlCollector"/>
     <collector service="PostgreSQL" class-name="org.opennms.netmgt.collectd.JdbcCollector"/>
     <collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
     <collector service="WMI" class-name="org.opennms.netmgt.collectd.WmiCollector"/>

@@ -63,7 +63,7 @@ public class GenericJMXDetectorFactory<T extends JMXDetector> extends GenericSer
     public Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port) {
         String ipAddress = address.getHostAddress();
         if (port == null) {
-            throw new IllegalArgumentException("Need to specify port number in the form of port=number for Jsr160Detector");
+            throw new IllegalArgumentException(" Port number needs to be specified in the form of port=number ");
         }
 
         if (jmxConfigDao == null) {
