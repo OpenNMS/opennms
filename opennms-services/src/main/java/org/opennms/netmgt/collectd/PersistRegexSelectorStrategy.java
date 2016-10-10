@@ -71,7 +71,7 @@ public class PersistRegexSelectorStrategy implements PersistenceSelectorStrategy
         @Override
         public void visitAttribute(CollectionAttribute attribute) {
             if (StringAttributeType.supportsType(attribute.getType()))
-                context.setVariable(attribute.getName(), attribute.getStringValue());
+                context.setVariable(attribute.getName().replace('-','_'), attribute.getStringValue());
         }
 
         public StandardEvaluationContext getEvaluationContext() {
