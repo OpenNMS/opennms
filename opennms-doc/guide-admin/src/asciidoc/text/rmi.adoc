@@ -24,17 +24,22 @@ ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.rmi.server.hostna
 
 This tells {opennms-product-name} to listen for RMI on port `18980`, and to listen on all interfaces.  (Originally, RMI was only used for the Remote Poller, so despite the porperty name mentioning the "opennms poller server" it applies to RMI as a whole.)  Note that you _must_ include the `-Djava.rmi.server.hostname=` option or {opennms-product-name} will accept connections on the RMI port, but not be able to complete a valid connection.
 
-Authentication will only be allowed for users that are in the `admin` role.  To make a user an admin, add them to the `role.admin.users` entry in `${OPENNMS_HOME}/etc/magic-users.properties`:
+Authentication will only be allowed for users that are in the `admin` role (i.e. `ROLE_ADMIN`), or the `jmx` role (i.e. `ROLE_JMX`).
+To make a user an admin, be sure to add only the `ROLE_ADMIN` role to the user in `users.xml`.
+To add the `jmx` role to the user, add the `ROLE_JMX` role to the user in `users.xml`, and also the `ROLE_USER` role if is required to provide access to the WebUI.
+
+Make sure `$OPENNMS_HOME/etc/jmxremote.access` has the appropriate settings:
 
 [options="nowrap"]
 ----
-...
-
-role.admin.name=OpenNMS Administrator
-role.admin.users=admin,myuser
-
-...
+admin   readwrite
+jmx     readonly
 ----
+
+The possible types of access are:
+
+readwrite:: Allows retrieving JMX metrics as well as executing MBeans.
+readonly:: Allows retrieving JMX metrics but does *not* allow executing MBeans, even if they just return simple values.
 
 === Enabling SSL
 
@@ -70,35 +75,3 @@ For example, when using `jconsole` to connect to the {opennms-product-name} RMI 
 ----
 jconsole -J-Djavax.net.ssl.trustStore=/path/to/opennms.truststore -J-Djavax.net.ssl.trustStorePassword=changeit
 ----
-
-=== Creating Custom Authentication Roles
-
-By default, RMI will only authenticate users in the `admin` role.  To create a custom role for RMI access, first add the role to `${OPENNMS_HOME}/etc/magic-users.properties`:
-
-[options="nowrap"]
-----
-...
-
-# add mycustomrole to the end of the roles= entry
-roles=rtc, admin, rouser, dashboard, provision, remoting, rest, asset, mobile, mycustomrole
-
-# ...and then give it a name and a list of users
-role.mycustomrole.name=OpenNMS Remote RMI User
-role.mycustomrole.users=admin,myuser
-
-...
-----
-
-Then, you must configure JMX to know about the new custom role by adding it to `${OPENNMS_HOME}/etc/jmxremote.access`:
-
-[options="nowrap"]
-----
-admin readwrite
-mycustomrole readonly
-----
-
-The possible types of access are:
-
-readwrite:: Allows retrieving JMX metrics as well as executing MBeans.
-readonly:: Allows retrieving JMX metrics but does *not* allow executing MBeans, even if they just return simple values.
-

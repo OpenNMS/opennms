@@ -65,14 +65,14 @@
 
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Role Configuration" />
+	<jsp:param name="title" value="On-Call Role Configuration" />
 	<jsp:param name="headTitle" value="View" />
-	<jsp:param name="headTitle" value="Roles" />
+	<jsp:param name="headTitle" value="On-Call Roles" />
 	<jsp:param name="headTitle" value="Admin" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/roles'>Role List</a>" />
-	<jsp:param name="breadcrumb" value="View Role" />
+	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and On-Call Roles</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/roles'>On-Call Role List</a>" />
+	<jsp:param name="breadcrumb" value="View On-Call Role" />
 </jsp:include>
 
 
@@ -121,7 +121,7 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">View Role</h3>
+    <h3 class="panel-title">View On-Call Role</h3>
   </div>
   <table class="table table-condensed">
     <tr>
@@ -165,7 +165,7 @@
 
 <div class="panel panel-default top-buffer">
   <div class="panel-heading">
-    <h3 class="panel-title">Role Schedule</h3>
+    <h3 class="panel-title">On-Call Role Schedule</h3>
   </div>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="prevMonthForm">
 					<input type="hidden" name="operation" value="view"/>
