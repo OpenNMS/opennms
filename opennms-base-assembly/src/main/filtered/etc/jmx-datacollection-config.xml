@@ -315,7 +315,6 @@
                 <attrib name="StorePercentUsage" alias="StorePctUsage" type="gauge"/>
                 <attrib name="TempLimit" alias="TempLimit" type="gauge"/>
                 <attrib name="TempPercentUsage" alias="TempPctUsage" type="gauge"/>
-                <attrib name="CurrentStatus" alias="currentStatus" type="String"/>
             </mbean>
         </mbeans>
     </jmx-collection>
