@@ -72,9 +72,6 @@ public class InfoPanel extends CssLayout {
 
         staticComponents.add(searchBox);
         staticComponents.add(toggleButton);
-
-        // Add a graph container to trigger backshift graph renderings on each update
-        staticComponents.add(new InlineGraphContainer());
     }
 
     private void refreshInfoArea() {
@@ -89,6 +86,10 @@ public class InfoPanel extends CssLayout {
             Label label = new Label();
             label.setWidth(350, Unit.PIXELS);
             addComponent(label);
+
+            // Add a graph container to trigger backshift graph renderings on each update
+            addComponent(new InlineGraphContainer());
+            
         } else {
             addComponent(toggleButton);
         }
