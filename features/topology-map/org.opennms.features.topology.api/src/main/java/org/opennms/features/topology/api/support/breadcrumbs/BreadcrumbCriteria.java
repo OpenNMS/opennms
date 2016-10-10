@@ -26,13 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.ui.breadcrumbs;
+package org.opennms.features.topology.api.support.breadcrumbs;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Criteria;
 
 import com.google.common.collect.Lists;
@@ -44,60 +43,6 @@ import com.google.common.collect.Lists;
  */
 public class BreadcrumbCriteria extends Criteria {
 
-    /**
-     * Element to describe a breadcrumb.
-     *
-     * @author mvrueden
-     */
-    public static class Breadcrumb {
-
-        /**
-         * Interface to define the click behaviour of a breadcrumb.
-         *
-         * @author mvrueden
-         */
-        public interface ClickListener {
-            void clicked(GraphContainer graphContainer);
-        }
-
-        private final String label;
-        private final ClickListener clickListener;
-
-        public Breadcrumb(String label, ClickListener clickListener) {
-            this.label = Objects.requireNonNull(label);
-            this.clickListener = Objects.requireNonNull(clickListener);
-        }
-
-        public Breadcrumb.ClickListener getClickListener() {
-            return clickListener;
-        }
-
-        public String getLabel() {
-            return label;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == this) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (obj instanceof Breadcrumb) {
-                Breadcrumb other = (Breadcrumb) obj;
-                boolean equals = Objects.equals(label, other.label);
-                return equals;
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(label);
-        }
-    }
-
     private List<Breadcrumb> breadcrumbs = Lists.newArrayList();
 
     public void setNewRoot(final Breadcrumb breadcrumb) {
@@ -107,6 +52,10 @@ public class BreadcrumbCriteria extends Criteria {
         } else {
             breadcrumbs.add(breadcrumb);
         }
+    }
+
+    public void clear() {
+        breadcrumbs.clear();
     }
 
     public List<Breadcrumb> getBreadcrumbs() {

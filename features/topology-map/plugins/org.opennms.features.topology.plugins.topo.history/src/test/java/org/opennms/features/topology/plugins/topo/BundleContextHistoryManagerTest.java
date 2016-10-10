@@ -28,6 +28,13 @@
 
 package org.opennms.features.topology.plugins.topo;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
@@ -40,18 +47,23 @@ import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.support.SavedHistory;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.DefaultLayout;
 import org.opennms.features.topology.app.internal.jung.CircleLayoutAlgorithm;
-import org.opennms.features.topology.app.internal.operations.*;
+import org.opennms.features.topology.app.internal.operations.AutoRefreshToggleOperation;
+import org.opennms.features.topology.app.internal.operations.CircleLayoutOperation;
+import org.opennms.features.topology.app.internal.operations.FRLayoutOperation;
+import org.opennms.features.topology.app.internal.operations.ISOMLayoutOperation;
+import org.opennms.features.topology.app.internal.operations.KKLayoutOperation;
+import org.opennms.features.topology.app.internal.operations.ManualLayoutOperation;
+import org.opennms.features.topology.app.internal.operations.RealUltimateLayoutOperation;
+import org.opennms.features.topology.app.internal.operations.SimpleLayoutOperation;
+import org.opennms.features.topology.app.internal.operations.SpringLayoutOperation;
 import org.osgi.framework.BundleContext;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 
 public class BundleContextHistoryManagerTest  {
 
@@ -121,8 +133,8 @@ public class BundleContextHistoryManagerTest  {
         displayableVertices.add(new TestVertex("100"));
         
         // simple save
-        String historyHash = historyManager.createHistory(admin, graphContainerMock);
-        SavedHistory savedHistory = historyManager.getHistory(admin, historyHash);
+        String historyHash = historyManager.saveOrUpdateHistory(admin, graphContainerMock);
+        SavedHistory savedHistory = historyManager.getHistoryByFragment(historyHash);
         Properties properties = loadProperties();
         Assert.assertNotNull(savedHistory);
         Assert.assertNotNull(properties);
@@ -133,8 +145,8 @@ public class BundleContextHistoryManagerTest  {
         properties = null;  // no access to this field after this line!
 
         // save again (nothing should change)
-        String historyHash2 = historyManager.createHistory(admin, graphContainerMock);
-        SavedHistory savedHistory2 = historyManager.getHistory(admin, historyHash2);
+        String historyHash2 = historyManager.saveOrUpdateHistory(admin, graphContainerMock);
+        SavedHistory savedHistory2 = historyManager.getHistoryByFragment(historyHash2);
         properties = loadProperties();
         Assert.assertNotNull(savedHistory2);
         Assert.assertNotNull(properties);
@@ -146,8 +158,8 @@ public class BundleContextHistoryManagerTest  {
 
         // change entry for user "admin"
         displayableVertices.add(new TestVertex("200"));
-        String historyHash3 = historyManager.createHistory(admin, graphContainerMock);
-        SavedHistory savedHistory3 = historyManager.getHistory(admin, historyHash3);
+        String historyHash3 = historyManager.saveOrUpdateHistory(admin, graphContainerMock);
+        SavedHistory savedHistory3 = historyManager.getHistoryByFragment(historyHash3);
         properties = loadProperties();
         Assert.assertNotNull(savedHistory3);
         Assert.assertNotNull(properties);
@@ -158,8 +170,8 @@ public class BundleContextHistoryManagerTest  {
         Assert.assertNotNull(properties.get(historyHash3));
 
         // create an entry for another user, but with same historyHash
-        String historyHash4 = historyManager.createHistory(user1, graphContainerMock);
-        SavedHistory savedHistory4 = historyManager.getHistory(admin, historyHash3);
+        String historyHash4 = historyManager.saveOrUpdateHistory(user1, graphContainerMock);
+        SavedHistory savedHistory4 = historyManager.getHistoryByFragment(historyHash3);
         properties = loadProperties();
         Assert.assertEquals(historyHash3, historyHash4);
         Assert.assertNotNull(savedHistory4);
@@ -174,8 +186,8 @@ public class BundleContextHistoryManagerTest  {
 
         // change entry for user1
         displayableVertices.remove(0);
-        String historyHash5 = historyManager.createHistory(user1, graphContainerMock);
-        SavedHistory savedHistory5 = historyManager.getHistory(user1, historyHash3);
+        String historyHash5 = historyManager.saveOrUpdateHistory(user1, graphContainerMock);
+        SavedHistory savedHistory5 = historyManager.getHistoryByFragment(historyHash3);
         properties = loadProperties();
         Assert.assertNotNull(savedHistory5);
         Assert.assertNotNull(properties);
