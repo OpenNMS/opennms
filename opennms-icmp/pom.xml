@@ -14,5 +14,7 @@
     <module>opennms-icmp-jni</module>
     <module>opennms-icmp-jni6</module>
     <module>opennms-icmp-jna</module>
+    <module>commands</module>
+    <module>opennms-icmp-proxy-rpc-impl</module>
   </modules>
 </project>
