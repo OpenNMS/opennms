@@ -34,10 +34,8 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.web.element.*,
-		org.opennms.web.asset.*
-		"
-%>
-<%@ page import="org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation" %>
+		org.opennms.web.asset.*,
+		org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation"%>
 
 <%!
     protected AssetModel model;
