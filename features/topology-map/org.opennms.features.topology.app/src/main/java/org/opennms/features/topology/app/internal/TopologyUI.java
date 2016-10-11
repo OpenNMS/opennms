@@ -77,8 +77,8 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
-import org.opennms.features.topology.app.internal.menu.MenuUpdateListener;
 import org.opennms.features.topology.app.internal.menu.MenuManager;
+import org.opennms.features.topology.app.internal.menu.MenuUpdateListener;
 import org.opennms.features.topology.app.internal.menu.TopologyContextMenu;
 import org.opennms.features.topology.app.internal.operations.MetaTopologySelectorOperation;
 import org.opennms.features.topology.app.internal.operations.RedoLayoutOperation;
@@ -102,6 +102,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.support.TransactionOperations;
 
 import com.github.wolfie.refresher.Refresher;
 import com.google.common.base.Strings;
@@ -116,7 +117,6 @@ import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.RequestHandler;
 import com.vaadin.server.SessionDestroyListener;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
 import com.vaadin.server.VaadinServletRequest;
@@ -136,7 +136,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
-import org.springframework.transaction.support.TransactionOperations;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -247,7 +246,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                 // Otherwise the Request-Parameters would still be there
 
                 // we must overwrite the existing saved history for this user, otherwise updateURL does not work
-                String fragment = m_historyManager.createHistory(m_applicationContext.getUsername(), m_graphContainer);
+                String fragment = m_historyManager.saveOrUpdateHistory(m_applicationContext.getUsername(), m_graphContainer);
                 LOG.info("Redirect user {} to topology fragment url with fragment {}", m_applicationContext.getUsername(), fragment);
                 getPage().setLocation(String.format("%s#%s", ((VaadinServletRequest) request).getRequestURI(), fragment));
             }
@@ -811,7 +810,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     // this user. Do this before laying out the UI because the history
     // may change during layout.
     private void loadUserSettings() {
-        applyHistory(m_applicationContext.getUsername(), m_historyManager.getHistoryHash(m_applicationContext.getUsername()));
+        applyHistory(m_applicationContext.getUsername(), m_historyManager.getHistoryFragment(m_applicationContext.getUsername()));
         m_graphContainer.redoLayout();
     }
 
@@ -822,7 +821,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             if (getPage() != null) {
                 getPage().setUriFragment(fragment);
             }
-            m_historyManager.applyHistory(username, fragment, m_graphContainer);
+            m_historyManager.applyHistory(fragment, m_graphContainer);
         }
     }
 
@@ -1008,7 +1007,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     public void uriFragmentChanged(UriFragmentChangedEvent event) {
         m_settingFragment++;
         String fragment = event.getUriFragment();
-        m_historyManager.applyHistory(m_applicationContext.getUsername(), fragment, m_graphContainer);
+        m_historyManager.applyHistory(fragment, m_graphContainer);
 
         // This is a hack to fix issue SPC-796 so that the display states of the
         // TopologyComponent and NoContentAvailableWindow are reset correctly
@@ -1018,12 +1017,15 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         //Manually trigger the searchbox to refresh
         m_searchBox.graphChanged(m_graphContainer);
 
+        // Manually trigger the breadcrumbs to refresh
+        m_breadcrumbComponent.graphChanged(m_graphContainer);
+
         m_settingFragment--;
     }
 
     private void saveHistory() {
         if (m_settingFragment == 0) {
-            String fragment = m_historyManager.createHistory(m_applicationContext.getUsername(), m_graphContainer);
+            String fragment = m_historyManager.saveOrUpdateHistory(m_applicationContext.getUsername(), m_graphContainer);
             if (getPage() != null) {
                 getPage().setUriFragment(fragment, false);
             }
