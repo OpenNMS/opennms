@@ -28,24 +28,22 @@
 
 package org.opennms.features.topology.api.support;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 /**
+ * This {@link XmlAdapter} allows to marshal the by default not marshable {@link VertexRef}.
+ *
+ * @author mvrueden
  */
-public class VertexRefSetAdapter extends XmlAdapter<VertexRefSetAdapter.VertexRefSet, Set<VertexRef>> {
+public class VertexRefAdapter extends XmlAdapter<VertexRefAdapter.VertexRefJaxbEntry, VertexRef> {
 
-	public static final class VertexRefSet {
-		public Set<VertexRefEntry> entry = new HashSet<VertexRefEntry>(0);
-	}
-
-	public static final class VertexRefEntry {
+	@XmlRootElement(name="vertex")
+	public static final class VertexRefJaxbEntry {
 		@XmlAttribute
 		public String namespace;
 		@XmlAttribute
@@ -55,33 +53,23 @@ public class VertexRefSetAdapter extends XmlAdapter<VertexRefSetAdapter.VertexRe
 	}
 
 	@Override
-	public VertexRefSetAdapter.VertexRefSet marshal(Set<VertexRef> v) throws Exception {
-		if(v == null) {
+	public VertexRefJaxbEntry marshal(VertexRef input) throws Exception {
+		if(input == null) {
 			return null;
-		} else {
-			VertexRefSet retval = new VertexRefSet();
-			for (VertexRef key : v) {
-				VertexRefEntry entry = new VertexRefEntry();
-				entry.namespace = key.getNamespace();
-				entry.id = key.getId();
-				entry.label = key.getLabel();
-				retval.entry.add(entry);
-			}
-			return retval;
 		}
+		final VertexRefJaxbEntry entry = new VertexRefJaxbEntry();
+		entry.namespace = input.getNamespace();
+		entry.id = input.getId();
+		entry.label = input.getLabel();
+		return entry;
 	}
 
 	@Override
-	public Set<VertexRef> unmarshal(VertexRefSetAdapter.VertexRefSet v) throws Exception {
-		if (v == null) {
+	public VertexRef unmarshal(VertexRefJaxbEntry input) throws Exception {
+		if (input == null) {
 			return null;
-		} else {
-			Set<VertexRef> retval = new HashSet<VertexRef>();
-			for (VertexRefEntry entry : v.entry) {
-				VertexRef ref = new DefaultVertexRef(entry.namespace, entry.id, entry.label);
-				retval.add(ref);
-			}
-			return retval;
 		}
+		final VertexRef ref = new DefaultVertexRef(input.namespace, input.id, input.label);
+		return ref;
 	}
 }
