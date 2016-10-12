@@ -28,8 +28,10 @@
 
 package org.opennms.smoketest;
 
-import java.lang.Exception;
-import com.google.common.collect.Iterables;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItems;
+import static org.junit.Assert.assertThat;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -38,8 +40,7 @@ import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import com.google.common.collect.Iterables;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NodeListPageIT extends OpenNMSSeleniumTestCase {
@@ -102,19 +103,22 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAvailableLocations() throws Exception {
+        // We use hasItems() instead of containsInAnyOrder() at some points because other tests do
+        // not properly clean up their created nodes ans locations.
+
         // Check if default selection is 'all locations' and all locations are listed
         findElementByXpath("//select[@id='monitoringLocation']//option[text()='All locations' and @selected]");
         assertThat(Iterables.transform(m_driver.findElements(By.xpath("//select[@id='monitoringLocation']//option")), WebElement::getText),
-                   containsInAnyOrder("All locations",
-                                      "Pittsboro",
-                                      "Fulda"));
+                   hasItems("All locations",
+                            "Pittsboro",
+                            "Fulda"));
 
         // Check the default lists all nodes
         assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
-                   containsInAnyOrder("TestMachine loc1node1",
-                                      "TestMachine loc1node2",
-                                      "TestMachine loc2node1",
-                                      "TestMachine loc2node2"));
+                   hasItems("TestMachine loc1node1",
+                            "TestMachine loc1node2",
+                            "TestMachine loc2node1",
+                            "TestMachine loc2node2"));
 
         // Check switching to first location
         findElementByXpath("//select[@id='monitoringLocation']//option[text()='Pittsboro']").click();
@@ -134,9 +138,9 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//select[@id='monitoringLocation']//option[text()='All locations']").click();
         findElementByXpath("//select[@id='monitoringLocation']//option[text()='All locations' and @selected]");
         assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
-                   containsInAnyOrder("TestMachine loc1node1",
-                                      "TestMachine loc1node2",
-                                      "TestMachine loc2node1",
-                                      "TestMachine loc2node2"));
+                   hasItems("TestMachine loc1node1",
+                            "TestMachine loc1node2",
+                            "TestMachine loc2node1",
+                            "TestMachine loc2node2"));
     }
 }
