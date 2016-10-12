@@ -57,6 +57,7 @@
           <!-- set not to clash with normal ES ports 9300 9200 -->
           <tcpPort>9300</tcpPort>
           <httpPort>9200</httpPort>
+          <skip>${skipTests}</skip>
         </configuration>
         <executions>
           <!-- The elasticsearch plugin is by default bound to the -->
