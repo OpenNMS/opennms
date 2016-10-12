@@ -174,6 +174,9 @@
     <c:if test="${command.nodename != null}">
       <c:param name="nodename" value="${command.nodename}"/>
     </c:if>
+    <c:if test="${command.monitoringLocation != null}">
+      <c:param name="monitoringLocation" value="${command.monitoringLocation}"/>
+    </c:if>
     <c:if test="${command.iplike != null}">
       <c:param name="iplike" value="${command.iplike}"/>
     </c:if>
