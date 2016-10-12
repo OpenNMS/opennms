@@ -118,7 +118,7 @@ function extraInfo2()
     if [ -n "${commithash}" ]; then
         echo "  https://github.com/OpenNMS/opennms/commit/${commithash}"
     else
-        echo ""
+        echo "  (unknown commit)"
     fi
 }
 
