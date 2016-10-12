@@ -29,11 +29,17 @@
 package org.opennms.smoketest;
 
 import java.lang.Exception;
+import com.google.common.collect.Iterables;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NodeListPageIT extends OpenNMSSeleniumTestCase {
@@ -43,8 +49,11 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
         createLocation("Pittsboro");
         createLocation("Fulda");
 
-        createNode("node1", "Pittsboro");
-        createNode("node2", "Fulda");
+        createNode("loc1node1", "Pittsboro");
+        createNode("loc1node2", "Pittsboro");
+        createNode("loc2node1", "Fulda");
+        createNode("loc2node2", "Fulda");
+
         nodePage();
     }
 
@@ -64,7 +73,7 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
     }
 
     private void createNode(final String foreignId, final String location) throws Exception {
-        final String node = "<node type=\"A\" label=\"TestMachine" + foreignId + "\" foreignSource=\""+ REQUISITION_NAME +"\" foreignId=\"" + foreignId + "\">" +
+        final String node = "<node type=\"A\" label=\"TestMachine " + foreignId + "\" foreignSource=\""+ REQUISITION_NAME +"\" foreignId=\"" + foreignId + "\">" +
         "<labelSource>H</labelSource>" +
         "<sysContact>The Owner</sysContact>" +
         "<sysDescription>" +
@@ -89,5 +98,45 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
         findElementByLink("Show interfaces").click();
         findElementByXpath("//h3[text()='Nodes and their interfaces']");
         findElementByLink("Hide interfaces");
+    }
+
+    @Test
+    public void testAvailableLocations() throws Exception {
+        // Check if default selection is 'all locations' and all locations are listed
+        findElementByXpath("//select[@id='monitoringLocation']//option[text()='All locations' and @selected]");
+        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//select[@id='monitoringLocation']//option")), WebElement::getText),
+                   containsInAnyOrder("All locations",
+                                      "Pittsboro",
+                                      "Fulda"));
+
+        // Check the default lists all nodes
+        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+                   containsInAnyOrder("TestMachine loc1node1",
+                                      "TestMachine loc1node2",
+                                      "TestMachine loc2node1",
+                                      "TestMachine loc2node2"));
+
+        // Check switching to first location
+        findElementByXpath("//select[@id='monitoringLocation']//option[text()='Pittsboro']").click();
+        findElementByXpath("//select[@id='monitoringLocation']//option[text()='Pittsboro' and @selected]");
+        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+                   containsInAnyOrder("TestMachine loc1node1",
+                                      "TestMachine loc1node2"));
+
+        // Check switching to second location
+        findElementByXpath("//select[@id='monitoringLocation']//option[text()='Fulda']").click();
+        findElementByXpath("//select[@id='monitoringLocation']//option[text()='Fulda' and @selected]");
+        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+                   containsInAnyOrder("TestMachine loc2node1",
+                                      "TestMachine loc2node2"));
+
+        // Check switching to unfiltered
+        findElementByXpath("//select[@id='monitoringLocation']//option[text()='All locations']").click();
+        findElementByXpath("//select[@id='monitoringLocation']//option[text()='All locations' and @selected]");
+        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+                   containsInAnyOrder("TestMachine loc1node1",
+                                      "TestMachine loc1node2",
+                                      "TestMachine loc2node1",
+                                      "TestMachine loc2node2"));
     }
 }
