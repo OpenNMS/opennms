@@ -135,11 +135,30 @@
 
             <!-- TODO: Collect route stats for RPC.Server.Discover (when available) -->
 
+			<!-- Route stats for RPC.Server.DNS -->
+            <mbean name="DNS RPC Server" objectname="org.apache.camel:context=org.opennms.core.ipc.rpc.camel-impl,type=routes,name=&quot;RPC.Server.DNS&quot;">
+                <attrib name="ExchangesCompleted" alias="DNSComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="DNSFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="DNSTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="DNSMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="DNSMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="DNSMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="DNSLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="DNSTotProc" type="counter"/>
+            </mbean>
 
-            <!-- TODO: Collect route stats for RPC.Server.DNS (when available) -->
 
-
-            <!-- TODO: Collect route stats for RPC.Server.Poll (when available) -->
+			<!-- Route stats for RPC.Server.Poller -->
+			<mbean name="Poller RPC Server" objectname="org.apache.camel:context=org.opennms.core.ipc.rpc.camel-impl,type=routes,name=&quot;RPC.Server.Poller&quot;">
+				<attrib name="ExchangesCompleted" alias="PollerComplete" type="counter" />
+				<attrib name="ExchangesFailed" alias="PollerFailed" type="counter" />
+				<attrib name="ExchangesTotal" alias="PollerTotal" type="counter" />
+				<attrib name="MaxProcessingTime" alias="PollerMaxProc" type="gauge" />
+				<attrib name="MeanProcessingTime" alias="PollerMeanProc" type="gauge" />
+				<attrib name="MinProcessingTime" alias="PollerMinProc" type="gauge" />
+				<attrib name="LastProcessingTime" alias="PollerLastProc" type="gauge" />
+				<attrib name="TotalProcessingTime" alias="PollerTotProc" type="counter" />
+			</mbean>
 
 
             <!-- Route stats for RPC.Server.SNMP -->
