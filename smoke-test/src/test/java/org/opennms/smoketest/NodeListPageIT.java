@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest;
 
+import java.lang.Exception;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -39,17 +40,30 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         deleteTestRequisition();
-        createNode("node1");
-        createNode("node2");
+        createLocation("Pittsboro");
+        createLocation("Fulda");
+
+        createNode("node1", "Pittsboro");
+        createNode("node2", "Fulda");
         nodePage();
     }
 
     @After
     public void tearDown() throws Exception {
         deleteTestRequisition();
+        deleteLocation("Pittsboro");
+        deleteLocation("Fulda");
     }
 
-    private void createNode(final String foreignId) throws Exception {
+    private void deleteLocation(final String location) throws Exception {
+        sendDelete("/rest/monitoringLocations/" + location);
+    }
+
+    private void createLocation(final String location) throws Exception {
+        sendPost("/rest/monitoringLocations", "<location location-name=\"" + location + "\" monitoring-area=\"" + location + "\"/>", 201);
+    }
+
+    private void createNode(final String foreignId, final String location) throws Exception {
         final String node = "<node type=\"A\" label=\"TestMachine" + foreignId + "\" foreignSource=\""+ REQUISITION_NAME +"\" foreignId=\"" + foreignId + "\">" +
         "<labelSource>H</labelSource>" +
         "<sysContact>The Owner</sysContact>" +
@@ -59,6 +73,7 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
         "<sysLocation>DevJam</sysLocation>" +
         "<sysName>TestMachine" + foreignId + "</sysName>" +
         "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
+        "<location>" + location + "</location>" +
         "</node>";
         sendPost("/rest/nodes", node, 201);
     }
