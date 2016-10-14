@@ -88,6 +88,10 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
     protected OspfLinkDao m_ospfLinkDao;
 
     @Autowired
+    protected OspfElementDao m_ospfElementDao;
+
+
+    @Autowired
     protected IsIsLinkDao m_isisLinkDao;
 
     @Autowired

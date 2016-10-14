@@ -51,8 +51,6 @@ import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -60,8 +58,6 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 public class NodeACLVertexProvider implements GraphProvider {
-
-    private static final Logger LOG = LoggerFactory.getLogger(NodeACLVertexProvider.class);
 
     private final GraphProvider m_delegate;
     private final NodeDao m_nodeDao;
@@ -329,5 +325,9 @@ public class NodeACLVertexProvider implements GraphProvider {
 
     public TopologyProviderInfo getTopologyProviderInfo() {
         return m_delegate.getTopologyProviderInfo();
+    }
+    
+    public GraphProvider getDelegate() {
+        return m_delegate;
     }
 }

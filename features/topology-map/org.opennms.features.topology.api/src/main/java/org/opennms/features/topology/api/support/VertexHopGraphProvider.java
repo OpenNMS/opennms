@@ -734,4 +734,8 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     public TopologyProviderInfo getTopologyProviderInfo() {
         return m_delegate.getTopologyProviderInfo();
     }
+    
+    public GraphProvider getDelegate() {
+        return m_delegate;
+    }
 }

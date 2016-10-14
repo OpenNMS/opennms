@@ -34,6 +34,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
 import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
@@ -119,6 +120,7 @@ public class JmxDatacollectionConfiggeneratorTest {
     }
 
     @Test
+    @Ignore
     public void testGenerateJmxConfigModelUsingMbeanFilter() throws MBeanServerQueryException, IOException, JMException {
         List<String> mbeanIds = new ArrayList<>();
         mbeanIds.add("java.lang:type=GarbageCollector,name=PS MarkSweep");
