@@ -164,7 +164,9 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
             enterText(By.name(fieldName), "-5"); // < 0
             validate(errorMessageTemplate, fieldName, fieldLabel, "-5", false);
             enterText(By.name( fieldName), "0"); // = 0
-            validate(errorMessageTemplate, fieldName, fieldLabel, "0", false);
+            if (i != 1) { // A retryCount of zero is legal
+                validate(errorMessageTemplate, fieldName, fieldLabel, "0", false);
+            }
             enterText(By.name(fieldName), "1000"); // > 0
             validate(errorMessageTemplate, fieldName, fieldLabel, "1000", true);
             // reset to default
