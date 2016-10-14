@@ -77,10 +77,6 @@ public class UpdateUserServlet extends HttpServlet {
             // get the rest of the user information from the form
             newUser.setFullName(request.getParameter("fullName"));
             newUser.setUserComments(request.getParameter("userComments"));
-            newUser.setReadOnly(false);
-            if (request.getParameter("readOnly") != null && (request.getParameter("readOnly").equalsIgnoreCase("true") || request.getParameter("readOnly").equalsIgnoreCase("on"))) {
-                newUser.setReadOnly(true);
-            }
 
             String password = request.getParameter("password");
             if (password != null && !password.trim().equals("")) {
@@ -179,6 +175,17 @@ public class UpdateUserServlet extends HttpServlet {
 
                     DutySchedule newDuty = new DutySchedule(newSchedule, startTime, stopTime);
                     dutySchedules.add(newDuty.toString());
+                }
+            }
+
+            // The new list of roles will override the existing one.
+            // If the new list is empty or null, that means the user should not have roles, and the existing ones should be removed.
+            newUser.getRoleCollection().clear();
+            String[] configuredRoles = request.getParameterValues("configuredRoles");
+            if (configuredRoles != null && configuredRoles.length > 0) {
+                newUser.getRoleCollection().clear();
+                for (String role : configuredRoles) {
+                    newUser.addRole(role);
                 }
             }
 

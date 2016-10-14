@@ -53,6 +53,7 @@
                                 <feature>minion-snmp-proxy</feature>
                                 <feature>minion-provisiond-detectors</feature>
                                 <feature>minion-poller</feature>
+                                <feature>minion-icmp-proxy</feature>
                             </features>
                             <repository>target/maven-repo</repository>
                         </configuration>

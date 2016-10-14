@@ -46,7 +46,6 @@ import java.util.Date;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -56,7 +55,6 @@ import org.opennms.netmgt.dao.hibernate.MinionDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.smoketest.NullTestEnvironment;
@@ -69,8 +67,6 @@ import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Iterables;
 
 /**
  * Verifies that syslog messages sent to the Minion generate
@@ -157,7 +153,6 @@ public class SyslogTest {
     }
 
     @Test
-    @Ignore
     public void testNewSuspect() throws Exception {
         final Date startOfTest = new Date();
 
@@ -180,7 +175,7 @@ public class SyslogTest {
                .until(DaoUtils.countMatchingCallable(this.daoFactory.getDao(EventDaoHibernate.class),
                                                      new CriteriaBuilder(OnmsEvent.class)
                                                              .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
-                                                             .ge("eventTime", startOfTest)
+                                                             .ge("eventCreateTime", startOfTest)
                                                              .toCriteria()),
                       is(1));
 
@@ -195,20 +190,23 @@ public class SyslogTest {
                                                              .isNull("node")
                                                              .toCriteria()),
                        notNullValue());
-
         assertThat(event.getDistPoller().getLocation(), is("MINION"));
 
         // Check if the node was detected
-        final OnmsNode node = Iterables.getOnlyElement(this.daoFactory.getDao(NodeDaoHibernate.class)
-                                                                      .findMatching(new CriteriaBuilder(OnmsNode.class)
-                                                                                            .eq("label", "snmpd")
-                                                                                            .toCriteria()));
-        assertThat(node, notNullValue());
+        final OnmsNode node = await()
+                .atMost(1, MINUTES).pollInterval(5, SECONDS)
+                .until(DaoUtils.findMatchingCallable(this.daoFactory.getDao(NodeDaoHibernate.class),
+                                                     new CriteriaBuilder(OnmsNode.class)
+                                                             .eq("label", "snmpd")
+                                                             .toCriteria()),
+                       notNullValue());
         assertThat(node.getLocation().getLocationName(), is("MINION"));
 
-        // Check if the service was decovered
-        final OnmsMonitoredService service = this.daoFactory.getDao(MonitoredServiceDaoHibernate.class).getPrimaryService(node.getId(), "SNMP");
-        assertThat(service, notNullValue());
+        // Check if the service was discovered
+        await().atMost(1, MINUTES).pollInterval(5, SECONDS)
+               .until(() -> this.daoFactory.getDao(MonitoredServiceDaoHibernate.class)
+                                           .getPrimaryService(node.getId(), "SNMP"),
+                      notNullValue());
 
         // Send the second message
         this.sendMessage(sender);
@@ -218,7 +216,7 @@ public class SyslogTest {
                .until(DaoUtils.countMatchingCallable(this.daoFactory.getDao(EventDaoHibernate.class),
                                                      new CriteriaBuilder(OnmsEvent.class)
                                                              .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
-                                                             .ge("eventTime", startOfTest)
+                                                             .ge("eventCreateTime", startOfTest)
                                                              .eq("node", node)
                                                              .toCriteria()),
                       is(1));

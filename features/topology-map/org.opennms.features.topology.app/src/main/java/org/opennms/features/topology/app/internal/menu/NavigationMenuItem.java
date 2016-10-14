@@ -28,19 +28,14 @@
 
 package org.opennms.features.topology.app.internal.menu;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-import org.opennms.features.topology.api.Callbacks;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.breadcrumbs.Breadcrumb;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.ui.breadcrumbs.BreadcrumbCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,56 +56,8 @@ public class NavigationMenuItem extends AbstractMenuItem {
 
     @Override
     public MenuCommand getCommand() {
-        return new MenuCommand() {
-            @Override
-            public void execute(List<VertexRef> targets, OperationContext operationContext) {
-                final GraphContainer graphContainer = operationContext.getGraphContainer();
-                navigateTo(graphContainer, sourceVertex, targetGraphProvider);
-            }
-
-            private void navigateTo(GraphContainer graphContainer, VertexRef sourceVertex, GraphProvider targetGraphProvider) {
-                final String targetNamespace = targetGraphProvider.getVertexNamespace();
-
-                // Get the Breadcrumb (before) navigating, otherwise it is lost
-                BreadcrumbCriteria breadcrumbCriteria = VertexHopGraphProvider.VertexHopCriteria.getSingleCriteriaForGraphContainer(graphContainer, BreadcrumbCriteria.class, true);
-
-                // If no breadcrumb is defined yet, add source before target.
-                if (breadcrumbCriteria.isEmpty()) {
-                    final GraphProvider graphProvider = graphContainer.getBaseTopology();
-                    breadcrumbCriteria.setNewRoot(new BreadcrumbCriteria.Breadcrumb(
-                            graphProvider.getTopologyProviderInfo().getName(),
-                            (theGraphContainer) -> theGraphContainer.selectTopologyProvider(graphProvider, Callbacks.applyDefaults())));
-                }
-                graphContainer.selectTopologyProvider(targetGraphProvider,
-                        Callbacks.clearCriteria(),
-                        Callbacks.applyDefaultSemanticZoomLevel(),
-                        (theGraphContainer, theGraphProvider) -> theGraphContainer.addCriteria(breadcrumbCriteria));
-
-                // Find the vertices in other graphs that this vertex links to
-                final Collection<VertexRef> oppositeVertices = graphContainer.getMetaTopologyProvider().getOppositeVertices(sourceVertex);
-
-                // Filter the vertices for those matching the target namespace
-                final List<VertexRef> targetVertices = oppositeVertices.stream()
-                        .filter(v -> v.getNamespace().matches(targetNamespace))
-                        .collect(Collectors.toList());
-
-                // Add the target vertices to focus
-                targetVertices.stream().forEach(v -> graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(v)));
-
-                // Update Criteria for Breadcrumbs
-                breadcrumbCriteria.setNewRoot(new BreadcrumbCriteria.Breadcrumb(
-                        sourceVertex.getLabel(),
-                        (theGraphContainer) -> {
-                            // only navigate if namespace is different, otherwise we switch to the same target, which does not make any sense
-                            if (!theGraphContainer.getBaseTopology().getVertexNamespace().equals(targetNamespace)) {
-                                navigateTo(theGraphContainer, sourceVertex, targetGraphProvider);
-                            }
-                        }));
-
-                // Render
-                graphContainer.redoLayout();
-            }
-        };
+        return (targets, operationContext) -> new Breadcrumb(sourceVertex.getLabel(), targetGraphProvider.getVertexNamespace(), sourceVertex)
+                .navigateTo(operationContext.getGraphContainer());
     }
 
     @Override

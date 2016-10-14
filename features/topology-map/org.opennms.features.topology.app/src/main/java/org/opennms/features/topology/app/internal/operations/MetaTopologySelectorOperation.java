@@ -29,7 +29,6 @@
 package org.opennms.features.topology.app.internal.operations;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +43,9 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 
 public class MetaTopologySelectorOperation extends AbstractCheckedOperation {
 
@@ -109,14 +111,30 @@ public class MetaTopologySelectorOperation extends AbstractCheckedOperation {
 
     @Override
     public Map<String, String> createHistory(GraphContainer container) {
-        return Collections.singletonMap(this.getClass().getName() + "." + getLabel(), Boolean.toString(isChecked(container)));
+        return ImmutableMap
+                .<String, String>builder()
+                .put(getClass().getName() + "." + getLabel(), Boolean.toString(isChecked(container)))
+                .put(getClass().getName() + ".selectedLayer", container.getBaseTopology().getVertexNamespace())
+                .build();
     }
 
     @Override
     public void applyHistory(GraphContainer container, Map<String, String> settings) {
         // If the class name and label tuple is set to true, then set the base topology provider
-        if ("true".equals(settings.get(this.getClass().getName() + "." + getLabel()))) {
+        if ("true".equals(settings.get(getClass().getName() + "." + getLabel()))) {
             execute(container);
+        }
+
+        // Select the according layer
+        final String selectedLayer = settings.get(getClass().getName() + ".selectedLayer");
+        if (container.getMetaTopologyProvider() != null
+                && !Strings.isNullOrEmpty(selectedLayer)
+                && !selectedLayer.equals(container.getBaseTopology().getVertexNamespace())) {
+            // Find provider for selected layer and select
+            container.getMetaTopologyProvider().getGraphProviders().stream()
+                    .filter(p -> p.getVertexNamespace().equals(selectedLayer))
+                    .findFirst()
+                    .ifPresent(p -> container.selectTopologyProvider(p));
         }
     }
 

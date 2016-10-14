@@ -71,6 +71,9 @@ public class LocationInfoPanelItemProvider implements InfoPanelItemProvider {
                 .map(v -> v.getNodeID())
                 .collect(Collectors.toSet());
 
+        if (nodeIds.isEmpty()) {
+            return Collections.emptyList();
+        }
         final CoordinateResolver.Result result = new CoordinateResolver(geocoderService, nodeDao).resolve(nodeIds);
         final List<Marker> markers = vertices.stream()
                 .filter(v -> result.getCoordinates(v.getNodeID()) != null)

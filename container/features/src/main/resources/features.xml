@@ -788,6 +788,13 @@
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
     </feature>
 
+
+    <feature name="opennms-icmp-commands" description="OpenNMS :: Core :: ICMP :: Commands" version="${project.version}">
+        <feature>opennms-icmp-api</feature>
+
+        <bundle>mvn:org.opennms/opennms-icmp-commands/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-syslogd" description="OpenNMS :: Syslogd" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
       <feature>activemq-camel</feature>
