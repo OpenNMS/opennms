@@ -49,10 +49,13 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.Constants;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
@@ -78,11 +81,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class EnhancedLinkdTopologyProviderTest {
 
     @Autowired
-    private EnhancedLinkdTopologyProvider m_topologyProvider;
+    private TopologyFactory m_topologyFactory;
 
     @Autowired
     private EnhancedLinkdMockDataPopulator m_databasePopulator;
-    private String m_originalFilename;
+    private MetaTopologyProvider m_metaTopologyProvider;
+    private EnhancedLinkdTopologyProvider m_topologyProvider;
 
 
     @Before
@@ -92,9 +96,12 @@ public class EnhancedLinkdTopologyProviderTest {
 
         m_databasePopulator.populateDatabase();
         m_databasePopulator.setUpMock();
-        m_originalFilename = m_topologyProvider.getConfigurationFile();
+        m_metaTopologyProvider = m_topologyFactory.createMetaTopologyProvider();
 
-        m_topologyProvider.load(null);
+        for (GraphProvider graphprovider: m_metaTopologyProvider.getGraphProviders())
+            graphprovider.load(null);
+        m_topologyProvider = (EnhancedLinkdTopologyProvider)
+                ((VertexHopGraphProvider)((NodeACLVertexProvider) m_metaTopologyProvider.getDefaultGraphProvider()).getDelegate()).getDelegate();
     }
 
     @Test
