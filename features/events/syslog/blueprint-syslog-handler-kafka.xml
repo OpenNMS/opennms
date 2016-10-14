@@ -17,6 +17,7 @@
 		<cm:default-properties>
 			<cm:property name="kafkaAddress" value="127.0.0.1:9092" />
 			<cm:property name="kafkatopic" value="syslog" />
+			<cm:property name="includeRawMessage" value="true" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -26,12 +27,14 @@
 		<argument value="seda:handleMessage"/>
 	</bean>
 
+	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
+
 	<!-- Camel Event marshalling processor -->
 	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
-		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
+		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
 	</bean>
-	
-	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
+
+	<bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogObjectToDTOProcessor"/>
 
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
 	<camelContext id="syslogdHandlerKafkaContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
@@ -39,8 +42,15 @@
 
 		<route id="syslogMarshal">
 			<from uri="seda:handleMessage?concurrentConsumers=4" />
+
+			<setHeader headerName="includeRawMessage">
+				<simple resultType="java.lang.Boolean">properties:includeRawMessage</simple>
+			</setHeader>
+
 			<!-- Marshal the message to XML -->
-			<bean ref="marshaller"/>
+			<process ref="mapper"/>
+			<process ref="marshaller"/>
+
 			<to uri="seda:sendMessage"/>
 		</route>
 

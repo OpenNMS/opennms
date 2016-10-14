@@ -50,7 +50,6 @@
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="norequirejs" value="true" />
-  <jsp:param name="disableCoreWeb" value="true" />
   <jsp:param name="title" value="Choose Resource" />
   <jsp:param name="headTitle" value="Choose" />
   <jsp:param name="headTitle" value="Resource Graphs" />

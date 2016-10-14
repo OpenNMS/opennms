@@ -50,6 +50,7 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.rrd.RrdStrategy;
 
 import com.google.common.collect.Lists;
@@ -107,7 +108,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         pollerConfig.setRRAList(pkg, Lists.newArrayList("RRA:AVERAGE:0.5:1:2016"));
 
         LatencyStoringServiceMonitorAdaptor lssma = new LatencyStoringServiceMonitorAdaptor(
-                serviceMonitor, pollerConfig, pkg, m_persisterFactory, m_resourceStorageDao);
+                pollerConfig, pkg, m_persisterFactory, m_resourceStorageDao);
 
         MonitoredService monitoredService = new MockMonitoredService(3, "Firewall",
                 InetAddress.getByName("192.168.1.5"), "SMTP");
@@ -141,7 +142,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         EasyMock.replay(m_rrdStrategy);
 
         // Trigger the poll
-        lssma.poll(monitoredService, params);
+        lssma.handlePollResult(monitoredService, params, serviceMonitor.poll(monitoredService, params));
 
         // Verify
         EasyMock.verify(m_rrdStrategy);
@@ -151,24 +152,12 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         return new File(m_tempFolder.getRoot(), "response");
     }
 
-    private static class FixedServiceMonitor implements ServiceMonitor {
+    private static class FixedServiceMonitor extends AbstractServiceMonitor {
         private final PollStatus m_pollStatus;
 
         public FixedServiceMonitor(PollStatus pollStatus) {
             m_pollStatus = pollStatus;
         }
-
-        @Override
-        public void initialize(Map<String, Object> parameters) {}
-
-        @Override
-        public void release() {}
-
-        @Override
-        public void initialize(MonitoredService svc) {}
-
-        @Override
-        public void release(MonitoredService svc) {}
 
         @Override
         public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {

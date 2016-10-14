@@ -50,4 +50,10 @@ public class AnAgentConfigFactory implements SnmpAgentConfigFactory {
 	public void define(final SnmpEventInfo info) {
 	}
 
+    @Override
+    public SnmpAgentConfig getAgentConfig(InetAddress address, String location) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

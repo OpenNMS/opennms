@@ -25,6 +25,7 @@
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-pollerd.xml</value>
+         <value>META-INF/opennms/applicationContext-rpc-poller.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg ref="daoContext" />
@@ -74,16 +75,7 @@
      </constructor-arg>
      <constructor-arg ref="daoContext" />
    </bean>
-        
-    <bean id="trapDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
-     <constructor-arg>
-       <list>
-         <value>META-INF/opennms/applicationContext-trapDaemon.xml</value>
-       </list>
-     </constructor-arg>
-     <constructor-arg ref="daoContext" />
-   </bean>
-   
+
    <bean id="tl1DaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
@@ -92,5 +84,5 @@
      </constructor-arg>
      <constructor-arg ref="daoContext" />
    </bean>
-
+   
 </beans>

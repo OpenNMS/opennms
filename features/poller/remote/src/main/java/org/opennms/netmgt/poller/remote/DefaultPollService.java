@@ -35,6 +35,8 @@ import java.util.Map;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.ServiceMonitorRegistry;
+import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
 import org.springframework.util.Assert;
 
 /**
@@ -44,6 +46,8 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class DefaultPollService implements PollService {
+
+    private static final ServiceMonitorRegistry s_serviceMonitorRegistry = new DefaultServiceMonitorRegistry();
 
     private TimeAdjustment m_timeAdjustment;
     private Map<String, ServiceMonitor> m_monitors = null;
@@ -61,22 +65,10 @@ public class DefaultPollService implements PollService {
 
         Map<String, ServiceMonitor> monitors = new HashMap<String, ServiceMonitor>();
         for (ServiceMonitorLocator locator : locators) {
-            monitors.put(locator.getServiceName(), locator.getServiceMonitor());
+            monitors.put(locator.getServiceName(), locator.getServiceMonitor(s_serviceMonitorRegistry));
         }
         
         m_monitors = monitors;
-    }
-
-    /**
-     * This method will initialize the {@link ServiceMonitor} for the
-     * {@link PolledService}.
-     */
-    @Override
-    public void initialize(PolledService polledService) {
-        ServiceMonitor monitor = getServiceMonitor(polledService);
-        if (monitor != null) {
-            monitor.initialize(polledService);
-        }
     }
 
     /** {@inheritDoc} */
@@ -99,12 +91,4 @@ public class DefaultPollService implements PollService {
         return monitor;
     }
 
-    // FIXME: this is never called but should be
-    // also monitor.release() isn't called either
-    /** {@inheritDoc} */
-    @Override
-    public void release(PolledService polledService) {
-        ServiceMonitor monitor = getServiceMonitor(polledService);
-        monitor.release(polledService);
-    }
 }

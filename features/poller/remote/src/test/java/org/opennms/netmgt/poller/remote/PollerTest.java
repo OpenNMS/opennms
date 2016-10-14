@@ -48,6 +48,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.quartz.Scheduler;
 
 public class PollerTest {
@@ -111,7 +112,10 @@ public class PollerTest {
 	
 	private OnmsMonitoredService getMonitoredService() {
 		OnmsNode node = new OnmsNode();
+		OnmsMonitoringLocation location = new OnmsMonitoringLocation();
+		location.setLocationName("MINION");
 		node.setId(1);
+		node.setLocation(location);
 		OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
 		OnmsServiceType svcType = new OnmsServiceType("HTTP");
 		OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
@@ -120,7 +124,10 @@ public class PollerTest {
 
     private OnmsMonitoredService getIPv6MonitoredService() {
         OnmsNode node = new OnmsNode();
+        OnmsMonitoringLocation location = new OnmsMonitoringLocation();
+        location.setLocationName("MINION");
         node.setId(1);
+        node.setLocation(location);
         OnmsIpInterface iface = new OnmsIpInterface("::1", node);
         // Make sure that the address is being converted into fully-qualified format
         assertEquals("0000:0000:0000:0000:0000:0000:0000:0001", str(iface.getIpAddress()));

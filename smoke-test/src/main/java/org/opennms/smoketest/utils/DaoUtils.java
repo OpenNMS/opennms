@@ -29,6 +29,7 @@ package org.opennms.smoketest.utils;
 
 import java.util.concurrent.Callable;
 
+import com.google.common.collect.Iterables;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.slf4j.Logger;
@@ -51,5 +52,9 @@ public class DaoUtils {
                   return count;
               }
         };
+    }
+
+    public static <T> Callable<T> findMatchingCallable(OnmsDao<?,?> dao, Criteria criteria) {
+        return () -> (T) Iterables.getFirst(dao.findMatching(criteria), null);
     }
 }

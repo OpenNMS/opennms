@@ -104,9 +104,6 @@
     <script type="text/javascript" src="<%= baseHref %>lib/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="<%= baseHref %>lib/bootstrap/dist/js/bootstrap.js"></script>
 
-    <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
-        <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
-    </c:if>
     <c:if test="${param.storageAdmin == 'true'}">
       <script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
     </c:if>

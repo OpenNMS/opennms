@@ -34,6 +34,7 @@ import java.io.Writer;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,8 +50,6 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.view.AbstractView;
-
-import com.google.gwt.thirdparty.guava.common.collect.Maps;
 
 import freemarker.ext.beans.StringModel;
 import freemarker.template.Configuration;
@@ -94,7 +93,7 @@ public class NavBarController extends AbstractController implements Initializing
     }
 
     private Map<String, Object> createModel(final HttpServletRequest request) {
-        Map<String, Object> model = Maps.newHashMap();
+        Map<String, Object> model = new HashMap<String, Object>();
 
         // Create the NavBarModel
         final Map<NavBarEntry, DisplayStatus> navBar = new LinkedHashMap<NavBarEntry, DisplayStatus>();

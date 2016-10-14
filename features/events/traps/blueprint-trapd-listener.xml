@@ -23,6 +23,11 @@
         <argument value="org.opennms.netmgt.config.trapd.TrapdConfiguration" />
     </bean>
 
+	 <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
+    <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+        <property name="timeout" value="15"/>
+    </bean>
+
     <!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
     <camelContext id="trapdListenerContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
         <propertyPlaceholder id="minionproperties" location="blueprint:minionProperties" />

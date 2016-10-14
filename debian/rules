@@ -284,7 +284,6 @@ install: build
 	chmod 640 \
 		debian/opennms-common/etc/opennms/users.xml \
 		debian/opennms-common/etc/opennms/groups.xml \
-		debian/opennms-common/etc/opennms/magic-users.properties \
 		debian/opennms-common/etc/opennms/opennms.properties \
 		debian/opennms-common/etc/opennms/opennms-datasources.xml \
 		debian/opennms-common/etc/opennms/snmp-config.xml

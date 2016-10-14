@@ -48,7 +48,7 @@ import org.opennms.netmgt.dao.mock.MockServiceTypeDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;

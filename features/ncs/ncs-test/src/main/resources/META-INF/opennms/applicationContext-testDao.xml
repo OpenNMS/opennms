@@ -80,6 +80,10 @@
     <qualifier value="mock" />
   </bean>
 
+  <bean id="monitoringSystemDao" class="org.opennms.netmgt.dao.hibernate.MonitoringSystemDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+
   <onmsgi:service ref="eventProxy">
     <onmsgi:interfaces>
       <value>org.opennms.netmgt.events.api.EventForwarder</value>

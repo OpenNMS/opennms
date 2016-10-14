@@ -184,7 +184,10 @@ public abstract class UserManager implements UserConfig {
             castorUser.setPassword(pass);
     
             if (onmsUser.getDutySchedule() != null) {
-                castorUser.setDutySchedule(onmsUser.getDutySchedule());
+                castorUser.setDutySchedule(new ArrayList<String>(onmsUser.getDutySchedule()));
+            }
+            if (onmsUser.getRoles() != null) {
+                castorUser.setRole(new ArrayList<String>(onmsUser.getRoles()));
             }
             
             _writeUser(onmsUser.getUsername(), castorUser);
@@ -313,6 +316,7 @@ public abstract class UserManager implements UserConfig {
         user.setPassword(castorUser.getPassword().getContent());
         user.setPasswordSalted(castorUser.getPassword().getSalt());
         user.setDutySchedule(castorUser.getDutyScheduleCollection());
+        user.setRoles(castorUser.getRoleCollection());
         user.setEmail(_getContactInfo(castorUser, ContactType.email));
         return user;
     }
@@ -1341,7 +1345,7 @@ public abstract class UserManager implements UserConfig {
     }
     
     /**
-     * <p>hasRole</p>
+     * <p>hasOnCallRole</p>
      *
      * @param roleid a {@link java.lang.String} object.
      * @return a boolean.
@@ -1349,7 +1353,7 @@ public abstract class UserManager implements UserConfig {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public boolean hasRole(final String roleid) throws MarshalException, ValidationException, IOException {
+    public boolean hasOnCallRole(final String roleid) throws MarshalException, ValidationException, IOException {
         update();
 
         m_readLock.lock();

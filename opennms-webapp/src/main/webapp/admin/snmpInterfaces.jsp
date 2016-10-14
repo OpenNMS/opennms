@@ -42,7 +42,6 @@
 %>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
     <jsp:param name="norequirejs" value="true" />
-    <jsp:param name="disableCoreWeb" value="true" />
 	<jsp:param name="title" value="Select SNMP Interfaces" />
 	<jsp:param name="headTitle" value="Select SNMP Interfaces" />
 	<jsp:param name="headTitle" value="Admin"/>

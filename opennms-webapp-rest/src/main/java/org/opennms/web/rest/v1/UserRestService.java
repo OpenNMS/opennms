@@ -153,7 +153,40 @@ public class UserRestService extends OnmsRestService {
             writeUnlock();
         }
     }
-    
+
+    @PUT
+    @Path("{userCriteria}/roles/{roleName}")
+    public Response addRole(@Context final SecurityContext securityContext, @PathParam("userCriteria") final String userCriteria, @PathParam("roleName") final String roleName) {
+        writeLock();
+        try {
+            if (!hasEditRights(securityContext)) {
+                throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
+            }
+            if (! Authentication.isValidRole(roleName)) {
+                throw getException(Status.BAD_REQUEST, "Invalid role {}!", roleName);
+            }
+            final OnmsUser user = getOnmsUser(userCriteria);
+            LOG.debug("addRole: updating user {}", user);
+            boolean modified = false;
+            if (!user.getRoles().contains(roleName)) {
+                user.getRoles().add(roleName);
+                modified = true;
+            }
+            if (modified) {
+                LOG.debug("addRole: user {} updated", user);
+                try {
+                    m_userManager.save(user);
+                } catch (final Throwable t) {
+                    throw getException(Status.INTERNAL_SERVER_ERROR, t);
+                }
+                return Response.noContent().build();
+            }
+            return Response.notModified().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
     @DELETE
     @Path("{userCriteria}")
     public Response deleteUser(@Context final SecurityContext securityContext, @PathParam("userCriteria") final String userCriteria) {
@@ -170,6 +203,38 @@ public class UserRestService extends OnmsRestService {
                 throw getException(Status.INTERNAL_SERVER_ERROR, t);
             }
             return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @DELETE
+    @Path("{userCriteria}/roles/{roleName}")
+    public Response deleteRole(@Context final SecurityContext securityContext, @PathParam("userCriteria") final String userCriteria, @PathParam("roleName") final String roleName) {
+        writeLock();
+        try {
+            if (!hasEditRights(securityContext)) {
+                throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
+            }
+            if (! Authentication.isValidRole(roleName)) {
+                throw getException(Status.BAD_REQUEST, "Invalid role {}!", roleName);
+            }
+            final OnmsUser user = getOnmsUser(userCriteria);
+            boolean modified = false;
+            if (user.getRoles().contains(roleName)) {
+                user.getRoles().remove(roleName);
+                modified = true;
+            }
+            if (modified) {
+                LOG.debug("deleteRole: user {} updated", user);
+                try {
+                    m_userManager.save(user);
+                } catch (final Throwable t) {
+                    throw getException(Status.INTERNAL_SERVER_ERROR, t);
+                }
+                return Response.noContent().build();
+            }
+            return Response.notModified().build();
         } finally {
             writeUnlock();
         }

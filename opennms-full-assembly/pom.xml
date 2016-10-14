@@ -371,6 +371,11 @@
       <type>pom</type>
     </dependency>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>owasp-encoder-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>root-webapp</artifactId>
       <type>war</type>
@@ -709,6 +714,13 @@
       <id>coova</id>
       <name>Coova Repository</name>
       <url>http://maven.opennms.org/content/repositories/coova/</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>jboss-repo</id>
+      <name>JBoss Repository</name>
+      <url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
     </repository>
   </repositories>
 </project>

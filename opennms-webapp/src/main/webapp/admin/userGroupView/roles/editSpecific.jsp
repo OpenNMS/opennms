@@ -38,13 +38,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Role Configuration" />
+	<jsp:param name="title" value="On-Call Role Configuration" />
 	<jsp:param name="headTitle" value="Edit Schedule" />
-	<jsp:param name="headTitle" value="Roles" />
+	<jsp:param name="headTitle" value="On-Call Roles" />
 	<jsp:param name="headTitle" value="Admin" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/roles'>Role List</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and On-Call Roles</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/roles'>On-Call Role List</a>" />
 	<jsp:param name="breadcrumb" value="Edit Entry" />
 </jsp:include>
 
@@ -61,7 +61,7 @@
       <input type="hidden" name="timeIndex" value="${timeIndex}" /> 
 
       <div class="form-group">
-        <label class="col-sm-2">Role</label>
+        <label class="col-sm-2">On-Call Role</label>
         <div class="col-sm-4">
           <p class="form-control-static">${role.name}</p>
         </div>

@@ -28,14 +28,47 @@
 
 package org.opennms.features.topology.api;
 
-import java.util.List;
+import org.opennms.features.topology.api.support.SavedHistory;
 
+/**
+ * Common interface to handle the user's history.
+ */
 public interface HistoryManager {
 
-    public void applyHistory(String userId, String fragmentId, GraphContainer container);
-    public String getHistoryHash(String userId);
-    public String createHistory(String userId, GraphContainer container);
-	void onBind(HistoryOperation operation);
-	void onUnbind(HistoryOperation operation);
-	public List<HistoryOperation> getHistoryOperations();
+    /**
+     * Saves the current state of the {@link GraphContainer} for the current <code>userId</code>.
+     * The returned {@link String} is the history fragment (hash).
+     *
+     * @param userId The user to save the history for
+     * @param container The current {@link GraphContainer}
+     * @return the history fragment (hash) of the saved history
+     * @see #getHistoryFragment(String)
+     */
+    String saveOrUpdateHistory(String userId, GraphContainer container);
+
+    /**
+     * Restores the given history represented by <code>fragementId</code>.
+     * The {@link GraphContainer} represents the user's state, which does not require the userId.
+     *
+     * @param fragment The history fragment (history hash)
+     * @param container The {@link GraphContainer} needed to actually apply the history.
+     */
+    void applyHistory(String fragment, GraphContainer container);
+
+    String getHistoryFragment(String userId);
+
+    /**
+     * Returns the history object for the provided <code>fragment</code>.
+     */
+    SavedHistory getHistoryByFragment(String fragment);
+
+    /**
+     * Returns the history object for the provided <code>userId</code>.
+     */
+    SavedHistory getHistoryByUserId(String userId);
+
+    /**
+     * Deletes the history for all users.
+     */
+    void deleteHistory();
 }

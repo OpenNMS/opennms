@@ -101,6 +101,7 @@ ____
                                                                                 used when the attribute `nodeID` is set.
 | `tooltipText`             | no       | Node, Edge   | `string`  |           | Defines a custom tooltip. If not defined, the `id` attribute is used instead.
 | `level`                   | no       | Node         | `int`     | `0`       | Sets the level of the Vertex which is used by certain layout algorithms i.e. `Hierarchical Layout` and `Grid Layout`.
+| `edge-path-offset`        | no       | Graph, Node  | `int`     | `20`      | Controls the spacing between the paths drawn for the edges when there are multiple edges connecting two vertices.
 |=======================
 
 [[gd-topology-graphml-focus-strategy]]

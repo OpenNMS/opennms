@@ -11,7 +11,7 @@
   <groupId>org.opennms.features.activemq</groupId>
   <artifactId>org.opennms.features.activemq.component</artifactId>
 
-<build>
+  <build>
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -26,6 +26,13 @@
         </configuration>
       </plugin>
     </plugins>
-</build>
+  </build>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-pool</artifactId>
+      <version>${activemqVersion}</version>
+    </dependency>
+  </dependencies>
 </project>

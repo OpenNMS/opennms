@@ -300,6 +300,12 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.MinionDao" ref="minionDao" />
 
+  <bean id="monitoringSystemDao" class="org.opennms.netmgt.dao.hibernate.MonitoringSystemDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoringSystemDao" ref="monitoringSystemDao" />
+
   <bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
