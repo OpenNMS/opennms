@@ -323,7 +323,7 @@ CREATE UNIQUE INDEX monitoringsystemsproperties_id_property_idx on monitoringsys
 --# The following command adds the initial localhost poller entry to
 --# the 'monitoringsystems' table.
 --##################################################################
-INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000-0000-0000-000000000000', 'localhost', 'localhost', 'OpenNMS');
+INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000-0000-0000-000000000000', 'localhost', 'Default', 'OpenNMS');
 
 
 --#####################################################
