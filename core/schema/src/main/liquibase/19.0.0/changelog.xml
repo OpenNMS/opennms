@@ -61,6 +61,18 @@
       <column name="id" type="text" value="Default"/>
       <where>id = 'localhost'</where>
     </update>
+
+    <!-- Rename any existing 'Default' location to 'My Default' -->
+    <update tableName="monitoringsystems">
+      <column name="location" type="text" value="My Default"/>
+      <where>location = 'Default'</where>
+    </update>
+
+    <!-- Update the value from 'localhost' to 'Default' -->
+    <update tableName="monitoringsystems">
+      <column name="location" type="text" value="Default"/>
+      <where>location = 'localhost'</where>
+    </update>
   </changeSet>
 
 </databaseChangeLog>
