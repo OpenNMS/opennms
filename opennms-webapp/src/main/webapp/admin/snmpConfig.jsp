@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -78,9 +78,9 @@
 		//validate retryCount
 		var retryCount = new String(document.snmpConfigForm.retryCount.value);
 		if (retryCount != ""
-				&& (!isNumber(retryCount) || parseInt(retryCount) <= 0)) {
+				&& (!isNumber(retryCount) || parseInt(retryCount) < 0)) {
 			alert(retryCount
-					+ " is not a valid Retry Count. Please enter a number greater than 0 or leave it empty.");
+					+ " is not a valid Retry Count. Please enter a number greater than or equal to 0, or leave it empty.");
 			return false;
 		}
 
