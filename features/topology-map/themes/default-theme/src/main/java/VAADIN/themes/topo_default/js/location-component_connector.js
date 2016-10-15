@@ -1,3 +1,14 @@
+var __onms_getImagePath = function() {
+    var el = L.DomUtil.create('div',  'leaflet-default-icon-path', document.body);
+    var path = L.DomUtil.getStyle(el, 'background-image') ||
+               L.DomUtil.getStyle(el, 'backgroundImage');   // IE8
+
+    document.body.removeChild(el);
+
+    return path.indexOf('url') === 0 ?
+            path.replace(/^url\([\"\']?/, '').replace(/marker-icon\.png[\"\']?\)$/, '') : '';
+}
+
 window.org_opennms_features_topology_app_internal_ui_geographical_LocationComponent = function() {
     var state = this.getState();
 
@@ -11,15 +22,25 @@ window.org_opennms_features_topology_app_internal_ui_geographical_LocationCompon
     var theMap = L.map(mapId);
     L.tileLayer(state.tileLayer, state.layerOptions).addTo(theMap);
 
+    var imagePath = __onms_getImagePath();
+
     var notMarkedIcon = L.icon({
+        /*
         iconUrl: L.Icon.Default.imagePath + '/not-marked-icon.png',
         iconRetinaUrl: L.Icon.Default.imagePath + '/not-marked-icon-2x.png',
+        */
+        iconUrl: imagePath + 'not-marked-icon.png',
+        iconRetinaUrl: imagePath + 'not-marked-icon-2x.png',
         iconSize:    [25, 41],
         iconAnchor:  [12, 41],
         popupAnchor: [1, -34],
         tooltipAnchor: [16, -28],
+        /*
         shadowUrl: L.Icon.Default.imagePath + '/marker-shadow.png',
         shadowRetinaUrl: L.Icon.Default.imagePath + '/marker-shadow.png',
+        */
+        shadowUrl: imagePath + 'marker-shadow.png',
+        shadowRetinaUrl: imagePath + 'marker-shadow.png',
         shadowSize:  [41, 41]
     });
 
