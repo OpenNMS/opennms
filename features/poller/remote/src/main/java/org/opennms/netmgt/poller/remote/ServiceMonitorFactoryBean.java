@@ -112,13 +112,11 @@ public class ServiceMonitorFactoryBean implements FactoryBean<ServiceMonitor>, I
 			m_monitorParameters = new HashMap<String,Object>();
 		
 		m_serviceMonitor = (ServiceMonitor)m_monitorClass.newInstance();
-		m_serviceMonitor.initialize(m_monitorParameters);
-		
+
 	}
-	
+
 	private void assertNotNull(Object propertyValue, String propertyName) {
 		Assert.state(propertyValue != null, propertyName+" must be set for instances of "+Poller.class);
 	}
-
 
 }

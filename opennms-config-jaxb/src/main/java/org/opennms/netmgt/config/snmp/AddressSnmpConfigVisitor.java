@@ -50,7 +50,9 @@ import static org.opennms.netmgt.snmp.SnmpConfiguration.versionToString;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Objects;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
@@ -67,11 +69,18 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     private Definition m_currentDefinition;
     private Definition m_matchedDefinition;
     private Definition m_generatedDefinition = null;
+    private String m_location = null;
+    private Definition m_definitionWithLocation = null;
+    private Definition m_prevMatchedDefinition = null;
 
     public AddressSnmpConfigVisitor(final InetAddress addr) {
         m_address = addr;
     }
 
+    public AddressSnmpConfigVisitor(final InetAddress addr, String location) {
+        m_address = addr;
+        m_location = location;
+    }
     public void visitSnmpConfig(final SnmpConfig config) {
         m_currentConfig = config;
     }
@@ -135,7 +144,25 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     }
 
     public void visitDefinitionFinished() {
-        //LOG.debug("matched = {}", m_matchedDefinition);
+        // LOG.debug("matched = {}", m_matchedDefinition);
+
+        if (m_matchedDefinition != null && Objects.equals(m_currentDefinition, m_matchedDefinition)) {
+
+            String location = m_matchedDefinition.getLocation();
+            // If location doesn't match, it's not a matched definition
+            if (!Objects.equals(location, m_location)) {
+                // Retrieve if there is a matched Definition before
+                m_matchedDefinition = m_prevMatchedDefinition;
+                m_currentDefinition = null;
+                return;
+            }
+            // Save Definition with location in case of a valid location match
+            if (StringUtils.isNotBlank(m_location) && m_location.equals(location)) {
+                m_definitionWithLocation = m_matchedDefinition;
+            }
+            m_prevMatchedDefinition = m_matchedDefinition;
+        }
+
         m_currentDefinition = null;
     }
 
@@ -143,7 +170,9 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
         final Definition ret = new Definition();
 
         final Configuration sourceConfig;
-        if (m_matchedDefinition != null) {
+        if (m_definitionWithLocation != null) {
+            sourceConfig = m_definitionWithLocation;
+        } else if (m_matchedDefinition != null) {
             sourceConfig = m_matchedDefinition;
         } else {
             sourceConfig = m_currentConfig;
@@ -323,6 +352,7 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
 
         //LOG.debug("generated: {}", ret);
         m_generatedDefinition = ret;
+
     }
 
     public Definition getDefinition() {

@@ -152,7 +152,7 @@
 	      String textPin = userFactory.getTextPin(userid);
          %>
          <tr id="user-<%= userid %>">
-          <% if (!curUser.getUserId().equals("admin")) { %>
+          <% if (!curUser.getUserId().equals("admin") && !curUser.getUserId().equals("rtc")) { %>
           <td rowspan="2" class="text-center"> 
             <a id="<%= "users("+curUser.getUserId()+").doDelete" %>" href="javascript:deleteUser('<%=curUser.getUserId()%>')" onclick="return confirm('Are you sure you want to delete the user <%=curUser.getUserId()%>?')"><i class="fa fa-trash-o fa-2x"></i></a> 
           </td>

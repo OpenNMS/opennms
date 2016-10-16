@@ -62,7 +62,7 @@ public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericS
         if (m_agentConfigFactory == null) {
             throw new IllegalStateException("Cannot determine agent configuration without a SnmpAgentConfigFactory.");
         }
-        return m_agentConfigFactory.getAgentConfig(address).toMap();
+        return m_agentConfigFactory.getAgentConfig(address, location).toMap();
     }
 
     public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {

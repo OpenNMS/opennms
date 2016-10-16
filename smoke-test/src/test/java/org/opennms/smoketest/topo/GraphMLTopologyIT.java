@@ -76,6 +76,8 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         importGraph();
         topologyUIPage = new TopologyIT.TopologyUIPage(this, getBaseUrl());
         topologyUIPage.open();
+        // Select EnLinkd, otherwise the "GraphML Topology Provider (test-graph)" is always pre-selected due to history restoration
+        topologyUIPage.selectTopologyProvider(TopologyIT.TopologyProvider.ENLINKD);
     }
 
     @After
@@ -148,7 +150,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         assertEquals(Lists.newArrayList("regions", "East Region"), topologyUIPage.getBreadcrumbs().getLabels());
 
         topologyUIPage.getBreadcrumbs().click("regions");
-        assertEquals(Lists.newArrayList(), topologyUIPage.getBreadcrumbs().getLabels());
+        assertEquals(Lists.newArrayList("regions"), topologyUIPage.getBreadcrumbs().getLabels());
         assertEquals(4, topologyUIPage.getFocusedVertices().size());
     }
 

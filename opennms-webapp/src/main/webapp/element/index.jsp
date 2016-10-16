@@ -97,7 +97,7 @@
                   <input type="hidden" name="listInterfaces" value="false"/>
                   <div class="form-group">
                     <label for="byip_iplike">TCP/IP Address like:</label>
-                    <input type="text" class="form-control" id="byip_iplike" name="iplike" value="" placeholder="*.*.*.*" />
+                    <input type="text" class="form-control" id="byip_iplike" name="iplike" value="" placeholder="*.*.*.* or *:*:*:*:*:*:*:*:*" />
                   </div>
                   <button type="submit" class="btn btn-default">Search</button>
                 </form>
@@ -272,8 +272,8 @@
           </p>
 
           <p>Searching by TCP/IP address uses a very flexible search format, allowing you
-            to separate the four octets (fields) of a TCP/IP address into specific
-            searches.  An asterisk (*) in place of any octet matches any value for that
+            to separate the four or eight (in case of IPv6) fields of a TCP/IP address into
+            specific searches. An asterisk (*) in place of any octet matches any value for that
             octet. Ranges are indicated by two numbers separated by a dash (-), and
             commas are used for list demarcation.
           </p>
@@ -287,6 +287,8 @@
                 <li>192.168.*.*
                 <li>192.168.0-255.0-255
                 <li>192.168.0,1,2,3-255.*
+                <li>2001:6a8:3c80:8000-8fff:*:*:*:*
+                <li>fc00,fe80:*:*:*:*:*:*:*
             </ul>
 
           <p>A search for ifAlias, ifName, or ifDescr "contains" will find nodes with interfaces

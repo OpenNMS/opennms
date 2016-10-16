@@ -31,6 +31,8 @@ package org.opennms.features.topology.app.internal.ui.breadcrumbs;
 import static org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.support.breadcrumbs.Breadcrumb;
+import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbCriteria;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
@@ -62,7 +64,7 @@ public class BreadcrumbComponent extends CustomComponent implements GraphContain
         breadcrumbLayout.removeAllComponents();
 
         if (criteria != null) {
-            for (BreadcrumbCriteria.Breadcrumb eachBreadcrumb : criteria.getBreadcrumbs()) {
+            for (Breadcrumb eachBreadcrumb : criteria.getBreadcrumbs()) {
                 if (breadcrumbLayout.getComponentCount() >= 1) {
                     breadcrumbLayout.addComponent(new Label(" > "));
                 }
@@ -75,13 +77,11 @@ public class BreadcrumbComponent extends CustomComponent implements GraphContain
         return VertexHopCriteria.getSingleCriteriaForGraphContainer(container, BreadcrumbCriteria.class, false);
     }
 
-    private static Button createButton(GraphContainer container, BreadcrumbCriteria.Breadcrumb breadcrumb) {
+    private static Button createButton(GraphContainer container, Breadcrumb breadcrumb) {
         Button button = new Button();
         button.addStyleName(BaseTheme.BUTTON_LINK);
         button.setCaption(breadcrumb.getLabel());
-        if (breadcrumb.getClickListener() != null) {
-            button.addClickListener((event) -> breadcrumb.getClickListener().clicked(container));
-        }
+        button.addClickListener((event) -> breadcrumb.clicked(container));
         return button;
     }
 }

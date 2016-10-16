@@ -27,8 +27,10 @@
 	<bean id="syslogConnectionHandlerDefault" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerDefaultImpl"/>
 
 	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
-		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
+		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
 	</bean>
+
+	<bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogDTOToObjectProcessor"/>
 
 	<reference id="syslogdConfig" interface="org.opennms.netmgt.config.SyslogdConfig" />
 
@@ -36,13 +38,20 @@
 		<argument ref="syslogdConfig"/>
 	</bean>
 
+		<!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
+	<bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+		<property name="timeout" value="15"/>
+    </bean>
+
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
 	<camelContext id="syslogdHandlerKafkaDefaultContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerDefaultKafkaProperties" />
 
 		<route id="receiveSyslogConnectionViaKafka">
 			<from uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}&amp;consumerStreams={{consumerstreams}}"/>
-			<process ref="unmarshaller"/>
+			<!-- TODO: Change these to <process> tags once Syslogd is loaded from inside Karaf -->
+			<bean ref="unmarshaller"/>
+			<bean ref="mapper"/>
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>
 			<to uri="seda:syslogkafkaHandler"/>

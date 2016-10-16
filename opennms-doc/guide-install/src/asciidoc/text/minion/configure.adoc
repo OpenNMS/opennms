@@ -5,19 +5,26 @@
 [[gi-install-minion-configure-opennms]]
 === Configuring OpenNMS
 
-Some configuration is necessary on OpenNMS to allow it to receive data from an OpenNMS Minion.
+Minions communicate with {opennms-product-name} via _REST_, and over an _ActiveMQ_ broker.
+Some configuration is required to setup and secure these communication channels.
+
+==== Authentication and Authorization
+
+The `minion` role includes the minimal amount of permissions required for a _Minion_ to operate.
+
+This guide will assume you have created a user called `minion`, with a password of `minion` that has been associated to the `minion` role.
 
 ==== Configure ActiveMQ
 
 _OpenNMS_ embeds an _ActiveMQ_ broker which, by default, cannot be accessed remotely via the network.
-In order to make the _ActiveMQ_ broker accessible remotely, you must edit `$OPENNMS_HOME/etc/opennms-activemq.xml` and 
+In order to make the _ActiveMQ_ broker accessible remotely, you must edit `$OPENNMS_HOME/etc/opennms-activemq.xml` and
 uncomment the `transportConnector` with the `tcp://0.0.0.0:61616` URI.
 
 [source,xml]
 ----
 <!-- Uncomment this line to allow external TCP connections -->
-<!-- 
-  WARNING: Access to port 61616 should be firewalled to prevent unauthorized injection 
+<!--
+  WARNING: Access to port 61616 should be firewalled to prevent unauthorized injection
   of data into OpenNMS when this port is open.
 -->
 <transportConnector name="openwire" uri="tcp://0.0.0.0:61616?useJmx=false&amp;maximumConnections=1000&amp;wireformat.maxFrameSize=104857600"/>
@@ -35,10 +42,10 @@ To process syslog messages received by a Minion device, you must install the `op
 ----
 [root@localhost /root]# $ ssh -p 8101 admin@localhost
 ...
-admin@minion()> config:edit org.opennms.netmgt.syslog.handler.default
-admin@minion()> config:propset brokerUri tcp://127.0.0.1:61616
-admin@minion()> config:update
-admin@minion()> features:install opennms-syslogd-handler-default
+opennms> config:edit org.opennms.netmgt.syslog.handler.default
+opennms> config:propset brokerUri tcp://127.0.0.1:61616
+opennms> config:update
+opennms> features:install opennms-syslogd-handler-default
 ----
 
 [[gi-install-minion-configure]]
@@ -65,8 +72,8 @@ admin@minion()> config:update
 .Configure the credentials to use when communicating with _OpenNMS_
 [source]
 ----
-admin@minion()> scv:set opennms.http admin admin
-admin@minion()> scv:set opennms.broker admin admin
+admin@minion()> scv:set opennms.http minion minion
+admin@minion()> scv:set opennms.broker minion minion
 ----
 
 .Restart the Minion after updating the credentials
@@ -92,4 +99,3 @@ Connecting to Broker...
 OK
 admin@minion()>
 ----
-

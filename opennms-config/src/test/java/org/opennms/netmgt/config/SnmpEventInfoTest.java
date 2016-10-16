@@ -1179,6 +1179,45 @@ public class SnmpEventInfoTest {
         assertXmlEquals(expectedConfig, actualConfig);
     }
     
+    public void testOverlapsTwoRangesWithLocationAndCombinesThem(String firstIp, String lastIp) throws Exception {
+
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
+                + "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n"
+                + "    <definition location=\"MINION\" version=\"v2c\">\n"
+                + "        <range begin=\"192.168.1.10\" end=\"192.168.1.20\"/>\n"
+                + "        <range begin=\"192.168.1.30\" end=\"192.168.1.40\"/>\n" + "    </definition>\n"
+                + "    <definition location=\"AUSTIN\" version=\"v2c\">\n"
+                + "        <range begin=\"192.168.2.10\" end=\"192.168.2.20\"/>\n"
+                + "        <range begin=\"192.168.2.30\" end=\"192.168.2.40\"/>\n" + "    </definition>\n"
+                + "</snmp-config>\n" + "";
+
+        String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
+                + "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n"
+                + "    <definition location=\"MINION\" version=\"v2c\">\n"
+                + "        <range begin=\"192.168.1.10\" end=\"192.168.1.20\"/>\n"
+                + "        <range begin=\"192.168.1.30\" end=\"192.168.1.40\"/>\n" + "    </definition>\n"
+                + "    <definition location=\"AUSTIN\" version=\"v2c\">\n"
+                + "        <range begin=\"192.168.1.10\" end=\"192.168.1.40\"/>\n"
+                + "        <range begin=\"192.168.2.10\" end=\"192.168.2.20\"/>\n"
+                + "        <range begin=\"192.168.2.30\" end=\"192.168.2.40\"/>\n" + "    </definition>\n"
+                + "</snmp-config>\n" + "";
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
+
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
+
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setVersion("v2c");
+        info.setLocation("AUSTIN");
+        info.setFirstIPAddress(firstIp);
+        info.setLastIPAddress(lastIp);
+
+        SnmpPeerFactory.getInstance().define(info);
+
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
+        assertXmlEquals(expectedConfig, actualConfig);
+    }
+
     @Test
     public void testCombineOverlappingRanges() throws Exception {
         testOverlapsTwoRangesAndCombinesThem("192.168.1.15", "192.168.1.35");
@@ -1189,6 +1228,12 @@ public class SnmpEventInfoTest {
         testOverlapsTwoRangesAndCombinesThem("192.168.1.21", "192.168.1.30");
         testOverlapsTwoRangesAndCombinesThem("192.168.1.21", "192.168.1.29");
         testOverlapsTwoRangesAndCombinesThem("192.168.1.10", "192.168.1.40");
+
+    }
+
+    @Test
+    public void testCombineOverLappingRangesWithLocation() throws Exception {
+        testOverlapsTwoRangesWithLocationAndCombinesThem("192.168.1.10", "192.168.1.40");
     }
     /**
      * This tests moving a range that from one defintion into another defintion for which it overlaps

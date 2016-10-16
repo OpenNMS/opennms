@@ -14,7 +14,7 @@
 # Description
 %{!?_name:%define _name "opennms"}
 %{!?_descr:%define _descr "OpenNMS"}
-%{!?packagedir:%define packagedir %{_name}-minion-%version-%{releasenumber}}
+%{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
 %{!?jdk:%define jdk java-1.8.0}
 
@@ -104,55 +104,97 @@ Minion Default Features
 
 %prep
 
+tar -xvzf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
+%define setupdir %{packagedir}
+
+%setup -D -T -n %setupdir
+
 %build
 
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %install
 
+export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true"
+export OPTS_SKIP_TARBALL="-Dbuild.skip.tarball=true"
+export PROJECTS="org.opennms.features.minion.container:karaf,org.opennms.features.minion:core-repository,org.opennms.features.minion:repository"
+
+if [ "%{skip_compile}" = 1 ]; then
+	echo "=== SKIPPING FULL COMPILE ==="
+	echo "Projects: ${PROJECTS}"
+	if [ "%{enable_snapshots}" = 1 ]; then
+		OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"
+		OPTS_UPDATE_POLICY="-DupdatePolicy=always"
+	fi
+	./compile.pl -N $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" -Dopennms.home="%{instprefix}" install
+	./compile.pl $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" \
+		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
+		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks \
+		--projects "$PROJECTS" \
+		install
+else
+	# get the full list of minion projects to build
+	PROJECTS="${PROJECTS},org.opennms.features.minion:container-parent,org.opennms.features.minion:core-parent,org.opennms.features.minion:org.opennms.features.minion.heartbeat,org.opennms.features.minion:repository,org.opennms.features.minion:shell"
+	echo "=== RUNNING COMPILE ==="
+	echo "Projects: ${PROJECTS}"
+	./compile.pl $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" \
+		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
+		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks \
+		--projects "$PROJECTS" --also-make \
+		install
+fi
+
+
 # Extract the container
-mkdir -p $RPM_BUILD_ROOT%{minioninstprefix}
-tar zxvf $RPM_BUILD_DIR/%{_name}-%{version}-%{release}/features/minion/container/karaf/target/karaf-*.tar.gz -C $RPM_BUILD_ROOT%{minioninstprefix} --strip-components=1
+mkdir -p %{buildroot}%{minioninstprefix}
+tar zxvf %{_builddir}/%{_name}-%{version}-%{release}/features/minion/container/karaf/target/karaf-*.tar.gz -C %{buildroot}%{minioninstprefix} --strip-components=1
 # Remove the data directory
-rm -rf $RPM_BUILD_ROOT%{minioninstprefix}/data
+rm -rf %{buildroot}%{minioninstprefix}/data
 # Remove the demos directory
-rm -rf $RPM_BUILD_ROOT%{minioninstprefix}/demos
+rm -rf %{buildroot}%{minioninstprefix}/demos
+
+# Copy over the find-java.sh script
+install -d -m 755 %{buildroot}%{minioninstprefix}/bin
+install -c -m 755 %{_builddir}/%{_name}-%{version}-%{release}/opennms-base-assembly/src/main/filtered/bin/find-java.sh %{buildroot}%{minioninstprefix}/bin/find-java.sh
 
 # Copy over the run script
-mkdir -p $RPM_BUILD_ROOT%{_initrddir}
-sed -e 's,@INSTPREFIX@,%{minioninstprefix},g' $RPM_BUILD_DIR/%{_name}-%{version}-%{release}/tools/packages/minion/minion.init > "$RPM_BUILD_ROOT%{_initrddir}"/minion
-chmod 755 "$RPM_BUILD_ROOT%{_initrddir}"/minion
+mkdir -p %{buildroot}%{_initrddir}
+sed -e 's,@INSTPREFIX@,%{minioninstprefix},g' -e 's,@SYSCONFDIR@,%{_sysconfdir}/sysconfig,g'  %{_builddir}/%{_name}-%{version}-%{release}/tools/packages/minion/minion.init > "%{buildroot}%{_initrddir}"/minion
+chmod 755 "%{buildroot}%{_initrddir}"/minion
+
+install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
+install -m 644 "%{_builddir}/%{_name}-%{version}-%{release}/tools/packages/minion/minion.sysconfig" "%{buildroot}%{_sysconfdir}/sysconfig/minion"
 
 # Extract the core repository
-mkdir -p $RPM_BUILD_ROOT%{minionrepoprefix}/core
-tar zxvf $RPM_BUILD_DIR/%{_name}-%{version}-%{release}/features/minion/core/repository/target/core-repository-*-repo.tar.gz -C $RPM_BUILD_ROOT%{minionrepoprefix}/core
+mkdir -p %{buildroot}%{minionrepoprefix}/core
+tar zxvf %{_builddir}/%{_name}-%{version}-%{release}/features/minion/core/repository/target/core-repository-*-repo.tar.gz -C %{buildroot}%{minionrepoprefix}/core
 # Create a default org.opennms.minion.controller.cfg file
-echo "location = MINION" > $RPM_BUILD_ROOT%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
-echo "id = 00000000-0000-0000-0000-000000ddba11" >> $RPM_BUILD_ROOT%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
+echo "location = MINION" > %{buildroot}%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
+echo "id = 00000000-0000-0000-0000-000000ddba11" >> %{buildroot}%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
 # Extract the default repository
-mkdir -p $RPM_BUILD_ROOT%{minionrepoprefix}/default
-tar zxvf $RPM_BUILD_DIR/%{_name}-%{version}-%{release}/features/minion/repository/target/repository-*-repo.tar.gz -C $RPM_BUILD_ROOT%{minionrepoprefix}/default
+mkdir -p %{buildroot}%{minionrepoprefix}/default
+tar zxvf %{_builddir}/%{_name}-%{version}-%{release}/features/minion/repository/target/repository-*-repo.tar.gz -C %{buildroot}%{minionrepoprefix}/default
 
 # container package files
-find $RPM_BUILD_ROOT%{minioninstprefix} ! -type d | \
+find %{buildroot}%{minioninstprefix} ! -type d | \
     grep -v %{minioninstprefix}/bin | \
     grep -v %{minionrepoprefix} | \
     grep -v %{minioninstprefix}/etc/featuresBoot.d | \
     grep -v %{minioninstprefix}/etc/org.opennms.minion.controller.cfg | \
-    sed -e "s|^$RPM_BUILD_ROOT|%attr(644,root,root) |" | \
+    sed -e "s|^%{buildroot}|%attr(644,root,root) |" | \
     sort > %{_tmppath}/files.container
-find $RPM_BUILD_ROOT%{minioninstprefix}/bin ! -type d | \
-    sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+find %{buildroot}%{minioninstprefix}/bin ! -type d | \
+    sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
     sort >> %{_tmppath}/files.container
 # Exclude subdirs of the repository directory
-find $RPM_BUILD_ROOT%{minioninstprefix} -type d | \
+find %{buildroot}%{minioninstprefix} -type d | \
     grep -v %{minionrepoprefix}/ | \
-    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+    sed -e "s,^%{buildroot},%dir ," | \
     sort >> %{_tmppath}/files.container
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
 %defattr(664 root root 775)
@@ -160,6 +202,7 @@ rm -rf $RPM_BUILD_ROOT
 %files container -f %{_tmppath}/files.container
 %defattr(664 root root 775)
 %attr(755,root,root) %{_initrddir}/minion
+%attr(644,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/minion
 %attr(644,root,root) %{minioninstprefix}/etc/featuresBoot.d/.readme
 
 %post container
@@ -189,3 +232,19 @@ rm -rf %{minionrepoprefix}/.local
 %post features-default
 # Remove the directory used as the local Maven repo cache
 rm -rf %{minionrepoprefix}/.local
+
+%preun -p /bin/bash container
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
+if [ "$1" = 0 ] && [ -x "%{_initrddir}/minion" ]; then
+	%{_initrddir}/minion stop || :
+fi
+
+%postun -p /bin/bash container
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
+if [ "$1" = 0 ] && [ -n "${ROOT_INST}" ] && [ -d "${ROOT_INST}" ]; then
+	rm -rf "${ROOT_INST}" || echo "WARNING: failed to delete ${ROOT_INST}. You may have to clean it up yourself."
+fi

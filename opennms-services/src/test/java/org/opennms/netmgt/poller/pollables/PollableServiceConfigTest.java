@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.poller.pollables;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
@@ -37,7 +40,7 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
@@ -47,11 +50,30 @@ import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
-import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.mock.MockPersisterFactory;
+import org.opennms.netmgt.poller.LocationAwarePollerClient;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.scheduler.Timer;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-pinger.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
+        "classpath:/META-INF/opennms/applicationContext-serviceMonitorRegistry.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml"
+})
+@JUnitConfigurationEnvironment(systemProperties={
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger"
+})
 public class PollableServiceConfigTest {
+
+    @Autowired
+    private LocationAwarePollerClient m_locationAwarePollerClient;
+
     @Test
     public void testPollableServiceConfig() throws Exception {
         final FilterDao fd = mock(FilterDao.class);
@@ -62,23 +84,20 @@ public class PollableServiceConfigTest {
         PollerConfigFactory.setInstance(factory);        
         IOUtils.closeQuietly(is);
 
-        PersisterFactory persisterFactory = null;
+        PersisterFactory persisterFactory = new MockPersisterFactory();
         ResourceStorageDao resourceStorageDao = new FilesystemResourceStorageDao();
 
         final PollContext context = mock(PollContext.class);
         final PollableNetwork network = new PollableNetwork(context);
-        final PollableNode node = network.createNodeIfNecessary(1, "foo");
+        final PollableNode node = network.createNodeIfNecessary(1, "foo", null);
         final PollableInterface iface = new PollableInterface(node, InetAddressUtils.addr("127.0.0.1"));
         final PollableService svc = new PollableService(iface, "MQ_API_DirectRte_v2");
         final PollOutagesConfig pollOutagesConfig = mock(PollOutagesConfig.class);
         final Package pkg = factory.getPackage("MapQuest");
         final Timer timer = mock(Timer.class);
         final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pollOutagesConfig, pkg, timer,
-                persisterFactory, resourceStorageDao);
-
-        final ServiceMonitor sm = mock(ServiceMonitor.class);
-        psc.setServiceMonitor(sm);
-
-        psc.poll();
+                persisterFactory, resourceStorageDao, m_locationAwarePollerClient);
+        PollStatus pollStatus = psc.poll();
+        assertThat(pollStatus.getReason(), not(containsString("Unexpected exception")));
     }
 }

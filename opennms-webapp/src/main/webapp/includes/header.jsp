@@ -133,9 +133,6 @@ final String baseHref = Util.calculateUrlBase( request );
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
   <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
-    <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
-        <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
-    </c:if>
 	<c:if test="${param.storageAdmin == 'true'}">
   		<script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
 	</c:if>

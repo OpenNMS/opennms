@@ -38,13 +38,17 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.karaf.features.FeaturesService;
+import org.apache.karaf.features.FeaturesService.Option;
 import org.ops4j.pax.url.mvn.MavenResolver;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -148,17 +152,15 @@ public class KarafExtender {
             }
         }
 
-        for (Feature feature : featuresBoot) {
-            LOG.info("Installing feature: {}", feature);
-            try {
-                if (feature.getVersion() == null) {
-                    m_featuresService.installFeature(feature.getName());
-                } else {
-                    m_featuresService.installFeature(feature.getName(), feature.getVersion());
-                }
-            } catch (Exception e) {
-                LOG.error("Failed to install feature '{}'. Skipping.", feature, e);
-            }
+        final Set<String> featuresToInstall = featuresBoot.stream()
+            .map(f -> f.getVersion() != null ? f.getName() + "/" + f.getVersion() : f.getName())
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        try {
+            LOG.info("Installing features: {}", featuresToInstall);
+            m_featuresService.installFeatures(featuresToInstall, EnumSet.noneOf(Option.class));
+        } catch (Exception e) {
+            LOG.error("Failed to install one or more features.", e);
         }
     }
 

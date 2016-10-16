@@ -107,14 +107,6 @@ public class TrapTest {
             final SshClient sshClient = new SshClient(sshAddr, "admin", "admin");
         ) {
             PrintStream pipe = sshClient.openShell();
-            // Point the syslog handler at the local ActiveMQ broker
-            pipe.println("config:edit org.opennms.netmgt.syslog.handler.default");
-            pipe.println("config:propset brokerUri tcp://127.0.0.1:61616");
-            pipe.println("config:update");
-            // Point the trap handler at the local ActiveMQ broker
-            pipe.println("config:edit org.opennms.netmgt.trapd.handler.default");
-            pipe.println("config:propset brokerUri tcp://127.0.0.1:61616");
-            pipe.println("config:update");
             // Install the syslog and trap handler features
             pipe.println("features:install opennms-syslogd-handler-default opennms-trapd-handler-default");
             pipe.println("features:list -i");
