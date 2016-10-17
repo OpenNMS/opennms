@@ -892,10 +892,9 @@
     <feature name="opennms-trapd-listener" description="OpenNMS :: Trapd :: Listener" version="${project.version}">
       <feature>camel-blueprint</feature>
       <feature>opennms-trapd</feature>
-
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-listener</bundle>
     </feature>
-
+    
     <!-- TODO: Rename this. It's more of an Dominion-side trap message handler... -->
     <feature name="opennms-trapd-handler-default" description="OpenNMS :: Trapd :: Handler :: Default" version="${project.version}">
       <feature>activemq-camel</feature>

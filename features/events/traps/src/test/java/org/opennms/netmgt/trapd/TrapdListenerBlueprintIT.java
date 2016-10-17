@@ -42,6 +42,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.minion.core.api.RestClient;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -66,6 +67,11 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTest {
 	private final TrapNotificationLatch m_handler = new TrapNotificationLatch(3);
 
 	private int m_port;
+	
+	private String trapConfiguration  = "<?xml version='1.0'?>"
+                + "<trapd-configuration xmlns='http://xmlns.opennms.org/xsd/config/trapd' snmp-trap-address='127.0.0.1' snmp-trap-port='10500' new-suspect-on-trap='true'>"
+                + "<snmpv3-user security-name='opennms' security-level='0' auth-protocol='MD5' auth-passphrase='0p3nNMSv3' privacy-protocol='DES' privacy-passphrase='0p3nNMSv3' />"
+                + "</trapd-configuration>";
 
 	/**
 	 * This method overrides the blueprint property and sets port to 10514 instead of 162
@@ -89,8 +95,21 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTest {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		// Register any mock OSGi services here
-		services.put(TrapNotificationHandler.class.getName(), new KeyValueHolder<Object, Dictionary>(m_handler, new Properties()));
+        RestClient client = new RestClient() {
+            @Override
+            public void ping() throws Exception {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public String getSnmpV3Users() throws Exception {
+                return trapConfiguration;
+            }
+        };
+	    
+	   services.put(RestClient.class.getName(), new KeyValueHolder<Object, Dictionary>(client, new Properties()));
+	   services.put(TrapNotificationHandler.class.getName(), new KeyValueHolder<Object, Dictionary>(m_handler, new Properties()));
 	}
 
 	// The location of our Blueprint XML files to be used for testing

@@ -264,10 +264,16 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- TODO: Is this necessary now that we're using RestClient? -->
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-netty-http</artifactId>
       <version>${camelVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.minion</groupId>
+      <artifactId>core-api</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.curator</groupId>
@@ -284,6 +290,12 @@
           <groupId>org.slf4j</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.minion</groupId>
+      <artifactId>core-impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
