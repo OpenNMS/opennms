@@ -154,9 +154,9 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         m_eventSubscriber.getEventAnticipator().reset();
 
         if (m_distPollerDao.findAll().size() == 0) {
-            OnmsDistPoller distPoller = new OnmsDistPoller("00000000-0000-0000-0000-000000000000");
+            OnmsDistPoller distPoller = new OnmsDistPoller(DistPollerDao.DEFAULT_DIST_POLLER_ID);
             distPoller.setLabel("localhost");
-            distPoller.setLocation("localhost");
+            distPoller.setLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
             distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
             m_distPollerDao.save(distPoller);
         }
