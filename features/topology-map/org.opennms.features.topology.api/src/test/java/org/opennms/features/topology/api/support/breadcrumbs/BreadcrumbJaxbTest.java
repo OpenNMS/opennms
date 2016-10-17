@@ -44,10 +44,10 @@ public class BreadcrumbJaxbTest extends XmlTestNoCastor<Breadcrumb> {
         return new Object[][]{{
                 breadcrumb,
                 "<breadcrumb>\n" +
-                "     <target-namespace>this</target-namespace>\n" +
                 "     <source-vertices>\n" +
-                "       <vertex namespace=\"other\" id=\"1\" label=\"custom\"/>\n" +
+                "       <source-vertex namespace=\"other\" id=\"1\" label=\"custom\"/>\n" +
                 "     </source-vertices>\n" +
+                "     <target-namespace>this</target-namespace>\n" +
                 "</breadcrumb>",
                 null
             }
