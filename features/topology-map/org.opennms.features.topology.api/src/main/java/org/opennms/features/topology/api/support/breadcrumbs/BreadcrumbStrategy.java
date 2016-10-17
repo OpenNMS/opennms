@@ -26,21 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.api.support.breadcrumbs;
 
-import java.util.Collection;
+/**
+ * Specifies the breadcrumb strategy.
+ */
+public enum BreadcrumbStrategy {
+    /**
+     * No Breadcrumbs are shown.
+     */
+    NONE,
 
-import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
-
-public interface MetaTopologyProvider {
-
-    GraphProvider getDefaultGraphProvider();
-
-    Collection<GraphProvider> getGraphProviders();
-
-    Collection<VertexRef> getOppositeVertices(VertexRef vertexRef);
-
-    GraphProvider getGraphProviderBy(String namespace);
-
-    BreadcrumbStrategy getBreadcrumbStrategy();
+    /**
+     * The shortest path to root is always calculated and shown as breadcrumbs.
+     */
+    SHORTEST_PATH_TO_ROOT
 }

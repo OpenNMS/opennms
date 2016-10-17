@@ -59,8 +59,7 @@ public class SavedHistoryTest {
 				locations,
 				Collections.singleton(vert2),
 				Collections.emptySet(),
-				settings,
-				Collections.emptyList()
+				settings
 		);
 		JAXB.marshal(savedHistory, System.out);
 
@@ -71,8 +70,7 @@ public class SavedHistoryTest {
 				locations,
 				Collections.singleton(vert2),
 				Collections.singleton(vert1),
-				settings,
-				Collections.emptyList()
+				settings
 		);
 		JAXB.marshal(savedHistory, System.out);
 	}

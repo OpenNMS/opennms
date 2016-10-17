@@ -33,6 +33,8 @@ import java.util.Objects;
 
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.breadcrumbs.Breadcrumb;
+import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbCriteria;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -56,8 +58,12 @@ public class NavigationMenuItem extends AbstractMenuItem {
 
     @Override
     public MenuCommand getCommand() {
-        return (targets, operationContext) -> new Breadcrumb(sourceVertex.getLabel(), targetGraphProvider.getVertexNamespace(), sourceVertex)
-                .navigateTo(operationContext.getGraphContainer());
+        return (targets, operationContext) -> {
+            Breadcrumb breadcrumb = new Breadcrumb(targetGraphProvider.getVertexNamespace(), sourceVertex);
+            BreadcrumbCriteria criteria = Criteria.getSingleCriteriaForGraphContainer(operationContext.getGraphContainer(), BreadcrumbCriteria.class, true);
+            criteria.setNewRoot(breadcrumb);
+            criteria.handleClick(breadcrumb, operationContext.getGraphContainer());
+        };
     }
 
     @Override
