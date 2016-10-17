@@ -53,7 +53,6 @@
         <entry key="jmx-config.xml" value="jmxConfigDao"/>
         <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigDao"/>
         <entry key="ksc-performance-reports.xml" value="kscReportFactory"/>
-        <entry key="magic-users.properties" value="userDao"/>
         <entry key="microblog-configuration.xml" value="microblogConfigurationDao"/>
         <!--  <entry key="modemConfig.properties" value="unknown"/> -->
         <entry key="notifd-configuration.xml" value="notifdConfigFactory"/>
@@ -251,12 +250,8 @@
   <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
 
   <bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
-    <property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties" />
     <property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
-    <property name="groupsConfigurationFile" value="${opennms.home}/etc/groups.xml" />
-    <property name="useGroups" value="false" />
     <property name="userManager" ref="userManager" />
-    <property name="groupManager" ref="groupManager" />
   </bean>
   
   <bean id="microblogConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao">

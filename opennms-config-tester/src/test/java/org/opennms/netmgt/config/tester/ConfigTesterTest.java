@@ -229,11 +229,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testMagicUsers() {
-        testConfigFile("magic-users.properties");
-    }
-
-    @Test
     /**
      * FIXME: Database access.
      */

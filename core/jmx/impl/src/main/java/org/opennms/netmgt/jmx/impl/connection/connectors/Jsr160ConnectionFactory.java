@@ -110,9 +110,11 @@ public abstract class Jsr160ConnectionFactory {
                      return new Jsr160ConnectionWrapper(connector, connection);
                 } catch (InterruptedException | ExecutionException | TimeoutException e) {
                     LOG.info("Exception connecting JMXConnectorFactory url {} , Error: {}", url, e.getMessage());
+                    if (!future.isDone()) {
+                        future.cancel(true);
+                        LOG.info(" the task {}", future.isCancelled() ? "was cancelled" : "could not be cancelled");
+                    }
                     throw new ConnectException("Error connecting JMXConnectionFactory  " + url);
-                } finally {
-                    future.cancel(true);
                 }
 
         }
@@ -148,11 +150,12 @@ public abstract class Jsr160ConnectionFactory {
                      return new Jsr160ConnectionWrapper(connector, connection);
                 } catch (InterruptedException | ExecutionException | TimeoutException e) {
                     LOG.info("Exception connecting JMXConnectorFactory url {} , Error: {}", url, e.getMessage());
+                    if (!future.isDone()) {
+                        future.cancel(true);
+                        LOG.info(" the task {}", future.isCancelled() ? "was cancelled" : "could not be cancelled");
+                    }
                     throw new ConnectException("Error connecting JMXConnectionFactory  " + url);
-                } finally {
-                    future.cancel(true);
                 }
-
         }
         /*
         else if (factory.equals("PASSWORD-OBFUSCATED")) {

@@ -131,13 +131,20 @@ The following example assigns a Dashboard to the user "drv4doe" (a router and sw
 .Creating the user `drv4doe` using the {opennms-product-name} WebUI
 image::dashboard/07_dashboard-add-user.png[]
 
-===== Step 2: Change magic-users.properties
-Now, edit the magic-users.properties file in the `/opt/opennms/etc` directory and set `drv4doe` as a dashboard user.
+===== Step 2: Change Security Roles
+Now, add the `ROLE_PROVISION` role to the user through the WebUI or by manually editing the `users.xml` file in the `/opt/opennms/etc` directory for the user `drv4doe`.
+
+.Adding dashboard role to the user `drv4doe` using the {opennms-product-name} WebUI
+image::dashboard/08_dashboard-user-roles.png[]
+
 [source, properties]
 ----
-role.dashboard.name=OpenNMS Dashboard User
-role.dashboard.users=drv4doe
-role.dashboard.notInDefaultGroup=true
+<user>
+    <user-id>drv4doe</user-id>
+    <full-name>Dashboard User</full-name>
+    <password salt="true">6FOip6hgZsUwDhdzdPUVV5UhkSxdbZTlq8M5LXWG5586eDPa7BFizirjXEfV/srK</password>
+    <role>ROLE_DASHBOARD</role>
+</user>
 ----
 
 ===== Step 3: Define Surveillance View
