@@ -84,35 +84,32 @@
   </c:when>
   
   <c:otherwise>
-    <h3 class="panel-title"><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><i class="fa fa-database fa-lg icon-black" title="Toggle database IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><i class="fa fa-list-alt fa-lg icon-black" title="Toggle requisition names"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><i class="fa fa-qrcode fa-lg icon-black" title="Toggle foreign IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLloc', '', 'inline');"><i class="fa fa-map-marker fa-lg icon-black" title="Toggle locations"></i></a></span>
-      <span style="float:right;" class="icon-black">
-        <select id="monitoringLocation" onchange="javascript:location.href = location.protocol + '//' + location.host + location.pathname + '?monitoringLocation=' + this.options[this.selectedIndex].value;">
-          <%
-            if ("".equals(selectedMonitoringLocation)) {
-          %>
-          <option value="" selected>All locations</option>
-          <%
-            } else {
-          %>
-          <option value="">All locations</option>
-          <%
-            }
+    <select style="float:right;" class="icon-black" id="monitoringLocation" onchange="javascript:location.href = location.protocol + '//' + location.host + location.pathname + '?monitoringLocation=' + this.options[this.selectedIndex].value;">
+      <%
+        if ("".equals(selectedMonitoringLocation)) {
+      %>
+      <option value="" selected>All locations</option>
+      <%
+      } else {
+      %>
+      <option value="">All locations</option>
+      <%
+        }
 
-            for (OnmsMonitoringLocation monitoringLocation : monitoringLocations) {
-              if (selectedMonitoringLocation.equals(monitoringLocation.getLocationName())) {
-          %>
-          <option value="<%=monitoringLocation.getLocationName()%>" selected><%=monitoringLocation.getLocationName()%></option>
-          <%
-              } else {
-          %>
-          <option value="<%=monitoringLocation.getLocationName()%>"><%=monitoringLocation.getLocationName()%></option>
-          <%
-              }
-            }
-          %>
-        </select>
-      </span>
-    </h3>
+        for (OnmsMonitoringLocation monitoringLocation : monitoringLocations) {
+          if (selectedMonitoringLocation.equals(monitoringLocation.getLocationName())) {
+      %>
+      <option value="<%=monitoringLocation.getLocationName()%>" selected><%=monitoringLocation.getLocationName()%></option>
+      <%
+      } else {
+      %>
+      <option value="<%=monitoringLocation.getLocationName()%>"><%=monitoringLocation.getLocationName()%></option>
+      <%
+          }
+        }
+      %>
+    </select>
+    <h3 class="panel-title"><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><i class="fa fa-database fa-lg icon-black" title="Toggle database IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><i class="fa fa-list-alt fa-lg icon-black" title="Toggle requisition names"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><i class="fa fa-qrcode fa-lg icon-black" title="Toggle foreign IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLloc', '', 'inline');"><i class="fa fa-map-marker fa-lg icon-black" title="Toggle locations"></i></a></span></h3>
   </c:otherwise>
 </c:choose>
   </div> <!-- panel-heading -->
