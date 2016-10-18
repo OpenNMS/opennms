@@ -136,7 +136,7 @@
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.graphml</artifactId>
       <version>${project.version}</version>
-      <scope>rest</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

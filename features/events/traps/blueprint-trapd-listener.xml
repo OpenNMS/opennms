@@ -14,7 +14,7 @@
     <cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd" update-strategy="none">
         <cm:default-properties>
             <cm:property name="trapd.listen.interface" value="127.0.0.1" />
-            <cm:property name="trapd.listen.port" value="162" />
+            <cm:property name="trapd.listen.port" value="1162" />
         </cm:default-properties>
     </cm:property-placeholder>
 
