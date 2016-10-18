@@ -106,13 +106,11 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
      */
     public static boolean compareSnmpV3UsersMap(Map<String, SnmpV3User> existingSnmpV3UserMap, Map<String, SnmpV3User> updatedSnmpV3Usermap) {
 
-        if ((existingSnmpV3UserMap.isEmpty() && updatedSnmpV3Usermap.isEmpty())
-                || (!existingSnmpV3UserMap.isEmpty() && updatedSnmpV3Usermap.isEmpty())) {
-            return false;
-        } else if (existingSnmpV3UserMap.isEmpty()
-                && !updatedSnmpV3Usermap.isEmpty()) {
-            return true;
-        }
+		if (updatedSnmpV3Usermap.isEmpty()) {
+			return false;
+		} else if (existingSnmpV3UserMap.isEmpty()) {
+			return true;
+		}
 
         for (String securityName : existingSnmpV3UserMap.keySet()) {
             if (
