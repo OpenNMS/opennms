@@ -31,13 +31,10 @@ package org.opennms.netmgt.eventd.processor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
-import org.opennms.netmgt.dao.api.MinionDao;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
@@ -51,7 +48,6 @@ import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
@@ -61,6 +57,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DeadlockLoserDataAccessException;
 import org.springframework.util.Assert;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 
 /**
  * EventWriter loads the information in each 'Event' into the database.
@@ -105,6 +105,12 @@ public class HibernateEventWriter implements EventWriter {
     @Autowired
     private EventUtil eventUtil;
 
+    private final Timer writeTimer;
+
+    public HibernateEventWriter(MetricRegistry registry) {
+        writeTimer = Objects.requireNonNull(registry).timer("events.process.write");
+    }
+
     /**
      * <p>checkEventSanityAndDoWeProcess</p>
      *
@@ -144,7 +150,7 @@ public class HibernateEventWriter implements EventWriter {
 
         LOG.debug("HibernateEventWriter: processing {}, nodeid: {}, ipaddr: {}, serviceid: {}, time: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
 
-        try {
+        try (Context context = writeTimer.time()) {
             insertEvent(eventHeader, event);
         } catch (DeadlockLoserDataAccessException e) {
             throw new EventProcessorException("Encountered deadlock when inserting event: " + event.toString(), e);
