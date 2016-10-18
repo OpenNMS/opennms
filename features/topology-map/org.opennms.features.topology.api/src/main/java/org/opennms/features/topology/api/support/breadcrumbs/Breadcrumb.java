@@ -28,9 +28,10 @@
 
 package org.opennms.features.topology.api.support.breadcrumbs;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -116,7 +117,7 @@ public class Breadcrumb implements ClickListener {
         return targetNamespace;
     }
 
-    public ArrayList<VertexRef> getSourceVertices() {
-        return Lists.newArrayList(sourceVertices);
+    public List<VertexRef> getSourceVertices() {
+        return sourceVertices.stream().sorted(Comparator.comparing(VertexRef::getLabel)).collect(Collectors.toList());
     }
 }

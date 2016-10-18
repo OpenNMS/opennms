@@ -49,8 +49,8 @@ public class PathTreeTest {
         Assert.assertEquals("Regions > Central, East", toString(pathTree.toBreadcrumbs()));
 
         pathTree.clear();
-        pathTree.addPath(Lists.newArrayList(vertex("regions", "Central"), vertex("markets", "Minneapolis"), vertex("sites", "MN-Site1")));
         pathTree.addPath(Lists.newArrayList(vertex("regions", "East"), vertex("markets", "New York"), vertex("sites", "'NY-Site1")));
+        pathTree.addPath(Lists.newArrayList(vertex("regions", "Central"), vertex("markets", "Minneapolis"), vertex("sites", "MN-Site1")));
         Assert.assertEquals(2, pathTree.getNumberOfPaths());
         Assert.assertEquals("Regions > Central, East > Minneapolis, New York", toString(pathTree.toBreadcrumbs()));
 
