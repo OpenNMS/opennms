@@ -26,21 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.api.support;
 
-import java.util.Collection;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.GraphProvider;
 
-import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
+/**
+ * Allows to get ALL vertices from the {@link GraphProvider}, even if it is a {@link VertexHopGraphProvider}.
+ * Please use with care, as it overwrites the default behaviour (consider focus and szl)
+ *
+ * @author mvrueden
+ */
+public class IgnoreHopCriteria extends Criteria {
+    @Override
+    public ElementType getType() {
+        return ElementType.GRAPH;
+    }
 
-public interface MetaTopologyProvider {
+    @Override
+    public String getNamespace() {
+        return "$$internal$$";
+    }
 
-    GraphProvider getDefaultGraphProvider();
+    @Override
+    public int hashCode() {
+        return -17;
+    }
 
-    Collection<GraphProvider> getGraphProviders();
-
-    Collection<VertexRef> getOppositeVertices(VertexRef vertexRef);
-
-    GraphProvider getGraphProviderBy(String namespace);
-
-    BreadcrumbStrategy getBreadcrumbStrategy();
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof IgnoreHopCriteria;
+    }
 }

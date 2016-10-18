@@ -40,13 +40,14 @@ public class BreadcrumbJaxbTest extends XmlTestNoCastor<Breadcrumb> {
 
     @Parameterized.Parameters
     public static Object[][] data() {
-        Breadcrumb breadcrumb = new Breadcrumb("breadcrumb 1", "this", new DefaultVertexRef("other", "1", "custom"));
+        Breadcrumb breadcrumb = new Breadcrumb("this", new DefaultVertexRef("other", "1", "custom"));
         return new Object[][]{{
                 breadcrumb,
                 "<breadcrumb>\n" +
-                "     <label>breadcrumb 1</label>\n" +
+                "     <source-vertices>\n" +
+                "       <source-vertex namespace=\"other\" id=\"1\" label=\"custom\"/>\n" +
+                "     </source-vertices>\n" +
                 "     <target-namespace>this</target-namespace>\n" +
-                "     <source-vertex namespace=\"other\" id=\"1\" label=\"custom\"/>\n" +
                 "</breadcrumb>",
                 null
             }
