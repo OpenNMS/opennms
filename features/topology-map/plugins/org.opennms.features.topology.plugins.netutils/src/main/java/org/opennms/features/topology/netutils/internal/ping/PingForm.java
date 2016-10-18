@@ -26,15 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.netutils.internal;
+package org.opennms.features.topology.netutils.internal.ping;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.topology.netutils.internal.service.PingRequest;
 
 import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -57,22 +57,30 @@ public class PingForm extends FormLayout {
     private final BeanItem<PingRequest> item;
     private final NativeSelect ipDropdown;
     private final NativeSelect packetSizeDropdown;
+    private final NativeSelect locationDropdown;
     private final TextField numberOfRequestsField;
     private final TextField timeoutField;
     private final FieldGroup binder;
 
-    public PingForm(InetAddress host) {
-        Objects.requireNonNull(host);
+    public PingForm(List<String> locations, String defaultLocation, List<InetAddress> ipAddresses, InetAddress defaultIp) {
+        Objects.requireNonNull(locations);
+        Objects.requireNonNull(defaultLocation);
+        Objects.requireNonNull(ipAddresses);
+        Objects.requireNonNull(defaultIp);
+
         PingRequest pingRequest = new PingRequest()
                 .withNumberRequests(4)
                 .withTimeout(1, TimeUnit.SECONDS)
                 .withPackageSize(64)
-                .withInetAddress(host);
+                .withInetAddress(defaultIp)
+                .withLocation(defaultLocation);
 
         // IP
         ipDropdown = new NativeSelect();
         ipDropdown.setCaption("IP Address");
-        ipDropdown.addItem(pingRequest.getInetAddress());
+        for (InetAddress eachIp : ipAddresses) {
+            ipDropdown.addItem(eachIp);
+        }
         ipDropdown.setNullSelectionAllowed(false);
         ipDropdown.getItemIds().forEach(eachItemId -> ipDropdown.setItemCaption(eachItemId, InetAddressUtils.toIpAddrString((InetAddress) eachItemId)));
         ipDropdown.setWidth(FIELD_WIDTH, Unit.PIXELS);
@@ -89,6 +97,15 @@ public class PingForm extends FormLayout {
         packetSizeDropdown.setNullSelectionAllowed(false);
         packetSizeDropdown.setWidth(FIELD_WIDTH, Unit.PIXELS);
 
+        // Location
+        locationDropdown = new NativeSelect();
+        locationDropdown.setCaption("Location");
+        for (String eachLocation : locations) {
+            locationDropdown.addItem(eachLocation);
+        }
+        locationDropdown.setNullSelectionAllowed(false);
+        locationDropdown.setWidth(FIELD_WIDTH, Unit.PIXELS);
+
         // Number of Requests
         numberOfRequestsField = new TextField();
         numberOfRequestsField.setCaption("Number of Requests");
@@ -102,7 +119,6 @@ public class PingForm extends FormLayout {
                     throw new Validator.InvalidValueException("must be > 0");
                 }
             }
-
         });
 
         // Timeout
@@ -140,6 +156,7 @@ public class PingForm extends FormLayout {
 
         addComponent(ipDropdown);
         addComponent(numberOfRequestsField);
+        addComponent(locationDropdown);
         addComponent(timeoutField);
         addComponent(packetSizeDropdown);
 
@@ -148,15 +165,15 @@ public class PingForm extends FormLayout {
         binder.bind(ipDropdown, "inetAddress");
         binder.bind(numberOfRequestsField, "numberRequests");
         binder.bind(timeoutField, "timeout");
-        binder.bind(packetSizeDropdown, "packageSize");
+        binder.bind(packetSizeDropdown, "packetSize");
+        binder.bind(locationDropdown, "location");
         binder.setBuffered(true);
     }
 
     public PingRequest getPingRequest() throws FieldGroup.CommitException {
         binder.commit(); // we must commit before to ensure there are no errors
         return item.getBean()
-                .withRetries(0)
-                .withDelay(1, TimeUnit.SECONDS);
+                .withRetries(0);
     }
 
 }

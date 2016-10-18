@@ -26,21 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.netutils.internal.service;
+package org.opennms.features.topology.netutils.internal.ping;
 
 import java.net.InetAddress;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 public class PingRequest {
     private long timeout;
-    private int packageSize;
+    private int packetSize;
     private int retries;
     private InetAddress inetAddress;
     private int numberRequests;
-    private long delay;
+    private String location;
 
     public PingRequest withTimeout(long timeout, TimeUnit unit) {
         Preconditions.checkArgument(timeout > 0, "timeout must be > 0");
@@ -50,8 +51,8 @@ public class PingRequest {
     }
 
     public PingRequest withPackageSize(int packageSize) {
-        Preconditions.checkArgument(packageSize > 0, "packageSize must be > 0");
-        this.packageSize = packageSize;
+        Preconditions.checkArgument(packageSize > 0, "packetSize must be > 0");
+        this.packetSize = packageSize;
         return this;
     }
 
@@ -72,10 +73,9 @@ public class PingRequest {
         return this;
     }
 
-    public PingRequest withDelay(int delay, TimeUnit unit) {
-        Preconditions.checkArgument(delay > 0, "delay must be > 0");
-        Objects.requireNonNull(unit);
-        this.delay = TimeUnit.MILLISECONDS.convert(delay, unit);
+    public PingRequest withLocation(String location) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(location), "Location must not be empty or null");
+        this.location = location;
         return this;
     }
 
@@ -83,8 +83,8 @@ public class PingRequest {
         return timeout;
     }
 
-    public int getPackageSize() {
-        return packageSize;
+    public int getPacketSize() {
+        return packetSize;
     }
 
     public int getRetries() {
@@ -99,16 +99,12 @@ public class PingRequest {
         return numberRequests;
     }
 
-    public long getDelay() {
-        return delay;
-    }
-
     public void setTimeout(long timeout) {
         this.timeout = timeout;
     }
 
-    public void setPackageSize(int packageSize) {
-        this.packageSize = packageSize;
+    public void setPacketSize(int packetSize) {
+        this.packetSize = packetSize;
     }
 
     public void setRetries(int retries) {
@@ -123,7 +119,11 @@ public class PingRequest {
         this.numberRequests = numberRequests;
     }
 
-    public void setDelay(long delay) {
-        this.delay = delay;
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }
