@@ -31,6 +31,7 @@ package org.opennms.web.element;
 import java.util.List;
 import java.util.Map;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 public interface NetworkElementFactoryInterface {
 
@@ -438,4 +439,6 @@ public interface NetworkElementFactoryInterface {
     Integer getIfIndex(int ipinterfaceid);
     
     Integer getIfIndex(int nodeID, String ipaddr);
+
+	List<OnmsMonitoringLocation> getMonitoringLocations();
 }
