@@ -112,8 +112,12 @@ public class RangeChunker {
         final double packetsPerSecond = (config.getPacketsPerSecond() > 0.0) ? config.getPacketsPerSecond() : DiscoveryConfigFactory.DEFAULT_PACKETS_PER_SECOND;
 
         // If the foreign source for the discovery config is not set than use 
-        // the default foreign source
-        final String foreignSourceFromConfig = (config.getForeignSource() == null || "".equals(config.getForeignSource().trim())) ? "default" : config.getForeignSource().trim();
+        // a value of null so that non-requisitioned nodes are created.
+        //
+        // TODO: Use the "default" foreign source instead so that we can move
+        // away from using non-requisitioned nodes.
+        //
+        final String foreignSourceFromConfig = (config.getForeignSource() == null || "".equals(config.getForeignSource().trim())) ? null : config.getForeignSource().trim();
 
         // If the monitoring location for the discovery config is not set than use 
         // the default localhost location
@@ -193,8 +197,8 @@ public class RangeChunker {
         Preconditions.checkState(BigInteger.ONE.equals(address.getAddressRange().size()));
         return range != null && 
             new IPAddress(range.getAddressRange().getEnd()).isPredecessorOf(new IPAddress(address.getAddressRange().getEnd())) &&
-            range.getForeignSource().equals(address.getForeignSource()) &&
-            range.getLocation().equals(address.getLocation()) &&
+            Objects.equals(range.getForeignSource(), address.getForeignSource()) &&
+            Objects.equals(range.getLocation(), address.getLocation()) &&
             range.getRetries() == address.getRetries() &&
             range.getTimeout() == address.getTimeout();
     }

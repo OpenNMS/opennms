@@ -43,7 +43,9 @@ public class DiscoveryResults implements Serializable {
 
     public DiscoveryResults(Map<InetAddress, Long> responses, String foreignSource, String location) {
         m_responses = Preconditions.checkNotNull(responses, "ranges argument");
-        m_foreignSource = Preconditions.checkNotNull(foreignSource, "foreignSource argument");
+        // NMS-8767: Allow null foreignSources so that Provisiond will create non-provisioned nodes
+        //m_foreignSource = Preconditions.checkNotNull(foreignSource, "foreignSource argument");
+        m_foreignSource = foreignSource;
         m_location = Preconditions.checkNotNull(location, "location argument");
     }
 
