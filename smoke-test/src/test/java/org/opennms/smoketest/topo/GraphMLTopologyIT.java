@@ -31,6 +31,7 @@ package org.opennms.smoketest.topo;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -97,10 +98,10 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         focusedVertices.sort(Comparator.comparing(TopologyIT.FocusedVertex::getNamespace).thenComparing(TopologyIT.FocusedVertex::getLabel));
         assertEquals(
                 Lists.newArrayList(
-                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "East Region"),
-                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "North Region"),
-                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "South Region"),
-                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:regions:", "West Region")
+                        focusVertex(topologyUIPage, "Acme:regions:", "East Region"),
+                        focusVertex(topologyUIPage, "Acme:regions:", "North Region"),
+                        focusVertex(topologyUIPage, "Acme:regions:", "South Region"),
+                        focusVertex(topologyUIPage, "Acme:regions:", "West Region")
                 ), focusedVertices);
 
         // Search for and select a region
@@ -139,19 +140,36 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
     public void verifyNavigateToAndBreadcrumbs() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         topologyUIPage.findVertex("East Region").contextMenu().click("Navigate To", "Markets (East Region)");
-        assertEquals(
-                Lists.newArrayList(
-                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:markets:", "East 1"),
-                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:markets:", "East 2"),
-                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:markets:", "East 3"),
-                        new TopologyIT.FocusedVertex(topologyUIPage,"Acme:markets:", "East 4")
-                ), topologyUIPage.getFocusedVertices());
+
+        final ArrayList<TopologyIT.FocusedVertex> marketsVertcies = Lists.newArrayList(
+                focusVertex(topologyUIPage, "Acme:markets:", "East 1"),
+                focusVertex(topologyUIPage, "Acme:markets:", "East 2"),
+                focusVertex(topologyUIPage, "Acme:markets:", "East 3"),
+                focusVertex(topologyUIPage, "Acme:markets:", "East 4"));
+        assertEquals(marketsVertcies, topologyUIPage.getFocusedVertices());
         assertEquals("Markets", topologyUIPage.getSelectedLayer());
         assertEquals(Lists.newArrayList("regions", "East Region"), topologyUIPage.getBreadcrumbs().getLabels());
 
+        // Click on last element should add all vertices to focus
+        topologyUIPage.getFocusedVertices().get(0).removeFromFocus(); // remove an element from focus
+        topologyUIPage.getBreadcrumbs().click("East Region");
+        assertEquals(marketsVertcies, topologyUIPage.getFocusedVertices());
+
+        // Click on 1st element, should switch layer and add "child" to focus
         topologyUIPage.getBreadcrumbs().click("regions");
         assertEquals(Lists.newArrayList("regions"), topologyUIPage.getBreadcrumbs().getLabels());
-        assertEquals(4, topologyUIPage.getFocusedVertices().size());
+        assertEquals(Lists.newArrayList(focusVertex(topologyUIPage, "Acme:regions:", "East Region")), topologyUIPage.getFocusedVertices());
+
+        // Click on last element should add all elements to focus
+        topologyUIPage.getBreadcrumbs().click("regions");
+        List<TopologyIT.FocusedVertex> focusedVertices = topologyUIPage.getFocusedVertices();
+        focusedVertices.sort(Comparator.comparing(TopologyIT.FocusedVertex::getNamespace).thenComparing(TopologyIT.FocusedVertex::getLabel));
+        assertEquals(Lists.newArrayList(
+                focusVertex(topologyUIPage, "Acme:regions:", "East Region"),
+                focusVertex(topologyUIPage, "Acme:regions:", "North Region"),
+                focusVertex(topologyUIPage, "Acme:regions:", "South Region"),
+                focusVertex(topologyUIPage, "Acme:regions:", "West Region")
+        ), focusedVertices); // all elements should be focused
     }
 
     private boolean existsGraph() throws IOException {
@@ -190,6 +208,10 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         HttpClientWrapper wrapper = HttpClientWrapper.create();
         wrapper.addBasicCredentials(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
         return wrapper;
+    }
+
+    private static TopologyIT.FocusedVertex focusVertex(TopologyIT.TopologyUIPage topologyUIPage, String namespace, String label) {
+        return  new TopologyIT.FocusedVertex(topologyUIPage, namespace, label);
     }
 
 }

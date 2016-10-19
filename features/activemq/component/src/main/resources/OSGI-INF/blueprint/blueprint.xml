@@ -30,7 +30,7 @@
 	</bean>
 
 	<!-- Setup JMS connection pooling -->
-	<bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
+	<bean id="pooledConnectionFactory" class="org.opennms.features.activemq.PooledConnectionFactory"
 		init-method="start" destroy-method="stop">
 		<property name="maxConnections" value="$[org.opennms.activemq.client.max-connections]" />
 		<property name="connectionFactory" ref="jmsConnectionFactory" />

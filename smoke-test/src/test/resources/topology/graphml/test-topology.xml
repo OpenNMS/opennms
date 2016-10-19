@@ -3,6 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
      http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+    <key id="breadcrumb-strategy" for="graphml" attr.name="breadcrumb-strategy" attr.type="string"/>
     <key id="label" for="all" attr.name="label" attr.type="string"></key>
     <key id="description" for="graph" attr.name="description" attr.type="string"></key>
     <key id="namespace" for="graph" attr.name="namespace" attr.type="string"></key>
@@ -11,6 +12,7 @@
     <key id="preferred-layout" for="graph" attr.name="preferred-layout" attr.type="string"></key>
     <key id="semantic-zoom-level" for="graph" attr.name="semantic-zoom-level" attr.type="int"/>
     <data key="label">GraphML Topology Provider (test-graph)</data>
+    <data key="breadcrumb-strategy">SHORTEST_PATH_TO_ROOT</data>
     <graph id="regions" edgedefault="undirected">
         <data key="namespace">acme:regions</data>
         <data key="focus-strategy">ALL</data>

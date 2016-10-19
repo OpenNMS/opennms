@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DistPollerDaoMinion;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.TrapInformation;
@@ -90,7 +91,7 @@ public class TrapDTOMapperTest {
 		OnmsDistPoller distPoller = new OnmsDistPoller();
 		distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
 		distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
-		distPoller.setLocation("localhost");
+		distPoller.setLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
 		DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
 
 		TrapObjectToDTOProcessor mapper = new TrapObjectToDTOProcessor();

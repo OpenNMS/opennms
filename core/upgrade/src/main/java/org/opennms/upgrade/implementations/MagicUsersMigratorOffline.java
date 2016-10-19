@@ -79,7 +79,6 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
             magicUsersFile = ConfigFileConstants.getConfigFileByName("magic-users.properties");
             usersFile = ConfigFileConstants.getFile(ConfigFileConstants.USERS_CONF_FILE_NAME);
         } catch (Exception e) {
-            log("Error: cannot execute task because: %s", e.getMessage());
         }
     }
 
@@ -160,7 +159,10 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void execute() throws OnmsUpgradeException {
-        if (!canRun()) return;
+        if (!canRun()) {
+            log("Error: ignoring the execution of the task because the file magic-users.properties was not found. Maybe the task was already successfully executed before.\n");
+            return;
+        }
 
         // Parse read-only attributes
         final List<String> readOnlyUsers = new ArrayList<String>();
