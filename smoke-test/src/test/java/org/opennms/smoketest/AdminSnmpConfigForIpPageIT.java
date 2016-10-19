@@ -291,11 +291,11 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         if (success) {
             // if we expect this page to succeed, we should have no alert text, and we should find the finish text
             assertNull(alertText);
-            assertTrue(wait.until(pageContainsText("Finished configuring SNMP")));
+            assertTrue("Expected success on field '" + fieldLabel + "' with value " + fieldValue, wait.until(pageContainsText("Finished configuring SNMP")));
         } else {
             // if we expect a failure, check that the message matches
             assertNotNull(alertText);
-            assertEquals(String.format(errorMessageTemplate, fieldValue, fieldLabel), alertText);
+            assertEquals("Expected a failure on field '" + fieldLabel + "' with value " + fieldValue, String.format(errorMessageTemplate, fieldValue, fieldLabel), alertText);
         }
     }
 
