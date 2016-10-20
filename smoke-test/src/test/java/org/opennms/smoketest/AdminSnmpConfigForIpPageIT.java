@@ -122,6 +122,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testIntegerValidation() {
         final String defaultValidationErrorTemplate = "%s is not a valid %s. Please enter a number greater than 0 or leave it empty.";
+        final String geZeroValidationErrorTemplate = "%s is not a valid %s. Please enter a number greater than or equal to 0, or leave it empty.";
         final String maxRequestSizeErrorTemplate = "%s is not a valid %s. Please enter a number greater or equal than 484 or leave it empty.";
         final String[] integerFields = new String[]{
                 "timeout", 
@@ -139,7 +140,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         "Max Request Size"};
         final String[] errorMessages = new String[]{
                 defaultValidationErrorTemplate, 
-                defaultValidationErrorTemplate,
+                geZeroValidationErrorTemplate, 
                 defaultValidationErrorTemplate, 
                 defaultValidationErrorTemplate, 
                 defaultValidationErrorTemplate,
