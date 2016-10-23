@@ -37,6 +37,7 @@ import java.util.Map;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
@@ -75,37 +76,49 @@ public class NodeScriptingPolicy extends BasePolicy<OnmsNode> implements NodePol
     @Override
     public OnmsNode act(final OnmsNode node) {
     	if (getQualifier() == null) {
+    		LOG.error("Qualifier expression is not set. Returning unmodified node: {}", node);
     		return node;
     	}
     	if (! qualifies(node)) {
+    		LOG.info("Qualifier expression '{}' returned false. Returning unmodified node: {}", m_qualifier, node);
     		return node;
     	}
     	if (m_engine == null || m_scriptUrl == null) {
+    		LOG.error("The 'engine' and 'scriptUrl' parameters must be set. Returning unmodified node: {}", node);
     		return node;
     	}
 
-    	ScriptEngine engine = new ScriptEngineManager().getEngineByName(m_engine);
     	UrlResource scriptResource;
-    	try {
-    		scriptResource = new UrlResource(m_scriptUrl);
-    		Reader sr = new InputStreamReader(scriptResource.getInputStream());
-    		Bindings bindings = new SimpleBindings();
-    		bindings.put("node", node);
-    		final OnmsNode newNode = (OnmsNode)engine.eval(sr, bindings);
-    		return newNode;
-    	} catch (MalformedURLException mue) {
-    		LOG.error("Malformed URL for scriptUrl '{}': {}", m_scriptUrl, mue.getMessage());
-    		return node;
-    	} catch (IOException ioe) {
-    		LOG.error("IO exception while retrieving scriptURL '{}': {}", m_scriptUrl, ioe.getMessage());
-    		return node;
-    	} catch (ScriptException se) {
-    		LOG.error("Script exception while running script at '{}': {}", m_scriptUrl, se.getMessage());
-    		return node;
-    	} catch (Throwable t) {
-    		LOG.error("Unexpected {} while running script at '{}': {}", t.getClass(), m_scriptUrl, t.getMessage());
+    	ScriptEngine engine = new ScriptEngineManager().getEngineByName(m_engine);
+    	if (engine == null) {
+    		StringBuilder sb = new StringBuilder("[ ");
+    		for (ScriptEngineFactory sef : new ScriptEngineManager().getEngineFactories()) {
+    			sb.append(sef.getLanguageName()).append(" (").append(sef.getLanguageVersion()).append("), ");
+    		}
+    		sb.append("]");
+    		LOG.error("Failed to construct script engine for name '{}'. Returning unmodified node: {}", m_engine, node);
+    		LOG.error("Available script engines are: {}", sb.toString());
     		return node;
     	}
+    	try {
+    		scriptResource = new UrlResource(m_scriptUrl);
+    		Reader scriptReader = new InputStreamReader(scriptResource.getInputStream());
+    		Bindings bindings = new SimpleBindings();
+    		bindings.put("node", node);
+    		bindings.put("LOG", LOG);
+    		LOG.debug("Attempting to eval script '{}' with engine '{}' for node {}", m_scriptUrl, m_engine, node);
+    		engine.eval(scriptReader, bindings);
+    		final OnmsNode newNode = (OnmsNode)engine.eval(scriptReader, bindings);
+    	} catch (MalformedURLException mue) {
+    		LOG.error("Malformed URL for scriptUrl '{}': {}", m_scriptUrl, mue.getMessage());
+    	} catch (IOException ioe) {
+    		LOG.error("IO exception while retrieving scriptURL '{}': {}", m_scriptUrl, ioe.getMessage());
+    	} catch (ScriptException se) {
+    		LOG.error("Script exception while running script at '{}': {}", m_scriptUrl, se.getMessage());
+    	}
+    	
+    	LOG.debug("Returning updated node: {}", node);
+    	return node;
     }
 
 
