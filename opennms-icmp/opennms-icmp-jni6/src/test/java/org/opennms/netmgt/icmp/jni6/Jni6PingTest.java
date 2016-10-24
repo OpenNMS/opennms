@@ -73,7 +73,7 @@ public class Jni6PingTest extends TestCase {
     }
 
     private boolean isRunTest() {
-        return Boolean.getBoolean(getRunTestProperty());
+        return Boolean.parseBoolean(System.getProperty(getRunTestProperty()));
     }
 
     private String getRunTestProperty() {
