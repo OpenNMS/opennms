@@ -61,7 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(reuseDatabase=false)
 public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
 
     @Autowired
@@ -85,7 +85,7 @@ public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
         OnmsNode n = new OnmsNode(m_databasePopulator.getMonitoringLocationDao().getDefaultLocation(), "my-new-node");
         n.setForeignSource("junit");
         n.setForeignId("10001");
-        OnmsIpInterface iface = new OnmsIpInterface("192.168.1.3", n);
+        OnmsIpInterface iface = new OnmsIpInterface(InetAddress.getByName("192.168.1.3"), n);
         iface.setIsManaged("M");
         iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
         OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(n, 1001);
@@ -113,4 +113,17 @@ public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
         Assert.assertEquals(m_testNodeId, m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"))); // return the new nodeId
     }
 
+    @Test
+    @Transactional
+    public void testNullLocation() throws Exception {
+        // Retrieve a known entry stored using the default location id
+        InetAddress ipAddr = m_databasePopulator.getNode2().getPrimaryInterface().getIpAddress();
+        long expectedNodeId = Long.parseLong(m_databasePopulator.getNode2().getNodeId());
+        long nodeId = m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, ipAddr);
+        Assert.assertEquals(expectedNodeId, nodeId);
+
+        // Now try retrieving that same node using null for the location
+        nodeId = m_cache.getNodeId(null, ipAddr);
+        Assert.assertEquals(expectedNodeId, nodeId);
+    }
 }
