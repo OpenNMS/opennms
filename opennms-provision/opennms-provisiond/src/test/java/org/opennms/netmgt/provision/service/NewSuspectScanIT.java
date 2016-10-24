@@ -267,8 +267,8 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-        String foreignSource = "Testie";
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource);
+        final String foreignSource = "Testie";
+        NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource);
         runScan(scan);
 
         anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
@@ -299,6 +299,12 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
 
+        // NMS-8835: Now send another new suspect event for the same IP address and foreignSource
+        scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource);
+        runScan(scan);
+
+        // The node count should not increase
+        assertEquals(1, getNodeDao().countAll());
     }
 
     @Test(timeout=300000)
