@@ -35,19 +35,64 @@ import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.app.internal.jung.GridLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.LayoutManager;
+import org.opennms.netmgt.topology.persistence.api.LayoutEntity;
+import org.opennms.netmgt.topology.persistence.api.PointEntity;
 
 public class ManualLayoutAlgorithm implements LayoutAlgorithm {
 
+    private final LayoutManager layoutManager;
+
+    public ManualLayoutAlgorithm(LayoutManager layoutManager) {
+        this.layoutManager = layoutManager;
+    }
+
     @Override
 	public void updateLayout(GraphContainer graphContainer) {
-        Collection<Vertex> vertices = graphContainer.getGraph().getDisplayVertices();
-        Layout layout = graphContainer.getGraph().getLayout();
+        final LayoutEntity layoutEntity = layoutManager != null ? layoutManager.loadLayout(graphContainer) : null;
+        if (layoutEntity != null) {
+            // if we have a persisted layout, we apply it ...
+            final Layout layout = graphContainer.getGraph().getLayout();
+            final Collection<Vertex> vertices = graphContainer.getGraph().getDisplayVertices();
+            for (Vertex vertex : vertices) {
+                PointEntity pointEntity = layoutEntity.getPosition(vertex.getNamespace(), vertex.getId());
+                layout.setLocation(vertex, new Point(pointEntity.getX(), pointEntity.getY()));
+            }
+        } else {
+            // otherwise we apply the manual layout ...
+            final Collection<Vertex> vertices = graphContainer.getGraph().getDisplayVertices();
+            final Layout layout = graphContainer.getGraph().getLayout();
+            final long notLayedOutCount = vertices.stream().filter(v -> {
+                Point location = layout.getLocation(v);
+                return location.getX() == 0 && location.getY() == 0;
+            }).count();
+            final long noVertexLocationCount = vertices.stream().filter(v -> {
+                boolean hasNoX = v.getX() == null || v.getX().intValue() == 0;
+                boolean hasNoY = v.getY() == null || v.getY().intValue() == 0;
+                return hasNoX && hasNoY;
+            }).count();
 
-        for (Vertex vertex : vertices) {
-            Point p = layout.getLocation(vertex);
-            layout.setLocation(vertex, p);
+            // If nothing was manually layed out before, or the vertices do not have x,y coordinates assigned, we
+            // manually apply the Grid Layout
+            if (notLayedOutCount == vertices.size() && noVertexLocationCount == vertices.size()) {
+                new GridLayoutAlgorithm().updateLayout(graphContainer);
+            } else if(noVertexLocationCount != vertices.size()) {
+                // If we have at least one vertex with coordinates != (0,0), we apply them to the layout
+                for (Vertex vertex : vertices) {
+                    layout.setLocation(vertex, new Point(vertex.getX(), vertex.getY()));
+                }
+            } else {
+                // Otherwise, we apply the x,y coordinates already assigned.
+                // This means, the last calculated layout coordinates are re-applied.
+                // At the moment no communication between ui and backend is made, when changing the coordinates manually
+                // This is only done when the user explicitly saves the layout
+                for (Vertex vertex : vertices) {
+                    Point p = layout.getLocation(vertex);
+                    layout.setLocation(vertex, p);
+                }
+            }
         }
-
 	}
 
 }

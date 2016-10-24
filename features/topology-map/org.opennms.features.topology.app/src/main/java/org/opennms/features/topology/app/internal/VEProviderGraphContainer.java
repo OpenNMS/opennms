@@ -73,7 +73,9 @@ import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.jung.D3TopoLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.LayoutManager;
 import org.opennms.features.topology.app.internal.operations.LayoutOperation;
+import org.opennms.osgi.VaadinApplicationContext;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -394,10 +396,11 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private EdgeStatusProvider m_edgeStatusProvider;
     private MergingGraphProvider m_mergedGraphProvider;
     private MapViewManager m_viewManager = new DefaultMapViewManager();
-    private String m_sessionId;
+    private VaadinApplicationContext applicationContext;
     private BundleContext m_bundleContext;
     private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
     private AutoRefreshSupport m_autoRefreshSupport;
+    private LayoutManager m_layoutManager;
     
     private VEGraph m_graph;
     private AtomicBoolean m_containerDirty = new AtomicBoolean(Boolean.TRUE);
@@ -722,6 +725,10 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         m_bundleContext = bundleContext;
     }
 
+    public void setLayoutManager(LayoutManager layoutManager) {
+        m_layoutManager = layoutManager;
+    }
+
     @Override
 	public void fireGraphChanged() {
 		for(ChangeListener listener : m_listeners) {
@@ -766,6 +773,12 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public void setIconManager(IconManager iconManager) {
         m_iconManager = iconManager;
+    }
+
+    @Override
+    public void saveLayout() {
+        m_layoutManager.persistLayout(this);
+        fireGraphChanged();
     }
 
     @Override
@@ -849,18 +862,27 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public String getSessionId() {
-        return m_sessionId;
+        return applicationContext.getSessionId();
     }
 
-    @Override
-    public void setSessionId(String sessionId) {
-        m_sessionId = sessionId;
+    private void setSessionId(String sessionId) {
         try {
             m_bundleContext.removeServiceListener(this);
-            m_bundleContext.addServiceListener(this, String.format("(&(objectClass=%s)(sessionId=%s))", "org.opennms.features.topology.api.topo.Criteria", m_sessionId));
+            m_bundleContext.addServiceListener(this, String.format("(&(objectClass=%s)(sessionId=%s))", "org.opennms.features.topology.api.topo.Criteria", sessionId));
         } catch (InvalidSyntaxException e) {
             LoggerFactory.getLogger(getClass()).error("registerServiceListener() failed", e);
         }
+    }
+
+    @Override
+    public VaadinApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    @Override
+    public void setApplicationContext(VaadinApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+        setSessionId(applicationContext.getSessionId());
     }
 
     @Override
