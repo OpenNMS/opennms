@@ -110,7 +110,7 @@ main() {
 	for dir in $JAVA_SEARCH_DIRS; do
 		if [ -d "${dir}" ]; then
 			[ -n "$DEBUG" ] && (>&2 printf 'Scanning: %s\n' "${dir}")
-			find "$dir" -type f -name java | grep -E '/bin/java$' | sort -u > /tmp/$$.javabins
+			find "$dir" -type f -name java 2>/dev/null | grep -E '/bin/java$' | sort -u > /tmp/$$.javabins
 			while read -r javabin; do
 				javahome="$(printf '%s' "${javabin}" | sed -e 's,/bin/java$,,')"
 				version_string="$(get_java_version_string "$javahome")"

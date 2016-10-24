@@ -1204,8 +1204,8 @@
     <!--
       This is on by default now that root is not required for pinging.
       If you have issues with this, see https://wiki.opennms.org/wiki/ICMP for enabling non-root ping.
-    -->
-    <runPingTests>true</runPingTests>
+      However, we need to set the default in a profile (NMS-8838).
+    <runPingTests>true</runPingTests> -->
 
     <build.skip.tarball>false</build.skip.tarball>
 
@@ -1563,6 +1563,17 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>default-runPingTests</id>
+      <activation>
+        <property>
+          <name>!runPingTests</name>
+        </property>
+      </activation>
+      <properties>
+        <runPingTests>true</runPingTests>
+      </properties>
     </profile>
   </profiles>
   <dependencyManagement>
