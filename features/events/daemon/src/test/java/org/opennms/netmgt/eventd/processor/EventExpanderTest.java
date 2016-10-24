@@ -43,6 +43,8 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 
+import com.codahale.metrics.MetricRegistry;
+
 /**
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
@@ -65,7 +67,7 @@ public class EventExpanderTest extends TestCase {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalStateException("property eventConfDao must be set"));
 
-        EventExpander expander = new EventExpander();
+        EventExpander expander = new EventExpander(new MetricRegistry());
 
         try {
             expander.afterPropertiesSet();
@@ -79,7 +81,7 @@ public class EventExpanderTest extends TestCase {
     public void testAfterPropertiesSet() {
         m_mocks.replayAll();
 
-        EventExpander expander = new EventExpander();
+        EventExpander expander = new EventExpander(new MetricRegistry());
         expander.setEventConfDao(m_eventConfDao);
         expander.afterPropertiesSet();
     }
@@ -90,7 +92,7 @@ public class EventExpanderTest extends TestCase {
 
         EventBuilder builder = new EventBuilder(uei, "something");
 
-        EventExpander expander = new EventExpander();
+        EventExpander expander = new EventExpander(new MetricRegistry());
         expander.setEventConfDao(m_eventConfDao);
         expander.afterPropertiesSet();
         
@@ -116,7 +118,7 @@ public class EventExpanderTest extends TestCase {
         builder.addParam("worst-framework-ever", "Vaadin");
         Event event = builder.getEvent();
 
-        EventExpander expander = new EventExpander();
+        EventExpander expander = new EventExpander(new MetricRegistry());
         expander.setEventConfDao(m_eventConfDao);
         expander.afterPropertiesSet();
 

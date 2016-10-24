@@ -34,8 +34,6 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventHandler;
 import org.opennms.netmgt.events.api.EventListener;
@@ -44,6 +42,10 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
+
+import com.codahale.metrics.MetricRegistry;
+
+import junit.framework.TestCase;
 
 /**
  * 
@@ -56,10 +58,11 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     private MockEventListener m_listener = new MockEventListener();
     private Throwable m_caughtThrowable = null;
     private Thread m_caughtThrowableThread = null;
+    private MetricRegistry m_registry = new MetricRegistry();
 
     @Override
     public void setUp() throws Exception {
-        m_manager = new EventIpcManagerDefaultImpl();
+        m_manager = new EventIpcManagerDefaultImpl(m_registry);
         m_manager.setEventHandler(m_eventHandler);
         m_manager.setHandlerPoolSize(5);
         m_manager.afterPropertiesSet();
@@ -88,7 +91,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalStateException("handlerPoolSize not set"));
 
-        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl();
+        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
         manager.setEventHandler(m_eventHandler);
         
         try {
@@ -104,7 +107,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalStateException("eventHandler not set"));
 
-        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl();
+        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
         manager.setHandlerPoolSize(5);
 
         try {
@@ -117,7 +120,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     }
     
     public void testInit() throws Exception {
-        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl();
+        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
         manager.setEventHandler(m_eventHandler);
         manager.setHandlerPoolSize(5);
         manager.afterPropertiesSet();

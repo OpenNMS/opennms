@@ -642,6 +642,12 @@
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.api/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-events-commands" description="OpenNMS :: Events :: Shell Commands" version="${project.version}">
+      <!-- Other dependencies are available via the root classloader -->
+      <feature>commons-jexl</feature>
+      <bundle>mvn:org.opennms.features.events/org.opennms.features.events.commands/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-events-daemon" description="OpenNMS :: Events :: Daemon" version="${project.version}">
       <feature>commons-beanutils</feature>
       <feature version="${guavaVersion}">guava</feature>
