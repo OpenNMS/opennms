@@ -42,8 +42,9 @@ public class InterfaceToNodeMap {
         private final InetAddress m_ipAddress;
 
         public LocationIpAddressKey(String location, InetAddress ipAddress) {
-            m_location = location;
-            m_ipAddress = ipAddress;
+            // Use the default location when location is null
+            m_location = location != null ? location : MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
+            m_ipAddress = Objects.requireNonNull(ipAddress);
         }
 
         public InetAddress getIpAddress() {
