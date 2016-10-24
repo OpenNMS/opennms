@@ -321,19 +321,6 @@ abstract public class XmlTest<T> {
         }
     }
 
-    public static String getLocalDateString(long time) {
-        return getLocalDateString(time, null);
-    }
-    
-    public static String getLocalDateString(long time, ChronoUnit truncateTo) {
-        ZonedDateTime zdt = ((new Date(time)).toInstant())
-                .atZone(ZoneId.systemDefault());
-        if(truncateTo != null) {
-            zdt = zdt.truncatedTo(truncateTo);
-        }
-        return zdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-    }
-    
     public static <T> String marshalToXmlWithJaxb(T sampleObject) {
         LOG.debug("Reference Object: {}", sampleObject);
 
