@@ -107,8 +107,7 @@ abstract public class XmlTest<T> {
     private Object m_sampleXml;
     private String m_schemaFile;
 
-    public XmlTest(final T sampleObject, final Object sampleXml,
-            final String schemaFile) {
+    public XmlTest(final T sampleObject, final Object sampleXml, final String schemaFile) {
         m_sampleObject = sampleObject;
         m_sampleXml = sampleXml;
         m_schemaFile = schemaFile;
@@ -126,20 +125,19 @@ abstract public class XmlTest<T> {
 
     protected String getSampleXml() throws IOException {
         if (m_sampleXml instanceof File) {
-            return IOUtils.toString(((File) m_sampleXml).toURI());
+            return IOUtils.toString(((File)m_sampleXml).toURI());
         } else if (m_sampleXml instanceof URI) {
-            return IOUtils.toString((URI) m_sampleXml);
+            return IOUtils.toString((URI)m_sampleXml);
         } else if (m_sampleXml instanceof URL) {
-            return IOUtils.toString((URL) m_sampleXml);
+            return IOUtils.toString((URL)m_sampleXml);
         } else if (m_sampleXml instanceof InputStream) {
-            return IOUtils.toString((InputStream) m_sampleXml);
+            return IOUtils.toString((InputStream)m_sampleXml);
         } else {
             return m_sampleXml.toString();
         }
     }
 
-    protected ByteArrayInputStream getSampleXmlInputStream()
-            throws IOException {
+    protected ByteArrayInputStream getSampleXmlInputStream() throws IOException {
         return new ByteArrayInputStream(getSampleXml().getBytes());
     }
 
@@ -165,8 +163,8 @@ abstract public class XmlTest<T> {
             final String controlValue = d.getControlNodeDetail().getValue();
             final String testValue = d.getTestNodeDetail().getValue();
 
-            return (controlValue == null || controlValue.trim().isEmpty())
-                    && (testValue == null || testValue.trim().isEmpty());
+            return (controlValue == null || controlValue.trim().isEmpty()) &&
+                    (testValue    == null || testValue.trim().isEmpty());
         }
         return false;
     }
@@ -187,8 +185,7 @@ abstract public class XmlTest<T> {
         saxParserFactory.setNamespaceAware(true);
         saxParserFactory.setSchema(schema);
 
-        assertTrue("make sure our SAX implementation can validate",
-                   saxParserFactory.isValidating());
+        assertTrue("make sure our SAX implementation can validate", saxParserFactory.isValidating());
 
         final Validator validator = schema.newValidator();
         final ByteArrayInputStream inputStream = new ByteArrayInputStream(xml.getBytes());
@@ -201,8 +198,7 @@ abstract public class XmlTest<T> {
         LOG.debug("Reference Object: {}", getSampleObject());
 
         final StringWriter writer = new StringWriter();
-        CastorUtils.marshalWithTranslatedExceptions(getSampleObject(),
-                                                    writer);
+        CastorUtils.marshalWithTranslatedExceptions(getSampleObject(), writer);
         final String xml = writer.toString();
         LOG.debug("Castor XML: {}", xml);
         return xml;
@@ -226,18 +222,14 @@ abstract public class XmlTest<T> {
 
     @Test
     public void unmarshalXmlAndCompareToCastor() throws Exception {
-        final T obj = CastorUtils.unmarshal(getSampleClass(),
-                                            getSampleXmlInputStream());
-        LOG.debug("Sample object: {}\n\nCastor object: {}", getSampleObject(),
-                  obj);
+        final T obj = CastorUtils.unmarshal(getSampleClass(), getSampleXmlInputStream());
+        LOG.debug("Sample object: {}\n\nCastor object: {}", getSampleObject(), obj);
         assertDepthEquals(getSampleObject(), obj);
     }
 
     @Test
     public void unmarshalJaxbMarshalJaxb() throws Exception {
-        final T obj = JaxbUtils.unmarshal(getSampleClass(),
-                                          new InputSource(getSampleXmlInputStream()),
-                                          null);
+        final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(getSampleXmlInputStream()), null);
         final String remarshaled = JaxbUtils.marshal(obj);
         _assertXmlEquals(getSampleXml(), remarshaled);
     }
@@ -251,8 +243,7 @@ abstract public class XmlTest<T> {
 
     @Test
     public void unmarshalCastorMarshalCastor() throws Exception {
-        final T obj = CastorUtils.unmarshal(getSampleClass(),
-                                            getSampleXmlInputStream());
+        final T obj = CastorUtils.unmarshal(getSampleClass(), getSampleXmlInputStream());
         final StringWriter writer = new StringWriter();
         CastorUtils.marshalWithTranslatedExceptions(obj, writer);
         _assertXmlEquals(getSampleXml(), writer.toString());
@@ -269,11 +260,8 @@ abstract public class XmlTest<T> {
     @Test
     public void unmarshalXmlAndCompareToJaxb() throws Exception {
         LOG.debug("xml: {}", getSampleXml());
-        final T obj = JaxbUtils.unmarshal(getSampleClass(),
-                                          new InputSource(getSampleXmlInputStream()),
-                                          null);
-        LOG.debug("Sample object: {}\n\nJAXB object: {}", getSampleObject(),
-                  obj);
+        final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(getSampleXmlInputStream()), null);
+        LOG.debug("Sample object: {}\n\nJAXB object: {}", getSampleObject(), obj);
         assertDepthEquals(getSampleObject(), obj);
     }
 
@@ -288,8 +276,7 @@ abstract public class XmlTest<T> {
     @Test
     public void marshalJaxbUnmarshalCastor() throws Exception {
         final String xml = marshalToXmlWithJaxb();
-        final T obj = CastorUtils.unmarshal(getSampleClass(),
-                                            new ByteArrayInputStream(xml.getBytes()));
+        final T obj = CastorUtils.unmarshal(getSampleClass(), new ByteArrayInputStream(xml.getBytes()));
         LOG.debug("Generated Object: {}", obj);
         assertDepthEquals(getSampleObject(), obj);
     }
@@ -311,17 +298,14 @@ abstract public class XmlTest<T> {
             return;
         }
         LOG.debug("Validating against XSD: {}", schemaFile);
-        javax.xml.bind.Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(getSampleClass(),
-                                                                                null,
-                                                                                true);
+        javax.xml.bind.Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(getSampleClass(), null, true);
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
         final Schema schema = factory.newSchema(new StreamSource(schemaFile));
         unmarshaller.setSchema(schema);
         unmarshaller.setEventHandler(new ValidationEventHandler() {
             @Override
             public boolean handleEvent(final ValidationEvent event) {
-                LOG.warn("Received validation event: {}", event,
-                         event.getLinkedException());
+                LOG.warn("Received validation event: {}", event, event.getLinkedException());
                 return false;
             }
         });
@@ -349,7 +333,7 @@ abstract public class XmlTest<T> {
         }
         return zdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     }
-
+    
     public static <T> String marshalToXmlWithJaxb(T sampleObject) {
         LOG.debug("Reference Object: {}", sampleObject);
 
@@ -367,56 +351,40 @@ abstract public class XmlTest<T> {
         return unmarshalledObject;
     }
 
-    public static void assertXmlEquals(final String expectedXml,
-            final String actualXml) {
+    public static void assertXmlEquals(final String expectedXml, final String actualXml) {
         // ugly hack alert!
         final XmlTest<Object> test = new XmlTest<Object>(null, null, null) {
         };
         test._assertXmlEquals(expectedXml, actualXml);
     }
 
-    protected void _assertXmlEquals(final String expectedXml,
-            final String actualXml) {
-        final List<Difference> differences = getDifferences(expectedXml,
-                                                            actualXml);
+    protected void _assertXmlEquals(final String expectedXml, final String actualXml) {
+        final List<Difference> differences = getDifferences(expectedXml, actualXml);
         if (differences.size() > 0) {
-            LOG.debug("XML:\n\n{}\n\n...does not match XML:\n\n{}",
-                      expectedXml, actualXml);
+            LOG.debug("XML:\n\n{}\n\n...does not match XML:\n\n{}", expectedXml, actualXml);
         }
-        assertEquals("number of XMLUnit differences between the expected xml and the actual xml should be 0",
-                     0, differences.size());
+        assertEquals("number of XMLUnit differences between the expected xml and the actual xml should be 0", 0, differences.size());
     }
 
-    public static void assertXpathDoesNotMatch(final String xml,
-            final String expression) throws XPathExpressionException {
+    public static void assertXpathDoesNotMatch(final String xml, final String expression) throws XPathExpressionException {
         assertXpathDoesNotMatch(null, xml, expression);
     }
 
-    public static void assertXpathDoesNotMatch(final String description,
-            final String xml, final String expression)
-                    throws XPathExpressionException {
+    public static void assertXpathDoesNotMatch(final String description, final String xml, final String expression) throws XPathExpressionException {
         final NodeList nodes = xpathGetNodesMatching(xml, expression);
-        assertTrue(description == null ? ("Must get at least one node back from the query '"
-                + expression + "'") : description,
-                   nodes == null || nodes.getLength() == 0);
+        assertTrue(description == null? ("Must get at least one node back from the query '" + expression + "'") : description, nodes == null || nodes.getLength() == 0);
     }
 
-    public static void assertXpathMatches(final String xml,
-            final String expression) throws XPathExpressionException {
+    public static void assertXpathMatches(final String xml, final String expression) throws XPathExpressionException {
         assertXpathMatches(null, xml, expression);
     }
 
-    public static void assertXpathMatches(final String description,
-            final String xml, final String expression)
-                    throws XPathExpressionException {
+    public static void assertXpathMatches(final String description, final String xml, final String expression) throws XPathExpressionException {
         final NodeList nodes = xpathGetNodesMatching(xml, expression);
-        assertTrue(description == null ? ("Must get at least one node back from the query '"
-                + expression + "'") : description,
-                   nodes != null && nodes.getLength() != 0);
+        assertTrue(description == null? ("Must get at least one node back from the query '" + expression + "'") : description, nodes != null && nodes.getLength() != 0);
     }
 
-    protected List<Difference> getDifferences(final String xmlA,
-            final String xmlB) {
+    protected List<Difference> getDifferences(final String xmlA, final String xmlB) {
         DetailedDiff myDiff;
         try {
             myDiff = new DetailedDiff(XMLUnit.compareXML(xmlA, xmlB));
@@ -436,48 +404,39 @@ abstract public class XmlTest<T> {
                 if (d.getDescription().equals("namespace URI")) {
                     if (control != null && !"null".equals(control)) {
                         if (ignoreNamespace(control.toLowerCase())) {
-                            LOG.trace("Ignoring {}: {}", d.getDescription(),
-                                      d);
+                            LOG.trace("Ignoring {}: {}", d.getDescription(), d);
                             continue DIFFERENCES;
                         }
                     }
                     if (test != null && !"null".equals(test)) {
                         if (ignoreNamespace(test.toLowerCase())) {
-                            LOG.trace("Ignoring {}: {}", d.getDescription(),
-                                      d);
+                            LOG.trace("Ignoring {}: {}", d.getDescription(), d);
                             continue DIFFERENCES;
                         }
                     }
                 } else if (d.getDescription().equals("namespace prefix")) {
                     if (control != null && !"null".equals(control)) {
                         if (ignorePrefix(control.toLowerCase())) {
-                            LOG.trace("Ignoring {}: {}", d.getDescription(),
-                                      d);
+                            LOG.trace("Ignoring {}: {}", d.getDescription(), d);
                             continue DIFFERENCES;
                         }
                     }
                     if (test != null && !"null".equals(test)) {
                         if (ignorePrefix(test.toLowerCase())) {
-                            LOG.trace("Ignoring {}: {}", d.getDescription(),
-                                      d);
+                            LOG.trace("Ignoring {}: {}", d.getDescription(), d);
                             continue DIFFERENCES;
                         }
                     }
-                } else
-                    if (d.getDescription().equals("xsi:schemaLocation attribute")) {
-                    LOG.debug("Schema location '{}' does not match.  Ignoring.",
-                              controlNodeDetail.getValue() == null ? testNodeDetail.getValue()
-                                                                   : controlNodeDetail.getValue());
+                } else if (d.getDescription().equals("xsi:schemaLocation attribute")) {
+                    LOG.debug("Schema location '{}' does not match.  Ignoring.", controlNodeDetail.getValue() == null? testNodeDetail.getValue() : controlNodeDetail.getValue());
                     continue DIFFERENCES;
                 }
 
                 if (ignoreDifference(d)) {
-                    LOG.debug("ignoreDifference matched.  Ignoring difference: {}: {}",
-                              d.getDescription(), d);
+                    LOG.debug("ignoreDifference matched.  Ignoring difference: {}: {}", d.getDescription(), d);
                     continue DIFFERENCES;
                 } else {
-                    LOG.warn("Found difference: {}: {}", d.getDescription(),
-                             d);
+                    LOG.warn("Found difference: {}: {}", d.getDescription(), d);
                     retDifferences.add(d);
                 }
             }
@@ -485,8 +444,7 @@ abstract public class XmlTest<T> {
         return retDifferences;
     }
 
-    protected static NodeList xpathGetNodesMatching(final String xml,
-            final String expression) throws XPathExpressionException {
+    protected static NodeList xpathGetNodesMatching(final String xml, final String expression) throws XPathExpressionException {
         final XPath query = XPathFactory.newInstance().newXPath();
         StringReader sr = null;
         InputSource is = null;
@@ -494,8 +452,7 @@ abstract public class XmlTest<T> {
         try {
             sr = new StringReader(xml);
             is = new InputSource(sr);
-            nodes = (NodeList) query.evaluate(expression, is,
-                                              XPathConstants.NODESET);
+            nodes = (NodeList)query.evaluate(expression, is, XPathConstants.NODESET);
         } finally {
             sr.close();
             IOUtils.closeQuietly(sr);
@@ -503,35 +460,24 @@ abstract public class XmlTest<T> {
         return nodes;
     }
 
-    public static void assertDepthEquals(final Object expected,
-            Object actual) {
+    public static void assertDepthEquals(final Object expected, Object actual) {
         assertDepthEquals(0, "", expected, actual);
     }
 
-    private static void assertDepthEquals(final int depth,
-            final String propertyName, final Object expected, Object actual) {
+    private static void assertDepthEquals(final int depth, final String propertyName, final Object expected, Object actual) {
         if (expected == null && actual == null) {
             return;
         } else if (expected == null) {
-            fail("expected " + propertyName
-                    + " was null but actual was not!");
+            fail("expected " + propertyName + " was null but actual was not!");
         } else if (actual == null) {
-            fail("actual " + propertyName
-                    + " was null but expected was not!");
+            fail("actual " + propertyName + " was null but expected was not!");
         }
 
-        final String assertionMessage = propertyName == null ? ("Top-level objects ("
-                + expected.getClass().getName() + ") do not match.")
-                                                             : ("Properties "
-                                                                     + propertyName
-                                                                     + " do not match.");
-        if (expected.getClass().getName().startsWith("java")
-                || actual.getClass().getName().startsWith("java")) {
+        final String assertionMessage = propertyName == null? ("Top-level objects (" + expected.getClass().getName() + ") do not match.") : ("Properties " + propertyName + " do not match.");
+        if (expected.getClass().getName().startsWith("java") || actual.getClass().getName().startsWith("java")) {
             // java primitives, just do assertEquals
             if (expected instanceof Object[] || actual instanceof Object[]) {
-                assertTrue(assertionMessage,
-                           Arrays.equals((Object[]) expected,
-                                         (Object[]) actual));
+                assertTrue(assertionMessage, Arrays.equals((Object[])expected, (Object[])actual));
             } else {
                 assertEquals(assertionMessage, expected, actual);
             }
@@ -539,7 +485,7 @@ abstract public class XmlTest<T> {
         }
 
         final BeanWrapper expectedWrapper = new BeanWrapperImpl(expected);
-        final BeanWrapper actualWrapper = new BeanWrapperImpl(actual);
+        final BeanWrapper actualWrapper   = new BeanWrapperImpl(actual);
 
         final Set<String> properties = new TreeSet<String>();
         for (final PropertyDescriptor descriptor : expectedWrapper.getPropertyDescriptors()) {
@@ -554,11 +500,11 @@ abstract public class XmlTest<T> {
         for (final String property : properties) {
             final PropertyDescriptor expectedDescriptor = expectedWrapper.getPropertyDescriptor(property);
             final PropertyDescriptor actualDescriptor = actualWrapper.getPropertyDescriptor(property);
-
+            
             if (expectedDescriptor != null && actualDescriptor != null) {
                 // both have descriptors, so walk the sub-objects
                 Object expectedValue = null;
-                Object actualValue = null;
+                Object actualValue   = null;
                 try {
                     expectedValue = expectedWrapper.getPropertyValue(property);
                 } catch (final Exception e) {
@@ -568,38 +514,31 @@ abstract public class XmlTest<T> {
                 } catch (final Exception e) {
                 }
 
-                assertDepthEquals(depth + 1, property, expectedValue,
-                                  actualValue);
+                assertDepthEquals(depth + 1, property, expectedValue, actualValue);
             } else if (expectedDescriptor != null) {
-                fail("Should have '" + property
-                        + "' property on actual object, but there was none!");
+                fail("Should have '" + property + "' property on actual object, but there was none!");
             } else if (actualDescriptor != null) {
-                fail("Should have '" + property
-                        + "' property on expected object, but there was none!");
+                fail("Should have '" + property + "' property on expected object, but there was none!");
             }
 
         }
 
         if (expected instanceof Object[] || actual instanceof Object[]) {
-            final Object[] expectedArray = (Object[]) expected;
-            final Object[] actualArray = (Object[]) actual;
-            assertTrue(assertionMessage,
-                       Arrays.equals(expectedArray, actualArray));
+            final Object[] expectedArray = (Object[])expected;
+            final Object[] actualArray   = (Object[])actual;
+            assertTrue(assertionMessage, Arrays.equals(expectedArray, actualArray));
         } else if (expected instanceof long[] || actual instanceof long[]) {
-            final long[] expectedArray = (long[]) expected;
-            final long[] actualArray = (long[]) actual;
-            assertTrue(assertionMessage,
-                       Arrays.equals(expectedArray, actualArray));
+            final long[] expectedArray = (long[])expected;
+            final long[] actualArray   = (long[])actual;
+            assertTrue(assertionMessage, Arrays.equals(expectedArray, actualArray));
         } else if (expected instanceof int[] || actual instanceof int[]) {
-            final int[] expectedArray = (int[]) expected;
-            final int[] actualArray = (int[]) actual;
-            assertTrue(assertionMessage,
-                       Arrays.equals(expectedArray, actualArray));
+            final int[] expectedArray = (int[])expected;
+            final int[] actualArray   = (int[])actual;
+            assertTrue(assertionMessage, Arrays.equals(expectedArray, actualArray));
         } else if (expected instanceof byte[] || actual instanceof byte[]) {
-            final byte[] expectedArray = (byte[]) expected;
-            final byte[] actualArray = (byte[]) actual;
-            assertTrue(assertionMessage,
-                       Arrays.equals(expectedArray, actualArray));
+            final byte[] expectedArray = (byte[])expected;
+            final byte[] actualArray   = (byte[])actual;
+            assertTrue(assertionMessage, Arrays.equals(expectedArray, actualArray));
         } else {
             expected.getClass().isPrimitive();
             assertEquals(assertionMessage, expected, actual);
