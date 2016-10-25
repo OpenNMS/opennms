@@ -36,7 +36,12 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 public abstract class StringUtils {
@@ -224,5 +229,18 @@ public abstract class StringUtils {
         transformer.transform(source, result);
 
         return out.toString().trim();
+    }
+    
+    public static String iso8601LocalOffsetString(Date d) {
+        return iso8601OffsetString(d, ZoneId.systemDefault(), null);
+    }
+    
+    public static String iso8601OffsetString(Date d, ZoneId zone, ChronoUnit truncateTo) {
+        ZonedDateTime zdt = ((d).toInstant())
+                .atZone(zone);
+        if(truncateTo != null) {
+            zdt = zdt.truncatedTo(truncateTo);
+        }
+        return zdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     }
 }
