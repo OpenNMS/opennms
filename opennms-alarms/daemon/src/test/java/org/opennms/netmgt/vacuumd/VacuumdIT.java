@@ -83,6 +83,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.codahale.metrics.MetricRegistry;
+
 /**
  * Tests Vacuumd's execution of statements and automations
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
@@ -151,7 +153,7 @@ public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, Initiali
         }
 
         m_eventdIpcMgr.setEventWriter(m_database);
-        EventExpander expander = new EventExpander();
+        EventExpander expander = new EventExpander(new MetricRegistry());
         expander.setEventConfDao(new EmptyEventConfDao());
         m_eventdIpcMgr.setEventExpander(expander);
 

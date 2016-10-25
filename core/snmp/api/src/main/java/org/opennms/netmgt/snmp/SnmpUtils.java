@@ -44,8 +44,10 @@ import org.slf4j.LoggerFactory;
 
 public abstract class SnmpUtils {
 
-	private static final transient Logger LOG = LoggerFactory.getLogger(SnmpUtils.class);
-	
+    private static final transient Logger LOG = LoggerFactory.getLogger(SnmpUtils.class);
+
+    private static final ClassBasedStrategyResolver s_classBasedStrategyResolver = new ClassBasedStrategyResolver();
+
     private static Properties sm_config;
     private static StrategyResolver s_strategyResolver;
 
@@ -157,33 +159,19 @@ public abstract class SnmpUtils {
     public static SnmpStrategy getStrategy() {
     	return getStrategyResolver().getStrategy();
     }
-    
+
     public static StrategyResolver getStrategyResolver() {
-    	return s_strategyResolver != null ? s_strategyResolver : new DefaultStrategyResolver();
+    	return s_strategyResolver != null ? s_strategyResolver : s_classBasedStrategyResolver;
     }
-    
+
     public static void setStrategyResolver(StrategyResolver strategyResolver) {
     	s_strategyResolver = strategyResolver;
     }
-    
+
     public static void unsetStrategyResolver() {
     	s_strategyResolver = null;
     }
-    
-    private static class DefaultStrategyResolver implements StrategyResolver {
 
-		@Override
-		public SnmpStrategy getStrategy() {
-	    	String strategyClass = getStrategyClassName();
-	        try {
-	            return (SnmpStrategy)Class.forName(strategyClass).newInstance();
-	        } catch (Exception e) {
-	            throw new RuntimeException("Unable to instantiate class "+strategyClass, e);
-	        }
-		}
-    	
-    }
-    
     public static String getStrategyClassName() {
         // Use SNMP4J as the default SNMP strategy
         return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");

@@ -39,7 +39,7 @@ public class AbstractEdge extends AbstractEdgeRef implements Edge {
 	private String m_tooltipText;
 	private String m_styleName;
 
-	public AbstractEdge(String namespace, String id, Vertex source, Vertex target) {
+	public AbstractEdge(String namespace, String id, VertexRef source, VertexRef target) {
 		super(namespace, id);
 		if (source == null) {
 			throw new IllegalArgumentException("Source is null");

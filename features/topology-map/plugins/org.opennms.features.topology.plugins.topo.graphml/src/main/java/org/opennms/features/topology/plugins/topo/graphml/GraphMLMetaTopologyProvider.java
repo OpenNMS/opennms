@@ -48,6 +48,7 @@ import org.opennms.features.graphml.model.GraphMLNode;
 import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -69,6 +70,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     private final Map<String, GraphProvider> graphsByNamespace = Maps.newLinkedHashMap();
     private final Map<String, GraphMLTopologyProvider> rawGraphsByNamespace = Maps.newLinkedHashMap();
     private final Map<VertexRef, List<VertexRef>> oppositeVertices = Maps.newLinkedHashMap();
+    private BreadcrumbStrategy breadcrumbStrategy;
 
     public GraphMLMetaTopologyProvider(GraphMLServiceAccessor serviceAccessor) {
         m_serviceAccessor = Objects.requireNonNull(serviceAccessor);
@@ -117,6 +119,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
                     }
                 }
             }
+            this.breadcrumbStrategy = getBreadcrumbStrategy(graphML);
         } catch (InvalidGraphException | IOException e) {
             LOG.error(e.getMessage(), e);
         }
@@ -135,6 +138,16 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     @Override
     public Collection<VertexRef> getOppositeVertices(VertexRef vertexRef) {
         return oppositeVertices.getOrDefault(vertexRef, Collections.emptyList());
+    }
+
+    @Override
+    public GraphProvider getGraphProviderBy(String namespace) {
+        return graphsByNamespace.get(namespace);
+    }
+
+    @Override
+    public BreadcrumbStrategy getBreadcrumbStrategy() {
+        return breadcrumbStrategy == null ? BreadcrumbStrategy.NONE : breadcrumbStrategy;
     }
 
     public void setTopologyLocation(String filename) {
@@ -196,5 +209,22 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
      */
     public GraphMLTopologyProvider getRawTopologyProvider(String vertexNamespace) {
         return rawGraphsByNamespace.get(vertexNamespace);
+    }
+
+    private static BreadcrumbStrategy getBreadcrumbStrategy(GraphML graphML) {
+        Objects.requireNonNull(graphML);
+        return getBreadcrumbStrategy((String) graphML.getProperty("breadcrumb-strategy"));
+    }
+
+    static BreadcrumbStrategy getBreadcrumbStrategy(String property) {
+        if (Strings.isNullOrEmpty(property)) {
+            return null;
+        }
+        try {
+            return BreadcrumbStrategy.valueOf(property.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            LOG.warn("No breadcrumb-strategy found for value '{}'", property, ex);
+            return null;
+        }
     }
 }

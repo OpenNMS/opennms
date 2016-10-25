@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.DistPollerDaoMinion;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager.EmptyEventConfDao;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -165,7 +166,7 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 		OnmsDistPoller distPoller = new OnmsDistPoller();
 		distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
 		distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
-		distPoller.setLocation("localhost");
+		distPoller.setLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
 		DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
 
 		TrapObjectToDTOProcessor mapper = new TrapObjectToDTOProcessor();

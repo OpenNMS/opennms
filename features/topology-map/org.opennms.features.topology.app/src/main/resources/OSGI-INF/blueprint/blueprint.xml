@@ -269,6 +269,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
+            <entry key="operation.label" value="Clear Focus?group=additions"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.ClearFocusOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
             <entry key="operation.menuLocation" value="Device"/>
             <entry key="operation.label" value="Change Icon" />
             <entry key="operation.contextMenuLocation" value=""/>

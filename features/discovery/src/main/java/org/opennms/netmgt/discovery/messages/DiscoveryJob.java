@@ -67,7 +67,9 @@ public class DiscoveryJob implements Serializable {
      */
     public DiscoveryJob(List<IPPollRange> ranges, String foreignSource, String location, double packetsPerSecond) {
         m_ranges = Preconditions.checkNotNull(ranges, "ranges argument");
-        m_foreignSource = Preconditions.checkNotNull(foreignSource, "foreignSource argument");
+        // NMS-8767: Allow null foreignSources so that Provisiond will create non-provisioned nodes
+        //m_foreignSource = Preconditions.checkNotNull(foreignSource, "foreignSource argument");
+        m_foreignSource = foreignSource;
         m_location = Preconditions.checkNotNull(location, "location argument");
         m_packetsPerSecond = packetsPerSecond > 0.0 ? packetsPerSecond : DiscoveryConfigFactory.DEFAULT_PACKETS_PER_SECOND;
 

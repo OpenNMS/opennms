@@ -147,15 +147,21 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             addCriteriaForCategories(criteria, command.getCategory1());
         } else if (command.hasStatusViewName() && command.hasStatusSite() && command.hasStatusRowLabel()) {
             addCriteriaForSiteStatusView(criteria, command.getStatusViewName(), command.getStatusSite(), command.getStatusRowLabel());
-        }else if(command.hasForeignSource()) {
+        } else if(command.hasForeignSource()) {
             addCriteriaForForeignSource(criteria, command.getForeignSource());
-        }else {
+        } else if(command.hasMonitoringLocation()) {
+            addCriteriaForMonitoringLocation(criteria, command.getMonitoringLocation());
+        } else {
             // Do nothing.... don't add any restrictions other than the default ones
         }
 
         if (command.getNodesWithOutages()) {
             addCriteriaForCurrentOutages(criteria);
         }
+    }
+
+    private void addCriteriaForMonitoringLocation(OnmsCriteria criteria, String monitoringLocation) {
+        criteria.add(Restrictions.ilike("node.location.locationName", monitoringLocation, MatchMode.ANYWHERE));
     }
 
     private static void addCriteriaForMib2Parm(OnmsCriteria criteria, String mib2Parm, String mib2ParmValue, String mib2ParmMatchType) {

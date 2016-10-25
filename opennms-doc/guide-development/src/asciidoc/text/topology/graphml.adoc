@@ -83,7 +83,7 @@ ____
 | `namespace`               | yes      | Graph        | `string`  | -         | The namespace must be unique overall existing Topologies.
 | `description`             | no       | Graph        | `string`  | -         | A description, which is shown in the Info Panel.
 | `preferred-layout`        | no       | Graph        | `string`  | `D3`      | Defines a preferred layout.
-| `focus-strategy`          | no       | Graph        | `string`  | `FIRST`   | Defines a focus strategy. More see <<gd-topology-graphml-focus-strategy>> for more information.
+| `focus-strategy`          | no       | Graph        | `string`  | `FIRST`   | Defines a focus strategy. See <<gd-topology-graphml-focus-strategy>> for more information.
 | `focus-ids`               | no       | Graph        | `string`  | -         | Refers to nodes ids in the graph.
                                                                                 This is required if `focus-strategy` is `SPECIFIC`.
                                                                                 If multiple ids should be add to focus, they are separated by `,`.
@@ -102,6 +102,7 @@ ____
 | `tooltipText`             | no       | Node, Edge   | `string`  |           | Defines a custom tooltip. If not defined, the `id` attribute is used instead.
 | `level`                   | no       | Node         | `int`     | `0`       | Sets the level of the Vertex which is used by certain layout algorithms i.e. `Hierarchical Layout` and `Grid Layout`.
 | `edge-path-offset`        | no       | Graph, Node  | `int`     | `20`      | Controls the spacing between the paths drawn for the edges when there are multiple edges connecting two vertices.
+| `breadcrumb-strategy`     | no       | GraphML      | `string`  | `NONE`    | Defines the breadcrumb strategy to use. See <<gd-topology-graphml-breadcrumbs>> for more information.
 |=======================
 
 [[gd-topology-graphml-focus-strategy]]
@@ -162,4 +163,47 @@ If a vertex from one graph has an edge pointing to another graph, one can naviga
 [source, xml]
 ----
 include::examples/layers.xml[]
+----
+
+[[gd-topology-graphml-breadcrumbs]]
+==== Breadcrumbs
+
+When multiple Layers are used it is possible to navigate between them (`navigate to` option from vertex' context menu).
+To give the user some orientation breadcrumbs can be enabled with the `breadcrumb-strategy` property.
+
+The following strategies are supported:
+
+ * *NONE* No breadcrumbs are shown.
+ * *SHORTEST_PATH_TO_ROOT* generates breadcrumbs from all visible vertices to the root layer (TopologyProvider).
+    The algorithms assumes a hierarchical graph. Be aware, that all vertices MUST share the same root layer, otherwise the algorithm to determine the path to root does not work.
+
+The following figure visualizes a graphml defining multiple layers (see below for the graphml definition).
+
+image::topology/layers-example.jpg[]
+
+From the given example, the user can select the `Breadcrumb Example` Topology Provider from the menu.
+The user can switch between `Layer 1`, `Layer 2` and `Layer 3`.
+In addition for each vertex which has connections to another layer, the user can select the `navigate to` option from the context menu of that vertex to navigate to the according layer.
+The user can also search for all vertices and add it to focus.
+
+The following behaviour is implemented:
+
+ * If a user navigates from one vertex to a vertex in another layer, the view is switched to that layer and adds all vertices to focus, the `source vertex` pointed to. The Breadcrumb is `<parent layer name> > <source vertex>`.
+ For example, if a user navigates from `Layer1:A2` to `Layer2:B1` the view switches to `Layer 2` and adds `B1` and `B2` to focus. In addition `Layer 1 > A2` is shown as Breadcrumbs.
+ * If a user directly switches to another layer, the default focus strategy is applied, which may result in multiple vertices with no unique parent.
+  The calculated breadcrumb is: `<parent layer name> > Multiple <target layer name>`.
+  For example, if a user switches to `Layer 3`, all vertices of that layer are added to focus (`focus-strategy=ALL`). No unique path to root is found, the following breadcrumb is shown instead: `Layer 1 > Multiple Layer 1` > `Multiple Layer 2`
+ * If a user adds a vertex to focus, which is not in the current selected layer, the view switches to that layer and only the "new" vertex is added to focus.
+ The generated breadcrumb shows the path to root through all layers.
+  For example, the user adds `C3` to focus, and the current layer is `Layer 1`, than the generated breadcrumb is as follows: `Layer 1 > A1 > B3`.
+ * Only elements between layers are shown in the breadcrumb. Connections on the same layer are ignored.
+ For example, a user adds `C5` to focus, the generated breadcrumb is as follows: `Layer 1 > A2 > B2`
+
+
+The following graphml file defines the above shown graph.
+Be aware, that the root vertex shown above is generated to help calculating the path to root.
+It must not be defined in the graphml document.
+[source, xml]
+----
+include::examples/layers-path.xml[]
 ----

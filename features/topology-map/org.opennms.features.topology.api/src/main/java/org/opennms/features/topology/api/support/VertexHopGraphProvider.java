@@ -365,7 +365,15 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
 
     @Override
     public List<Vertex> getVertices(Criteria... criteria) {
+        // If we have a IgnoreHopCriteria, just return all existing vertices
+        for (Criteria criterium : criteria) {
+            try {
+                IgnoreHopCriteria ignoreHopCriteria = (IgnoreHopCriteria)criterium;
+                return m_delegate.getVertices();
+            } catch (ClassCastException e) {}
+        }
 
+        // Otherwise consider vertices szl and focus nodes
         Set<VertexRef> focusNodes = getFocusNodes(criteria);
         int maxSemanticZoomLevel = getMaxSemanticZoomLevel(criteria);
 

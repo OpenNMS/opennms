@@ -31,7 +31,9 @@ package org.opennms.netmgt.config;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 
@@ -43,7 +45,8 @@ import org.opennms.netmgt.config.snmp.SnmpConfig;
  */
 public class SnmpConfigManager {
 
-	private SnmpConfig m_config;
+    private static final String DEFAULT_LOCATION = "Default";
+    private SnmpConfig m_config;
 	private List<MergeableDefinition> m_definitions = new ArrayList<MergeableDefinition>();
 
 	/**
@@ -155,7 +158,16 @@ public class SnmpConfigManager {
         for (Iterator<MergeableDefinition> iter = getDefinitions().iterator(); iter.hasNext();) {
             MergeableDefinition def = iter.next();
             String location = def.getConfigDef().getLocation();
-            if ((location != null) && (!location.equals(eventToDef.getLocation()))) {
+            String locationFromEvent = eventToDef.getLocation();
+            if (DEFAULT_LOCATION.equals(location)) {
+                location = null;
+                def.getConfigDef().setLocation(location);
+            }
+            if (DEFAULT_LOCATION.equals(locationFromEvent)) {
+                locationFromEvent = null;
+                eventToDef.setLocation(locationFromEvent);
+            }
+            if (!Objects.equals(location, locationFromEvent)) {
                 iter.remove();
             }
         }

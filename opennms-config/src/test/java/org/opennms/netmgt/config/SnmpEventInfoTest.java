@@ -1234,7 +1234,88 @@ public class SnmpEventInfoTest {
     @Test
     public void testCombineOverLappingRangesWithLocation() throws Exception {
         testOverlapsTwoRangesWithLocationAndCombinesThem("192.168.1.10", "192.168.1.40");
+        testOverlapsTwoRangesWithDefaultLocationAndCombinesThem("192.168.1.0", "192.168.1.40");
+        testOverlapsTwoRangesWithoutLocationAndCombinesThem("192.168.1.15", "192.168.1.40");
     }
+
+    private void testOverlapsTwoRangesWithDefaultLocationAndCombinesThem(String firstIp, String lastIp)
+            throws IOException {
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
+                + "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n"
+                + "    <definition location=\"MINION\" version=\"v2c\">\n"
+                + "        <range begin=\"192.168.1.10\" end=\"192.168.1.20\"/>\n"
+                + "        <range begin=\"192.168.1.30\" end=\"192.168.1.40\"/>\n" + "    </definition>\n"
+                + "    <definition location=\"Default\" version=\"v2c\">\n"
+                + "        <range begin=\"192.168.2.10\" end=\"192.168.2.20\"/>\n"
+                + "        <range begin=\"192.168.2.30\" end=\"192.168.2.40\"/>\n" + "    </definition>\n"
+                + "</snmp-config>\n" + "";
+
+        String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
+                + "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n"
+                + "    <definition location=\"MINION\" version=\"v2c\">\n"
+                + "        <range begin=\"192.168.1.10\" end=\"192.168.1.20\"/>\n"
+                + "        <range begin=\"192.168.1.30\" end=\"192.168.1.40\"/>\n" + "    </definition>\n"
+                + "    <definition version=\"v2c\">\n"
+                + "        <range begin=\"192.168.1.0\" end=\"192.168.1.40\"/>\n"
+                + "        <range begin=\"192.168.2.10\" end=\"192.168.2.20\"/>\n"
+                + "        <range begin=\"192.168.2.30\" end=\"192.168.2.40\"/>\n" + "    </definition>\n"
+                + "</snmp-config>\n" + "";
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
+
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
+
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setVersion("v2c");
+        info.setFirstIPAddress(firstIp);
+        info.setLastIPAddress(lastIp);
+
+        SnmpPeerFactory.getInstance().define(info);
+
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
+        assertXmlEquals(expectedConfig, actualConfig);
+
+    }
+
+    private void testOverlapsTwoRangesWithoutLocationAndCombinesThem(String firstIp, String lastIp) throws IOException {
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
+                + "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n"
+                + "    <definition location=\"MINION\" version=\"v2c\">\n"
+                + "        <range begin=\"192.168.1.10\" end=\"192.168.1.20\"/>\n"
+                + "        <range begin=\"192.168.1.30\" end=\"192.168.1.40\"/>\n" + "    </definition>\n"
+                + "    <definition version=\"v2c\">\n"
+                + "        <range begin=\"192.168.2.10\" end=\"192.168.2.20\"/>\n"
+                + "        <range begin=\"192.168.2.30\" end=\"192.168.2.40\"/>\n" + "    </definition>\n"
+                + "</snmp-config>\n" + "";
+
+        String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
+                + "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n"
+                + "    <definition location=\"MINION\" version=\"v2c\">\n"
+                + "        <range begin=\"192.168.1.10\" end=\"192.168.1.20\"/>\n"
+                + "        <range begin=\"192.168.1.30\" end=\"192.168.1.40\"/>\n" + "    </definition>\n"
+                + "    <definition version=\"v2c\">\n"
+                + "        <range begin=\"192.168.1.15\" end=\"192.168.1.40\"/>\n"
+                + "        <range begin=\"192.168.2.10\" end=\"192.168.2.20\"/>\n"
+                + "        <range begin=\"192.168.2.30\" end=\"192.168.2.40\"/>\n" + "    </definition>\n"
+                + "</snmp-config>\n" + "";
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
+
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
+
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setVersion("v2c");
+        info.setFirstIPAddress(firstIp);
+        info.setLastIPAddress(lastIp);
+        info.setLocation("Default");
+
+        SnmpPeerFactory.getInstance().define(info);
+
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
+        assertXmlEquals(expectedConfig, actualConfig);
+
+    }
+
     /**
      * This tests moving a range that from one defintion into another defintion for which it overlaps
      * one range in the merging definition and creates 2 adjacent ranges that should be merged together.
