@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,31 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.snmp;
 
-import java.util.concurrent.atomic.AtomicReference;
+public class ClassBasedStrategyResolver implements StrategyResolver {
 
-/**
- * This class represents a singular instance that is used to map trap IP
- * addresses to known nodes.
- *
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- */
-public abstract class AbstractInterfaceToNodeCache implements InterfaceToNodeCache {
-
-    private static final AtomicReference<InterfaceToNodeCache> s_instance = new AtomicReference<>();
-
-    public static void setInstance(InterfaceToNodeCache cache) {
-        s_instance.set(cache);
+    @Override
+    public SnmpStrategy getStrategy() {
+        final String strategyClass = SnmpUtils.getStrategyClassName();
+        try {
+            return (SnmpStrategy)Class.forName(strategyClass).newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to instantiate class "+strategyClass, e);
+        }
     }
 
-    /**
-     * @deprecated Inject this value instead of using singleton access.
-     */
-    public static InterfaceToNodeCache getInstance() {
-        return s_instance.get(); 
-    }
 }
