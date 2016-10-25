@@ -16,7 +16,10 @@
     <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
     <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
 
+    <bean id="eventdMetricRegistry" class="com.codahale.metrics.MetricRegistry" />
+
     <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
+		<constructor-arg ref="eventdMetricRegistry"/>
 		<property name="eventProcessors">
 			<list>
 				<!-- This EventProcessor can be used to perform regex replacements on 
@@ -31,6 +34,7 @@
 	</bean>
 
 	<bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
+		<constructor-arg ref="eventdMetricRegistry"/>
 		<property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize" />
 		<property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength" />
 		<property name="eventHandler" ref="eventdEventHandler" />
@@ -47,10 +51,12 @@
 	</onmsgi:service>
 
 	<bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
+		<constructor-arg ref="eventdMetricRegistry"/>
 		<property name="eventIpcBroadcaster" ref="eventIpcManagerImpl" />
 	</bean>
 
 	<bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
+		<constructor-arg ref="eventdMetricRegistry"/>
 		<property name="eventConfDao" ref="eventConfDao" />
 	</bean>
 

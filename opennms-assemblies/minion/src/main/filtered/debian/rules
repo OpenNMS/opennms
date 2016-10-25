@@ -1,0 +1,81 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE=1
+export JAVA_HOME=$(shell opennms-base-assembly/src/main/filtered/bin/find-java.sh 1.8 1.8.9999)
+
+export OPTS_MAVEN="-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false"
+export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true"
+export OPTS_SKIP_TARBALL="-Dbuild.skip.tarball=true"
+export OPTS_ASSEMBLIES="-Passemblies"
+export OPTS_PROFILES="-Prun-expensive-tasks"
+export COMPILE_PROJECTS="org.opennms.features.minion.container:karaf,org.opennms.features.minion:core-repository,org.opennms.features.minion:repository,org.opennms.features.minion:container-parent,org.opennms.features.minion:core-parent,org.opennms.features.minion:org.opennms.features.minion.heartbeat,org.opennms.features.minion:repository,org.opennms.features.minion:shell"
+export ASSEMBLY_PROJECTS=":org.opennms.assemblies.minion"
+
+export BUILDDEFINES=\
+	$(OPTS_MAVEN) \
+	$(OPTS_SKIP_TESTS) \
+	$(OPTS_SKIP_TARBALL) \
+	$(OPTS_PROFILES) \
+	-Duser.home=$(HOME) \
+	-Dbuild.profile=fulldir \
+	-Dopennms.home=/opt/minion \
+	-Ddist.dir=$(CURDIR)/debian \
+	-Ddist.name=temp
+
+STAMP_BUILD = debian/stamp-build
+
+configure:
+
+build: configure $(STAMP_BUILD)
+
+$(STAMP_BUILD):
+	dh_testdir
+	./compile.pl -N $(BUILDDEFINES) install
+	if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then export OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"; fi
+	if [ -z "$$OPENNMS_SKIP_COMPILE" ] || [ "$$OPENNMS_SKIP_COMPILE" = 0 ]; then \
+		./compile.pl $(OPTS_SKIP_TESTS) $(OPTS_SKIP_TARBALL) $(OPTS_UPDATE_POLICY) $(BUILDDEFINES) $$OPTS_ENABLE_SNAPSHOTS --projects $(COMPILE_PROJECTS) --also-make install; \
+	fi
+	./assemble.pl $(OPTS_SKIP_TESTS) $(OPTS_SKIP_TARBALL) $(OPTS_UPDATE_POLICY) $(BUILDDEFINES) $$OPTS_ENABLE_SNAPSHOTS --projects $(ASSEMBLY_PROJECTS) install
+	find debian/temp -type d -name .svn -exec rm -rf {} \;
+	find debian/temp -type d -name .git -exec rm -rf {} \;
+	touch $(STAMP_BUILD)
+
+clean:
+	dh_testdir
+	dh_testroot
+	./compile.pl $(OPTS_ASSEMBLIES) $(OPTS_PROFILES) $(BUILDDEFINES) clean
+	rm -f opennms-remote-poller.{init,default}
+	dh_clean
+	rm -f $(STAMP_BUILD)
+
+install:
+	dh_testdir
+	dh_clean -k --exclude=temp
+	dh_installdirs
+	dh_testroot
+
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_installdocs
+	#dh_installinit --package=opennms-server --name=opennms --no-start -u"defaults 21 19"
+	#dh_installinit --package=opennms-remote-poller --no-start -u"defaults 21 19"
+	dh_installman
+	dh_installdebconf
+	dh_link
+	dh_strip
+	dh_compress
+	#dh_fixperms # Disabled to allow non-standard permissions
+	dh_makeshlibs -n
+	dh_installdeb
+	#dh_perl debian/opennms-common/usr/share/opennms/bin debian/opennms-contrib/usr/share/opennms/contrib
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture-dependent files here.
+binary-arch: build install
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure

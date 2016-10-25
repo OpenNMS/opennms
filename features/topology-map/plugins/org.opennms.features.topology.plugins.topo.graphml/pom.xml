@@ -68,6 +68,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
@@ -89,23 +94,13 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-	   <groupId>org.osgi</groupId>
-	   <artifactId>org.osgi.compendium</artifactId>
-	   <scope>provided</scope>
-	</dependency>
-    <dependency>
-	   <groupId>org.osgi</groupId>
-	   <artifactId>org.osgi.core</artifactId>
-	   <scope>provided</scope>
-	</dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao-api</artifactId>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
       <scope>provided</scope>
     </dependency>
 
