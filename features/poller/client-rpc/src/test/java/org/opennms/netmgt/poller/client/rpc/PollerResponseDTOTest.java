@@ -29,12 +29,15 @@
 package org.opennms.netmgt.poller.client.rpc;
 
 import java.net.UnknownHostException;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.poller.PollStatus;
 
 public class PollerResponseDTOTest extends XmlTestNoCastor<PollerResponseDTO> {
@@ -50,7 +53,7 @@ public class PollerResponseDTOTest extends XmlTestNoCastor<PollerResponseDTO> {
                 getPollerResponse(),
                 "<?xml version=\"1.0\"?>\n" +
                 "<poller-response>" +
-                    "<poll-status code=\"1\" name=\"Up\" time=\"1969-12-31T19:00:00-05:00\"/>" +
+                    "<poll-status code=\"1\" name=\"Up\" time=\"" + StringUtils.iso8601OffsetString(new Date(0), ZoneId.systemDefault(), ChronoUnit.SECONDS) + "\"/>" +
                  "</poller-response>"
             }
         });
