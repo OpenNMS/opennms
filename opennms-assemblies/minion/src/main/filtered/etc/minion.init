@@ -103,7 +103,15 @@ kill_minion() {
 	fi
 }
 
-case "$1" in
+
+ARGS="$@"
+COMMAND="$1"
+
+if [ "$(id -n -u)" "!=" "${RUNAS}" ]; then
+	exec /usr/bin/sudo -u "${RUNAS}" "${ME}" "$ARGS"
+fi
+
+case "$COMMAND" in
 
 	start)
 		if is_running; then
@@ -112,12 +120,8 @@ case "$1" in
 		fi
 
 		validate_icmp
-		if [ "$(id -un)" = "${RUNAS}" ]; then
-			"$MINION_HOME"/bin/start
-			exit $?
-		else
-			exec /usr/bin/sudo -u "${RUNAS}" "${ME}" start
-		fi
+		"$MINION_HOME"/bin/start
+		exit $?
 		;;
 
 	stop)
