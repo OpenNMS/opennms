@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.trapd;
 
-import static org.junit.Assert.assertTrue;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -57,10 +55,11 @@ import org.snmp4j.smi.VariableBinding;
 public class TrapDTOMapperTest {
 
 	@Test
-	public void object2dtoTest() throws UnknownHostException {
+	public void object2dtoTestV2() throws UnknownHostException {
 
 		PDU snmp4JV2cTrapPdu = new PDU();
-		snmp4JV2cTrapPdu.setType(PDU.TRAP);
+		snmp4JV2cTrapPdu.setType(PDU.NOTIFICATION);
+		
 		OID oid = new OID(".1.3.6.1.2.1.1.3.0");
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.sysUpTime, new TimeTicks(5000)));
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(oid)));
