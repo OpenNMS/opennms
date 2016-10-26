@@ -52,6 +52,7 @@ import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.snmp.EntityPhysicalTableRow;
 import org.opennms.netmgt.provision.snmp.EntityPhysicalTableTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -172,7 +173,9 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
                 LOG.warn("Skiping hardware discover because the node {} doesn't support SNMP", nodeId);
                 return;
             }
-            SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipAddress);
+            OnmsMonitoringLocation location = node.getLocation();
+            String locationName = (location == null) ? null : location.getLocationName();
+            SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipAddress, locationName);
             final OnmsHwEntity newRoot = getRootEntity(agentConfig, node);
             newRoot.setNode(node);
             final OnmsHwEntity currentRoot = m_hwEntityDao.findRootByNodeId(node.getId());
