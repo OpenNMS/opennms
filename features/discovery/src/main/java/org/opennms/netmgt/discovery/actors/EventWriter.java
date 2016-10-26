@@ -30,7 +30,6 @@ package org.opennms.netmgt.discovery.actors;
 
 import java.net.InetAddress;
 import java.util.Map;
-import java.util.Optional;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.discovery.messages.DiscoveryResults;
@@ -58,18 +57,20 @@ public class EventWriter
         results.getResponses().entrySet().forEach(
                         e -> sendNewSuspectEvent( e.getKey(), e.getValue(),
                                 ImmutableMap.of(
-                                        "foreignSource", Optional.ofNullable(results.getForeignSource()),
-                                        "location", Optional.ofNullable(results.getLocation()))));
+                                        "foreignSource", results.getForeignSource(),
+                                        "location", results.getLocation())));
     }
 
-    private void sendNewSuspectEvent( InetAddress address, Long rtt, Map<String, Optional<String>> eventParameters) {
+    private void sendNewSuspectEvent( InetAddress address, Long rtt, Map<String, String> eventParameters) {
         EventBuilder eb = new EventBuilder( EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "OpenNMS.Discovery" );
         eb.setInterface( address );
         eb.setHost( InetAddressUtils.getLocalHostName() );
         eb.addParam( "RTT", rtt );
 
         eventParameters.entrySet().forEach(eachEntry -> {
-            eachEntry.getValue().ifPresent(v -> eb.addParam(eachEntry.getKey(), v));
+            if (eachEntry.getValue() != null) {
+                eb.addParam( eachEntry.getKey(), eachEntry.getValue());
+            }
         });
 
         try

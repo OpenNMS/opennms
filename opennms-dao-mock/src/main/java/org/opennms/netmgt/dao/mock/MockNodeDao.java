@@ -35,7 +35,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -242,7 +241,7 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     public List<OnmsNode> findByForeignSource(final String foreignSource) {
         final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
         for (final OnmsNode node : findAll()) {
-            if (Objects.equals(foreignSource, node.getForeignSource())) {
+            if (foreignSource.equals(node.getForeignSource())) {
                 nodes.add(node);
             }
         }
@@ -376,7 +375,7 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     public List<OnmsNode> findByForeignSourceAndIpAddress(final String foreignSource, final String ipAddress) {
         final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
         for (final OnmsNode node : findAll()) {
-            if (Objects.equals(foreignSource, node.getForeignSource())) {
+            if (foreignSource.equals(node.getForeignSource())) {
                 final OnmsIpInterface iface = node.getIpInterfaceByIpAddress(ipAddress);
                 if (iface != null) nodes.add(node);
                 continue;

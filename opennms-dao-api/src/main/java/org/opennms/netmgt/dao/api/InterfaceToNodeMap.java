@@ -29,12 +29,15 @@
 package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
+/**
+ */
 public class InterfaceToNodeMap {
 
     public static class LocationIpAddressKey {
@@ -42,9 +45,8 @@ public class InterfaceToNodeMap {
         private final InetAddress m_ipAddress;
 
         public LocationIpAddressKey(String location, InetAddress ipAddress) {
-            // Use the default location when location is null
-            m_location = location != null ? location : MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
-            m_ipAddress = Objects.requireNonNull(ipAddress);
+            m_location = location;
+            m_ipAddress = ipAddress;
         }
 
         public InetAddress getIpAddress() {
@@ -62,82 +64,55 @@ public class InterfaceToNodeMap {
             if (obj.getClass() != getClass()) {
                 return false;
             }
-            LocationIpAddressKey other = (LocationIpAddressKey)obj;
-            return Objects.equals(m_ipAddress, other.m_ipAddress)
-                    && Objects.equals(m_location, other.m_location);
+            LocationIpAddressKey key = (LocationIpAddressKey)obj;
+            return new EqualsBuilder()
+                .append(m_ipAddress, key.getIpAddress())
+                .append(m_location, key.getLocation())
+                .isEquals();
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(m_ipAddress, m_location);
-        }
-
-        @Override
-        public String toString() {
-            return String.format("LocationIpAddressKey[location='%s', ipAddress='%s']",
-                    m_location, m_ipAddress);
+            return new HashCodeBuilder()
+                .append(m_ipAddress)
+                .append(m_location)
+                .toHashCode();
         }
     }
 
-    private final ReadWriteLock m_lock = new ReentrantReadWriteLock();
-    private final Map<LocationIpAddressKey,Integer> m_managedAddresses = new HashMap<>();
+    private final Map<LocationIpAddressKey,Integer> m_managedAddresses = Collections.synchronizedMap(new HashMap<>());
 
     public int addManagedAddress(String location, InetAddress address, int nodeId) {
-        m_lock.writeLock().lock();
-        try {
+        synchronized(m_managedAddresses) {
             Integer retval = m_managedAddresses.put(new LocationIpAddressKey(location, address), nodeId);
             return retval == null ? -1 : retval.intValue();
-        } finally {
-            m_lock.writeLock().unlock();
         }
     }
 
     public int removeManagedAddress(String location, InetAddress address) {
-        m_lock.writeLock().lock();
-        try {
+        synchronized(m_managedAddresses) {
             Integer retval = m_managedAddresses.remove(new LocationIpAddressKey(location, address));
             return retval == null ? -1 : retval.intValue();
-        } finally {
-            m_lock.writeLock().unlock();
         }
     }
 
     public int size() {
-        m_lock.readLock().lock();
-        try {
+        synchronized(m_managedAddresses) {
             return m_managedAddresses.size();
-        } finally {
-            m_lock.readLock().unlock();
         }
     }
 
     public int getNodeId(String location, InetAddress address) {
-        m_lock.readLock().lock();
-        try {
+        synchronized(m_managedAddresses) {
             Integer retval = m_managedAddresses.get(new LocationIpAddressKey(location, address));
             return retval == null ? -1 : retval.intValue();
-        } finally {
-            m_lock.readLock().unlock();
         }
     }
 
     public void setManagedAddresses(Map<LocationIpAddressKey,Integer> addresses) {
-        m_lock.writeLock().lock();
-        try {
+        synchronized(m_managedAddresses) {
             m_managedAddresses.clear();
             m_managedAddresses.putAll(addresses);
-        } finally {
-            m_lock.writeLock().unlock();
-        }
-    }
-
-    @Override
-    public String toString() {
-        m_lock.readLock().lock();
-        try {
-            return String.format("InterfaceToNodeMap[managedAddresses='%s']", m_managedAddresses);
-        } finally {
-            m_lock.readLock().unlock();
         }
     }
 }

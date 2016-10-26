@@ -33,7 +33,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.events.api.EventProcessor;
@@ -56,10 +55,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
-
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.Timer.Context;
 
 /**
  * <P>
@@ -117,10 +112,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      */
     private static final String DEFAULT_EVENT_UEI = "uei.opennms.org/default/event";
 
-    private final Timer expandTimer;
-
-    public EventExpander(MetricRegistry registry) {
-        expandTimer = Objects.requireNonNull(registry).timer("events.process.expand");
+    public EventExpander() {
     }
 
     /**
@@ -793,9 +785,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
     /** {@inheritDoc} */
     @Override
     public void process(Header eventHeader, Event event) {
-        try(Context ctx = expandTimer.time()) {
-            expandEvent(event);
-        }
+        expandEvent(event);
     }
 
     /**

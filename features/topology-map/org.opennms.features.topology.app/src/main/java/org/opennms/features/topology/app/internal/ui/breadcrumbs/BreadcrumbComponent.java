@@ -28,18 +28,11 @@
 
 package org.opennms.features.topology.app.internal.ui.breadcrumbs;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import static org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.breadcrumbs.Breadcrumb;
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbCriteria;
-import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
@@ -66,18 +59,11 @@ public class BreadcrumbComponent extends CustomComponent implements GraphContain
 
     @Override
     public void graphChanged(GraphContainer graphContainer) {
-        final BreadcrumbCriteria criteria = Criteria.getSingleCriteriaForGraphContainer(graphContainer, BreadcrumbCriteria.class, true);
+        final BreadcrumbCriteria criteria = getBreadcrumbCriteria(graphContainer);
         final HorizontalLayout breadcrumbLayout = (HorizontalLayout) getCompositionRoot();
         breadcrumbLayout.removeAllComponents();
 
-        // Verify that breadcrumbs are enabled
-        if (graphContainer.getMetaTopologyProvider().getBreadcrumbStrategy() == BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT) {
-            final Collection<Vertex> displayVertices = graphContainer.getGraph().getDisplayVertices();
-            if (!displayVertices.isEmpty()) {
-                final PathTree pathTree = BreadcrumbPathCalculator.findPath(graphContainer.getMetaTopologyProvider(), displayVertices.stream().map(v -> (VertexRef) v).collect(Collectors.toSet()));
-                final List<Breadcrumb> breadcrumbs = pathTree.toBreadcrumbs();
-                criteria.setBreadcrumbs(breadcrumbs);
-            }
+        if (criteria != null) {
             for (Breadcrumb eachBreadcrumb : criteria.getBreadcrumbs()) {
                 if (breadcrumbLayout.getComponentCount() >= 1) {
                     breadcrumbLayout.addComponent(new Label(" > "));
@@ -87,29 +73,15 @@ public class BreadcrumbComponent extends CustomComponent implements GraphContain
         }
     }
 
-    private static Button createButton(GraphContainer container, Breadcrumb breadcrumb) {
-        final Button button = new Button();
-        final String layerName = getLayerName(container, breadcrumb.getTargetNamespace());
-        if (breadcrumb.getSourceVertices().isEmpty()) {
-            button.setCaption(layerName);
-        } else {
-            String sourceLayerName = getLayerName(container, breadcrumb.getSourceVertices().get(0).getNamespace());
-            if (breadcrumb.getSourceVertices().size() > 2) {
-                button.setCaption("Multiple " + layerName);
-                button.setDescription(String.format("Multiple vertices from %s", sourceLayerName));
-            } else {
-                button.setCaption(breadcrumb.getSourceVertices().stream().map(b -> b.getLabel()).collect(Collectors.joining(", ")));
-                button.setDescription(String.format("%s from %s", button.getCaption(), sourceLayerName));
-            }
-        }
-        button.addStyleName(BaseTheme.BUTTON_LINK);
-        button.addClickListener((event) -> breadcrumb.clicked(container));
-        return button;
+    private static BreadcrumbCriteria getBreadcrumbCriteria(GraphContainer container) {
+        return VertexHopCriteria.getSingleCriteriaForGraphContainer(container, BreadcrumbCriteria.class, false);
     }
 
-    private static String getLayerName(GraphContainer container, String namespace) {
-        Objects.requireNonNull(container);
-        Objects.requireNonNull(namespace);
-        return container.getMetaTopologyProvider().getGraphProviderBy(namespace).getTopologyProviderInfo().getName();
+    private static Button createButton(GraphContainer container, Breadcrumb breadcrumb) {
+        Button button = new Button();
+        button.addStyleName(BaseTheme.BUTTON_LINK);
+        button.setCaption(breadcrumb.getLabel());
+        button.addClickListener((event) -> breadcrumb.clicked(container));
+        return button;
     }
 }

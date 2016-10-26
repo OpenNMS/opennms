@@ -1,0 +1,12 @@
+. option condition problem {autoCollapse: true, markerLocation: true} not show location, row 138
+
+. option condition problem {autoCollapse:false }, row 139
+
+. _autoType find a way without innerHTML that also guarantees correct order (application developer may want images in tooltip), row 406
+
+. removeClass .search-load apparently executed before searchCall!! A BIG MYSTERY!, row 501
+
+. _handleAutoresize Should resize max search box size when map is resized., row 520
+
+. autoCollapse option hide this._markerLoc before that visualized!!, row 632
+

@@ -37,7 +37,6 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm.AlarmType;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm.x733ProbableCause;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
-import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -294,7 +293,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable, St
             mapping.put("foreignId", "");
         }
 
-        String poller = alarm.getPoller() == null ? DistPollerDao.DEFAULT_DIST_POLLER_ID : alarm.getPoller().getId();
+        String poller = alarm.getPoller() == null ? "localhost" : alarm.getPoller().getId();
         mapping.put("distPoller", poller);
 
         String service = alarm.getService() == null ? "" : alarm.getService();

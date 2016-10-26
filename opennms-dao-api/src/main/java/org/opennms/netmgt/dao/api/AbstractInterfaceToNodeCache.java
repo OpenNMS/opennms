@@ -30,6 +30,9 @@ package org.opennms.netmgt.dao.api;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class represents a singular instance that is used to map trap IP
  * addresses to known nodes.
@@ -40,6 +43,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public abstract class AbstractInterfaceToNodeCache implements InterfaceToNodeCache {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractInterfaceToNodeCache.class);
 
     private static final AtomicReference<InterfaceToNodeCache> s_instance = new AtomicReference<>();
 

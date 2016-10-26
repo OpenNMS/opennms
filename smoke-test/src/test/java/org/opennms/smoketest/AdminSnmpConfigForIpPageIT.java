@@ -122,7 +122,6 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testIntegerValidation() {
         final String defaultValidationErrorTemplate = "%s is not a valid %s. Please enter a number greater than 0 or leave it empty.";
-        final String geZeroValidationErrorTemplate = "%s is not a valid %s. Please enter a number greater than or equal to 0, or leave it empty.";
         final String maxRequestSizeErrorTemplate = "%s is not a valid %s. Please enter a number greater or equal than 484 or leave it empty.";
         final String[] integerFields = new String[]{
                 "timeout", 
@@ -140,7 +139,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         "Max Request Size"};
         final String[] errorMessages = new String[]{
                 defaultValidationErrorTemplate, 
-                geZeroValidationErrorTemplate, 
+                defaultValidationErrorTemplate, 
                 defaultValidationErrorTemplate, 
                 defaultValidationErrorTemplate, 
                 defaultValidationErrorTemplate,
@@ -164,9 +163,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
             enterText(By.name(fieldName), "-5"); // < 0
             validate(errorMessageTemplate, fieldName, fieldLabel, "-5", false);
             enterText(By.name( fieldName), "0"); // = 0
-            if (i != 1) { // A retryCount of zero is legal
-                validate(errorMessageTemplate, fieldName, fieldLabel, "0", false);
-            }
+            validate(errorMessageTemplate, fieldName, fieldLabel, "0", false);
             enterText(By.name(fieldName), "1000"); // > 0
             validate(errorMessageTemplate, fieldName, fieldLabel, "1000", true);
             // reset to default
@@ -291,11 +288,11 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         if (success) {
             // if we expect this page to succeed, we should have no alert text, and we should find the finish text
             assertNull(alertText);
-            assertTrue("Expected success on field '" + fieldLabel + "' with value " + fieldValue, wait.until(pageContainsText("Finished configuring SNMP")));
+            assertTrue(wait.until(pageContainsText("Finished configuring SNMP")));
         } else {
             // if we expect a failure, check that the message matches
             assertNotNull(alertText);
-            assertEquals("Expected a failure on field '" + fieldLabel + "' with value " + fieldValue, String.format(errorMessageTemplate, fieldValue, fieldLabel), alertText);
+            assertEquals(String.format(errorMessageTemplate, fieldValue, fieldLabel), alertText);
         }
     }
 

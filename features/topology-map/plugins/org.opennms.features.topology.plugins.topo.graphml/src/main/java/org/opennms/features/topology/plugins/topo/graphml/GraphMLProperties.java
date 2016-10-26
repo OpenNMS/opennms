@@ -51,5 +51,4 @@ public interface GraphMLProperties {
     String VERTEX_STATUS_PROVIDER = "vertex-status-provider";
     String LEVEL = "level";
     String EDGE_PATH_OFFSET = "edge-path-offset";
-    String BREADCRUMB_STRATEGY = "breadcrumb-strategy";
 }

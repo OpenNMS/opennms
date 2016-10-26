@@ -1331,12 +1331,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource, final String locationString) {
 
-        final String effectiveForeignSource = foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource;
-        final OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
+        OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
 
             @Override
             protected OnmsNode query() {
-                List<OnmsNode> nodes = m_nodeDao.findByForeignSourceAndIpAddress(effectiveForeignSource, ipAddress);
+                List<OnmsNode> nodes = m_nodeDao.findByForeignSourceAndIpAddress(FOREIGN_SOURCE_FOR_DISCOVERED_NODES, ipAddress);
                 return nodes.size() > 0 ? nodes.get(0) : null;
             }
 
@@ -1363,7 +1362,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     node.setLabelSource(NodeLabelSource.HOSTNAME);
                 }
 
-                node.setForeignSource(effectiveForeignSource);
+                node.setForeignSource(foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource);
                 node.setType(NodeType.ACTIVE);
                 node.setLastCapsdPoll(now);
 
@@ -1380,9 +1379,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         }.execute();
 
         if (node != null) {
-            if (effectiveForeignSource != null) {
+            if (foreignSource != null) {
                 node.setForeignId(node.getNodeId());
-                createUpdateRequistion(ipAddress, node, effectiveForeignSource);
+                createUpdateRequistion(ipAddress, node, foreignSource);
             }
 
             // we do this here rather than in the doInsert method because

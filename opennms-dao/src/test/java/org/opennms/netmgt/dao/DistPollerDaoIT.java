@@ -37,7 +37,6 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -71,7 +70,7 @@ public class DistPollerDaoIT implements InitializingBean {
 	public void testCreate() {
         OnmsDistPoller distPoller = new OnmsDistPoller("otherpoller");
         distPoller.setLabel("otherpoller");
-        distPoller.setLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+        distPoller.setLocation("localhost");
         distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
         getDistPollerDao().save(distPoller);
     }

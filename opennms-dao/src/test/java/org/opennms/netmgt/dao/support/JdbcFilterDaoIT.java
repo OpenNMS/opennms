@@ -54,7 +54,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -246,8 +245,7 @@ public class JdbcFilterDaoIT implements InitializingBean {
 
     @Test
     public void testLocationFilterMatch() throws Exception {
-        Map<Integer, String> map = m_dao.getNodeMap(String.format("location == '%s'",
-                MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
+        Map<Integer, String> map = m_dao.getNodeMap("location == 'localhost'");
         assertNotNull("returned map should not be null", map);
         assertEquals("map size", 6, map.size());
     }

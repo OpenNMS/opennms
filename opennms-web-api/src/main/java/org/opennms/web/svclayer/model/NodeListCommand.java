@@ -30,8 +30,6 @@ package org.opennms.web.svclayer.model;
 
 import java.util.Arrays;
 
-import com.google.common.base.Strings;
-
 /**
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
@@ -57,7 +55,6 @@ public class NodeListCommand {
     private boolean m_nodesWithDownAggregateStatus = false;
     private boolean m_listInterfaces = false;
     private int m_nodeId = -1;
-    private String m_monitoringLocation;
     
     public void setNodeId(int nodeId) {
         m_nodeId = nodeId;
@@ -246,16 +243,5 @@ public class NodeListCommand {
     public boolean getListInterfaces() {
         return m_listInterfaces;
     }
-
-    public void setMonitoringLocation(String monitoringLocation) {
-        m_monitoringLocation = monitoringLocation;
-    }
-
-    public String getMonitoringLocation() {
-        return m_monitoringLocation;
-    }
-
-    public boolean hasMonitoringLocation() {
-        return !Strings.isNullOrEmpty(m_monitoringLocation);
-    }
+    
 }

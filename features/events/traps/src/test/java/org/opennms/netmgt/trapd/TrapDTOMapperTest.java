@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.trapd;
 
+import static org.junit.Assert.assertTrue;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -35,7 +37,6 @@ import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DistPollerDaoMinion;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.TrapInformation;
@@ -55,11 +56,10 @@ import org.snmp4j.smi.VariableBinding;
 public class TrapDTOMapperTest {
 
 	@Test
-	public void object2dtoTestV2() throws UnknownHostException {
+	public void object2dtoTest() throws UnknownHostException {
 
 		PDU snmp4JV2cTrapPdu = new PDU();
-		snmp4JV2cTrapPdu.setType(PDU.NOTIFICATION);
-		
+		snmp4JV2cTrapPdu.setType(PDU.TRAP);
 		OID oid = new OID(".1.3.6.1.2.1.1.3.0");
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.sysUpTime, new TimeTicks(5000)));
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(oid)));
@@ -93,7 +93,7 @@ public class TrapDTOMapperTest {
 		OnmsDistPoller distPoller = new OnmsDistPoller();
 		distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
 		distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
-		distPoller.setLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+		distPoller.setLocation("localhost");
 		DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
 
 		TrapObjectToDTOProcessor mapper = new TrapObjectToDTOProcessor();

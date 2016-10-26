@@ -40,8 +40,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import javax.servlet.ServletContext;
 
 import org.hibernate.Criteria;
@@ -59,7 +57,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -73,7 +70,7 @@ import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.model.StatusType;
 import org.opennms.web.svclayer.model.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,9 +107,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     
     @Autowired
     private CategoryDao m_categoryDao;
-
-    @Autowired
-    private MonitoringLocationDao m_monitoringLocationDao;
     
 	@Autowired
 	private PlatformTransactionManager m_transactionManager;
@@ -966,9 +960,5 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         
         Collections.sort(intfs, INTERFACE_COMPARATOR);
         return intfs.toArray(new Interface[intfs.size()]);
-    }
-
-    public List<OnmsMonitoringLocation> getMonitoringLocations() {
-        return m_monitoringLocationDao.findAll().stream().sorted((a,b) -> a.getLocationName().compareTo(b.getLocationName())).collect(Collectors.toList());
-    }
+    }    
 }

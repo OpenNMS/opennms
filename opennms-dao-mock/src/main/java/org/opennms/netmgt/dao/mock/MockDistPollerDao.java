@@ -31,7 +31,6 @@ package org.opennms.netmgt.dao.mock;
 import java.util.UUID;
 
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
 
 public class MockDistPollerDao extends AbstractMockDao<OnmsDistPoller,String> implements DistPollerDao {
@@ -54,7 +53,7 @@ public class MockDistPollerDao extends AbstractMockDao<OnmsDistPoller,String> im
         final OnmsDistPoller whoami = new OnmsDistPoller();
         whoami.setId(DEFAULT_DIST_POLLER_ID);
         whoami.setLabel("localhost");
-        whoami.setLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+        whoami.setLocation("localhost");
         return whoami;
     }
 }

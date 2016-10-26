@@ -101,7 +101,7 @@ public class TrapDTOToObjectProcessor implements Processor {
 		) {
 			PDU pdu = new PDU();
 			pdu.setType(PDU.NOTIFICATION);
-
+			
 			for (SnmpResult snmpResult : trapDto.getResults()) {
 				final int type = snmpResult.getValue().getType();
 				final byte[] value = snmpResult.getValue().getBytes();
@@ -109,6 +109,9 @@ public class TrapDTOToObjectProcessor implements Processor {
 
 				pdu.add(new VariableBinding(oid, ((Snmp4JValue)SnmpUtils.getValueFactory().getValue(type, value)).getVariable()));
 			}
+			
+			
+			
 
 			TrapInformation retval = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
 				InetAddrUtils.addr(trapDto.getHeader(TrapDTO.SOURCE_ADDRESS)),

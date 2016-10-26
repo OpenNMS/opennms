@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<title></title> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<link rel="stylesheet" href="/leaflet/leaflet.css" />
+<link rel="stylesheet" href="../leaflet-search.css" />
+<link rel="stylesheet" href="../style.css" />
+</head>
+
+<body>
+<h3><a href="../">Leaflet.Control.Search</a></h3>
+
+<h4>Bulk Data Example: <em>search locations by City name</em></h4>
+<div id="map"></div>
+
+<div id="post-it">
+<b>Search values:</b><br />
+Cities having more than 15000 inhabitants<br />
+<small>(about 14000 records <a href="http://www.geonames.org/">geonames.org</a>)
+</small>
+</div>
+
+<script src="/js/jquery-1.7.2.min.js"></script>
+<script src="/leaflet/leaflet.js"></script>
+<script src="../leaflet-search.js"></script>
+<script>
+
+	var map = new L.Map('map', {zoom: 9, center: new L.latLng([41.575730,13.002411]) });
+
+	map.addLayer(new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));	//base layer
+
+	function searchByAjax(text) {	//definition of callback for syncronous ajax serching
+
+		var resultsraw = {},
+			results = {};
+	
+		$.ajax({
+			url: 'search.php',	//read comments in search.php for more information usage
+			async: false,		//must be syncronous request! or not return ajax results
+			type: 'GET',
+			data: {q : text, cities: 1},
+			dataType: 'json',
+			success: function(json) {
+				if(json)
+					resultsraw = json;
+			}
+		});
+	
+		for(i in resultsraw)	//reformatting results in key,value
+			results[ resultsraw[i].title ] = resultsraw[i].loc;
+
+		return results;
+	}
+
+	map.addControl( new L.Control.Search({ searchCall: searchByAjax, text:'City name...', markerLocation: true }) );
+
+</script>
+
+<div id="copy">powered by <a href="mailto:stefano.cudini@gmail.com">Stefano Cudini</a></div>
+</body>
+</html>

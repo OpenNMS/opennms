@@ -72,19 +72,14 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     private String m_location = null;
     private Definition m_definitionWithLocation = null;
     private Definition m_prevMatchedDefinition = null;
-    static private final String DEFAULT_LOCATION ="Default";
 
     public AddressSnmpConfigVisitor(final InetAddress addr) {
         m_address = addr;
-        m_location = DEFAULT_LOCATION;
     }
 
     public AddressSnmpConfigVisitor(final InetAddress addr, String location) {
         m_address = addr;
         m_location = location;
-        if (StringUtils.isBlank(m_location)) {
-            m_location = DEFAULT_LOCATION;
-        }
     }
     public void visitSnmpConfig(final SnmpConfig config) {
         m_currentConfig = config;
@@ -154,9 +149,6 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
         if (m_matchedDefinition != null && Objects.equals(m_currentDefinition, m_matchedDefinition)) {
 
             String location = m_matchedDefinition.getLocation();
-            if (StringUtils.isBlank(location)) {
-                location = DEFAULT_LOCATION;
-            }
             // If location doesn't match, it's not a matched definition
             if (!Objects.equals(location, m_location)) {
                 // Retrieve if there is a matched Definition before
