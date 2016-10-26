@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>org.opennms.features.ticketing</artifactId>
+    <groupId>org.opennms.features</groupId>
+    <version>17.0.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>jira-client</artifactId>
+  <packaging>bundle</packaging>
+  <name>OpenNMS :: Features :: Ticketing :: JIRA Client</name>
+  <description>OSGi wrapper for the Jira Client API.</description>
+  <build>
+    <defaultGoal>install</defaultGoal>
+    <plugins>
+      <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.4.2</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <excludes>
+                  <exclude>org.springframework:*</exclude>
+                  <exclude>javax.xml.bind:jaxb-api</exclude>
+                  <exclude>com.sun.xml.bind:jaxb-impl</exclude>
+                  <exclude>commons-logging:commons-logging</exclude>
+                  <exclude>joda-time:joda-time</exclude>
+                </excludes>
+              </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>javax/ws/rs/**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <createDependencyReducedPom>true</createDependencyReducedPom>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Import-Package>org.joda.time,org.joda.time.format;version=${jodaTimeVersion},javax.ws.rs,javax.ws.rs.core,javax.ws.rs.ext,javax.net.ssl,javax.naming,org.apache.commons.logging,org.springframework.beans.factory</Import-Package>
+            <Export-Package>com.atlassian.jira.rest.client.api,com.atlassian.jira.rest.client.auth,com.atlassian.jira.rest.client.api.domain,com.atlassian.jira.rest.client.api.domain.input,com.atlassian.jira.rest.client.internal.async,com.atlassian.util.concurrent</Export-Package>
+          </instructions>
+          <unpackBundle>true</unpackBundle>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <repositories>
+    <repository>
+      <id>atlassian-public</id>
+      <name>Atlassian public repo</name>
+      <url>http://maven.atlassian.com/content/repositories/atlassian-public/</url>
+    </repository>
+    <repository>
+      <id>atlassian-public-mirror</id>
+      <name>Atlassian public repo</name>
+      <url>http://maven.opennms.org/content/repositories/atlassian-public/</url>
+    </repository>
+  </repositories>
+  <properties>
+    <jiraClientVersion>3.0.0</jiraClientVersion>
+  </properties>
+</project>
+
