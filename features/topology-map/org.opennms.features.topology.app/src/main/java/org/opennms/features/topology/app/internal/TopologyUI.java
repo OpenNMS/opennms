@@ -845,6 +845,15 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                 bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
                 bottomLayoutBar.setSizeFull();
                 bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
+                bottomLayoutBar.addSplitterClickListener((event) -> {
+                    if (event.isDoubleClick()) {
+                        if (bottomLayoutBar.getSplitPosition() == 100) {
+                            bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
+                        } else {
+                            bottomLayoutBar.setSplitPosition(100, Unit.PERCENTAGE);
+                        }
+                    }
+                });
                 m_layout.addComponent(bottomLayoutBar);
                 updateTabVisibility();
             }
