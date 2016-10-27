@@ -48,12 +48,6 @@ public interface GraphProvider extends VertexProvider, EdgeProvider, SelectionAw
 	 */
 	Vertex addVertex(int x, int y);
 
-	/**
-	 * This function indicates support for (mostly legacy) grouping operations.
-	 * If true then addGroup() should work as expected.
-	 */
-	boolean groupingSupported();
-
 	Vertex addGroup(String label, String iconKey);
 
 	EdgeRef[] getEdgeIdsForVertex(VertexRef vertex);

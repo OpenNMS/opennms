@@ -550,41 +550,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 			}
     	}
 
-    	Collection<Edge> displayEdges = new HashSet<Edge>();
-    	// This legacy grouping code mimics the CollapsibleCriteria behavior
-    	if (m_mergedGraphProvider.groupingSupported()) {
-    		for(Edge e : m_mergedGraphProvider.getEdges(getCriteria())) {
-    			VertexRef source = e.getSource().getVertex();
-    			VertexRef target = e.getTarget().getVertex();
-
-    			VertexRef displaySource = getDisplayVertex(source);
-    			VertexRef displayTarget = getDisplayVertex(target);
-    			if (displaySource == null) {
-    				s_log.debug("Discarding edge with null source: {}", e);
-    			} else if (displayTarget == null) {
-    				s_log.debug("Discarding edge with null target: {}", e);
-    			} else if (refEquals(displaySource, displayTarget)) {
-    				s_log.debug("Discarding edge with identical source and target: {}", e);
-    			} else if (refEquals(source, displaySource) && refEquals(target, displayTarget)) {
-    				// If the grouping display source and target are the same as the actual
-    				// source and target (ie. the vertex is not part of a group) then just
-    				// display the edge
-    				displayEdges.add(e);
-    			} else {
-    				// we may need to create a pseudo edge to represent this edge
-    				String pseudoId = pseudoId(displaySource, displayTarget);
-    				PseudoEdge pEdge = new PseudoEdge("pseudo-"+e.getNamespace(), pseudoId, e.getStyleName(), m_mergedGraphProvider.getVertex(displaySource), m_mergedGraphProvider.getVertex(displayTarget));
-    				//This is a hack to get around the device A to device Z label in NCS Path when going through groups
-    				if(e.getStyleName().equals("ncs edge direct")){
-    					pEdge.setTooltipText(e.getTooltipText());
-    				}
-    				displayEdges.add(pEdge);
-    			}
-    		}
-    	} else {
-    		displayEdges = m_mergedGraphProvider.getEdges(getCriteria());
-    	}
-
+    	Collection<Edge> displayEdges = m_mergedGraphProvider.getEdges(getCriteria());
         if (m_graph == null) {
             m_graph = new VEGraph(displayVertices, displayEdges);
         } else {

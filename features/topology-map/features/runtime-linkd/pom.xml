@@ -29,15 +29,6 @@
           <features>
             <feature>opennms-topology-runtime-base</feature>
           </features>
-          <configs>
-            <config>
-                <name>org.opennms.features.topology.plugins.topo.linkd</name>
-                <contents>
-                    configurationFile=${karaf.home}/etc/saved-linkd-graph.xml
-                </contents>
-            </config>
-          </configs>
-
         </configuration>
       </plugin>
     </plugins>

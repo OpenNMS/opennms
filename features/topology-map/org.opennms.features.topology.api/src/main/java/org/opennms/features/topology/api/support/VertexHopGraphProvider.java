@@ -674,11 +674,6 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     }
 
     @Override
-    public boolean groupingSupported() {
-        return false;
-    }
-
-    @Override
     public Vertex addGroup(String label, String iconKey) {
         throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
     }

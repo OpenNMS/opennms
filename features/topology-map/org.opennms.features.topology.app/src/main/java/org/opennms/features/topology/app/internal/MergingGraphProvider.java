@@ -355,14 +355,6 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	 * TODO Is this going to work properly?
 	 */
 	@Override
-	public boolean groupingSupported() {
-		return m_baseGraphProvider.groupingSupported();
-	}
-
-	/**
-	 * TODO Is this going to work properly?
-	 */
-	@Override
 	public Vertex addGroup(String label, String iconKey) {
 		return m_baseGraphProvider.addGroup(label, iconKey);
 	}
@@ -669,11 +661,6 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 
         @Override
 		public boolean setParent(VertexRef child, VertexRef parent) {
-			return false;
-		}
-
-		@Override
-		public boolean groupingSupported() {
 			return false;
 		}
 

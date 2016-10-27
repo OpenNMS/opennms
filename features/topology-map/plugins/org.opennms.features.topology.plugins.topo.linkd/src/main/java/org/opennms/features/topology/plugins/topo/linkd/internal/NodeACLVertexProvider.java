@@ -97,11 +97,6 @@ public class NodeACLVertexProvider implements GraphProvider {
     }
 
     @Override
-    public boolean groupingSupported() {
-        return false;
-    }
-
-    @Override
     public Vertex addGroup(String label, String iconKey) {
         return m_delegate.addGroup(label, iconKey);
     }
