@@ -29,37 +29,32 @@
 package org.opennms.netmgt.icmp.proxy;
 
 import java.net.InetAddress;
+import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import com.google.common.collect.Maps;
 
-import org.opennms.core.rpc.api.RpcClient;
-import org.opennms.core.rpc.api.RpcClientFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+public class PingSweepSummary {
 
-@Component(value = "locationAwarePingClient")
-public class LocationAwarePingClientImpl implements LocationAwarePingClient {
+    private Map<InetAddress, Double> responses = Maps.newConcurrentMap();
 
-    @Autowired
-    private RpcClientFactory rpcClientFactory;
-
-    @Autowired
-    private PingProxyRpcModule pingProxyRpcModule;
-
-    private RpcClient<PingRequestDTO, PingResponseDTO> delegate;
-
-
-    @PostConstruct
-    public void init() {
-        delegate = rpcClientFactory.getClient(pingProxyRpcModule);
+    public Map<InetAddress, Double> getResponses() {
+        return responses;
     }
 
-    public RpcClient<PingRequestDTO, PingResponseDTO> getDelegate() {
-        return delegate;
+    public void setResponses(Map<InetAddress, Double> m_responses) {
+        this.responses = m_responses;
     }
 
-    @Override
-    public PingRequestBuilder ping(InetAddress inetAddress) {
-        return new PingRequestBuilderImpl(delegate).withInetAddress(inetAddress);
+    public void addResponse(Map<InetAddress, Double> response) {
+        this.responses.putAll(response);
     }
+
+    public boolean isSuccess() {
+        return responses.isEmpty() ? Boolean.FALSE : Boolean.TRUE;
+    }
+
+    public int numberOfPingsReturned() {
+        return responses.size();
+    }
+
 }
