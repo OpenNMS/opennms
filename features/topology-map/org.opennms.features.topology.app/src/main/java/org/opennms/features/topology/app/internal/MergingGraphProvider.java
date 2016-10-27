@@ -411,11 +411,6 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		return m_baseGraphProvider.getEdgeIdsForVertices(vertices);
 	}
 
-	@Override
-	public void load(String filename) {
-		// Do nothing
-	}
-
     @Override
     public void refresh() {
         m_baseGraphProvider.refresh();
@@ -445,11 +440,6 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		for (VertexProvider provider : m_vertexProviders.values()) {
 			provider.clearVertices();
 		}
-	}
-
-	@Override
-	public void save() {
-		// TODO Do nothing?
 	}
 
 	/**
@@ -709,11 +699,6 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 					.withCriteria(() -> null);
 		}
 
-		@Override
-		public void load(String filename) {
-			// Do nothing
-		}
-
         @Override
         public void refresh() {
             // Do nothing
@@ -726,11 +711,6 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 
 		@Override
 		public void resetContainer() {
-			// Do nothing
-		}
-
-		@Override
-		public void save() {
 			// Do nothing
 		}
 

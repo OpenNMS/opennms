@@ -28,19 +28,12 @@
 
 package org.opennms.features.topology.api.topo;
 
-import java.net.MalformedURLException;
 import java.util.Map;
 import java.util.Set;
-
-import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.browsers.SelectionAware;
 
 public interface GraphProvider extends VertexProvider, EdgeProvider, SelectionAware {
-
-	void save();
-
-	void load(String filename) throws MalformedURLException, JAXBException;
 
 	void refresh();
 

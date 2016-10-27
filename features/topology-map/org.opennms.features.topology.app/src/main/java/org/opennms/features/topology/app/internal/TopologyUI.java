@@ -875,6 +875,9 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             try {
                 ((SelectionNotifier)view).addSelectionListener(m_graphContainer.getSelectionManager());
             } catch (ClassCastException e) {}
+            try {
+                m_graphContainer.addChangeListener((GraphContainer.ChangeListener) view);
+            } catch (ClassCastException e) {}
 
             // Icon can be null
             tabSheet.addTab(view, viewContrib.getTitle(), viewContrib.getIcon());

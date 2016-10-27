@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -37,9 +36,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBException;
 
@@ -60,8 +59,6 @@ import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.WrappedGraph;
-import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
@@ -465,20 +462,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         m_loadManualLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "manual"));
     }
 
-    @Override
-    @Transactional
-    public void load(String filename) throws MalformedURLException, JAXBException {
-        final Timer.Context context = m_loadFullTimer.time();
-        if (filename != null) {
-            LOG.warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + getConfigurationFile() + " instead");
-        }
-        try {
-            loadCompleteTopology();
-        } finally {
-            context.stop();
-        }
-    }
-
     private void loadCompleteTopology() throws MalformedURLException, JAXBException {
         try{
             resetContainer();
@@ -659,60 +642,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
             if (isAddNodeWithoutLink()) {
                 addNodesWithoutLinks(nodemap,nodeipmap,nodeipprimarymap);
-            }
-        } finally {
-            context.stop();
-        }
-
-        context = m_loadManualLinksTimer.time();
-        try {
-            File configFile = new File(getConfigurationFile());
-            if (configFile.exists() && configFile.canRead()) {
-                LOG.debug("loadtopology: loading topology from configuration file: " + getConfigurationFile());
-                WrappedGraph graph = getGraphFromFile(configFile);
-
-                // Add all groups to the topology
-                for (WrappedVertex eachVertexInFile: graph.m_vertices) {
-                    if (eachVertexInFile.group) {
-                        LOG.debug("loadtopology: adding group to topology: " + eachVertexInFile.id);
-                        if (eachVertexInFile.namespace == null) {
-                            eachVertexInFile.namespace = getVertexNamespace();
-                            LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on vertex to default: {}", eachVertexInFile);
-                        }
-                        if (eachVertexInFile.id == null) {
-                            LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", getConfigurationFile(), eachVertexInFile);
-                        }
-                        AbstractVertex newGroupVertex = addGroup(eachVertexInFile.id, eachVertexInFile.iconKey, eachVertexInFile.label);
-                        newGroupVertex.setIpAddress(eachVertexInFile.ipAddr);
-                        newGroupVertex.setLocked(eachVertexInFile.locked);
-                        if (eachVertexInFile.nodeID != null) newGroupVertex.setNodeID(eachVertexInFile.nodeID);
-                        if (!newGroupVertex.equals(eachVertexInFile.parent)) newGroupVertex.setParent(eachVertexInFile.parent);
-                        newGroupVertex.setSelected(eachVertexInFile.selected);
-                        newGroupVertex.setStyleName(eachVertexInFile.styleName);
-                        newGroupVertex.setTooltipText(eachVertexInFile.tooltipText);
-                        if (eachVertexInFile.x != null) newGroupVertex.setX(eachVertexInFile.x);
-                        if (eachVertexInFile.y != null) newGroupVertex.setY(eachVertexInFile.y);
-                    }
-                }
-                for (Vertex vertex: getVertices()) {
-                    if (vertex.getParent() != null && !vertex.equals(vertex.getParent())) {
-                        LOG.debug("loadtopology: setting parent of " + vertex + " to " + vertex.getParent());
-                        setParent(vertex, vertex.getParent());
-                    }
-                }
-                // Add all children to the specific group
-                // Attention: We ignore all other attributes, they do not need to be merged!
-                for (WrappedVertex eachVertexInFile : graph.m_vertices) {
-                    if (!eachVertexInFile.group && eachVertexInFile.parent != null) {
-                        final Vertex child = getVertex(eachVertexInFile);
-                        final Vertex parent = getVertex(eachVertexInFile.parent);
-                        if (child == null || parent == null) continue;
-                        LOG.debug("loadtopology: setting parent of " + child + " to " + parent);
-                        if (!child.equals(parent)) setParent(child, parent);
-                    }
-                }
-            } else {
-                LOG.debug("loadtopology: could not load topology configFile:" + getConfigurationFile());
             }
         } finally {
             context.stop();
@@ -1118,13 +1047,17 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     @Override
+    @Transactional
     public void refresh() {
+        final Timer.Context context = m_loadFullTimer.time();
         try {
-            load(null);
+            loadCompleteTopology();
         } catch (MalformedURLException e) {
             LOG.error(e.getMessage(), e);
         } catch (JAXBException e) {
             LOG.error(e.getMessage(), e);
+        } finally {
+            context.stop();
         }
     }
 

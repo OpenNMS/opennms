@@ -28,16 +28,16 @@
 
 package org.opennms.features.topology.api.topo;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXBException;
-
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -364,12 +364,6 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     }
 
     @Override
-    public abstract void save();
-
-    @Override
-    public abstract void load(String filename) throws MalformedURLException, JAXBException;
-
-    @Override
     public abstract void refresh();
 
     public TopologyProviderInfo getTopologyProviderInfo() {
@@ -378,5 +372,22 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
 
     public void setTopologyProviderInfo(TopologyProviderInfo topologyProviderInfo) {
         this.topologyProviderInfo = topologyProviderInfo;
+    }
+
+    protected static SelectionChangedListener.Selection getSelection(String namespace, List<VertexRef> selectedVertices, ContentType type) {
+        final Set<Integer> nodeIds = selectedVertices.stream()
+                .filter(v -> namespace.equals(v.getNamespace()))
+                .filter(v -> v instanceof AbstractVertex)
+                .map(v -> (AbstractVertex) v)
+                .map(v -> v.getNodeID())
+                .filter(nodeId -> nodeId != null)
+                .collect(Collectors.toSet());
+        if (type == ContentType.Alarm) {
+            return new SelectionChangedListener.AlarmNodeIdSelection(nodeIds);
+        }
+        if (type == ContentType.Node) {
+            return new SelectionChangedListener.IdSelection<>(nodeIds);
+        }
+        return SelectionChangedListener.Selection.NONE;
     }
 }

@@ -28,14 +28,11 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
@@ -72,17 +69,6 @@ public class NodeACLVertexProvider implements GraphProvider {
         m_nodeDao = nodeDao;
         String aclsProp = System.getProperty("org.opennms.web.aclsEnabled");
         m_aclsEnabled = aclsProp != null ? aclsProp.equals("true") : false;
-    }
-
-
-    @Override
-    public void save() {
-        m_delegate.save();
-    }
-
-    @Override
-    public void load(String filename) throws MalformedURLException, JAXBException {
-        m_delegate.load(filename);
     }
 
     @Override

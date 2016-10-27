@@ -28,13 +28,9 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
-import java.net.MalformedURLException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBException;
 
 import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLNode;
@@ -155,16 +151,6 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     @Override
     public void refresh() {
         // TODO: How to handle refresh()?
-    }
-
-    @Override
-    public void load(final String filename) throws MalformedURLException, JAXBException {
-        refresh();
-    }
-
-    @Override
-    public void save() {
-        throw new UnsupportedOperationException();
     }
 
     @Override

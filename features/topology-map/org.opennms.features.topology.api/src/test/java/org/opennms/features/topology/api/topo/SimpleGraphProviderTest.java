@@ -32,13 +32,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
-import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.xml.bind.JAXB;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -117,20 +113,6 @@ public class SimpleGraphProviderTest {
         }
     }
 
-    /**
-     * This test makes sure that the afterUnmarshall() functions are working on the
-     * {@link WrappedVertex} class.
-     */
-    @Test
-    public void testUnmarshallVertex() throws Exception {
-        String vertexString = "<graph namespace=\"blah\"><vertex><id>hello</id></vertex></graph>";
-        WrappedGraph graph = JAXB.unmarshal(new ByteArrayInputStream(vertexString.getBytes()), WrappedGraph.class);
-        assertEquals("blah", graph.m_namespace);
-        assertEquals(1, graph.m_vertices.size());
-        WrappedVertex vertex = graph.m_vertices.get(0);
-        assertEquals("hello", vertex.id);
-        assertEquals("blah", vertex.namespace);
-    }
 
     @Test
     public void test() throws Exception {
@@ -176,21 +158,11 @@ public class SimpleGraphProviderTest {
         m_topologyProvider.connectVertices(vertexA, vertexE);
         m_topologyProvider.connectVertices(vertexD, vertexE);
 
-        // Ensure that the WrappedVertex class is working properly 
-        WrappedVertex wrappedVertex = new WrappedLeafVertex(vertexA);
-        assertEquals("v0", wrappedVertex.id);
-        assertEquals("simple", wrappedVertex.namespace);
-        assertEquals("10.0.0.4", wrappedVertex.ipAddr);
-        assertEquals(50, wrappedVertex.x.intValue());
-        assertEquals(100, wrappedVertex.y.intValue());
-
         Assert.assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref0)).size());
         Assert.assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref1)).size());
         Assert.assertEquals(7, m_topologyProvider.getVertices().size());
         Assert.assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref0)).length);
         Assert.assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref1)).length);
-
-        m_topologyProvider.save("target/test-classes/test-graph.xml");
 
         m_topologyProvider.resetContainer();
 
@@ -200,67 +172,6 @@ public class SimpleGraphProviderTest {
         Assert.assertEquals(0, m_topologyProvider.getVertices().size());
         Assert.assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref0)).length);
         Assert.assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref1)).length);
-
-        m_topologyProvider.load("target/test-classes/test-graph.xml");
-
-        // Ensure that all of the content has been reloaded properly
-        Assert.assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref0)).size());
-        Assert.assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref1)).size());
-        Assert.assertEquals(7, m_topologyProvider.getVertices().size());
-        Assert.assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref0)).length);
-        Assert.assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref1)).length);
-    }
-
-    @Test
-    public void loadSampleGraph() throws Exception {
-        GraphProvider topologyProvider = new SimpleGraphProvider();
-        topologyProvider.load("saved-vmware-graph.xml");
-
-        LOG.info("Vertex Count: " + topologyProvider.getVertices().size());
-        LOG.info("Edge Count: " + topologyProvider.getEdges().size());
-    }
-
-    @Test
-    public void testLoadSimpleGraph() throws Exception {
-        SimpleGraphProvider topologyProvider = new SimpleGraphProvider();
-        topologyProvider.load(URI.create("file:target/test-classes/simple-graph.xml"));
-
-        Assert.assertEquals(7, topologyProvider.getVertices().size());
-        Assert.assertEquals(7, topologyProvider.getEdges().size());
-
-        Vertex v0 = topologyProvider.getVertex("vertex", "v0");
-        Vertex v1 = topologyProvider.getVertex("vertex", "v1");
-        Vertex v2 = topologyProvider.getVertex("vertex", "v2");
-        Vertex v3 = topologyProvider.getVertex("vertex", "v3");
-        Vertex v4 = topologyProvider.getVertex("vertex", "v4");
-        Vertex g0 = topologyProvider.getVertex("vertex", "g0");
-        assertEquals("Vertex v0", v0.getLabel());
-        assertEquals("64.146.64.214", v0.getIpAddress());
-        assertEquals(false, v0.isLocked());
-        assertEquals(new Integer(-1), v0.getNodeID());
-        assertEquals(false, v0.isSelected());
-        assertEquals(new Integer(50), v0.getX());
-        assertEquals(new Integer(100), v0.getY());
-        assertEquals(g0, v0.getParent());
-
-        Assert.assertEquals(2, topologyProvider.getChildren(g0).size());
-
-        Assert.assertEquals(0, topologyProvider.getSemanticZoomLevel(g0));
-        Assert.assertEquals(1, topologyProvider.getSemanticZoomLevel(v0));
-
-        Assert.assertEquals(3, topologyProvider.getEdgeIdsForVertex(v0).length);
-        Assert.assertEquals(3, topologyProvider.getEdgeIdsForVertex(v1).length);
-        Assert.assertEquals(3, topologyProvider.getEdgeIdsForVertex(v2).length);
-        Assert.assertEquals(3, topologyProvider.getEdgeIdsForVertex(v3).length);
-        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(v4).length);
-
-        for (Vertex vertex : topologyProvider.getVertices()) {
-            assertEquals("vertex", vertex.getNamespace());
-            assertTrue(vertex.getIpAddress(), "127.0.0.1".equals(vertex.getIpAddress()) || "64.146.64.214".equals(vertex.getIpAddress()));
-        }
-        for (Edge edge : topologyProvider.getEdges()) {
-            assertEquals("vertex", edge.getNamespace());
-        }
     }
 
     @Test
