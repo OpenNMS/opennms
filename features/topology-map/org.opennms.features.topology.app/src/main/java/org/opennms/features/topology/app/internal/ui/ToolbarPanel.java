@@ -36,8 +36,10 @@ import org.opennms.features.topology.api.GraphContainer.ChangeListener;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
+import org.opennms.features.topology.app.internal.ManualLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.TopologyUI;
 import org.opennms.features.topology.app.internal.support.IonicIcons;
+import org.opennms.features.topology.app.internal.support.LayoutManager;
 
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutAction;
@@ -77,12 +79,20 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
     private final Button layerButton;
 
     /**
+     * The Button to save the current vertex positions.
+     */
+    private final Button layerSaveButton;
+
+    private final LayoutManager layoutManager;
+
+    /**
      * The Layout which shows the available layers.
      */
     private final VerticalLayout layerLayout;
 
     public ToolbarPanel(final ToolbarPanelController controller) {
         addStyleName(Styles.TOOLBAR);
+        this.layoutManager = controller.getLayoutManager();
 
         final Property<Double> scale = controller.getScaleProperty();
         final Boolean[] eyeClosed = new Boolean[] {false};
@@ -253,6 +263,12 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
             setLayerLayoutVisible(!isCollapsed);
         });
 
+        // Save button
+        layerSaveButton = new Button();
+        layerSaveButton.setId("saveLayerButton");
+        layerSaveButton.setIcon(FontAwesome.FLOPPY_O);
+        layerSaveButton.addClickListener((event) -> controller.saveLayout());
+
         // Actual Layout for the Toolbar
         CssLayout contentLayout = new CssLayout();
         contentLayout.addStyleName("toolbar-component");
@@ -261,6 +277,7 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
         contentLayout.addComponent(createGroup(m_panBtn, m_selectBtn));
         contentLayout.addComponent(createGroup(magnifyBtn, demagnifyBtn));
         contentLayout.addComponent(createGroup(shareButton));
+        contentLayout.addComponent(createGroup(layerSaveButton));
 
         // Toolbar
         addComponent(contentLayout);
@@ -313,7 +330,12 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
     @Override
     public void graphChanged(GraphContainer graphContainer) {
         setSemanticZoomLevelLabel(graphContainer.getSemanticZoomLevel());
+        handleSaveButton(graphContainer);
+        handleLayerButton(graphContainer);
+    }
 
+    private void handleLayerButton(GraphContainer graphContainer) {
+        // Toggle layer button
         boolean enableLayerButton = graphContainer.getMetaTopologyProvider().getGraphProviders().size() > 1;
         layerButton.setEnabled(enableLayerButton);
 
@@ -336,6 +358,23 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
             });
         } else {
             setLayerLayoutVisible(false);
+        }
+    }
+
+    private void handleSaveButton(GraphContainer graphContainer) {
+        // Toggle save button for coordinates
+        if (graphContainer.getLayoutAlgorithm() instanceof ManualLayoutAlgorithm) {
+            // We only show the save button if we don't have a layout persisted, or the layout is not equal
+            boolean showSave = layoutManager.loadLayout(graphContainer) == null || !layoutManager.isPersistedLayoutEqualToCurrentLayout(graphContainer);
+            layerSaveButton.setEnabled(showSave);
+            if (showSave) {
+                layerSaveButton.setDescription("Save the current layout");
+            } else {
+                layerSaveButton.setDescription("Nothing to save");
+            }
+        } else {
+            layerSaveButton.setEnabled(false);
+            layerSaveButton.setDescription("Change to Manual Layout to enable saving");
         }
     }
 }

@@ -30,13 +30,14 @@ package org.opennms.features.topology.app.internal.operations;
 
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.app.internal.ManualLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.LayoutManager;
 
 public class ManualLayoutOperation extends LayoutOperation {
 
-	public ManualLayoutOperation() {
+	public ManualLayoutOperation(LayoutManager layoutManager) {
 		super(new LayoutFactory() {
 		    
-		    private final ManualLayoutAlgorithm m_layoutAlgorithm = new ManualLayoutAlgorithm();
+		    private final ManualLayoutAlgorithm m_layoutAlgorithm = new ManualLayoutAlgorithm(layoutManager);
 		    
 			@Override
 			public LayoutAlgorithm getLayoutAlgorithm() {
