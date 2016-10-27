@@ -203,6 +203,14 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
 
+    <!-- Discovery -->
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.discovery</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+
     <!-- CORS support -->
     <dependency>
       <groupId>org.ebaysf.web</groupId>
