@@ -36,9 +36,11 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -62,6 +64,9 @@ public class GraphMLMetaTopologyProviderTest {
         final GraphMLMetaTopologyProvider metaTopoProvider = new GraphMLMetaTopologyProvider(new GraphMLServiceAccessor());
         metaTopoProvider.setTopologyLocation(graphXml.getAbsolutePath());
         metaTopoProvider.load();
+
+        // Verify Breadcrumb-Strategy
+        Assert.assertEquals(BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT, metaTopoProvider.getBreadcrumbStrategy());
 
         // We should have two graph providers (one for each graph)
         Collection<GraphProvider> graphProviders = metaTopoProvider.getGraphProviders();
@@ -90,5 +95,19 @@ public class GraphMLMetaTopologyProviderTest {
         assertEquals("Some Layout", marketsGraphProvider.getDefaults().getPreferredLayout());
         assertEquals(0, marketsGraphProvider.getDefaults().getSemanticZoomLevel());
         assertEquals(16, marketsGraphProvider.getVertexTotalCount());
+    }
+
+    @Test
+    public void verifyGetBreadcrumbStrategy() {
+        Assert.assertEquals(BreadcrumbStrategy.NONE, GraphMLMetaTopologyProvider.getBreadcrumbStrategy("none"));
+        Assert.assertEquals(BreadcrumbStrategy.NONE, GraphMLMetaTopologyProvider.getBreadcrumbStrategy("NONE"));
+        Assert.assertEquals(BreadcrumbStrategy.NONE, GraphMLMetaTopologyProvider.getBreadcrumbStrategy("nOne"));
+
+        Assert.assertEquals(null, GraphMLMetaTopologyProvider.getBreadcrumbStrategy(""));
+        Assert.assertEquals(null, GraphMLMetaTopologyProvider.getBreadcrumbStrategy(null));
+
+        Assert.assertEquals(BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT, GraphMLMetaTopologyProvider.getBreadcrumbStrategy("SHORTEST_PATH_TO_ROOT"));
+        Assert.assertEquals(BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT, GraphMLMetaTopologyProvider.getBreadcrumbStrategy("shortest_path_to_root"));
+        Assert.assertEquals(BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT, GraphMLMetaTopologyProvider.getBreadcrumbStrategy("Shortest_Path_To_Root"));
     }
 }

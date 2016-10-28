@@ -35,7 +35,6 @@ import java.util.List;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -47,7 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
-import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 
 public class TrapObjectToDTOProcessor implements Processor {
@@ -112,9 +110,6 @@ public class TrapObjectToDTOProcessor implements Processor {
 			// NOTE: This value is an SNMP TimeTicks value, not an epoch timestamp
 			trapDTO.setTimestamp(v1Trap.getTimeStamp());
 			trapDTO.setVersion(version);
-			trapDTO.setEnterpriseId(pdu.getEnterprise());
-			trapDTO.setGeneric(pdu.getGenericTrap());
-			trapDTO.setSpecific(pdu.getSpecificTrap());
 
 			List<SnmpResult> results = new ArrayList<SnmpResult>();
 
@@ -155,11 +150,6 @@ public class TrapObjectToDTOProcessor implements Processor {
 			// NOTE: This value is an SNMP TimeTicks value, not an epoch timestamp
 			trapDTO.setTimestamp(v2Trap.getTimeStamp());
 			trapDTO.setVersion(version);
-			
-			BasicTrapProcessor trapsProcessor=(BasicTrapProcessor) v2Trap.getTrapProcessor();
-			trapDTO.setEnterpriseId(new OID(trapsProcessor.getTrapIdentity().getEnterpriseId()));
-			trapDTO.setGeneric(trapsProcessor.getTrapIdentity().getGeneric());
-			trapDTO.setSpecific(trapsProcessor.getTrapIdentity().getSpecific());
 
 			List<SnmpResult> results = new ArrayList<SnmpResult>();
 

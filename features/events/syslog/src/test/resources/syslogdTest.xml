@@ -8,8 +8,9 @@
   <bean id="eventConfResourceLocation" class="java.lang.String">
     <constructor-arg value="classpath:/etc/eventconf.xml" />
   </bean>
-  
+
   <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
+    <constructor-arg ref="eventdMetricRegistry"/>
     <property name="eventIpcBroadcaster" ref="mockEventIpcManager"/>
   </bean>
 

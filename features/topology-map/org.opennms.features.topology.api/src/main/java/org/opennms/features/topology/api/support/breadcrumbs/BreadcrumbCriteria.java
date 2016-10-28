@@ -28,11 +28,18 @@
 
 package org.opennms.features.topology.api.support.breadcrumbs;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.opennms.features.topology.api.Callbacks;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.google.common.collect.Lists;
 
@@ -44,6 +51,10 @@ import com.google.common.collect.Lists;
 public class BreadcrumbCriteria extends Criteria {
 
     private List<Breadcrumb> breadcrumbs = Lists.newArrayList();
+
+    public BreadcrumbCriteria() {
+
+    }
 
     public void setNewRoot(final Breadcrumb breadcrumb) {
         if (breadcrumbs.contains(breadcrumb)) {
@@ -97,4 +108,88 @@ public class BreadcrumbCriteria extends Criteria {
         return false;
     }
 
+    public void setBreadcrumbs(List<Breadcrumb> breadcrumbs) {
+        this.breadcrumbs = Lists.newArrayList(Objects.requireNonNull(breadcrumbs));
+    }
+
+    private Breadcrumb getNext(Breadcrumb breadcrumb) {
+        int index = breadcrumbs.indexOf(breadcrumb);
+        if (index == breadcrumbs.size() - 1) {
+            return null;
+        }
+        return breadcrumbs.get(index + 1);
+    }
+
+    private Breadcrumb getPrevious(Breadcrumb breadcrumb) {
+        int index = breadcrumbs.indexOf(breadcrumb);
+        if (index == 0) {
+            return null;
+        }
+        return breadcrumbs.get(index - 1);
+
+    }
+
+    private boolean isLeaf(Breadcrumb breadcrumb) {
+        return breadcrumbs.indexOf(breadcrumb) == breadcrumbs.size() - 1;
+    }
+
+    public void handleClick(Breadcrumb breadcrumb, GraphContainer graphContainer) {
+        final GraphProvider targetGraphProvider = graphContainer.getMetaTopologyProvider().getGraphProviderBy(breadcrumb.getTargetNamespace());
+        if (isLeaf(breadcrumb)) {
+            if (breadcrumb.getSourceVertices().isEmpty()) {
+                final List<VertexRef> defaultFocus = targetGraphProvider.getDefaults().getCriteria()
+                        .stream()
+                        .filter(c -> c instanceof VertexHopGraphProvider.VertexHopCriteria)
+                        .map(c -> ((VertexHopGraphProvider.VertexHopCriteria) c).getVertices())
+                        .flatMap(v -> v.stream())
+                        .collect(Collectors.toList());
+                handleClick(graphContainer, targetGraphProvider, defaultFocus, breadcrumb);
+            } else {
+                List<VertexRef> oppositeVertices = breadcrumb.getSourceVertices().stream().flatMap(sourceVertex -> getOppositeVertices(graphContainer, breadcrumb.getTargetNamespace(), sourceVertex).stream()).collect(Collectors.toList());
+                handleClick(graphContainer, targetGraphProvider, oppositeVertices, breadcrumb);
+            }
+        } else {
+            Breadcrumb next = getNext(breadcrumb);
+            handleClick(graphContainer, targetGraphProvider, next.getSourceVertices(), breadcrumb);
+        }
+    }
+
+    private static List<VertexRef> getOppositeVertices(GraphContainer graphContainer, String targetNamespace, VertexRef sourceVertex) {
+        // Find the vertices in other graphs that this vertex links to
+        final Collection<VertexRef> oppositeVertices = graphContainer.getMetaTopologyProvider().getOppositeVertices(sourceVertex);
+
+        // Filter the vertices for those matching the target namespace
+        final List<VertexRef> targetVertices = oppositeVertices.stream()
+                .filter(v -> v.getNamespace().matches(targetNamespace))
+                .collect(Collectors.toList());
+
+        return targetVertices;
+    }
+
+    private static void handleClick(GraphContainer graphContainer, GraphProvider targetGraphProvider, List<VertexRef> verticesToFocus, Breadcrumb breadcrumb) {
+        final String targetNamespace = targetGraphProvider.getVertexNamespace();
+        final String currentNamespace = graphContainer.getBaseTopology().getVertexNamespace();
+
+        // Only Change the layer if namespace is different, otherwise we would switch to the current layer
+        if (!currentNamespace.equals(targetNamespace)) {
+            BreadcrumbCriteria breadcrumbCriteria = getBreadcrumbCriteria(graphContainer);
+            graphContainer.selectTopologyProvider(targetGraphProvider, Callbacks.applyDefaults(), (graphContainer1, graphProvider) -> graphContainer1.addCriteria(breadcrumbCriteria));
+            breadcrumbCriteria.setNewRoot(breadcrumb);
+        }
+
+        // Reset focus
+        getCriteriaForGraphContainer(graphContainer, VertexHopGraphProvider.VertexHopCriteria.class).forEach(c -> graphContainer.removeCriteria(c));
+
+        // Set elements to focus
+        verticesToFocus.forEach(v -> graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(v)));
+
+        // Render
+        graphContainer.setDirty(true);
+        graphContainer.redoLayout();
+    }
+
+
+    private static BreadcrumbCriteria getBreadcrumbCriteria(GraphContainer graphContainer) {
+        return Criteria.getSingleCriteriaForGraphContainer(graphContainer, BreadcrumbCriteria.class, true);
+    }
 }

@@ -1508,6 +1508,12 @@
       </properties>
     </profile>
     <profile>
+      <id>assemblies</id>
+      <modules>
+        <module>opennms-full-assembly</module>
+      </modules>
+    </profile>
+    <profile>
       <id>build-bamboo</id>
       <modules>
         <module>opennms-full-assembly</module>

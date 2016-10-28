@@ -246,7 +246,7 @@ CREATE TABLE monitoringlocationspollingpackages (
     monitoringlocationid TEXT NOT NULL,
     packagename TEXT NOT NULL,
 
-    CONSTRAINT monitoringlocationspollingpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT monitoringlocationspollingpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX monitoringlocationspollingpackages_id_idx on monitoringlocationspollingpackages(monitoringlocationid);
@@ -257,7 +257,7 @@ CREATE TABLE monitoringlocationscollectionpackages (
     monitoringlocationid TEXT NOT NULL,
     packagename TEXT NOT NULL,
 
-    CONSTRAINT monitoringlocationscollectionpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT monitoringlocationscollectionpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX monitoringlocationscollectionpackages_id_idx on monitoringlocationscollectionpackages(monitoringlocationid);
@@ -268,17 +268,17 @@ CREATE TABLE monitoringlocationstags (
     monitoringlocationid TEXT NOT NULL,
     tag TEXT NOT NULL,
 
-    CONSTRAINT monitoringlocationstags_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT monitoringlocationstags_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX monitoringlocationstags_id_idx on monitoringlocationstags(monitoringlocationid);
 CREATE UNIQUE INDEX monitoringlocationstags_id_pkg_idx on monitoringlocationstags(monitoringlocationid, tag);
 
 --##################################################################
---# The following command adds the initial localhost entry to
+--# The following command adds the initial 'Default' entry to
 --# the 'monitoringlocations' table.
 --##################################################################
-INSERT INTO monitoringlocations (id, monitoringarea) values ('localhost', 'localhost');
+INSERT INTO monitoringlocations (id, monitoringarea) values ('Default', 'Default');
 
 
 --#####################################################
@@ -323,7 +323,7 @@ CREATE UNIQUE INDEX monitoringsystemsproperties_id_property_idx on monitoringsys
 --# The following command adds the initial localhost poller entry to
 --# the 'monitoringsystems' table.
 --##################################################################
-INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000-0000-0000-000000000000', 'localhost', 'localhost', 'OpenNMS');
+INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000-0000-0000-000000000000', 'localhost', 'Default', 'OpenNMS');
 
 
 --#####################################################
@@ -345,7 +345,7 @@ CREATE TABLE scanreports (
     timestamp TIMESTAMP WITH TIME ZONE,
 
     CONSTRAINT scanreports_pkey PRIMARY KEY (id),
-    CONSTRAINT scanreports_monitoringlocations_fkey FOREIGN KEY (location) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT scanreports_monitoringlocations_fkey FOREIGN KEY (location) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE UNIQUE INDEX scanreports_id_idx on scanreport(id);
@@ -493,7 +493,7 @@ create table node (
 	location        text not null,
 
 	constraint pk_nodeID primary key (nodeID),
-	constraint fk_node_location foreign key (location) references monitoringlocations (id) ON DELETE CASCADE
+	constraint fk_node_location foreign key (location) references monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 create index node_id_type_idx on node(nodeID, nodeType);

@@ -4,9 +4,9 @@
         {
             "collection-package-names": [],
             "geolocation": null,
-            "monitoring-area": "localhost",
+            "monitoring-area": "Default",
             "latitude": null,
-            "location-name": "localhost",
+            "location-name": "Default",
             "longitude": null,
             "polling-package-names": [],
             "priority": 100,

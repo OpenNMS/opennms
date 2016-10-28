@@ -61,7 +61,7 @@ public class MockNode extends MockContainer<MockNetwork, MockElement> {
     public MockNode(MockNetwork network, int nodeid, String label) {
         super(network);
         // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
-        m_location = "localhost";
+        m_location = "Default";
         m_nodeid = nodeid;
         m_label = label;
     }
