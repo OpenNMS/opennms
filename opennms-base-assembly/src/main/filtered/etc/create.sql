@@ -2428,3 +2428,38 @@ CREATE TABLE bsm_service_children (
       CONSTRAINT fk_bsm_service_child_service_id FOREIGN KEY (bsm_service_child_id)
       REFERENCES bsm_service (id) ON DELETE CASCADE
 );
+
+--##################################################################
+--# Topology tables
+--##################################################################
+
+-- Layout table
+CREATE TABLE topo_layout (
+	id varchar(255) NOT NULL,
+	created timestamp NOT NULL,
+	creator varchar(255) NOT NULL,
+	updated timestamp NOT NULL,
+	updator varchar(255) NOT NULL,
+	last_used timestamp,
+	CONSTRAINT topo_layout_pkey PRIMARY KEY (id)
+);
+
+-- Layout coordinates of vertex
+CREATE TABLE topo_vertex_position (
+	id integer NOT NULL,
+	x integer NOT NULL,
+	y integer NOT NULL,
+	vertex_namespace varchar(255) NULL,
+	vertex_id varchar(255) NULL,
+	CONSTRAINT topo_vertex_position_pkey PRIMARY KEY (id)
+);
+
+-- Relation table (layout -> vertex positions)
+CREATE TABLE topo_layout_vertex_positions (
+  vertex_position_id integer NOT NULL,
+	layout_id varchar(255) NOT NULL,
+	CONSTRAINT fk_topo_layout_vertex_positions_layout_id FOREIGN KEY (layout_id)
+	REFERENCES topo_layout (id) ON DELETE CASCADE,
+	CONSTRAINT fk_topo_layout_vertex_positions_vertex_position_id FOREIGN KEY (vertex_position_id)
+	REFERENCES topo_vertex_position (id) ON DELETE CASCADE
+);

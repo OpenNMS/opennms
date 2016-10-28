@@ -19,12 +19,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
     <reference id="geocoderService" interface="org.opennms.features.geocoder.GeocoderService" availability="mandatory" />
+    <reference id="layoutDao" interface="org.opennms.netmgt.topology.persistence.api.LayoutDao" availability="mandatory" />
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
         <argument ref="menuManager"/>
         <argument ref="historyManager"/>
         <argument ref="veGraphContainer" />
         <argument ref="iconRepoManager"/>
+        <argument ref="layoutManager"/>
         <argument ref="transactionOperations"/>
         <property name="widgetManager" ref="widgetManager"/>
         <property name="headerProvider" ref="onmsHeaderProvider" />
@@ -36,6 +38,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <argument ref="providerManager" />
         <property name="bundleContext" ref="blueprintBundleContext" />
         <property name="autoRefreshSupport" ref="defaultAutoRefreshSupport"/>
+        <property name="layoutManager" ref="layoutManager" />
     </bean>
 
     <!--  Header reference -->
@@ -162,7 +165,13 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </service>
     
     <bean id="menuManager" class="org.opennms.features.topology.app.internal.menu.MenuManager" />
-    
+
+    <!-- Set up Layout Manager -->
+    <bean id="layoutManager" class="org.opennms.features.topology.app.internal.support.LayoutManager">
+        <argument ref="layoutDao"/>
+        <argument ref="transactionOperations"/>
+    </bean>
+
     <reference-list interface="org.opennms.features.topology.api.Operation" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="menuManager">
         </reference-listener>
@@ -255,7 +264,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
             <entry key="operation.menuLocation" value="View"/>
             <entry key="operation.label" value="Manual Layout?group=layout"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.ManualLayoutOperation"/>
+        <bean class="org.opennms.features.topology.app.internal.operations.ManualLayoutOperation">
+            <argument ref="layoutManager"/>
+        </bean>
     </service>
 
     <service interface="org.opennms.features.topology.api.Operation" >

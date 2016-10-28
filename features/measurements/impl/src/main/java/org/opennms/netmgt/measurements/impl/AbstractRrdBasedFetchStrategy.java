@@ -112,12 +112,21 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
 
     /**
      *  Performs the actual retrieval of the values from the RRD/JRB files.
-     *  If relaxed is <code>true</code> the {@link FetchResults} is populated with {@link Double#NaN} for all missing
-     *  entries.
+     *
+     *  If relaxed is <code>true</code> an empty response will be generated if there
+     *  are no RRD/JRB files to query.
+     *
+     *  If relaxed is <code>true</code> and one or more RRD/JRB files are present,
+     *  then {@link FetchResults} will be populated with {@link Double#NaN} for all missing entries.
      */
     private FetchResults fetchMeasurements(long start, long end, long step, int maxrows,
                                            Map<Source, String> rrdsBySource, Map<String, Object> constants,
                                            List<Source> sources, boolean relaxed) throws RrdException {
+        // NMS-8665: Avoid making calls to XPORT with no definitions
+        if (relaxed && rrdsBySource.isEmpty()) {
+            return Utils.createEmtpyFetchResults(step, constants);
+        }
+
         FetchResults fetchResults = fetchMeasurements(start, end, step, maxrows, rrdsBySource, constants);
         if (relaxed) {
             Utils.fillMissingValues(fetchResults, sources);

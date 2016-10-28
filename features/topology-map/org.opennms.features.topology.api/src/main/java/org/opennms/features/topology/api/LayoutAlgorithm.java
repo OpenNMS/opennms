@@ -30,6 +30,6 @@ package org.opennms.features.topology.api;
 
 public interface LayoutAlgorithm {
 
-    void updateLayout(GraphContainer graph);
+    void updateLayout(GraphContainer graphContainer);
 
 }

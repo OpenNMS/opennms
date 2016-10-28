@@ -154,6 +154,17 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         assertEquals(4, topologyUIPage.getFocusedVertices().size());
     }
 
+    @Test
+    public void verifySaveLayoutButton() {
+        topologyUIPage.selectTopologyProvider(() -> LABEL);
+        assertEquals(false, topologyUIPage.getSaveLayoutButton().isEnabled()); // it should be disabled
+
+        topologyUIPage.selectLayout(TopologyIT.Layout.MANUAL);
+        assertEquals(true, topologyUIPage.getSaveLayoutButton().isEnabled()); // now it should be enabled
+        topologyUIPage.getSaveLayoutButton().click();
+        assertEquals(false, topologyUIPage.getSaveLayoutButton().isEnabled()); // it should be disabled after save
+    }
+
     private boolean existsGraph() throws IOException {
         try (HttpClientWrapper client = createClientWrapper()) {
             HttpGet httpGet = new HttpGet(URL);
