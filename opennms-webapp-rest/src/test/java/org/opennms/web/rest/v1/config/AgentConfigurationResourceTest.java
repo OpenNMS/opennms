@@ -154,10 +154,6 @@ public class AgentConfigurationResourceTest {
     }
     
     private static final class TestSnmpConfigDao implements SnmpAgentConfigFactory {
-        @Override
-        public SnmpAgentConfig getAgentConfig(final InetAddress address) {
-            return new SnmpAgentConfig(address, getDefaults());
-        }
 
         private static SnmpConfiguration getDefaults() {
             final SnmpConfiguration config = new SnmpConfiguration();
@@ -167,8 +163,7 @@ public class AgentConfigurationResourceTest {
 
         @Override
         public SnmpAgentConfig getAgentConfig(InetAddress address, String location) {
-            // TODO Auto-generated method stub
-            return null;
+            return new SnmpAgentConfig(address, getDefaults());
         }
     }
 }
