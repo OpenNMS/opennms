@@ -69,8 +69,8 @@ Requires:      openssh
 Requires(pre): %{jdk}
 Requires:      %{jdk}
 Requires(pre): /usr/bin/getent
-Requires(pre): /sbin/groupadd
-Requires(pre): /sbin/useradd
+Requires(pre): /usr/sbin/groupadd
+Requires(pre): /usr/sbin/useradd
 Requires(pre): /sbin/nologin
 Requires:      /sbin/nologin
 Requires:      /usr/bin/id

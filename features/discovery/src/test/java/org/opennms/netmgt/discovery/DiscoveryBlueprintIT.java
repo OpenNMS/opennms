@@ -47,6 +47,7 @@ import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.camel.JmsQueueNameFactory;
@@ -80,6 +81,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
+@Ignore("See NMS-8839")
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
 public class DiscoveryBlueprintIT extends CamelBlueprintTest {
