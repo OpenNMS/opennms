@@ -101,7 +101,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>webstart-maven-plugin</artifactId>
-        <version>1.0-beta-7-ONMS-20140424</version>
+        <version>1.0-beta-7</version>
         <executions>
           <execution>
             <id>gui-app</id>
@@ -310,6 +310,7 @@
     </dependency>
   </dependencies>
 
+  <!--
   <pluginRepositories>
     <pluginRepository>
       <snapshots><enabled>false</enabled></snapshots>
@@ -319,5 +320,6 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </pluginRepository>
   </pluginRepositories>
+  -->
 
 </project>
