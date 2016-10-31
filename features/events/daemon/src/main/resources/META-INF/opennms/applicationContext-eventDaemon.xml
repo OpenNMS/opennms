@@ -40,6 +40,7 @@
   <bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
     <constructor-arg ref="eventdMetricRegistry"/>
     <property name="eventConfDao" ref="eventConfDao"/>
+    <property name="eventUtil" ref="eventUtil"/>
   </bean>
 
   <bean id="eventParmRegexFilter" class="org.opennms.netmgt.eventd.processor.EventParmRegexFilterProcessor">

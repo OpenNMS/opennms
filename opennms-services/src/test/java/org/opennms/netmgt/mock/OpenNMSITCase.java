@@ -162,7 +162,8 @@ public class OpenNMSITCase {
             if (isStartEventd()) {
                 m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_registry);
 
-                AbstractEventUtil.setInstance(new EventUtilJdbcImpl());
+                EventUtilJdbcImpl eventUtil = new EventUtilJdbcImpl();
+                AbstractEventUtil.setInstance(eventUtil);
 
                 JdbcEventdServiceManager eventdServiceManager = new JdbcEventdServiceManager();
                 eventdServiceManager.setDataSource(m_db);
@@ -179,6 +180,7 @@ public class OpenNMSITCase {
                 
                 EventExpander eventExpander = new EventExpander(m_registry);
                 eventExpander.setEventConfDao(eventConfDao);
+                eventExpander.setEventUtil(eventUtil);
                 eventExpander.afterPropertiesSet();
 
                 JdbcEventWriter jdbcEventWriter = new JdbcEventWriter();
