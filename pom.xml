@@ -1507,15 +1507,12 @@
         <install.rrdtool.bin>/opt/csw/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-<<<<<<< HEAD
     <profile>
       <id>assemblies</id>
       <modules>
         <module>opennms-full-assembly</module>
       </modules>
     </profile>
-=======
->>>>>>> origin/release-18.0.3
     <profile>
       <id>build-bamboo</id>
       <modules>
