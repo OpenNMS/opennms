@@ -24,6 +24,9 @@
             <artifactId>webstart-maven-plugin</artifactId>
             <version>${webstartPluginVersion}</version>
             <configuration>
+              <verifyjar>true</verifyjar>
+              <canUnsign>true</canUnsign>
+              <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
               <sign>
                 <keystore>${webstart.keystore}</keystore>
                 <keypass>${webstart.keypass}</keypass>
@@ -202,11 +205,9 @@
         </executions>
         <configuration>
           <templateDirectory>src/main/jnlp</templateDirectory>
-          <outputJarVersions>false</outputJarVersions>
-          <verbose>false</verbose>
-          <verifyjar>true</verifyjar>
-          <canUnsign>true</canUnsign>
-          <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
+          <excludeTransitive>false</excludeTransitive>
+          <outputJarVersions>true</outputJarVersions>
+          <verbose>true</verbose>
           <updateManifestEntries>
             <!--
               Application name that is displayed on the Security Warning
