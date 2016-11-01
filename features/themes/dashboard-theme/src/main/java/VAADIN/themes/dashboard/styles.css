@@ -54,6 +54,7 @@
     display:block;
     height:44px;
     width:130px;
+    background-size: 130px 44px;
     overflow:hidden;
     text-indent:100%;
     white-space:nowrap;
