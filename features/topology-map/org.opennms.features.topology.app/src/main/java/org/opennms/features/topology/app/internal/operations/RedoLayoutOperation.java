@@ -40,7 +40,6 @@ import org.opennms.features.topology.app.internal.TopologyUI;
 public class RedoLayoutOperation implements Operation {
 
     public void execute(final GraphContainer graphContainer) {
-            graphContainer.getTopologyServiceClient().REFRESHDUMMY();
             graphContainer.setDirty(true);
             graphContainer.redoLayout();
             TopologyUI.getCurrent().markAsDirtyRecursive();

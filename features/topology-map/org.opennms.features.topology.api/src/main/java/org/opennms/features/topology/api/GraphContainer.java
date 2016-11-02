@@ -64,9 +64,6 @@ public interface GraphContainer extends DisplayState {
 
     TopologyServiceClient getTopologyServiceClient();
 
-    // TODO MVR rip it out ...
-    void setBaseTopology(GraphProvider graphProvider);
-
     Criteria[] getCriteria();
 
     void addCriteria(Criteria criteria);

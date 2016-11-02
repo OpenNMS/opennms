@@ -56,10 +56,6 @@ public interface TopologyServiceClient extends SelectionAware {
 
     Defaults getDefaults();
 
-    // TODO MVR we have to figure out what to do in this case
-    void REFRESHDUMMY();
-
-    // TODO MVR this should be removed...
     List<Vertex> getChildren(VertexRef vertexId, Criteria[] criteria);
 
     Collection<GraphProvider> getGraphProviders();
@@ -71,4 +67,10 @@ public interface TopologyServiceClient extends SelectionAware {
     VertexProvider getDefaultGraphProvider();
 
     BreadcrumbStrategy getBreadcrumbStrategy();
+
+    void setMetaTopologyId(String metaTopologyId);
+
+    String getMetaTopologyId();
+
+    void setNamespace(String namespace);
 }

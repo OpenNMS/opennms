@@ -16,11 +16,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.Graph;
-import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.TopologyService;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -46,35 +46,24 @@ public class DefaultTopologyService implements TopologyService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultTopologyService.class);
 
-    private final BundleContext bundleContext;
-
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
     private final List<MetaTopologyProvider> providers = Lists.newArrayList();
 
-    public DefaultTopologyService(BundleContext bundleContext) {
-        this.bundleContext = Objects.requireNonNull(bundleContext);
-        scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                ExecutorService executorService = Executors.newFixedThreadPool(Math.min(10, providers.size()));
-                List<Future> futures = Lists.newArrayList();
-                providers.forEach(eachProvider -> {
-                    futures.add(executorService.submit(() -> {
-                        eachProvider.reload();
-                    }));
-                });
-                futures.forEach(eachFuture -> {
-                    try {
-                        eachFuture.get();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    }
-                });
+    private ScheduledFuture<?> scheduledFuture;
+
+    private BundleContext bundleContext;
+
+    public void setAutoRefresh(boolean autorefresh) {
+        if(autorefresh) {
+            if (scheduledFuture == null || scheduledFuture.isCancelled()) {
+                scheduledFuture = schedule();
             }
-        }, 5, 30, TimeUnit.SECONDS);
+        } else {
+            if (scheduledFuture != null) {
+                scheduledFuture.cancel(true);
+            }
+        }
     }
 
     @Override
@@ -93,17 +82,20 @@ public class DefaultTopologyService implements TopologyService {
 
         // Determine default layout
         final String preferredLayout = graphProvider.getDefaults().getPreferredLayout();
-        final LayoutAlgorithm layoutAlgorithm = findLayoutAlgorithm(preferredLayout);
+        final LayoutAlgorithm preferredLayoutAlgorithm = bundleContext != null ? findLayoutAlgorithm(preferredLayout) : DEFAULT_LAYOUT_ALGORITHM;
 
-        // create graph object
+        // Create Layout object
+        DefaultLayout layout = new DefaultLayout();
+        layout.setDisplayVertices(displayVertices);
+
+        // Create graph object
         final DefaultGraph graph = new DefaultGraph(displayVertices, displayEdges);
-        final Layout layout = new DefaultLayout(graph);
+        graph.setLayoutAlgorithm(preferredLayoutAlgorithm);
         graph.setLayout(layout);
-        graph.setLayoutAlgorithm(layoutAlgorithm);
 
         // Calculate status
-        final StatusProvider vertexStatusProvider = findVertexStatusProvider(graphProvider);
-        final EdgeStatusProvider edgeStatusProvider = findEdgeStatusProvider(graphProvider);
+        final StatusProvider vertexStatusProvider = bundleContext != null ? findVertexStatusProvider(graphProvider) : null;
+        final EdgeStatusProvider edgeStatusProvider = bundleContext != null ? findEdgeStatusProvider(graphProvider) : null;
         if (vertexStatusProvider != null && vertexStatusProvider.contributesTo(graphProvider.getNamespace())) {
             graph.setVertexStatus(vertexStatusProvider.getStatusForVertices(graphProvider, new ArrayList<>(displayVertices), criteria));
         }
@@ -125,6 +117,10 @@ public class DefaultTopologyService implements TopologyService {
         Optional<MetaTopologyProvider> metaTopologyProviderOptional = providers.stream().filter(metaTopologyProvider -> metaTopologyId.equals(metaTopologyProvider.getId())).findFirst();
         MetaTopologyProvider metaTopologyProvider = metaTopologyProviderOptional.orElseThrow(() -> new NoSuchElementException("No MetaTopologyProvider with id '" + metaTopologyId + "' found."));
         return metaTopologyProvider;
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = Objects.requireNonNull(bundleContext);
     }
 
     public synchronized void onBind(MetaTopologyProvider provider, Map<?, ?> metaData) {
@@ -179,5 +175,29 @@ public class DefaultTopologyService implements TopologyService {
                 statusProvider -> statusProvider.contributesTo(graphProvider.getNamespace()),
                 null);
         return edgeStatusProvider;
+    }
+
+    private ScheduledFuture<?> schedule() {
+        return scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                ExecutorService executorService = Executors.newFixedThreadPool(Math.min(10, providers.size()));
+                List<Future> futures = Lists.newArrayList();
+                providers.forEach(eachProvider -> {
+                    futures.add(executorService.submit(() -> {
+                        eachProvider.reload();
+                    }));
+                });
+                futures.forEach(eachFuture -> {
+                    try {
+                        eachFuture.get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        }, 5, 30, TimeUnit.SECONDS);
     }
 }

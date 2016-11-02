@@ -73,7 +73,6 @@
             <repository>mvn:org.opennms.osgi.features.nrtg/nrtg/${project.version}/xml/features</repository>
 
             <!-- Topology features -->
-            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-dev/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-base/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-browsers/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-linkd/${project.version}/xml/features</repository>
@@ -267,7 +266,6 @@
             <feature>opennms-amqp-event-forwarder</feature>
             <feature>opennms-amqp-event-receiver</feature>
             <feature>opennms-amqp-alarm-northbounder</feature>
-            <feature>opennms-topology-dev</feature>
             <feature>opennms-topology-runtime-base</feature>
             <feature>opennms-topology-runtime-browsers</feature>
             <feature>opennms-topology-runtime-linkd</feature>

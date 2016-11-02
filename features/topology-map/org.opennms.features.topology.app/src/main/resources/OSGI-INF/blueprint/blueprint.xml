@@ -35,6 +35,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     <bean id="veGraphContainer" class="org.opennms.features.topology.app.internal.VEProviderGraphContainer" scope="prototype">
         <property name="bundleContext" ref="blueprintBundleContext" />
         <property name="autoRefreshSupport" ref="defaultAutoRefreshSupport"/>
+        <property name="topologyService" ref="topologyService" />
     </bean>
 
     <!--  Header reference -->
@@ -137,7 +138,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <!-- Topology Service -->
     <bean id="topologyService" class="org.opennms.features.topology.app.internal.service.DefaultTopologyService" >
-        <argument ref="blueprintBundleContext"/>
+        <property name="bundleContext" ref="blueprintBundleContext"/>
+        <property name="autoRefresh" value="true" />
     </bean>
     <service ref="topologyService" interface="org.opennms.features.topology.api.TopologyService" />
     <reference-list interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" availability="mandatory">

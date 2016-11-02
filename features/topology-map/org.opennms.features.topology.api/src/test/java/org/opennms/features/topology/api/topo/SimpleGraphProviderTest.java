@@ -42,54 +42,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.Constants;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.OperationContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.UI;
 
 public class SimpleGraphProviderTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleGraphProviderTest.class);
-
-    private static class TestOperationContext implements OperationContext {
-
-        private GraphContainer m_graphContainer;
-
-        public TestOperationContext(GraphContainer graphContainer) {
-            m_graphContainer = graphContainer;
-        }
-
-        @Override
-        public UI getMainWindow() {
-            return new UI() {
-
-                @Override
-                protected void init(VaadinRequest request) {
-
-                }
-            };
-        }
-
-        @Override
-        public GraphContainer getGraphContainer() {
-            return m_graphContainer;
-        }
-
-        @Override
-        public DisplayLocation getDisplayLocation() {
-            return DisplayLocation.MENUBAR;
-        }
-
-    }
-
-    private static TestOperationContext getOperationContext(GraphContainer mockedContainer) {
-        return new TestOperationContext(mockedContainer);
-    }
-
-    private VertexRef addVertexToTopr() {
+    private VertexRef addVertexToTopology() {
         return m_topologyProvider.addVertex(0, 0);
     }
 
@@ -100,9 +56,7 @@ public class SimpleGraphProviderTest {
         if(m_topologyProvider == null) {
             m_topologyProvider = new SimpleGraphProvider();
         }
-
         m_topologyProvider.resetContainer();
-
         MockLogAppender.setupLogging();
     }
 
@@ -113,14 +67,12 @@ public class SimpleGraphProviderTest {
         }
     }
 
-
     @Test
     public void test() throws Exception {
         Assert.assertEquals(0, m_topologyProvider.getVertices().size());
 
         Vertex vertexA = m_topologyProvider.addVertex(50, 100);
         Assert.assertEquals(1, m_topologyProvider.getVertices().size());
-        //LoggerFactory.getLogger(this.getClass()).debug(m_topologyProvider.getVertices().get(0).toString());
         assertTrue(m_topologyProvider.containsVertexId(vertexA));
         assertTrue(m_topologyProvider.containsVertexId("v0"));
         assertFalse(m_topologyProvider.containsVertexId("v1"));
@@ -201,11 +153,10 @@ public class SimpleGraphProviderTest {
 
     }
 
-
     @Test
     public void testTopoProviderSetParent() {
-        VertexRef vertexId1 = addVertexToTopr();
-        VertexRef vertexId2 = addVertexToTopr();
+        VertexRef vertexId1 = addVertexToTopology();
+        VertexRef vertexId2 = addVertexToTopology();
 
         final AtomicInteger eventsReceived = new AtomicInteger(0);
 

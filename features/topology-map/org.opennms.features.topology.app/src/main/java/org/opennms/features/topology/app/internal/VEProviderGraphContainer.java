@@ -28,8 +28,6 @@
 
 package org.opennms.features.topology.app.internal;
 
-import static org.opennms.features.topology.app.internal.service.BundleContextUtils.findSingleService;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -49,20 +47,15 @@ import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyService;
 import org.opennms.features.topology.api.TopologyServiceClient;
-import org.opennms.features.topology.api.browsers.ContentType;
-import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
@@ -170,14 +163,13 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private AutoRefreshSupport m_autoRefreshSupport;
     private TopologyService m_topologyService;
     private Graph m_graph;
-    private String m_namespace;
     private AtomicBoolean m_containerDirty = new AtomicBoolean(Boolean.TRUE);
-    private String m_metaTopologyId;
+    private TopologyServiceClient m_topologyServiceClient;
 
     public VEProviderGraphContainer() {
         // Create null-graph
         DefaultGraph graph = new DefaultGraph(Lists.newArrayList(), Lists.newArrayList());
-        DefaultLayout layout = new DefaultLayout(graph);
+        DefaultLayout layout = new DefaultLayout();
         graph.setLayoutAlgorithm(new FRLayoutAlgorithm());
         graph.setLayout(layout);
         m_graph = graph;
@@ -240,7 +232,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
         if(m_layoutAlgorithm != layoutAlgorithm) {
             m_layoutAlgorithm = layoutAlgorithm;
-            setDirty(true);
+            redoLayout();
         }
     }
 
@@ -262,114 +254,23 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public void setMetaTopologyId(String metaTopologyId) {
-        m_metaTopologyId = metaTopologyId;
+        getTopologyServiceClient().setMetaTopologyId(metaTopologyId);
+        setDirty(true);
     }
 
     @Override
     public String getMetaTopologyId() {
-        return m_metaTopologyId;
+        return getTopologyServiceClient().getMetaTopologyId();
     }
 
     @Override
     public TopologyServiceClient getTopologyServiceClient() {
-        return new TopologyServiceClient() {
-
-            @Override
-            public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
-                if (m_namespace == null) {
-                    return SelectionChangedListener.Selection.NONE;
-                }
-                return m_topologyService.getGraphProvider(m_metaTopologyId, m_namespace).getSelection(selectedVertices, type);
-            }
-
-            @Override
-            public boolean contributesTo(ContentType type) {
-                if (m_namespace == null) {
-                    return false;
-                }
-                return m_topologyService.getGraphProvider(m_metaTopologyId, m_namespace).contributesTo(type);
-            }
-
-            @Override
-            public Vertex getVertex(VertexRef target, Criteria... criteria) {
-                return m_topologyService.getGraphProvider(m_metaTopologyId, m_namespace).getVertex(target, criteria);
-            }
-
-            @Override
-            public String getNamespace() {
-                return m_namespace;
-            }
-
-            @Override
-            public Vertex getVertex(String namespace, String vertexId) {
-                return m_topologyService.getGraphProvider(m_metaTopologyId, namespace).getVertex(namespace, vertexId);
-            }
-
-            @Override
-            public int getVertexTotalCount() {
-                return m_topologyService.getGraphProvider(m_metaTopologyId, m_namespace).getVertexTotalCount();
-            }
-
-            @Override
-            public int getEdgeTotalCount() {
-                return m_topologyService.getGraphProvider(m_metaTopologyId, m_namespace).getEdgeTotalCount();
-            }
-
-            @Override
-            public TopologyProviderInfo getInfo() {
-                return m_topologyService.getGraphProvider(m_metaTopologyId, m_namespace).getTopologyProviderInfo();
-            }
-
-            @Override
-            public Defaults getDefaults() {
-                return m_topologyService.getGraphProvider(m_metaTopologyId, m_namespace).getDefaults();
-            }
-
-            @Override
-            public void REFRESHDUMMY() {
-                // TODO MVR ???
-            }
-
-            @Override
-            public List<Vertex> getChildren(VertexRef vertexId, Criteria[] criteria) {
-                return m_topologyService.getGraphProvider(m_metaTopologyId, m_namespace).getChildren(vertexId, criteria);
-            }
-
-            @Override
-            public Collection<GraphProvider> getGraphProviders() {
-                return m_topologyService.getMetaTopologyProvider(m_metaTopologyId).getGraphProviders();
-            }
-
-            @Override
-            public Collection<VertexRef> getOppositeVertices(VertexRef vertexRef) {
-                return m_topologyService.getMetaTopologyProvider(m_metaTopologyId).getOppositeVertices(vertexRef);
-            }
-
-            @Override
-            public GraphProvider getGraphProviderBy(String namespace) {
-                return m_topologyService.getMetaTopologyProvider(m_metaTopologyId).getGraphProviderBy(namespace);
-            }
-
-            @Override
-            public VertexProvider getDefaultGraphProvider() {
-                return m_topologyService.getMetaTopologyProvider(m_metaTopologyId).getDefaultGraphProvider();
-            }
-
-            @Override
-            public BreadcrumbStrategy getBreadcrumbStrategy() {
-                return m_topologyService.getMetaTopologyProvider(m_metaTopologyId).getBreadcrumbStrategy();
-            }
-        };
+        if (m_topologyServiceClient == null) {
+            m_topologyServiceClient = new DefaultTopologyServiceClient(m_topologyService);
+        }
+        return m_topologyServiceClient;
     }
 
-    @Override
-    public void setBaseTopology(GraphProvider graphProvider) {
-        // TODO MVR ...
-        m_namespace = graphProvider.getNamespace();
-        setDirty(true);
-        throw new UnsupportedOperationException("NEEEIN!!!");
-    }
-    
     @Override
     public SelectionManager getSelectionManager() {
         return m_selectionManager;
@@ -437,8 +338,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public Graph getGraph() {
         synchronized(m_containerDirty) {
-            if ((isDirty() || isCriteriaDirty()) && m_namespace != null) {
-                m_graph = m_topologyService.getGraph(m_metaTopologyId, m_namespace, getCriteria(), getSemanticZoomLevel());
+            if ((isDirty() || isCriteriaDirty()) && getTopologyServiceClient().getNamespace() != null) {
+                m_graph = m_topologyService.getGraph(getTopologyServiceClient().getMetaTopologyId(), getTopologyServiceClient().getNamespace(), getCriteria(), getSemanticZoomLevel());
                 unselectElementsWhichAreNotVisibleAnymore(m_graph, m_selectionManager);
                 removeVerticesWhichAreNotVisible(m_graph.getDisplayVertices());
                 setDirty(false);
@@ -477,8 +378,10 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     public void setBundleContext(final BundleContext bundleContext) {
         m_bundleContext = bundleContext;
-        // TODO MVR HACK
-        m_topologyService = findSingleService(bundleContext, TopologyService.class, null, null);
+    }
+
+    public void setTopologyService(final TopologyService topologyService) {
+        m_topologyService = topologyService;
     }
 
     @Override
@@ -529,7 +432,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public void selectTopologyProvider(GraphProvider graphProvider, Callback... callbacks) {
-        Graph graph = m_topologyService.getGraph(m_metaTopologyId, graphProvider.getNamespace(), getCriteria(), getSemanticZoomLevel());
+        Graph graph = m_topologyService.getGraph(getTopologyServiceClient().getMetaTopologyId(), graphProvider.getNamespace(), getCriteria(), getSemanticZoomLevel());
         setSelectedNamespace(graphProvider.getNamespace());
         setLayoutAlgorithm(graph.getLayoutAlgorithm());
         if (callbacks != null) {
@@ -561,7 +464,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public void setSelectedNamespace(String namespace) {
-        this.m_namespace = namespace;
+        getTopologyServiceClient().setNamespace(namespace);
+        setDirty(true);
     }
 
     private static void addRefTreeToSet(TopologyServiceClient topologyServiceClient, VertexRef vertexId, Set<VertexRef> processed, Criteria[] criteria) {

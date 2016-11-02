@@ -39,6 +39,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.TopologyService;
+import org.opennms.features.topology.api.TopologyServiceClient;
 import org.opennms.features.topology.api.topo.AbstractSearchQuery;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -83,43 +85,42 @@ public class BusinessServiceSearchProviderIT {
 
     @Test
     public void verifyQuery() {
-        Assert.fail("implement me");
-//        BusinessServiceEntity bs1 = new BusinessServiceEntityBuilder()
-//                .name("Test Service")
-//                .reduceFunction(new HighestSeverityEntity())
-//                .addReductionKey("bs1.key1", new IdentityEntity(), 1)
-//                .addReductionKey("bs1.key2", new IdentityEntity(), 1)
-//                .toEntity();
-//        BusinessServiceEntity bs2 = new BusinessServiceEntityBuilder()
-//                .name("Real Service 2")
-//                .reduceFunction(new HighestSeverityEntity())
-//                .addReductionKey("bs2.key1", new IdentityEntity(), 1)
-//                .addReductionKey("bs2.key2", new IdentityEntity(), 1)
-//                .toEntity();
-//        businessServiceDao.save(bs1);
-//        businessServiceDao.save(bs2);
-//        businessServiceDao.flush();
-//
-//        // prepare mocks
-//        GraphProvider graphProviderMock = EasyMock.createNiceMock(GraphProvider.class);
-//        EasyMock.expect(graphProviderMock.getVertex(EasyMock.anyObject(BusinessServiceVertex.class)))
-//                .andReturn(new AbstractVertex("bsm", "0", "Dummy Vertex")); // always return a vertex, it just needs to be not null
-//
-//        GraphContainer graphContainerMock = EasyMock.createNiceMock(GraphContainer.class);
-//        EasyMock.expect(graphContainerMock.getTopologyServiceClient()).andReturn(graphProviderMock).times(1);
-//        EasyMock.replay(graphContainerMock, graphProviderMock);
-//
-//        // try searching
-//        final BusinessServiceSearchProvider provider = new BusinessServiceSearchProvider();
-//        provider.setBusinessServiceManager(businessServiceManager);
-//        final SearchQuery query = new AbstractSearchQuery("Test"){
-//            @Override
-//            public boolean matches(String label) {
-//                return true; // always match, it does not matter
-//            }
-//        };
-//        final List<SearchResult> result = provider.query(query, graphContainerMock);
-//        Assert.assertEquals(1, result.size());
-//        EasyMock.verify(graphContainerMock, graphProviderMock);
+        BusinessServiceEntity bs1 = new BusinessServiceEntityBuilder()
+                .name("Test Service")
+                .reduceFunction(new HighestSeverityEntity())
+                .addReductionKey("bs1.key1", new IdentityEntity(), 1)
+                .addReductionKey("bs1.key2", new IdentityEntity(), 1)
+                .toEntity();
+        BusinessServiceEntity bs2 = new BusinessServiceEntityBuilder()
+                .name("Real Service 2")
+                .reduceFunction(new HighestSeverityEntity())
+                .addReductionKey("bs2.key1", new IdentityEntity(), 1)
+                .addReductionKey("bs2.key2", new IdentityEntity(), 1)
+                .toEntity();
+        businessServiceDao.save(bs1);
+        businessServiceDao.save(bs2);
+        businessServiceDao.flush();
+
+        // prepare mocks
+        TopologyServiceClient topologyServiceClientMock = EasyMock.createNiceMock(TopologyServiceClient.class);
+        EasyMock.expect(topologyServiceClientMock.getVertex(EasyMock.anyObject(BusinessServiceVertex.class)))
+                .andReturn(new AbstractVertex("bsm", "0", "Dummy Vertex")); // always return a vertex, it just needs to be not null
+
+        GraphContainer graphContainerMock = EasyMock.createNiceMock(GraphContainer.class);
+        EasyMock.expect(graphContainerMock.getTopologyServiceClient()).andReturn(topologyServiceClientMock).anyTimes();
+        EasyMock.replay(graphContainerMock, topologyServiceClientMock);
+
+        // try searching
+        final BusinessServiceSearchProvider provider = new BusinessServiceSearchProvider();
+        provider.setBusinessServiceManager(businessServiceManager);
+        final SearchQuery query = new AbstractSearchQuery("Test"){
+            @Override
+            public boolean matches(String label) {
+                return true; // always match, it does not matter
+            }
+        };
+        final List<SearchResult> result = provider.query(query, graphContainerMock);
+        Assert.assertEquals(1, result.size());
+        EasyMock.verify(graphContainerMock, topologyServiceClientMock);
     }
 }
