@@ -1338,6 +1338,9 @@
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
     <vaadinExtenderVersion>1.0.0</vaadinExtenderVersion>
     
+    <skipPdfGeneration>true</skipPdfGeneration>
+    <skipSignJar>true</skipSignJar>
+
     <!-- moved here from opennms-pluginmanger -->
     <pluginmanagerVersion>1.0.1</pluginmanagerVersion>
     <licencemanagerVersion>1.0.1</licencemanagerVersion>
@@ -1346,7 +1349,6 @@
   </properties>
 
   <profiles>
-
     <profile>
       <id>enable.snapshots</id>
       <activation>
@@ -1362,55 +1364,28 @@
         </repository>
       </repositories>
     </profile>
-
-    <profile>
-      <id>build.all</id>
-      <activation>
-        <property><name>build</name><value>all</value></property>
-      </activation>
-      <modules>
-        <module>extensions</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>build.extensions</id>
-      <activation>
-        <property><name>build</name><value>extensions</value></property>
-      </activation>
-      <modules>
-        <module>extensions</module>
-      </modules>
-    </profile>
-
     <profile>
       <id>opt-local-rrdtool</id>
-      
       <activation>
         <file>
           <exists>/opt/local/bin/rrdtool</exists>
         </file>
       </activation>
-  
       <properties>
         <install.rrdtool.bin>/opt/local/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>fink-rrdtool</id>
-
       <activation>
         <file>
           <exists>/sw/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/sw/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>usr-bin-rrdtool</id>
       <activation>
@@ -1418,12 +1393,10 @@
           <exists>/usr/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>usr-local-bin-rrdtool</id>
       <activation>
@@ -1431,12 +1404,10 @@
           <exists>/usr/local/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/usr/local/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>usr-local-rrdtool-bin-rrdtool</id>
       <activation>
@@ -1444,12 +1415,10 @@
           <exists>/usr/local/rrdtool/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/usr/local/rrdtool/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <!--
          This is for the rrdtool package from Blastwave.org.
          See this for more information:
@@ -1463,32 +1432,23 @@
         <exists>/opt/csw/bin/rrdtool</exists>
       </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/opt/csw/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
-    <profile>
-      <id>build-tools</id>
-      <activation>
-        <property>
-          <name>tagging</name>
-        </property>
-      </activation>
-      <modules>
-        <module>extensions</module>
-        <module>opennms-tools</module>
-      </modules>
-    </profile>
-
     <profile>
       <id>build-bamboo</id>
       <modules>
         <module>opennms-full-assembly</module>
       </modules>
     </profile>
-
+    <profile>
+      <id>run-expensive-tasks</id>
+      <properties>
+        <skipPdfGeneration>false</skipPdfGeneration>
+        <skipSignJar>false</skipSignJar>
+      </properties>
+    </profile>
     <profile>
       <id>smoke</id>
       <activation>
@@ -1503,7 +1463,6 @@
         <module>smoke-test</module>
       </modules>
     </profile>
-
     <profile>
       <id>jdk7+</id>
       <activation>
@@ -1529,7 +1488,6 @@
       </build>
     </profile>
   </profiles>
-
   <dependencyManagement>
     <dependencies>
       <!--  opennms dependencies that are outside of the opennms/trunk project -->
