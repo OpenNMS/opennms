@@ -242,7 +242,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public String getEdgeNamespace() {
+	public String getNamespace() {
 		return "ncs";
 	}
 	

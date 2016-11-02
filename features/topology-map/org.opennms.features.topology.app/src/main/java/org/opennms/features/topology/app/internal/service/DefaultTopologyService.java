@@ -104,10 +104,10 @@ public class DefaultTopologyService implements TopologyService {
         // Calculate status
         final StatusProvider vertexStatusProvider = findVertexStatusProvider(graphProvider);
         final EdgeStatusProvider edgeStatusProvider = findEdgeStatusProvider(graphProvider);
-        if (vertexStatusProvider != null && vertexStatusProvider.contributesTo(graphProvider.getVertexNamespace())) {
+        if (vertexStatusProvider != null && vertexStatusProvider.contributesTo(graphProvider.getNamespace())) {
             graph.setVertexStatus(vertexStatusProvider.getStatusForVertices(graphProvider, new ArrayList<>(displayVertices), criteria));
         }
-        if(edgeStatusProvider != null && edgeStatusProvider.contributesTo(graphProvider.getVertexNamespace())) {
+        if(edgeStatusProvider != null && edgeStatusProvider.contributesTo(graphProvider.getNamespace())) {
             graph.setEdgeStatus(edgeStatusProvider.getStatusForEdges(graphProvider, new ArrayList<>(graph.getDisplayEdges()), criteria));
         }
         return graph;
@@ -147,7 +147,7 @@ public class DefaultTopologyService implements TopologyService {
 
     private GraphProvider findBy(String metaTopologyId, String namespace) {
         MetaTopologyProvider metaTopologyProvider = getMetaTopologyProvider(metaTopologyId);
-        Optional<GraphProvider> graphProviderOptional = metaTopologyProvider.getGraphProviders().stream().filter(graphProvider -> graphProvider.getVertexNamespace().equals(namespace)).findFirst();
+        Optional<GraphProvider> graphProviderOptional = metaTopologyProvider.getGraphProviders().stream().filter(graphProvider -> graphProvider.getNamespace().equals(namespace)).findFirst();
         return graphProviderOptional.orElseThrow(() -> new NoSuchElementException("No GraphProvider with namespace '" + namespace + "' found."));
     }
 
@@ -167,7 +167,7 @@ public class DefaultTopologyService implements TopologyService {
         StatusProvider vertexStatusProvider = findSingleService(
                 bundleContext,
                 StatusProvider.class,
-                statusProvider -> statusProvider.contributesTo(graphProvider.getVertexNamespace()),
+                statusProvider -> statusProvider.contributesTo(graphProvider.getNamespace()),
                 null);
         return vertexStatusProvider;
     }
@@ -176,7 +176,7 @@ public class DefaultTopologyService implements TopologyService {
         EdgeStatusProvider edgeStatusProvider = findSingleService(
                 bundleContext,
                 EdgeStatusProvider.class,
-                statusProvider -> statusProvider.contributesTo(graphProvider.getEdgeNamespace()),
+                statusProvider -> statusProvider.contributesTo(graphProvider.getNamespace()),
                 null);
         return edgeStatusProvider;
     }

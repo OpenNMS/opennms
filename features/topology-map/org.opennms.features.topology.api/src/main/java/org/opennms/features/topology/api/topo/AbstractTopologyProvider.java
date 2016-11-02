@@ -134,7 +134,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
          */
         @SuppressWarnings("deprecation")
         private boolean isValid(String generatedId) {
-            return !provider.containsVertexId(new DefaultVertexRef(provider.getVertexNamespace(), generatedId));
+            return !provider.containsVertexId(new DefaultVertexRef(provider.getNamespace(), generatedId));
         }
 
         public void reset() {
@@ -252,7 +252,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     
     protected final AbstractVertex addVertex(String id, int x, int y) {
         LoggerFactory.getLogger(getClass()).debug("Adding vertex in {} with ID: {}", getClass().getSimpleName(), id);
-        AbstractVertex vertex = new SimpleLeafVertex(getVertexNamespace(), id, x, y);
+        AbstractVertex vertex = new SimpleLeafVertex(getNamespace(), id, x, y);
         getSimpleVertexProvider().add(vertex);
         return vertex;
     }
@@ -264,7 +264,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     }
 
     protected final AbstractVertex addGroup(String groupId, String iconKey, String label) {
-        AbstractVertex vertex = new SimpleGroup(getVertexNamespace(), groupId);
+        AbstractVertex vertex = new SimpleGroup(getNamespace(), groupId);
         if (containsVertexId(vertex)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
@@ -319,7 +319,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     @Override
 	public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
         String nextEdgeId = getNextEdgeId();
-        return connectVertices(nextEdgeId, sourceVertextId, targetVertextId, getEdgeNamespace());
+        return connectVertices(nextEdgeId, sourceVertextId, targetVertextId, getNamespace());
     }
 
     protected final AbstractEdge connectVertices(String id, VertexRef sourceId, VertexRef targetId, String namespace) {

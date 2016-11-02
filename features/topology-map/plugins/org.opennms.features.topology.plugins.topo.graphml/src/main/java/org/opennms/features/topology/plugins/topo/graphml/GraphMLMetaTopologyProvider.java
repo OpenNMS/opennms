@@ -80,7 +80,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
 
     private VertexRef getVertex(GraphMLNode node) {
         return graphsByNamespace.values().stream()
-            .map(g -> g.getVertex(g.getVertexNamespace(), node.getId()))
+            .map(g -> g.getVertex(g.getNamespace(), node.getId()))
             .filter(v -> v != null)
             .findFirst().orElse(null);
     }
@@ -88,8 +88,8 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     @Override
     public String getId() {
         return getGraphProviders().stream()
-                .sorted(Comparator.comparing(GraphProvider::getVertexNamespace))
-                .map(g -> g.getVertexNamespace())
+                .sorted(Comparator.comparing(GraphProvider::getNamespace))
+                .map(g -> g.getNamespace())
                 .collect(Collectors.joining(":"));
     }
 
@@ -113,8 +113,8 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
                 final GraphMLTopologyProvider topoProvider = new GraphMLTopologyProvider(eachGraph, m_serviceAccessor);
                 final VertexHopGraphProvider vertexHopGraphProvider = new VertexHopGraphProvider(topoProvider);
-                graphsByNamespace.put(topoProvider.getVertexNamespace(), vertexHopGraphProvider);
-                rawGraphsByNamespace.put(topoProvider.getVertexNamespace(), topoProvider);
+                graphsByNamespace.put(topoProvider.getNamespace(), vertexHopGraphProvider);
+                rawGraphsByNamespace.put(topoProvider.getNamespace(), topoProvider);
             }
 
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {

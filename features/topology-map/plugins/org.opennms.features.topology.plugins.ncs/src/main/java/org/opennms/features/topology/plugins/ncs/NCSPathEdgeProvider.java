@@ -128,8 +128,7 @@ public class NCSPathEdgeProvider implements EdgeProvider {
     }
 
     @Override
-    public String getEdgeNamespace() {
-        // TODO Auto-generated method stub
+    public String getNamespace() {
         return "ncsPath";
     }
 

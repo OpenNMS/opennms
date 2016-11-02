@@ -387,7 +387,7 @@ public class EasyMockDataPopulator {
 
     @SuppressWarnings("deprecation")
     public void check(GraphProvider topologyProvider) {
-        String vertexNamespace = topologyProvider.getVertexNamespace();
+        String vertexNamespace = topologyProvider.getNamespace();
         Assert.assertEquals(8, topologyProvider.getVertices().size());
         
         Assert.assertEquals(8, topologyProvider.getEdges().size());

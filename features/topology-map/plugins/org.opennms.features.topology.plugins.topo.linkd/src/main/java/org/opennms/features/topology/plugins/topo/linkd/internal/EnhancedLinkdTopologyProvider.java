@@ -156,7 +156,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             int result = 1;
             result = prime * result + ((getSourceLink() == null) ? 0 : getSourceLink().getId().hashCode()) + ((getTargetLink() == null) ? 0 : getTargetLink().getId().hashCode());
             result = prime * result
-                    + ((getVertexNamespace() == null) ? 0 : getVertexNamespace().hashCode());
+                    + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
             return result;
         }
 
@@ -200,7 +200,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             int result = 1;
             result = prime * result + ((getSourceLink() == null) ? 0 : getSourceLink().getId().hashCode()) + ((getTargetLink() == null) ? 0 : getTargetLink().getId().hashCode());
             result = prime * result
-                    + ((getVertexNamespace() == null) ? 0 : getVertexNamespace().hashCode());
+                    + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
             return result;
         }
 
@@ -253,7 +253,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             int result = 1;
             result = prime * result + ((getSourceLink() == null) ? 0 : m_sourceLinkId) + ((getTargetLink() == null) ? 0 : m_targetLinkId);
             result = prime * result
-                    + ((getVertexNamespace() == null) ? 0 : getVertexNamespace().hashCode());
+                    + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
             return result;
         }
 
@@ -371,7 +371,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             int result = 1;
             result = prime * result + ((getSourceLink() == null) ? 0 : getSource().getNodeID().hashCode()) + ((getTargetLink() == null) ? 0 : getTarget().getNodeID().hashCode());
             result = prime * result
-                    + ((getVertexNamespace() == null) ? 0 : getVertexNamespace().hashCode());
+                    + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
             return result;
         }
 
@@ -653,7 +653,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     protected final Vertex getOrCreateVertex(OnmsNode sourceNode,OnmsIpInterface primary) {
-        Vertex source = getVertex(getVertexNamespace(), sourceNode.getNodeId());
+        Vertex source = getVertex(getNamespace(), sourceNode.getNodeId());
         if (source == null) {
             source = getDefaultVertex(sourceNode.getId(),
                                   sourceNode.getSysObjectId(),
@@ -929,7 +929,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             for (IsisTopologyLink link : isislinks) {
                 LOG.debug("loadtopology: adding isis link: '{}'", link );
                 String id = Math.min(link.getSourceId(), link.getTargetId()) + "|" + Math.max(link.getSourceId(), link.getTargetId());
-                Vertex source = getVertex(getVertexNamespace(), link.getSrcNodeId().toString());
+                Vertex source = getVertex(getNamespace(), link.getSrcNodeId().toString());
                 if (source == null) {
                     OnmsIpInterface primary= ipprimarymap.get(link.getSrcNodeId());
                      source = getDefaultVertex(link.getSrcNodeId(),
@@ -942,7 +942,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     addVertices(source);
 
                 }
-                Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
+                Vertex target = getVertex(getNamespace(), link.getTargetNodeId().toString());
                 if (target == null) {
                     OnmsIpInterface targetprimary= ipprimarymap.get(link.getSrcNodeId());
                     target = getDefaultVertex(link.getTargetNodeId(),
@@ -1030,7 +1030,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         for (Entry<Integer, OnmsNode> entry: nodemap.entrySet()) {
             Integer nodeId = entry.getKey();
             OnmsNode node = entry.getValue();
-            if (getVertex(getVertexNamespace(), nodeId.toString()) == null) {
+            if (getVertex(getNamespace(), nodeId.toString()) == null) {
                 LOG.debug("Adding link-less node: {}", node.getLabel());
                 // Use the primary interface, if set
                 OnmsIpInterface ipInterface = nodeipprimarymap.get(nodeId);

@@ -76,7 +76,7 @@ public enum FocusStrategy {
         Objects.requireNonNull(arguments);
 
         List<VertexHopCriteria> collected = Arrays.stream(arguments)
-                .map(eachArgument -> new DefaultVertexRef(topologyProvider.getVertexNamespace(), eachArgument))
+                .map(eachArgument -> new DefaultVertexRef(topologyProvider.getNamespace(), eachArgument))
                 .map(eachVertexRef -> topologyProvider.getVertex(eachVertexRef))
                 .filter(eachVertex -> eachVertex != null)
                 .map(VertexHopGraphProvider.DefaultVertexHopCriteria::new)

@@ -55,7 +55,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public String getVertexNamespace() {
+	public String getNamespace() {
 		return m_namespace;
 	}
 
@@ -75,7 +75,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	private Vertex getSimpleVertex(VertexRef reference) {
-		if (reference != null && getVertexNamespace().equals(reference.getNamespace())) {
+		if (reference != null && getNamespace().equals(reference.getNamespace())) {
 			return m_vertexMap.get(reference.getId());
 		}
 		return null;
@@ -263,7 +263,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	 */
 	@Override
 	public boolean containsVertexId(String id) {
-		return containsVertexId(new DefaultVertexRef(getVertexNamespace(), id));
+		return containsVertexId(new DefaultVertexRef(getNamespace(), id));
 	}
 
 	@Override

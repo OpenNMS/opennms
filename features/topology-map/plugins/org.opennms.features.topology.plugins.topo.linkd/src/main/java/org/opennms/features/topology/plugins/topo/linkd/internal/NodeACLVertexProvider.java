@@ -132,11 +132,6 @@ public class NodeACLVertexProvider implements GraphProvider {
     }
 
     @Override
-    public String getEdgeNamespace() {
-        return m_delegate.getEdgeNamespace();
-    }
-
-    @Override
     public Edge getEdge(String namespace, String id) {
         //TODO: Filter through ACL list ??
         return m_delegate.getEdge(namespace, id);
@@ -176,8 +171,8 @@ public class NodeACLVertexProvider implements GraphProvider {
     }
 
     @Override
-    public String getVertexNamespace() {
-        return m_delegate.getVertexNamespace();
+    public String getNamespace() {
+        return m_delegate.getNamespace();
     }
 
     @Override

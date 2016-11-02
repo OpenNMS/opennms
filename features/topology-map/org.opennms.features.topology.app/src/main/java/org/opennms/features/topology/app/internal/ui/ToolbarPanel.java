@@ -321,7 +321,7 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
         layerLayout.removeAllComponents();
         if (enableLayerButton) {
             graphContainer.getTopologyServiceClient().getGraphProviders().forEach(topologyProvider -> {
-                boolean selected = topologyProvider.getVertexNamespace().equals(graphContainer.getTopologyServiceClient().getNamespace());
+                boolean selected = topologyProvider.getNamespace().equals(graphContainer.getTopologyServiceClient().getNamespace());
                 final TopologyProviderInfo topologyProviderInfo = topologyProvider.getTopologyProviderInfo();
 
                 final Label nameLabel = new Label(topologyProviderInfo.getName());

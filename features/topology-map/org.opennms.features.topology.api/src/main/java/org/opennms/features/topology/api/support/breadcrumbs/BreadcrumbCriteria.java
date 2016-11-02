@@ -167,7 +167,7 @@ public class BreadcrumbCriteria extends Criteria {
     }
 
     private static void handleClick(GraphContainer graphContainer, GraphProvider targetGraphProvider, List<VertexRef> verticesToFocus, Breadcrumb breadcrumb) {
-        final String targetNamespace = targetGraphProvider.getVertexNamespace();
+        final String targetNamespace = targetGraphProvider.getNamespace();
         final String currentNamespace = graphContainer.getTopologyServiceClient().getNamespace();
 
         // Only Change the layer if namespace is different, otherwise we would switch to the current layer

@@ -79,7 +79,7 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
 
                 // connect with application
                 String id = String.format("connection:%s:%s", applicationVertex.getId(), serviceVertex.getId());
-                Edge edge = new AbstractEdge(getEdgeNamespace(), id, applicationVertex, serviceVertex);
+                Edge edge = new AbstractEdge(getNamespace(), id, applicationVertex, serviceVertex);
                 addEdges(edge);
             }
         }

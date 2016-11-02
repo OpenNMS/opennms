@@ -125,7 +125,7 @@ public class SimpleGraphProviderTest {
         assertTrue(m_topologyProvider.containsVertexId("v0"));
         assertFalse(m_topologyProvider.containsVertexId("v1"));
         ((AbstractVertex)vertexA).setIpAddress("10.0.0.4");
-        final String namespace = m_topologyProvider.getVertexNamespace();
+        final String namespace = m_topologyProvider.getNamespace();
         VertexRef ref0 = new DefaultVertexRef(namespace, "v0", namespace + ":v0");
         VertexRef ref1 = new DefaultVertexRef(namespace, "v1", namespace + ":v0");
         Assert.assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref0)).size());

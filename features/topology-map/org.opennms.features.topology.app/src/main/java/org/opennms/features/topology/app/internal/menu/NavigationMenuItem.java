@@ -58,7 +58,7 @@ public class NavigationMenuItem extends AbstractMenuItem {
     @Override
     public MenuCommand getCommand() {
         return (targets, operationContext) -> {
-            Breadcrumb breadcrumb = new Breadcrumb(targetGraphProvider.getVertexNamespace(), sourceVertex);
+            Breadcrumb breadcrumb = new Breadcrumb(targetGraphProvider.getNamespace(), sourceVertex);
             BreadcrumbCriteria criteria = Criteria.getSingleCriteriaForGraphContainer(operationContext.getGraphContainer(), BreadcrumbCriteria.class, true);
             criteria.setNewRoot(breadcrumb);
             criteria.handleClick(breadcrumb, operationContext.getGraphContainer());

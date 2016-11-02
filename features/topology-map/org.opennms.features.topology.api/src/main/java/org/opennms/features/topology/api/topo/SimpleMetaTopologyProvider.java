@@ -56,8 +56,8 @@ public class SimpleMetaTopologyProvider implements MetaTopologyProvider {
     @Override
     public String getId() {
         return getGraphProviders().stream()
-                .sorted(Comparator.comparing(GraphProvider::getVertexNamespace))
-                .map(g -> g.getVertexNamespace())
+                .sorted(Comparator.comparing(GraphProvider::getNamespace))
+                .map(g -> g.getNamespace())
                 .collect(Collectors.joining(":"));
     }
 
@@ -80,7 +80,7 @@ public class SimpleMetaTopologyProvider implements MetaTopologyProvider {
     public GraphProvider getGraphProviderBy(String namespace) {
         return getGraphProviders()
                 .stream()
-                .filter(provider -> provider.getVertexNamespace().equals(namespace))
+                .filter(provider -> provider.getNamespace().equals(namespace))
                 .findFirst().orElse(null);
     }
 

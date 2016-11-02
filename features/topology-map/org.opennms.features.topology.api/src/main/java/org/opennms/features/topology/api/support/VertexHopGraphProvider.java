@@ -279,8 +279,8 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     }
 
     @Override
-    public String getVertexNamespace() {
-        return m_delegate.getVertexNamespace();
+    public String getNamespace() {
+        return m_delegate.getNamespace();
     }
 
     @Override
@@ -291,7 +291,7 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     @Deprecated
     @Override
     public boolean containsVertexId(String id) {
-        return containsVertexId(new DefaultVertexRef(getVertexNamespace(), id));
+        return containsVertexId(new DefaultVertexRef(getNamespace(), id));
     }
 
     @Override
@@ -614,11 +614,6 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     @Override
     public int getEdgeTotalCount() {
         return m_delegate.getEdgeTotalCount();
-    }
-
-    @Override
-    public String getEdgeNamespace() {
-        return m_delegate.getEdgeNamespace();
     }
 
     @Override

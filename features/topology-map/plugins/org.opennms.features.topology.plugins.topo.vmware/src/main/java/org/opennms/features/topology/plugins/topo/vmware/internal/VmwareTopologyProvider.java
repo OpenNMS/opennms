@@ -266,7 +266,7 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
                             vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + e.getEntityId(),
                             hostSystemVertex,
                             networkVertex,
-                            getEdgeNamespace()
+                            getNamespace()
                     );
                 }
         );
@@ -280,7 +280,7 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
                             vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + e.getEntityId(),
                             hostSystemVertex,
                             datastoreVertex,
-                            getEdgeNamespace()
+                            getNamespace()
                     );
                 }
         );
@@ -315,8 +315,8 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
         connectVertices(
                 vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + vmwareManagementServer + "/" + vmwareHostSystemId,
                 virtualMachineVertex,
-                getVertex(getVertexNamespace(), vmwareManagementServer + "/" + vmwareHostSystemId),
-                getEdgeNamespace()
+                getVertex(getNamespace(), vmwareManagementServer + "/" + vmwareHostSystemId),
+                getNamespace()
         );
     }
 }

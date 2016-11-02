@@ -207,7 +207,7 @@ public class MenuManager {
 			for (String eachTargetNamespace : targetNamespaces) {
 				// Find the graph provider for the target namespace
 				final GraphProvider targetGraphProvider = graphContainer.getTopologyServiceClient().getGraphProviders().stream()
-						.filter(g -> g.getVertexNamespace().equals(eachTargetNamespace))
+						.filter(g -> g.getNamespace().equals(eachTargetNamespace))
 						.findFirst().orElse(null);
 				if (targetGraphProvider == null) {
 					LOG.warn("No graph provider found for namespace '{}'.", eachTargetNamespace);

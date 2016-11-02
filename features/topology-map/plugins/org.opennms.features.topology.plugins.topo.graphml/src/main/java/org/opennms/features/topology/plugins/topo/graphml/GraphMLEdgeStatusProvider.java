@@ -165,7 +165,7 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
 
     @Override
     public String getNamespace() {
-        return provider.getVertexNamespace();
+        return provider.getNamespace();
     }
 
     @Override

@@ -125,7 +125,7 @@ public class SimpleGraphBuilder {
 	}
 
 	private String ns() {
-		return m_graphProvider.getVertexNamespace();
+		return m_graphProvider.getNamespace();
 	}
 	
 }

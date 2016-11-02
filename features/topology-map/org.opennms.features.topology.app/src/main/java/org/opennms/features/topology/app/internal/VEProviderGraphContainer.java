@@ -365,7 +365,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public void setBaseTopology(GraphProvider graphProvider) {
         // TODO MVR ...
-        m_namespace = graphProvider.getVertexNamespace();
+        m_namespace = graphProvider.getNamespace();
         setDirty(true);
         throw new UnsupportedOperationException("NEEEIN!!!");
     }
@@ -529,8 +529,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public void selectTopologyProvider(GraphProvider graphProvider, Callback... callbacks) {
-        Graph graph = m_topologyService.getGraph(m_metaTopologyId, graphProvider.getVertexNamespace(), getCriteria(), getSemanticZoomLevel());
-        setSelectedNamespace(graphProvider.getVertexNamespace());
+        Graph graph = m_topologyService.getGraph(m_metaTopologyId, graphProvider.getNamespace(), getCriteria(), getSemanticZoomLevel());
+        setSelectedNamespace(graphProvider.getNamespace());
         setLayoutAlgorithm(graph.getLayoutAlgorithm());
         if (callbacks != null) {
             for (Callback eachCallback : callbacks) {

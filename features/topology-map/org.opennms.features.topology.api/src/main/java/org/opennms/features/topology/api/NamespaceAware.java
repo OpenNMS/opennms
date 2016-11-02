@@ -34,7 +34,11 @@ package org.opennms.features.topology.api;
 public interface NamespaceAware {
 
     /**
-     * The namespace, e.g. "nodes".
+     * A string used to identify references belonging to this provider
+     *
+     * May only contain characters that make for a reasonable Java identifier
+     * such as letters digits and underscore (no colons, periods, commas etc.)
+     *
      * @return the namespace, e.g. "nodes".
      */
     String getNamespace();
@@ -42,6 +46,7 @@ public interface NamespaceAware {
     /**
      * Defines if the current implementation contributes to the given namespace.
      * This is usually the case, when the given namespaces equals {@link #getNamespace()}, but is not a requirement.
+     *
      * @param namespace the namespace to contribute to
      * @return <code>true</code>, if the current implementation contributes to the given namespace, otherwise <code>false</code>.
      */

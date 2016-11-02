@@ -132,8 +132,8 @@ public class EnhancedLinkdTopologyProviderTest {
         ((AbstractVertex)vertexA).setIpAddress("10.0.0.4");
 
         // Search by VertexRef
-        VertexRef vertexAref = new DefaultVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
-        VertexRef vertexBref = new DefaultVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
+        VertexRef vertexAref = new DefaultVertexRef(m_topologyProvider.getNamespace(), "v0");
+        VertexRef vertexBref = new DefaultVertexRef(m_topologyProvider.getNamespace(), "v1");
         assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(vertexAref)).size());
         assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
 

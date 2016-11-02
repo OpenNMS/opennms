@@ -60,7 +60,7 @@ public class BreadcrumbPathCalculatorTest {
 //            public GraphProvider getGraphProviderBy(String namespace) {
 //                return getGraphProviders()
 //                        .stream()
-//                        .filter(p -> p.getVertexNamespace().equals(namespace))
+//                        .filter(p -> p.getNamespace().equals(namespace))
 //                        .findFirst().orElse(null);
 //            }
 //
