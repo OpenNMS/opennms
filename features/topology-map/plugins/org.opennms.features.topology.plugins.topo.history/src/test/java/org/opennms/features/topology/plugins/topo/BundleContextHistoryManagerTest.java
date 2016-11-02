@@ -52,17 +52,7 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.DefaultLayout;
 import org.opennms.features.topology.app.internal.jung.CircleLayoutAlgorithm;
-import org.opennms.features.topology.app.internal.operations.AutoRefreshToggleOperation;
-import org.opennms.features.topology.app.internal.operations.CircleLayoutOperation;
-import org.opennms.features.topology.app.internal.operations.FRLayoutOperation;
-import org.opennms.features.topology.app.internal.operations.ISOMLayoutOperation;
-import org.opennms.features.topology.app.internal.operations.KKLayoutOperation;
-import org.opennms.features.topology.app.internal.operations.ManualLayoutOperation;
-import org.opennms.features.topology.app.internal.operations.RealUltimateLayoutOperation;
-import org.opennms.features.topology.app.internal.operations.SimpleLayoutOperation;
-import org.opennms.features.topology.app.internal.operations.SpringLayoutOperation;
 import org.osgi.framework.BundleContext;
 
 public class BundleContextHistoryManagerTest  {
@@ -88,35 +78,36 @@ public class BundleContextHistoryManagerTest  {
 
     @Before
     public void setUp() {
-        if (new File(DATA_FILE_NAME).exists()) {
-            new File(DATA_FILE_NAME).delete();
-        }
-        
-    	bundleContextMock = EasyMock.createNiceMock(BundleContext.class);
-    	graphContainerMock = EasyMock.createNiceMock(GraphContainer.class);
-        graphMock = EasyMock.createNiceMock(Graph.class);
-    	
-        displayableVertices = new ArrayList<Vertex>();
-        selectedLayout = new DefaultLayout(graphContainerMock);
-
-        historyManager = new BundleContextHistoryManager(bundleContextMock);
-        historyManager.onBind(new CircleLayoutOperation());
-        historyManager.onBind(new ManualLayoutOperation());
-        historyManager.onBind(new FRLayoutOperation());
-        historyManager.onBind(new SimpleLayoutOperation());
-        historyManager.onBind(new ISOMLayoutOperation());
-        historyManager.onBind(new SpringLayoutOperation());
-        historyManager.onBind(new RealUltimateLayoutOperation());
-        historyManager.onBind(new KKLayoutOperation());
-        historyManager.onBind(new AutoRefreshToggleOperation());
-
-        setBehaviour(bundleContextMock);
-        setBehaviour(graphContainerMock);
-        setBehaviour(graphMock);
-
-        EasyMock.replay(graphContainerMock);
-        EasyMock.replay(graphMock);
-        EasyMock.replay(bundleContextMock);
+        Assert.fail("implement me");
+//        if (new File(DATA_FILE_NAME).exists()) {
+//            new File(DATA_FILE_NAME).delete();
+//        }
+//
+//    	bundleContextMock = EasyMock.createNiceMock(BundleContext.class);
+//    	graphContainerMock = EasyMock.createNiceMock(GraphContainer.class);
+//        graphMock = EasyMock.createNiceMock(Graph.class);
+//
+//        displayableVertices = new ArrayList<Vertex>();
+//        selectedLayout = new DefaultLayout(graphContainerMock);
+//
+//        historyManager = new BundleContextHistoryManager(bundleContextMock);
+//        historyManager.onBind(new CircleLayoutOperation());
+//        historyManager.onBind(new ManualLayoutOperation());
+//        historyManager.onBind(new FRLayoutOperation());
+//        historyManager.onBind(new SimpleLayoutOperation());
+//        historyManager.onBind(new ISOMLayoutOperation());
+//        historyManager.onBind(new SpringLayoutOperation());
+//        historyManager.onBind(new RealUltimateLayoutOperation());
+//        historyManager.onBind(new KKLayoutOperation());
+//        historyManager.onBind(new AutoRefreshToggleOperation());
+//
+//        setBehaviour(bundleContextMock);
+//        setBehaviour(graphContainerMock);
+//        setBehaviour(graphMock);
+//
+//        EasyMock.replay(graphContainerMock);
+//        EasyMock.replay(graphMock);
+//        EasyMock.replay(bundleContextMock);
     }
 
     @After

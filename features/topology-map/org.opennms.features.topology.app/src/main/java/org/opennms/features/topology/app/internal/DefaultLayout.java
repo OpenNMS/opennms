@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.features.topology.api.BoundingBox;
-import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Edge;
@@ -44,12 +44,11 @@ import org.opennms.features.topology.api.topo.VertexRef;
 
 public class DefaultLayout implements Layout {
 	
-	private GraphContainer m_graphContainer;
-	
-	private final Map<VertexRef, Point> m_locations = new HashMap<VertexRef, Point>();
+	private final Map<VertexRef, Point> m_locations = new HashMap<>();
+	private final Graph m_graph;
 
-	public DefaultLayout(GraphContainer graphContainer) {
-		m_graphContainer = graphContainer;
+	public DefaultLayout(Graph graph) {
+		m_graph = graph;
 	}
 
 	@Override
@@ -62,7 +61,7 @@ public class DefaultLayout implements Layout {
 		if (p == null) {
 			// If there isn't one, then try to find a neighboring vertex and use it
 			// as the initial location
-			for (Edge edge : m_graphContainer.getGraph().getDisplayEdges()){
+			for (Edge edge : m_graph.getDisplayEdges()){
 				if (v.equals(edge.getSource().getVertex())) {
 					Point neighbor = m_locations.get(edge.getTarget().getVertex());
 					if (neighbor != null) {
@@ -101,13 +100,15 @@ public class DefaultLayout implements Layout {
 		if (v == null) {
 			throw new IllegalArgumentException("Cannot get initial location of null vertex");
 		}
-		Vertex parent = m_graphContainer.getBaseTopology().getParent(v);
-		return parent == null ? getLocation(v) : getLocation(parent);
+		// TODO MVR ...
+//		Vertex parent = m_graphContainer.getTopologyServiceClient().getParent(v);
+//		return parent == null ? getLocation(v) : getLocation(parent);
+		return getLocation(v);
 	}
 	
     @Override
     public BoundingBox getBounds() {
-        Collection<? extends Vertex> vertices = m_graphContainer.getGraph().getDisplayVertices();
+        Collection<? extends Vertex> vertices = m_graph.getDisplayVertices();
         if(vertices.size() > 0) {
             Collection<VertexRef> vRefs = new ArrayList<>();
             for(Vertex v : vertices) {
@@ -134,10 +135,8 @@ public class DefaultLayout implements Layout {
                 boundingBox.addBoundingbox( computeBoundingBox(this, vertRef) );
             }
             return boundingBox;
-        }else {
+        } else {
             return getBounds();
         }
-        
     }
-
 }

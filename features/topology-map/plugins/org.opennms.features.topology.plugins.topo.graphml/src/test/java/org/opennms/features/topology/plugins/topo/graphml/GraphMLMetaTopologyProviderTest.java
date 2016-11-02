@@ -63,7 +63,7 @@ public class GraphMLMetaTopologyProviderTest {
         // Initialize the meta topology provider
         final GraphMLMetaTopologyProvider metaTopoProvider = new GraphMLMetaTopologyProvider(new GraphMLServiceAccessor());
         metaTopoProvider.setTopologyLocation(graphXml.getAbsolutePath());
-        metaTopoProvider.load();
+        metaTopoProvider.reload();
 
         // Verify Breadcrumb-Strategy
         Assert.assertEquals(BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT, metaTopoProvider.getBreadcrumbStrategy());

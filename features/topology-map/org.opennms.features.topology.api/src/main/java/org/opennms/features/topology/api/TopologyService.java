@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.api;
 
-import org.opennms.features.topology.api.Graph;
-import org.opennms.features.topology.api.GraphVisitor;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 
-import com.vaadin.server.PaintException;
+public interface TopologyService {
 
-public class BaseGraphVisitor implements GraphVisitor {
+    Graph getGraph(String metaTopologyId, String namespace, Criteria[] criteria, int semanticZoomLevel);
 
-	@Override
-	public void visitGraph(Graph graph) throws PaintException {}
+    GraphProvider getGraphProvider(String metaTopologyId, String namespace);
 
-	@Override
-	public void visitVertex(Vertex vertex) throws PaintException {}
-
-	@Override
-	public void visitEdge(Edge edge) throws PaintException {}
-
-	@Override
-	public void completeGraph(Graph graph) throws PaintException {}
+    MetaTopologyProvider getMetaTopologyProvider(String m_metaTopologyId);
 
 }

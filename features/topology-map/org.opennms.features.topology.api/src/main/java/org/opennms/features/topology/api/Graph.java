@@ -29,9 +29,13 @@
 package org.opennms.features.topology.api;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 public interface Graph {
 
@@ -48,6 +52,11 @@ public interface Graph {
 	
 	Vertex getVertexByKey(String vertexKey);
 
+	Map<VertexRef, Status> getVertexStatus();
+
+	Map<EdgeRef, Status> getEdgeStatus();
+
 	void visit(GraphVisitor visitor) throws Exception;
-	
+
+	LayoutAlgorithm getLayoutAlgorithm();
 }

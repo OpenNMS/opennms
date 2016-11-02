@@ -26,15 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.api;
 
 import java.util.Collection;
+import java.util.List;
 
+import org.opennms.features.topology.api.browsers.SelectionAware;
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Defaults;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.TopologyProviderInfo;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
 
-public interface MetaTopologyProvider {
+public interface TopologyServiceClient extends SelectionAware {
+    Vertex getVertex(VertexRef target, Criteria... criteria);
 
-    GraphProvider getDefaultGraphProvider();
+    String getNamespace();
+
+    Vertex getVertex(String namespace, String vertexId);
+
+    int getVertexTotalCount();
+
+    int getEdgeTotalCount();
+
+    TopologyProviderInfo getInfo();
+
+    Defaults getDefaults();
+
+    // TODO MVR we have to figure out what to do in this case
+    void REFRESHDUMMY();
+
+    // TODO MVR this should be removed...
+    List<Vertex> getChildren(VertexRef vertexId, Criteria[] criteria);
 
     Collection<GraphProvider> getGraphProviders();
 
@@ -42,17 +68,7 @@ public interface MetaTopologyProvider {
 
     GraphProvider getGraphProviderBy(String namespace);
 
+    VertexProvider getDefaultGraphProvider();
+
     BreadcrumbStrategy getBreadcrumbStrategy();
-
-    /**
-     * Reloads the {@link MetaTopologyProvider}.
-     */
-    void reload();
-
-    /**
-     * Each {@link MetaTopologyProvider} must have a unique id.
-     *
-     * @return the unique id.
-     */
-    String getId();
 }

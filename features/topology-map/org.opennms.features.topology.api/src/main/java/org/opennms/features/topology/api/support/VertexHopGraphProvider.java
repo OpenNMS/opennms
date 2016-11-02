@@ -612,6 +612,11 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     }
 
     @Override
+    public int getEdgeTotalCount() {
+        return m_delegate.getEdgeTotalCount();
+    }
+
+    @Override
     public String getEdgeNamespace() {
         return m_delegate.getEdgeNamespace();
     }

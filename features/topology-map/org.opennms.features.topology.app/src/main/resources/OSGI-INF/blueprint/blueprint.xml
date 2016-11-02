@@ -33,7 +33,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </bean>
 
     <bean id="veGraphContainer" class="org.opennms.features.topology.app.internal.VEProviderGraphContainer" scope="prototype">
-        <argument ref="providerManager" />
         <property name="bundleContext" ref="blueprintBundleContext" />
         <property name="autoRefreshSupport" ref="defaultAutoRefreshSupport"/>
     </bean>
@@ -136,14 +135,13 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager" />
     </reference-list>
 
-    <bean id="providerManager" class="org.opennms.features.topology.app.internal.ProviderManager" />
-    
-    <reference-list interface="org.opennms.features.topology.api.topo.EdgeProvider" availability="optional">
-        <reference-listener bind-method="onEdgeProviderBind" unbind-method="onEdgeProviderUnbind" ref="providerManager"/>
-    </reference-list>
-
-    <reference-list interface="org.opennms.features.topology.api.topo.VertexProvider" availability="optional">
-        <reference-listener bind-method="onVertexProviderBind" unbind-method="onVertexProviderUnbind" ref="providerManager"/>
+    <!-- Topology Service -->
+    <bean id="topologyService" class="org.opennms.features.topology.app.internal.service.DefaultTopologyService" >
+        <argument ref="blueprintBundleContext"/>
+    </bean>
+    <service ref="topologyService" interface="org.opennms.features.topology.api.TopologyService" />
+    <reference-list interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" availability="mandatory">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="topologyService"/>
     </reference-list>
     
     <bean id="widgetManager" class="org.opennms.features.topology.api.WidgetManager" />

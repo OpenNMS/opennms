@@ -39,7 +39,6 @@ import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.SearchProvider;
-import org.opennms.features.topology.app.internal.ProviderManager;
 import org.opennms.features.topology.app.internal.VEProviderGraphContainer;
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
 import org.opennms.features.topology.app.internal.ui.SearchBox;
@@ -65,7 +64,7 @@ public class GraphMLSearchProviderTest {
     public void canSearchAllSearchProviders() {
         final GraphMLMetaTopologyProvider metaTopologyProvider = new GraphMLMetaTopologyProvider(new GraphMLServiceAccessor());
         metaTopologyProvider.setTopologyLocation("target/test-classes/test-graph.xml");
-        metaTopologyProvider.load();
+        metaTopologyProvider.reload();
         Assert.assertNotNull(metaTopologyProvider.getDefaultGraphProvider());
 
         List<SearchProvider> searchProviders = metaTopologyProvider.getGraphProviders().stream()
@@ -73,8 +72,7 @@ public class GraphMLSearchProviderTest {
                 .collect(Collectors.toList());
         Assert.assertEquals(2, searchProviders.size());
 
-        ProviderManager providerManager = new ProviderManager();
-        GraphContainer graphContainer = new VEProviderGraphContainer(providerManager);
+        GraphContainer graphContainer = new VEProviderGraphContainer();
         graphContainer.setBaseTopology(metaTopologyProvider.getDefaultGraphProvider());
 
         OperationContext operationContext = EasyMock.niceMock(OperationContext.class);

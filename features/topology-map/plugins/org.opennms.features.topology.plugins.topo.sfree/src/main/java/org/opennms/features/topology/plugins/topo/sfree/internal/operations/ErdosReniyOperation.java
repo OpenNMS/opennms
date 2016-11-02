@@ -40,7 +40,7 @@ public class ErdosReniyOperation implements Operation {
 	@Override
 	public void execute(List<VertexRef> targets, OperationContext operationContext) {
 		if (operationContext != null && operationContext.getGraphContainer() != null) {
-			((SFreeTopologyProvider) operationContext.getGraphContainer().getBaseTopology()).setType(SFreeTopologyProvider.Type.ErdosRenis);
+			((SFreeTopologyProvider) operationContext.getGraphContainer().getTopologyServiceClient()).setType(SFreeTopologyProvider.Type.ErdosRenis);
 			operationContext.getGraphContainer().redoLayout();
 		}
 	}

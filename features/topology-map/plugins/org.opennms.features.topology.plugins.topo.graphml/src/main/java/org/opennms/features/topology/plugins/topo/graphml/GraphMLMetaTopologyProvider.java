@@ -34,12 +34,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLEdge;
@@ -83,9 +85,19 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
             .findFirst().orElse(null);
     }
 
-    public void load() {
+    @Override
+    public String getId() {
+        return getGraphProviders().stream()
+                .sorted(Comparator.comparing(GraphProvider::getVertexNamespace))
+                .map(g -> g.getVertexNamespace())
+                .collect(Collectors.joining(":"));
+    }
+
+    @Override
+    public void reload() {
         graphsByNamespace.clear();
         oppositeVertices.clear();
+        rawGraphsByNamespace.clear();
         if (graphMLFile == null) {
             LOG.warn("No graph defined");
             return;

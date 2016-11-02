@@ -53,7 +53,7 @@ public class IconResetOperation implements Operation {
         if (updated[0]) {
             // HACK! We have no concept of "get the default icon for a vertex" at the moment.
             // In order to populate the icon, we have to re-initialize the Base Topology Provider
-            operationContext.getGraphContainer().getBaseTopology().refresh();
+            operationContext.getGraphContainer().getTopologyServiceClient().REFRESHDUMMY();
             operationContext.getGraphContainer().setDirty(true);
             operationContext.getGraphContainer().redoLayout();
         }

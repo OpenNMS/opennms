@@ -198,7 +198,7 @@ public class MenuManager {
 
 			final GraphContainer graphContainer = operationContext.getGraphContainer();
 			// Find the vertices in other graphs that this vertex links to
-			final Collection<VertexRef> oppositeVertices = graphContainer.getMetaTopologyProvider().getOppositeVertices(targets.get(0));
+			final Collection<VertexRef> oppositeVertices = graphContainer.getTopologyServiceClient().getOppositeVertices(targets.get(0));
 
 			// Find all namespaces
 			final Set<String> targetNamespaces = oppositeVertices.stream().map(v -> v.getNamespace()).collect(Collectors.toSet());
@@ -206,7 +206,7 @@ public class MenuManager {
 			// Find provider for namespaces and add menu entry
 			for (String eachTargetNamespace : targetNamespaces) {
 				// Find the graph provider for the target namespace
-				final GraphProvider targetGraphProvider = graphContainer.getMetaTopologyProvider().getGraphProviders().stream()
+				final GraphProvider targetGraphProvider = graphContainer.getTopologyServiceClient().getGraphProviders().stream()
 						.filter(g -> g.getVertexNamespace().equals(eachTargetNamespace))
 						.findFirst().orElse(null);
 				if (targetGraphProvider == null) {

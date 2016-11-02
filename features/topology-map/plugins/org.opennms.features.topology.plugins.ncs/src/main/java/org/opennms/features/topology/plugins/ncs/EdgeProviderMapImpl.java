@@ -114,6 +114,11 @@ public class EdgeProviderMapImpl implements EdgeProvider {
 		fireEdgesRemoved(all);
 	}
 
+	@Override
+	public int getEdgeTotalCount() {
+		return m_edges.size();
+	}
+
 	private void fireEdgesRemoved(List<Edge> edges) {
 		List<String> ids = new ArrayList<String>(edges.size());
 		for(Edge e : edges) {

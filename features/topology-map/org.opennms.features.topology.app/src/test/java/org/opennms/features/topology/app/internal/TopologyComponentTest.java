@@ -80,7 +80,7 @@ public class TopologyComponentTest {
         TestTopologyProvider topoProvider = new TestTopologyProvider();
         assertEquals(2, topoProvider.getVertices().size());
         assertEquals(1, topoProvider.getEdges().size());
-        GraphContainer graphContainer = new VEProviderGraphContainer(new ProviderManager());
+        GraphContainer graphContainer = new VEProviderGraphContainer();
         graphContainer.setBaseTopology(topoProvider);
         graphContainer.setSelectionManager(selectionManager);
         TopologyComponent topoComponent = getTopologyComponent(graphContainer);
@@ -126,7 +126,7 @@ public class TopologyComponentTest {
         TestTopologyProvider topoProvider = new TestTopologyProvider();
         assertEquals(2, topoProvider.getVertices().size());
         assertEquals(1, topoProvider.getEdges().size());
-        GraphContainer graphContainer = new VEProviderGraphContainer(new ProviderManager());
+        GraphContainer graphContainer = new VEProviderGraphContainer();
         graphContainer.setBaseTopology(topoProvider);
         graphContainer.setSelectionManager(selectionManager);
         TopologyComponent topoComponent = getTopologyComponent(graphContainer);
@@ -186,7 +186,7 @@ public class TopologyComponentTest {
         EasyMock.replay(target, selectionManager);
         
         TestTopologyProvider topologyProvider = new TestTopologyProvider();
-        GraphContainer graphContainer = new VEProviderGraphContainer(new ProviderManager());
+        GraphContainer graphContainer = new VEProviderGraphContainer();
         graphContainer.setBaseTopology(topologyProvider);
         graphContainer.setSelectionManager(selectionManager);
         TopologyComponent topoComponent = getTopologyComponent(graphContainer);
@@ -232,7 +232,7 @@ public class TopologyComponentTest {
         EasyMock.replay(selectionManager);
 
         TestTopologyProvider topoProvider = new TestTopologyProvider();
-        GraphContainer graphContainer = new VEProviderGraphContainer(new ProviderManager());
+        GraphContainer graphContainer = new VEProviderGraphContainer();
         graphContainer.setBaseTopology(topoProvider);
         graphContainer.setSelectionManager(selectionManager);
         TopologyComponent topoComponent = getTopologyComponent(graphContainer);
@@ -277,8 +277,8 @@ public class TopologyComponentTest {
         }
         
         for(Edge e: graph.getDisplayEdges()) {
-        	Vertex sourceV = graphContainer.getBaseTopology().getVertex(e.getSource().getVertex(), graphContainer.getCriteria());
-        	Vertex targetV = graphContainer.getBaseTopology().getVertex(e.getTarget().getVertex(), graphContainer.getCriteria());
+        	Vertex sourceV = graphContainer.getTopologyServiceClient().getVertex(e.getSource().getVertex(), graphContainer.getCriteria());
+        	Vertex targetV = graphContainer.getTopologyServiceClient().getVertex(e.getTarget().getVertex(), graphContainer.getCriteria());
             String sourceKey = sourceV.getKey();
             String targetKey = targetV.getKey();
             mockEdgeWithKeys(target2, e.getKey(), sourceKey, targetKey);

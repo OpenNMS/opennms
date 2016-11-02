@@ -71,7 +71,7 @@ public class ClearFocusOperation implements Operation {
         return "ClearFocus";
     }
     public void execute(final GraphContainer graphContainer) {
-        graphContainer.getBaseTopology().refresh();
+        graphContainer.getTopologyServiceClient().REFRESHDUMMY();
         graphContainer.setDirty(true);
         graphContainer.redoLayout();
         TopologyUI.getCurrent().markAsDirtyRecursive();

@@ -72,4 +72,5 @@ public interface EdgeProvider {
 
 	void clearEdges();
 
+    int getEdgeTotalCount();
 }

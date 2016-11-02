@@ -44,14 +44,13 @@ import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.support.SimpleGraphBuilder;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.ProviderManager;
 import org.opennms.features.topology.app.internal.VEProviderGraphContainer;
-import org.opennms.features.topology.api.support.SimpleGraphBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,8 +88,7 @@ public class D3LayoutTest {
             .edge("e14", "v7", "v8").eStyleName("edge");
 
         m_graphProvider = bldr.get();
-        ProviderManager providerManager = new ProviderManager();
-        m_graphContainer = new VEProviderGraphContainer(providerManager);
+        m_graphContainer = new VEProviderGraphContainer();
         m_graphContainer.setBaseTopology(m_graphProvider);
     }
 

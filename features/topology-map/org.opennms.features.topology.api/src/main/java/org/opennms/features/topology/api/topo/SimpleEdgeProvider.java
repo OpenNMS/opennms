@@ -261,4 +261,8 @@ public class SimpleEdgeProvider implements EdgeProvider {
 		fireEdgesRemoved(all);
 	}
 
+	@Override
+	public int getEdgeTotalCount() {
+		return m_edgeMap.size();
+	}
 }

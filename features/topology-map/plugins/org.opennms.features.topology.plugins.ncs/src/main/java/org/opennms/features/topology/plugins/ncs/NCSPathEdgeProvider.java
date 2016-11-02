@@ -181,4 +181,9 @@ public class NCSPathEdgeProvider implements EdgeProvider {
 
     }
 
+    @Override
+    public int getEdgeTotalCount() {
+        return getEdges().size();
+    }
+
 }

@@ -40,7 +40,7 @@ public class BarabasiAlbertOperation implements Operation {
     @Override
     public void execute(List<VertexRef> targets, OperationContext operationContext) {
         if (operationContext != null && operationContext.getGraphContainer() != null) {
-            ((SFreeTopologyProvider) operationContext.getGraphContainer().getBaseTopology()).setType(SFreeTopologyProvider.Type.BarabasiAlbert);
+            ((SFreeTopologyProvider) operationContext.getGraphContainer().getTopologyServiceClient()).setType(SFreeTopologyProvider.Type.BarabasiAlbert);
             operationContext.getGraphContainer().redoLayout();
         }
     }

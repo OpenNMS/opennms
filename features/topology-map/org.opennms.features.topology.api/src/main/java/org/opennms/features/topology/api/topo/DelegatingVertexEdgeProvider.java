@@ -71,7 +71,12 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
         return m_vertexProvider.getVertexTotalCount();
     }
 
-    @Override
+	@Override
+	public int getEdgeTotalCount() {
+		return m_edgeProvider.getEdgeTotalCount();
+	}
+
+	@Override
 	public final boolean contributesTo(String namespace) {
 		return m_vertexProvider.contributesTo(namespace);
 	}

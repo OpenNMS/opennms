@@ -76,7 +76,6 @@ import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
-import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.menu.MenuManager;
 import org.opennms.features.topology.app.internal.menu.MenuUpdateListener;
 import org.opennms.features.topology.app.internal.menu.TopologyContextMenu;
@@ -313,11 +312,11 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                 // Build the VertexRef elements
                 final TreeSet<VertexRef> refs = new TreeSet<>();
                 for (String vertexId : vertexIdInFocus.split(",")) {
-                    String namespace = m_graphContainer.getBaseTopology().getVertexNamespace();
-                    Vertex vertex = m_graphContainer.getBaseTopology().getVertex(namespace, vertexId);
+                    String namespace = m_graphContainer.getTopologyServiceClient().getNamespace();
+                    Vertex vertex = m_graphContainer.getTopologyServiceClient().getVertex(namespace, vertexId);
                     if (vertex == null) {
                         LOG.warn("Vertex with namespace {} and id {} do not exist in the selected Graph Provider {}",
-                                namespace, vertexId, m_graphContainer.getBaseTopology().getClass().getSimpleName());
+                                namespace, vertexId, m_graphContainer.getTopologyServiceClient().getClass().getSimpleName());
                     } else {
                         refs.add(vertex);
                     }
@@ -351,17 +350,17 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                                 synchronized (m_currentHudDisplayLock) {
                                     m_currentHudDisplay = new HudDisplay();
                                     m_currentHudDisplay.setImmediate(true);
-                                    m_currentHudDisplay.setProvider(m_graphContainer.getBaseTopology().getVertexNamespace().equals("nodes")
+                                    m_currentHudDisplay.setProvider(m_graphContainer.getTopologyServiceClient().getNamespace().equals("nodes")
                                                                     ? "Linkd"
-                                                                    : m_graphContainer.getBaseTopology().getVertexNamespace());
+                                                                    : m_graphContainer.getTopologyServiceClient().getNamespace());
                                     m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));
                                     m_currentHudDisplay.setEdgeFocusCount(0);
                                     m_currentHudDisplay.setVertexSelectionCount(m_graphContainer.getSelectionManager().getSelectedVertexRefs().size());
                                     m_currentHudDisplay.setEdgeSelectionCount(m_graphContainer.getSelectionManager().getSelectedEdgeRefs().size());
                                     m_currentHudDisplay.setVertexContextCount(m_graphContainer.getGraph().getDisplayVertices().size());
                                     m_currentHudDisplay.setEdgeContextCount(m_graphContainer.getGraph().getDisplayEdges().size());
-                                    m_currentHudDisplay.setVertexTotalCount(m_graphContainer.getBaseTopology().getVertexTotalCount());
-                                    m_currentHudDisplay.setEdgeTotalCount(m_graphContainer.getBaseTopology().getEdges().size());
+                                    m_currentHudDisplay.setVertexTotalCount(m_graphContainer.getTopologyServiceClient().getVertexTotalCount());
+                                    m_currentHudDisplay.setEdgeTotalCount(m_graphContainer.getTopologyServiceClient().getEdgeTotalCount());
                                     return m_currentHudDisplay;
                                 }
                             }
@@ -381,7 +380,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
         // Panel Item to visualize the meta info
         private final InfoPanelItemProvider topologyProviderInfoPanelItem = (container) -> {
-            TopologyProviderInfo metaInfo = Optional.ofNullable(getGraphContainer().getBaseTopology().getTopologyProviderInfo())
+            TopologyProviderInfo metaInfo = Optional.ofNullable(getGraphContainer().getTopologyServiceClient().getInfo())
                     .orElseGet(DefaultTopologyProviderInfo::new);
 
             // Only contribute if no selection
@@ -564,13 +563,20 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         // Set the algorithm last so that the criteria and SZLs are
         // in place before we run the layout algorithm.
         m_graphContainer.setSessionId(m_applicationContext.getSessionId());
-        m_graphContainer.setLayoutAlgorithm(new TopoFRLayoutAlgorithm());
 
         createLayouts();
         setupErrorHandler(); // Set up an error handler for UI-level exceptions
         setupAutoRefresher(); // Add an auto refresh handler to the GraphContainer
 
         loadUserSettings();
+
+        // If no Topology Provider was selected (due to loadUserSettings(), fallback to default
+        if (Strings.isNullOrEmpty(m_graphContainer.getMetaTopologyId())) {
+            MetaTopologySelectorOperation defaultTopologySelectorOperation = createOperationForDefaultGraphProvider(m_bundlecontext, "(|(label=Enhanced Linkd)(label=Linkd))");
+            Objects.requireNonNull(defaultTopologySelectorOperation, "No default GraphProvider found."); // no default found, abort
+            defaultTopologySelectorOperation.execute(m_graphContainer);
+        }
+
         // the layout must be created BEFORE loading the hop criteria and the semantic zoom level
         TopologyUIRequestHandler handler = new TopologyUIRequestHandler();
         getSession().addRequestHandler(handler); // Add a request handler that parses incoming focusNode and szl query parameters
@@ -578,25 +584,14 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
         // Add the default criteria if we do not have already a criteria set
         if (getWrappedVertexHopCriteria(m_graphContainer).isEmpty() && noAdditionalFocusCriteria()) {
-            List<Criteria> defaultCriteriaList = m_graphContainer.getBaseTopology().getDefaults().getCriteria();
+            List<Criteria> defaultCriteriaList = m_graphContainer.getTopologyServiceClient().getDefaults().getCriteria();
             if (defaultCriteriaList != null) {
                 defaultCriteriaList.forEach(eachCriteria -> m_graphContainer.addCriteria(eachCriteria)); // set default
             }
         }
 
-        // If no Topology Provider was selected (due to loadUserSettings(), fallback to default
-        if (m_graphContainer.getBaseTopology() == null
-                || m_graphContainer.getBaseTopology() == MergingGraphProvider.NULL_PROVIDER) {
-            MetaTopologySelectorOperation defaultTopologySelectorOperation = createOperationForDefaultGraphProvider(m_bundlecontext, "(|(label=Enhanced Linkd)(label=Linkd))");
-            Objects.requireNonNull(defaultTopologySelectorOperation, "No default GraphProvider found."); // no default found, abort
-            defaultTopologySelectorOperation.execute(m_graphContainer);
-        }
-
         // We set the listeners at the end, to not fire them all the time when initializing the UI
         setupListeners();
-
-        // We force a reload of the topology provider as it may not have been initialized
-        m_graphContainer.getBaseTopology().refresh();
 
         // We force a reload to trigger a fireGraphChanged()
         m_graphContainer.setDirty(true);
@@ -938,7 +933,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             TabSheet.Tab tab = tabSheet.getTab(i);
             if (tab.getComponent() instanceof SelectionAwareTable) {
                 ContentType contentType = ((SelectionAwareTable) tab.getComponent()).getContentType();
-                boolean visible = m_graphContainer.getBaseTopology().contributesTo(contentType);
+                boolean visible = m_graphContainer.getTopologyServiceClient().contributesTo(contentType);
                 tab.setVisible(visible);
             }
         }

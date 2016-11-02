@@ -299,6 +299,11 @@ public class NodeACLVertexProvider implements GraphProvider {
     }
 
     @Override
+    public int getEdgeTotalCount() {
+        return m_delegate.getEdgeTotalCount();
+    }
+
+    @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
         return m_delegate.getSelection(selectedVertices, type);
     }

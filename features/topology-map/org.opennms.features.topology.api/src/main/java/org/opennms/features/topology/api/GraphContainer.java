@@ -32,10 +32,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.MetaTopologyProvider;
-import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.data.Property;
@@ -61,12 +58,13 @@ public interface GraphContainer extends DisplayState {
         void callback(GraphContainer graphContainer, GraphProvider graphProvider);
     }
 
-    MetaTopologyProvider getMetaTopologyProvider();
+    void setMetaTopologyId(String metaTopologyId);
 
-    void setMetaTopologyProvider(MetaTopologyProvider metaGraphProvider);
+    String getMetaTopologyId();
 
-    GraphProvider getBaseTopology();
+    TopologyServiceClient getTopologyServiceClient();
 
+    // TODO MVR rip it out ...
     void setBaseTopology(GraphProvider graphProvider);
 
     Criteria[] getCriteria();
@@ -101,18 +99,12 @@ public interface GraphContainer extends DisplayState {
     boolean hasAutoRefreshSupport();
 
     Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs);
-    
+
+    void setSelectedNamespace(String namespace);
+
     MapViewManager getMapViewManager();
 
     Property<Double> getScaleProperty();
-
-    StatusProvider getVertexStatusProvider();
-
-    void setVertexStatusProvider(StatusProvider statusProvider);
-
-    EdgeStatusProvider getEdgeStatusProvider();
-
-    void setEdgeStatusProvider(EdgeStatusProvider edgeStatusProvider);
 
     // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
     String getSessionId();

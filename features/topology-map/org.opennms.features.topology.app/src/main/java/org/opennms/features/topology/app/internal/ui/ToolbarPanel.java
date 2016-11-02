@@ -314,14 +314,14 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
     public void graphChanged(GraphContainer graphContainer) {
         setSemanticZoomLevelLabel(graphContainer.getSemanticZoomLevel());
 
-        boolean enableLayerButton = graphContainer.getMetaTopologyProvider().getGraphProviders().size() > 1;
+        boolean enableLayerButton = graphContainer.getTopologyServiceClient().getGraphProviders().size() > 1;
         layerButton.setEnabled(enableLayerButton);
 
         // update the layer layout
         layerLayout.removeAllComponents();
         if (enableLayerButton) {
-            graphContainer.getMetaTopologyProvider().getGraphProviders().forEach(topologyProvider -> {
-                boolean selected = topologyProvider.getVertexNamespace().equals(graphContainer.getBaseTopology().getVertexNamespace());
+            graphContainer.getTopologyServiceClient().getGraphProviders().forEach(topologyProvider -> {
+                boolean selected = topologyProvider.getVertexNamespace().equals(graphContainer.getTopologyServiceClient().getNamespace());
                 final TopologyProviderInfo topologyProviderInfo = topologyProvider.getTopologyProviderInfo();
 
                 final Label nameLabel = new Label(topologyProviderInfo.getName());
