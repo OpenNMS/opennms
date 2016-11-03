@@ -131,4 +131,16 @@ public class SnmpV3User {
             Objects.equals(getPrivPassPhrase(), that.getPrivPassPhrase()) &&
             Objects.equals(getPrivProtocol(), that.getPrivProtocol());
     }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("authPassPhrase", authPassPhrase)
+            .append("authProtocol", authProtocol)
+            .append("engineId", engineId)
+            .append("privPassPhrase", privPassPhrase)
+            .append("privProtocol", privProtocol)
+            .append("securityName", securityName)
+            .toString();
+    }
 }
