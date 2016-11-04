@@ -32,8 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ColumnTracker extends CollectionTracker {
-	
-	private static final transient Logger LOG = LoggerFactory.getLogger(ColumnTracker.class);
+    private static final transient Logger LOG = LoggerFactory.getLogger(ColumnTracker.class);
     
     private SnmpObjId m_base;
     private SnmpObjId m_last;
@@ -109,21 +108,28 @@ public class ColumnTracker extends CollectionTracker {
 
             @Override
             public boolean processErrors(int errorStatus, int errorIndex) {
-                if (errorStatus == NO_ERR) {
-                    return false;
-                } else if (errorStatus == TOO_BIG_ERR) {
+                //LOG.trace("processErrors: errorStatus={}, errorIndex={}", errorStatus, errorIndex);;
+
+                final ErrorStatus status = ErrorStatus.fromStatus(errorStatus);
+                if (status == ErrorStatus.TOO_BIG) {
                     throw new IllegalArgumentException("Unable to handle tooBigError for next oid request after "+m_last);
-                } else if (errorStatus == GEN_ERR) {
+                } else if (status == ErrorStatus.GEN_ERR) {
                     reportGenErr("Received genErr requesting next oid after "+m_last+". Marking column is finished.");
                     errorOccurred();
                     return true;
-                } else if (errorStatus == NO_SUCH_NAME_ERR) {
+                } else if (status == ErrorStatus.NO_SUCH_NAME) {
                     reportNoSuchNameErr("Received noSuchName requesting next oid after "+m_last+". Marking column is finished.");
                     errorOccurred();
                     return true;
-                } else {
-                    throw new IllegalArgumentException("Unexpected error processing next oid after "+m_last+". Aborting!");
+                } else if (status.isFatal()) {
+                    final ErrorStatusException ex = new ErrorStatusException(status, "Unexpected error processing next oid after "+m_last+". Aborting!");
+                    LOG.debug("Fatal Error: {}", status, ex);
+                    throw ex;
+                } else if (status != ErrorStatus.NO_ERROR) {
+                    LOG.warn("Non-fatal error encountered: {}. {}", status, status.retry()? "Retrying." : "Giving up.");
+                    return status.retry();
                 }
+                return false;
             }
         };
         
