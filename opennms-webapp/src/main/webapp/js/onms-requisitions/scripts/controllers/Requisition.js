@@ -200,6 +200,15 @@
           RequisitionsService.startTiming();
           RequisitionsService.deleteNode(node).then(
             function() { // success
+              var index = -1;
+              for(var i = 0; i < $scope.filteredNodes.length; i++) {
+                if ($scope.filteredNodes[i].foreignId === node.foreignId) {
+                  index = i;
+                }
+              }
+              if (index > -1) {
+                $scope.filteredNodes.splice(index,1);
+              }
               growl.success('The node ' + node.nodeLabel + ' has been deleted.');
             },
             $scope.errorHandler
