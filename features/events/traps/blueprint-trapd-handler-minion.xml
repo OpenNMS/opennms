@@ -23,6 +23,7 @@
 			<cm:property name="queueName">
 				<bean factory-ref="queueNameFactory" factory-method="getName"/>
 			</cm:property>
+			<cm:property name="concurrentConsumers" value="4"/>
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -40,7 +41,7 @@
 		<propertyPlaceholder id="properties" location="blueprint:trapHandlerMinionProperties" />
 
 		<route id="trapMarshal">
-			<from uri="seda:handleMessage?concurrentConsumers=4"/>
+			<from uri="seda:handleMessage?concurrentConsumers={{concurrentConsumers}}"/>
 			<!-- Marshal the message to XML -->
 			<!-- TODO: HZN-766: Implement this marshaller -->
 			<!-- <bean ref="marshaller"/> -->
@@ -48,7 +49,7 @@
 		</route>
 
 		<route id="trapSendJms">
-			<from uri="seda:sendMessage?concurrentConsumers=4"/>
+			<from uri="seda:sendMessage?concurrentConsumers={{concurrentConsumers}}"/>
 
 			<!-- Broadcast message over ActiveMQ -->
 			<to uri="queuingservice:{{queueName}}?disableReplyTo=true" />

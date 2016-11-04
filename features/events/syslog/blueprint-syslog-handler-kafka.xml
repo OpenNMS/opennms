@@ -17,6 +17,7 @@
 		<cm:default-properties>
 			<cm:property name="kafkaAddress" value="127.0.0.1:9092" />
 			<cm:property name="kafkatopic" value="syslog" />
+			<cm:property name="concurrentConsumers" value="4"/>
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -38,14 +39,14 @@
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerKafkaProperties" />
 
 		<route id="syslogMarshal">
-			<from uri="seda:handleMessage?concurrentConsumers=4" />
+			<from uri="seda:handleMessage?concurrentConsumers={{concurrentConsumers}}" />
 			<!-- Marshal the message to XML -->
 			<bean ref="marshaller"/>
 			<to uri="seda:sendMessage"/>
 		</route>
 
 		<route id="syslogSendKafka">
-			<from uri="seda:sendMessage?concurrentConsumers=4" />
+			<from uri="seda:sendMessage?concurrentConsumers={{concurrentConsumers}}" />
 
 			<!-- HZN-862: Use ByteArrayPartitioner instead of this key generator -->
 			<setHeader headerName="kafka.PARTITION_KEY">

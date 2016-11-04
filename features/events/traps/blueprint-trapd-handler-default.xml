@@ -22,6 +22,7 @@
 			<cm:property name="queueName">
 				<bean factory-ref="queueNameFactory" factory-method="getName"/>
 			</cm:property>
+			<cm:property name="concurrentConsumers" value="4"/>
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -64,7 +65,7 @@
 		</route>
 
 		<route id="trapHandler">
-			<from uri="seda:trapHandler?concurrentConsumers=4" />
+			<from uri="seda:trapHandler?concurrentConsumers={{concurrentConsumers}}" />
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification" />
 			<!--
 				Pass the message to the default handler which will convert it into 

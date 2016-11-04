@@ -23,6 +23,7 @@
 			<cm:property name="queueName">
 				<bean factory-ref="queueNameFactory" factory-method="getName"/>
 			</cm:property>
+			<cm:property name="concurrentConsumers" value="4"/>
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -37,8 +38,13 @@
 	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
 		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
 	</bean>
+	<bean id="syslogdConfig" class="org.opennms.netmgt.config.SyslogdConfigFactory" />
+	
+	
+	<service interface="org.opennms.netmgt.config.SyslogdConfig" ref="syslogdConfig"/>
+	
 
-	<reference id="syslogdConfig" interface="org.opennms.netmgt.config.SyslogdConfig" />
+<!-- 	<reference id="syslogdConfig" interface="org.opennms.netmgt.config.SyslogdConfig" /> -->
 	
 	<bean id="syslogdConfigProcessor" class="org.opennms.netmgt.syslogd.SyslogdConfigProcessor">
 		<argument ref="syslogdConfig"/>
@@ -51,14 +57,14 @@
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerDefaultProperties" />
 
 		<route id="receiveSyslogConnection">
-			<from uri="queuingservice:{{queueName}}?concurrentConsumers=8"/>
+			<from uri="queuingservice:{{queueName}}?concurrentConsumers={{concurrentConsumers}}"/>
 			<!-- No performance improvement with asyncConsumer -->
 			<!-- <from uri="activemq:{{queueName}}?asyncConsumer=true&amp;concurrentConsumers=8"/> -->
 			<to uri="seda:unmarshalMessage"/>
 		</route>
 
 		<route id="unmarshalSyslogConnection">
-			<from uri="seda:unmarshalMessage?concurrentConsumers=8"/>
+			<from uri="seda:unmarshalMessage?concurrentConsumers={{concurrentConsumers}}"/>
 			<process ref="unmarshaller"/>
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>
@@ -66,7 +72,7 @@
 		</route>
 
 		<route id="handleSyslogConnection">
-			<from uri="seda:syslogHandler?concurrentConsumers=8"/>
+			<from uri="seda:syslogHandler?concurrentConsumers={{concurrentConsumers}}"/>
 			<!-- 
 				Pass the message to the default handler which will convert it into
 				an event and broadcast the event.

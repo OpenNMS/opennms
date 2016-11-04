@@ -23,6 +23,7 @@
 			<cm:property name="queueName">
 				<bean factory-ref="queueNameFactory" factory-method="getName"/>
 			</cm:property>
+			<cm:property name="concurrentConsumers" value="4"/>
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -45,7 +46,7 @@
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerMinionProperties" />
 
 		<route id="syslogMarshal">
-			<from uri="seda:handleMessage?concurrentConsumers=4" />
+			<from uri="seda:handleMessage?concurrentConsumers={{concurrentConsumers}}" />
 			<!-- Marshal the message to XML -->
 			<bean ref="marshaller"/>
 			<to uri="seda:sendMessage"/>
@@ -53,7 +54,7 @@
 
 		<route id="syslogSendJms">
 			<!-- Concurrent consumers gives a performance boost here because we have pooled connections to the JMS broker -->
-			<from uri="seda:sendMessage?concurrentConsumers=4"/>
+			<from uri="seda:sendMessage?concurrentConsumers={{concurrentConsumers}}"/>
 			<!-- Broadcast the message over ActiveMQ -->
 			<!--
 				Turn off persistent messages to avoid the latency penalty: 

@@ -17,6 +17,7 @@
 		<cm:default-properties>
 			<cm:property name="kafkaAddress" value="127.0.0.1:9092" />
 			<cm:property name="kafkatopic" value="trapd" />
+			<cm:property name="concurrentConsumers" value="4"/>
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -38,7 +39,7 @@
 		<propertyPlaceholder id="properties" location="blueprint:trapdHandlerKafkaProperties" />
 
 		<route id="trapMarshal">
-			<from uri="seda:handleMessage?concurrentConsumers=4" />
+			<from uri="seda:handleMessage?concurrentConsumers={{concurrentConsumers}}" />
 			<!-- Marshal the message to XML -->
 			<!-- TODO: HZN-766: Implement this marshaller -->
 			<!-- <bean ref="marshaller"/> -->
@@ -46,7 +47,7 @@
 		</route>
 
 		<route id="trapSendKafka">
-			<from uri="seda:sendMessage?concurrentConsumers=4" />
+			<from uri="seda:sendMessage?concurrentConsumers={{concurrentConsumers}}" />
 
 			<!-- HZN-862: Use ByteArrayPartitioner instead of this key generator -->
 			<setHeader headerName="kafka.PARTITION_KEY">
