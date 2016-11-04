@@ -231,6 +231,39 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     @JUnitTemporaryDatabase
+    public void testGetOutagesForNode() throws Exception {
+        // Test last week (no outages)
+        MockHttpServletRequest jsonRequest = createRequest(m_context, GET, "/outages/forNode/1");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        String json = sendRequest(jsonRequest, 200);
+        JSONObject restObject = new JSONObject(json);
+        Assert.assertEquals(0, restObject.getJSONArray("outage").length());
+
+        // Test a range with outages
+        long start = 1436846400000l;
+        long end = 1436932800000l;
+        jsonRequest = createRequest(m_context, GET, "/outages/forNode/1");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("start=" + start + "&end=" + end);
+        json = sendRequest(jsonRequest, 200);
+        restObject = new JSONObject(json);
+        for (int i=0; i < restObject.getJSONArray("outage").length(); i++) {
+            JSONObject obj = restObject.getJSONArray("outage").getJSONObject(i);
+            Assert.assertTrue(obj.getLong("ifLostService") > start);
+            Assert.assertTrue(obj.getLong("ifLostService") < end);
+        }
+
+        // Test a range without outages
+        jsonRequest = createRequest(m_context, GET, "/outages/forNode/1");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("start=1436932800000&end=1437019200000");
+        json = sendRequest(jsonRequest, 200);
+        restObject = new JSONObject(json);
+        Assert.assertEquals(0, restObject.getJSONArray("outage").length());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
     public void testOutagesJson() throws Exception {
         String url = "/outages";
 
