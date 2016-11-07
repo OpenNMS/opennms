@@ -29,60 +29,53 @@
 
 --%>
 
-<%@page import="org.opennms.web.enlinkd.EnLinkdElementFactory"%>
-<%@page import="org.opennms.web.enlinkd.EnLinkdElementFactoryInterface"%>
+<%@page import="java.util.Collection"%>
+<%@page import="org.opennms.core.utils.WebSecurityUtils"%>
+<%@page import="org.opennms.netmgt.model.OnmsNode"%>
+<%@page import="org.opennms.web.element.ElementNotFoundException"%>
+<%@page import="org.opennms.web.element.NetworkElementFactory"%>
+<%@page import="org.opennms.web.element.NetworkElementFactoryInterface"%>
 <%@page import="org.opennms.web.enlinkd.BridgeLinkNode"%>
-<%@page import="org.opennms.web.enlinkd.NodeLinkBridge"%>
-<%@page import="org.opennms.web.enlinkd.BridgeLinkSharedHost"%>
 <%@page import="org.opennms.web.enlinkd.BridgeLinkRemoteNode"%>
-<%@page import="org.opennms.web.enlinkd.LldpLinkNode"%>
+<%@page import="org.opennms.web.enlinkd.BridgeLinkSharedHost"%>
 <%@page import="org.opennms.web.enlinkd.CdpLinkNode"%>
-<%@page import="org.opennms.web.enlinkd.OspfLinkNode"%>
-<%@page import="org.opennms.web.enlinkd.IsisLinkNode"%>
-<%@page
-	language="java"
-	contentType="text/html"
-	session="true"
-	import="
-		java.net.*,
-		java.util.*,
-		org.springframework.web.context.WebApplicationContext,
-		org.springframework.web.context.support.WebApplicationContextUtils,
-		org.opennms.core.utils.InetAddressUtils,
-		org.opennms.netmgt.model.OnmsNode,
-		org.opennms.core.utils.WebSecurityUtils,
-		org.opennms.web.element.*,
-		org.opennms.web.api.Authentication
-	"
-%>
+<%@ page import="org.opennms.web.enlinkd.EnLinkdElementFactory" %>
+<%@ page import="org.opennms.web.enlinkd.EnLinkdElementFactoryInterface" %>
+<%@ page import="org.opennms.web.enlinkd.IsisLinkNode" %>
+<%@ page import="org.opennms.web.enlinkd.LldpLinkNode" %>
+<%@ page import="org.opennms.web.enlinkd.NodeLinkBridge" %>
+<%@ page import="org.opennms.web.enlinkd.OspfLinkNode" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-
 <%
-    NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
-    EnLinkdElementFactoryInterface enlinkdfactory = EnLinkdElementFactory.getInstance(getServletContext());
+    final NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
+    final EnLinkdElementFactoryInterface enlinkdfactory = EnLinkdElementFactory.getInstance(getServletContext());
 
-    String nodeIdString = request.getParameter( "node" );
-
+    final String nodeIdString = request.getParameter( "node" );
     if( nodeIdString == null ) {
         throw new org.opennms.web.servlet.MissingParameterException( "node" );
     }
-
-    int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
+    final int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
 
     //get the database node info
-    OnmsNode node_db = factory.getNode( nodeId );
+    final OnmsNode node_db = factory.getNode( nodeId );
     if( node_db == null ) {
 		throw new ElementNotFoundException("No such node in database", "node", "element/linkednode.jsp", "node", "element/nodeList.htm");
     }
 
-%>
+	pageContext.setAttribute("nodeId", nodeId);
+	pageContext.setAttribute("nodeLabel", node_db.getLabel());
 
-<% pageContext.setAttribute("nodeId", nodeId); %>
-<% pageContext.setAttribute("nodeLabel", node_db.getLabel()); %>
+	Collection<LldpLinkNode> lldpLinks = enlinkdfactory.getLldpLinks(nodeId);
+	Collection<BridgeLinkNode> bridgelinks = enlinkdfactory.getBridgeLinks(nodeId);
+	Collection<CdpLinkNode> cdpLinks = enlinkdfactory.getCdpLinks(nodeId);
+	Collection<NodeLinkBridge> nodelinks = enlinkdfactory.getNodeLinks(nodeId);
+	Collection<OspfLinkNode> ospfLinks = enlinkdfactory.getOspfLinks(nodeId);
+	Collection<IsisLinkNode> isisLinks = enlinkdfactory.getIsisLinks(nodeId);
+%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="headTitle" value="${nodeLabel}" />
@@ -105,8 +98,7 @@
 </script>
 
 <!-- Body -->
-  <h4>Node: <%=node_db.getLabel()%></h4>
-
+  <h4>Node: ${nodeLabel}</h4>
 
 <div class="row">
 <div class="col-md-12">
@@ -115,17 +107,16 @@
 
 <div class="panel panel-default">
 <%
-   Collection<BridgeLinkNode> bridgelinks = enlinkdfactory.getBridgeLinks(nodeId);
+
    if (bridgelinks.isEmpty()) {
-	   Collection<NodeLinkBridge> nodelinks = enlinkdfactory.getNodeLinks(nodeId);
 	   if (nodelinks.isEmpty()) {
 %>
 	<div class="panel-heading">
-		<h3 class="panel-title">No Bridge Forwarding Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+		<h3 class="panel-title">No Bridge Forwarding Table Links found on ${nodeLabel}%> by Enhanced Linkd</h3>
 	</div>
 	<% } else { %>
   <div class="panel-heading">
-    <h3 class="panel-title"><%=node_db.getLabel()%> Shared Segments found by Enhanced Linkd using Bridge Forwarding Table</h3>
+    <h3 class="panel-title">{nodeLabel}%> Shared Segments found by Enhanced Linkd using Bridge Forwarding Table</h3>
 	</div>
 		<!-- Link box -->
 		<table class="table table-condensed">
@@ -205,7 +196,7 @@
 	
 <% } else { %>
   <div class="panel-heading">
-    <h3 class="panel-title"><%=node_db.getLabel()%> Bridge Forwarding Table Links found by Enhanced Linkd</h3>
+    <h3 class="panel-title">${nodeLabel} Bridge Forwarding Table Links found by Enhanced Linkd</h3>
   </div>		
 		<!-- Link box -->
 		<table class="table table-condensed">
@@ -298,14 +289,14 @@
 
 <div class="panel panel-default">
 <%
-   if (enlinkdfactory.getLldpLinks(nodeId).isEmpty()) {
+    if (lldpLinks.isEmpty()) {
 %>
 	<div class="panel-heading">
-		<h3 class="panel-title">No LLDP Remote Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+		<h3 class="panel-title">No LLDP Remote Table Links found on ${nodeLabel} by Enhanced Linkd</h3>
 	</div>
 <% } else { %>
   <div class="panel-heading">
-    <h3 class="panel-title"><%=node_db.getLabel()%> LLDP Remote Table Links found by Enhanced Linkd</h3>
+    <h3 class="panel-title">${nodeLabel} LLDP Remote Table Links found by Enhanced Linkd</h3>
   </div>
 		<!-- Link box -->
 		<table class="table table-condensed">
@@ -323,7 +314,7 @@
 			</tr>
 		</thead>
 				
-		<% for( LldpLinkNode lldplink: enlinkdfactory.getLldpLinks(nodeId)) { %>
+		<% for( LldpLinkNode lldplink: lldpLinks) { %>
 	    <tr>
 		    <td>
 		 	<% if (lldplink.getLldpPortUrl() != null) { %>
@@ -364,13 +355,13 @@
 <!-- CDP Links -->
 
 <div class="panel panel-default">
-<% if (enlinkdfactory.getCdpLinks(nodeId).isEmpty()) { %>
+<% if (cdpLinks.isEmpty()) { %>
 	<div class="panel-heading">
-		<h3 class="panel-title">No CDP Cache Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+		<h3 class="panel-title">No CDP Cache Table Links found on ${nodeLabel} by Enhanced Linkd</h3>
 	</div>
 <% } else { %>
   <div class="panel-heading">
-    <h3 class="panel-title"><%=node_db.getLabel()%> CDP Cache Table Links found by Enhanced Linkd</h3>
+    <h3 class="panel-title">${nodeLabel} CDP Cache Table Links found by Enhanced Linkd</h3>
   </div>
 	<table class="table table-condensed">		
 		<thead>
@@ -386,7 +377,7 @@
 			<th>Last Poll</th>
 			</tr>
 		</thead>
-		<% for( CdpLinkNode cdplink: enlinkdfactory.getCdpLinks(nodeId)) { %>
+		<% for( CdpLinkNode cdplink: cdpLinks) { %>
 	    <tr>
 		    <td>
 		 	  <% if (cdplink.getCdpLocalPortUrl() != null) { %>
@@ -425,14 +416,14 @@
 
 <div class="panel panel-default">
 <%
-   if (enlinkdfactory.getOspfLinks(nodeId).isEmpty()) {
+   if (ospfLinks.isEmpty()) {
 %>
 	<div class="panel-heading">
-		<h3 class="panel-title">No OSPF Nbr Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+		<h3 class="panel-title">No OSPF Nbr Links found on ${nodeLabel} by Enhanced Linkd</h3>
 	</div>
 <% } else { %>
   <div class="panel-heading">
-    <h3 class="panel-title"><%=node_db.getLabel()%> OSPF Nbr Table Links found by Enhanced Linkd</h3>
+    <h3 class="panel-title">${nodeLabel} OSPF Nbr Table Links found by Enhanced Linkd</h3>
 	</div>
 		<!-- Link box -->
 		<table class="table table-condensed">
@@ -449,7 +440,7 @@
 			</tr>
 		</thead>
 				
-		<% for( OspfLinkNode ospflink: enlinkdfactory.getOspfLinks(nodeId)) { %>
+		<% for( OspfLinkNode ospflink: ospfLinks) { %>
 	    <tr>
 		    <td><%=ospflink.getOspfIpAddr()%>(ifindex=<%=ospflink.getOspfIfIndex()%>)</td>
 		    <td><%=ospflink.getOspfAddressLessIndex()%></td>
@@ -482,14 +473,14 @@
 
 <div class="panel panel-default">
 <%
-   if (enlinkdfactory.getIsisLinks(nodeId).isEmpty()) {
+   if (isisLinks.isEmpty()) {
 %>
 	<div class="panel-heading">
-		<h3 class="panel-title">No IS-IS Adjacency Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+		<h3 class="panel-title">No IS-IS Adjacency Links found on ${nodeLabel} by Enhanced Linkd</h3>
 	</div>
 <% } else { %>
   <div class="panel-heading">
-    <h3 class="panel-title"><%=node_db.getLabel()%> IS-IS Adj Table Links found by Enhanced Linkd</h3>
+    <h3 class="panel-title">${nodeLabel} IS-IS Adj Table Links found by Enhanced Linkd</h3>
 	</div>
 		<!-- Link box -->
 		<table class="table table-condensed">
@@ -509,7 +500,7 @@
 			</tr>
 		</thead>
 				
-		<% for( IsisLinkNode isislink: enlinkdfactory.getIsisLinks(nodeId)) { %>
+		<% for( IsisLinkNode isislink : isisLinks) { %>
 	    <tr>
 		    <td><%=isislink.getIsisCircIfIndex()%></td>
 		    <td><%=isislink.getIsisCircAdminState()%></td>
