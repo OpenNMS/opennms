@@ -749,6 +749,36 @@
         if (requisition != null) {
           requisition.setNode(node);
         }
+        // Updating categories cache
+        var categories = requisitionsService.internal.getCatchedConfigData('categoriesConfig');
+        if (categories) {
+          var categoriesChanged = false;
+          angular.forEach(node.categories, function(cat) {
+            if (categories.indexOf(cat.name) == -1) {
+              categoriesChanged = true;
+              categories.push(cat.name);
+            }
+          });
+          if (categoriesChanged) {
+            requisitionsService.internal.setCatchedConfigData('categoriesConfig', categories);
+          }
+        }
+        // Updating services cache
+        var services = requisitionsService.internal.getCatchedConfigData('servicesConfig');
+        if (services) {
+          var servicesChanged = false;
+          angular.forEach(node.interfaces, function(intf) {
+            angular.forEach(intf.services, function(svc) {
+              if (services.indexOf(svc.name) == -1) {
+                servicesChanged = true;
+                services.push(svc.name);
+              }
+            });
+          });
+          if (servicesChanged) {
+            requisitionsService.internal.setCatchedConfigData('servicesConfig', services);
+          }
+        }
         deferred.resolve(data);
       }).error(function(error, status) {
         $log.error('saveNode: POST ' + url + ' failed:', error, status);
@@ -1039,7 +1069,6 @@
     * @param {string} foreignSource The requisition's name (a.k.a. foreign source), use 'default' for the default foreign source.
     * @returns {object} a promise. On success, it provides a list of available services.
     */
-    // FIXME Does make sense to cache this information ?
     requisitionsService.getAvailableServices = function(foreignSource) {
       var deferred = $q.defer();
 
@@ -1128,7 +1157,6 @@
     * @methodOf RequisitionsService
     * @returns {object} a promise. On success, it provides a list of available categories.
     */
-    // FIXME Does make sense to cache this information ?
     requisitionsService.getAvailableCategories = function() {
       var deferred = $q.defer();
 

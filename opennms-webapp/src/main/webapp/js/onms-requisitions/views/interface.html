@@ -27,7 +27,7 @@
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-pencil"></span>
           </span>
-          <input class="form-control" type="text" name="serviceName" placeholder="Service Name (choose one from the list or type a custom text for a new one)" ng-model="service.name" typeahead-editable="true" typeahead-min-length="0" uib-typeahead="service for service in getAvailableServices() | filter:$viewValue" required valid-service></input>
+          <input class="form-control" type="text" name="serviceName" placeholder="Service Name (choose one from the list or type a custom text for a new one)" ng-model="service.name" typeahead-editable="true" typeahead-min-length="0" uib-typeahead="service for service in getAvailableServices() | filter:$viewValue | orderBy:'toString()'" required valid-service></input>
           <span class="input-group-btn">
             <button class="btn btn-default" type="button" ng-click="removeService($index)">
               <span class="glyphicon glyphicon-trash"></span>
