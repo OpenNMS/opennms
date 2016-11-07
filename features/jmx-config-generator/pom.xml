@@ -6,12 +6,12 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>18.0.0-SNAPSHOT</version>
+        <version>19.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>jmxconfiggenerator</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS Features JMX Config Generator</name>
+    <name>OpenNMS :: Features :: JMX Config Generator</name>
     <url>http://www.opennms.org</url>
 
     <properties>
@@ -20,26 +20,42 @@
     </properties>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/filtered</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
             </plugin>
+            <!-- don't generate this, because we need to have some dependencies scoped differently
+                 between the features and the onejar maven plugin -->
+            <!--
             <plugin>
                 <groupId>org.opennms.maven.plugins</groupId>
                 <artifactId>features-maven-plugin</artifactId>
                 <configuration>
+                    <features>
+                        <feature>guava</feature>
+                        <feature>commons-io</feature>
+                    </features>
                     <bundles>
                         <bundle>mvn:org.opennms.features/jmxconfiggenerator/${project.version}</bundle>
-                        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
                         <bundle>wrap:mvn:args4j/args4j/${args4jVersion}</bundle>
                         <bundle>wrap:mvn:org.jvnet.opendmk/jmxremote_optional/${jmxremote.optional.version}</bundle>
-                        <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
                         <bundle>mvn:org.apache.velocity/velocity/${velocity.version}</bundle>
                     </bundles>
                 </configuration>
             </plugin>
+            -->
+
             <!-- We need this to generate the JmxConfig.xml data model for the config generator tool.
             The one defined by opennms-config cannot be used, because it describes the whole config file.
             We only need a sub set of the overall schema, which makes it easier to program.
@@ -63,6 +79,26 @@
                         <version>${project.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-features-xml</id>
+                        <phase>package</phase>
+                        <goals><goal>attach-artifact</goal></goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.outputDirectory}/features.xml</file>
+                                    <type>xml</type>
+                                    <classifier>features</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <!-- We generate a big onejar.jar file to make Deployment easier -->
             <plugin>
@@ -124,7 +160,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     <pluginRepositories>

@@ -35,16 +35,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.base.Throwables;
-import com.google.common.io.ByteStreams;
-
-import io.netty.handler.codec.http.HttpResponse;
-import net.lightbody.bmp.BrowserMobProxy;
-import net.lightbody.bmp.BrowserMobProxyServer;
-import net.lightbody.bmp.client.ClientUtil;
-import net.lightbody.bmp.filters.ResponseFilter;
-import net.lightbody.bmp.util.HttpMessageContents;
-import net.lightbody.bmp.util.HttpMessageInfo;
+import org.apache.cxf.helpers.FileUtils;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -58,6 +50,17 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Throwables;
+import com.google.common.io.ByteStreams;
+
+import io.netty.handler.codec.http.HttpResponse;
+import net.lightbody.bmp.BrowserMobProxy;
+import net.lightbody.bmp.BrowserMobProxyServer;
+import net.lightbody.bmp.client.ClientUtil;
+import net.lightbody.bmp.filters.ResponseFilter;
+import net.lightbody.bmp.util.HttpMessageContents;
+import net.lightbody.bmp.util.HttpMessageInfo;
 
 /**
  * Verifies that the database reports can be generated without any exceptions.
@@ -166,6 +169,11 @@ public class DatabaseReportIT extends OpenNMSSeleniumTestCase {
         if (page > 1) {
             findElementByLink(Integer.toString(page)).click();
         }
+    }
+
+    @After
+    public void after() {
+        FileUtils.removeDir(new File("target/reports"));
     }
 
     @Test

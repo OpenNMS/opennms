@@ -34,17 +34,13 @@ import java.net.InetAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>BgpSessionDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
 public class BgpSessionDetector extends SnmpDetector {
 
     private static final Logger LOG = LoggerFactory.getLogger(BgpSessionDetector.class);
@@ -77,16 +73,15 @@ public class BgpSessionDetector extends SnmpDetector {
      * added to service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address) {
+    public boolean isServiceDetected(final InetAddress address, final SnmpAgentConfig agentConfig) {
         try {
             String bgpPeerIp = getBgpPeerIp();
-            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
-            
+
             configureAgentPTR(agentConfig);
 
             configureAgentVersion(agentConfig);
 
-            String bgpPeerState = getValue(agentConfig, BGP_PEER_STATE_OID + "." + bgpPeerIp);
+            String bgpPeerState = getValue(agentConfig, BGP_PEER_STATE_OID + "." + bgpPeerIp, isHex());
             LOG.debug("BgpSessionMonitor.capsd: bgpPeerState: {}", bgpPeerState);
             if  (bgpPeerState != null && Integer.parseInt(bgpPeerState) >= 1 && Integer.parseInt(bgpPeerState) <= 6){
                 return true;

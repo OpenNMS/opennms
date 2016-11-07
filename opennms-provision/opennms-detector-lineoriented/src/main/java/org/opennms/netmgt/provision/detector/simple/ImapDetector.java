@@ -29,8 +29,6 @@
 package org.opennms.netmgt.provision.detector.simple;
 
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>ImapDetector class.</p>
@@ -38,8 +36,7 @@ import org.springframework.stereotype.Component;
  * @author ranger
  * @version $Id: $
  */
-@Component
-@Scope("prototype")
+
 public class ImapDetector extends AsyncLineOrientedDetectorMinaImpl {
 
     private static final String DEFAULT_SERVICE_NAME = "IMAP";

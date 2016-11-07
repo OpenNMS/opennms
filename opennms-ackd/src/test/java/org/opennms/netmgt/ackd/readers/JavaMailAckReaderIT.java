@@ -280,7 +280,7 @@ public class JavaMailAckReaderIT implements InitializingBean {
         }
 
         @Override
-        public End2endMailConfig getEnd2EndConfig(String name) {
+        public End2endMailConfig getEnd2endConfig(String name) {
             return m_e2eConfig;
         }
 
@@ -320,11 +320,47 @@ public class JavaMailAckReaderIT implements InitializingBean {
         }
 
         @Override
-        public void reloadConfiguration()
-                throws DataAccessResourceFailureException {
-            
+        public void reloadConfiguration() throws DataAccessResourceFailureException {
         }
-        
+
+        @Override
+        public void addSendMailConfig(SendmailConfig sendmailConfig) {
+        }
+
+        @Override
+        public void addReadMailConfig(ReadmailConfig readmailConfig) {
+        }
+
+        @Override
+        public void addEnd2endMailConfig(End2endMailConfig end2endConfig) {
+        }
+
+        @Override
+        public void saveConfiguration() {
+        }
+
+        @Override
+        public boolean removeSendMailConfig(String sendmailConfigName) {
+            return false;
+        }
+
+        @Override
+        public boolean removeReadMailConfig(String readmailConfigName) {
+            return false;
+        }
+
+        @Override
+        public boolean removeEnd2endConfig(String end2endConfigName) {
+            return false;
+        }
+
+        @Override
+        public void setDefaultSendmailConfig(String sendmailConfigName) {
+        }
+
+        @Override
+        public void setDefaultReadmailConfig(String sendmailConfigName) {
+        }        
     }
     
     @Ignore
@@ -448,7 +484,7 @@ public class JavaMailAckReaderIT implements InitializingBean {
         
         SendmailConfig config = new SendmailConfig();
         
-        config.setAttemptInterval(1000);
+        config.setAttemptInterval(1000l);
         config.setDebug(true);
         config.setName("test");
         

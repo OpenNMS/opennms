@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.opennms.features.minion</groupId>
+        <artifactId>container-parent</artifactId>
+        <version>19.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.features.minion.container</groupId>
+    <artifactId>karaf</artifactId>
+    <packaging>karaf-assembly</packaging>
+    <name>OpenNMS :: Features :: Minion :: Container :: Karaf</name>
+
+    <build>
+        <!-- if you want to include resources in the distribution -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/filtered-resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <!-- if you want to include resources in the distribution -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>process-resources</id>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <bootFeatures>
+                        <feature>aries-blueprint</feature>
+                        <feature>jaas</feature>
+                        <feature>shell</feature>
+                        <feature>ssh</feature>
+                        <feature>management</feature>
+                        <feature>bundle</feature>
+                        <feature>config</feature>
+                        <feature>deployer</feature>
+                        <feature>diagnostic</feature>
+                        <feature>feature</feature>
+                        <feature>instance</feature>
+                        <feature>kar</feature>
+                        <feature>karaf-extender</feature>
+                        <feature>log</feature>
+                        <feature>package</feature>
+                        <feature>scv</feature>
+                        <feature>service</feature>
+                        <feature>shell</feature>
+                        <feature>shell-compat</feature>
+                        <feature>system</feature>
+                        <feature>wrap</feature>
+                    </bootFeatures>
+                    <installedFeatures>
+                        <feature>spring</feature>
+                    </installedFeatures>
+                </configuration>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse 
+                    m2e settings only. It has no influence on the Maven build itself. -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.apache.karaf.tooling
+                                        </groupId>
+                                        <artifactId>
+                                            karaf-maven-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [4.0.4,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>assembly</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <!-- scope is compile so all features (there is only one) are 
+                installed into startup.properties and the feature repo itself is not added 
+                in etc/org.apache.karaf.features.cfg file -->
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>framework</artifactId>
+            <version>${minionKarafVersion}</version>
+            <type>kar</type>
+        </dependency>
+        <dependency>
+            <!-- scope is runtime so the feature repo is listed in etc/org.apache.karaf.features.cfg 
+                file, and features will installed into the system directory if specify in 
+                the plugin configuration -->
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>standard</artifactId>
+            <version>${minionKarafVersion}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <!-- scope is runtime so the feature repo is listed in etc/org.apache.karaf.features.cfg 
+                file, and features will installed into the system directory if specify in 
+                the plugin configuration -->
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>spring</artifactId>
+            <version>${minionKarafVersion}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion.container</groupId>
+            <artifactId>features</artifactId>
+            <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+</project>

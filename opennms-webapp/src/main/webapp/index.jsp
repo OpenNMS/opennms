@@ -48,6 +48,16 @@
            if (Boolean.parseBoolean(showNodesWithOutages)) { %>
 		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
         <% } %>
+		<!-- Business Services box -->
+		<% String showBusinessServicesProblems = System.getProperty("opennms.businessServicesWithProblems.show", "true");
+			if (Boolean.parseBoolean(showBusinessServicesProblems)) { %>
+		<jsp:include page="/bsm/summary-box.htm" flush="false" />
+		<% } %>
+		<!-- Applications box -->
+		<% String showApplicationsProblems = System.getProperty("opennms.applicationsWithProblems.show", "true");
+			if (Boolean.parseBoolean(showApplicationsProblems)) { %>
+		<jsp:include page="/application/summary-box.htm" flush="false" />
+		<% } %>
 	</div>
 
 	<!-- Middle Column -->
@@ -68,11 +78,8 @@
 		<!-- notification box -->    
 		<jsp:include page="/includes/notification-box.jsp" flush="false" />
 
-		<!-- Performance box -->    
-		<jsp:include page="/includes/resourceGraphs-box.jsp" flush="false" />
-
-		<!-- KSC Reports box -->    
-		<jsp:include page="/KSC/include-box.htm" flush="false" />
+		<!-- Search box -->
+		<jsp:include page="/includes/search-box.jsp" flush="false" />
 
 		<% String showGrafanaBox = System.getProperty("org.opennms.grafanaBox.show", "false");
 			if (Boolean.parseBoolean(showGrafanaBox)) { %>

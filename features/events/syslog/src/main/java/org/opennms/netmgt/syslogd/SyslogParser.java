@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 public class SyslogParser {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogParser.class);
+    private static final String datePattern="((19|20)\\d{2})-([1-9]|0[1-9]|1[0-2])-(0[1-9]|[1-9]|[12][0-9]|3[01])";
     private Matcher m_matcher = null;
     private final SyslogdConfig m_config;
     private final String m_text;
@@ -136,28 +137,27 @@ public class SyslogParser {
     }
 
     protected static Date parseDate(final String dateString) {
-        Date date;
         try {
-            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
-            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-            date = df.parse(dateString);
-        } catch (final Exception e) {
-            try {
-                final DateFormat df = new SimpleDateFormat("MMM d HH:mm:ss", Locale.ROOT);
+            // Date pattern has been crearted and checked inside if loop instead of 
+            // parsing date inside the exception class.
+            if (dateString.matches(datePattern)) {
+                final DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
+                df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                return df.parse(dateString);
+            } else {
+                final DateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss", Locale.ROOT);
                 df.setTimeZone(TimeZone.getTimeZone("UTC"));
                 
                 // Ugh, what's a non-lame way of forcing it to parse to "this year"?
-                date = df.parse(dateString);
+                Date date = df.parse(dateString);
                 final Calendar c = df.getCalendar();
                 c.setTime(date);
                 c.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
-                date = c.getTime();
-            } catch (final Exception e2) {
-                LOG.debug("Unable to parse date '{}'", dateString, e2);
-                date = null;
+                return c.getTime();
             }
+        } catch (final Exception e) {
+            LOG.debug("Unable to parse date '{}'", dateString, e);
+            return null;
         }
-        return date;
     }
-
 }

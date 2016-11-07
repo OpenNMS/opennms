@@ -4,15 +4,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-    <artifactId>themes</artifactId>
+    <artifactId>org.opennms.features.topology.themes</artifactId>
     <groupId>org.opennms.features.topology</groupId>
-    <version>18.0.0-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
 
     <groupId>org.opennms.features.topology.themes</groupId>
-    <artifactId>default-theme</artifactId>
+    <artifactId>org.opennms.features.topology.themes.default-theme</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS Features :: Topology :: Default  Theme</name>
+    <name>OpenNMS :: Features :: Topology :: Default  Theme</name>
     <properties>
         <bundle.symbolicname>org.opennms.features.topology.themes.default-theme</bundle.symbolicname>
     </properties>
@@ -40,6 +40,30 @@
         
         <plugins>
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/javascript/VAADIN/themes/topo_default/js</outputDirectory>
+                             <resources>
+                                 <resource>
+                                     <directory>../../../../opennms-webapp/src/main/webapp/lib/d3</directory>
+                                     <includes>
+                                        <include>d3.js</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
@@ -49,6 +73,11 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Fragment-Host>com.vaadin.themes;bundle-version=${vaadinVersion}</Fragment-Host>
+                        <Include-Resource>
+                          {maven-resources},
+                          {maven-dependencies},
+                          target/javascript
+                        </Include-Resource>
                     </instructions>
                 </configuration>
             </plugin>

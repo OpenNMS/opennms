@@ -39,7 +39,7 @@ public class AbstractEdge extends AbstractEdgeRef implements Edge {
 	private String m_tooltipText;
 	private String m_styleName;
 
-	public AbstractEdge(String namespace, String id, Vertex source, Vertex target) {
+	public AbstractEdge(String namespace, String id, VertexRef source, VertexRef target) {
 		super(namespace, id);
 		if (source == null) {
 			throw new IllegalArgumentException("Source is null");
@@ -58,13 +58,17 @@ public class AbstractEdge extends AbstractEdgeRef implements Edge {
 		m_styleName = "edge";
 	}
 
+	// Constructor to make cloneable easier for sub classes
+	protected AbstractEdge(AbstractEdge edgeToClone) {
+		this(edgeToClone.getNamespace(), edgeToClone.getId(), edgeToClone.getSource().clone(), edgeToClone.getTarget().clone());
+		setLabel(edgeToClone.getLabel());
+		setStyleName(edgeToClone.getStyleName());
+		setTooltipText(edgeToClone.getTooltipText());
+	}
+
 	@Override
 	public AbstractEdge clone() {
-		AbstractEdge retval = new AbstractEdge(getNamespace(), getId(), getSource().clone(), getTarget().clone());
-		retval.setLabel(getLabel());
-		retval.setStyleName(getStyleName());
-		retval.setTooltipText(getTooltipText());
-		return retval;
+		return new AbstractEdge(this);
 	}
 
 	@Override

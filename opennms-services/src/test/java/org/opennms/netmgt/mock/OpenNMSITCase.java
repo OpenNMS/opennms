@@ -71,6 +71,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.codahale.metrics.MetricRegistry;
+
 /**
  * @deprecated Please develop new unit tests by using the Spring unit test
  * framework instead of this base class.
@@ -136,6 +138,8 @@ public class OpenNMSITCase {
 
     protected PlatformTransactionManager m_transMgr;
     
+    private MetricRegistry m_registry = new MetricRegistry();
+
     public void setVersion(int version) {
         m_version = version;
     }
@@ -156,9 +160,10 @@ public class OpenNMSITCase {
             SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
             
             if (isStartEventd()) {
-                m_eventdIpcMgr = new EventIpcManagerDefaultImpl();
+                m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_registry);
 
-                AbstractEventUtil.setInstance(new EventUtilJdbcImpl());
+                EventUtilJdbcImpl eventUtil = new EventUtilJdbcImpl();
+                AbstractEventUtil.setInstance(eventUtil);
 
                 JdbcEventdServiceManager eventdServiceManager = new JdbcEventdServiceManager();
                 eventdServiceManager.setDataSource(m_db);
@@ -173,8 +178,9 @@ public class OpenNMSITCase {
                 eventConfDao.setConfigResource(new FileSystemResource(configFile));
                 eventConfDao.afterPropertiesSet();
                 
-                EventExpander eventExpander = new EventExpander();
+                EventExpander eventExpander = new EventExpander(m_registry);
                 eventExpander.setEventConfDao(eventConfDao);
+                eventExpander.setEventUtil(eventUtil);
                 eventExpander.afterPropertiesSet();
 
                 JdbcEventWriter jdbcEventWriter = new JdbcEventWriter();
@@ -184,7 +190,7 @@ public class OpenNMSITCase {
                 jdbcEventWriter.setGetNextIdString("select nextVal('eventsNxtId')"); // for HSQL: "SELECT max(eventId)+1 from events"
                 jdbcEventWriter.afterPropertiesSet();
                 
-                EventIpcBroadcastProcessor eventIpcBroadcastProcessor = new EventIpcBroadcastProcessor();
+                EventIpcBroadcastProcessor eventIpcBroadcastProcessor = new EventIpcBroadcastProcessor(m_registry);
                 eventIpcBroadcastProcessor.setEventIpcBroadcaster(m_eventdIpcMgr);
                 eventIpcBroadcastProcessor.afterPropertiesSet();
 
@@ -193,7 +199,7 @@ public class OpenNMSITCase {
                 eventProcessors.add(jdbcEventWriter);
                 eventProcessors.add(eventIpcBroadcastProcessor);
                 
-                DefaultEventHandlerImpl eventHandler = new DefaultEventHandlerImpl();
+                DefaultEventHandlerImpl eventHandler = new DefaultEventHandlerImpl(m_registry);
                 eventHandler.setEventProcessors(eventProcessors);
                 eventHandler.afterPropertiesSet();
                 

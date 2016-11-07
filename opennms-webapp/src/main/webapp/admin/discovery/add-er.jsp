@@ -28,8 +28,9 @@
  *******************************************************************************/
 
 --%>
-
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.admin.discovery.ActionDiscoveryServlet" %>
+<%@page language="java" contentType="text/html" session="true" import="
+  org.opennms.web.admin.discovery.DiscoveryServletConstants
+"%>
 <% 
 	response.setDateHeader("Expires", 0);
 	response.setHeader("Pragma", "no-cache");
@@ -90,7 +91,7 @@ function doAddExcludeRange(){
 	
 	opener.document.getElementById("erbegin").value=document.getElementById("begin").value;
 	opener.document.getElementById("erend").value=document.getElementById("end").value;
-	opener.document.getElementById("modifyDiscoveryConfig").action=opener.document.getElementById("modifyDiscoveryConfig").action+"?action=<%=ActionDiscoveryServlet.addExcludeRangeAction%>";
+	opener.document.getElementById("modifyDiscoveryConfig").action=opener.document.getElementById("modifyDiscoveryConfig").action+"?action=<%=DiscoveryServletConstants.addExcludeRangeAction%>";
 	opener.document.getElementById("modifyDiscoveryConfig").submit();
 	window.close();
 	opener.document.focus();
@@ -106,12 +107,9 @@ function doAddExcludeRange(){
         <h3 class="panel-title">Add Range to Exclude from Discovery</h3>
       </div>
       <div class="panel-body">
-        <p>Add a range of IP addresses to exclude from discovery.<br/>
-        Insert <i>Begin</i> and <i>End</i> IP addresses and click on <i>Add</i> to confirm.
-        </p>
         <form role="form" class="form-horizontal">
           <div class="form-group">
-            <label for="begin" class="control-label col-sm-2">Being IP Address:</label>
+            <label for="begin" class="control-label col-sm-2">Begin IP Address:</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="begin" name="begin" value=''/>
             </div>

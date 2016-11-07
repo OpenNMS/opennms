@@ -55,11 +55,11 @@ import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
+import org.opennms.features.topology.api.topo.SimpleGraphProvider;
+import org.opennms.features.topology.app.internal.TestOperationContext;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
@@ -67,41 +67,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 public class GroupOperationsTest {
-
-	private static class TestOperationContext implements OperationContext {
-
-		private final GraphContainer m_graphContainer;
-		private final UI m_window;
-
-		public TestOperationContext(GraphContainer graphContainer) {
-			m_graphContainer = graphContainer;
-			m_window = new UI() {
-				@Override
-				protected void init(VaadinRequest request) {
-				}};
-		}
-
-		@Override
-		public UI getMainWindow() {
-			return m_window;
-		}
-
-		@Override
-		public GraphContainer getGraphContainer() {
-			return m_graphContainer;
-		}
-
-		@Override
-		public boolean isChecked() {
-			return false;
-		}
-
-		@Override
-		public DisplayLocation getDisplayLocation() {
-			return DisplayLocation.MENUBAR;
-		}
-
-	}
 
 	private static TestOperationContext getOperationContext(GraphContainer mockedContainer) {
 		return new TestOperationContext(mockedContainer);

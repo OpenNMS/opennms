@@ -137,11 +137,11 @@ public class FormProcReportController extends AbstractController implements Init
         }
         
         if (Actions.Save.toString().equals(action)) {
-            return new ModelAndView("redirect:/KSC/index.htm");
+            return new ModelAndView("redirect:/KSC/index.jsp");
         } else if (Actions.DelGraph.toString().equals(action)) {
             return new ModelAndView("redirect:/KSC/customReport.htm");
         } else if (Actions.AddGraph.toString().equals(action)) {
-            return new ModelAndView("redirect:/KSC/customGraphChooseParentResource.htm");
+            return new ModelAndView("redirect:/KSC/customGraphChooseResource.jsp");
         } else if (Actions.ModGraph.toString().equals(action)) {
             Graph graph = editor.getWorkingGraph();
             OnmsResource resource = getKscReportService().getResourceFromGraph(graph);

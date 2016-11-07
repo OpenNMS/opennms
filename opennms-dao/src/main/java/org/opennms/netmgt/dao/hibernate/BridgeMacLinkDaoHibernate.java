@@ -66,18 +66,32 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
 	}
 
 
+       @Override
+        public List<BridgeMacLink> findByNodeIdBridgePort(Integer id, Integer port) {
+                return find("from BridgeMacLink rec where rec.node.id = ?  and rec.bridgePort = ? ", id,port);
+        }
+
 	@Override
 	public List<BridgeMacLink> findByMacAddress(String mac) {
 		return find("from BridgeMacLink rec where rec.macAddress = ?", mac);
 	}
 
 
-	@Override
-	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-		for (BridgeMacLink elem: find("from BridgeMacLink rec where rec.node.id = ? and rec.bridgeMacLinkLastPollTime < ?",nodeId,now)) {
-			delete(elem);
-		}
-	}
+    @Override
+    public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
+        for (BridgeMacLink elem : find("from BridgeMacLink rec where rec.node.id = ? and rec.bridgeMacLinkLastPollTime < ?",
+                                       nodeId, now)) {
+            delete(elem);
+        }
+    }
+
+    @Override
+    public void deleteByNodeId(Integer nodeId) {
+        for (BridgeMacLink elem : find("from BridgeMacLink rec where rec.node.id = ? ",
+                                       nodeId)) {
+            delete(elem);
+        }
+    }
 
 	private final static String SQL_GET_MAC_LINKS=
 	        "select mlink.id as source_id, "
@@ -177,6 +191,7 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
     public List<BridgeMacTopologyLink> getAllBridgeLinksToIpAddrToNodes(){
         return  getHibernateTemplate().execute(new HibernateCallback<List<BridgeMacTopologyLink>>() {
             @Override
+            @SuppressWarnings("unchecked")
             public List<BridgeMacTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
                 return convertObjectToTopologyLink(session.createSQLQuery(SQL_GET_MAC_LINKS).list());
             }
@@ -187,6 +202,7 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
     @Override
     public List<BridgeMacTopologyLink> getAllBridgeLinksToBridgeNodes(){
         return  getHibernateTemplate().execute(new HibernateCallback<List<BridgeMacTopologyLink>>() {
+            @SuppressWarnings("unchecked")
             @Override
             public List<BridgeMacTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
                 return convertObjectToTopologyLink(session.createSQLQuery(SQL_GET_BRIDGE_LINKS).list());

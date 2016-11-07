@@ -59,7 +59,6 @@ import org.springframework.transaction.annotation.Transactional;
     "classpath:/META-INF/opennms/applicationContext-soa.xml",
     "classpath:/META-INF/opennms/applicationContext-dao.xml",
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-    "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
     "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
     "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
@@ -111,7 +110,6 @@ public class HibernateCriteriaConverterIT implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase
-    @Ignore("This test appears to flap since the upgrade to Hibernate 3.5.")
     public void testNodeIlikeQuery() {
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.isNotNull("id").eq("label", "node1").alias("ipInterfaces", "iface").ilike("iface.ipAddress", "1%");

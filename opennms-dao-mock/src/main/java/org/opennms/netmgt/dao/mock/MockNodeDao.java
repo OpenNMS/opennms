@@ -28,6 +28,19 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -37,15 +50,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SurveillanceStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements NodeDao {
     private static final Logger LOG = LoggerFactory.getLogger(MockNodeDao.class);
@@ -102,6 +106,11 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         for (final OnmsCategory cat : node.getCategories()) {
             getCategoryDao().saveOrUpdate(cat);
         }
+
+        /* not sure if this is necessary */
+        /*
+        getMonitoringLocationDao().saveOrUpdate(node.getLocation());
+        */
 
         /** delete any interfaces that were removed compared to the database **/
         final OnmsNode dbNode = node.getId() == null ? null : get(node.getId());
@@ -233,7 +242,7 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     public List<OnmsNode> findByForeignSource(final String foreignSource) {
         final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
         for (final OnmsNode node : findAll()) {
-            if (foreignSource.equals(node.getForeignSource())) {
+            if (Objects.equals(foreignSource, node.getForeignSource())) {
                 nodes.add(node);
             }
         }
@@ -258,6 +267,32 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     @Override
     public int getNodeCountForForeignSource(final String foreignSource) {
         return findByForeignSource(foreignSource).size();
+    }
+
+    @Override
+    public Map<String, Set<String>> getForeignIdsPerForeignSourceMap() {
+        Map<String, Set<String>> map = new TreeMap<String,Set<String>>();
+        for (final OnmsNode node : findAll()) {
+            if (node.getForeignSource() != null) {
+                final String foreignSource = node.getForeignSource();
+                final String foreignId = node.getForeignId();
+                if (!map.containsKey(foreignSource)) {
+                    map.put(foreignSource, new TreeSet<String>());
+                }
+                map.get(foreignSource).add(foreignId);
+            }
+        }
+        return map;
+    }
+    @Override
+    public Set<String> getForeignIdsPerForeignSource(String foreignSource) {
+        Set<String> set = new TreeSet<String>();
+        for (final OnmsNode node : findAll()) {
+            if (node.getForeignId() != null) {
+                set.add(node.getForeignId());
+            }
+        }
+        return set;
     }
 
     @Override
@@ -341,7 +376,7 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     public List<OnmsNode> findByForeignSourceAndIpAddress(final String foreignSource, final String ipAddress) {
         final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
         for (final OnmsNode node : findAll()) {
-            if (foreignSource.equals(node.getForeignSource())) {
+            if (Objects.equals(foreignSource, node.getForeignSource())) {
                 final OnmsIpInterface iface = node.getIpInterfaceByIpAddress(ipAddress);
                 if (iface != null) nodes.add(node);
                 continue;
@@ -388,6 +423,11 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
             allLabelsById.put(node.getId(), node.getLabel());
         }
         return allLabelsById;
+    }
+
+    @Override
+    public Map<String, Long> getNumberOfNodesBySysOid() {
+        return new HashMap<>();
     }
 
     public int getNextNodeId() {

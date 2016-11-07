@@ -28,81 +28,78 @@
 
 package org.opennms.netmgt.provision.detector;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.HttpsDetector;
+import org.opennms.netmgt.provision.detector.simple.HttpsDetectorFactory;
 import org.opennms.netmgt.provision.server.SSLServer;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
+import com.github.tomakehurst.wiremock.http.Fault;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class HttpsDetectorTest implements ApplicationContextAware{
+public class HttpsDetectorTest {
     private static final int SSL_PORT = 7142;
 
+    @Autowired
+    private HttpsDetectorFactory m_detectorFactory;
+    
     private HttpsDetector m_detector;
     private SSLServer m_server;
 
-    private String serverOKResponse = "HTTP/1.1 200 OK\r\n"
-            + "Date: Tue, 28 Oct 2008 20:47:55 GMT\r\n"
-            + "Server: Apache/2.0.54\r\n"
-            + "Last-Modified: Fri, 16 Jun 2006 01:52:14 GMT\r\n"
-            + "ETag: \"778216aa-2f-aa66cf80\"\r\n"
-            + "Accept-Ranges: bytes\r\n"
-            + "Content-Length: 47\r\n"
-            + "Vary: Accept-Encoding,User-Agent\r\n"
-            + "Connection: close\rn"
-            + "Content-Type: text/html\r\n"
-            + "\r\n"
-            + "<html>\r\n"
-            + "<body>\r\n"
-            + "<!-- default -->\r\n"
-            + "</body>\r\n"
-            + "</html>";
+    @Rule
+    public WireMockRule m_wireMockRule = new WireMockRule(wireMockConfig().httpsPort(SSL_PORT));
 
-    private String notFoundResponse = "HTTP/1.1 404 Not Found\r\n"
-            + "Date: Tue, 28 Oct 2008 20:47:55 GMT\r\n"
-            + "Server: Apache/2.0.54\r\n"
-            + "Last-Modified: Fri, 16 Jun 2006 01:52:14 GMT\r\n"
-            + "ETag: \"778216aa-2f-aa66cf80\"\r\n"
-            + "Accept-Ranges: bytes\r\n"
-            + "Content-Length: 52\r\n"
-            + "Vary: Accept-Encoding,User-Agent\r\n"
-            + "Connection: close\rn"
-            + "Content-Type: text/html\r\n"
-            + "\r\n"
-            + "<html>\r\n"
-            + "<body>\r\n"
-            + "<!-- default -->\r\n"
-            + "</body>\r\n"
-            + "</html>";
+    private ResponseDefinitionBuilder getOKResponse() {
+        return aResponse()
+                .withHeader("Server", "Apache/2.0.54")
+                .withHeader("Last-Modified", "Fri, 16 Jun 2006 01:52:14 GMT")
+                .withHeader("ETag", "\"778216aa-2f-aa66cf80\"")
+                .withHeader("Content-Type", "text/html")
+                .withBody("<html>\r\n<body>\r\n<!-- default -->\r\n</body>\r\n</html>");
+    };
 
-    private String notAServerResponse = "NOT A SERVER";
-    private ApplicationContext m_applicationContext;
+    private ResponseDefinitionBuilder getNotFoundResponse() {
+        return aResponse()
+                .withStatus(404)
+                .withHeader("Last-Modified", "Fri, 16 Jun 2006 01:52:14 GMT")
+                .withHeader("ETag", "\"778216aa-2f-aa66cf80\"")
+                .withHeader("Content-Type", "text/html")
+                .withBody("<html>\r\n<body>\r\n<!-- default -->\r\n</body>\r\n</html>");
+    }
+
 
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-        m_detector = getDetector(HttpsDetector.class);
+        m_detector = m_detectorFactory.createDetector();
 
         /* make sure defaults are initialized */
-        m_detector.setPort(443);
+        m_detector.setPort(SSL_PORT);
         m_detector.setUseSSLFilter(true);
         m_detector.setUrl("/");
+        m_detector.setCheckRetCode(false);
         m_detector.setMaxRetCode(500);
         m_detector.setRetries(0);
     }
@@ -123,18 +120,18 @@ public class HttpsDetectorTest implements ApplicationContextAware{
     @Test(timeout=20000)
     public void testDetectorFailWrongPort() throws Exception {
         m_detector.setPort(2000);
-        m_server = createServer(serverOKResponse);
+        m_detector.init();
 
-        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
+        stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
+        assertFalse(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
 
     @Test(timeout=20000)
     public void testDetectorFailNotAServerResponse() throws Exception {
         m_detector.init();
-        m_server = createServer(notAServerResponse);
-        m_detector.setPort(m_server.getLocalPort());
 
-        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
+        stubFor(get(urlEqualTo("/")).willReturn(aResponse().withFault(Fault.RANDOM_DATA_THEN_CLOSE)));
+        assertFalse(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
 
     @Test(timeout=20000)
@@ -144,10 +141,9 @@ public class HttpsDetectorTest implements ApplicationContextAware{
         m_detector.setMaxRetCode(301);
         m_detector.init();
 
-        m_server = createServer(notFoundResponse);
-        m_detector.setPort(m_server.getLocalPort());
+        stubFor(get(urlEqualTo("/blog")).willReturn(getNotFoundResponse()));
 
-        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
+        assertFalse(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
 
     @Test(timeout=20000)
@@ -155,12 +151,11 @@ public class HttpsDetectorTest implements ApplicationContextAware{
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("/blog");
         m_detector.setMaxRetCode(399);
-
-
-        m_server = createServer(serverOKResponse);
-        m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
-        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
+
+        stubFor(get(urlEqualTo("/blog")).willReturn(getOKResponse()));
+
+        assertTrue(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
 
     @Test(timeout=20000)
@@ -170,10 +165,9 @@ public class HttpsDetectorTest implements ApplicationContextAware{
         m_detector.setMaxRetCode(199);
         m_detector.init();
 
-        m_server = createServer(getServerOKResponse());
-        m_detector.setPort(m_server.getLocalPort());
+        stubFor(get(urlEqualTo("/blog")).willReturn(getOKResponse()));
 
-        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
+        assertFalse(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
 
     @Test(timeout=20000)
@@ -182,10 +176,9 @@ public class HttpsDetectorTest implements ApplicationContextAware{
         m_detector.setMaxRetCode(600);
         m_detector.init();
 
-        m_server = createServer(getServerOKResponse());
-        m_detector.setPort(m_server.getLocalPort());
+        stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
 
-        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
+        assertTrue(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
 
 
@@ -193,12 +186,13 @@ public class HttpsDetectorTest implements ApplicationContextAware{
     public void testDetectorSucessCheckCodeTrue() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("http://localhost/");
+        m_detector.setPort(SSL_PORT);
         m_detector.init();
         m_detector.setIdleTime(1000);
-        m_server = createServer(getServerOKResponse());
-        m_detector.setPort(m_server.getLocalPort());
 
-        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
+        stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
+
+        assertTrue(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
 
     @Test(timeout=20000)
@@ -206,21 +200,18 @@ public class HttpsDetectorTest implements ApplicationContextAware{
         m_detector.setCheckRetCode(false);
         m_detector.init();
 
-        m_server = createServer(getServerOKResponse());
-        m_detector.setPort(m_server.getLocalPort());
+        stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
 
-        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
+        assertTrue(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
 
     @Test(timeout=20000)
     public void testDetectorSuccess() throws Exception {
-        m_server = createServer(serverOKResponse);
+        stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
 
-        m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
-        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));        
+        assertTrue(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
-
 
     /**
      * @param serviceDetected
@@ -232,44 +223,5 @@ public class HttpsDetectorTest implements ApplicationContextAware{
         future.awaitFor();
 
         return future.isServiceDetected();
-    }
-
-    private SSLServer createServer(final String httpResponse) throws Exception {
-        SSLServer server = new SSLServer() {
-
-            @Override
-            public void onInit() {
-                addResponseHandler(contains("GET"), shutdownServer(httpResponse));
-            }
-        };
-        server.setPort(SSL_PORT);
-        server.init();
-        server.startServer();
-
-        return server;
-    }
-
-    public void setServerOKResponse(String serverOKResponse) {
-        this.serverOKResponse = serverOKResponse;
-    }
-
-    public String getServerOKResponse() {
-        return serverOKResponse;
-    }
-
-    /* (non-Javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     */
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        m_applicationContext = applicationContext;
-
-    }
-
-    private HttpsDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
-        Object bean = m_applicationContext.getBean(detectorClass.getName());
-        assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
-        return (HttpsDetector)bean;
     }
 }

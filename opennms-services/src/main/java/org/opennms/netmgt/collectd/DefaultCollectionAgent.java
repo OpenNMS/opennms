@@ -40,7 +40,7 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.ResourceTypeUtils;
-import org.opennms.netmgt.poller.InetNetworkInterface;
+import org.opennms.netmgt.poller.support.InetNetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,6 +84,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
     private String m_sysObjId = null;
     private String m_foreignSource = null;
     private String m_foreignId = null;
+    private String m_locationName = null;
     private String m_nodeLabel = null;
     private File m_storageDir = null;
     
@@ -219,7 +220,15 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
         }
         return m_foreignId;
     }
-    
+
+    @Override
+    public String getLocationName() {
+        if (m_locationName == null) {
+            m_locationName = m_agentService.getLocationName();
+        }
+        return m_locationName;
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getStorageDir()
      */
@@ -395,6 +404,5 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
     public void setSavedSysUpTime(final long sysUpTime) {
         m_sysUpTime = sysUpTime;
     }
-    
 
 }

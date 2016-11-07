@@ -29,9 +29,17 @@
 package org.opennms.netmgt.rrd.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.NavigableSet;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -164,7 +172,7 @@ public abstract class AbstractRRD {
         if (getLastUpdate() == null || getStep() == null || rra == null) {
             return null;
         }
-        return getEndTimestamp(rra) - getStep() * rra.getPdpPerRow() * rra.getRows().size();
+        return getEndTimestamp(rra) - getStep() * rra.getPdpPerRow() * (rra.getRows().size() - 1);
     }
 
     /**
@@ -177,7 +185,7 @@ public abstract class AbstractRRD {
         if (getLastUpdate() == null || getStep() == null || rra == null) {
             return null;
         }
-        return getLastUpdate() - getLastUpdate() % (getStep() * rra.getPdpPerRow()) + (getStep() * rra.getPdpPerRow());
+        return getLastUpdate() - getLastUpdate() % (getStep() * rra.getPdpPerRow());
     }
 
     /**
@@ -220,22 +228,55 @@ public abstract class AbstractRRD {
      * @throws IllegalArgumentException the illegal argument exception
      */
     public void merge(AbstractRRD rrdSrc) throws IllegalArgumentException {
-        if (!formatEquals(rrdSrc)) {
-            throw new IllegalArgumentException("Invalid RRD format");
+        if (!hasMergeableRRAs(rrdSrc)) {
+            throw new IllegalArgumentException("Invalid RRD format. There are not mergeable RRAs on the source RRD.");
         }
-        int rraNum = 0;
         for (AbstractRRA rra : rrdSrc.getRras()) {
-            for (Row row : rra.getRows()) {
-                if (!row.isNan()) {
-                    Long ts = rrdSrc.findTimestampByRow(rra, row);
-                    Row localRow = findRowByTimestamp(getRras().get(rraNum), ts);
-                    if (localRow != null) {
-                        localRow.setValues(row.getValues());
+            AbstractRRA localRra = getMergeableRRA(rra);
+            if (localRra != null) {
+                for (Row row : rra.getRows()) {
+                    if (!row.isNan()) {
+                        Long ts = rrdSrc.findTimestampByRow(rra, row);
+                        Row localRow = findRowByTimestamp(localRra, ts);
+                        if (localRow != null) {
+                            localRow.setValues(row.getValues());
+                        }
                     }
                 }
             }
-            rraNum++;
         }
+    }
+
+    /**
+     * Checks for mergeable RRAs.
+     *
+     * @param rrdSrc the RRD source
+     * @return true, if there are mergeable RRAs
+     */
+    public boolean hasMergeableRRAs(AbstractRRD rrdSrc) {
+        for (AbstractRRA rraSrc : rrdSrc.getRras()) {
+            for (AbstractRRA rra : getRras()) {
+                if (rra.formatMergeable(rraSrc)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Gets the mergeable RRA.
+     *
+     * @param rraSrc the source RRA
+     * @return the local RRA mergeable with rraSrc
+     */
+    public AbstractRRA getMergeableRRA(AbstractRRA rraSrc) {
+        for (AbstractRRA rra : getRras()) {
+            if (rra.formatMergeable(rraSrc)) {
+                return rra;
+            }
+        }
+        return null;
     }
 
     /**
@@ -246,35 +287,55 @@ public abstract class AbstractRRD {
      */
     public void merge(List<? extends AbstractRRD> rrdList) throws IllegalArgumentException {
         if (rrdList.size() != getDataSources().size()) {
-            throw new IllegalArgumentException("Cannot merge RRDs because the amount of RRDs doesn't match the amount of data sources.");
+            final String msg = String.format("Cannot merge RRDs because the amount of RRDs (%d) doesn't match the amount of data sources (%d)", rrdList.size(), getDataSources().size());
+            throw new IllegalArgumentException(msg);
         }
-        for (AbstractRRD arrd : rrdList) {
-            if (!getVersion().equals(getVersion())) {
+        int validDsFound = 0;
+        for (AbstractRRD singleMetricRrd : rrdList) {
+            if (!singleMetricRrd.getStep().equals(getStep())) {
+                throw new IllegalArgumentException("Cannot merge RRDs because one of them have a different step value.");
+            }
+            if (!singleMetricRrd.getVersion().equals(getVersion())) {
                 throw new IllegalArgumentException("Cannot merge RRDs because one of them have a different file version.");
             }
-            if (!hasEqualsRras(arrd)) {
-                throw new IllegalArgumentException("Cannot merge RRDs because one of them as different RRA configuration.");
-            }
-            if (arrd.getDataSources().size() > 1) {
+            if (singleMetricRrd.getDataSources().size() > 1) {
                 throw new IllegalArgumentException("Cannot merge RRDs because one of them has more than one DS.");
             }
-        }
-        Collections.sort(rrdList, new Comparator<AbstractRRD>() {
-            @Override
-            public int compare(AbstractRRD a, AbstractRRD b) {
-                int aInt = getIndex(a.getDataSources().get(0).getName());
-                int bInt = getIndex(b.getDataSources().get(0).getName());
-                return aInt - bInt;
+            for (AbstractDS ds : getDataSources()) {
+                if (ds.getName().equals(singleMetricRrd.getDataSource(0).getName())) {
+                    validDsFound++;
+                    break;
+                }
             }
-        });
-        for (int i = 0; i < getRras().size(); i++) {
-            AbstractRRA rra = getRras().get(i);
-            for (int j = 0; j < rra.getRows().size(); j++) {
-                Row row = rra.getRows().get(j);
-                for (int k = 0; k < row.getValues().size(); k++) {
-                    Double v = rrdList.get(k).getRras().get(i).getRows().get(j).getValues().get(0);
-                    if (!v.isNaN()) {
-                        row.getValues().set(k, v);
+            if (!hasMergeableRRAs(singleMetricRrd)) {
+                throw new IllegalArgumentException("Cannot merge RRDs because there are no mergeable RRA configuration.");
+            }
+        }
+        if (validDsFound != getDataSources().size()) {
+            throw new IllegalArgumentException("Cannot merge RRDs because some data sources don't have a RRD file on the list.");
+        }
+        for (AbstractRRA localRra : getRras()) {
+            for (Row localRow : localRra.getRows()) {
+                for (int k = 0; k < getDataSources().size(); k++) {
+                    final String ds = getDataSources().get(k).getName();
+                    AbstractRRA singleMetricRra = null;
+                    AbstractRRD singleMetricRrd = null;
+                    for (AbstractRRD rrd : rrdList) {
+                        if (rrd.getDataSource(0).getName().equals(ds)) {
+                            singleMetricRrd = rrd;
+                            singleMetricRra = rrd.getMergeableRRA(localRra);
+                            break;
+                        }
+                    }
+                    if (singleMetricRra != null) {
+                        Long ts = findTimestampByRow(localRra, localRow);
+                        Row row = singleMetricRrd.findRowByTimestamp(singleMetricRra, ts);
+                        if (row != null) {
+                            Double v = row.getValues().get(0);
+                            if (!v.isNaN()) {
+                                localRow.getValues().set(k, v);
+                            }
+                        }
                     }
                 }
             }
@@ -368,6 +429,121 @@ public abstract class AbstractRRD {
         }
 
         return true;
+    }
+
+    /**
+     * Resets the row values for all the RRAs.
+     * <p>Double.NaN will be stored on each slot</p>
+     */
+    public void reset() {
+        getRras().stream().flatMap(rra -> rra.getRows().stream()).forEach(row -> {
+            List<Double> values = new ArrayList<>();
+            row.getValues().forEach(d -> values.add(Double.NaN));
+            row.setValues(values);
+        });
+    }
+
+    /**
+     * Generate raw samples.
+     *
+     * @return the all samples
+     */
+    public SortedMap<Long, List<Double>> generateSamples() {
+        final NavigableSet<AbstractRRA> rras = this.getRras()
+                                                   .stream()
+                                                   .filter(AbstractRRA::hasAverageAsCF)
+                                                   .collect(Collectors.toCollection(() -> new TreeSet<>((rra1, rra2) -> rra1.getPdpPerRow().compareTo(rra2.getPdpPerRow()))));
+        final SortedMap<Long, List<Double>> collected = new TreeMap<>();
+
+        for (final AbstractRRA rra : rras) {
+            NavigableMap<Long, List<Double>> samples = this.generateSamples(rra);
+
+            final AbstractRRA lowerRra = rras.lower(rra);
+            if (lowerRra != null) {
+                final long lowerRraStart = this.getLastUpdate() - lowerRra.getPdpPerRow() * this.getStep() * lowerRra.getRows().size();
+                final long rraStep = rra.getPdpPerRow() * this.getStep();
+                samples = samples.headMap((int) Math.ceil(((double) lowerRraStart) / ((double) rraStep)) * rraStep, false);
+            }
+
+            final AbstractRRA higherRra = rras.higher(rra);
+            if (higherRra != null) {
+                final long higherRraStep = higherRra.getPdpPerRow() * this.getStep();
+                samples = samples.tailMap((int) Math.ceil(((double) samples.firstKey()) / ((double) higherRraStep)) * higherRraStep, true);
+            }
+
+            collected.putAll(samples);
+        }
+
+        return collected;
+    }
+
+    /**
+     * Generate raw samples.
+     *
+     * @param rra the source RRA to be used (it must have AVERAGE for its consolidation function)
+     * @return the samples for the given RRA
+     */
+    public NavigableMap<Long, List<Double>> generateSamples(AbstractRRA rra) {
+        long step = rra.getPdpPerRow() * getStep();
+        long start = getStartTimestamp(rra);
+        long end = getEndTimestamp(rra);
+
+        // Initialize Values Map
+        NavigableMap<Long, List<Double>> valuesMap = new TreeMap<>();
+        for (long ts = start; ts <= end; ts+= step) {
+            List<Double> values = new ArrayList<>();
+            for (int i=0; i<getDataSources().size(); i++) {
+                values.add(Double.NaN);
+            }
+            valuesMap.put(ts, values);
+        }
+
+        // Initialize Last Values
+        List<Double> lastValues = new ArrayList<>();
+        for (AbstractDS ds : getDataSources()) {
+            Double v = ds.getLastDs() == null ? 0.0 : ds.getLastDs();
+            lastValues.add(v - v % step);
+        }
+
+        // Set Last-Value for Counters
+        for (int i = 0; i < getDataSources().size(); i++) {
+            if (getDataSource(i).isCounter()) {
+                valuesMap.get(end).set(i, lastValues.get(i));
+            }
+        }
+
+        // Process
+        // Counters must be processed in reverse order (from latest to oldest) in order to recreate the counter raw values
+        // The first sample is processed separated because the lastValues must be updated after adding each sample.
+        long ts = end - step;
+        for (int j = rra.getRows().size() - 1; j >= 0; j--) {
+            final Row row = rra.getRows().get(j);
+
+            for (int i = 0; i < getDataSources().size(); i++) {
+                if (getDataSource(i).isCounter()) {
+                    if (j > 0) {
+                        Double last = lastValues.get(i);
+                        Double current = row.getValue(i).isNaN() ? 0 : row.getValue(i);
+                        Double value = last - (current * step);
+                        if (value < 0) { // Counter-Wrap emulation
+                            value += Math.pow(2, 64);
+                        }
+                        lastValues.set(i, value);
+                        if (!row.getValue(i).isNaN()) {
+                            valuesMap.get(ts).set(i, value);
+                        }
+                    }
+                } else {
+                    if (!row.getValue(i).isNaN()) {
+                        valuesMap.get(ts + step).set(i, row.getValue(i));
+                    }
+                }
+            }
+
+            ts -= step;
+        }
+
+        return valuesMap;
     }
 
     /**

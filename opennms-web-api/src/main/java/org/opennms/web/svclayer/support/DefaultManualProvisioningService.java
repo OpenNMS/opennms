@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -76,6 +77,8 @@ import org.springframework.util.Assert;
  */
 public class DefaultManualProvisioningService implements ManualProvisioningService {
 
+    private static final List<String> ASSETS_BLACKLIST = new ArrayList<String>();
+
     private ForeignSourceRepository m_deployedForeignSourceRepository;
     private ForeignSourceRepository m_pendingForeignSourceRepository;
     private NodeDao m_nodeDao;
@@ -86,6 +89,13 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
+
+    static {
+        ASSETS_BLACKLIST.add("id");
+        ASSETS_BLACKLIST.add("class");
+        ASSETS_BLACKLIST.add("geolocation");
+        ASSETS_BLACKLIST.add("node");
+    }
 
     /**
      * <p>Constructor for DefaultManualProvisioningService.</p>
@@ -573,7 +583,9 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             }
 
             // Include all of the service names defined in the poller configuration
-            serviceNames.addAll(m_pollerConfig.getServiceMonitors().keySet());
+            if (m_pollerConfig != null && m_pollerConfig.getServiceMonitors() != null && ! m_pollerConfig.getServiceMonitors().isEmpty()) {
+                serviceNames.addAll(m_pollerConfig.getServiceMonitors().keySet());
+            }
 
             return serviceNames;
         } finally {
@@ -591,7 +603,9 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         m_readLock.lock();
         
         try {
-            return PropertyUtils.getProperties(new OnmsAssetRecord());
+            final Collection<String> assets = PropertyUtils.getProperties(new OnmsAssetRecord());
+            assets.removeIf(a -> ASSETS_BLACKLIST.contains(a));
+            return assets;
         } finally {
             m_readLock.unlock();
         }

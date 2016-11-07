@@ -27,6 +27,7 @@
       <property name="name" value="OpenNMS.Poller.DefaultPollContext" />
       <property name="pollerConfig" ref="pollerConfig" />
       <property name="queryManager" ref="pollerQueryManager" />
+      <property name="pingerFactory" ref="pingerFactory" />
     </bean> 
     
     <bean name="pollableNetwork" class="org.opennms.netmgt.poller.pollables.PollableNetwork">

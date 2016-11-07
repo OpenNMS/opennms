@@ -29,89 +29,148 @@
 package org.opennms.netmgt.snmp;
 
 import java.net.InetAddress;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class TrapInformation implements TrapNotification {
-	
-	private static final transient Logger LOG = LoggerFactory.getLogger(TrapInformation.class);
+
+    private static final transient Logger LOG = LoggerFactory.getLogger(TrapInformation.class);
 
     /**
-     * The internet address of the sending agent
+     * The internet address of the sending agent.
      */
-    private InetAddress m_agent;
+    private final InetAddress m_agent;
+
     /**
-     * The community string from the actual SNMP packet
+     * The community string from the actual SNMP packet.
      */
-    private String m_community;
+    private final String m_community;
+
+    /**
+     * The initial creation time of this object. This is used to track the reception
+     * time of the event.
+     */
+    private long m_creationTime;
+
+    /**
+     * Optional system ID of the monitoring system that received this trap
+     */
+    private String systemId;
+
+    /**
+     * Optional location of the monitoring system that received this trap
+     */
+    private String location;
+
     private TrapProcessor m_trapProcessor;
 
     protected TrapInformation(InetAddress agent, String community, TrapProcessor trapProcessor) {
+        m_creationTime = new Date().getTime();
         m_agent = agent;
         m_community = community;
         m_trapProcessor = trapProcessor;
-        
     }
 
-    protected abstract InetAddress getTrapAddress();
-
     /**
-     * Returns the sending agent's internet address
+     * @return The source IP address of the trap. For SNMPv2 traps, this value
+     * is always the same as the value of {@link #getAgentAddress()} but for SNMPv1
+     * traps, the value can be different if the trap has been forwarded. It then
+     * represents the true source IP address of the trap event.
      */
-    protected InetAddress getAgent() {
-        return m_agent;
+    public abstract InetAddress getTrapAddress();
+
+    public final String getSystemId() {
+        return systemId;
+    }
+
+    public final void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
+    public final String getLocation() {
+        return location;
+    }
+
+    public final void setLocation(String location) {
+        this.location = location;
     }
 
     /**
      * Returns the SNMP community string from the received packet.
      */
-    protected String getCommunity() {
+    public final String getCommunity() {
         return m_community;
     }
 
     protected void validate() {
         // by default we do nothing;
     }
-    
-    protected InetAddress getAgentAddress() {
-        return getAgent();
+
+    /**
+     * Returns the sending agent's internet address
+     */
+    public final InetAddress getAgentAddress() {
+        return m_agent;
+    }
+
+    public final long getCreationTime() {
+        return m_creationTime;
+    }
+
+    public final void setCreationTime(long creationTime) {
+        m_creationTime = creationTime;
     }
 
     @Override
-    public TrapProcessor getTrapProcessor() {
-        // We do this here to processing of the data is delayed until it is requested.
-        processTrap();
-        return m_trapProcessor;
+    public final TrapProcessor getTrapProcessor() {
+        // We do this here so that processing of the data is delayed until it is requested.
+        return processTrap(this, m_trapProcessor);
     }
 
-    protected abstract String getVersion();
+    @Override
+    public final void setTrapProcessor(final TrapProcessor trapProcessor) {
+        m_trapProcessor = trapProcessor;
+    }
 
-    protected abstract int getPduLength();
+    public abstract String getVersion();
 
-    protected abstract long getTimeStamp();
+    public abstract int getPduLength();
+
+    /**
+     * Get the SNMP TimeTicks value for the sysUpTime of the agent that
+     * generated the trap. Note that the units for this value are 1/100ths
+     * of a second instead of milliseconds.
+     */
+    public abstract long getTimeStamp();
 
     protected abstract TrapIdentity getTrapIdentity();
 
-    protected void processTrap() {
+    protected static TrapProcessor processTrap(TrapInformation trap, TrapProcessor trapProcessor) {
         
-        validate();
+        trap.validate();
         
-        m_trapProcessor.setVersion(getVersion());
-        m_trapProcessor.setCommunity(getCommunity());
-        m_trapProcessor.setAgentAddress(getAgentAddress());
-        m_trapProcessor.setTrapAddress(getTrapAddress());
+        trapProcessor.setSystemId(trap.getSystemId());
+        trapProcessor.setLocation(trap.getLocation());
+        trapProcessor.setCreationTime(trap.getCreationTime());
+        trapProcessor.setVersion(trap.getVersion());
+        trapProcessor.setCommunity(trap.getCommunity());
+        trapProcessor.setAgentAddress(trap.getAgentAddress());
+        trapProcessor.setTrapAddress(trap.getTrapAddress());
     
-        LOG.debug("{} trap - trapInterface: ()", getVersion(), getTrapAddress());
+        LOG.debug("{} trap - trapInterface: ()", trap.getVersion(), trap.getTrapAddress());
         
         // time-stamp
-        m_trapProcessor.setTimeStamp(getTimeStamp());
+        trapProcessor.setTimeStamp(trap.getTimeStamp());
     
-        m_trapProcessor.setTrapIdentity(getTrapIdentity());
+        trapProcessor.setTrapIdentity(trap.getTrapIdentity());
         
-        for (int i = 0; i < getPduLength(); i++) {
-            processVarBindAt(i);
+        for (int i = 0; i < trap.getPduLength(); i++) {
+            trap.processVarBindAt(i);
         } // end for loop
+    
+        return trapProcessor;
     }
 
     protected abstract void processVarBindAt(int i);

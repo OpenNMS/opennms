@@ -64,7 +64,7 @@
     <form class="form-inline" action="element/nodeList.htm" method="get">
       <label for="iplike">TCP/IP Address like:</label><br/>
       <input type="hidden" name="listInterfaces" value="false"/>
-      <input class="form-control" type="text" name="iplike" value="" placeholder="*.*.*.*" />
+      <input class="form-control" type="text" name="iplike" value="" placeholder="*.*.*.* or *:*:*:*:*:*:*:*" />
       <input class="form-control btn btn-default" type="submit" value="Search"/>
     </form>
     <br/>

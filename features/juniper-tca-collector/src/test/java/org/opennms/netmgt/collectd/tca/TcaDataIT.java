@@ -55,6 +55,7 @@ import org.springframework.test.context.ContextConfiguration;
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-soa.xml",
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitSnmpAgent(port=TcaDataIT.TEST_SNMP_PORT, host=TcaDataIT.TEST_IP_ADDRESS, resource="classpath:juniperTcaSample.properties")

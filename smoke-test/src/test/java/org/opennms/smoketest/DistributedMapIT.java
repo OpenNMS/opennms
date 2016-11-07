@@ -41,12 +41,15 @@ import org.openqa.selenium.By;
 public class DistributedMapIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        m_driver.get(BASE_URL + "opennms/RemotePollerMap/index.jsp");
+        m_driver.get(getBaseUrl() + "opennms/RemotePollerMap/index.jsp");
     }
 
     @Test
     public void testDistributedMap() throws Exception {
-        m_driver.switchTo().frame("app");
+        // switchTo() by xpath is much faster than by ID
+        //m_driver.switchTo().frame("app");
+        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+
         // first 5 checkboxes are checked by default
         for (int i=1; i <= 5; i++) {
             assertTrue("checkbox gwt-uid-" + i + " should be checked.", m_driver.findElement(By.id("gwt-uid-" + i)).isSelected());

@@ -80,6 +80,12 @@ public class QueryRequest {
      */
     private Long heartbeat;
 
+    /**
+     * If relaxed is false a missing source attribute results in a 404.
+     * If set to true, a missing source attribute does not result in a 404, but it filled with {@link Double#NaN}.
+     */
+    private boolean relaxed = false;
+
     private List<Source> sources = Lists.newArrayListWithCapacity(0);
 
     private List<Expression> expressions = Lists.newArrayListWithCapacity(0);
@@ -169,6 +175,15 @@ public class QueryRequest {
         this.filters = filters;
     }
 
+    @XmlAttribute(name = "relaxed", required = false)
+    public void setRelaxed(boolean relaxed) {
+        this.relaxed = relaxed;
+    }
+
+    public boolean isRelaxed() {
+        return relaxed;
+    }
+
     @Override
     public boolean equals(Object obj) {
        if (obj == null) {
@@ -187,13 +202,14 @@ public class QueryRequest {
              && com.google.common.base.Objects.equal(this.heartbeat, other.heartbeat)
              && com.google.common.base.Objects.equal(this.sources, other.sources)
              && com.google.common.base.Objects.equal(this.expressions, other.expressions)
-             && com.google.common.base.Objects.equal(this.filters, other.filters);
+             && com.google.common.base.Objects.equal(this.filters, other.filters)
+             && com.google.common.base.Objects.equal(this.relaxed, other.relaxed);
     }
 
     @Override
     public int hashCode() {
        return com.google.common.base.Objects.hashCode(
-                 this.step, this.start, this.end, this.maxrows, this.interval,
+                 this.step, this.start, this.end, this.relaxed, this.maxrows, this.interval,
                  this.heartbeat ,this.sources, this.expressions, this.filters);
     }
 
@@ -203,6 +219,7 @@ public class QueryRequest {
                  .add("Step", this.step)
                  .add("Start", this.start)
                  .add("End", this.end)
+                 .add("Relaxed", this.relaxed)
                  .add("Max Rows", this.maxrows)
                  .add("Interval", this.interval)
                  .add("Heartbeat", this.heartbeat)

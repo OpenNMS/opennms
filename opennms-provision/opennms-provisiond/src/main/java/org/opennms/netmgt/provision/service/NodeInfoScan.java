@@ -31,22 +31,20 @@
  */
 package org.opennms.netmgt.provision.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 import java.net.InetAddress;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 final class NodeInfoScan implements RunInBatch {
@@ -57,15 +55,16 @@ final class NodeInfoScan implements RunInBatch {
     private final String m_foreignSource;
     private OnmsNode m_node;
     private Integer m_nodeId;
+    private final OnmsMonitoringLocation m_location;
     private boolean restoreCategories = false;
     private final ProvisionService m_provisionService;
     private final ScanProgress m_scanProgress;
-    
 
-    NodeInfoScan(OnmsNode node, InetAddress agentAddress, String foreignSource, ScanProgress scanProgress, SnmpAgentConfigFactory agentConfigFactory, ProvisionService provisionService, Integer nodeId){
+    NodeInfoScan(OnmsNode node, InetAddress agentAddress, String foreignSource, final OnmsMonitoringLocation location, ScanProgress scanProgress, SnmpAgentConfigFactory agentConfigFactory, ProvisionService provisionService, Integer nodeId){
         m_node = node;
         m_agentAddress = agentAddress;
         m_foreignSource = foreignSource;
+        m_location = location;
         m_scanProgress = scanProgress;
         m_agentConfigFactory = agentConfigFactory;
         m_provisionService = provisionService;
@@ -96,7 +95,8 @@ final class NodeInfoScan implements RunInBatch {
     }
 
     private SnmpAgentConfig getAgentConfig(InetAddress primaryAddress) {
-        return getAgentConfigFactory().getAgentConfig(primaryAddress);
+        return getAgentConfigFactory().getAgentConfig(primaryAddress,
+                (m_location == null) ? null : m_location.getLocationName());
     }
 
     private SnmpAgentConfigFactory getAgentConfigFactory() {
@@ -105,6 +105,14 @@ final class NodeInfoScan implements RunInBatch {
 
     private String getForeignSource() {
         return m_foreignSource;
+    }
+
+    public OnmsMonitoringLocation getLocation() {
+        return m_location;
+    }
+
+    private String getLocationName() {
+        return m_location == null ? null : m_location.getLocationName();
     }
 
     private ProvisionService getProvisionService() {
@@ -133,26 +141,21 @@ final class NodeInfoScan implements RunInBatch {
         SnmpAgentConfig agentConfig = getAgentConfig(primaryAddress);
         
         SystemGroup systemGroup = new SystemGroup(primaryAddress);
-        
-        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "systemGroup", systemGroup);
-        walker.start();
-        
+
         try {
-        
-            walker.waitFor();
-        
-            if (walker.timedOut()) {
-                abort("Aborting node scan : Agent timed out while scanning the system table");
-            }
-            else if (walker.failed()) {
-                abort("Aborting node scan : Agent failed while scanning the system table: " + walker.getErrorMessage());
-            } else {
-        
+            try {
+                m_provisionService.getLocationAwareSnmpClient().walk(agentConfig, systemGroup)
+                    .withDescription("systemGroup")
+                    .withLocation(getLocationName())
+                    .execute()
+                    .get();
                 systemGroup.updateSnmpDataForNode(getNode());
+            } catch (ExecutionException e) {
+                abort("Aborting node scan : Agent failed while scanning the system table: " + e.getMessage());
             }
-        
+
             List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getEffectiveForeignSource());
-            
+
             OnmsNode node = null;
             if (isAborted()) {
                 if (getNodeId() != null && nodePolicies.size() > 0) {

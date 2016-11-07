@@ -28,6 +28,11 @@
 
 package org.opennms.features.topology.app.internal.ui;
 
+import java.util.List;
+
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.topo.Criteria;
+
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
@@ -35,8 +40,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.topo.Criteria;
 
 public class NoContentAvailableWindow extends Window {
 
@@ -57,39 +60,28 @@ public class NoContentAvailableWindow extends Window {
                 "<li>the last vertex was removed from focus or</li>" +
                 "<li>no default focus is available.</li>" +
                 "</ul>" +
-                "To add a node to focus" +
+                "To add a vertex to focus" +
                 "<ul>" +
-                "<li>manually add a node to focus via the search box</li>" +
+                "<li>manually add a vertex to focus via the search box</li>" +
                 "<li>use the default focus</li>" +
                 "</ul>",  ContentMode.HTML);
 
         final HorizontalLayout defaultLayout = new HorizontalLayout();
         defaultLayout.setMargin(true);
         defaultLayout.setSpacing(true);
-        noDefaultsAvailable = new Label("No nodes found.<br/>Please add nodes manually.", ContentMode.HTML);
+        noDefaultsAvailable = new Label("No vertices found.<br/>Please add vertices manually.", ContentMode.HTML);
         noDefaultsAvailable.setVisible(false);
 
         Button defaultFocusButton = new Button("Use Default Focus");
+        defaultFocusButton.setId("defaultFocusBtn");
         defaultFocusButton.addClickListener(new Button.ClickListener() {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                Criteria defaultCriteria = graphContainer.getBaseTopology().getDefaultCriteria();
-                if (defaultCriteria != null) {
-                    // check if there is already a criteria registered for focus nodes. If so, remove that
-                	
-                	Criteria[] allCriteria = graphContainer.getCriteria();
-                	for (Criteria criterion : allCriteria) {
-						graphContainer.removeCriteria(criterion);
-					}
-                	
-//                    VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
-//                    if (criteria != null) {
-//                        graphContainer.removeCriteria(criteria);
-//                    }
-                	
-                    graphContainer.addCriteria(defaultCriteria); // add default criteria
-                    graphContainer.redoLayout(); // we need to redo the layout
+                List<Criteria> defaultCriteriaList = graphContainer.getBaseTopology().getDefaults().getCriteria();
+                if (defaultCriteriaList != null) {
+                    defaultCriteriaList.forEach(eachCriteria -> graphContainer.addCriteria(eachCriteria));
+                    graphContainer.redoLayout();
                     noDefaultsAvailable.setVisible(false);
                 } else {
                     noDefaultsAvailable.setVisible(true);

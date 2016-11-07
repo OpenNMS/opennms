@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -47,15 +48,31 @@ public class SupportPageIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAllLinksArePresent() throws InterruptedException {
-        for (final String text : new String[] {
+    public void testAllLinksArePresent() throws Exception {
+        Thread.sleep(4000);
+        assertEquals(4, countElementsMatchingCss("h3.panel-title"));
+        final String[] links = new String[] {
+                "the OpenNMS.com support page",
                 "About the OpenNMS Web Console",
                 "Release Notes",
-                "Online Documentation",
+                // Online docs links
+                "Installation Guide",
+                "Users Guide",
+                "Administrators Guide",
+                "Developers Guide",
+                "Online Wiki Documentation",
+                // Offline docs links
+                "Installation Guide",
+                "Users Guide",
+                "Administrators Guide",
+                "Developers Guide",
+                "Online Wiki Documentation",
                 "Generate a System Report",
                 "Open a Bug or Enhancement Request",
                 "Chat with Developers on IRC"
-        }) {
+        };
+        assertEquals(links.length, countElementsMatchingCss("div.panel-body a"));
+        for (final String text : links) {
             assertNotNull("Link with text '" + text + "' must exist.", m_driver.findElement(By.linkText(text)));
         }
     }

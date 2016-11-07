@@ -38,11 +38,16 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
      */
 
     private int[] m_ids;
-    
+
+    protected  SnmpObjId() {
+        // No-arg constructor for JAXB
+        m_ids = new int[0];
+    }
+
     /**
      * These constructors are private.  The get method should be called to create a new oid
      */ 
-    protected SnmpObjId(int[] ids, boolean clone) {
+    public SnmpObjId(int[] ids, boolean clone) {
         m_ids = (clone ? cloneIds(ids) : ids);
     }
     

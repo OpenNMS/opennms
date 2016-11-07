@@ -1,0 +1,26 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <reference id="businessServiceStateMachine" interface="org.opennms.netmgt.bsm.service.BusinessServiceStateMachine" availability="mandatory"/>
+    <reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory"/>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="bsm/render-graph">
+            <action class="org.opennms.netmgt.bsm.karaf.shell.RenderGraphShellCommand">
+                <property name="businessServiceStateMachine" ref="businessServiceStateMachine"/>
+            </action>
+        </command>
+        <command name="bsm/generate-hierarchies">
+            <action class="org.opennms.netmgt.bsm.karaf.shell.GenerateHierarchiesShellCommand">
+                <property name="businessServiceManager" ref="businessServiceManager"/>
+            </action>
+        </command>
+        <command name="bsm/delete-generated-hierarchies">
+            <action class="org.opennms.netmgt.bsm.karaf.shell.DeleteGeneratedHierarchiesShellCommand">
+                <property name="businessServiceManager" ref="businessServiceManager"/>
+            </action>
+        </command>
+    </command-bundle>
+
+</blueprint>

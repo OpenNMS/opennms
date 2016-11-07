@@ -39,15 +39,20 @@ import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Tests the HTTP North Bound Interface
- * FIXME: This is far from completed
- * 
- * @author <a mailto:brozow@opennms.org>Matt Brozowski</a>
- * @author <a mailto:david@opennms.org>David Hustace</a>
+ * FIXME: This is far from completed.
+ *
+ * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations="classpath:/test-context.xml")
 public class HttpNorthBounderTest {
 
+    /**
+     * Test forward alarms.
+     *
+     * @throws InterruptedException the interrupted exception
+     */
     @Test
     @JUnitHttpServer(port=10342)
     public void testForwardAlarms() throws InterruptedException {

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.poller;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,14 +37,24 @@ import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
  * Represents the status of a node, interface or services
  */
 @Embeddable
+@XmlRootElement(name="poll-status")
+@XmlAccessorType(XmlAccessType.NONE)
 public class PollStatus implements Serializable {
     private static final long serialVersionUID = 3L;
+
+    public static final String PROPERTY_RESPONSE_TIME = "response-time";
 
     private Date m_timestamp = new Date();
 
@@ -54,7 +65,7 @@ public class PollStatus implements Serializable {
     
     private String m_reason;
 
-    private Map<String, Number> m_properties = new LinkedHashMap<String, Number>();
+    private final Map<String, Number> m_properties = Collections.synchronizedMap(new LinkedHashMap<String, Number>());
     
     /**
      * <P>
@@ -230,7 +241,7 @@ public class PollStatus implements Serializable {
     }
 
     /**
-     * <p>unknown</p>
+     * @deprecated We should specify a reason on every PollStatus object.
      *
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
@@ -249,7 +260,7 @@ public class PollStatus implements Serializable {
     }
 
     /**
-     * <p>unresponsive</p>
+     * @deprecated We should specify a reason on every PollStatus object.
      *
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
@@ -268,7 +279,7 @@ public class PollStatus implements Serializable {
     }
 
     /**
-     * <p>down</p>
+     * @deprecated We should specify a reason on every PollStatus object.
      *
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
@@ -277,7 +288,7 @@ public class PollStatus implements Serializable {
     }
 
     /**
-     * <p>unavailable</p>
+     * @deprecated We should specify a reason on every PollStatus object.
      *
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
@@ -399,6 +410,7 @@ public class PollStatus implements Serializable {
      *
      * @return a {@link java.util.Date} object.
      */
+    @XmlAttribute(name="time")
     @Column(name="statusTime", nullable=false)
     public Date getTimestamp() {
         return m_timestamp;
@@ -418,6 +430,7 @@ public class PollStatus implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlAttribute(name="reason")
     @Column(name="statusReason", length=255, nullable=true)
     public String getReason() {
         return m_reason;
@@ -443,9 +456,11 @@ public class PollStatus implements Serializable {
      *
      * @return a {@link java.lang.Double} object.
      */
+    @XmlAttribute(name="response-time")
+    @XmlJavaTypeAdapter(DoubleXmlAdapter.class)
     @Column(name="responseTime", nullable=true)
     public Double getResponseTime() {
-        Number val = getProperty("response-time");
+        Number val = getProperty(PROPERTY_RESPONSE_TIME);
         return (val == null ? null : val.doubleValue());
     	
     }
@@ -458,9 +473,9 @@ public class PollStatus implements Serializable {
      */
     public void setResponseTime(final Double responseTime) {
         if (responseTime == null) {
-            m_properties.remove("response-time");
+            m_properties.remove(PROPERTY_RESPONSE_TIME);
         } else {
-            m_properties.put("response-time", responseTime);
+            m_properties.put(PROPERTY_RESPONSE_TIME, responseTime);
         }
     }
 
@@ -469,12 +484,10 @@ public class PollStatus implements Serializable {
      *
      * @return a {@link java.util.Map} object.
      */
+    @XmlElement(name="properties")
     @Transient
     public Map<String, Number> getProperties() {
-    	if (m_properties == null) {
-    		m_properties = new LinkedHashMap<String, Number>();
-    	}
-    	return m_properties;
+        return Collections.unmodifiableMap(m_properties);
     }
     
     /**
@@ -483,7 +496,10 @@ public class PollStatus implements Serializable {
      * @param p a {@link java.util.Map} object.
      */
     public void setProperties(Map<String, Number> p) {
-    	m_properties = p;
+        synchronized(m_properties) {
+            m_properties.clear();
+            m_properties.putAll(p);
+        }
     }
     
     /**
@@ -494,11 +510,9 @@ public class PollStatus implements Serializable {
      */
     @Transient
     public Number getProperty(final String key) {
-    	if (m_properties != null) {
-    		return m_properties.get(key);
-    	} else {
-    		return null;
-    	}
+        synchronized(m_properties) {
+            return m_properties.get(key);
+        }
     }
 
     /**
@@ -508,9 +522,9 @@ public class PollStatus implements Serializable {
      * @param value a {@link java.lang.Number} object.
      */
     public void setProperty(final String key, final Number value) {
-    	Map<String, Number> m = getProperties();
-    	m.put(key, value);
-    	setProperties(m);
+        synchronized(m_properties) {
+            m_properties.put(key, value);
+        }
     }
 
     /**
@@ -518,6 +532,7 @@ public class PollStatus implements Serializable {
      *
      * @return a int.
      */
+    @XmlAttribute(name="code")
     @Column(name="statusCode", nullable=false)
     public int getStatusCode() {
         return m_statusCode;
@@ -532,10 +547,9 @@ public class PollStatus implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlAttribute(name="name")
     @Transient
     public String getStatusName() {
         return s_statusNames[m_statusCode];
     }
-
-
 }

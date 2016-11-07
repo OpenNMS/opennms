@@ -35,16 +35,16 @@ import com.vaadin.shared.communication.ServerRpc;
 
 public interface TopologyComponentServerRpc extends ServerRpc {
     
-    public void doubleClicked(MouseEventDetails eventDetails);
-    public void deselectAllItems();
-    public void edgeClicked(String edgeId);
-    public void backgroundClicked();
-    public void scrollWheel(double scrollVal, int x, int y);
-    public void mapPhysicalBounds(int width, int height);
-    public void marqueeSelection(String[] vertexIds, MouseEventDetails eventDetails);
-    public void contextMenu(String target, String type, int x, int y);
-    public void clientCenterPoint(int x, int y);
-    public void vertexClicked(String vertexId, MouseEventDetails eventDetails, String platform);
-    public void updateVertices(List<String> vertices);
-    public void backgroundDoubleClick(double x, double y);
+    void doubleClicked(MouseEventDetails eventDetails);
+    void deselectAllItems();
+    void edgeClicked(String edgeId);
+    void backgroundClicked();
+    void scrollWheel(double scrollVal, int x, int y);
+    void mapPhysicalBounds(int width, int height);
+    void marqueeSelection(String[] vertexIds, MouseEventDetails eventDetails);
+    void contextMenu(String target, String type, int x, int y);
+    void clientCenterPoint(int x, int y);
+    void vertexClicked(String vertexId, MouseEventDetails eventDetails, String platform);
+    void updateVertices(List<String> vertices);
+    void backgroundDoubleClick(double x, double y);
 }

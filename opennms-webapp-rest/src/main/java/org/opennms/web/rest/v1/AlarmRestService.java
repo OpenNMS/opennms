@@ -44,6 +44,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -51,6 +53,8 @@ import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
+import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.AlarmSummaryCollection;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
@@ -84,11 +88,11 @@ public class AlarmRestService extends AlarmRestServiceBase {
     public Response getAlarm(@Context SecurityContext securityContext, @PathParam("alarmId") final Integer alarmId) {
         assertUserReadCredentials(securityContext);
         if ("summaries".equals(alarmId)) {
-            final AlarmSummaryCollection collection = new AlarmSummaryCollection(m_alarmDao.getNodeAlarmSummaries());
-            return collection == null ? Response.noContent().build() : Response.ok(collection).build();
+            final List<AlarmSummary> collection = m_alarmDao.getNodeAlarmSummaries();
+            return collection == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(new AlarmSummaryCollection(collection)).build();
         } else {
             final OnmsAlarm alarm = m_alarmDao.get(alarmId);
-            return alarm == null ? Response.noContent().build() : Response.ok(alarm).build();
+            return alarm == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(alarm).build();
         }
     }
 
@@ -144,10 +148,11 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Path("{alarmId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateAlarm(@Context final UriInfo uriInfo, @Context final SecurityContext securityContext, @PathParam("alarmId") final Integer alarmId, final MultivaluedMapImpl formProperties) {
+    public Response updateAlarm(@Context final SecurityContext securityContext, @PathParam("alarmId") final Integer alarmId, final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {
+            boolean isProcessAck = true;
             if (alarmId == null) {
                 return getBadRequestResponse("Unable to determine alarm ID to update based on query path.");
             }
@@ -160,7 +165,10 @@ public class AlarmRestService extends AlarmRestServiceBase {
             formProperties.remove("clear");
             final String ackUserValue = formProperties.getFirst("ackUser");
             formProperties.remove("ackUser");
-
+            final String ticketIdValue = formProperties.getFirst("ticketId");
+            formProperties.remove("ticketId");
+            final String ticketStateValue = formProperties.getFirst("ticketState");
+            formProperties.remove("ticketState");
             final OnmsAlarm alarm = m_alarmDao.get(alarmId);
             if (alarm == null) {
                 return getBadRequestResponse("Unable to locate alarm with ID '" + alarmId + "'");
@@ -185,11 +193,21 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 if (Boolean.parseBoolean(clearValue)) {
                     acknowledgement.setAckAction(AckAction.CLEAR);
                 }
+            } else if (StringUtils.isNotBlank(ticketIdValue)) {
+                isProcessAck = false;
+                alarm.setTTicketId(ticketIdValue);
+            } else if (EnumUtils.isValidEnum(TroubleTicketState.class, ticketStateValue)) {
+                isProcessAck = false;
+                alarm.setTTicketState(TroubleTicketState.valueOf(ticketStateValue));
             } else {
                 return getBadRequestResponse("Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
             }
-            m_ackDao.processAck(acknowledgement);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            if (isProcessAck) {
+                m_ackDao.processAck(acknowledgement);
+            } else {
+                m_alarmDao.saveOrUpdate(alarm);
+            }
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -206,7 +224,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @PUT
     @Transactional
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateAlarms(@Context final UriInfo uriInfo, @Context final SecurityContext securityContext, final MultivaluedMapImpl formProperties) {
+    public Response updateAlarms(@Context final SecurityContext securityContext, final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {
@@ -250,11 +268,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 m_ackDao.processAck(acknowledgement);
             }
 
-            if (alarms.size() == 1) {
-                return Response.seeOther(getRedirectUri(uriInfo, alarms.get(0).getId())).build();
-            } else {
-                return Response.seeOther(getRedirectUri(uriInfo)).build();
-            }
+            return alarms == null || alarms.isEmpty() ? Response.notModified().build() : Response.noContent().build();
         } finally {
             writeUnlock();
         }

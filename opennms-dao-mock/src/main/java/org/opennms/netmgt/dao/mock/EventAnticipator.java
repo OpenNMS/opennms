@@ -33,9 +33,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
-
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -130,43 +130,41 @@ public class EventAnticipator implements EventListener {
         }
     }
 
-    private void saveUnanticipatedEvent(Event event) {
+    private synchronized void saveUnanticipatedEvent(Event event) {
         if (!m_discardUnanticipated) {
             m_unanticipatedEvents.add(event);
         }
     }
 
-    public synchronized Collection<Event> getAnticipatedEvents() {
-        List<Event> events = new ArrayList<Event>(m_anticipatedEvents.size());
-        for (EventWrapper w : m_anticipatedEvents) {
-            events.add(w.getEvent());
-        }
-        return events;
-    }
-    
-    public synchronized List<Event> getAnticipatedEventsRecieved() {
-        return new ArrayList<Event>(m_anticipatedEventsReceived);
+    public synchronized List<Event> getAnticipatedEvents() {
+        return Collections.unmodifiableList(
+            m_anticipatedEvents.stream().map(EventWrapper::getEvent).collect(Collectors.toList())
+        );
     }
 
-    public void reset() {
-        resetAnticipated();
-        resetUnanticipated();
-    }
-
-    public void resetUnanticipated() {
-        m_unanticipatedEvents.clear();
-    }
-
-    public void resetAnticipated() {
-        m_anticipatedEvents.clear();
-        m_anticipatedEventsReceived.clear();
+    public synchronized List<Event> getAnticipatedEventsReceived() {
+        return Collections.unmodifiableList(m_anticipatedEventsReceived);
     }
 
     /**
      * @return
      */
-    public Collection<Event> unanticipatedEvents() {
-        return Collections.synchronizedCollection(Collections.unmodifiableCollection(m_unanticipatedEvents));
+    public synchronized List<Event> getUnanticipatedEvents() {
+        return Collections.unmodifiableList(m_unanticipatedEvents);
+    }
+
+    public synchronized void reset() {
+        resetAnticipated();
+        resetUnanticipated();
+    }
+
+    public synchronized void resetUnanticipated() {
+        m_unanticipatedEvents.clear();
+    }
+
+    public synchronized void resetAnticipated() {
+        m_anticipatedEvents.clear();
+        m_anticipatedEventsReceived.clear();
     }
 
     /**
@@ -198,7 +196,7 @@ public class EventAnticipator implements EventListener {
     public void eventProcessed(Event event) {
     }
 
-    public void verifyAnticipated(long wait,
+    public synchronized void verifyAnticipated(long wait,
             long sleepMiddle,
             long sleepAfter,
             int anticipatedSize,
@@ -229,11 +227,11 @@ public class EventAnticipator implements EventListener {
             }
         }
 
-        if (unanticipatedSize >= 0 && unanticipatedEvents().size() != unanticipatedSize) {
-            problems.append(unanticipatedEvents().size() +
+        if (unanticipatedSize >= 0 && getUnanticipatedEvents().size() != unanticipatedSize) {
+            problems.append(getUnanticipatedEvents().size() +
                     " unanticipated events received (expected " +
                     unanticipatedSize + "):\n");
-            problems.append(listEvents("\t", unanticipatedEvents()));
+            problems.append(listEvents("\t", getUnanticipatedEvents()));
         }
 
         if (problems.length() > 0) {

@@ -33,9 +33,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.config.api.ConfigurationResourceException;
-import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
 import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 import org.slf4j.Logger;
@@ -59,7 +59,6 @@ public class JmxDataCollectionConfigResource implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_jmxDataCollectionConfigDao, "JmxDataCollectionConfigDao must be set!");
-        Assert.isTrue(m_jmxDataCollectionConfigDao instanceof AbstractJaxbConfigDao<?, ?>);
     }
 
     @GET
@@ -67,10 +66,10 @@ public class JmxDataCollectionConfigResource implements InitializingBean {
     public Response getJmxDataCollectionConfig() throws ConfigurationResourceException {
         LOG.debug("getJmxDataCollectionConfigurationForLocation()");
 
-        final JmxDatacollectionConfig jmxDataCollectionConfig = m_jmxDataCollectionConfigDao.getContainer().getObject();
+        final JmxDatacollectionConfig jmxDataCollectionConfig = m_jmxDataCollectionConfigDao.getConfig();
 
         if (jmxDataCollectionConfig == null) {
-            return Response.status(404).build();
+            return Response.status(Status.NOT_FOUND).build();
         }
 
         return Response.ok(jmxDataCollectionConfig).build();

@@ -31,7 +31,7 @@ package org.opennms.netmgt.provision.service;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.provision.support.AbstractDetector;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 
 /**
  * The Class IpInterfaceScanTest.
@@ -39,35 +39,6 @@ import org.opennms.netmgt.provision.support.AbstractDetector;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class IpInterfaceScanTest {
-
-    /**
-     * The Class MockServiceDetector.
-     */
-    private static final class MockServiceDetector extends AbstractDetector {
-
-        /**
-         * Instantiates a new mock service detector.
-         *
-         * @param serviceName the service name
-         * @param ipMatch the IP match
-         */
-        protected MockServiceDetector(String serviceName, String ipMatch) {
-            super(serviceName, 100);
-            setIpMatch(ipMatch);
-        }
-
-        /* (non-Javadoc)
-         * @see org.opennms.netmgt.provision.support.AbstractDetector#onInit()
-         */
-        @Override
-        protected void onInit() {}
-
-        /* (non-Javadoc)
-         * @see org.opennms.netmgt.provision.support.AbstractDetector#dispose()
-         */
-        @Override
-        public void dispose() {}
-    }
 
     /**
      * Check regular expression rule.
@@ -118,8 +89,9 @@ public class IpInterfaceScanTest {
      * @param expectedResult the expected result
      */
     private void runTest(String ipAddress, String ipMatch, boolean expectedResult) {
-        IpInterfaceScan scan = new IpInterfaceScan(1, InetAddressUtils.addr(ipAddress), "JUnit", null);
-        Assert.assertTrue(expectedResult == scan.shouldDetect(new MockServiceDetector("TEST_SVC", ipMatch)));
+        PluginConfig detectorConfig = new PluginConfig();
+        detectorConfig.addParameter("ipMatch", ipMatch);
+        Assert.assertEquals(expectedResult, IpInterfaceScan.shouldDetect(detectorConfig, InetAddressUtils.addr(ipAddress)));
     }
 
 }

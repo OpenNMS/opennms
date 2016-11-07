@@ -35,6 +35,7 @@ import java.net.InetAddress;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.sun.jna.Platform;
@@ -46,6 +47,7 @@ import com.sun.jna.Platform;
  * @author brozow
  */
 
+@Ignore
 public class PingThreadIT {
     
     @Before
@@ -60,7 +62,7 @@ public class PingThreadIT {
     @Test
     public void testMultiThreadSocketUse() throws Exception {
         int pingCount = 10;
-        V4Pinger listener = new V4Pinger();
+        V4Pinger listener = new V4Pinger(1234);
         try {
         listener.start();
         
@@ -75,7 +77,7 @@ public class PingThreadIT {
 
     @Test
     public void testManyThreadSocketUse() throws Exception {
-        V4Pinger listener = new V4Pinger();
+        V4Pinger listener = new V4Pinger(1243);
         try {
         listener.start();
         

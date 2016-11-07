@@ -33,7 +33,7 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 /**
  * <p>MonitoringLocationListCellRenderer class.</p>
@@ -44,15 +44,15 @@ import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 public class MonitoringLocationListCellRenderer extends DefaultListCellRenderer {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = -6166605236770433826L;
+     *
+     */
+    private static final long serialVersionUID = -6166605236770433826L;
 
-	/** {@inheritDoc} */
+    /** {@inheritDoc} */
     @Override
     public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        LocationDef location = (LocationDef)value;
-        
+        OnmsMonitoringLocation location = (OnmsMonitoringLocation)value;
+
         StringBuffer stringValue = new StringBuffer();
         if (location != null) {
             stringValue.append(location.getMonitoringArea());
@@ -64,5 +64,5 @@ public class MonitoringLocationListCellRenderer extends DefaultListCellRenderer 
         return super.getListCellRendererComponent(list, stringValue.toString(), index, isSelected, cellHasFocus);
     }
 
-    
+
 }

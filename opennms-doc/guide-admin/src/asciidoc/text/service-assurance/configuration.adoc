@@ -29,17 +29,13 @@ The configuration file is structured in the following parts:
 ----
 <poller-configuration threads="30" <1>
                       pathOutageEnabled="false" <2>
-                      serviceUnresponsiveEnabled="false" <3>
-                      pollAllIfNoCriticalServiceDefined="true"> <4>
+                      serviceUnresponsiveEnabled="false"> <3>
 ----
 
 <1> Size of the _Thread Pool_ to run _Service Monitors_ in parallel
 <2> Enable or Disable _Path Outage_ functionality based on a _Critical Node_ in a network path
 <3> In case of unresponsive service services a _serviceUnresponsive_ event is generated and not an outage.
     It prevents to apply the _Downtime Model_ to retest the service after 30 seconds and prevents false alarms.
-<4> Optional: In case of nodes without a _Critical Service_ this option controls the behavior.
-    If set to `true` then all services will be polled.
-    If set to `false` then the first service in the package that exists on the node will be polled until service is restored, and then polling will resume for all services.
 
 Configuration changes are applied by restarting _OpenNMS_ and _Pollerd_.
 It is also possible to send an _Event_ to _Pollerd_ reloading the configuration.

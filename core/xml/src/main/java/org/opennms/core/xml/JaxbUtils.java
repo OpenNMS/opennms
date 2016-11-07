@@ -31,18 +31,23 @@ package org.opennms.core.xml;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.xml.bind.JAXBContext;
@@ -109,6 +114,22 @@ public abstract class JaxbUtils {
         final StringWriter jaxbWriter = new StringWriter();
         marshal(obj, jaxbWriter);
         return jaxbWriter.toString();
+    }
+
+    public static void marshal(final Object obj, final File file) throws IOException {
+        /*
+         * Marshal to a string first, then write the string to the file.
+         * This way the original configuration isn't lost if the XML from the
+         * marshal is hosed.
+         */
+        String xmlString = marshal(obj);
+
+        if (xmlString != null) {
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+            fileWriter.write(xmlString);
+            fileWriter.flush();
+            fileWriter.close();
+        }
     }
 
     public static Class<?> getClassForElement(final String elementName) {
@@ -310,7 +331,7 @@ public abstract class JaxbUtils {
     /**
      * Get a JAXB unmarshaller for the given object.  If no JAXBContext is provided,
      * JAXBUtils will create and cache a context for the given object.
-     * @param obj The object type to be unmarshaled.
+     * @param obj The object type to be unmarshalled.
      * @param jaxbContext An optional JAXB context to create the unmarshaller from.
      * @param validate TODO
      * @return an Unmarshaller
@@ -334,13 +355,11 @@ public abstract class JaxbUtils {
 
         if (unmarshaller == null) {
             try {
-                final JAXBContext context;
                 if (jaxbContext == null) {
-                    context = getContextFor(clazz);
+                    unmarshaller = getContextFor(clazz).createUnmarshaller();
                 } else {
-                    context = jaxbContext;
+                    unmarshaller = jaxbContext.createUnmarshaller();
                 }
-                unmarshaller = context.createUnmarshaller();
             } catch (final JAXBException e) {
                 throw EXCEPTION_TRANSLATOR.translate("creating XML marshaller", e);
             }
@@ -360,10 +379,11 @@ public abstract class JaxbUtils {
         return unmarshaller;
     }
 
-    private static List<Class<?>> getAllRelatedClasses(final Class<?> clazz) {
-        final List<Class<?>> classes = new ArrayList<Class<?>>();
+    private static Collection<Class<?>> getAllRelatedClasses(final Class<?> clazz) {
+        final Set<Class<?>> classes = new HashSet<Class<?>>();
         classes.add(clazz);
 
+        // Get any XmlSeeAlsos on the class
         final XmlSeeAlso seeAlso = clazz.getAnnotation(XmlSeeAlso.class);
         if (seeAlso != null && seeAlso.value() != null) {
             for (final Class<?> c : seeAlso.value()) {
@@ -381,7 +401,7 @@ public abstract class JaxbUtils {
         if (m_contexts.containsKey(clazz)) {
             context = m_contexts.get(clazz);
         } else {
-            final List<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
+            final Collection<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
             LOG.trace("Creating new context for classes: {}", allRelatedClasses);
             context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(allRelatedClasses.toArray(EMPTY_CLASS_LIST), null);
             LOG.trace("Context for {}: {}", allRelatedClasses, context);

@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.snmp;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -64,50 +67,6 @@ public class SnmpUtilsIT extends MockSnmpAgentITCase implements TrapProcessorFac
 	}
     
     private TestTrapListener m_trapListener;
-
-    static private final class TestTrapProcessor implements TrapProcessor {
-        @Override
-        public void setCommunity(String community) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void setTimeStamp(long timeStamp) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void setVersion(String version) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void setAgentAddress(InetAddress agentAddress) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void processVarBind(SnmpObjId name, SnmpValue value) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void setTrapAddress(InetAddress trapAddress) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void setTrapIdentity(TrapIdentity trapIdentity) {
-            // TODO Auto-generated method stub
-            
-        }
-    }
 
     private static final class TestTrapListener implements TrapNotificationListener {
         private boolean m_error = false;
@@ -247,10 +206,9 @@ public class SnmpUtilsIT extends MockSnmpAgentITCase implements TrapProcessorFac
         trap.setSpecific(1);
         trap.setTimeStamp(8640000);
         trap.send(getAgentAddress().getHostAddress(), 9162, "public");
-        Thread.sleep(1000);
-        assertEquals("Unexpected number of traps Received", 1, m_trapListener.getReceivedTrapCount());
+        await().atMost(5, SECONDS).until(() -> m_trapListener.getReceivedTrapCount(), equalTo(1));
     }
-    
+
     @Test
     public void testSendV2Trap() throws Exception {
     	assumeTrue(m_trapsSupported);
@@ -266,13 +224,12 @@ public class SnmpUtilsIT extends MockSnmpAgentITCase implements TrapProcessorFac
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
 
         pdu.send(getAgentAddress().getHostAddress(), 9162, "public");
-        Thread.sleep(1000);
-        assertEquals("Unexpected number of traps Received", 1, m_trapListener.getReceivedTrapCount());
+        await().atMost(5, SECONDS).until(() -> m_trapListener.getReceivedTrapCount(), equalTo(1));
     }
-    
+
         @Override
     public TrapProcessor createTrapProcessor() {
-        return new TestTrapProcessor();
+        return new BasicTrapProcessor();
     }
     
     @Test

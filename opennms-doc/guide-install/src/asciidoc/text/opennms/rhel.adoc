@@ -2,29 +2,24 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+[[gi-install-opennms]]
+== OpenNMS
+
+After configuring the package repository, you are ready to install the _OpenNMS_ packages,
+configure the database, and initialize the _OpenNMS_ platform.
+
 [[gi-install-opennms-rhel]]
-=== Installing on RHEL-based system
+=== RHEL
 
 This section describes how to install the _OpenNMS_ platform on _CentOS 7.1_.
 The setup process is described in the following steps:
 
-. Install _OpenNMS_ _YUM_ repository server with GPG key to verify packages
 . Installation of the _opennms_ meta package which handles all dependencies
 . Initialize _PostgreSQL_ database and configure access
 . Initialize _OpenNMS_ and first start of the application
 
-[[gi-install-opennms-yum-repo]]
-==== Setup OpenNMS YUM repository
-
-.Installation of stable repository and GPG key
-[source, shell]
-----
-rpm -Uvh http://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
-rpm --import http://yum.opennms.org/OPENNMS-GPG-KEY
-----
-
 [[gi-install-opennms-rhel-package]]
-==== Install OpenNMS package
+==== Install OpenNMS
 
 .Installation of the full application with all dependencies like PostgreSQL and Java
 [source, shell]
@@ -38,9 +33,11 @@ The following packages will be automatically installed:
 * _jicmp6_ and _jicmp_: _Java_ bridge to allow sending _ICMP messages_ from _OpenNMS_ repository.
 * _opennms-core_: _OpenNMS_ core services, e.g. _Provisiond_, _Pollerd_ and _Collectd_ from _OpenNMS_ repository.
 * _opennms-webapp-jetty_: _OpenNMS_ web application from _OpenNMS_ repository
-* _jdk1.8_: _Oracle Java 8_ environment from _OpenNMS_ respository
+* _jdk1.8_: _Oracle Java SE Development Kit 8_ environment from _OpenNMS_ respository
 * _postgresql_: _PostgreSQL_ database server from distribution repository
 * _postgresql-libs_: _PostgreSQL_ database from distribution repository
+
+TIP: Verify the version of the _OpenNMS_ packages that was installed with `yum info opennms`.
 
 With the successful installed packages the _OpenNMS_ platform is installed in the following directory structure:
 
@@ -86,7 +83,8 @@ systemctl enable postgresql
 systemctl start postgresql
 ----
 
-The next step is creating an _opennms_ database user with password and configure the authentication method.
+The next step is setting the _postgres_ super user password and creating an _opennms_ database user with password.
+Additionally it is required to configure the authentication method to allow authentication from the local network.
 
 .Accounting and database management for _OpenNMS_
 [source, shell]
@@ -94,9 +92,18 @@ The next step is creating an _opennms_ database user with password and configure
 su - postgres
 createuser -P opennms
 createdb -O opennms opennms
-psql -c "ALTER USER opennms WITH SUPERUSER;"
 exit
 ----
+
+.Set password for Postgres super user
+[source, shell]
+----
+su - postgres
+psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PASSWORD';"
+exit
+----
+
+NOTE: The super user is required to be able to initialize and change the database schema for installation and updates.
 
 To allow _OpenNMS_ access to the database over the local network _PostgreSQL_ has to be configured.
 
@@ -141,14 +148,14 @@ vi ${OPENNMS_HOME}/etc/opennms-datasources.xml
                     database-name="template1"
                     class-name="org.postgresql.Driver"
                     url="jdbc:postgresql://localhost:5432/template1"
-                    user-name="** YOUR-OPENNMS-USERNAME **"<3>
-                    password="** YOUR-OPENNMS-PASSWORD **" /><4>
+                    user-name="postgres"<3>
+                    password="** YOUR-POSTGRES-PASSWORD **" /><4>
 ----
 
 <1> Set the user name to access the _OpenNMS_ database table
 <2> Set the password to access the _OpenNMS_ database table
-<3> Set the user name for administrative changes of the _OpenNMS_ database table
-<4> Set the password for administrative changes of the _OpenNMS_ database table
+<3> Set the _postgres_ user for administrative access to PostgreSQL
+<4> Set the password for administrative access to PostgreSQL
 
 [[gi-install-opennms-rhel-init]]
 ==== Initialize OpenNMS
@@ -172,18 +179,6 @@ ${OPENNMS_HOME}/bin/install -dis
 [source, shell]
 ----
 systemctl enable opennms
-----
-
-Running _OpenNMS_ doesn't require super user permissions.
-They are necessary for installing the _IPLIKE_ stored procedure during the database initialization.
-For operation the _OpenNMS_ database user can be restricted to a normal user.
-
-.Lockdown database permissions
-[source, shell]
-----
-su - postgres
-psql -c "ALTER ROLE opennms NOSUPERUSER;"
-psql -c "ALTER ROLE opennms NOCREATEDB;"
 ----
 
 .Startup _OpenNMS_

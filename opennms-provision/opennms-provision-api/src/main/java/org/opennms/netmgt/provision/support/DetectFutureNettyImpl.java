@@ -28,9 +28,10 @@
 
 package org.opennms.netmgt.provision.support;
 
+import java.util.Map;
+
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
-import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectFutureListener;
 
@@ -61,16 +62,6 @@ public class DetectFutureNettyImpl implements DetectFuture {
     }
 
     /**
-     * <p>getServiceDetector</p>
-     *
-     * @return a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
-     */
-    @Override
-    public AsyncServiceDetector getServiceDetector() {
-        return m_detector;
-    }
-
-    /**
      * <p>isServiceDetected</p>
      *
      * @return a boolean.
@@ -78,6 +69,16 @@ public class DetectFutureNettyImpl implements DetectFuture {
     @Override
     public boolean isServiceDetected() {
         return m_future.isSuccess();
+    }
+
+    /**
+     * <p>getServiceAttributes</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
+    @Override
+    public Map<String, String> getServiceAttributes() {
+        return null;
     }
 
     /**

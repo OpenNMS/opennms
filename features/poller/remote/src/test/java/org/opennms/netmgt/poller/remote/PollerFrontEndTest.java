@@ -29,8 +29,6 @@
 package org.opennms.netmgt.poller.remote;
 
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.isA;
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
 
 import java.beans.PropertyChangeEvent;
@@ -41,8 +39,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
 import org.opennms.netmgt.config.DefaultServiceMonitorLocator;
@@ -51,13 +47,15 @@ import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd;
-import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd.PollerFrontEndStates;
 import org.opennms.test.mock.EasyMockUtils;
+
+import junit.framework.TestCase;
 
 public class PollerFrontEndTest extends TestCase {
 
-    public static final String LOCATION_MONITOR_ID = UUID.randomUUID().toString();
+    public static final String MONITORING_SYSTEM_ID = UUID.randomUUID().toString();
 
     public static class PolledServiceChangeEventEquals implements IArgumentMatcher {
 
@@ -157,7 +155,7 @@ public class PollerFrontEndTest extends TestCase {
     }
 
     public void testAfterPropertiesSetWhenRegistered() throws Exception {
-        testAfterPropertiesSetWithRegisteredId(LOCATION_MONITOR_ID);
+        testAfterPropertiesSetWithRegisteredId(MONITORING_SYSTEM_ID);
     }
 
     public void testAlreadyRegistered() throws Exception {
@@ -169,6 +167,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         assertTrue(m_frontEnd.isRegistered());
 
@@ -186,6 +185,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         m_frontEnd.checkConfig();
 
@@ -206,6 +206,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         assertTrue(m_frontEnd.isRegistered());
 
@@ -220,6 +221,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         assertFalse(m_frontEnd.isRegistered());
 
@@ -239,6 +241,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         m_frontEnd.pollService(pollConfig().getFirstId());
 
@@ -261,6 +264,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         assertFalse(m_frontEnd.isRegistered());
 
@@ -295,6 +299,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
 
         m_frontEnd.setInitialPollTime(polledServiceId, start);
@@ -316,6 +321,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         assertTrue(m_frontEnd.isStarted());
 
@@ -342,6 +348,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
         
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
         
         m_frontEnd.checkConfig();
         
@@ -366,6 +373,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
         
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
         
         m_frontEnd.checkConfig();
         
@@ -445,7 +453,6 @@ public class PollerFrontEndTest extends TestCase {
         anticipatePollServiceSetMonitorLocators();
         anticipateGetMonitorId();
         anticipateGetConfiguration();
-        anticipatePolledServicesInitialized();
         anticipateFireConfigurationChangeEvent();
     }
 
@@ -526,11 +533,11 @@ public class PollerFrontEndTest extends TestCase {
     }
 
     private void anticipateGetConfiguration() {
-        expect(m_backEnd.getPollerConfiguration(LOCATION_MONITOR_ID)).andReturn(pollConfig());
+        expect(m_backEnd.getPollerConfiguration(MONITORING_SYSTEM_ID)).andReturn(pollConfig());
     }
 
     private void anticipateGetMonitorId() {
-        expect(m_settings.getMonitorId()).andReturn(getRegisteredId());
+        expect(m_settings.getMonitoringSystemId()).andReturn(getRegisteredId());
     }
 
     private void anticipateGetPolledService() {
@@ -538,11 +545,6 @@ public class PollerFrontEndTest extends TestCase {
     }
 
     private void anticipateGetServicePollState() {
-    }
-
-    private void anticipatePolledServicesInitialized() {
-        m_pollService.initialize(isA(PolledService.class));
-        expectLastCall().times(pollConfig().getPolledServices().length);
     }
 
     private void anticipatePollerCheckingIn() {
@@ -561,7 +563,7 @@ public class PollerFrontEndTest extends TestCase {
             }
         }
         
-        expect(m_backEnd.pollerCheckingIn(LOCATION_MONITOR_ID, oldTimestamp)).andReturn(m_monitorStatus);
+        expect(m_backEnd.pollerCheckingIn(MONITORING_SYSTEM_ID, oldTimestamp)).andReturn(m_monitorStatus);
 
     }
 
@@ -593,7 +595,7 @@ public class PollerFrontEndTest extends TestCase {
     private void anticipateRegisterLocationMonitor() {
         setRegistered();
         expect(m_backEnd.registerLocationMonitor("OAK")).andReturn(getRegisteredId());
-        m_settings.setMonitorId(getRegisteredId());
+        m_settings.setMonitoringSystemId(getRegisteredId());
     }
 
     private void anticipateReportResult() {
@@ -659,7 +661,7 @@ public class PollerFrontEndTest extends TestCase {
     }
 
     private void setRegistered() {
-        setRegisteredId(LOCATION_MONITOR_ID);
+        setRegisteredId(MONITORING_SYSTEM_ID);
     }
 
     private void setRegisteredId(String registeredId) {
@@ -674,6 +676,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         m_mock.verifyAll();
     }

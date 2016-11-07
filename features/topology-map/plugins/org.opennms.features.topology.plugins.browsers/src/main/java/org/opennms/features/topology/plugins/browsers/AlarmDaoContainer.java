@@ -28,30 +28,27 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.core.criteria.restrictions.Restrictions;
-import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
+import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.osgi.EventConsumer;
+import org.springframework.transaction.support.TransactionOperations;
 
-public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
+public class AlarmDaoContainer extends OnmsVaadinContainer<OnmsAlarm,Integer> {
 
     private static final long serialVersionUID = -4026870931086916312L;
 
-    public AlarmDaoContainer(AlarmDao dao) {
-        super(OnmsAlarm.class, dao);
+    public AlarmDaoContainer(AlarmDao dao, TransactionOperations transactionTemplate) {
+        super(OnmsAlarm.class, new OnmsDaoContainerDatasource<>(dao, transactionTemplate));
         addBeanToHibernatePropertyMapping("nodeLabel", "node.label");
     }
 
@@ -83,24 +80,14 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 
     @Override
     protected void addAdditionalCriteriaOptions(Criteria criteria, Page page, boolean doOrder) {
+        // we join table node, to be able eto sort by node.label
         criteria.setAliases(Arrays.asList(new Alias[] {
                 new Alias("node", "node", JoinType.LEFT_JOIN)
         }));
     }
 
     @Override
-    @EventConsumer
-    public void verticesUpdated(final VerticesUpdateManager.VerticesUpdateEvent event) {
-        final List<Restriction> newRestrictions = new ArrayList<Restriction>();
-        final List<Integer> nodeIds = extractNodeIds(event.getVertexRefs());
-        if (nodeIds.size() > 0) {
-            newRestrictions.add(Restrictions.in("node.id", nodeIds));
-        }
-
-        if (!getRestrictions().equals(newRestrictions)) { // selection really changed
-            setRestrictions(newRestrictions);
-            getCache().reload(getPage());
-            fireItemSetChangedEvent();
-        }
+    protected ContentType getContentType() {
+        return ContentType.Alarm;
     }
 }

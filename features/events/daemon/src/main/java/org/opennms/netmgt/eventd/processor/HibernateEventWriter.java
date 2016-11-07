@@ -31,11 +31,11 @@ package org.opennms.netmgt.eventd.processor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.util.AutoAction;
@@ -57,6 +57,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DeadlockLoserDataAccessException;
 import org.springframework.util.Assert;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 
 /**
  * EventWriter loads the information in each 'Event' into the database.
@@ -87,11 +91,8 @@ public class HibernateEventWriter implements EventWriter {
     private NodeDao nodeDao;
     
     @Autowired
-    private IpInterfaceDao ipInterfaceDao;
-    
-    @Autowired
-    private MonitoredServiceDao monitoredServiceDao;
-    
+    private MonitoringSystemDao monitoringSystemDao;
+
     @Autowired
     private DistPollerDao distPollerDao;
     
@@ -103,6 +104,12 @@ public class HibernateEventWriter implements EventWriter {
 
     @Autowired
     private EventUtil eventUtil;
+
+    private final Timer writeTimer;
+
+    public HibernateEventWriter(MetricRegistry registry) {
+        writeTimer = Objects.requireNonNull(registry).timer("events.process.write");
+    }
 
     /**
      * <p>checkEventSanityAndDoWeProcess</p>
@@ -141,21 +148,20 @@ public class HibernateEventWriter implements EventWriter {
             return;
         }
 
-        LOG.debug("HibernateEventWriter: processing {} nodeid: {} ipaddr: {} serviceid: {} time: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
+        LOG.debug("HibernateEventWriter: processing {}, nodeid: {}, ipaddr: {}, serviceid: {}, time: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
 
-        try {
+        try (Context context = writeTimer.time()) {
             insertEvent(eventHeader, event);
         } catch (DeadlockLoserDataAccessException e) {
             throw new EventProcessorException("Encountered deadlock when inserting event: " + event.toString(), e);
+        } catch (Throwable e) {
+            throw new EventProcessorException("Unexpected exception while storing event: " + event.toString(), e);
         }
     }
 
     /**
      * Insert values into the EVENTS table
      * 
-     * @exception java.sql.SQLException
-     *                Thrown if there is an error adding the event to the
-     *                database.
      * @exception java.lang.NullPointerException
      *                Thrown if a required resource cannot be found in the
      *                properties file.
@@ -199,12 +205,13 @@ public class HibernateEventWriter implements EventWriter {
 
         // If available, use the header's distPoller
         if (eventHeader != null && eventHeader.getDpName() != null && !"".equals(eventHeader.getDpName().trim())) {
+            // TODO: Should we also try a look up the value in the MinionDao and LocationMonitorDao here?
             ovent.setDistPoller(distPollerDao.get(eventHeader.getDpName()));
         }
         // Otherwise, use the event's distPoller
         if (ovent.getDistPoller() == null && event.getDistPoller() != null && !"".equals(event.getDistPoller().trim())) {
-            ovent.setDistPoller(distPollerDao.get(event.getDistPoller()));
-        } 
+            ovent.setDistPoller(monitoringSystemDao.get(event.getDistPoller()));
+        }
         // And if both are unavailable, use the local system as the event's source system
         if (ovent.getDistPoller() == null) {
             ovent.setDistPoller(distPollerDao.whoami());
@@ -225,7 +232,9 @@ public class HibernateEventWriter implements EventWriter {
         ovent.setEventParms(EventDatabaseConstants.format(parametersString, 0));
 
         // eventCreateTime
-        // TODO: Should we use event.getCreationTime() here?
+        // TODO: We are overriding the 'eventcreatetime' field of the event with a new Date
+        // representing the storage time of the event. 'eventcreatetime' should really be
+        // renamed to something like 'eventpersisttime' since that is closer to its meaning.
         ovent.setEventCreateTime(new Date());
 
         // eventDescr

@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.dao.support;
 
+import static org.opennms.netmgt.newts.support.NewtsUtils.findResourcesWithMetricsAtDepth;
+import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
+import static org.opennms.netmgt.newts.support.NewtsUtils.toResourcePath;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,22 +41,17 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.stream.IntStream;
 
-import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
-import static org.opennms.netmgt.newts.support.NewtsUtils.toResourcePath;
-import static org.opennms.netmgt.newts.support.NewtsUtils.findResourcesWithMetricsAtDepth;
-
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
+import org.opennms.netmgt.newts.NewtsWriter;
+import org.opennms.netmgt.newts.support.NewtsUtils;
 import org.opennms.netmgt.newts.support.SearchableResourceMetadataCache;
 import org.opennms.newts.api.Context;
-import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Sample;
-import org.opennms.newts.api.Timestamp;
-import org.opennms.newts.api.ValueType;
 import org.opennms.newts.api.search.Query;
 import org.opennms.newts.api.search.SearchResults;
 import org.opennms.newts.api.search.SearchResults.Result;
@@ -87,10 +86,6 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsResourceStorageDao.class);
 
-    // Constants used when building mock samples in setStringAttribute()
-    private static final Timestamp EPOCH = Timestamp.fromEpochMillis(0);
-    private static final ValueType<?> ZERO = ValueType.compose(0, MetricType.GAUGE);
-
     @Autowired
     private Context m_context;
 
@@ -102,6 +97,9 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     @Autowired
     private CassandraIndexer m_indexer;
+
+    @Autowired
+    private NewtsWriter m_newtsWriter;
 
     @Autowired
     private SearchableResourceMetadataCache m_searchableCache;
@@ -214,11 +212,11 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
                 .put(key, value)
                 .build();
         Resource resource = new Resource(toResourceId(path), Optional.of(attributes));
-        Sample sample = new Sample(EPOCH, m_context, resource, "strings", MetricType.GAUGE, ZERO);
+        Sample sample = NewtsUtils.createSampleForIndexingStrings(m_context, resource);
 
-        // Leverage the existing interface provided by the indexer to persist the attributes.
+        // Index, but do not insert the sample(s)
         // The key/value pair specified in the attributes map will be merged with the others.
-        m_indexer.update(Lists.newArrayList(sample));
+        m_newtsWriter.index(Lists.newArrayList(sample));
     }
 
     @Override

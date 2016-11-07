@@ -28,7 +28,7 @@
 
 package org.opennms.web.enlinkd;
 
-public class IsisLinkNode {
+public class IsisLinkNode implements Comparable<IsisLinkNode>{
 	
 	private Integer m_isisCircIfIndex;
 	private String  m_isisCircAdminState;
@@ -117,6 +117,10 @@ public class IsisLinkNode {
 	public void setIsisLinkLastPollTime(String isisLinkLastPollTime) {
 		m_isisLinkLastPollTime = isisLinkLastPollTime;
 	}
+    @Override
+    public int compareTo(IsisLinkNode o) {
+        return m_isisCircIfIndex-o.m_isisCircIfIndex;
+    }
 
 
 }

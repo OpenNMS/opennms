@@ -51,6 +51,7 @@ import org.jsmiparser.smi.SmiNamedNumber;
 import org.jsmiparser.smi.SmiNotificationType;
 import org.jsmiparser.smi.SmiPrimitiveType;
 import org.jsmiparser.smi.SmiRow;
+import org.jsmiparser.smi.SmiType;
 import org.jsmiparser.smi.SmiTrapType;
 import org.jsmiparser.smi.SmiVariable;
 import org.opennms.features.mibcompiler.api.MibParser;
@@ -617,8 +618,18 @@ public class JsmiMibParser implements MibParser, Serializable {
             SmiPrimitiveType type = var.getType().getPrimitiveType();
             if (type.equals(SmiPrimitiveType.ENUM)) {
                 SortedMap<BigInteger, String> map = new TreeMap<BigInteger, String>();
-                for (SmiNamedNumber v : var.getType().getEnumValues()) {
-                    map.put(v.getValue(), v.getId());
+                SmiType t = var.getType();
+                while (t.getEnumValues() == null) {
+                  t = t.getBaseType();
+                }
+                List<SmiNamedNumber> enumValues = t.getEnumValues();
+                if (enumValues != null) {
+                    for (SmiNamedNumber v : enumValues) {
+                        map.put(v.getValue(), v.getId());
+                    }
+                } else {
+                    // This is theoretically impossible, but in case of another bug in JSMIParser, better than an NPE.
+                    map.put(new BigInteger("0"), "Unable to derive list of possible values.");
                 }
                 dbuf.append("\n");
                 for (Entry<BigInteger, String> entry : map.entrySet()) {
@@ -650,19 +661,26 @@ public class JsmiMibParser implements MibParser, Serializable {
             SmiPrimitiveType type = var.getType().getPrimitiveType();
             if (type.equals(SmiPrimitiveType.ENUM)) {
                 SortedMap<BigInteger, String> map = new TreeMap<BigInteger, String>();
-                for (SmiNamedNumber v : var.getType().getEnumValues()) {
-                    map.put(v.getValue(), v.getId());
+                SmiType t = var.getType();
+                while (t.getEnumValues() == null) {
+                  t = t.getBaseType();
                 }
-                for (Entry<BigInteger, String> entry : map.entrySet()) {
-                    if (!decode.containsKey(parmName)) {
-                        Varbindsdecode newVarbind = new Varbindsdecode();
-                        newVarbind.setParmid(parmName);
-                        decode.put(newVarbind.getParmid(), newVarbind);
+                List<SmiNamedNumber> enumValues = t.getEnumValues();
+                if (enumValues != null) {
+                    for (SmiNamedNumber v : enumValues) {
+                        map.put(v.getValue(), v.getId());
                     }
-                    Decode d = new Decode();
-                    d.setVarbinddecodedstring(entry.getValue());
-                    d.setVarbindvalue(entry.getKey().toString());
-                    decode.get(parmName).addDecode(d);
+                    for (Entry<BigInteger, String> entry : map.entrySet()) {
+                        if (!decode.containsKey(parmName)) {
+                            Varbindsdecode newVarbind = new Varbindsdecode();
+                            newVarbind.setParmid(parmName);
+                            decode.put(newVarbind.getParmid(), newVarbind);
+                        }
+                        Decode d = new Decode();
+                        d.setVarbinddecodedstring(entry.getValue());
+                        d.setVarbindvalue(entry.getKey().toString());
+                        decode.get(parmName).addDecode(d);
+                    }
                 }
             }
             vbNum++;

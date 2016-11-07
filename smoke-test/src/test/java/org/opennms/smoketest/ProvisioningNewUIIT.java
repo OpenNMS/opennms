@@ -34,6 +34,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -46,13 +47,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
-
-    /** The Constant NODE_LABEL. */
     private static final String NODE_LABEL = "localNode";
     private static final String NODE_FOREIGNID = "localNode";
     private static final String NODE_IPADDR = "127.0.0.1";
-
-    private RequisitionUtils m_requisitionUtils = new RequisitionUtils(this);
+    private static final String NODE_SERVICE = "HTTP-8980";
+    private static final String NODE_CATEGORY = "Test";
 
     /**
      * Sets up the test.
@@ -61,7 +60,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
      */
     @Before
     public void setUp() throws Exception {
-        m_requisitionUtils.deleteTestRequisition();
+        deleteTestRequisition();
         provisioningPage();
     }
 
@@ -73,7 +72,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
      */
     @After
     public void tearDown() throws Exception {
-        m_requisitionUtils.deleteTestRequisition();
+        //deleteTestRequisition();
     }
 
     /**
@@ -83,98 +82,153 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
      */
     @Test
     public void testRequisitionUI() throws Exception {
+        setImplicitWait(2, TimeUnit.SECONDS);
+
         // Add a new requisition
-        findElementByXpath("//div/button[contains(@ng-click,'add')]").click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog")));
-        enterText(By.xpath("//form/input[contains(@class,'bootbox-input')]"), REQUISITION_NAME);
+        clickId("add-requisition", false);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("form.bootbox-form > input.bootbox-input")));
+        enterText(By.cssSelector("form.bootbox-form > input.bootbox-input"), REQUISITION_NAME);
         findElementByXpath("//div/button[text()='OK']").click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[text()='" + REQUISITION_NAME + "']")));
 
         // Edit the foreign source
-        findElementByXpath("//td[text()='" + REQUISITION_NAME + "']/../td/button[contains(@ng-click,'editForeignSource')]").click();
+        final String editForeignSourceButton = "button.btn[uib-tooltip='Edit detectors and policies of the "+REQUISITION_NAME+" Requisition']";
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(editForeignSourceButton))).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("ul.nav-tabs > li > a.nav-link")));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[text()='Foreign Source Definition for Requisition " + REQUISITION_NAME + "']")));
 
         // Add a detector
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div/button[contains(@ng-click,'addDetector')]")));
-        Thread.sleep(10000); // Inducing a delay to be sure that the page and all the asynchronous operations have been executed
-        findElementByXpath("//div/button[contains(@ng-click,'addDetector')]").click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog")));
-        enterText(By.xpath("//input[@ng-model='detector.name']"), "HTTP-8980");
-        enterText(By.xpath("//input[@ng-model='detector.class']"), "HTTP");
-        findElementByXpath("//li/a/strong[text()='HTTP']").click();
-        findElementByXpath("//div[contains(@class,'modal-footer')]/button[text()='Save']").click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("add-detector")));
+        clickId("add-detector", false);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("form[name='detectorForm']")));
+        enterText(By.xpath("//form[@name='detectorForm']//input[@ng-model='detector.name']"), NODE_SERVICE);
+        enterText(By.xpath("//form[@name='detectorForm']//input[@ng-model='detector.class']"), "HTTP");
+        findElementByXpath("//form[@name='detectorForm']//ul[contains(@class, 'dropdown-menu')]/li/a/strong[text()='HTTP']").click();
+        waitForDropdownClose();
+
+        // Add a parameter to the detector
+        clickId("add-detector-parameter", false);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='paramName']")));
+        enterText(By.cssSelector("input[name='paramName']"), "po");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@title='port']"))).click();
+        enterText(By.cssSelector("input[name='paramValue']"), "8980");
+        //enterText(By.cssSelector("input[name='paramValue']"), Keys.ENTER);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("save-detector"))).click();
+        waitForModalClose();
+        enterText(By.cssSelector("input[placeholder='Search/Filter Detectors'][ng-model='filters.detector']"), "HTTP-8980");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[text()='"+NODE_SERVICE+"']")));
+
+        // Add a policy to the detector
+        findElementByCss("#tab-policies .ng-binding").click();
+        clickId("add-policy", false);
+        findElementByCss("form[name='policyForm']");
+        enterText(By.cssSelector("input#name"), "No IPs");
+        enterText(By.cssSelector("input#clazz"), "Match IP Interface");
+        enterText(By.cssSelector("input#clazz"), Keys.ENTER);
+        enterText(By.xpath("(//input[@name='paramValue'])[1]"), "DO_NOT_PERSIST");
+        enterText(By.xpath("(//input[@name='paramValue'])[1]"), Keys.ENTER);
+        enterText(By.xpath("(//input[@name='paramValue'])[2]"), "NO_PARAMETERS");
+        enterText(By.xpath("(//input[@name='paramValue'])[2]"), Keys.ENTER);
+        clickId("save-policy", false);
+        waitForModalClose();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[text()='No IPs']")));
 
         // Save foreign source definition
-        final String saveFSXpath = "//div/button[contains(@ng-click,'save')]";
-        findElementByXpath(saveFSXpath).click();
-        wait.until(ExpectedConditions.not(ExpectedConditions.visibilityOfElementLocated(By.xpath(saveFSXpath))));
+        clickId("save-foreign-source", false);
+        wait.until(ExpectedConditions.not(ExpectedConditions.visibilityOfElementLocated(By.id("save-foreign-source"))));
 
         // Go to the Requisition page
-        findElementByXpath("//div/button[contains(@ng-click,'goBack')]").click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[text()='Requisition " + REQUISITION_NAME + " (0 nodes)']")));
+        clickId("go-back", false);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[text()='Requisition " + REQUISITION_NAME + " (0 defined, 0 deployed)']")));
 
         // Add node to a requisition
-        findElementByXpath("//div/button[contains(@ng-click,'addNode')]").click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nodeLabel")));
+        clickId("add-node", false);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nodeLabel"))).clear();
         enterText(By.id("nodeLabel"), NODE_LABEL);
-        WebElement foreignId = m_driver.findElement(By.id("foreignId"));
-        foreignId.clear();
-        foreignId.sendKeys(NODE_FOREIGNID);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("foreignId"))).clear();
+        enterText(By.id("foreignId"), NODE_FOREIGNID);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("location"))).clear();
+        saveNode();
 
         // Add an IP Interface
-        findElementByXpath("//ul/li/a[text()='Interfaces']").click();
-        final String addIntfXpath = "//div/a[contains(@ng-click,'addInterface')]";
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(addIntfXpath)));
-        findElementByXpath(addIntfXpath).click();
-        final String ipAddrXpath = "//div/input[@id='ipAddress']";
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(ipAddrXpath)));
-        enterText(By.xpath(ipAddrXpath), NODE_IPADDR);
+        clickId("tab-interfaces", false);
+        findElementById("add-interface").click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("form[name='intfForm']")));
+        final By ipaddrBy = By.cssSelector("input#ipAddress");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(ipaddrBy));
+        enterText(ipaddrBy, NODE_IPADDR);
 
         // Add a service to the IP Interface
-        findElementByXpath("//div/button[contains(@ng-click,'addService')]").click();
-        final String serviceXpath = "//div/input[@ng-model='service.name']";
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(serviceXpath)));
-        enterText(By.xpath(serviceXpath), "HTTP-8980");
+        findElementById("add-service").click();
+        final By xpath = By.cssSelector("input[name='serviceName']");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(xpath));
+        Thread.sleep(100);
+        enterText(xpath, "HTTP-89");
+        findElementByXpath("//a[@title='HTTP-8980']/strong").click();
 
         // Save the IP interface
-        findElementByXpath("//div[@class='modal-footer']/button[contains(@ng-click,'save')]").click();
+        clickId("save-interface", false);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[contains(@class,'ng-binding') and text()='" + NODE_IPADDR + "']")));
 
-        // Save the node
-        final String saveNodeXpath = "//div/button[contains(@ng-click,'save')]";
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(saveNodeXpath)));
-        findElementByXpath(saveNodeXpath).click();
-        wait.until(ExpectedConditions.not(ExpectedConditions.visibilityOfElementLocated(By.xpath(saveNodeXpath))));
-        
+        // Add an asset to the node
+        clickId("tab-assets", false);
+        clickId("add-asset", false);
+        findElementByCss("form[name='assetForm']");
+        enterText(By.id("asset-name"), "countr");
+        findElementByXpath("//a[@title='country']/strong").click();
+        enterText(By.id("asset-value"), "USA");
+        clickId("save-asset", false);
+        waitForModalClose();
+
+        // Add a category to the node
+        clickId("tab-categories", false);
+        clickId("add-category", false);
+        Thread.sleep(100);
+        enterText(By.cssSelector("input[name='categoryName']"), NODE_CATEGORY);
+        findElementByXpath("//a[@title='"+NODE_CATEGORY+"']/strong").click();
+
+        saveNode();
+
         // Go to the requisition page
-        findElementByXpath("//div/button[contains(@ng-click,'goBack')]").click();
+        clickId("go-back", false);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[contains(@class,'ng-binding') and text()='" + NODE_LABEL + "']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[contains(@class,'ng-binding') and text()='" + NODE_FOREIGNID + "']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//p[contains(@class,'ng-binding') and text()='" + NODE_IPADDR + " (P)']")));
 
         // Synchronize the requisition
-        final String syncXpath = "//div/button[contains(@ng-click,'synchronize')]";
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(syncXpath)));
-        findElementByXpath(syncXpath).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog")));
-        findElementByXpath("//div/button[text()='Yes']").click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[text()='Requisition " + REQUISITION_NAME + " (1 nodes)']")));
-        
+        clickId("synchronize", false);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog button.btn.btn-success")));
+        WebElement modal = findModal();
+        modal.findElement(By.xpath("//div/button[text()='Yes']")).click();
+        waitForModalClose();
+        wait.until(new WaitForNodesInRequisition(REQUISITION_NAME, 1));
+        wait.until(new WaitForNodesInDatabase(REQUISITION_NAME, 1));
+        clickId("refresh", false);
+        clickId("refreshDeployedStats", false);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[text()='Requisition " + REQUISITION_NAME + " (1 defined, 1 deployed)']")));
+
         // Go to the requisitions page
-        findElementByXpath("//div/button[contains(@ng-click,'goBack')]").click();
+        clickId("go-back", false);
 
         // Wait until the node has been added to the database, using the ReST API
-        for (int i=0; i<5; i++) {
-            Thread.sleep(10000); // Give enough time before trying again.
-            try {
-                m_driver.get(BASE_URL + "opennms/rest/nodes/" + REQUISITION_NAME + ":" + NODE_FOREIGNID + "/ipinterfaces/" + NODE_IPADDR + "/services/ICMP");
-                WebElement e = m_driver.findElement(By.xpath("//service/serviceType/name[text()='ICMP']"));
-                if (e != null) {
-                    break;
-                }
-            } catch (Exception e) {}
+        m_driver.get(getBaseUrl() + "opennms/rest/nodes/" + REQUISITION_NAME + ":" + NODE_FOREIGNID + "/ipinterfaces/" + NODE_IPADDR + "/services/ICMP");
+        m_driver.manage().timeouts().implicitlyWait(2000, TimeUnit.MILLISECONDS);
+        try {
+            for (int i=0; i<30; i++) {
+                try {
+                    final WebElement e = m_driver.findElement(By.xpath("//service/serviceType/name[text()='ICMP']"));
+                    if (e != null) {
+                        break;
+                    }
+                } catch (Exception e) {}
+                m_driver.navigate().refresh();
+            }
+        } finally {
+            m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
         }
 
         // Open the nodes list page
-        m_driver.get(BASE_URL + "opennms/");
+        m_driver.get(getBaseUrl() + "opennms/");
         clickMenuItem("Info", "Nodes", "element/nodeList.htm");
 
         try {
@@ -193,5 +247,24 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));
         findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + NODE_IPADDR + "']");
         findElementByLink("HTTP-8980");
+    }
+
+    protected void saveNode() throws InterruptedException {
+        clickId("save-node", false);
+        wait.until(ExpectedConditions.not(ExpectedConditions.visibilityOfElementLocated(By.id("save-node"))));
+    }
+
+    protected void waitForDropdownClose() {
+        waitForClose(By.cssSelector(".modal-dialog ul.dropdown-menu"));
+    }
+
+    protected void waitForModalClose() {
+        System.err.println("waitForModalClose()");
+        waitForClose(By.cssSelector(".modal-dialog"));
+    }
+
+    protected WebElement findModal() {
+        final String xpath = "//div[contains(@class, 'modal-dialog')]";
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
     }
 }

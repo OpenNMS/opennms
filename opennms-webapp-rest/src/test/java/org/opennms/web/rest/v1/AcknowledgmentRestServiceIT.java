@@ -119,12 +119,12 @@ public class AcknowledgmentRestServiceIT extends AbstractSpringJerseyRestTestCas
 	@JUnitTemporaryDatabase
 	public void testAcknowlegeNotification() throws Exception {
 	    final Pattern p = Pattern.compile("^.*<answeredBy>(.*?)</answeredBy>.*$", Pattern.DOTALL & Pattern.MULTILINE);
-	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "notifId=1&action=ack");
+	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "notifId=1&action=ack", 200);
 	    String xml = sendRequest(GET, "/notifications/1", new HashMap<String,String>(), 200);
 	    Matcher m = p.matcher(xml);
 	    assertTrue(m.matches());
 	    assertTrue(m.group(1).equals("admin"));
-	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "notifId=1&action=unack");
+	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "notifId=1&action=unack", 200);
 	    xml = sendRequest(GET, "/notifications/1", new HashMap<String,String>(), 200);
 	    m = p.matcher(xml);
 	    assertFalse(m.matches());
@@ -134,10 +134,10 @@ public class AcknowledgmentRestServiceIT extends AbstractSpringJerseyRestTestCas
 	@JUnitTemporaryDatabase
 	public void testAcknowlegeAlarm() throws Exception {
 	    final Pattern p = Pattern.compile("^.*<ackTime>(.*?)</ackTime>.*$", Pattern.DOTALL & Pattern.MULTILINE);
-	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=ack");
+	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=ack", 200);
 
-	    // Try to fetch a non-existent ack, get 204 No Content
-	    String xml = sendRequest(GET, "/acks/999999", 204);
+	    // Try to fetch a non-existent ack, get 404 Not Found
+	    String xml = sendRequest(GET, "/acks/999999", 404);
 
 	    xml = sendRequest(GET, "/acks/count", 200);
 	    // {@link DatabasePopulator} adds one ack so we have 2 total
@@ -169,13 +169,13 @@ public class AcknowledgmentRestServiceIT extends AbstractSpringJerseyRestTestCas
 	    Matcher m = p.matcher(xml);
 	    assertTrue(m.matches());
 	    assertTrue(m.group(1).length() > 0);
-	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=unack");
+	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=unack", 200);
 	    xml = sendRequest(GET, "/alarms/1", new HashMap<String,String>(), 200);
 	    m = p.matcher(xml);
 	    assertFalse(m.matches());
 
 	    // POST with no argument, this will ack by default
-	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1");
+	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1", 200);
 	    xml = sendRequest(GET, "/alarms/1", new HashMap<String,String>(), 200);
 	    m = p.matcher(xml);
 	    assertTrue(m.matches());

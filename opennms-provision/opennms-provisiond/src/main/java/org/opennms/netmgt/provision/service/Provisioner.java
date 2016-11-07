@@ -45,11 +45,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
@@ -58,6 +60,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
@@ -71,6 +74,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+
+import com.google.common.collect.Maps;
 
 /**
  * Massively Parallel Java Provisioning <code>ServiceDaemon</code> for OpenNMS.
@@ -88,7 +93,7 @@ public class Provisioner implements SpringServiceDaemon {
     /** Constant <code>NAME="Provisiond"</code> */
     public static final String NAME = "Provisiond";
 
-    private DefaultTaskCoordinator m_taskCoordinator;
+    private TaskCoordinator m_taskCoordinator;
     private CoreImportActivities m_importActivities;
     private LifeCycleRepository m_lifeCycleRepository;
     private ProvisionService m_provisionService;
@@ -101,6 +106,9 @@ public class Provisioner implements SpringServiceDaemon {
     
     @Autowired
     private ProvisioningAdapterManager m_manager;
+
+    @Autowired
+    private MonitoringSystemDao monitoringSystemDao;
     
     private ImportScheduler m_importSchedule;
 
@@ -163,7 +171,7 @@ public class Provisioner implements SpringServiceDaemon {
      *
      * @param taskCoordinator the taskCoordinator to set
      */
-    public void setTaskCoordinator(DefaultTaskCoordinator taskCoordinator) {
+    public void setTaskCoordinator(TaskCoordinator taskCoordinator) {
         m_taskCoordinator = taskCoordinator;
     }
     
@@ -262,11 +270,12 @@ public class Provisioner implements SpringServiceDaemon {
      * @param nodeId a {@link java.lang.Integer} object.
      * @param foreignSource a {@link java.lang.String} object.
      * @param foreignId a {@link java.lang.String} object.
+     * @param location a {@link org.opennms.netmgt.model.monitoringLocation.OnmsMonitoringLocation} object.
      * @return a {@link org.opennms.netmgt.provision.service.NodeScan} object.
      */
-    public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId) {
+    public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location) {
         LOG.info("createNodeScan called");
-        return new NodeScan(nodeId, foreignSource, foreignId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
+        return new NodeScan(nodeId, foreignSource, foreignId, location, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
     }
 
     /**
@@ -275,9 +284,9 @@ public class Provisioner implements SpringServiceDaemon {
      * @param ipAddress a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.provision.service.NewSuspectScan} object.
      */
-    public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource) {
+    public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource, String location) {
         LOG.info("createNewSuspectScan called with IP: "+ipAddress+ "and foreignSource"+foreignSource == null ? "null" : foreignSource);
-        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource);
+        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource, location);
     }
 
     /**
@@ -320,7 +329,7 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     private ScheduledFuture<?> scheduleNodeScan(NodeScanSchedule schedule) {
-        NodeScan nodeScan = createNodeScan(schedule.getNodeId(), schedule.getForeignSource(), schedule.getForeignId());
+        NodeScan nodeScan = createNodeScan(schedule.getNodeId(), schedule.getForeignSource(), schedule.getForeignId(), schedule.getLocation());
         LOG.warn("nodeScan = {}", nodeScan);
         return nodeScan.schedule(m_scheduledExecutor, schedule);
     }
@@ -581,24 +590,13 @@ public class Provisioner implements SpringServiceDaemon {
         m_scheduledExecutor.execute(r);
     }
     
-    /**
-     * <p>handleNewSuspectEvent</p>
-     *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     @EventHandler(uei = EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
     public void handleNewSuspectEvent(Event e) {
-        
+        final Event event = e;
         final String uei = e.getUei();
         final String ip = e.getInterface();
-        
-        String foreignSource = null;
-        List<Parm> parmCollection = e.getParmCollection();
-        for (Parm parm : parmCollection) {
-			if (parm.getParmName().equals("foreignSource")) {
-				foreignSource = parm.getValue().getContent();
-			}
-		}
+        final Map<String, String> paramMap = Maps.newHashMap();
+        e.getParmCollection().forEach(eachParam -> paramMap.put(eachParam.getParmName(), eachParam.getValue().getContent()));
 
         if (ip == null) {
             LOG.error("Received a {} event with a null ipAddress", uei);
@@ -610,7 +608,6 @@ public class Provisioner implements SpringServiceDaemon {
             return;
         }
 
-        final String fs = foreignSource;
         Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -620,7 +617,15 @@ public class Provisioner implements SpringServiceDaemon {
                     	LOG.error("Unable to convert {} to an InetAddress.", ip);
                     	return;
                     }
-                    NewSuspectScan scan = createNewSuspectScan(addr, fs);
+
+                    final String location;
+                    if (paramMap.containsKey("location")) {
+                        location = paramMap.get("location");
+                    } else {
+                        location = monitoringSystemDao.get(event.getDistPoller()).getLocation();
+                    }
+
+                    NewSuspectScan scan = createNewSuspectScan(addr, paramMap.get("foreignSource"), location);
                     Task t = scan.createTask();
                     t.schedule();
                     t.waitFor();
@@ -773,18 +778,22 @@ public class Provisioner implements SpringServiceDaemon {
             }
         }
     }
-    
+
+    /**
+     * @param ipAddr
+     * @param nodeLabel
+     */
     private void doAddNode(String ipAddr, String nodeLabel) {
 
         OnmsNode node = new OnmsNode();
         node.setLabel(nodeLabel);
-        
+
         OnmsIpInterface iface = new OnmsIpInterface(addr(ipAddr), node);
         iface.setIsManaged("M");
         iface.setPrimaryString("N");
-        
+
         m_provisionService.insertNode(node);
-        
+
     }
 
     /**

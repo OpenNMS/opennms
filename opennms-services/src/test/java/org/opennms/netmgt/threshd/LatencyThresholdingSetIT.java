@@ -72,6 +72,7 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -108,7 +109,6 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
 
     private static final Logger LOG = LoggerFactory.getLogger(LatencyThresholdingSetIT.class);
 
-    private EventAnticipator m_anticipator;
     private FileAnticipator m_fileAnticipator;
     private List<Event> m_anticipatedEvents;
     private MockDatabase m_db;
@@ -222,10 +222,6 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         FilterDaoFactory.setInstance(filterDao);
         EasyMock.replay(filterDao);
 
-        // Add an EventAnticipator to the EventIpcManager
-        m_anticipator = new EventAnticipator();
-        m_eventIpcManager.setEventAnticipator(m_anticipator);
-
         DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<outages>");
@@ -259,7 +255,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         m_fileAnticipator.deleteExpected();
         m_fileAnticipator.tearDown();
         m_anticipatedEvents.clear();
-        m_anticipator.reset();
+        m_eventIpcManager.reset();
     }
 
     /*
@@ -281,7 +277,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
             triggerEvents.addAll(thresholdingSet.applyThresholds("http", attributes));
         assertTrue(triggerEvents.size() == 1);
 
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, IfLabel.NO_IFLABEL, "127.0.0.1[http]", "http", IfLabel.NO_IFLABEL, null, m_anticipator, m_anticipatedEvents);
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, IfLabel.NO_IFLABEL, "127.0.0.1[http]", "http", IfLabel.NO_IFLABEL, null, m_eventIpcManager.getEventAnticipator(), m_anticipatedEvents);
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.sendAllEvents();
@@ -307,12 +303,12 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
             attributes.put("ping" + i, 2 * i);
         }
         attributes.put("loss", 60.0);
-        attributes.put("response-time", 100.0);
         attributes.put("median", 100.0);
+        attributes.put(PollStatus.PROPERTY_RESPONSE_TIME, 100.0);
         assertTrue(thresholdingSet.hasThresholds(attributes));
         List<Event> triggerEvents = thresholdingSet.applyThresholds("StrafePing", attributes);
         assertTrue(triggerEvents.size() == 1);
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "StrafePing", 1, 50.0, 25.0, 60.0, ifName, "127.0.0.1[StrafePing]", "loss", "eth0", null, m_anticipator, m_anticipatedEvents);
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "StrafePing", 1, 50.0, 25.0, 60.0, ifName, "127.0.0.1[StrafePing]", "loss", "eth0", null, m_eventIpcManager.getEventAnticipator(), m_anticipatedEvents);
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.sendAllEvents();
@@ -364,8 +360,8 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         }
 
         // Validate Events
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString(), m_anticipator, m_anticipatedEvents);
-        addEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 40.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString(), m_anticipator, m_anticipatedEvents);
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString(), m_eventIpcManager.getEventAnticipator(), m_anticipatedEvents);
+        addEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 40.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString(), m_eventIpcManager.getEventAnticipator(), m_anticipatedEvents);
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.add(rearmEvents);
@@ -483,7 +479,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
 
     private void verifyEvents(int remainEvents) {
         if (remainEvents == 0) {
-            List<Event> receivedList = m_anticipator.getAnticipatedEventsRecieved();
+            List<Event> receivedList = new ArrayList<>(m_eventIpcManager.getEventAnticipator().getAnticipatedEventsReceived());
             
             Collections.sort(receivedList, EVENT_COMPARATOR);
             Collections.sort(m_anticipatedEvents, EVENT_COMPARATOR);
@@ -500,7 +496,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
                 compareEvents(m_anticipatedEvents.get(i), receivedList.get(i));
             }
         }
-        m_anticipator.verifyAnticipated(0, 0, 0, remainEvents, 0);
+        m_eventIpcManager.getEventAnticipator().verifyAnticipated(0, 0, 0, remainEvents, 0);
     }
     
     private static void compareEvents(Event anticipated, Event received) {

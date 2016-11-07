@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,7 +43,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.io.File"
+	import="java.io.File,org.opennms.web.api.HtmlInjectHandler"
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -62,7 +62,7 @@
 
     <footer id="footer">
       <p>
-        OpenNMS <a href="support/about.jsp">Copyright</a> &copy; 2002-2015
+        OpenNMS <a href="support/about.jsp">Copyright</a> &copy; 2002-2016
         <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
         OpenNMS&reg; is a registered trademark of
         <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
@@ -89,6 +89,9 @@
      header), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
 <%= "</div>" %><!-- id="content" class="container-fluid" -->
+
+<%-- Allows services exposed via the OSGi registry to inject HTML content --%>
+<%= HtmlInjectHandler.inject( request ) %>
 
 <%-- The </body> and </html> tags are unmatched in this file (the matching
      tags are in the header), so we hide them in JSP code fragments so the

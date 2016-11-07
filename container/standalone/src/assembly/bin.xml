@@ -37,7 +37,6 @@
 
                 <!-- Exclude etc files that we are providing replacements for -->
                 <exclude>etc/custom.properties</exclude>
-                <exclude>etc/startup.properties</exclude>
                 <exclude>etc/system.properties</exclude>
                 <exclude>etc/users.properties</exclude>
                 <exclude>etc/org.apache.karaf.features.cfg</exclude>
@@ -89,7 +88,7 @@
         </file>
         <file>
             <source>${basedir}/target/classes/features.xml</source>
-            <outputDirectory>system/org/opennms/container/${project.groupId}.${project.artifactId}/${project.version}</outputDirectory>
+            <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
             <destName>${project.artifactId}-${project.version}-features.xml</destName>
             <lineEnding>unix</lineEnding>
         </file>

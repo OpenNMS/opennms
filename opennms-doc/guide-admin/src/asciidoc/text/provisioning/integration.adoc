@@ -4,7 +4,7 @@
 
 === Integrating with Provisiond
 
-The ReST API should be used for integration from other provisioning systems with OpenNMS.
+The ReST API should be used for integration from other provisioning systems with {opennms-product-name}.
 The ReST API provides an interface for defining foreign sources and requisitions.
 
 ==== Provisioning Groups of Nodes
@@ -67,7 +67,7 @@ NOTE: The current API doesn’t strictly follow the ReST design guidelines and w
 ===== Step 2 - Update the SNMP configuration
 
 The implementation only supports a _PUT_ request because it is an implied "Update" of the configuration since it requires an IP address and all IPs have a default configuration.
-This request is is passed to the SNMP configuration factory in OpenNMS for optimization of the configuration store `snmp-config.xml`.
+This request is is passed to the SNMP configuration factory in {opennms-product-name} for optimization of the configuration store `snmp-config.xml`.
 This example changes the community string for the IP address 10.1.1.1 to `yRuSonoZ`.
 
 NOTE: Community string is the only required element
@@ -90,7 +90,7 @@ In the following example, the ReST API will automatically create a provisioning 
 curl -X POST -H "Content-Type: application/xml" -d "<?xml version="1.0" encoding="UTF-8"?><model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2009-03-07T17:56:53.123-05:00" last-import="2009-03-07T17:56:53.117-05:00" foreign-source="customer-a"><node node-label="p-brane" foreign-id="1" ><interface ip-addr="10.0.1.3" descr="en1" status="1" snmp-primary="P"><monitored-service service-name="ICMP"/><monitored-service service-name="SNMP"/></interface><category name="Production"/><category name="Routers"/></node><node node-label="m-brane" foreign-id="1" ><interface ip-addr="10.0.1.4" descr="en1" status="1" snmp-primary="P"><monitored-service service-name="ICMP"/><monitored-service service-name="SNMP"/></interface><category name="Production"/><category name="Routers"/></node></model-import>" -u admin:admin http://localhost:8980/opennms/rest/requisitions
 ----
 
-A provisioning group file called `etc/imports/customer-a.xml` will be found on the OpenNMS system following the successful completion of this `curl` command and will also be visible via the WebUI.
+A provisioning group file called `etc/imports/customer-a.xml` will be found on the {opennms-product-name} system following the successful completion of this `curl` command and will also be visible via the WebUI.
 
 NOTE: _Add_, _Update_, _Delete_ operations are handled via the ReST API in the same manner as described in detailed specification.
 

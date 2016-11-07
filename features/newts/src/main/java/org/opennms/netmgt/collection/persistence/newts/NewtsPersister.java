@@ -33,16 +33,15 @@ import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.PersistException;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.dao.support.NewtsResourceStorageDao;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.newts.NewtsWriter;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.newts.api.Context;
 
 /**
  * Newts persistence strategy.
  *
- * Numeric attributes are collected and persisted via {@link org.opennms.netmgt.collection.persistence.newts.NewtsPersistOperationBuilder}.
- * String attributes are persisted via {@link org.opennms.netmgt.dao.support.NewtsResourceStorageDao}.
+ * Both string and numeric attributes are persisted via {@link org.opennms.netmgt.collection.persistence.newts.NewtsPersistOperationBuilder}.
  *
  * @author jwhite
  */
@@ -50,18 +49,14 @@ public class NewtsPersister extends AbstractPersister {
 
     private final RrdRepository m_repository;
     private final NewtsWriter m_newtsWriter;
-    private final NewtsResourceStorageDao m_resourceStorageDao;
+    private final Context m_context;
+    private NewtsPersistOperationBuilder m_builder;
 
-    protected NewtsPersister(ServiceParameters params, RrdRepository repository, NewtsWriter newtsWriter, NewtsResourceStorageDao resourceStorageDao) {
+    protected NewtsPersister(ServiceParameters params, RrdRepository repository, NewtsWriter newtsWriter, Context context) {
         super(params, repository);
         m_repository = repository;
         m_newtsWriter = newtsWriter;
-        m_resourceStorageDao = resourceStorageDao;
-    }
-
-    @Override
-    protected void persistStringAttribute(ResourcePath path, String key, String value) throws PersistException {
-        m_resourceStorageDao.setStringAttribute(path, key, value);
+        m_context = context;
     }
 
     /** {@inheritDoc} */
@@ -71,12 +66,17 @@ public class NewtsPersister extends AbstractPersister {
         if (shouldPersist()) {
             // Set the builder before any calls to persistNumericAttribute are made
             CollectionResource resource = group.getResource();
-            NewtsPersistOperationBuilder builder  = new NewtsPersistOperationBuilder(m_newtsWriter, m_repository, resource, group.getName());
+            m_builder = new NewtsPersistOperationBuilder(m_newtsWriter, m_context, m_repository, resource, group.getName());
             if (resource.getTimeKeeper() != null) {
-                builder.setTimeKeeper(resource.getTimeKeeper());
+                m_builder.setTimeKeeper(resource.getTimeKeeper());
             }
-            setBuilder(builder);
+            setBuilder(m_builder);
         }
+    }
+
+    @Override
+    protected void persistStringAttribute(ResourcePath path, String key, String value) throws PersistException {
+        m_builder.persistStringAttribute(path, key, value);
     }
 
     /** {@inheritDoc} */

@@ -3,7 +3,7 @@ package org.opennms.features.resourcemgnt.commands;
 import org.kohsuke.args4j.Argument;
 import org.opennms.features.resourcemgnt.ResourceCli;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.web.rest.v1.ResourceDTO;
+import org.opennms.netmgt.model.resource.ResourceDTO;
 
 import java.util.Map;
 

@@ -28,15 +28,15 @@
 
 package org.opennms.features.amqp.eventforwarder;
 
-import org.apache.camel.util.KeyValueHolder;
-
 import java.util.Dictionary;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.camel.BeanInject;
-import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
+import org.apache.camel.util.KeyValueHolder;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
@@ -52,7 +52,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author jwhite
  */
 @Ignore
-public class AMQPEventForwarderBlueprintTest extends CamelBlueprintTestSupport {
+public class AMQPEventForwarderBlueprintTest extends CamelBlueprintTest {
 
     @BeanInject
     protected ForwardingEventListener forwardingEventListener;
@@ -62,9 +62,8 @@ public class AMQPEventForwarderBlueprintTest extends CamelBlueprintTestSupport {
         return "OSGI-INF/blueprint/blueprint-event-forwarder.xml";
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    protected String useOverridePropertiesWithConfigAdmin(Dictionary props) {
+    protected String setConfigAdminInitialConfiguration(Properties props) {
         props.put("destination", "mock:destination");
      
         // Return the PID

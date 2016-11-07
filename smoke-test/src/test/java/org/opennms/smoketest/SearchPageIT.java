@@ -28,35 +28,44 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SearchPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
+        deleteTestRequisition();
         searchPage();
     }
 
     @Test
     public void testAllTextIsPresent() throws Exception {
+        assertEquals(3, countElementsMatchingCss("h3.panel-title"));
         findElementByXpath("//h3[text()='Search for Nodes']");
         findElementByXpath("//h3[text()='Search Asset Information']");
         findElementByXpath("//h3[text()='Search Options']");
     }
 
     @Test 
-    public void testAllFormsArePresent() throws InterruptedException {
+    public void testAllFormsArePresent() throws Exception {
+        assertEquals(10, countElementsMatchingCss("form"));
         for (final String matchingElement : new String[] {
-                "input[@name='nodename']",
-                "input[@name='iplike']",
-                "input[@name='snmpParmValue']",
-                "select[@name='service']",
+                "input[@id='byname_nodename']",
+                "input[@id='byip_iplike']",
+                "select[@name='mib2Parm']",
+                "select[@name='snmpParm']",
+                "select[@id='bymonitoringLocation_monitoringLocation']",
+                "select[@id='byservice_service']",
                 "input[@name='maclike']",
                 "input[@name='foreignSource']"
-
         }) {
             findElementByXpath("//form[@action='element/nodeList.htm']//" + matchingElement);
         }
@@ -80,4 +89,11 @@ public class SearchPageIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[text()='Assets']");
     }
 
+    @Test
+    public void testSearchMacAddress() throws Exception {
+        final WebElement maclike = enterText(By.cssSelector("input[name='maclike']"), "0");
+        maclike.sendKeys(Keys.ENTER);
+        findElementByXpath("//div[@id='content']/ol/li[text()='Node List']");
+        findElementByXpath("//h3[@class='panel-title']/span[text()='Nodes']");
+    }
 }

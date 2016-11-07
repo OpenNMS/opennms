@@ -1,4 +1,4 @@
-<discovery-configuration threads="1" packets-per-second="1"
+<discovery-configuration packets-per-second="1"
 	initial-sleep-time="30000" restart-sleep-time="86400000"
 	retries="1" timeout="2000">
 

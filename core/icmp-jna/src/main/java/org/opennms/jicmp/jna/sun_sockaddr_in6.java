@@ -30,6 +30,8 @@ package org.opennms.jicmp.jna;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
 
 import com.sun.jna.Structure;
 
@@ -61,7 +63,18 @@ public class sun_sockaddr_in6 extends Structure {
              address.getAddress(), 
              new byte[] {(byte)(0xff & (port >> 8)), (byte)(0xff & port)});
     }
-    
+
+    public sun_sockaddr_in6(final int port) {
+        this(NativeDatagramSocket.AF_INET6, 
+             new byte[16], 
+             new byte[] {(byte)(0xff & (port >> 8)), (byte)(0xff & port)});
+    }
+
+    @Override
+    protected List<String> getFieldOrder() {
+        return Arrays.asList(new String[] {"sin6_family", "sin6_port", "sin6_flowinfo", "sin6_addr", "sin6_scope_id", "__sin6_src_id"});
+    }
+
     private void assertLen(String field, byte[] addr, int len) {
         if (addr.length != len) {
             throw new IllegalArgumentException(field+" length must be "+len+" bytes but was " + addr.length + " bytes.");

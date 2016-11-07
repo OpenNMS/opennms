@@ -46,7 +46,7 @@ import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.api.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -68,7 +68,7 @@ public class FindTopLevelResourcesTest {
     private NodeDao m_nodeDao;
     private LocationMonitorDao m_locationMonitorDao;
     private CollectdConfigFactory m_collectdConfig;
-    private DataCollectionConfigDao m_dataCollectionConfigDao;
+    private ResourceTypesDao m_resourceTypesDao;
     private DefaultResourceDao m_resourceDao;
     private FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
 
@@ -85,7 +85,7 @@ public class FindTopLevelResourcesTest {
         m_easyMockUtils = new EasyMockUtils();
         m_nodeDao = m_easyMockUtils.createMock(NodeDao.class);
         m_locationMonitorDao = m_easyMockUtils.createMock(LocationMonitorDao.class);
-        m_dataCollectionConfigDao = m_easyMockUtils.createMock(DataCollectionConfigDao.class);
+        m_resourceTypesDao = m_easyMockUtils.createMock(ResourceTypesDao.class);
         m_filterDao = m_easyMockUtils.createMock(FilterDao.class);
 
         FilterDaoFactory.setInstance(m_filterDao);
@@ -107,7 +107,7 @@ public class FindTopLevelResourcesTest {
         m_resourceDao.setNodeDao(m_nodeDao);
         m_resourceDao.setLocationMonitorDao(m_locationMonitorDao);
         m_resourceDao.setCollectdConfig(m_collectdConfig);
-        m_resourceDao.setDataCollectionConfigDao(m_dataCollectionConfigDao);
+        m_resourceDao.setResourceTypesDao(m_resourceTypesDao);
         m_resourceDao.setResourceStorageDao(m_resourceStorageDao);
     }
 
@@ -146,8 +146,8 @@ public class FindTopLevelResourcesTest {
         OnmsNode n2 = createNode(2, "node2", null, null, "10.0.0.2"); // Node on the DB with No RRD Data
         nodes.add(n2);
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
-        expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
+        expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         expect(m_nodeDao.findAll()).andReturn(nodes);
 
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
@@ -213,8 +213,8 @@ public class FindTopLevelResourcesTest {
         OnmsNode n3 = createNode(3, "node3", foreignSource, "node3", "10.0.0.3"); // Node on the DB with No RRD Data or Response Time
         nodes.add(n3);
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
-        expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
+        expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         expect(m_nodeDao.findAll()).andReturn(nodes);
 
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
@@ -269,23 +269,14 @@ public class FindTopLevelResourcesTest {
         List<OnmsResource> children = resources.get(0).getChildResources();
         Collections.sort(children);
         Assert.assertEquals(2, children.size());
-        if (storeByForeignSource) {
-            Assert.assertEquals("nodeSource[Junit%3Anode1].responseTime[10.0.0.1]", children.get(0).getId());
-            Assert.assertEquals("nodeSource[Junit%3Anode1].nodeSnmp[]", children.get(1).getId());
-        } else {
-            Assert.assertEquals("node[1].responseTime[10.0.0.1]", children.get(0).getId());
-            Assert.assertEquals("node[1].nodeSnmp[]", children.get(1).getId());
-        }
+        Assert.assertEquals("node[Junit%3Anode1].responseTime[10.0.0.1]", children.get(0).getId());
+        Assert.assertEquals("node[Junit%3Anode1].nodeSnmp[]", children.get(1).getId());
 
         // Node 2
         children = resources.get(1).getChildResources();
         Collections.sort(children);
         Assert.assertEquals(1, children.size());
-        if (storeByForeignSource) {
-            Assert.assertEquals("nodeSource[Junit%3Anode2].nodeSnmp[]", children.get(0).getId());
-        } else {
-            Assert.assertEquals("node[2].nodeSnmp[]", children.get(0).getId());
-        }
+        Assert.assertEquals("node[Junit%3Anode2].nodeSnmp[]", children.get(0).getId());
 
         m_easyMockUtils.verifyAll();
     }
@@ -322,8 +313,8 @@ public class FindTopLevelResourcesTest {
         OnmsNode n4 = createNode(4, "node4", foreignSource, "node4", "10.0.0.4"); // Requisitioned node on the DB with RRD Data
         nodes.add(n4);
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
-        expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
+        expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         expect(m_nodeDao.findAll()).andReturn(nodes);
 
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
@@ -378,38 +369,20 @@ public class FindTopLevelResourcesTest {
         Collections.sort(resources);
         Assert.assertEquals(2, resources.size());
 
-        if (storeByForeignSource) {
-            OnmsResource r1 = resources.get(0); // parent resource for the provisioned node 
-            List<OnmsResource> children1 = r1.getChildResources();
-            Collections.sort(children1);
-            Assert.assertEquals("nodeSource[Junit%3Anode2]", r1.getId());
-            Assert.assertEquals("nodeSource[Junit%3Anode2].responseTime[10.0.0.2]", children1.get(0).getId());
-            Assert.assertEquals("nodeSource[Junit%3Anode2].nodeSnmp[]", children1.get(1).getId());
+        OnmsResource r1 = resources.get(0); // parent resource for the discovered node
+        Assert.assertEquals("node[1]", r1.getId());
+        List<OnmsResource> children2 = r1.getChildResources();
+        Collections.sort(children2);
+        Assert.assertEquals(2, children2.size());
+        Assert.assertEquals("node[1].responseTime[10.0.0.1]", children2.get(0).getId());
+        Assert.assertEquals("node[1].nodeSnmp[]", children2.get(1).getId());
 
-            OnmsResource r2 = resources.get(1); // parent resource for the discovered node
-            Assert.assertEquals("node[1]", r2.getId());
-            List<OnmsResource> children2 = r2.getChildResources();
-            Collections.sort(children2);
-            Assert.assertEquals(2, children2.size());
-            Assert.assertEquals("node[1].responseTime[10.0.0.1]", children2.get(0).getId());
-            Assert.assertEquals("node[1].nodeSnmp[]", children2.get(1).getId());
-
-        } else {
-            OnmsResource r1 = resources.get(1); // parent resource for the provisioned node 
-            List<OnmsResource> children1 = r1.getChildResources();
-            Collections.sort(children1);
-            Assert.assertEquals("node[2]", r1.getId());
-            Assert.assertEquals("node[2].responseTime[10.0.0.2]", children1.get(0).getId());
-            Assert.assertEquals("node[2].nodeSnmp[]", children1.get(1).getId());
-
-            OnmsResource r2 = resources.get(0); // parent resource for the discovered node
-            Assert.assertEquals("node[1]", r2.getId());
-            List<OnmsResource> children2 = r2.getChildResources();
-            Collections.sort(children2);
-            Assert.assertEquals(2, children2.size());
-            Assert.assertEquals("node[1].responseTime[10.0.0.1]", children2.get(0).getId());
-            Assert.assertEquals("node[1].nodeSnmp[]", children2.get(1).getId());
-        }
+        OnmsResource r2 = resources.get(1); // parent resource for the provisioned node 
+        List<OnmsResource> children1 = r2.getChildResources();
+        Collections.sort(children1);
+        Assert.assertEquals("node[Junit%3Anode2]", r2.getId());
+        Assert.assertEquals("node[Junit%3Anode2].responseTime[10.0.0.2]", children1.get(0).getId());
+        Assert.assertEquals("node[Junit%3Anode2].nodeSnmp[]", children1.get(1).getId());
 
         m_easyMockUtils.verifyAll();
     }

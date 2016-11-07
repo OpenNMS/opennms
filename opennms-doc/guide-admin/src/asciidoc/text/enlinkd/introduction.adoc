@@ -6,12 +6,12 @@ _Enhanced Linkd (Enlinkd)_ has been designed to discover connections between nod
 _Enlinkd_ gathers this data on a regular interval and creates a snapshot of a device's neighbors from its perspective.
 The connections discovered by _Enlinkd_ are called _Links_.
 The term _Link_, within the context of _Enlinkd_, is not synonymous with the term "link" when used with respect to the network OSI _Layer 2_ domain, whereby a link only indicates a _Layer 2_ connection.
-A _Link_ in context of _Enlinkd_ is a more abstract concept and is used to describe any connection between two _OpenNMS Nodes_.
+A _Link_ in context of _Enlinkd_ is a more abstract concept and is used to describe any connection between two _{opennms-product-name} Nodes_.
 These _Links_ are discovered based on information provided by an agent's understanding of connections at the OSI _Layer 2_, _Layer 3_, or other OSI layers.
 
 The following sections describe the _Enlinkd_ daemon and its configuration.
 Additionally, the supported _Link discovery_ implementations will be described as well as a list of the SNMP MIBs that the SNMP agents must expose in order for _EnLinkd_ to gather _Links_ between _Nodes_.
-FYI: Detailed information about a node's connections (discovered _Links_) and supporting link data can be seen on the _Node detail page_ within the _OpenNMS_ Web-UI.
+FYI: Detailed information about a node's connections (discovered _Links_) and supporting link data can be seen on the _Node detail page_ within the _{opennms-product-name}_ Web-UI.
 
 [[ga-enlinkd-daemon]]
 === Enlinkd Daemon
@@ -52,7 +52,7 @@ During the _Link_ discovery process informational and error output is logged to 
 |===
 | Attribute              | Type      | Default    | Description
 | `threads`              | _Integer_ | `5`        | Number of parallel threads used to discover the topology.
-| `initial_sleep_time`   | _Integer_ | `60000`    | Time in milliseconds to wait for discovering the topology after OpenNMS is started.
+| `initial_sleep_time`   | _Integer_ | `60000`    | Time in milliseconds to wait for discovering the topology after {opennms-product-name} is started.
 | `rescan_interval`      | _Integer_ | `86400000` | Interval to rediscover and update the topology in milliseconds.
 | `use-cdp-discovery`    | _Boolean_ | `true`     | Enable or disable topology discovery based on _CDP_ information.
 | `use-bridge-discovery` | _Boolean_ | `true`     | Enable or disable algorithm to discover the topology based on the _Bridge MIB_ information.

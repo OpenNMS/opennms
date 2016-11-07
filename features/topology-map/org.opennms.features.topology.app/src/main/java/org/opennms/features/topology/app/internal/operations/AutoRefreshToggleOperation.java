@@ -28,12 +28,15 @@
 
 package org.opennms.features.topology.app.internal.operations;
 
-import org.opennms.features.topology.api.*;
-import org.opennms.features.topology.api.topo.VertexRef;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.opennms.features.topology.api.AbstractCheckedOperation;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.TopologyUI;
 
 public class AutoRefreshToggleOperation extends AbstractCheckedOperation {
 
@@ -61,8 +64,8 @@ public class AutoRefreshToggleOperation extends AbstractCheckedOperation {
     }
 
     @Override
-    public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
-       return toggle(operationContext.getGraphContainer());
+    public void execute(final List<VertexRef> targets, final OperationContext operationContext) {
+       toggle(operationContext.getGraphContainer());
     }
 
     @Override
@@ -78,17 +81,9 @@ public class AutoRefreshToggleOperation extends AbstractCheckedOperation {
         }
     }
 
-    private static Undoer toggle(final GraphContainer container) {
+    private static void toggle(final GraphContainer container) {
         if (container.hasAutoRefreshSupport()) {
             container.getAutoRefreshSupport().toggle();
-            container.redoLayout();
         }
-
-        return new Undoer() {
-            @Override
-            public void undo(OperationContext operationContext) {
-                toggle(operationContext.getGraphContainer()); // toggle again
-            }
-        };
     }
 }

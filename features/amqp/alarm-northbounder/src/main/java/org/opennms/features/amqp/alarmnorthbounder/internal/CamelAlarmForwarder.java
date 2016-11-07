@@ -28,8 +28,14 @@
 
 package org.opennms.features.amqp.alarmnorthbounder.internal;
 
+import org.apache.camel.InOnly;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 
+/**
+ * This interface must be {@link InOnly} in order for alarm forwarding to
+ * be performed asynchronously.
+ */
+@InOnly
 public interface CamelAlarmForwarder {
     public void sendNow(NorthboundAlarm alarm);
 }

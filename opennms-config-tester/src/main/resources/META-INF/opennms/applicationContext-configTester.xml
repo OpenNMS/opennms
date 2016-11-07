@@ -33,7 +33,7 @@
         <entry key="availability-reports.xml" value="onmsReportConfigDao"/>
         <entry key="categories.xml" value="categoryFactory"/>
         <entry key="chart-configuration.xml" value="chartConfigFactory"/>
-        <!-- <entry key="collectd-configuration.xml" value="collectdConfigFactory"/>--><!-- database access -->
+        <entry key="collectd-configuration.xml" value="collectdConfigFactory"/>
         <entry key="database-reports.xml" value="databaseReportConfigDao"/>
         <entry key="database-schema.xml" value="databaseSchemaConfigFactory"/>
         <entry key="datacollection-config.xml" value="dataCollectionConfigDao"/>
@@ -43,6 +43,7 @@
         <entry key="eventconf.xml" value="eventConfDao"/>
         <entry key="eventd-configuration.xml" value="eventdConfigFactory"/>
         <entry key="exclude-ueis.properties" value="excludeUeisProperties"/>
+        <entry key="email-northbounder-configuration.xml" value="emailNorthbounderConfigDao"/>
         <entry key="groups.xml" value="groupFactory"/>
         <entry key="http-datacollection-config.xml" value="httpCollectionConfigFactory"/>
         <entry key="jasper-reports.xml" value="jasperReportConfigDao"/>
@@ -50,15 +51,13 @@
         <entry key="javamail-configuration.xml" value="javamailConfigurationDao"/>
         <entry key="jdbc-datacollection-config.xml" value="jdbcDataCollectionConfigDao"/>
         <entry key="jmx-config.xml" value="jmxConfigDao"/>
-        <entry key="jms-northbounder-configuration.xml" value="jmsNorthbounderConfigDao"/>
-        <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigFactory"/>
+        <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigDao"/>
         <entry key="ksc-performance-reports.xml" value="kscReportFactory"/>
-        <entry key="magic-users.properties" value="userDao"/>
         <entry key="microblog-configuration.xml" value="microblogConfigurationDao"/>
         <!--  <entry key="modemConfig.properties" value="unknown"/> -->
         <entry key="notifd-configuration.xml" value="notifdConfigFactory"/>
         <entry key="notificationCommands.xml" value="notificationCommandFactory"/>
-        <!-- <entry key="notifications.xml" value="notificationFactory"/> --><!-- database access -->
+        <entry key="notifications.xml" value="notificationFactory"/>
         <!-- <entry key="nsclient-config.xml" value="nsClientPeerFactory"/> -->
         <!-- <entry key="nsclient-datacollection-config.xml" value="nsClientDataCollectionConfigFactory"/> -->
         <entry key="opennms-datasources.xml" value="dataSourceTester"/>
@@ -67,7 +66,7 @@
         <!-- <entry key="otrs.properties" value="otrsConfigDaoCheck"/> --> <!-- Not part of standard build -->
         <entry key="poll-outages.xml" value="pollOutagesConfigFactory"/>
         <entry key="poller-config.properties" value="pollerConfigProperties"/>
-        <!-- <entry key="poller-configuration.xml" value="pollerConfigFactory"/> --><!-- database access -->
+        <entry key="poller-configuration.xml" value="pollerConfigFactory"/>
         <entry key="provisiond-configuration.xml" value="provisiondConfigurationDao"/>
         <!-- <entry key="rancid-configuration.xml" value="rancidAdapterConfigFactory"/> --><!-- Not part of standard build -->
         <entry key="reportd-configuration.xml" value="reportdConfigurationDao"/>
@@ -85,11 +84,12 @@
         <entry key="snmp-config.xml" value="snmpPeerFactory"/>
         <entry key="snmp-graph.properties" value="snmpPrefabGraph"/>
         <!-- <entry key="snmp-interface-poller-configuration.xml" value="snmpInterfacePollerConfigFactory"/> --><!-- database access -->
+        <entry key="snmptrap-northbounder-configuration.xml" value="snmpTrapNorthbounderConfigDao"/>
         <entry key="statsd-configuration.xml" value="statisticsDaemonConfigDao"/>
         <entry key="surveillance-views.xml" value="surveillanceViewConfigDao"/>
         <entry key="syslogd-configuration.xml" value="syslogdConfigFactory"/>
         <entry key="syslog-northbounder-configuration.xml" value="syslogNorthbounderConfigDao"/>
-        <!-- <entry key="threshd-configuration.xml" value="threshdConfigFactory"/> --><!-- database access -->
+        <entry key="threshd-configuration.xml" value="threshdConfigFactory"/>
         <entry key="thresholds.xml" value="thresholdingConfigFactory"/>
         <entry key="tl1d-configuration.xml" value="tl1ConfigurationDao"/>
         <entry key="translator-configuration.xml" value="eventTranslatorConfigFactory"/>
@@ -107,10 +107,14 @@
         <!-- <entry key="xmp-config.xml" value="xmpConfigFactory"/> --><!-- Not part of standard build -->
         <!-- <entry key="xmp-datacollection-config.xml" value="xmpCollectionFactory"/> --><!-- Not part of standard build -->
         <!-- <entry key="xmpp-configuration.properties" value="unknown"/> --><!-- config code not in its own class -->
+
+        <!-- WS-Man configuration files -->
+        <entry key="wsman-config.xml" value="wsManConfigDao"/>
+        <entry key="wsman-datacollection-config.xml" value="wsManDataCollectionConfigDao"/>
       </map>
     </property>
   </bean>
-  
+
   <bean id="ackdConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultAckdConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/ackd-configuration.xml" />
   </bean>
@@ -147,24 +151,7 @@
 
   <bean id="chartConfigFactory" class="org.opennms.netmgt.config.ChartConfigFactory" depends-on="chartConfigFactory-init" factory-method="getInstance"/>
 
-<!-- 
-  Ugh, CollectdConfigFactory tries to hit the database via CollectdConfig.createPackageIpListMap -> CollectdPackage.createIpList
-  
-  2010-09-05 00:43:45,462 ERROR [main] org.opennms.netmgt.config.CollectdPackage: createPackageIpMap: failed to map package: example1 to an IP List: org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting IP List: java.sql.SQLException: Connections could not be acquired from the underlying database!
-org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting IP List: java.sql.SQLException: Connections could not be acquired from the underlying database!
-	at org.opennms.netmgt.filter.JdbcFilterDao.getIPList(JdbcFilterDao.java:326)
-	at org.opennms.netmgt.config.CollectdPackage.createIpList(CollectdPackage.java:316)
-	at org.opennms.netmgt.config.CollectdConfig.createPackageIpListMap(CollectdConfig.java:130)
-	at org.opennms.netmgt.config.CollectdConfig.initialize(CollectdConfig.java:148)
-	at org.opennms.netmgt.config.CollectdConfig.<init>(CollectdConfig.java:73)
-	at org.opennms.netmgt.config.CollectdConfigFactory.<init>(CollectdConfigFactory.java:129)
-	at org.opennms.netmgt.config.CollectdConfigFactory.init(CollectdConfigFactory.java:199)
-  
-  Interestingly, that exception does not bubble up and the initialization eventually completes once C3P0 gives up.
-  -->
-  <!--
   <bean id="collectdConfigFactory" class="org.opennms.netmgt.config.CollectdConfigFactory"/>
-  -->
 
   <bean id="databaseReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultDatabaseReportConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/database-reports.xml"/>
@@ -206,6 +193,10 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   
   <bean id="excludeUeisProperties" class="org.opennms.netmgt.config.tester.support.ExcludeUeisProperties"/>
   
+  <bean name="emailNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.email.EmailNorthbounderConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/email-northbounder-configuration.xml" />
+  </bean>
+  
   <bean id="groupFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
   </bean>
@@ -226,7 +217,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
     <property name="staticMethod"><value>org.opennms.javamail.JavaMailerConfig.getProperties</value></property>
   </bean>
     
-  <bean id="javamailConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultJavamailConfigurationDao">
+  <bean id="javamailConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultJavamailConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/javamail-configuration.xml"/>
   </bean>
   
@@ -237,17 +228,9 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.JmxConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/jmx-config.xml"/>
   </bean>
-  
-  <bean name="jmsNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfigDao">
-    <property name="configResource" value="file:${opennms.home}/etc/jms-northbounder-configuration.xml" />
-  </bean>
 
-  <bean id="jmxDataCollectionConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.JMXDataCollectionConfigFactory.init</value></property>
-  </bean>
+  <bean id="jmxDataCollectionConfigDao" class="org.opennms.netmgt.config.JMXDataCollectionConfigDao" />
 
-  <bean id="jmxDataCollectionConfigFactory" class="org.opennms.netmgt.config.JMXDataCollectionConfigFactory" depends-on="jmxDataCollectionConfigFactory-init" factory-method="getInstance"/>
-    
   <bean id="kscReportFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.init</value></property>
   </bean>
@@ -267,15 +250,9 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
 
   <bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
-    <property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties" />
     <property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
-    <property name="groupsConfigurationFile" value="${opennms.home}/etc/groups.xml" />
-    <property name="useGroups" value="false" />
     <property name="userManager" ref="userManager" />
-    <property name="groupManager" ref="groupManager" />
   </bean>
-  
-  <bean id="mapPropertiesFactory" class="org.opennms.web.map.config.MapPropertiesFactory"/>
   
   <bean id="microblogConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/microblog-configuration.xml"/>
@@ -312,15 +289,6 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="nsClientDataCollectionConfigFactory" class="org.opennms.netmgt.protocols.nsclient.config.NSClientDataCollectionConfigFactory" depends-on="nsClientDataCollectionConfigFactory-init" factory-method="getInstance"/>
   -->
-
-  <!-- This doesn't work because it pokes the database -->
-  <!--
-  <bean id="dataSourceFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.init</value></property>
-  </bean>
-
-  <bean id="dataSourceFactory" class="org.opennms.netmgt.config.DataSourceFactory" depends-on="dataSourceFactory-init" factory-method="getInstance"/>
-  -->
     
   <bean id="dataSourceTester" class="org.opennms.core.db.DataSourceConfigurationFactory">
     <constructor-arg value="${opennms.home}/etc/opennms-datasources.xml"/>
@@ -344,8 +312,8 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   </bean>
 
   <bean id="pollOutagesConfigFactory" class="org.opennms.netmgt.config.PollOutagesConfigFactory" depends-on="pollOutagesConfigFactory-init" factory-method="getInstance"/>
-    
-<!-- 
+
+  <!-- 
   <bean id="pollerConfigFactory" class="org.opennms.netmgt.config.PollerConfigFactory">
     <constructor-arg>
       <bean class="java.io.FileInputStream">
@@ -355,7 +323,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
     <constructor-arg><value>nms1</value></constructor-arg>
     <constructor-arg><value>false</value></constructor-arg>
   </bean>
-  -->
+   -->    
   
   <bean id="pollerConfigProperties-constructor" class="java.util.Properties"/>
   
@@ -484,6 +452,10 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" depends-on="snmpPeerFactory-init" factory-method="getInstance"/>
 
+  <bean name="snmpTrapNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/snmptrap-northbounder-configuration.xml" />
+  </bean>
+
   <bean id="statisticsDaemonConfigDao" class="org.opennms.netmgt.dao.castor.DefaultStatisticsDaemonConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/statsd-configuration.xml"/>
   </bean>
@@ -567,6 +539,12 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="VmwareConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/vmware-config.xml"/>
+  </bean>
+
+  <bean id="wsManDataCollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.WSManDataCollectionConfigDaoJaxb" />
+
+  <bean id="wsManConfigDao" class="org.opennms.netmgt.dao.jaxb.WSManConfigDaoJaxb">
+    <property name="configResource" value="file:${opennms.home}/etc/wsman-config.xml" />
   </bean>
 
   <!--

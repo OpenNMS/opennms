@@ -21,13 +21,12 @@
     <complexType>
       <sequence>
         <annotation>
-          <documentation>The addresses to be polled. NOTE: specifics and URLs
-          override excludes. I.e.: if an address is in an exclude range but
-          also either a specific address or specified in an URL, it will be
-          polled. The following definitions are used to create the capsd and
-          poller config files in addition to the discovery configuration. If
-          the definitions are changed, the web UI will need to be
-          changed.</documentation>
+          <documentation>
+            The addresses to be polled. NOTE: specifics and URLs
+            override excludes, ie. if an address is in an exclude range but
+            also either a specific address or specified in an URL, it will be
+            polled.
+          </documentation>
         </annotation>
 
         <element maxOccurs="unbounded" minOccurs="0" ref="this:specific">
@@ -57,27 +56,21 @@
         </element>
       </sequence>
 
-      <attribute name="threads" use="required">
+      <attribute name="location" type="string" use="optional">
         <annotation>
-          <documentation>the number of threads to be used for
-          discovery</documentation>
+          <documentation>The monitoring location where this discovery configuration
+          will be executed.</documentation>
         </annotation>
-        
-        <simpleType>
-          <restriction base="int">
-            <minInclusive value="1"/>
-          </restriction>
-        </simpleType>
       </attribute>
 
       <attribute name="packets-per-second" use="required">
         <annotation>
-          <documentation>the total number of ping packets sent per second from
+          <documentation>The total number of ping packets sent per second from
           OpenNMS for discovery</documentation>
         </annotation>
         
         <simpleType>
-          <restriction base="int">
+          <restriction base="double">
             <minInclusive value="1"/>
           </restriction>
         </simpleType>
@@ -118,7 +111,12 @@
       </attribute>
       
       <attribute name="foreign-source" type="string" use="optional" />
-      
+
+      <attribute name="chunk-size" type="int" use="optional">
+        <annotation>
+          <documentation>The default chunk size used to divide up ranges to be discovered by minions.  This size determines the individual unit of work a particular discovery job sent to a minion will encompass.</documentation>
+        </annotation>
+      </attribute>      
     </complexType>
   </element>
 
@@ -130,6 +128,13 @@
     <complexType>
       <simpleContent>
         <extension base="string">
+          <attribute name="location" type="string" use="optional">
+            <annotation>
+              <documentation>The monitoring location where this specific address
+              will be executed.</documentation>
+            </annotation>
+          </attribute>
+
           <attribute name="retries" type="int" use="optional">
             <annotation>
               <documentation>The number of times a ping is retried for this
@@ -174,6 +179,13 @@
           </annotation>
         </element>
       </sequence>
+
+      <attribute name="location" type="string" use="optional">
+        <annotation>
+          <documentation>The monitoring location where this include range
+          will be executed.</documentation>
+        </annotation>
+      </attribute>
 
       <attribute name="retries" type="int" use="optional">
         <annotation>
@@ -231,6 +243,13 @@
     <complexType>
       <simpleContent>
         <extension base="string">
+          <attribute name="location" type="string" use="optional">
+            <annotation>
+              <documentation>The monitoring location where this include URL
+              will be executed.</documentation>
+            </annotation>
+          </attribute>
+
           <attribute name="retries" type="int" use="optional">
             <annotation>
               <documentation>The number of times a ping is retried for
@@ -255,13 +274,11 @@
     </complexType>
     
   </element>
-  
+
   <element name="foreign-source" >
     <simpleType>
       <restriction base="string" />
     </simpleType>
   </element>
-  
-  
-  
+
 </schema>

@@ -35,7 +35,7 @@ import java.util.concurrent.Callable;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.xml.event.Event;
@@ -48,7 +48,10 @@ import org.springframework.util.Assert;
 
 /**
  * The TrapQueueProcessor handles the conversion of V1 and V2 traps to events
- * and sending them out the JSDT channel that eventd is listening on
+ * and sending them out the JSDT channel that eventd is listening on.
+ * 
+ * @see Java Shared Data Toolkit
+ * @see http://www.drdobbs.com/collaborative-applications-and-the-java/184403999
  * 
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
@@ -58,9 +61,9 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  *  
  */
-class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
+class TrapQueueProcessor implements Callable<Void>, InitializingBean {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(TrapQueueProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TrapQueueProcessor.class);
 	
     /**
      * The name of the local host.
@@ -76,7 +79,7 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
     /**
      * The event IPC manager to which we send events created from traps.
      */
-    private EventIpcManager m_eventMgr;
+    private EventForwarder m_eventForwarder;
 
     /**
      * The event configuration DAO that we use to convert from traps to events.
@@ -85,11 +88,15 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
 
     private TrapNotification m_trapNotification;
     
+    private static long s_trapsReceived = 0;
+    
     private static long s_v1TrapsReceived = 0;
     
     private static long s_v2cTrapsReceived = 0;
     
     private static long s_v3TrapsReceived = 0;
+    
+    private static long s_vUnknownTrapsReceived = 0;
     
     private static long s_trapsDiscarded = 0;
     
@@ -163,7 +170,7 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
      * </p>
      */
     @Override
-    public Callable<Void> call() {
+    public Void call() {
         try {
             processTrapEvent(((EventCreator)m_trapNotification.getTrapProcessor()).getEvent());
         } catch (IllegalArgumentException e) {
@@ -190,17 +197,22 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
             event.setUei(econf.getUei());
         }
 
-        if (econf != null) {
-            final Snmp snmp = econf.getSnmp();
-            if (snmp != null) {
-                if ("v1".equals(snmp.getVersion())) {
-                    s_v1TrapsReceived++;
-                } else if ("v2c".equals(snmp.getVersion())) {
-                    s_v2cTrapsReceived++;
-                } else if ("v3".equals(snmp.getVersion())) {
-                    s_v3TrapsReceived++;
-                }
+        if (event.getSnmp() != null) {
+            final String version = event.getSnmp().getVersion();
+            s_trapsReceived++;
+            if ("v1".equals(version)) {
+                s_v1TrapsReceived++;
+            } else if ("v2c".equals(version)) {
+                s_v2cTrapsReceived++;
+            } else if ("v3".equals(version)) {
+                s_v3TrapsReceived++;
+            } else {
+                s_vUnknownTrapsReceived++;
+                LOG.warn("Received a trap with an unknown SNMP protocol version '{}'", version);
             }
+        }
+        
+        if (econf != null) {
             final Logmsg logmsg = econf.getLogmsg();
             if (logmsg != null) {
                 final String dest = logmsg.getDest();
@@ -213,7 +225,7 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
         }
 
         // send the event to eventd
-        m_eventMgr.sendNow(event);
+        m_eventForwarder.sendNow(event);
 
         LOG.debug("Trap successfully converted and sent to eventd with UEI {}", event.getUei());
 
@@ -239,7 +251,7 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
         bldr.setHost(LOCALHOST_ADDRESS);
 
         // send the event to eventd
-        m_eventMgr.sendNow(bldr.getEvent());
+        m_eventForwarder.sendNow(bldr.getEvent());
     }
 
     /**
@@ -269,19 +281,19 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
     /**
      * <p>getEventMgr</p>
      *
-     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
-    public EventIpcManager getEventManager() {
-        return m_eventMgr;
+    public EventForwarder getEventForwarder() {
+        return m_eventForwarder;
     }
 
     /**
      * <p>setEventMgr</p>
      *
-     * @param eventMgr a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
-    public void setEventManager(EventIpcManager eventMgr) {
-        m_eventMgr = eventMgr;
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
     }
 
     /**
@@ -313,9 +325,13 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
     @Override
     public void afterPropertiesSet() throws IllegalStateException {
         Assert.state(m_eventConfDao != null, "property eventConfDao must be set");
-        Assert.state(m_eventMgr != null, "property eventMgr must be set");
+        Assert.state(m_eventForwarder != null, "property eventForwarder must be set");
         Assert.state(m_newSuspect != null, "property newSuspect must be set");
         Assert.state(m_trapNotification != null, "property trapNotification must be set");
+    }
+    
+    public static long getTrapsReceived() {
+        return s_trapsReceived;
     }
     
     public static long getV1TrapsReceived() {
@@ -328,6 +344,10 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
     
     public static long getV3TrapsReceived() {
         return s_v3TrapsReceived;
+    }
+    
+    public static long getVersionUnknownTrapsReceived() {
+        return s_vUnknownTrapsReceived;
     }
     
     public static long getTrapsDiscarded() {

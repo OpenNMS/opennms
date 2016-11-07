@@ -40,6 +40,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.servlet.ServletContext;
 
 import org.hibernate.Criteria;
@@ -57,6 +59,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -65,11 +68,12 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.StatusType;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.web.svclayer.model.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +110,9 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     
     @Autowired
     private CategoryDao m_categoryDao;
+
+    @Autowired
+    private MonitoringLocationDao m_monitoringLocationDao;
     
 	@Autowired
 	private PlatformTransactionManager m_transactionManager;
@@ -259,51 +266,36 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithPhysAddr(java.lang.String)
 	 */
     @Override
-    public List<OnmsNode> getNodesWithPhysAddr(String macAddr) {
+    public List<OnmsNode> getNodesWithPhysAddr(final String macAddr) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
         criteria.createAlias("assetRecord", "assetRecord");
         criteria.createAlias("snmpInterfaces", "snmpIfaces", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("arpInterfaces", "arpIfaces", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.ne("type", "D"));
-        criteria.add(
-                Restrictions.or(
-                        Restrictions.ilike("snmpIfaces.physAddr", macAddr, MatchMode.ANYWHERE),
-                        Restrictions.ilike("arpIfaces.physAddr", macAddr, MatchMode.ANYWHERE))
-                );
+        criteria.add(Restrictions.ilike("snmpIfaces.physAddr", macAddr.replaceAll("[:-]*", ""), MatchMode.ANYWHERE));
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.addOrder(Order.asc("label"));
         
         return m_nodeDao.findMatching(criteria);
     }
 
-    /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithPhysAddrAtInterface(java.lang.String)
-	 */
+    /**
+     * @deprecated OnmsNode.arpInterface went away, so we only search snmpInterfaces
+     * @param macAddr
+     * @return a list of @{OnmsNode}s
+     */
     @Override
     public List<OnmsNode> getNodesWithPhysAddrAtInterface(String macAddr) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
-        criteria.createAlias("arpInterfaces", "arpIfaces");
-        criteria.add(Restrictions.ne("type", "D"));
-        criteria.add(Restrictions.ilike("arpIfaces.physAddr", macAddr, MatchMode.ANYWHERE));
-        criteria.addOrder(Order.asc("label"));
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        
-        return m_nodeDao.findMatching(criteria);
+        return getNodesWithPhysAddr(macAddr);
     }
 
-    /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithPhysAddrFromSnmpInterface(java.lang.String)
-	 */
+    /**
+     * @deprecated OnmsNode.arpInterface went away, so we only search snmpInterfaces
+     * @param macAddr
+     * @return a list of @{OnmsNode}s
+     */
     @Override
     public List<OnmsNode> getNodesWithPhysAddrFromSnmpInterface(String macAddr) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
-        criteria.createAlias("snmpInterfaces", "snmpIface");
-        criteria.add(Restrictions.ne("type", "D"));
-        criteria.add(Restrictions.ilike("snmpIface.physAddr", macAddr, MatchMode.ANYWHERE));
-        criteria.addOrder(Order.asc("label"));
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        
-        return m_nodeDao.findMatching(criteria);
+        return getNodesWithPhysAddr(macAddr);
     }
 
     /* (non-Javadoc)
@@ -817,18 +809,16 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesFromPhysaddr(java.lang.String)
 	 */
     @Override
-    public List<OnmsNode> getNodesFromPhysaddr(String AtPhysAddr) {
-        if (AtPhysAddr == null) {
+    public List<OnmsNode> getNodesFromPhysaddr(final String physAddr) {
+        if (physAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
-        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
-        criteria.createAlias("assetRecord", "assetRecord");
-        criteria.createAlias("arpInterfaces", "arpInterfaces");
-        criteria.add(Restrictions.ilike("arpInterfaces.physAddr", AtPhysAddr, MatchMode.ANYWHERE));
-        criteria.add(Restrictions.ne("arpInterfaces.status", StatusType.DELETED));
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        
-        return m_nodeDao.findMatching(criteria);
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
+        builder.alias("snmpInterfaces", "iface")
+            .ilike("iface.physAddr", physAddr.replaceAll("[:-]", ""))
+            .ne("type", NodeType.DELETED)
+            .distinct();
+        return m_nodeDao.findMatching(builder.toCriteria());
     }
 
     private Interface getInterfaceForLink(int nodeid, int ifindex) {
@@ -976,5 +966,9 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         
         Collections.sort(intfs, INTERFACE_COMPARATOR);
         return intfs.toArray(new Interface[intfs.size()]);
-    }    
+    }
+
+    public List<OnmsMonitoringLocation> getMonitoringLocations() {
+        return m_monitoringLocationDao.findAll().stream().sorted((a,b) -> a.getLocationName().compareTo(b.getLocationName())).collect(Collectors.toList());
+    }
 }

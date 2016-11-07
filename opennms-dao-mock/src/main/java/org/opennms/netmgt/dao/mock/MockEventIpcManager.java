@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
 
@@ -62,6 +63,8 @@ import org.springframework.dao.DataAccessException;
 
 public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpcManager, EventIpcBroadcaster {
     private static final Logger LOG = LoggerFactory.getLogger(MockEventIpcManager.class);
+
+    private static final AtomicInteger m_eventId = new AtomicInteger();
 
     static class ListenerKeeper {
     	final EventListener m_listener;
@@ -183,7 +186,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     private EventWriter m_eventWriter = new EventWriter() {
         @Override
         public void writeEvent(final Event e) {
-            
+            e.setDbid(m_eventId.incrementAndGet());
         }
     };
 
@@ -220,6 +223,10 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     @Override
     public void addEventListener(final EventListener listener, final String uei) {
         m_listeners.add(new ListenerKeeper(listener, Collections.singleton(uei)));
+    }
+
+    public int getEventListenerCount() {
+        return m_listeners.size();
     }
 
     @Override
@@ -411,4 +418,14 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         sendNow(eventLog);
     }
 
+    @Override
+    public boolean hasEventListener(final String uei) {
+        for (final ListenerKeeper keeper : this.m_listeners) {
+            if (keeper.m_ueiList.contains(uei)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

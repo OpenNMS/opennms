@@ -44,7 +44,7 @@ public class ResourceGraphsOperation extends AbstractOperation {
     private String m_resourceGraphNodeURL;
 
     @Override
-    public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
+    public void execute(final List<VertexRef> targets, final OperationContext operationContext) {
         try {
             String label = "";
             int nodeID = -1;
@@ -73,7 +73,6 @@ public class ResourceGraphsOperation extends AbstractOperation {
 
             final URL fullUrl = new URL(getFullUrl(url));
             operationContext.getMainWindow().addWindow(new ResourceGraphsWindow(node, fullUrl));
-            return null;
         } catch (final Exception e) {
             if (e instanceof RuntimeException) {
                 throw (RuntimeException)e;

@@ -33,12 +33,11 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.core.concurrent.EndOfTheWaterfall;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */
-final class SyslogProcessor implements EndOfTheWaterfall {
+public final class SyslogProcessor implements Callable<Void> {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogProcessor.class);
 
     private final boolean m_NewSuspectOnMessage;
@@ -69,11 +68,15 @@ final class SyslogProcessor implements EndOfTheWaterfall {
         m_localAddr = InetAddressUtils.getLocalHostName();
     }
 
+    public Event getEvent() {
+        return m_event;
+    }
+
     /**
      * The event processing execution context.
      */
     @Override
-    public Callable<Void> call() {
+    public Void call() {
         // get a logger
         try {
             if (LOG.isTraceEnabled())  {
@@ -105,7 +108,7 @@ final class SyslogProcessor implements EndOfTheWaterfall {
 
             if (m_NewSuspectOnMessage && !m_event.hasNodeid()) {
                 LOG.trace("Syslogd: Found a new suspect {}", m_event.getInterface());
-                sendNewSuspectEvent(m_localAddr, m_event.getInterface());
+                sendNewSuspectEvent(m_localAddr, m_event.getInterface(), m_event.getDistPoller());
             }
 
         } catch (Throwable t) {
@@ -116,10 +119,11 @@ final class SyslogProcessor implements EndOfTheWaterfall {
         return null;
     }
 
-    private static void sendNewSuspectEvent(String localAddr, String trapInterface) {
+    private static void sendNewSuspectEvent(String localAddr, String trapInterface, String distPoller) {
         EventBuilder bldr = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "syslogd");
         bldr.setInterface(addr(trapInterface));
         bldr.setHost(localAddr);
+        bldr.setDistPoller(distPoller);
         EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());
     }
 }

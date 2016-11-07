@@ -33,11 +33,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.newts.api.Context;
+import org.opennms.newts.api.MetricType;
+import org.opennms.newts.api.Resource;
+import org.opennms.newts.api.Sample;
+import org.opennms.newts.api.Timestamp;
+import org.opennms.newts.api.ValueType;
 import org.opennms.newts.api.search.BooleanQuery;
 import org.opennms.newts.api.search.Operator;
 import org.opennms.newts.api.search.Query;
 import org.opennms.newts.api.search.Term;
 import org.opennms.newts.api.search.TermQuery;
+import org.opennms.newts.cassandra.search.CassandraIndexingOptions;
 import org.opennms.newts.cassandra.search.EscapableResourceIdSplitter;
 import org.opennms.newts.cassandra.search.ResourceIdSplitter;
 
@@ -49,7 +56,9 @@ import org.opennms.newts.cassandra.search.ResourceIdSplitter;
  */
 public abstract class NewtsUtils {
 
-    public static final boolean ENABLE_HIERARCHICAL_INDEXING = false;
+    public static final boolean DISABLE_INDEXING = Boolean.getBoolean("org.opennms.newts.disable.indexing");
+
+    public static final int MAX_BATCH_SIZE = Integer.getInteger("org.opennms.newts.config.max_batch_size", 16);
 
     public static final int TTL = Integer.getInteger("org.opennms.newts.config.ttl", 31536000);
 
@@ -69,7 +78,18 @@ public abstract class NewtsUtils {
 
     public static final String DEFAULT_TTL = "" + 86400 * 365;
 
+    public static final CassandraIndexingOptions INDEXING_OPTIONS = new CassandraIndexingOptions.Builder()
+            .withHierarchicalIndexing(false)
+            .withIndexResourceTerms(false)
+            .withIndexUsingDefaultTerm(false)
+            .withMaxBatchSize(MAX_BATCH_SIZE)
+            .build();
+
     private static final ResourceIdSplitter s_splitter = new EscapableResourceIdSplitter();
+
+    // Constants used when building mock samples in createSampleForIndexingStrings()
+    private static final Timestamp EPOCH = Timestamp.fromEpochMillis(0);
+    private static final ValueType<?> ZERO = ValueType.compose(0, MetricType.GAUGE);
 
     /**
      * Extends the attribute map with indices used by the {@link org.opennms.netmgt.dao.support.NewtsResourceStorageDao}.
@@ -134,4 +154,12 @@ public abstract class NewtsUtils {
         return ResourcePath.get(els.subList(0, els.size() - 1));
     }
 
+    /**
+     * Creates a sample used to index string attributes.
+     *
+     * These should only be index and not be persisted.
+     */
+    public static Sample createSampleForIndexingStrings(Context context, Resource resource) {
+        return new Sample(EPOCH, context, resource, "strings", MetricType.GAUGE, ZERO);
+    }
 }

@@ -32,8 +32,6 @@ import org.opennms.netmgt.provision.detector.simple.client.LdapDetectorClient;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
 import org.opennms.netmgt.provision.support.Client;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import com.novell.ldap.LDAPConnection;
 
@@ -44,8 +42,6 @@ import com.novell.ldap.LDAPConnection;
  * @version $Id: $
  */
 
-@Component
-@Scope("prototype")
 public class LdapDetector extends LineOrientedDetector {
     
     private static final String DEFAULT_SERVICE_NAME = "LDAP";
@@ -60,7 +56,7 @@ public class LdapDetector extends LineOrientedDetector {
     /**
      * Default constructor
      */
-    protected LdapDetector() {
+    public LdapDetector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
     }
 
@@ -70,7 +66,7 @@ public class LdapDetector extends LineOrientedDetector {
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    protected LdapDetector(final String serviceName, final int port) {
+    public LdapDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
     

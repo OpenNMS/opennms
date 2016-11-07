@@ -37,17 +37,16 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.ExecutorFactory;
 import org.opennms.core.concurrent.ExecutorFactoryJavaImpl;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
@@ -139,6 +138,8 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
 
     private final SyslogdConfig m_config;
 
+    private DistPollerDao m_distPollerDao = null;
+
     /**
      * This thread pool is used to process {@link DatagramChannel#receive(ByteBuffer)} 
      * calls on the syslog port. By using multiple threads, we can optimize the receipt of
@@ -219,6 +220,15 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
         return getClass().getSimpleName() + " [" + listenAddress + ":" + m_config.getSyslogPort() + "]";
     }
 
+    // Getter and setter for DistPollerDao
+    public DistPollerDao getDistPollerDao() {
+        return m_distPollerDao;
+    }
+
+    public void setDistPollerDao(DistPollerDao distPollerDao) {
+        m_distPollerDao = distPollerDao;
+    }
+
     public ExecutorFactory getExecutorFactory() {
         return m_executorFactory;
     }
@@ -269,12 +279,6 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
 
         // Get a log instance
         Logging.putPrefix(Syslogd.LOG4J_CATEGORY);
-
-        ConsoleReporter reporter = ConsoleReporter.forRegistry(METRICS)
-            .convertRatesTo(TimeUnit.SECONDS)
-            .convertDurationsTo(TimeUnit.MILLISECONDS)
-            .build();
-        reporter.start(1, TimeUnit.SECONDS);
 
         // Create some metrics
         Meter packetMeter = METRICS.meter(MetricRegistry.name(getClass(), "packets"));
@@ -366,7 +370,7 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
                             .thenAcceptAsync(c -> c.call(), m_syslogProcessorExecutor);
                             */
 
-                            SyslogConnection conn = new SyslogConnection(source.getAddress(), source.getPort(), message.buffer, m_config);
+                            SyslogConnection conn = new SyslogConnection(source.getAddress(), source.getPort(), message.buffer, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
 
                             // Convert the syslog packet into an OpenNMS event
                             CompletableFuture<SyslogProcessor> proc = CompletableFuture.supplyAsync(conn::call, m_syslogConnectionExecutor);

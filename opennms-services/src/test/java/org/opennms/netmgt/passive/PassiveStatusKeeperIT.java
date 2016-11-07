@@ -35,7 +35,6 @@ import static org.junit.Assert.assertTrue;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -46,7 +45,6 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -84,7 +82,6 @@ public class PassiveStatusKeeperIT {
     private MockEventIpcManager m_eventMgr;
     private MockDatabase m_db;
     private MockNetwork m_network;
-    private EventAnticipator m_anticipator;
     private OutageAnticipator m_outageAnticipator;
 
     @Before
@@ -98,7 +95,6 @@ public class PassiveStatusKeeperIT {
 
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
-        m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.addEventListener(m_outageAnticipator);
         m_eventMgr.setSynchronous(true);
 
@@ -125,7 +121,6 @@ public class PassiveStatusKeeperIT {
     
 
     private void createAnticipators() {
-        m_anticipator = new EventAnticipator();
         m_outageAnticipator = new OutageAnticipator(m_db);
     }
 
@@ -250,12 +245,8 @@ public class PassiveStatusKeeperIT {
         MockMonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr("192.168.1.1"), "ICMP" );
         
         ServiceMonitor m = new PassiveServiceMonitor();
-        m.initialize((Map<String,Object>)null);
-        m.initialize(svc);
         PollStatus ps2 = m.poll(svc, null);
-        m.release(svc);
-        m.release();
-        
+
         assertEquals(ps, ps2);
     }
 

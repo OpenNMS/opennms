@@ -104,11 +104,12 @@ public abstract class Bootstrap {
      *
      * @param dirStr
      *            List of directories to search for JARs, separated by
-     *            {@link java.io.File#pathSeparator File.pathSeparator}
+     *            {@link java.io.File#pathSeparator File.pathSeparator}.
      * @param recursive
      *            Whether to recurse into subdirectories of the directories in
-     *            dirStr
-     * @param append TODO
+     *            dirStr.
+     * @param append Append the URLs of the current {@link java.lang.Thread#getContextClassLoader())
+     *            to this classloader.
      * @returns A new ClassLoader containing the found JARs
      * @return a {@link java.lang.ClassLoader} object.
      * @throws java.net.MalformedURLException if any.
@@ -269,11 +270,19 @@ public abstract class Bootstrap {
                     String value = entry.getValue().toString();
 
                     if (systemProperties.containsKey(key)) {
-                        if (DEBUG) { System.err.println("Skipping: " + key); }
+                        if (DEBUG) {
+                            System.err.printf("Skipping system property entry '%s' with value '%s' found in '%s'. "
+                                    + " The property was already set on the JVM command line.\n",
+                                    key, value, propertiesFile.getAbsolutePath());
+                        }
                         // Skip properties that were already set outside of the .properties files
                         continue;
                     }
 
+                    if (DEBUG) {
+                        System.err.printf("Setting system property '%s' to '%s' found in '%s'.\n",
+                                key, value, propertiesFile.getAbsolutePath());
+                    }
                     System.setProperty(key, value);
                 }
             } catch (FileNotFoundException e) {

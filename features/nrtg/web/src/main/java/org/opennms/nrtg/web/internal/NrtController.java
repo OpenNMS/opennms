@@ -42,6 +42,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.utils.TimeSeries;
+import org.opennms.core.utils.TimeSeries.Strategy;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -52,6 +54,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.nrtg.api.NrtBroker;
 import org.opennms.nrtg.api.model.CollectionJob;
@@ -109,7 +112,7 @@ public class NrtController {
         }
     }
 
-    public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession, boolean useJson) {
+    public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession) {
 
         assert (resourceId != null);
         logger.debug("resourceId: '{}'", resourceId);
@@ -130,8 +133,7 @@ public class NrtController {
             getCollectionJobMap(httpSession, true).put(nrtCollectionTaskId, collectionJob);
         }
 
-        final String viewName = useJson ? "nrt/realtime.json" : "nrt/realtime.html";
-        ModelAndView modelAndView = new ModelAndView(viewName);
+        ModelAndView modelAndView = new ModelAndView("nrt/realtime.json");
         modelAndView.addObject("nrtCollectionTaskId", nrtCollectionTaskId);
 
         modelAndView.addObject("graphTitle", prefabGraph.getTitle());
@@ -253,7 +255,9 @@ public class NrtController {
             //I know....
             if (protocol.equals("SNMP") || protocol.equals("TCA")) {
                 collectionJob.setNetInterface(protocol);
-                final SnmpAgentConfig snmpAgentConfig = m_snmpAgentConfigFactory.getAgentConfig(node.getPrimaryInterface().getIpAddress());
+                OnmsMonitoringLocation location = node.getLocation();
+                String locationName = (location == null) ? null : location.getLocationName();
+                final SnmpAgentConfig snmpAgentConfig = m_snmpAgentConfigFactory.getAgentConfig(node.getPrimaryInterface().getIpAddress(), locationName);
                 collectionJob.setProtocolConfiguration(snmpAgentConfig.toProtocolConfigString());
                 collectionJob.setNetInterface(node.getPrimaryInterface().getIpAddress().getHostAddress());
                 collectionJobs.add(collectionJob);
@@ -324,19 +328,30 @@ public class NrtController {
 
         //get all metaData for RrdGraphAttributes from the meta files next to the RRD/JRobin files
         for (final RrdGraphAttribute attr : rrdGraphAttributes) {
-            // The ResourceStorageDao expects a ResourcePath that points to meta-data attributes
-            final String knownExtensions[] = new String[]{".rrd", ".jrb"};
-            String metaFileNameWithoutExtension = attr.getRrdFile();
-            for (final String ext : knownExtensions) {
-                if (metaFileNameWithoutExtension.endsWith(ext)) {
-                    metaFileNameWithoutExtension = metaFileNameWithoutExtension.substring(0,
-                            metaFileNameWithoutExtension.lastIndexOf(ext));
-                    break;
+            // Convert the "relative RRD path" from the RrdGraphAttribute to a ResourcePath used
+            // by the ResourceStorageDao.
+            ResourcePath pathToMetaFile;
+            if (TimeSeries.getTimeseriesStrategy() == Strategy.NEWTS) {
+                String path = attr.getRrdRelativePath();
+                if (path.startsWith("/")) {
+                    path = path.substring(1);
                 }
+                pathToMetaFile = ResourcePath.get(path.split(":"));
+            } else {
+                final String knownExtensions[] = new String[]{".rrd", ".jrb"};
+                String metaFileNameWithoutExtension = attr.getRrdFile();
+                for (final String ext : knownExtensions) {
+                    if (metaFileNameWithoutExtension.endsWith(ext)) {
+                        metaFileNameWithoutExtension = metaFileNameWithoutExtension.substring(0,
+                                metaFileNameWithoutExtension.lastIndexOf(ext));
+                        break;
+                    }
+                }
+                pathToMetaFile = ResourcePath.get(attr.getResource().getPath(), metaFileNameWithoutExtension);
             }
-            final ResourcePath pathToMetaFile = ResourcePath.get(attr.getResource().getPath(), metaFileNameWithoutExtension);
 
             final Set<Entry<String, String>> metaDataEntrySet = m_resourceStorageDao.getMetaData(pathToMetaFile).entrySet();
+            logger.debug("Meta-data for attribute '{}' at path '{}' contains: {}", attr, pathToMetaFile, metaDataEntrySet);
             if (metaDataEntrySet == null) continue;
 
             final String attrName = attr.getName();

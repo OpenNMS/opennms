@@ -28,6 +28,8 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -37,11 +39,12 @@ import org.junit.runners.MethodSorters;
 public class AssetsPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        m_driver.get(BASE_URL + "opennms/asset/index.jsp");
+        m_driver.get(getBaseUrl() + "opennms/asset/index.jsp");
     }
 
     @Test
-    public void testAllTextIsPresent() throws InterruptedException { 
+    public void testAllTextIsPresent() throws Exception {
+        assertEquals(3, countElementsMatchingCss("h3.panel-title"));
         findElementByXpath("//h3[text()='Search Asset Information']");
         findElementByXpath("//h3[text()='Assets with Asset Numbers']");
         findElementByXpath("//h3[text()='Assets Inventory']");

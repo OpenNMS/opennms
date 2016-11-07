@@ -56,6 +56,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.IOUtils;
 import org.opennms.bootstrap.Bootstrap;
 import org.opennms.core.db.DataSourceConfigurationFactory;
 import org.opennms.core.db.install.InstallerDb;
@@ -68,7 +69,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
-import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.icmp.PingerFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
@@ -313,6 +314,8 @@ public class Installer {
             System.setProperty("opennms.manager.class", "org.opennms.upgrade.support.Upgrade");
             Bootstrap.main(new String[] {});
         }
+
+        context.close();
     }
 
 	private void checkIPv6() {
@@ -808,20 +811,22 @@ public class Installer {
             throw new Exception("unable to create file: " + destinationFile);
         }
         FileChannel from = null;
+        FileInputStream fisFrom = null;
         FileChannel to = null;
+        FileOutputStream fisTo = null;
         try {
-            from = new FileInputStream(sourceFile).getChannel();
-            to = new FileOutputStream(destinationFile).getChannel();
+            fisFrom = new FileInputStream(sourceFile);
+            from = fisFrom.getChannel();
+            fisTo = new FileOutputStream(destinationFile);
+            to = fisTo.getChannel();
             to.transferFrom(from, 0, from.size());
         } catch (FileNotFoundException e) {
             throw new Exception("unable to copy " + sourceFile + " to " + destinationFile, e);
         } finally {
-            if (from != null) {
-                from.close();
-            }
-            if (to != null) {
-                to.close();
-            }
+            IOUtils.closeQuietly(fisTo);
+            IOUtils.closeQuietly(to);
+            IOUtils.closeQuietly(fisFrom);
+            IOUtils.closeQuietly(from);
         }
         System.out.println("DONE");
     }
@@ -1218,7 +1223,7 @@ public class Installer {
         Pinger pinger;
         try {
        
-            pinger = PingerFactory.getInstance();
+            pinger = new PingerFactoryImpl().getInstance();
         
         } catch (UnsatisfiedLinkError e) {
             System.out.println("UnsatisfiedLinkError while creating an ICMP Pinger.  Most likely failed to load "
@@ -1233,7 +1238,7 @@ public class Installer {
             		"or libjicmp6.so.");
             throw e;
         } catch (Exception e) {
-            System.out.println("Exception while creating an Pinger.");
+            System.out.println("Exception while creating Pinger.");
             throw e;
         }
         

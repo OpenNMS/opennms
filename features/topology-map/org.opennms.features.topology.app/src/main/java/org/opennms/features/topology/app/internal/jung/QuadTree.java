@@ -35,8 +35,8 @@ import org.opennms.features.topology.api.DblBoundingBox;
 public class QuadTree<Value> {
     private Node<Value> m_root;
     
-    public static interface Visitor<Value> {
-        public boolean visitNode(Node<Value> n);
+    public interface Visitor<Value> {
+        boolean visitNode(Node<Value> n);
     }
 
 
@@ -216,9 +216,9 @@ public class QuadTree<Value> {
     }
 
 
-    /***********************************************************************
+    /**
      *  Insert (x, y) into appropriate quadrant
-     ***********************************************************************/
+     */
     public void insert(Point2D location, int charge, Value value) {
         m_root.insert(location, charge, value);
     }

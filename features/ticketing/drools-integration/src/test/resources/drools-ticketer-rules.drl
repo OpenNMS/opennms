@@ -8,8 +8,7 @@ dialect "mvel"
 
 global Ticket ticket;
 
-// Set tickets defaults
-
+// Set ticket defaults
 rule "TicketDefaults"
 salience 100
  when
@@ -21,7 +20,6 @@ salience 100
 end
 
 // Overwrite defaults with custom logic
-
 rule "AssignNodeDownOnRoutersToJesse"
  when
     $alarm : OnmsAlarm( uei == "uei.opennms.org/nodes/nodeDown" )
@@ -29,4 +27,5 @@ rule "AssignNodeDownOnRoutersToJesse"
     ticket.user = "Jesse"
     ticket.summary = "Not Test Logmsg"
     ticket.details = "Not Test Description"
+    ticket.addAttribute("custom-key", "custom-value")
 end

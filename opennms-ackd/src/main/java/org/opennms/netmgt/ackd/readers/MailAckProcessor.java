@@ -277,7 +277,7 @@ class MailAckProcessor implements AckProcessor {
         
         ReadmailConfig readMailConfig = determineMailReaderConfig();
         
-        LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: host: {} port: {} ssl: {} transport: {} user: {} password: {}", readMailConfig.getReadmailHost().getHost(), readMailConfig.getReadmailHost().getPort(), readMailConfig.getReadmailHost().getReadmailProtocol().getSslEnable(), readMailConfig.getReadmailHost().getReadmailProtocol().getTransport(), readMailConfig.getUserAuth().getUserName(), readMailConfig.getUserAuth().getPassword());
+        LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: host: {} port: {} ssl: {} transport: {} user: {} password: {}", readMailConfig.getReadmailHost().getHost(), readMailConfig.getReadmailHost().getPort(), readMailConfig.getReadmailHost().getReadmailProtocol().isSslEnable(), readMailConfig.getReadmailHost().getReadmailProtocol().getTransport(), readMailConfig.getUserAuth().getUserName(), readMailConfig.getUserAuth().getPassword());
         
         //TODO: make flag for folder open mode
         //TODO: Make sure configuration supports flag for deleting acknowledgments

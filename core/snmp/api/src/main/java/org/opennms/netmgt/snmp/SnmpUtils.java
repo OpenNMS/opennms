@@ -37,14 +37,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class SnmpUtils {
 
-	private static final transient Logger LOG = LoggerFactory.getLogger(SnmpUtils.class);
-	
+    private static final transient Logger LOG = LoggerFactory.getLogger(SnmpUtils.class);
+
+    private static final ClassBasedStrategyResolver s_classBasedStrategyResolver = new ClassBasedStrategyResolver();
+
     private static Properties sm_config;
     private static StrategyResolver s_strategyResolver;
 
@@ -84,6 +87,10 @@ public abstract class SnmpUtils {
     
     public static SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
         return getStrategy().get(agentConfig, oids);
+    }
+
+    public static CompletableFuture<SnmpValue[]> getAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
+        return getStrategy().getAsync(agentConfig, oids);
     }
 
     public static SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid) {
@@ -152,29 +159,19 @@ public abstract class SnmpUtils {
     public static SnmpStrategy getStrategy() {
     	return getStrategyResolver().getStrategy();
     }
-    
+
     public static StrategyResolver getStrategyResolver() {
-    	return s_strategyResolver != null ? s_strategyResolver : new DefaultStrategyResolver();
+    	return s_strategyResolver != null ? s_strategyResolver : s_classBasedStrategyResolver;
     }
-    
+
     public static void setStrategyResolver(StrategyResolver strategyResolver) {
     	s_strategyResolver = strategyResolver;
     }
-    
-    private static class DefaultStrategyResolver implements StrategyResolver {
 
-		@Override
-		public SnmpStrategy getStrategy() {
-	    	String strategyClass = getStrategyClassName();
-	        try {
-	            return (SnmpStrategy)Class.forName(strategyClass).newInstance();
-	        } catch (Exception e) {
-	            throw new RuntimeException("Unable to instantiate class "+strategyClass, e);
-	        }
-		}
-    	
+    public static void unsetStrategyResolver() {
+    	s_strategyResolver = null;
     }
-    
+
     public static String getStrategyClassName() {
         // Use SNMP4J as the default SNMP strategy
         return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");

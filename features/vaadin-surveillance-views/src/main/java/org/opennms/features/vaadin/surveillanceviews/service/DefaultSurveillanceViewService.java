@@ -486,7 +486,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
 
         View defaultView = SurveillanceViewProvider.getInstance().getDefaultView();
         if (defaultView == null) {
-            String message = "There is no default surveillance view and we could not find a surviellance view for the user's username ('" + username + "') or any of their groups";
+            String message = "There is no default surveillance view and we could not find a surveillance view for the user's username ('" + username + "') or any of their groups";
             LOG.warn(message);
             throw new ObjectRetrievalFailureException(View.class, message);
         }
@@ -520,8 +520,8 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      * @return the computed availability
      */
 
-    private static Double calculateAvailability(int serviceCount, long downMillisCount) {
-        long upMillis = ((long) serviceCount * (24L * 60L * 60L * 1000L)) - downMillisCount;
+    private static Double calculateAvailability(long serviceCount, long downMillisCount) {
+        long upMillis = (serviceCount * (24L * 60L * 60L * 1000L)) - downMillisCount;
 
         return ((double) upMillis / (double) (serviceCount * (24 * 60 * 60 * 1000)));
     }

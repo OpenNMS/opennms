@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[gi-install-r-debian]]
-=== Installing on Debian-based systems
+=== Debian
 
 This section describes how to install _R_ on a _Debian_-based system.
 

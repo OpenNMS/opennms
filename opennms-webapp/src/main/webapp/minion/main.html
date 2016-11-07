@@ -25,8 +25,8 @@
 							<option value="GT">&gt;</option>
 							<option value="GE">&gt;=</option>
 						</select>
-						<input class="form-control" type="text" ng-model="clause.value" ng-show="clause.property !== 'lastUpdated'" />
-						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-show="clause.property === 'lastUpdated'"/>
+						<input class="form-control" type="text" ng-model="clause.value" ng-if="clause.property !== 'lastUpdated'" />
+						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-if="clause.property === 'lastUpdated'"/>
 						</div>
 						<br/><br/>
 						<button class="btn btn-default" type="submit">Submit</button>
@@ -169,33 +169,33 @@
 				<tr>
 					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('id')">ID</a>
-						<i ng-show="query.orderBy === 'id' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'id' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('label')">Label</a>
-						<i ng-show="query.orderBy === 'label' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'label' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('location')">Location</a>
-						<i ng-show="query.orderBy === 'location' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'location' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('type')">Type</a>
-						<i ng-show="query.orderBy === 'type' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'type' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'type' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'type' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('status')">Status</a>
-						<i ng-show="query.orderBy === 'status' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'status' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'status' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'status' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('date')">Last Updated</a>
-						<i ng-show="query.orderBy === 'date' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'date' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'date' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'date' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2 text-nowrap">
 						Properties
@@ -216,11 +216,9 @@
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
-						<!-- TODO: Figure out how to handle null/blank location, it should still be editable -->
-						<onms-list-edit-in-place item="item" value="item.location" value-type="'text'" on-submit="update(item)">
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o fa-lg"/></a>
-						</onms-list-edit-in-place>
+						{{item.location}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						{{item.type}}

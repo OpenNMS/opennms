@@ -79,7 +79,7 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
         super();
         try {
             configFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
-            InputSource src = new InputSource(getClass().getResourceAsStream("/default/service-configuration.xml"));
+            InputSource src = new InputSource(getClass().getResourceAsStream("/default/service-configuration-14.0.0.xml"));
             baseConfig = JaxbUtils.unmarshal(ServiceConfiguration.class, src);
         } catch (IOException e) {
             throw new OnmsUpgradeException("Can't find Services Configuration file", e);

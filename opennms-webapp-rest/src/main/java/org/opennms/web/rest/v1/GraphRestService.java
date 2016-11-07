@@ -51,6 +51,7 @@ import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.resource.ResourceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.stereotype.Component;
@@ -112,7 +113,10 @@ public class GraphRestService extends OnmsRestService {
         if (resource == null) {
             throw getException(Status.NOT_FOUND, "No resource with id '{}' found.", resourceId);
         }
+        return getGraphNamesForResource(resource);
+    }
 
+    private GraphNameCollection getGraphNamesForResource(final OnmsResource resource) {
         List<String> graphNames = Lists.newLinkedList();
         for (PrefabGraph prefabGraph : m_graphDao.getPrefabGraphsForResource(resource)) {
             graphNames.add(prefabGraph.getName());
@@ -174,7 +178,7 @@ public class GraphRestService extends OnmsRestService {
 
         public void visit(final ResourceDTO resource) {
             // first, decorate the DTO with the list of graph names
-            final GraphNameCollection graphNames = m_service.getGraphNamesForResource(resource.getId());
+            final GraphNameCollection graphNames = m_service.getGraphNamesForResource(resource.getResource());
             resource.setGraphNames(graphNames.getObjects());
 
             // then, get the prefab graphs for these graph names if we don't have them already

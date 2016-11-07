@@ -1,0 +1,22 @@
+{
+  "name": "opennms-smoke-tests",
+  "version": "19.0.0-SNAPSHOT",
+  "main": "src/main/javascript/index.js",
+  "devDependencies": {
+    "casper-chai": "^0.2.1",
+    "casperjs": "^1.1.0-beta5",
+    "chai": "^3.5.0",
+    "eslint": "^1.10.3",
+    "eslint-friendly-formatter": "^1.2.2",
+    "eslint-loader": "^1.3.0",
+    "fs-extra": "^0.26.5",
+    "moment": "^2.12.0",
+    "path": "^0.12.7",
+    "phantomjs": "^2.1.3",
+    "phantomjs-prebuilt": "^2.1.5"
+  },
+  "scripts": {
+    "test": "npm run lint && find src/test/javascript/tests -type f -name \\*.js | xargs casperjs test --xunit=target/failsafe-reports/casperjs.xml",
+    "lint": "eslint . --ext .js"
+  }
+}

@@ -28,49 +28,91 @@
 
 package org.opennms.features.topology.netutils.internal.operations;
 
+import java.net.InetAddress;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.AbstractOperation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.OperationContext.DisplayLocation;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.netutils.internal.Node;
-import org.opennms.features.topology.netutils.internal.PingWindow;
+import org.opennms.features.topology.netutils.internal.ping.PingWindow;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
+import org.opennms.netmgt.model.OnmsNode;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 public class PingOperation extends AbstractOperation {
 
-    private String pingURL;
+    private LocationAwarePingClient pingClient;
+
+    private MonitoringLocationDao monitoringLocationDao;
+
+    private NodeDao nodeDao;
+
+    public PingOperation(LocationAwarePingClient pingClient, MonitoringLocationDao monitoringLocationDao, NodeDao nodeDao) {
+        this.pingClient = Objects.requireNonNull(pingClient);
+        this.monitoringLocationDao = Objects.requireNonNull(monitoringLocationDao);
+        this.nodeDao = Objects.requireNonNull(nodeDao);
+    }
 
     @Override
-    public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
-        if (targets != null) {
-            for (final VertexRef target : targets) {
-                final String addrValue = getIpAddrValue(operationContext, target);
-                final String labelValue = getLabelValue(operationContext, target);
-                final Integer nodeValue = getNodeIdValue(operationContext, target);
+    public void execute(final List<VertexRef> targets, final OperationContext operationContext) {
+        final VertexRef target = targets.get(0);
+        final Vertex vertex = getVertexItem(operationContext, target);
+        final Optional<OnmsNode> node = getNodeIfAvailable(vertex);
 
-                if (addrValue != null && nodeValue != null && nodeValue > 0) {
-                    final Node node = new Node(nodeValue.intValue(), addrValue, labelValue == null? "" : labelValue);
-                    final String url = getPingURL();
-                    final String fullUrl = url.startsWith("/")? url : getFullUrl(url);
-                    operationContext.getMainWindow().addWindow(new PingWindow(node, fullUrl));
-                    return null;
-                }
+        final List<String> locations = monitoringLocationDao.findAll().stream().map(eachLocation -> eachLocation.getLocationName()).collect(Collectors.toList());
+        final String defaultLocation = node.isPresent()
+                ? node.get().getLocation().getLocationName()
+                : MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
+
+        final List<InetAddress> ipAddresses = node.isPresent()
+                ? Lists.newArrayList(node.get().getIpInterfaces()).stream().map(eachInterface -> eachInterface.getIpAddress()).collect(Collectors.toList())
+                : Lists.newArrayList(InetAddressUtils.addr(vertex.getIpAddress()));
+        final InetAddress defaultIp = getDefaultIp(vertex, node);
+
+        final String caption = String.format("Ping - %s (%s)", vertex.getLabel(), vertex.getIpAddress());
+        new PingWindow(pingClient,
+                locations, ipAddresses,
+                defaultLocation, defaultIp,
+                caption)
+                .open();
+    }
+
+    private InetAddress getDefaultIp(Vertex vertex, Optional<OnmsNode> node) {
+        if (hasValidIpAddress(vertex)) {
+            return InetAddressUtils.addr(vertex.getIpAddress());
+        }
+        if (node.isPresent() && node.get().getPrimaryInterface() != null) {
+            return node.get().getPrimaryInterface().getIpAddress();
+        }
+        if (node.isPresent()) {
+            return node.get().getIpInterfaces().iterator().next().getIpAddress();
+        }
+        throw new IllegalStateException("The vertex does not have a ip address or a node assigned.");
+    }
+
+    @Override
+    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
+        if (targets.size() == 1) {
+            final Vertex vertexItem = getVertexItem(operationContext, targets.get(0));
+            if (vertexItem != null) {
+                return hasValidIpAddress(vertexItem) || hasValidNodeId(vertexItem);
             }
         }
-        return null;
+        return false;
     }
 
     @Override
     public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
-        if (operationContext.getDisplayLocation() == DisplayLocation.MENUBAR) {
-            return true;
-        } else if(targets != null && targets.size() > 0 && targets.get(0) != null) {
-            return true;
-        }else {
-            return false;
-        }
-
+        return targets != null && targets.size() > 0;
     }
 
     @Override
@@ -78,12 +120,47 @@ public class PingOperation extends AbstractOperation {
         return "ping";
     }
 
-    public void setPingURL(final String url) {
-        pingURL = url;
+
+    /**
+     * Verifies that the provided vertex has a valid node assigned and the node has at least one ip address.
+     *
+     * @param vertex The vertex to check
+     * @return True if a node with at least one ip address is assigned, false otherwise.
+     */
+    private boolean hasValidNodeId(Vertex vertex) {
+        return vertex.getNodeID() != null && getNodeIfAvailable(vertex).isPresent();
     }
 
-    public String getPingURL() {
-        return pingURL;
+    private boolean hasValidIpAddress(Vertex vertexItem) {
+        // Only enable if we actually have something to ping
+        final String ipAddress = vertexItem.getIpAddress();
+        if (!Strings.isNullOrEmpty(ipAddress)) {
+            try {
+                InetAddressUtils.getInetAddress(ipAddress);
+                return true;
+            } catch (IllegalArgumentException ex) {
+                return false;
+            }
+        }
+        return false;
     }
 
+    /**
+     * Returns an Optional containing a node id {@link Vertex#getNodeID()} exists in the OpenNMS Database and that the node
+     * has at least one ip interface.
+     *
+     * @param   vertex The vertex to verify.
+     * @return  A non empty optional if a node with node id {@link Vertex#getNodeID()} exists and
+     *          that node has at least one ip interface defined.
+     */
+    private Optional<OnmsNode> getNodeIfAvailable(Vertex vertex) {
+        Objects.requireNonNull(vertex);
+        Objects.requireNonNull(vertex.getNodeID());
+
+        final OnmsNode node = nodeDao.get(vertex.getNodeID());
+        if (node != null && !node.getIpInterfaces().isEmpty()) {
+            return Optional.of(node);
+        }
+        return Optional.empty();
+    }
 }

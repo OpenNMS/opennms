@@ -3,46 +3,24 @@
 :imagesdir: ../../images
 
 [[gi-install-opennms-debian]]
-=== Install on Debian-based systems
+=== Debian
+
+IMPORTANT: This guide does not apply to OpenNMS Meridian, which can be installed only on Red Hat Enterprise Linux or CentOS systems.
 
 This section describes how to install the _OpenNMS_ platform on _Ubuntu 14.04 LTS_.
 The setup process is described in the following steps:
 
-. Install _OpenNMS_ apt repository server with GPG key to verify packages
 . Installation of the _opennms_ meta package which handles all dependencies
 . Initialize _PostgreSQL_ database and configure access
 . Initialize _OpenNMS_ and first start of the application
 
-[[gi-install-opennms-deb-repo]]
-==== Setup OpenNMS Debian repository
-
-_OpenNMS_ can be installed with Installation of stable repository and GPG key
-
-.Installation of _OpenNMS Debian_ repository
-[source, shell]
-----
-deb http://debian.opennms.org stable main
-deb-src http://debian.opennms.org stable main
-----
-
-.Installation of repository GPG key
-[source, shell]
-----
-wget -O - http://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
-----
-
-.Update apt repository cache
-[source, shell]
-----
-apt-get update
-----
-
 [[gi-install-opennms-deb-package]]
-==== Install OpenNMS package
+==== Install OpenNMS
 
 .Installation of the full application with all dependencies like PostgreSQL and Java
 [source, shell]
 ----
+apt-get update
 apt-get install -y opennms
 ----
 
@@ -55,6 +33,8 @@ The following packages will be automatically installed:
 * _jdk1.8_: _Oracle Java 8_ environment from _OpenNMS_ respository
 * _postgresql_: _PostgreSQL_ database server from distribution repository
 * _postgresql-libs_: _PostgreSQL_ database from distribution repository
+
+TIP: Verify the version of the _OpenNMS_ packages that was installed with `apt-cache show opennms`.
 
 With the successful installed packages the _OpenNMS_ platform is installed in the following directory structure:
 
@@ -95,11 +75,20 @@ The next step is creating an _opennms_ database user with password and configure
 su - postgres
 createuser -P opennms
 createdb -O opennms opennms
-psql -c "ALTER USER opennms WITH SUPERUSER;"
 exit
 ----
 
 NOTE: It is not necessary to change the authentication method in `pg_hba.conf`, it is by default set to `md5` for localhost connections.
+
+.Set password for Postgres super user
+[source, shell]
+----
+su - postgres
+psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PASSWORD';"
+exit
+----
+
+NOTE: The super user is required to be able to initialize and change the database schema for installation and updates.
 
 [source, shell]
 ----
@@ -120,14 +109,14 @@ vi ${OPENNMS_HOME}/etc/opennms-datasources.xml
                     database-name="template1"
                     class-name="org.postgresql.Driver"
                     url="jdbc:postgresql://localhost:5432/template1"
-                    user-name="** YOUR-OPENNMS-USERNAME **"<3>
-                    password="** YOUR-OPENNMS-PASSWORD **" /><4>
+                    user-name="postgres"<3>
+                    password="** YOUR-POSTGRES-PASSWORD **" /><4>
 ----
 
 <1> Set the user name to access the _OpenNMS_ database table
 <2> Set the password to access the _OpenNMS_ database table
-<3> Set the user name for administrative changes of the _OpenNMS_ database table
-<4> Set the password for administrative changes of the _OpenNMS_ database table
+<3> Set the _postgres_ user for administrative access to PostgreSQL
+<4> Set the password for administrative access to PostgreSQL
 
 [[gi-install-opennms-deb-init]]
 ==== Initialize OpenNMS
@@ -148,18 +137,6 @@ ${OPENNMS_HOME}/bin/install -dis
 ----
 
 NOTE: It is not necessary to add _OpenNMS_ to the run level manually, it is automatically added after setup.
-
-Running _OpenNMS_ doesn't require super user permissions.
-They are necessary for installing the _IPLIKE_ stored procedure during the database initialization.
-For operation the _OpenNMS_ database user can be restricted to a normal user.
-
-.Lockdown database permissions
-[source, shell]
-----
-su - postgres
-psql -c "ALTER ROLE opennms NOSUPERUSER;"
-psql -c "ALTER ROLE opennms NOCREATEDB;"
-----
 
 .Startup _OpenNMS_
 [source, shell]

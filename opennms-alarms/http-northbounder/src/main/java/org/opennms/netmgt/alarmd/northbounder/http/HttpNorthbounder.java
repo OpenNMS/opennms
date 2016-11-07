@@ -59,15 +59,21 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Forwards north bound alarms via HTTP.
- * FIXME: Needs lots of work still :(
+ * <p>FIXME: Needs lots of work still :(</p>
  * 
- * @author <a mailto:david@opennms.org>David Hustace</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public class HttpNorthbounder extends AbstractNorthbounder {
+
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(HttpNorthbounder.class);
 
+    /** The configuration. */
     private HttpNorthbounderConfig m_config;
 
+    /**
+     * Instantiates a new http northbounder.
+     */
     protected HttpNorthbounder() {
         super("HttpNorthbounder");
     }
@@ -76,12 +82,14 @@ public class HttpNorthbounder extends AbstractNorthbounder {
     // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
     // is available to JSSE
     static {
-        
         //this is a safe call because the method returns -1 if it is already installed (by PageSequenceMonitor, etc.)
         java.security.Security.addProvider(new EmptyKeyRelaxedTrustProvider());
     }
-    
 
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder#accepts(org.opennms.netmgt.alarmd.api.NorthboundAlarm)
+     */
     @Override
     public boolean accepts(NorthboundAlarm alarm) {
         if (m_config.getAcceptableUeis() == null || m_config.getAcceptableUeis().contains(alarm.getUei())) {
@@ -90,26 +98,28 @@ public class HttpNorthbounder extends AbstractNorthbounder {
         return false;
     }
 
-    
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder#forwardAlarms(java.util.List)
+     */
     @Override
     public void forwardAlarms(List<NorthboundAlarm> alarms) throws NorthbounderException {
-        
         LOG.info("Forwarding {} alarms", alarms.size());
-        
+
         //Need a configuration bean for these
-        
+
         int connectionTimeout = 3000;
         int socketTimeout = 3000;
         Integer retryCount = Integer.valueOf(3);
-        
+
         URI uri = m_config.getURI();
- 
+
         final HttpClientWrapper clientWrapper = HttpClientWrapper.create()
                 .setConnectionTimeout(connectionTimeout)
                 .setSocketTimeout(socketTimeout)
                 .setRetries(retryCount)
                 .useBrowserCompatibleCookies();
-        
+
         if (m_config.getVirtualHost() != null && !m_config.getVirtualHost().trim().isEmpty()) {
             clientWrapper.setVirtualHost(m_config.getVirtualHost());
         }
@@ -124,26 +134,26 @@ public class HttpNorthbounder extends AbstractNorthbounder {
                 throw new NorthbounderException("Failed to configure HTTP northbounder for relaxed SSL.", e);
             }
         }
-        
+
         HttpUriRequest method = null;
-        
+
         if (HttpMethod.POST == (m_config.getMethod())) {
             HttpPost postMethod = new HttpPost(uri);
-            
+
             //TODO: need to configure these
             List<NameValuePair> postParms = new ArrayList<NameValuePair>();
-            
+
             //FIXME:do this for now
             NameValuePair p = new BasicNameValuePair("foo", "bar");
             postParms.add(p);
-            
+
             try {
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParms, "UTF-8");
                 postMethod.setEntity(entity);
             } catch (UnsupportedEncodingException e) {
                 throw new NorthbounderException(e);
             }
-            
+
             HttpEntity entity = null;
             try {
                 //I have no idea what I'm doing here ;)
@@ -153,10 +163,10 @@ public class HttpNorthbounder extends AbstractNorthbounder {
                 e.printStackTrace();
             }
             postMethod.setEntity(entity);
-            
+
             method = postMethod;
         } else if (HttpMethod.GET == m_config.getMethod()) {
-            
+
             //TODO: need to configure these
             //List<NameValuePair> getParms = null;
             method = new HttpGet(uri);
@@ -184,7 +194,12 @@ public class HttpNorthbounder extends AbstractNorthbounder {
         }
     }
 
-
+    /**
+     * Determine HTTP version.
+     *
+     * @param version the version
+     * @return the HTTP version
+     */
     private static HttpVersion determineHttpVersion(String version) {
         HttpVersion httpVersion = null;
         if ("1.0".equals(version)) {
@@ -195,10 +210,20 @@ public class HttpNorthbounder extends AbstractNorthbounder {
         return httpVersion;
     }
 
+    /**
+     * Gets the configuration.
+     *
+     * @return the configuration
+     */
     public HttpNorthbounderConfig getConfig() {
         return m_config;
     }
 
+    /**
+     * Sets the configuration.
+     *
+     * @param config the new configuration
+     */
     public void setConfig(HttpNorthbounderConfig config) {
         m_config = config;
     }

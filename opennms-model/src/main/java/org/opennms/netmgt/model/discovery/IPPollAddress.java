@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model.discovery;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -42,21 +43,34 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  */
-public class IPPollAddress {
+public class IPPollAddress implements Serializable {
+
+    private static final long serialVersionUID = -4162816651553193934L;
+
+    /**
+     * Foreign source where this address should be persisted.
+     */
+    private final String m_foreignSource;
+
+    /**
+     * Network location of this address.
+     */
+    private final String m_location;
+
     /**
      * The dotted decimal IPv4 address for the poll.
      */
-    private InetAddress m_address; // dotted IP m_address
+    private final InetAddress m_address; // dotted IP m_address
 
     /**
      * The timeout for the poller in 1/1000th of a second.
      */
-    private long m_timeout;
+    private final long m_timeout;
 
     /**
      * The number of times to attempt to contact the remote.
      */
-    private int m_retries;
+    private final int m_retries;
 
     /**
      * <P>
@@ -71,10 +85,26 @@ public class IPPollAddress {
      *            The number of times to attempt to contact the address.
      * 
      */
-    public IPPollAddress(final InetAddress ipAddress, final long timeout, final int retries) {
+    public IPPollAddress(final String foreignSource, final String location, final InetAddress ipAddress, final long timeout, final int retries) {
+        m_foreignSource = foreignSource;
+        m_location = location;
         m_address = ipAddress;
         m_timeout = timeout;
         m_retries = retries;
+    }
+
+    /**
+     * Foreign source where this address should be persisted.
+     */
+    public String getForeignSource() {
+        return m_foreignSource;
+    }
+
+    /**
+     * Network location of this address.
+     */
+    public String getLocation() {
+        return m_location;
     }
 
     /**

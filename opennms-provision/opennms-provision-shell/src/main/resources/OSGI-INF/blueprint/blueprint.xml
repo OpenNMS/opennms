@@ -1,0 +1,50 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <reference id="locationAwareDetectorClient" interface="org.opennms.netmgt.provision.LocationAwareDetectorClient" availability="mandatory"/>
+    <reference id="serviceDetectorRegistry" interface="org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry" availability="mandatory"/>
+
+    <bean id="serviceNameCompleter" class="org.opennms.netmgt.provision.detector.command.ServiceNameCompleter">
+        <property name="serviceDetectorRegistry" ref="serviceDetectorRegistry" />
+    </bean>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="provision/detect">
+            <action class="org.opennms.netmgt.provision.detector.command.Detect">
+              <property name="locationAwareDetectorClient" ref="locationAwareDetectorClient"/>
+            </action>
+            <completers>
+                <ref component-id="serviceNameCompleter"/>
+                <null/>
+            </completers>
+        </command>
+    </command-bundle>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="provision/list-detectors">
+            <action class="org.opennms.netmgt.provision.detector.command.ListDetectors">
+              <property name="serviceDetectorRegistry" ref="serviceDetectorRegistry"/>
+            </action>
+        </command>
+    </command-bundle>
+    
+   <reference id="locationAwareDnsLookupClient" interface="org.opennms.netmgt.provision.LocationAwareDnsLookupClient" availability="mandatory"/>
+    
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="dns/lookup">
+            <action class="org.opennms.netmgt.provision.dns.command.DnsLookup">
+              <property name="client" ref="locationAwareDnsLookupClient"/>
+            </action>
+        </command>
+    </command-bundle>
+
+	<command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+		<command name="dns/reverse-lookup">
+			<action class="org.opennms.netmgt.provision.dns.command.DnsReverseLookup">
+			  <property name="client" ref="locationAwareDnsLookupClient" />
+			</action>
+		</command>
+	</command-bundle>
+	
+</blueprint>

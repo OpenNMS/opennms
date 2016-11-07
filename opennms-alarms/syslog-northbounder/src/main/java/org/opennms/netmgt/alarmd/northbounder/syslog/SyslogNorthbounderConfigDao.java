@@ -28,25 +28,58 @@
 
 package org.opennms.netmgt.alarmd.northbounder.syslog;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.core.xml.JaxbUtils;
 
-public class SyslogNorthbounderConfigDao
-        extends
-        AbstractJaxbConfigDao<SyslogNorthbounderConfig, SyslogNorthbounderConfig> {
+/**
+ * The Class SyslogNorthbounderConfigDao.
+ * 
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ */
+public class SyslogNorthbounderConfigDao extends AbstractJaxbConfigDao<SyslogNorthbounderConfig, SyslogNorthbounderConfig> {
 
+    /**
+     * Instantiates a new Syslog northbounder configiguration DAO.
+     */
     public SyslogNorthbounderConfigDao() {
-        super(SyslogNorthbounderConfig.class,
-              "Config for Syslog Northbounder");
+        super(SyslogNorthbounderConfig.class, "Config for Syslog Northbounder");
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.core.xml.AbstractJaxbConfigDao#translateConfig(java.lang.Object)
+     */
     @Override
-    protected SyslogNorthbounderConfig translateConfig(
-            SyslogNorthbounderConfig config) {
+    protected SyslogNorthbounderConfig translateConfig( SyslogNorthbounderConfig config) {
         return config;
     }
 
+    /**
+     * Gets the Syslog northbounder configuration.
+     *
+     * @return the configuration object
+     */
     public SyslogNorthbounderConfig getConfig() {
         return getContainer().getObject();
+    }
+
+
+    /**
+     * Reload.
+     */
+    public void reload() {
+        getContainer().reload();
+    }
+
+    /**
+     * Save.
+     *
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public void save() throws IOException {
+        JaxbUtils.marshal(getConfig(), new FileWriter(getConfigResource().getFile()));
     }
 
 }

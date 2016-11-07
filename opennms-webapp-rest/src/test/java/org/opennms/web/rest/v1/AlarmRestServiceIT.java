@@ -217,17 +217,25 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         getAlarmDao().saveOrUpdate(alarm);
         final Integer alarmId = alarm.getId();
 
-        sendPut("/alarms", "ack=true&alarmId=" + alarmId, 303, "/alarms/" + alarmId);
+        sendPut("/alarms", "ack=true&alarmId=" + alarmId, 204);
         String xml = sendRequest(GET, "/alarms/" + alarmId, 200);
         assertTrue(xml.contains("ackUser>admin<"));
 
-        sendPut("/alarms/" + alarmId, "clear=true", 303, "/alarms/" + alarmId);
+        sendPut("/alarms/" + alarmId, "clear=true", 204);
         xml = sendRequest(GET, "/alarms/" + alarmId, 200);
         assertTrue(xml.contains("severity=\"CLEARED\""));
 
-        sendPut("/alarms/" + alarmId, "escalate=true", 303, "/alarms/" + alarmId);
+        sendPut("/alarms/" + alarmId, "escalate=true", 204);
         xml = sendRequest(GET, "/alarms/" + alarmId, 200);
         assertTrue(xml.contains("severity=\"NORMAL\""));
+
+        sendPut("/alarms/" + alarmId, "ticketId=12345", 204);
+        xml = sendRequest(GET, "/alarms/" + alarmId, 200);
+        assertTrue(xml.contains("<troubleTicket>12345</troubleTicket>"));
+
+        sendPut("/alarms/" + alarmId, "ticketState=UPDATE_PENDING", 204);
+        xml = sendRequest(GET, "/alarms/" + alarmId, 200);
+        sendPut("/alarms/" + alarmId, "ticketState=UPDATE_PENDING", 204);
 
         alarm = getLastAlarm();
         alarm.setSeverity(OnmsSeverity.MAJOR);
@@ -238,7 +246,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // Log in as a normal REST user and attempt to resolve an alarm as a different user.
         // This should fail with a 403 forbidden.
         setUser("foo", new String[] { "ROLE_REST" });
-        sendPut("/alarms/" + alarmId, "ack=true&ackUser=bar", 403, null);
+        sendPut("/alarms/" + alarmId, "ack=true&ackUser=bar", 403);
     }
 
     private OnmsAlarm getLastAlarm() {
@@ -361,7 +369,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testAlarmClearAsAdmin() throws Exception {
         setUser("admin", new String[]{ "ROLE_ADMIN" });
         final OnmsAlarm alarm = createAlarm(OnmsSeverity.MAJOR);
-        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 303);
+        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 204);
         final String xml = sendRequest(GET, "/alarms/" + alarm.getId(), 200);
         final OnmsAlarm fromRest = JaxbUtils.unmarshal(OnmsAlarm.class, xml);
         assertEquals(fromRest.getSeverity(), OnmsSeverity.CLEARED);
@@ -372,7 +380,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testAlarmClearAsUser() throws Exception {
         setUser("ranger", new String[]{ "ROLE_USER" });
         final OnmsAlarm alarm = createAlarm(OnmsSeverity.MAJOR);
-        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 303);
+        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 204);
     }
 
     @Test
@@ -380,7 +388,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testAlarmClearAsRest() throws Exception {
         setUser("ranger", new String[]{ "ROLE_REST" });
         final OnmsAlarm alarm = createAlarm(OnmsSeverity.MAJOR);
-        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 303);
+        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 204);
         final String xml = sendRequest(GET, "/alarms/" + alarm.getId(), 200);
         final OnmsAlarm fromRest = JaxbUtils.unmarshal(OnmsAlarm.class, xml);
         assertEquals(fromRest.getSeverity(), OnmsSeverity.CLEARED);
@@ -391,7 +399,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testAlarmClearAsMobile() throws Exception {
         setUser("ranger", new String[]{ "ROLE_MOBILE" });
         final OnmsAlarm alarm = createAlarm(OnmsSeverity.MAJOR);
-        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 303);
+        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 204);
         final String xml = sendRequest(GET, "/alarms/" + alarm.getId(), 200);
         final OnmsAlarm fromRest = JaxbUtils.unmarshal(OnmsAlarm.class, xml);
         assertEquals(fromRest.getSeverity(), OnmsSeverity.CLEARED);

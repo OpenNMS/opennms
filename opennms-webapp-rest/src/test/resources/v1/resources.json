@@ -9,11 +9,11 @@
                 "resource": [
                     {
                         "externalValueAttributes": {}, 
-                        "id": "node[1].nodeSnmp[]", 
+                        "id": "node[imported%3A%3A1].nodeSnmp[]",
                         "label": "Node-level Performance Data", 
                         "link": null, 
                         "name": "", 
-                        "parentId": "node[1]", 
+                        "parentId": "node[imported%3A%3A1]",
                         "rrdGraphAttributes": {
                             "SwapIn": {
                                 "name": "SwapIn", 
@@ -33,10 +33,10 @@
                 "totalCount": 1
             }, 
             "externalValueAttributes": {}, 
-            "id": "node[1]", 
+            "id": "node[imported%3A%3A1]",
             "label": "node1", 
-            "link": "element/node.jsp?node=1", 
-            "name": "1", 
+            "link": "element/node.jsp?node=imported::1",
+            "name": "imported::1",
             "parentId": null, 
             "rrdGraphAttributes": {}, 
             "typeLabel": "Node", 

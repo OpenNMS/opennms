@@ -56,6 +56,10 @@
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
   
+  <bean id="locationDao" class="org.opennms.netmgt.dao.hibernate.MonitoringLocationDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
   <bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
@@ -74,6 +78,10 @@
 
   <bean name="eventProxy" class="org.opennms.netmgt.dao.mock.MockEventIpcManager">
     <qualifier value="mock" />
+  </bean>
+
+  <bean id="monitoringSystemDao" class="org.opennms.netmgt.dao.hibernate.MonitoringSystemDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
 
   <onmsgi:service ref="eventProxy">

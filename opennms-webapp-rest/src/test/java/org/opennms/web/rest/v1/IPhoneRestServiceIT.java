@@ -47,6 +47,7 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -81,6 +82,9 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private DistPollerDao m_distPollerDao;
 
     @Autowired
+    private MonitoringLocationDao m_locationDao;
+
+    @Autowired
     private DatabasePopulator m_databasePopulator;
 
     @Override
@@ -92,12 +96,12 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @JUnitTemporaryDatabase
     public void testAcknowlegement() throws Exception {
         final Pattern p = Pattern.compile("^.*<ackTime>(.*?)</ackTime>.*$", Pattern.DOTALL & Pattern.MULTILINE);
-        sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=ack");
+        sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=ack", 200);
         String xml = sendRequest(GET, "/alarms/1", new HashMap<String, String>(), 200);
         Matcher m = p.matcher(xml);
         assertTrue(m.matches());
         assertTrue(m.group(1).length() > 0);
-        sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=unack");
+        sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=unack", 200);
         xml = sendRequest(GET, "/alarms/1", new HashMap<String, String>(), 200);
         m = p.matcher(xml);
         assertFalse(m.matches());
@@ -208,7 +212,7 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     @JUnitTemporaryDatabase
     public void testEventsForNodeId() throws Exception {
-        OnmsNode node = new OnmsNode();
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation());
         node.setId(1);
 
         OnmsEvent event = new OnmsEvent();

@@ -60,13 +60,14 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.api.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
@@ -108,7 +109,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
@@ -120,9 +120,12 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
     private EasyMockUtils m_easyMockUtils;
     private FilterDao m_filterDao;
     private CollectdConfigFactory m_collectdConfig;
-    private DataCollectionConfigDao m_dataCollectionConfigDao;
+    private ResourceTypesDao m_resourceTypesDao;
     private DefaultResourceDao m_resourceDao;
     private FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
+
+    @Autowired
+    private MonitoringLocationDao m_locationDao;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -143,10 +146,10 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-        setStoreByForeignSource(true);
+        setStoreByForeignSource(false);
 
         m_easyMockUtils = new EasyMockUtils();
-        m_dataCollectionConfigDao = m_easyMockUtils.createMock(DataCollectionConfigDao.class);
+        m_resourceTypesDao = m_easyMockUtils.createMock(ResourceTypesDao.class);
         m_filterDao = m_easyMockUtils.createMock(FilterDao.class);
 
         FilterDaoFactory.setInstance(m_filterDao);
@@ -167,7 +170,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         m_resourceDao.setLocationMonitorDao(m_locationMonitorDao);
         m_resourceDao.setCollectdConfig(m_collectdConfig);
         m_resourceDao.setResourceStorageDao(m_resourceStorageDao);
-        m_resourceDao.setDataCollectionConfigDao(m_dataCollectionConfigDao);
+        m_resourceDao.setResourceTypesDao(m_resourceTypesDao);
         m_resourceDao.setIpInterfaceDao(m_ipInterfaceDao);
     }
 
@@ -179,8 +182,8 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         createNodes();
         Map<String, ResourceType> types = createResourceTypes();
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).anyTimes();
-        expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(types).anyTimes();
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).anyTimes();
+        expect(m_resourceTypesDao.getResourceTypes()).andReturn(types).anyTimes();
 
         m_easyMockUtils.replayAll();
         m_resourceDao.afterPropertiesSet();
@@ -256,7 +259,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         String[] resourceTreeFiles = fileAsString.split("\\r?\\n");
 
         // This should match the number of lines in the file
-        assertEquals(31830, resourceTreeFiles.length);
+        assertEquals(31829, resourceTreeFiles.length);
 
         for (String resourceTreeFile : resourceTreeFiles) {
             // Create the file and its parent directories in the temporary folder
@@ -276,12 +279,11 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         String fileAsString = IOUtils.toString(new ClassPathResource("resource-tree-ips.txt").getInputStream());
         String[] resourceTreeIps = fileAsString.split("\\r?\\n");
 
-        // Make sure every IP address is represented at lease once
+        // Make sure every IP address is represented at least once
         assertTrue(resourceTreeIps.length < NUM_NODES);
 
         for (int i = 1; i <= NUM_NODES; i++) {
-            OnmsNode node = new OnmsNode();
-            node.setLabel("node" + i);
+            OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node" + i);
             node.setForeignSource("NODES");
             node.setForeignId(Integer.toString(i));
             m_nodeDao.save(node);
