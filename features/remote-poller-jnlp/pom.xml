@@ -11,6 +11,36 @@
   <packaging>jar</packaging>
   <name>OpenNMS Features Remote Poller (JNLP)</name>
   <url>http://maven.apache.org</url>
+  <properties>
+    <webstartPluginVersion>1.0-beta-7-ONMS-20140424</webstartPluginVersion>
+  </properties>
+  <profiles>
+    <profile>
+      <id>run-expensive-tasks</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>webstart-maven-plugin</artifactId>
+            <version>${webstartPluginVersion}</version>
+            <configuration>
+              <verifyjar>true</verifyjar>
+              <canUnsign>true</canUnsign>
+              <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
+              <sign>
+                <keystore>${webstart.keystore}</keystore>
+                <keypass>${webstart.keypass}</keypass>
+                <storepass>${webstart.storepass}</storepass>
+                <alias>${webstart.keyalias}</alias>
+                <dnameCn>${webstart.dnameCn}</dnameCn>
+                <verify>true</verify>
+              </sign>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <build>
     <plugins>
        <plugin>
@@ -101,7 +131,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>webstart-maven-plugin</artifactId>
-        <version>1.0-beta-7-ONMS-20140424</version>
+        <version>${webstartPluginVersion}</version>
         <executions>
           <execution>
             <id>gui-app</id>
@@ -152,19 +182,9 @@
         </executions>
         <configuration>
           <templateDirectory>src/main/jnlp</templateDirectory>
-          <outputJarVersions>false</outputJarVersions>
-          <verbose>false</verbose>
-          <verifyjar>true</verifyjar>
-          <canUnsign>true</canUnsign>
-          <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
-          <sign>
-            <keystore>${webstart.keystore}</keystore>
-            <keypass>${webstart.keypass}</keypass>
-            <storepass>${webstart.storepass}</storepass>
-            <alias>${webstart.keyalias}</alias>
-            <dnameCn>${webstart.dnameCn}</dnameCn>
-            <verify>true</verify>
-          </sign>
+          <excludeTransitive>false</excludeTransitive>
+          <outputJarVersions>true</outputJarVersions>
+          <verbose>true</verbose>
           <updateManifestEntries>
             <!--
               Application name that is displayed on the Security Warning

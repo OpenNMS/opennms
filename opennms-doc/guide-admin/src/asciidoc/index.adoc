@@ -125,6 +125,15 @@ include::text/performance-data-collection/collectors/wsman/detector.adoc[]
 == Events
 include::text/events.adoc[]
 
+[[ga-notifications]]
+== Notifications
+include::text/notifications/introduction.adoc[]
+include::text/notifications/getting-started.adoc[]
+include::text/notifications/concepts.adoc[]
+include::text/notifications/bonus-strategies.adoc[]
+include::text/notifications/strategies/mattermost.adoc[]
+include::text/notifications/strategies/slack.adoc[]
+
 [ga-provisioning]
 == Provisioning
 include::text/provisioning/introduction.adoc[]
@@ -171,6 +180,10 @@ include::text/operation/newts/introduction.adoc[]
 include::text/operation/newts/configuration.adoc[]
 include::text/operation/newts/cassandra-jmx.adoc[]
 include::text/operation/newts/cassandra-newts-jmx.adoc[]
+
+[[ga-opennms-operation-daemon-config-files]]
+=== Daemon Configuration Files
+include::text/operation/daemon-config-files/notifd.adoc[]
 
 [[ga-ticketing]]
 == Ticketing
