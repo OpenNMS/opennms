@@ -46,6 +46,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsOutageCollection;
@@ -177,6 +178,7 @@ public class OutageRestService extends OnmsRestService {
 
         final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         params.putAll(uriInfo.getQueryParameters());
+        LOG.debug("Processing outages for node {} using {}", nodeId, params);
 
         if (startTs != null && endTs != null) {
             params.remove("start");
@@ -184,13 +186,12 @@ public class OutageRestService extends OnmsRestService {
             final Date start = new Date(startTs);
             final Date end = new Date(endTs);
             LOG.debug("Getting all outages from {} to {} for node {}", start, end, nodeId);
-            builder.gt("ifLostService", start);
-            builder.lt("ifLostService", end);
+            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.and(Restrictions.gt("ifLostService", start), Restrictions.lt("ifLostService", end)));
         } else {
             params.remove("dateRange");
             final Date start = new Date(System.currentTimeMillis() - dateRange);
             LOG.debug("Getting all outgae from {} to current date for node {}", start, nodeId);
-            builder.gt("ifLostService", start);
+            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifLostService", start));
         }
 
         applyQueryFilters(params, builder);
