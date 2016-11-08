@@ -73,8 +73,18 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
     private boolean m_registeredForTraps;
 
     private List<TrapNotificationHandler> m_trapNotificationHandlers = new ArrayList<TrapNotificationHandler>();
+    
+    private static SnmpV3User snmpV3User;
 
-    public void setTrapdConfig(TrapdConfiguration newTrapdConfig) {
+    public SnmpV3User getSnmpV3User() {
+		return snmpV3User;
+	}
+
+	public static void setSnmpV3User(SnmpV3User snmpV3UserFromMap) {
+		snmpV3User = snmpV3UserFromMap;
+	}
+
+	public void setTrapdConfig(TrapdConfiguration newTrapdConfig) {
 
         if (checkForTrapdConfigurationChange(newTrapdConfig)) {
 
@@ -97,6 +107,19 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
         }
     }
 
+	@Override
+	public boolean equals(Object obj) {
+		SnmpV3User snmpv3UserObject = (SnmpV3User) obj;
+		if (compareSnmpV3UsersAttributes(snmpv3UserObject.getAuthPassPhrase(),
+				snmpV3User.getAuthPassPhrase())||compareSnmpV3UsersAttributes(snmpv3UserObject.getAuthProtocol(),
+						snmpV3User.getAuthProtocol())||compareSnmpV3UsersAttributes(snmpv3UserObject.getEngineId(),
+								snmpV3User.getEngineId())||compareSnmpV3UsersAttributes(snmpv3UserObject.getPrivPassPhrase(),
+										snmpV3User.getPrivPassPhrase())||compareSnmpV3UsersAttributes(snmpv3UserObject.getPrivProtocol(),
+												snmpV3User.getPrivProtocol())) {
+			return true;
+		}
+		return false;
+	}
     /**
      * TODO: Add a better .equals() method to {@link SnmpV3User} and replace this
      * with a collection comparator.
@@ -113,18 +136,11 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
 		}
 
         for (String securityName : existingSnmpV3UserMap.keySet()) {
-            if (
-                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getAuthPassPhrase(), updatedSnmpV3Usermap.get(securityName).getAuthPassPhrase()) ||
-                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getAuthProtocol(), updatedSnmpV3Usermap.get(securityName).getAuthProtocol()) ||
-                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getEngineId(), updatedSnmpV3Usermap.get(securityName).getEngineId()) ||
-                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getPrivPassPhrase(), updatedSnmpV3Usermap.get(securityName).getPrivPassPhrase()) ||
-                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getPrivProtocol(), updatedSnmpV3Usermap.get(securityName).getPrivProtocol())
-            ) {
-                return true;
-            }
+        	setSnmpV3User(existingSnmpV3UserMap.get(securityName));
+        	if(new TrapReceiverImpl().equals(updatedSnmpV3Usermap.get(securityName)))
+        		return true;
         }
-
-        return false;
+       return false;
     }
 
     private static boolean compareSnmpV3UsersAttributes(String currentValue, String updatedValue) {
@@ -150,7 +166,7 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
 
             Map<String, SnmpV3User> existingSnmpV3Users = m_snmpV3Users.stream().collect(Collectors.toMap(SnmpV3User::getSecurityName, Function.<SnmpV3User>identity()));
 
-            if (compareSnmpV3UsersMap(existingSnmpV3Users, newSnmpV3Users) || compareSnmpV3UsersMap(newSnmpV3Users, existingSnmpV3Users)) {
+            if (compareSnmpV3UsersMap(existingSnmpV3Users, newSnmpV3Users) ) {
                 LOG.info("SNMPv3 user list has been updated from trapd-confguration.xml.");
                 return true;
             }
