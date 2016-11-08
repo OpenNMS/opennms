@@ -30,12 +30,6 @@ package org.opennms.netmgt.snmp;
 
 
 public abstract class CollectionTracker implements Collectable {
-    
-    public static final int NO_ERR = 0;
-    public static final int TOO_BIG_ERR = 1;
-    public static final int NO_SUCH_NAME_ERR = 2;
-    public static final int GEN_ERR = 5;
-
     private CollectionTracker m_parent;
     private boolean m_failed = false;
     private boolean m_timedOut = false;
