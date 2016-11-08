@@ -58,6 +58,10 @@ include::text/webui/jmx-config-generator/cli.adoc[]
 === Heatmap
 include::text/webui/heatmap/introduction.adoc[]
 
+[[ga-admin-ui-trend]]
+=== Trend
+include::text/webui/trend/introduction.adoc[]
+
 [[ga-service-assurance]]
 == Service Assurance
 include::text/service-assurance/introduction.adoc[]
