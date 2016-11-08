@@ -40,20 +40,11 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Map;
-import java.util.Optional;
 
-import javax.net.ssl.SNIHostName;
-import javax.net.ssl.SSLHandshakeException;
-import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import org.apache.http.conn.ssl.StrictHostnameVerifier;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.core.utils.SocketUtils;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.SslSocketWrapper;
 import org.opennms.core.utils.TimeoutTracker;
@@ -75,7 +66,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
  */
 @Distributable
-public class SSLCertMonitor extends AbstractServiceMonitor {
+final public class SSLCertMonitor extends AbstractServiceMonitor {
     
     
     public static final Logger LOG = LoggerFactory.getLogger(SSLCertMonitor.class);
@@ -102,10 +93,7 @@ public class SSLCertMonitor extends AbstractServiceMonitor {
     private static final int DEFAULT_DAYS = 7;
 
     public static final String PARAMETER_PORT = "port";
-
     public static final String PARAMETER_DAYS = "days";
-
-    public static final String PARAMETER_SERVER_NAME = "server-name";
 
     /**
      * {@inheritDoc}
@@ -124,38 +112,37 @@ public class SSLCertMonitor extends AbstractServiceMonitor {
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         // Port
+        //
         int port = ParameterMap.getKeyedInteger(parameters, PARAMETER_PORT, DEFAULT_PORT);
         if (port == DEFAULT_PORT) {
             throw new RuntimeException("Required parameter 'port' is not present in supplied properties.");
         }
 
-        // Remaining days
         int validityDays = ParameterMap.getKeyedInteger(parameters, PARAMETER_DAYS, DEFAULT_DAYS);
         if (validityDays <= 0) {
             throw new RuntimeException("Required parameter 'days' must be a positive value.");
         }
 
-        // Server name (optional)
-        final String serverName = PropertiesUtils.substitute(ParameterMap.getKeyedString(parameters, PARAMETER_SERVER_NAME, ""),
-                                                             getServiceProperties(svc));
-
-        // Calculate validity range
-        Calendar calValid = this.getCalendarInstance();
-        Calendar calCurrent = this.getCalendarInstance();
+        //
+        Calendar calValid = GregorianCalendar.getInstance();
+        Calendar calCurrent = GregorianCalendar.getInstance();
         calValid.setTimeInMillis(calCurrent.getTimeInMillis());
         calValid.add(Calendar.DAY_OF_MONTH, validityDays);
 
-        Calendar calBefore = this.getCalendarInstance();
-        Calendar calAfter = this.getCalendarInstance();
+        Calendar calBefore = GregorianCalendar.getInstance();
+        Calendar calAfter = GregorianCalendar.getInstance();
 
-        // Get the address instance
+        // Get the address instance.
+        //
         InetAddress ipAddr = svc.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipAddr);
-        LOG.debug("poll: address={}, port={}, serverName={}, {}", hostAddress, port, serverName, tracker);
+        LOG.debug("poll: address={}, port={}, {}", hostAddress, port, tracker);
 
         // Give it a whirl
+        //
         PollStatus serviceStatus = PollStatus.unavailable();
+
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             Socket socket = null;
             try {
@@ -165,23 +152,10 @@ public class SSLCertMonitor extends AbstractServiceMonitor {
                 socket.connect(new InetSocketAddress(ipAddr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
                 LOG.debug("Connected to host: {} on port: {}", ipAddr, port);
-                SSLSocket sslSocket = SocketUtils.wrapSocketInSslContext(socket, null);
+                SSLSocket sslSocket = (SSLSocket) getSocketWrapper().wrapSocket(socket);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
-
-                // Use the server name as as SNI host name if available
-                if (!Strings.isNullOrEmpty(serverName)) {
-                    final SSLParameters sslParameters = sslSocket.getSSLParameters();
-                    sslParameters.setServerNames(ImmutableList.of(new SNIHostName(serverName)));
-                    sslSocket.setSSLParameters(sslParameters);
-
-                    // Check certificates host name
-                    if (!new StrictHostnameVerifier().verify(serverName, sslSocket.getSession())) {
-                        serviceStatus = PollStatus.unavailable("Host name verification failed - certificate common name is invalid");
-                        continue;
-                    }
-                }
 
                 Certificate[] certs = sslSocket.getSession().getPeerCertificates();
                 for (int i = 0; i < certs.length && !serviceStatus.isAvailable(); i++) {
@@ -232,6 +206,7 @@ public class SSLCertMonitor extends AbstractServiceMonitor {
                 serviceStatus = PollStatus.unavailable(reason);
             } finally {
                 try {
+                    // Close the socket
                     if (socket != null) {
                         socket.close();
                     }
@@ -242,10 +217,20 @@ public class SSLCertMonitor extends AbstractServiceMonitor {
             }
         }
 
+        //
+        // return the status of the service
+        //
         return serviceStatus;
     }
 
-    protected Calendar getCalendarInstance() {
-        return GregorianCalendar.getInstance();
+    /**
+     * <p>wrapSocket</p>
+     *
+     * @param socket a {@link java.net.Socket} object.
+     * @return a {@link java.net.Socket} object.
+     * @throws java.io.IOException if any.
+     */
+    protected SocketWrapper getSocketWrapper() {
+        return new SslSocketWrapper();
     }
 }
