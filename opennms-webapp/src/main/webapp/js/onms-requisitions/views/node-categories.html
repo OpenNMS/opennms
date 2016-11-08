@@ -11,7 +11,8 @@
       <input class="form-control" type="text" name="categoryName"
              placeholder="Category Name (choose one from the list or type a custom text for a new one)"
              ng-model="category.name" typeahead-min-length="0" typeahead-editable="true"
-             uib-typeahead="category for category in getAvailableCategories() | filter:$viewValue" required valid-category="category"></input>
+             uib-typeahead="category for category in getAvailableCategories() | filter:$viewValue | orderBy:'toString()'"
+             required valid-category="category"></input>
       <span class="input-group-btn">
         <button type="button" class="btn btn-default" ng-click="removeCategory($index)">
           <span class="glyphicon glyphicon-remove"></span>

@@ -71,6 +71,7 @@ public class SnmpInfo {
 	private Integer m_maxRequestSize;
 	private String m_writeCommunity;
 	private String m_proxyHost;
+	private String m_location;
 	
 	/**
 	 * <p>
@@ -99,7 +100,6 @@ public class SnmpInfo {
 		if (config.getMaxRepetitions() >= 1) m_maxRepetitions = config.getMaxRepetitions();
 		if (config.getMaxVarsPerPdu() >= 1) m_maxVarsPerPdu = config.getMaxVarsPerPdu();
 		if (config.getMaxRequestSize() >= 1) m_maxRequestSize = Integer.valueOf(config.getMaxRequestSize());
-		
 		// handle a possible proxy host setting
 		if (config.getProxyFor() != null) { // switch proxy and address
 			m_proxyHost = InetAddressUtils.str(config.getAddress());
@@ -234,7 +234,22 @@ public class SnmpInfo {
 		m_timeout = timeout;
 	}
 
-	public String getSecurityName() {
+	/**
+     * @return the m_location
+     */
+    public String getLocation() {
+        return m_location;
+    }
+
+    /**
+     * @param location the m_location to set
+     */
+    public void setLocation(String location) {
+        this.m_location = location;
+    }
+
+
+    public String getSecurityName() {
 		return m_securityName;
 	}
 
@@ -429,6 +444,7 @@ public class SnmpInfo {
 		eventInfo.setPrivProtocol(m_privProtocol);
 		eventInfo.setSecurityName(m_securityName);
 		eventInfo.setProxyHost(m_proxyHost);
+		eventInfo.setLocation(m_location);
 		if (m_port != null) eventInfo.setPort(m_port.intValue());
 		if (m_retries != null) eventInfo.setRetryCount(m_retries.intValue());
 		if (m_timeout != null) eventInfo.setTimeout(m_timeout.intValue());

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="jmxconfiggenerator" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+    <feature name="jmxconfiggenerator" version="${project.version}" description="OpenNMS JMX Configuration Generator">
+        <feature>guava</feature>
+        <feature>commons-io</feature>
+        <bundle>mvn:org.opennms.features/jmxconfiggenerator/${project.version}</bundle>
+        <bundle>wrap:mvn:args4j/args4j/${args4jVersion}</bundle>
+        <bundle>wrap:mvn:org.jvnet.opendmk/jmxremote_optional/${jmxremote.optional.version}</bundle>
+        <bundle>mvn:org.apache.velocity/velocity/${velocity.version}</bundle>
+        <bundle>mvn:org.opennms.features/org.opennms.features.name-cutter/${project.version}</bundle>
+    </feature>
+</features>

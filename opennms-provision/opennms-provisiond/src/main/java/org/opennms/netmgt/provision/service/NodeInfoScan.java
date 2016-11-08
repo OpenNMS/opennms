@@ -95,7 +95,8 @@ final class NodeInfoScan implements RunInBatch {
     }
 
     private SnmpAgentConfig getAgentConfig(InetAddress primaryAddress) {
-        return getAgentConfigFactory().getAgentConfig(primaryAddress);
+        return getAgentConfigFactory().getAgentConfig(primaryAddress,
+                (m_location == null) ? null : m_location.getLocationName());
     }
 
     private SnmpAgentConfigFactory getAgentConfigFactory() {

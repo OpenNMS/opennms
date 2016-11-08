@@ -29,7 +29,6 @@
 package org.opennms.features.topology.app.internal;
 
 import static org.opennms.features.topology.api.support.VertexHopGraphProvider.getWrappedVertexHopCriteria;
-import static org.opennms.features.topology.app.internal.operations.MetaTopologySelectorOperation.createOperationForDefaultGraphProvider;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -38,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -80,7 +80,6 @@ import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.menu.MenuManager;
 import org.opennms.features.topology.app.internal.menu.MenuUpdateListener;
 import org.opennms.features.topology.app.internal.menu.TopologyContextMenu;
-import org.opennms.features.topology.app.internal.operations.MetaTopologySelectorOperation;
 import org.opennms.features.topology.app.internal.operations.RedoLayoutOperation;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
@@ -102,6 +101,7 @@ import org.opennms.osgi.locator.OnmsServiceManagerLocator;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
@@ -590,11 +590,10 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         }
 
         // If no Topology Provider was selected (due to loadUserSettings(), fallback to default
-        if (m_graphContainer.getBaseTopology() == null
-                || m_graphContainer.getBaseTopology() == MergingGraphProvider.NULL_PROVIDER) {
-            MetaTopologySelectorOperation defaultTopologySelectorOperation = createOperationForDefaultGraphProvider(m_bundlecontext, "(|(label=Enhanced Linkd)(label=Linkd))");
+        if (m_graphContainer.getBaseTopology() == null || m_graphContainer.getBaseTopology() == MergingGraphProvider.NULL_PROVIDER) {
+            CheckedOperation defaultTopologySelectorOperation = getDefaultTopologySelectorOperation(m_bundlecontext);
             Objects.requireNonNull(defaultTopologySelectorOperation, "No default GraphProvider found."); // no default found, abort
-            defaultTopologySelectorOperation.execute(m_graphContainer);
+            defaultTopologySelectorOperation.execute(Lists.newArrayList(), new DefaultOperationContext(TopologyUI.this, m_graphContainer, DisplayLocation.MENUBAR));
         }
 
         // We set the listeners at the end, to not fire them all the time when initializing the UI
@@ -1168,5 +1167,34 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         if(!selectedVertexRefs.equals(vertexRefs) && !event.allVerticesSelected()) {
             m_selectionManager.setSelectedVertexRefs(vertexRefs);
         }
+    }
+
+    private static CheckedOperation getDefaultTopologySelectorOperation(BundleContext bundleContext) {
+        try {
+            // Find all topology selector operations
+            final Collection<ServiceReference<CheckedOperation>> serviceReferences = bundleContext.getServiceReferences(CheckedOperation.class, "(operation.label=*?group=topology)");
+
+            // Filter for linkd
+            final Optional<ServiceReference<CheckedOperation>> linkdTopologySelectorOperationOptional = serviceReferences.stream()
+                    .filter(serviceReference -> {
+                        String label = (String) serviceReference.getProperty("operation.label");
+                        return label.toLowerCase().equalsIgnoreCase("linkd");
+                    })
+                    .findFirst();
+            if (linkdTopologySelectorOperationOptional.isPresent()) {
+                return bundleContext.getService(linkdTopologySelectorOperationOptional.get());
+            }
+
+            // We did not find linkd, we fall back to the first provider (sorted by label) we found, if any
+            final Map<String, CheckedOperation> operationMap = serviceReferences.stream()
+                    .collect(Collectors.toMap(reference -> (String) reference.getProperty("operation.label"), reference -> bundleContext.getService(reference)));
+            final Optional<String> optionalLabel = operationMap.keySet().stream().sorted().findFirst();
+            if (optionalLabel.isPresent()) {
+                return operationMap.get(optionalLabel.get());
+            }
+        } catch (InvalidSyntaxException e) {
+            LOG.error("Could not query BundleContext for services", e);
+        }
+        return null; // nothing found
     }
 }
