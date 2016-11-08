@@ -280,12 +280,12 @@
     :: Ops Board/Panel styles
     -------------------------------------------------- */
 
-.alert-details-dashlet .onms-table{
+.alert-details-dashlet.onms-table{
     border-collapse: collapse;
     width: 100%;
     margin-top: 0;
     margin-bottom: 10px;
-    color:#000000;
+    color: #000000;
 }
 
 .alert-details-dashlet .onms { padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
