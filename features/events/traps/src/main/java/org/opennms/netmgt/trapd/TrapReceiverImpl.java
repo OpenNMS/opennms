@@ -74,12 +74,6 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
 
     private List<TrapNotificationHandler> m_trapNotificationHandlers = new ArrayList<TrapNotificationHandler>();
     
-    private static SnmpV3User snmpV3User;
-
-	public static void setSnmpV3User(SnmpV3User snmpV3UserFromMap) {
-		snmpV3User = snmpV3UserFromMap;
-	}
-
 	public void setTrapdConfig(TrapdConfiguration newTrapdConfig) {
 
         if (checkForTrapdConfigurationChange(newTrapdConfig)) {
@@ -103,24 +97,6 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
         }
     }
 
-	@Override
-	public boolean equals(Object obj) {
-		SnmpV3User snmpv3UserObject = (SnmpV3User) obj;
-		if (compareSnmpV3UsersAttributes(snmpv3UserObject.getAuthPassPhrase(),
-				snmpV3User.getAuthPassPhrase())||compareSnmpV3UsersAttributes(snmpv3UserObject.getAuthProtocol(),
-						snmpV3User.getAuthProtocol())||compareSnmpV3UsersAttributes(snmpv3UserObject.getEngineId(),
-								snmpV3User.getEngineId())||compareSnmpV3UsersAttributes(snmpv3UserObject.getPrivPassPhrase(),
-										snmpV3User.getPrivPassPhrase())||compareSnmpV3UsersAttributes(snmpv3UserObject.getPrivProtocol(),
-												snmpV3User.getPrivProtocol())) {
-			return true;
-		}
-		return false;
-	}
-	
-	@Override
-	public int hashCode() {
-		return snmpV3User.hashCode();
-	}
     /**
      * TODO: Add a better .equals() method to {@link SnmpV3User} and replace this
      * with a collection comparator.
@@ -137,22 +113,12 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
 		}
 
         for (String securityName : existingSnmpV3UserMap.keySet()) {
-        	setSnmpV3User(existingSnmpV3UserMap.get(securityName));
-        	if(new TrapReceiverImpl().equals(updatedSnmpV3Usermap.get(securityName)))
+        	if(existingSnmpV3UserMap.get(securityName).equals(updatedSnmpV3Usermap.get(securityName)))
         		return true;
         }
        return false;
     }
-
-    private static boolean compareSnmpV3UsersAttributes(String currentValue, String updatedValue) {
-        if (currentValue != null && updatedValue != null) {
-            if (!currentValue.equalsIgnoreCase(updatedValue)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+   
     private boolean checkForTrapdConfigurationChange(TrapdConfiguration m_trapdConfig) {
         if (m_trapdConfig.getSnmpTrapPort() != m_snmpTrapPort) {
             LOG.info("SNMP trap port has been updated from trapd-confguration.xml.");

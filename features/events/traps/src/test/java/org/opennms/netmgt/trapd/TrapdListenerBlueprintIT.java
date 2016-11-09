@@ -31,18 +31,27 @@ package org.opennms.netmgt.trapd;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.camel.JaxbUtilsUnmarshalProcessor;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.minion.core.api.RestClient;
+import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -224,4 +233,111 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTest {
 		
 		notification.getTrapProcessor();
 	}
+	
+	
+	
+    private TrapdConfigBean getTrapConfiguration() {
+        TrapdConfigBean trapConfiguration = new TrapdConfigBean();
+        trapConfiguration.setSnmpTrapPort(10514);
+        trapConfiguration.setSnmpTrapAddress("127.0.0.1");
+        trapConfiguration.setNewSuspectOnTrap(false);
+        return trapConfiguration;
+    }
+    
+    @Test
+    @JUnitHttpServer(port = 10500)
+    public void testRouteWithoutSnmpV3Users() throws Exception {
+        DefaultCamelContext camelContext = new DefaultCamelContext();
+        camelContext.addRoutes(new RouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                JaxbUtilsUnmarshalProcessor jaxbUnmarshaller = new JaxbUtilsUnmarshalProcessor(TrapdConfiguration.class);
+                TrapReceiverImpl trapReciever = new TrapReceiverImpl(getTrapConfiguration());
+                from("http://localhost:10500/trapd-configuration-withoutSnmpV3Users.html").bean(jaxbUnmarshaller).bean(TrapdConfigBean.class,
+                        "onUpdate").bean(trapReciever, "setTrapdConfig").to("mock:result");
+            }
+        });
+        camelContext.start();
+
+        MockEndpoint mockEndPoint = camelContext.getEndpoint("mock:result", MockEndpoint.class);
+        mockEndPoint.expectedMessageCount(1);
+
+        ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
+        producerTemplate.start();
+        
+        mockEndPoint.assertIsSatisfied();
+
+        producerTemplate.stop();
+        camelContext.stop();
+        
+     
+    }
+    
+    @Test
+    @JUnitHttpServer(port = 10500)
+    public void testRouteWithSnmpV3Users() throws Exception {
+        
+        DefaultCamelContext camelContext = new DefaultCamelContext();
+        camelContext.addRoutes(new RouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                JaxbUtilsUnmarshalProcessor jaxbUnmarshaller = new JaxbUtilsUnmarshalProcessor(TrapdConfiguration.class);
+                TrapReceiverImpl trapReciever = new TrapReceiverImpl(getTrapConfiguration());
+                from("http://localhost:10500/trapd-configuration-withSnmpV3Users.html").bean(jaxbUnmarshaller).bean(TrapdConfigBean.class,
+                        "onUpdate").bean(trapReciever, "setTrapdConfig").to("mock:result");
+            }
+        });
+        camelContext.start();
+
+        MockEndpoint mockEndPoint = camelContext.getEndpoint("mock:result", MockEndpoint.class);
+        mockEndPoint.expectedMessageCount(1);
+
+        ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
+        producerTemplate.start();
+        
+        mockEndPoint.assertIsSatisfied();
+        
+        producerTemplate.stop();
+        camelContext.stop();
+
+    }
+    
+    @Test
+    @JUnitHttpServer(port = 10500)
+	public void testRouteWithSnmpV3UsersMultipleTimes() throws Exception {
+		DefaultCamelContext camelContext = new DefaultCamelContext();
+		Set<Object> uniqueExchangesRouted = new HashSet<Object>();
+		camelContext.addRoutes(new RouteBuilder() {
+			@Override
+			public void configure() throws Exception {
+				JaxbUtilsUnmarshalProcessor jaxbUnmarshaller = new JaxbUtilsUnmarshalProcessor(
+						TrapdConfiguration.class);
+				TrapReceiverImpl trapReciever = new TrapReceiverImpl(
+						getTrapConfiguration());
+				from("timer:mytimer?period=100")
+						.to("http://localhost:10500/trapd-configuration-withSnmpV3Users.html")
+						.bean(jaxbUnmarshaller)
+						.bean(TrapdConfigBean.class, "onUpdate")
+						.bean(trapReciever, "setTrapdConfig").to("mock:result");
+			}
+		});
+		camelContext.start();
+
+		MockEndpoint mockEndPoint = camelContext.getEndpoint("mock:result",
+				MockEndpoint.class);
+
+		if (mockEndPoint.getExchanges().toArray().length == 10) {
+			uniqueExchangesRouted.add(mockEndPoint.getExchanges().toArray());
+			assertEquals(1, uniqueExchangesRouted);
+		}
+		ProducerTemplate producerTemplate = camelContext
+				.createProducerTemplate();
+		producerTemplate.start();
+
+		mockEndPoint.assertIsSatisfied();
+
+		producerTemplate.stop();
+		camelContext.stop();
+	}
+    
 }
