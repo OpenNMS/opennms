@@ -76,10 +76,6 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
     
     private static SnmpV3User snmpV3User;
 
-    public SnmpV3User getSnmpV3User() {
-		return snmpV3User;
-	}
-
 	public static void setSnmpV3User(SnmpV3User snmpV3UserFromMap) {
 		snmpV3User = snmpV3UserFromMap;
 	}
@@ -119,6 +115,11 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
 			return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return snmpV3User.hashCode();
 	}
     /**
      * TODO: Add a better .equals() method to {@link SnmpV3User} and replace this
