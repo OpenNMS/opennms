@@ -19,5 +19,4 @@
                                                                   Reload Event loads changed configuration parameters of existing monitors.
 | `response-graph.properties` | no               | no           | Graph definition for response time graphs from monitors
 | `poll-outages.xml`          | ?                | ?            | ?
-| `poller-config.properties`  | ?                | ?            | ?
 |===
