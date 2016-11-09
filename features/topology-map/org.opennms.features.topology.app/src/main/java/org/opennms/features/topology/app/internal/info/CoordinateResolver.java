@@ -29,6 +29,7 @@
 package org.opennms.features.topology.app.internal.info;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -98,22 +99,21 @@ public class CoordinateResolver {
                 .filter(node -> !Strings.isNullOrEmpty(geoLocation(node).asAddressString()))
                 .collect(Collectors.toList());
 
-        // Retrieve coordinates
-        Map<Integer, Coordinates> nodeIdToCoordinateMapping = nodesWithAddress.stream().collect(Collectors.toMap(eachNode -> eachNode.getId(),
-                eachNode -> {
-                    final String addressString = geoLocation(eachNode).asAddressString();
-                    try {
-                        org.opennms.features.geocoder.Coordinates coordinates = geocoderService.getCoordinates(addressString);
-                        if (coordinates != null) {
-                            return new Coordinates(coordinates.getLongitude(), coordinates.getLatitude());
-                        }
-                    } catch (GeocoderException e) {
-                        LOG.warn("Couldn't resolve address '%s' for node id: %s, label: %s'", addressString, eachNode.getId(), eachNode.getLabel(), e);
-                    }
-                    return null;
-                }));
+        // Retrieve coordinates for nodes with a adress, but not logitude/latitude
+        Map<Integer, Coordinates> nodeIdToCoordinateMapping = new HashMap<>();
+        for (OnmsNode eachNode : nodesWithAddress) {
+            final String addressString = geoLocation(eachNode).asAddressString();
+            try {
+                org.opennms.features.geocoder.Coordinates coordinates = geocoderService.getCoordinates(addressString);
+                if (coordinates != null) {
+                    nodeIdToCoordinateMapping.put(eachNode.getId(), new Coordinates(coordinates.getLongitude(), coordinates.getLatitude()));
+                }
+            } catch (GeocoderException e) {
+                LOG.warn("Couldn't resolve address '%s' for node id: %s, label: %s'", addressString, eachNode.getId(), eachNode.getLabel(), e);
+            }
+        }
 
-        // Convert nodesWithLongLat
+        // Add nodesWithLongLat to node id to coordinate mapping
         nodesWithLongLat.forEach(eachNode -> {
             OnmsGeolocation geoLocation = geoLocation(eachNode);
             nodeIdToCoordinateMapping.put(eachNode.getId(), new Coordinates(geoLocation.getLongitude(), geoLocation.getLatitude()));
