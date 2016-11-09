@@ -18,5 +18,5 @@
 | `poller-configuration.xml`  | yes              | yes          | Restart is required in case new monitors are created or removed.
                                                                   Reload Event loads changed configuration parameters of existing monitors.
 | `response-graph.properties` | no               | no           | Graph definition for response time graphs from monitors
-| `poll-outages.xml`          | ?                | ?            | ?
+| `poll-outages.xml`          | no               | yes          | Can be reloaded with `uei.opennms.org/internal/schedOutagesChanged`
 |===
