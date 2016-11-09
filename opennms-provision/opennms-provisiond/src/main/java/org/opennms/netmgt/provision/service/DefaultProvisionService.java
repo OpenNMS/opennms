@@ -229,7 +229,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Transactional
     @Override
     public void updateNode(final OnmsNode node, String rescanExisting) {
-
         final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 
         // on an update, leave categories alone, let the NodeScan handle applying requisitioned categories
@@ -254,20 +253,30 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 primary = node.getIpInterfaces().iterator().next();
             }
 
-            if (primary != null) {
-                LOG.debug("Node Label was set by hostname or address.  Re-resolving.");
-                final InetAddress addr = primary.getIpAddress();
+            for (final OnmsIpInterface iface : node.getIpInterfaces()) {
+                final InetAddress addr = iface.getIpAddress();
                 final String ipAddress = str(addr);
                 final String hostname = getHostnameResolver().getHostname(addr);
 
-                if (hostname == null || ipAddress.equals(hostname)) {
-                    node.setLabel(ipAddress);
-                    node.setLabelSource(NodeLabelSource.ADDRESS);
+                if (iface.equals(primary)) {
+                    LOG.debug("Node Label was set by hostname or address.  Re-setting.");
+                    if (hostname == null || ipAddress.equals(hostname)) {
+                        node.setLabel(ipAddress);
+                        node.setLabelSource(NodeLabelSource.ADDRESS);
+                    } else {
+                        node.setLabel(hostname);
+                        node.setLabelSource(NodeLabelSource.HOSTNAME);
+                    }
+                }
+
+                if (hostname == null) {
+                    iface.setIpHostName(ipAddress);
                 } else {
-                    node.setLabel(hostname);
-                    node.setLabelSource(NodeLabelSource.HOSTNAME);
+                    iface.setIpHostName(hostname);
                 }
             }
+        } else {
+            LOG.debug("updateNodeHostname: skipping update. source = {}", node.getLabelSource());
         }
     }
 
