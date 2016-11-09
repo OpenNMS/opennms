@@ -585,14 +585,4 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 		LOG.error("The address {} is neither IPv4 nor IPv6. Don't know how to proceed, giving up.", ipaddr);
 		throw new RuntimeException("Cannot work with address " + ipaddr + " because it is neither IPv4 nor IPv6.");
 	}
-
-    private Properties getServiceProperties(MonitoredService svc) {
-        Properties properties = new Properties();
-        properties.put("ipaddr", svc.getIpAddr());
-        properties.put("nodeid", svc.getNodeId());
-        properties.put("nodelabel", svc.getNodeLabel());
-        properties.put("svcname", svc.getSvcName());
-        return properties;
-    }
-
 }
