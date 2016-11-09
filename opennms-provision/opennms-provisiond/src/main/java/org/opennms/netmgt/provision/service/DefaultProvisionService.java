@@ -258,7 +258,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 LOG.debug("Node Label was set by hostname or address.  Re-resolving.");
                 final InetAddress addr = primary.getIpAddress();
                 final String ipAddress = str(addr);
-                final String hostname = m_hostnameResolver.getHostname(addr);
+                final String hostname = getHostnameResolver().getHostname(addr);
 
                 if (hostname == null || ipAddress.equals(hostname)) {
                     node.setLabel(ipAddress);
@@ -1358,7 +1358,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 // TODO: Associate location with node if necessary
                 final OnmsNode node = new OnmsNode();
 
-                final String hostname = m_hostnameResolver.getHostname(addr(ipAddress));
+                final String hostname = getHostnameResolver().getHostname(addr(ipAddress));
                 if (hostname == null || ipAddress.equals(hostname)) {
                     node.setLabel(ipAddress);
                     node.setLabelSource(NodeLabelSource.ADDRESS);
