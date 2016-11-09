@@ -32,9 +32,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class AggregateTracker extends CollectionTracker {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    private static class ChildTrackerPduBuilder extends PduBuilder {
+public class AggregateTracker extends CollectionTracker {
+    private static final class ChildTrackerPduBuilder extends PduBuilder {
         private List<SnmpObjId> m_oids = new ArrayList<SnmpObjId>();
         private int m_nonRepeaters = 0;
         private int m_maxRepititions = 0;
@@ -141,13 +143,12 @@ public class AggregateTracker extends CollectionTracker {
         }
     }
 
-    private class ChildTrackerResponseProcessor implements ResponseProcessor {
+    private static class ChildTrackerResponseProcessor implements ResponseProcessor {
+        private static Logger LOG = LoggerFactory.getLogger(AggregateTracker.class);
+
         private final int m_repeaters;
-    
         private final PduBuilder m_pduBuilder;
-    
         private final int m_nonRepeaters;
-    
         private final List<ChildTrackerPduBuilder> m_childPduBuilders;
         
         private int m_currResponseIndex = 0;
@@ -197,23 +198,25 @@ public class AggregateTracker extends CollectionTracker {
     
         @Override
         public boolean processErrors(int errorStatus, int errorIndex) {
-            if (errorStatus == TOO_BIG_ERR) {
+            //LOG.trace("processErrors: errorStatus={}, errorIndex={}", errorStatus, errorIndex);;
+
+            final ErrorStatus status = ErrorStatus.fromStatus(errorStatus);
+
+            // handle special cases first
+            if (status == ErrorStatus.TOO_BIG) {
                 int maxVarsPerPdu = m_pduBuilder.getMaxVarsPerPdu();
                 if (maxVarsPerPdu <= 1) {
                     throw new IllegalArgumentException("Unable to handle tooBigError when maxVarsPerPdu = "+maxVarsPerPdu);
                 }
                 m_pduBuilder.setMaxVarsPerPdu(maxVarsPerPdu/2);
-                reportTooBigErr("Reducing maxVarsPerPdu for this request to "+m_pduBuilder.getMaxVarsPerPdu());
+                LOG.warn("Reducing maxVarsPerPdu for this request to {}", m_pduBuilder.getMaxVarsPerPdu());
                 return true;
-            } else if (errorStatus == GEN_ERR) {
-                return processChildError(errorStatus, errorIndex);
-            } else if (errorStatus == NO_SUCH_NAME_ERR) {
-                return processChildError(errorStatus, errorIndex);
-            } else if (errorStatus != NO_ERR){
-                throw new IllegalArgumentException("Unrecognized errorStatus "+errorStatus);
+            } else if (status.isFatal()) {
+                final ErrorStatusException ex = new ErrorStatusException(status);
+                LOG.debug("Fatal Error: {}", status, ex);
+                throw ex;
             } else {
-                // Continue on.. no need to retry
-                return false;
+                return processChildError(errorStatus, errorIndex);
             }
         }
     }

@@ -36,6 +36,7 @@ import java.util.concurrent.Executors;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.ErrorStatus;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -198,8 +199,8 @@ public class MockSnmpWalker extends SnmpWalker {
 	            }
 
 	            List<MockVarBind> responses = new ArrayList<MockVarBind>(m_oids.size());
-	            		
-	            int errorStatus = 0;
+
+	            ErrorStatus errorStatus = ErrorStatus.NO_ERROR;
 	            int errorIndex = 0;
 	            int index = 1; // snmp index start at 1
 	            for (final SnmpObjId oid : m_oids) {
@@ -207,8 +208,8 @@ public class MockSnmpWalker extends SnmpWalker {
 	            	if (nextOid == null) {
 	            		LOG.debug("No OID following {}", oid);
 	            		if (m_snmpVersion == SnmpAgentConfig.VERSION1) {
-	            			if (errorStatus == 0) { // for V1 only record the index of the first failing varbind
-	            				errorStatus = CollectionTracker.NO_SUCH_NAME_ERR;
+	            			if (errorStatus == ErrorStatus.NO_ERROR) { // for V1 only record the index of the first failing varbind
+	            				errorStatus = ErrorStatus.NO_SUCH_NAME;
 	            				errorIndex = index;
 	            			}
 	            		}
@@ -219,7 +220,7 @@ public class MockSnmpWalker extends SnmpWalker {
 	            	index++;
 	            }
 
-	            if (!processErrors(errorStatus, errorIndex)) {
+	            if (!processErrors(errorStatus.ordinal(), errorIndex)) {
 	            	LOG.debug("Responding with PDU of size {}.", responses.size());
 	            	for(MockVarBind vb : responses) {
 	                	processResponse(vb.getOid(), vb.getValue());
