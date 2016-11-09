@@ -29,7 +29,6 @@
 package org.opennms.features.topology.app.internal;
 
 import static org.opennms.features.topology.api.support.VertexHopGraphProvider.getWrappedVertexHopCriteria;
-import static org.opennms.features.topology.app.internal.operations.MetaTopologySelectorOperation.createOperationForDefaultGraphProvider;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -38,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -80,12 +80,13 @@ import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.menu.MenuManager;
 import org.opennms.features.topology.app.internal.menu.MenuUpdateListener;
 import org.opennms.features.topology.app.internal.menu.TopologyContextMenu;
-import org.opennms.features.topology.app.internal.operations.MetaTopologySelectorOperation;
 import org.opennms.features.topology.app.internal.operations.RedoLayoutOperation;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.opennms.features.topology.app.internal.support.LayoutManager;
 import org.opennms.features.topology.app.internal.ui.HudDisplay;
 import org.opennms.features.topology.app.internal.ui.InfoPanel;
+import org.opennms.features.topology.app.internal.ui.LayoutHintComponent;
 import org.opennms.features.topology.app.internal.ui.NoContentAvailableWindow;
 import org.opennms.features.topology.app.internal.ui.SearchBox;
 import org.opennms.features.topology.app.internal.ui.ToolbarPanel;
@@ -100,6 +101,7 @@ import org.opennms.osgi.locator.OnmsServiceManagerLocator;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
@@ -485,6 +487,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     private Window m_noContentWindow;
     private InfoPanel m_infoPanel;
     private BreadcrumbComponent m_breadcrumbComponent;
+    private LayoutHintComponent m_layoutHintComponent;
     private final GraphContainer m_graphContainer;
     private SelectionManager m_selectionManager;
     private final MenuManager m_menuManager;
@@ -510,6 +513,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     private HudDisplay m_currentHudDisplay;
     private ToolbarPanel m_toolbarPanel;
     private TransactionOperations m_transactionOperations;
+    private final LayoutManager m_layoutManager;
 
     private String getHeader(HttpServletRequest request) throws Exception {
         if(m_headerProvider == null) {
@@ -519,11 +523,12 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         }
     }
 
-    public TopologyUI(MenuManager menuManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager, TransactionOperations transactionOperations) {
+    public TopologyUI(MenuManager menuManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager, LayoutManager layoutManager, TransactionOperations transactionOperations) {
         // Ensure that selection changes trigger a history save operation
         m_menuManager = menuManager;
         m_historyManager = historyManager;
         m_iconRepositoryManager = iconRepoManager;
+        m_layoutManager = layoutManager;
         m_transactionOperations = transactionOperations;
 
         // We set it programmatically, as we require a GraphContainer instance per Topology UI instance.
@@ -563,7 +568,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
         // Set the algorithm last so that the criteria and SZLs are
         // in place before we run the layout algorithm.
-        m_graphContainer.setSessionId(m_applicationContext.getSessionId());
+        m_graphContainer.setApplicationContext(m_applicationContext);
         m_graphContainer.setLayoutAlgorithm(new TopoFRLayoutAlgorithm());
 
         createLayouts();
@@ -585,11 +590,10 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         }
 
         // If no Topology Provider was selected (due to loadUserSettings(), fallback to default
-        if (m_graphContainer.getBaseTopology() == null
-                || m_graphContainer.getBaseTopology() == MergingGraphProvider.NULL_PROVIDER) {
-            MetaTopologySelectorOperation defaultTopologySelectorOperation = createOperationForDefaultGraphProvider(m_bundlecontext, "(|(label=Enhanced Linkd)(label=Linkd))");
+        if (m_graphContainer.getBaseTopology() == null || m_graphContainer.getBaseTopology() == MergingGraphProvider.NULL_PROVIDER) {
+            CheckedOperation defaultTopologySelectorOperation = getDefaultTopologySelectorOperation(m_bundlecontext);
             Objects.requireNonNull(defaultTopologySelectorOperation, "No default GraphProvider found."); // no default found, abort
-            defaultTopologySelectorOperation.execute(m_graphContainer);
+            defaultTopologySelectorOperation.execute(Lists.newArrayList(), new DefaultOperationContext(TopologyUI.this, m_graphContainer, DisplayLocation.MENUBAR));
         }
 
         // We set the listeners at the end, to not fire them all the time when initializing the UI
@@ -631,6 +635,9 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
         // Register the Breadcrumb Panel
         m_graphContainer.addChangeListener(m_breadcrumbComponent);
+
+        // Register layout hint component
+        m_graphContainer.addChangeListener(m_layoutHintComponent);
     }
 
     private boolean noAdditionalFocusCriteria() {
@@ -739,6 +746,9 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         // Breadcrumb
         m_breadcrumbComponent = new BreadcrumbComponent();
 
+        // Layout hint
+        m_layoutHintComponent = new LayoutHintComponent(m_layoutManager, m_graphContainer);
+
         // Toolbar
         m_toolbarPanel = new ToolbarPanel(new ToolbarPanelController() {
             @Override
@@ -749,6 +759,11 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             @Override
             public void saveHistory() {
                 TopologyUI.this.saveHistory();
+            }
+
+            @Override
+            public void saveLayout() {
+                m_graphContainer.saveLayout();
             }
 
             @Override
@@ -787,12 +802,18 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             public Property<Double> getScaleProperty() {
                 return m_graphContainer.getScaleProperty();
             }
+
+            @Override
+            public LayoutManager getLayoutManager() {
+                return m_layoutManager;
+            }
         });
 
         // Map Layout (we need to wrap it in an absolute layout otherwise it shows up twice on the topology map)
         AbsoluteLayout mapLayout = new AbsoluteLayout();
         mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
         mapLayout.addComponent(m_breadcrumbComponent, "top:10px; left: 50px");
+        mapLayout.addComponent(m_layoutHintComponent, "bottom: 10px; left:20px");
         mapLayout.setSizeFull();
 
         HorizontalLayout layout = new HorizontalLayout();
@@ -845,6 +866,15 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                 bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
                 bottomLayoutBar.setSizeFull();
                 bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
+                bottomLayoutBar.addSplitterClickListener((event) -> {
+                    if (event.isDoubleClick()) {
+                        if (bottomLayoutBar.getSplitPosition() == 100) {
+                            bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
+                        } else {
+                            bottomLayoutBar.setSplitPosition(100, Unit.PERCENTAGE);
+                        }
+                    }
+                });
                 m_layout.addComponent(bottomLayoutBar);
                 updateTabVisibility();
             }
@@ -1082,6 +1112,10 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     @Override
     public void onVertexUpdate() {
         saveHistory();
+        // The vertex positions might be changed
+        // We update the ui elements accordingly
+        m_toolbarPanel.graphChanged(m_graphContainer);
+        m_layoutHintComponent.graphChanged(m_graphContainer);
     }
 
     public void setHeaderProvider(OnmsHeaderProvider headerProvider) {
@@ -1133,5 +1167,34 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         if(!selectedVertexRefs.equals(vertexRefs) && !event.allVerticesSelected()) {
             m_selectionManager.setSelectedVertexRefs(vertexRefs);
         }
+    }
+
+    private static CheckedOperation getDefaultTopologySelectorOperation(BundleContext bundleContext) {
+        try {
+            // Find all topology selector operations
+            final Collection<ServiceReference<CheckedOperation>> serviceReferences = bundleContext.getServiceReferences(CheckedOperation.class, "(operation.label=*?group=topology)");
+
+            // Filter for linkd
+            final Optional<ServiceReference<CheckedOperation>> linkdTopologySelectorOperationOptional = serviceReferences.stream()
+                    .filter(serviceReference -> {
+                        String label = (String) serviceReference.getProperty("operation.label");
+                        return label.toLowerCase().equalsIgnoreCase("linkd");
+                    })
+                    .findFirst();
+            if (linkdTopologySelectorOperationOptional.isPresent()) {
+                return bundleContext.getService(linkdTopologySelectorOperationOptional.get());
+            }
+
+            // We did not find linkd, we fall back to the first provider (sorted by label) we found, if any
+            final Map<String, CheckedOperation> operationMap = serviceReferences.stream()
+                    .collect(Collectors.toMap(reference -> (String) reference.getProperty("operation.label"), reference -> bundleContext.getService(reference)));
+            final Optional<String> optionalLabel = operationMap.keySet().stream().sorted().findFirst();
+            if (optionalLabel.isPresent()) {
+                return operationMap.get(optionalLabel.get());
+            }
+        } catch (InvalidSyntaxException e) {
+            LOG.error("Could not query BundleContext for services", e);
+        }
+        return null; // nothing found
     }
 }

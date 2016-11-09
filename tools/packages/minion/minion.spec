@@ -65,10 +65,16 @@ http://www.opennms.org/wiki/Minion
 %package container
 Summary:       Minion Container
 Group:         Applications/System
+Requires:      openssh
 Requires(pre): %{jdk}
 Requires:      %{jdk}
-Requires(pre): openssh
-Requires:      openssh
+Requires(pre): /usr/bin/getent
+Requires(pre): /usr/sbin/groupadd
+Requires(pre): /usr/sbin/useradd
+Requires(pre): /sbin/nologin
+Requires:      /sbin/nologin
+Requires:      /usr/bin/id
+Requires:      /usr/bin/sudo
 
 %description container
 Minion Container
@@ -77,12 +83,12 @@ Minion Container
 %{extrainfo2}
 
 %package features-core
-Summary:       Minion Core Features
-Group:         Applications/System
-Requires(pre): %{name}-container = %{version}-%{release}
-Requires:      %{name}-container = %{version}-%{release}
-Requires(pre): util-linux
-Requires:      util-linux
+Summary:        Minion Core Features
+Group:          Applications/System
+Requires(pre):  %{name}-container = %{version}-%{release}
+Requires:       %{name}-container = %{version}-%{release}
+Requires(post): util-linux
+Requires:       util-linux
 
 %description features-core
 Minion Core Features
@@ -104,7 +110,7 @@ Minion Default Features
 
 %prep
 
-tar -xvzf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
+tar zxf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -115,66 +121,60 @@ rm -rf %{buildroot}
 
 %install
 
+export OPTS_MAVEN="-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false"
 export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true"
 export OPTS_SKIP_TARBALL="-Dbuild.skip.tarball=true"
-export PROJECTS="org.opennms.features.minion.container:karaf,org.opennms.features.minion:core-repository,org.opennms.features.minion:repository"
+export OPTS_ASSEMBLIES="-Passemblies"
+export OPTS_PROFILES="-Prun-expensive-tasks"
+export COMPILE_PROJECTS="org.opennms.features.minion.container:karaf,org.opennms.features.minion:core-repository,org.opennms.features.minion:repository,org.opennms.features.minion:container-parent,org.opennms.features.minion:core-parent,org.opennms.features.minion:org.opennms.features.minion.heartbeat,org.opennms.features.minion:repository,org.opennms.features.minion:shell"
+export ASSEMBLY_PROJECTS=":org.opennms.assemblies.minion"
 
+if [ "%{enable_snapshots}" = 1 ]; then
+	OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"
+	OPTS_UPDATE_POLICY="-DupdatePolicy=always"
+fi
+
+# always build the root POM, just to be sure inherited properties/plugin/dependencies are right
+./compile.pl -N $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" -Dopennms.home="%{instprefix}" install
 if [ "%{skip_compile}" = 1 ]; then
 	echo "=== SKIPPING FULL COMPILE ==="
-	echo "Projects: ${PROJECTS}"
-	if [ "%{enable_snapshots}" = 1 ]; then
-		OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"
-		OPTS_UPDATE_POLICY="-DupdatePolicy=always"
-	fi
-	./compile.pl -N $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" -Dopennms.home="%{instprefix}" install
-	./compile.pl $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" \
-		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks \
-		--projects "$PROJECTS" \
+	echo "Projects: ${ASSEMBLY_PROJECTS}"
+	./compile.pl $OPTS_MAVEN $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY $OPTS_PROFILES $OPTS_ASSEMBLIES -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" \
+		-Dopennms.home="%{instprefix}" \
+		--projects "${ASSEMBLY_PROJECTS}" \
 		install
 else
 	# get the full list of minion projects to build
-	PROJECTS="${PROJECTS},org.opennms.features.minion:container-parent,org.opennms.features.minion:core-parent,org.opennms.features.minion:org.opennms.features.minion.heartbeat,org.opennms.features.minion:repository,org.opennms.features.minion:shell"
 	echo "=== RUNNING COMPILE ==="
-	echo "Projects: ${PROJECTS}"
-	./compile.pl $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" \
-		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks \
-		--projects "$PROJECTS" --also-make \
+	echo "Projects: ${COMPILE_PROJECTS},${ASSEMBLY_PROJECTS}"
+	./compile.pl $OPTS_MAVEN $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY $OPTS_PROFILES $OPTS_ASSEMBLIES -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" \
+		-Dopennms.home="%{instprefix}" \
+		--projects "${COMPILE_PROJECTS},${ASSEMBLY_PROJECTS}" --also-make \
 		install
 fi
 
-
-# Extract the container
+# Extract the minion assembly
 mkdir -p %{buildroot}%{minioninstprefix}
-tar zxvf %{_builddir}/%{_name}-%{version}-%{release}/features/minion/container/karaf/target/karaf-*.tar.gz -C %{buildroot}%{minioninstprefix} --strip-components=1
+tar zxf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz -C %{buildroot}%{minioninstprefix} --strip-components=1
+
 # Remove the data directory
 rm -rf %{buildroot}%{minioninstprefix}/data
 # Remove the demos directory
 rm -rf %{buildroot}%{minioninstprefix}/demos
 
-# Copy over the find-java.sh script
-install -d -m 755 %{buildroot}%{minioninstprefix}/bin
-install -c -m 755 %{_builddir}/%{_name}-%{version}-%{release}/opennms-base-assembly/src/main/filtered/bin/find-java.sh %{buildroot}%{minioninstprefix}/bin/find-java.sh
-
-# Copy over the run script
-mkdir -p %{buildroot}%{_initrddir}
-sed -e 's,@INSTPREFIX@,%{minioninstprefix},g' -e 's,@SYSCONFDIR@,%{_sysconfdir}/sysconfig,g'  %{_builddir}/%{_name}-%{version}-%{release}/tools/packages/minion/minion.init > "%{buildroot}%{_initrddir}"/minion
-chmod 755 "%{buildroot}%{_initrddir}"/minion
-
-install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
-install -m 644 "%{_builddir}/%{_name}-%{version}-%{release}/tools/packages/minion/minion.sysconfig" "%{buildroot}%{_sysconfdir}/sysconfig/minion"
-
-# Extract the core repository
-mkdir -p %{buildroot}%{minionrepoprefix}/core
-tar zxvf %{_builddir}/%{_name}-%{version}-%{release}/features/minion/core/repository/target/core-repository-*-repo.tar.gz -C %{buildroot}%{minionrepoprefix}/core
 # Create a default org.opennms.minion.controller.cfg file
 echo "location = MINION" > %{buildroot}%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 echo "id = 00000000-0000-0000-0000-000000ddba11" >> %{buildroot}%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
-# Extract the default repository
-mkdir -p %{buildroot}%{minionrepoprefix}/default
-tar zxvf %{_builddir}/%{_name}-%{version}-%{release}/features/minion/repository/target/repository-*-repo.tar.gz -C %{buildroot}%{minionrepoprefix}/default
+# fix the init script for RedHat/CentOS layout
+mkdir -p "%{buildroot}%{_initrddir}"
+sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" -e "s,^MINION_HOME[ \t]*=.*$,MINION_HOME=%{minioninstprefix},g" "%{buildroot}%{minioninstprefix}/etc/minion.init" > "%{buildroot}%{_initrddir}"/minion
+chmod 755 "%{buildroot}%{_initrddir}"/minion
+rm -f '%{buildroot}%{minioninstprefix}/etc/minion.init'
+
+# move minion.conf to the sysconfig dir
+install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
+mv "%{buildroot}%{minioninstprefix}/etc/minion.conf" "%{buildroot}%{_sysconfdir}/sysconfig/minion"
 
 # container package files
 find %{buildroot}%{minioninstprefix} ! -type d | \
@@ -182,10 +182,10 @@ find %{buildroot}%{minioninstprefix} ! -type d | \
     grep -v %{minionrepoprefix} | \
     grep -v %{minioninstprefix}/etc/featuresBoot.d | \
     grep -v %{minioninstprefix}/etc/org.opennms.minion.controller.cfg | \
-    sed -e "s|^%{buildroot}|%attr(644,root,root) |" | \
+    sed -e "s|^%{buildroot}|%attr(644,minion,minion) |" | \
     sort > %{_tmppath}/files.container
 find %{buildroot}%{minioninstprefix}/bin ! -type d | \
-    sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
+    sed -e "s|^%{buildroot}|%attr(755,minion,minion) |" | \
     sort >> %{_tmppath}/files.container
 # Exclude subdirs of the repository directory
 find %{buildroot}%{minioninstprefix} -type d | \
@@ -200,21 +200,29 @@ rm -rf %{buildroot}
 %defattr(664 root root 775)
 
 %files container -f %{_tmppath}/files.container
-%defattr(664 root root 775)
-%attr(755,root,root) %{_initrddir}/minion
-%attr(644,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/minion
-%attr(644,root,root) %{minioninstprefix}/etc/featuresBoot.d/.readme
+%defattr(664 minion minion 775)
+%attr(755,minion,minion) %{_initrddir}/minion
+%attr(644,minion,minion) %config(noreplace) %{_sysconfdir}/sysconfig/minion
+%attr(644,minion,minion) %{minioninstprefix}/etc/featuresBoot.d/.readme
+
+%pre container
+getent group minion >/dev/null || groupadd -r minion
+getent passwd minion >/dev/null || \
+	useradd -r -g minion -d "%{minioninstprefix}" -s /sbin/nologin \
+	-c "OpenNMS Minion" minion
+exit 0
 
 %post container
 # Clean out the data directory
-rm -rf %{minioninstprefix}/data
+rm -rf "%{minioninstprefix}/data"
 # Generate an SSH key if necessary
-if [ ! -f %{minioninstprefix}/etc/host.key ]; then
-    /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f %{minioninstprefix}/etc/host.key
+if [ ! -f "%{minioninstprefix}/etc/host.key" ]; then
+    /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f "%{minioninstprefix}/etc/host.key"
+    chown minion:minion "%{minioninstprefix}/etc/"host.key*
 fi
 
 %files features-core
-%defattr(644 root root 755)
+%defattr(644 minion minion 755)
 %{minionrepoprefix}/core
 %config(noreplace) %{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
@@ -226,7 +234,7 @@ sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "%{minioninstp
 rm -rf %{minionrepoprefix}/.local
 
 %files features-default
-%defattr(644 root root 755)
+%defattr(644 minion minion 755)
 %{minionrepoprefix}/default
 
 %post features-default

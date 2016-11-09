@@ -124,7 +124,10 @@ public class SnmpEventInfo {
                     setFirstIPAddress(parmContent);
                 } else if (parmName.equals(EventConstants.PARM_LAST_IP_ADDRESS)) {
                     setLastIPAddress(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING) || parmName.equals(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING)) {
+                } else if (parmName.equals(EventConstants.PARM_SNMP_LOCATION)) {
+                    setLocation(parmContent);
+                } else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING)
+                        || parmName.equals(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING)) {
                     setReadCommunityString(parmContent);
                 } else if (parmName.equals(EventConstants.PARM_SNMP_WRITE_COMMUNITY_STRING)) {
                 	setWriteCommunityString(parmContent);
@@ -526,6 +529,7 @@ public class SnmpEventInfo {
 	    if (getTimeout() != 0) bldr.addParam(EventConstants.PARM_TIMEOUT, Integer.toString(getTimeout()));
 	    if (!StringUtils.isEmpty(getVersion())) bldr.addParam(EventConstants.PARM_VERSION, getVersion());
 	    if (!StringUtils.isEmpty(getWriteCommunityString())) bldr.addParam(EventConstants.PARM_SNMP_WRITE_COMMUNITY_STRING, getWriteCommunityString());
+	    if (!StringUtils.isEmpty(getLocation())) bldr.addParam(EventConstants.PARM_SNMP_LOCATION, getLocation());
 	    
 	    return bldr.getEvent();
     }

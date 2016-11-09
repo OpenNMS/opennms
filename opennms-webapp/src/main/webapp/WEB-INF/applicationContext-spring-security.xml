@@ -152,6 +152,7 @@
         <beans:property name="authenticationManager" ref="authenticationManager"/>
         <beans:property name="authenticationFailureHandler" ref="failureHandler"/>
         <beans:property name="authenticationSuccessHandler" ref="successHandler"/>
+        <beans:property name="postOnly" value="false"/>
   </beans:bean>
 
     <beans:bean id="successHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">

@@ -119,7 +119,7 @@ public class TrapTest {
             }
         }
 
-        final InetSocketAddress trapAddr = minionSystem.getServiceAddress(ContainerAlias.MINION, 162, "udp");
+        final InetSocketAddress trapAddr = minionSystem.getServiceAddress(ContainerAlias.MINION, 1162, "udp");
 
         // Connect to the postgresql container
         InetSocketAddress pgsql = minionSystem.getServiceAddress(ContainerAlias.POSTGRES, 5432);

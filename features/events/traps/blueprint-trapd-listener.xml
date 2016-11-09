@@ -14,7 +14,7 @@
     <cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd" update-strategy="none">
         <cm:default-properties>
             <cm:property name="trapd.listen.interface" value="127.0.0.1" />
-            <cm:property name="trapd.listen.port" value="162" />
+            <cm:property name="trapd.listen.port" value="1162" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -33,23 +33,15 @@
         <propertyPlaceholder id="minionproperties" location="blueprint:minionProperties" />
         <route id="restClientToTrapdConfig">
             <from uri="timer://restTrapConfigurationTimer?fixedRate=true&amp;period=60000"/>
-            <to uri="{{http-url}}/rest/config/trapd?authMethod=Basic&amp;authUsername={{username}}&amp;authPassword={{password}}" />
+            <bean ref="restClient" method="getSnmpV3Users"/>
             <bean ref="unmarshaller" />
             <to uri="bean:trapdConfig?method=onUpdate" />
             <bean ref="trapReceiver" method="setTrapdConfig" />
         </route>
     </camelContext>
 
-    <cm:property-placeholder id="minionProperties" persistent-id="org.opennms.minion.controller" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="none">
-        <cm:default-properties>
-            <cm:property name="location" value="MINION"/>
-            <cm:property name="id" value="00000000-0000-0000-0000-000000ddba11"/>
-            <cm:property name="http-url" value="http://127.0.0.1:8980/opennms"/>
-            <cm:property name="username" value="admin"/>
-            <cm:property name="password" value="admin"/>
-        </cm:default-properties>
-    </cm:property-placeholder>
-
+   <reference id="restClient" interface="org.opennms.minion.core.api.RestClient"/>
+ 
     <bean id="trapdConfig" class="org.opennms.netmgt.trapd.TrapdConfigBean">
         <property name="snmpTrapPort" value="${trapd.listen.port}"/>
         <property name="snmpTrapAddress" value="${trapd.listen.interface}"/>

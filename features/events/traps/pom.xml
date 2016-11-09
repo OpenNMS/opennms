@@ -76,11 +76,6 @@
     </plugins>
   </build>
   <dependencies>
-   <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>javax.ws.rs-api</artifactId>
-        <version>2.0.1</version>
-      </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-kafka</artifactId>
@@ -109,6 +104,11 @@
         </exclusion>
       </exclusions>
     </dependency>  
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-netty-http</artifactId>
+      <version>${camelVersion}</version>
+    </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>camel-dependencies</artifactId>
@@ -241,38 +241,16 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-kafka</artifactId>
-      <version>${camelVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-impl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <!-- snappy-java has OSGi loading problems because of JNI bits -->
-        <exclusion>
-          <groupId>org.xerial.snappy</groupId>
-          <artifactId>snappy-java</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+    <!-- TODO: Is this necessary now that we're using RestClient? -->
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-netty-http</artifactId>
       <version>${camelVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.minion</groupId>
+      <artifactId>core-api</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.curator</groupId>
@@ -291,9 +269,11 @@
       </exclusions>
     </dependency>
     <dependency>
-	  <groupId>org.opennms.core.test-api</groupId>
-	  <artifactId>org.opennms.core.test-api.http</artifactId>
-	</dependency>
+      <groupId>org.opennms.features.minion</groupId>
+      <artifactId>core-impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-minion</artifactId>

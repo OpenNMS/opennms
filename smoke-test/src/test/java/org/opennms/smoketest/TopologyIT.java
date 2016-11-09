@@ -72,7 +72,8 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         ISOM("ISOM Layout"),
         KK("KK Layout"),
         REAL("Real Ultimate Layout"),
-        SPRING("Spring Layout");
+        SPRING("Spring Layout"),
+        MANUAL("Manual Layout");
 
         private final String label;
 
@@ -550,6 +551,34 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             } finally {
                 testCase.setImplicitWait();
             }
+        }
+
+        public SaveLayoutButton getSaveLayoutButton() {
+            return new SaveLayoutButton(testCase);
+        }
+    }
+
+    public static class SaveLayoutButton {
+        private final OpenNMSSeleniumTestCase testCase;
+
+        private SaveLayoutButton(OpenNMSSeleniumTestCase testCase) {
+            this.testCase = Objects.requireNonNull(testCase);
+        }
+
+        public boolean isEnabled() {
+            String disabled = getButton().getAttribute("aria-disabled");
+            return !"true".equalsIgnoreCase(disabled);
+        }
+
+        public void click() {
+            getButton().click();
+            waitForTransition();
+        }
+
+        private WebElement getButton() {
+            WebElement saveLayerButton = testCase.findElementById("saveLayerButton");
+            Objects.requireNonNull(saveLayerButton);
+            return saveLayerButton;
         }
     }
 

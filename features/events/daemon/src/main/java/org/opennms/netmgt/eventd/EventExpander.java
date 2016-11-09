@@ -33,6 +33,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.events.api.EventProcessor;
@@ -55,6 +56,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 
 /**
  * <P>
@@ -106,13 +111,18 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
 
     private EventConfDao m_eventConfDao;
 
+    private EventUtil m_eventUtil;
+
     /**
      * The default event UEI - if the event lookup into the 'event.conf' fails,
      * the event is loaded with information from this default UEI
      */
     private static final String DEFAULT_EVENT_UEI = "uei.opennms.org/default/event";
 
-    public EventExpander() {
+    private final Timer expandTimer;
+
+    public EventExpander(MetricRegistry registry) {
+        expandTimer = Objects.requireNonNull(registry).timer("events.process.expand");
     }
 
     /**
@@ -121,6 +131,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
     @Override
     public void afterPropertiesSet() {
         Assert.state(m_eventConfDao != null, "property eventConfDao must be set");
+        Assert.state(m_eventUtil != null, "property eventUtil must be set");
     }
 
     /**
@@ -413,7 +424,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * Expand parms in the event logmsg
      */
     private void expandParms(Logmsg logmsg, Event event, Map<String, Map<String, String>> decode) {
-        String strRet = AbstractEventUtil.getInstance().expandParms(logmsg.getContent(), event, decode);
+        String strRet = m_eventUtil.expandParms(logmsg.getContent(), event, decode);
         if (strRet != null) {
             logmsg.setContent(strRet);
         }
@@ -426,7 +437,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         boolean expanded = false;
 
         for (Autoaction action : autoactions) {
-            String strRet = AbstractEventUtil.getInstance().expandParms(action.getContent(), event);
+            String strRet = m_eventUtil.expandParms(action.getContent(), event);
             if (strRet != null) {
                 action.setContent(strRet);
                 expanded = true;
@@ -445,7 +456,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         boolean expanded = false;
 
         for (Operaction action : operactions) {
-            String strRet = AbstractEventUtil.getInstance().expandParms(action.getContent(), event);
+            String strRet = m_eventUtil.expandParms(action.getContent(), event);
             if (strRet != null) {
                 action.setContent(strRet);
                 expanded = true;
@@ -461,7 +472,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * Expand parms in the event tticket
      */
     private void expandParms(Tticket tticket, Event event) {
-        String strRet = AbstractEventUtil.getInstance().expandParms(tticket.getContent(), event);
+        String strRet = m_eventUtil.expandParms(tticket.getContent(), event);
         if (strRet != null) {
             tticket.setContent(strRet);
         }
@@ -485,7 +496,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         // parameters
         if (event.getParmCollection() != null && event.getParmCollection().size() > 0) {
             event.getParmCollection().stream().map(p -> p.getValue()).filter(v -> v.isExpand()).forEach(v -> {
-                final String str = AbstractEventUtil.getInstance().expandParms(v.getContent(), event, decode);
+                final String str = m_eventUtil.expandParms(v.getContent(), event, decode);
                 if (str != null) {
                     v.setContent(str);
                 }
@@ -494,7 +505,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
 
         // description
         if (event.getDescr() != null) {
-            strRet = AbstractEventUtil.getInstance().expandParms(event.getDescr(), event,decode);
+            strRet = m_eventUtil.expandParms(event.getDescr(), event,decode);
             if (strRet != null) {
                 event.setDescr(strRet);
                 strRet = null;
@@ -508,7 +519,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
 
         // operinstr
         if (event.getOperinstruct() != null) {
-            strRet = AbstractEventUtil.getInstance().expandParms(event.getOperinstruct(), event);
+            strRet = m_eventUtil.expandParms(event.getOperinstruct(), event);
             if (strRet != null) {
                 event.setOperinstruct(strRet);
                 strRet = null;
@@ -532,12 +543,12 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         
         // reductionKey
         if (event.getAlarmData() != null) {
-            strRet = AbstractEventUtil.getInstance().expandParms(event.getAlarmData().getReductionKey(), event);
+            strRet = m_eventUtil.expandParms(event.getAlarmData().getReductionKey(), event);
             if (strRet != null) {
                 event.getAlarmData().setReductionKey(strRet);
             }
             strRet = null;
-            strRet = AbstractEventUtil.getInstance().expandParms(event.getAlarmData().getClearKey(), event);
+            strRet = m_eventUtil.expandParms(event.getAlarmData().getClearKey(), event);
             if (strRet != null) {
             	event.getAlarmData().setClearKey(strRet);
             }
@@ -561,7 +572,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * @param e
      *            The event to expand if necessary.
      */
-    public synchronized void expandEvent(Event e) {
+    public void expandEvent(Event e) {
         org.opennms.netmgt.xml.eventconf.Event econf = lookup(m_eventConfDao, e);
 
         if (econf != null) {
@@ -728,7 +739,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
                 
                 List<org.opennms.netmgt.xml.eventconf.UpdateField> updateFieldList = econf.getAlarmData().getUpdateFieldList();
                 if (updateFieldList.size() > 0) {
-                    List<UpdateField> updateFields = new ArrayList<UpdateField>();
+                    List<UpdateField> updateFields = new ArrayList<>(updateFieldList.size());
                     for (org.opennms.netmgt.xml.eventconf.UpdateField econfUpdateField : updateFieldList) {
                         UpdateField eventField = new UpdateField();
                         eventField.setFieldName(econfUpdateField.getFieldName());
@@ -743,7 +754,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
 
             if (econf.getParameterCollection() != null && econf.getParameterCount() > 0) {
                 if (e.getParmCollection() == null) {
-                    e.setParmCollection(new ArrayList<Parm>());
+                    e.setParmCollection(new ArrayList<>(econf.getParameterCount()));
                 }
                 for (Parameter p : econf.getParameterCollection()) {
                     if (EventUtils.getParm(e, p.getName()) == null) {
@@ -785,7 +796,9 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
     /** {@inheritDoc} */
     @Override
     public void process(Header eventHeader, Event event) {
-        expandEvent(event);
+        try(Context ctx = expandTimer.time()) {
+            expandEvent(event);
+        }
     }
 
     /**
@@ -804,5 +817,9 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      */
     public void setEventConfDao(EventConfDao eventConfDao) {
         m_eventConfDao = eventConfDao;
+    }
+
+    public void setEventUtil(EventUtil eventUtil) {
+        m_eventUtil = eventUtil;
     }
 }

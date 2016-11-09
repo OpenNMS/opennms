@@ -34,16 +34,12 @@ import java.util.Date;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm.AlarmType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class NorthboundAlarmTest extends XmlTestNoCastor<NorthboundAlarm> {
-
-    private static final String FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"; // 1969-12-31T19:00:00.001-05:00 -- note the timezone needs the ":" added after SimpleDateFormat formats it
 
     public NorthboundAlarmTest(NorthboundAlarm sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, null);
@@ -52,13 +48,6 @@ public class NorthboundAlarmTest extends XmlTestNoCastor<NorthboundAlarm> {
     @Override
     protected String getSchemaFile() {
         return "target/classes/xsds/northbound-alarm.xsd";
-    }
-
-    private static String fixDate(Date d) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(FORMAT);
-        StringBuffer b = new StringBuffer(dateFormat.format(d));
-        b.insert(b.length() - 2, ':');
-        return b.toString().replaceAll("\\+00:00", "Z");
     }
 
     @Parameters
@@ -73,16 +62,16 @@ public class NorthboundAlarmTest extends XmlTestNoCastor<NorthboundAlarm> {
                      "<node-sysobjectid>.1.3.6</node-sysobjectid>\n" +
                      "<node-foreignsource>fs</node-foreignsource>\n" +
                      "<node-foreignid>fid</node-foreignid>\n" +
-                     "<ack-time>" + fixDate(new Date(1)).replaceAll("\\+00:00", "Z") + "</ack-time>\n" +
+                     "<ack-time>" + StringUtils.iso8601LocalOffsetString(new Date(1)) + "</ack-time>\n" +
                      "<ack-user>admin</ack-user>\n" +
                      "<alarm-type>PROBLEM</alarm-type>\n" +
                      "<app-dn>some-app-dn</app-dn>\n" +
                      "<clear-key>some-clear-key</clear-key>\n" +
                      "<count>1</count>\n" +
                      "<description>some description</description>\n" +
-                     "<first-occurrence>" + fixDate(new Date(2)).replaceAll("\\+00:00", "Z") + "</first-occurrence>\n" +
+                     "<first-occurrence>" + StringUtils.iso8601LocalOffsetString(new Date(2)) + "</first-occurrence>\n" +
                      "<ip-address>127.0.0.127</ip-address>\n" +
-                     "<last-occurrence>" + fixDate(new Date(4)).replaceAll("\\+00:00", "Z") + "</last-occurrence>\n" +
+                     "<last-occurrence>" + StringUtils.iso8601LocalOffsetString(new Date(4)) + "</last-occurrence>\n" +
                      "<log-messsage>logmsg</log-messsage>\n" +
                      "<object-instance>instance</object-instance>\n" +
                      "<object-type>type</object-type>\n" +
@@ -92,8 +81,8 @@ public class NorthboundAlarmTest extends XmlTestNoCastor<NorthboundAlarm> {
                      "<alarm-key>key</alarm-key>\n" +
                      "<service>service</service>\n" +
                      "<severity>CRITICAL</severity>\n" +
-                     "<suppressed>" + fixDate(new Date(5)).replaceAll("\\+00:00", "Z") + "</suppressed>\n" +
-                     "<suppressed-until>" + fixDate(new Date(6)).replaceAll("\\+00:00", "Z") + "</suppressed-until>\n" +
+                     "<suppressed>" + StringUtils.iso8601LocalOffsetString(new Date(5)) + "</suppressed>\n" +
+                     "<suppressed-until>" + StringUtils.iso8601LocalOffsetString(new Date(6)) + "</suppressed-until>\n" +
                      "<suppressed-by>me</suppressed-by>\n" +
                      "<ticket-id>NMS-8068</ticket-id>\n" +
                      "<ticket-state>OPEN</ticket-state>\n" +

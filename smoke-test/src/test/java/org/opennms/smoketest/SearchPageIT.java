@@ -56,12 +56,13 @@ public class SearchPageIT extends OpenNMSSeleniumTestCase {
 
     @Test 
     public void testAllFormsArePresent() throws Exception {
-        assertEquals(9, countElementsMatchingCss("form"));
+        assertEquals(10, countElementsMatchingCss("form"));
         for (final String matchingElement : new String[] {
                 "input[@id='byname_nodename']",
                 "input[@id='byip_iplike']",
                 "select[@name='mib2Parm']",
                 "select[@name='snmpParm']",
+                "select[@id='bymonitoringLocation_monitoringLocation']",
                 "select[@id='byservice_service']",
                 "input[@name='maclike']",
                 "input[@name='foreignSource']"

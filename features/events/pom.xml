@@ -15,5 +15,6 @@
     <module>daemon</module>
     <module>syslog</module>
     <module>traps</module>
+    <module>shell-commands</module>
   </modules>
 </project>

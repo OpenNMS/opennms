@@ -3,11 +3,23 @@
            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
     <reference id="locationAwarePingClient" interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient" availability="mandatory"/>
+    
+    
+    <reference id="locationAwarePingSweepClient" interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingSweepClient" availability="mandatory"/>
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
         <command name="ping/ping">
             <action class="org.opennms.netmgt.icmp.commands.PingCommand">
               <property name="locationAwarePingClient" ref="locationAwarePingClient"/>
+            </action>
+        </command>
+    </command-bundle>
+    
+    
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="ping/sweep">
+            <action class="org.opennms.netmgt.icmp.commands.PingSweepCommand">
+              <property name="client" ref="locationAwarePingSweepClient"/>
             </action>
         </command>
     </command-bundle>

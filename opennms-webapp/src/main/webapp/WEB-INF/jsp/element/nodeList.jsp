@@ -29,7 +29,12 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true" %>
+<%@page language="java" contentType="text/html" session="true"
+        import="java.util.*,
+		org.opennms.web.element.*,
+		org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation"%>
+
+<%@ page import="com.google.common.base.Strings" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="element" tagdir="/WEB-INF/tags/element" %>
@@ -61,6 +66,16 @@
     }
 </script>
 
+<%
+  List<OnmsMonitoringLocation> monitoringLocations = NetworkElementFactory.getInstance(getServletContext()).getMonitoringLocations();
+
+  String selectedMonitoringLocation = "";
+
+  if (request.getParameterMap().containsKey("monitoringLocation")) {
+    selectedMonitoringLocation = request.getParameter("monitoringLocation");
+  }
+%>
+
 <div class="panel panel-default">
   <div class="panel-heading">
 <c:choose>
@@ -69,6 +84,31 @@
   </c:when>
   
   <c:otherwise>
+    <select style="float:right;" class="icon-black" id="monitoringLocation" onchange="javascript:location.href = location.protocol + '//' + location.host + location.pathname + '?monitoringLocation=' + this.options[this.selectedIndex].value;">
+      <%
+        if ("".equals(selectedMonitoringLocation)) {
+      %>
+      <option value="" selected>All locations</option>
+      <%
+      } else {
+      %>
+      <option value="">All locations</option>
+      <%
+        }
+
+        for (OnmsMonitoringLocation monitoringLocation : monitoringLocations) {
+          if (selectedMonitoringLocation.equals(monitoringLocation.getLocationName())) {
+      %>
+      <option value="<%=monitoringLocation.getLocationName()%>" selected><%=monitoringLocation.getLocationName()%></option>
+      <%
+      } else {
+      %>
+      <option value="<%=monitoringLocation.getLocationName()%>"><%=monitoringLocation.getLocationName()%></option>
+      <%
+          }
+        }
+      %>
+    </select>
     <h3 class="panel-title"><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><i class="fa fa-database fa-lg icon-black" title="Toggle database IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><i class="fa fa-list-alt fa-lg icon-black" title="Toggle requisition names"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><i class="fa fa-qrcode fa-lg icon-black" title="Toggle foreign IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLloc', '', 'inline');"><i class="fa fa-map-marker fa-lg icon-black" title="Toggle locations"></i></a></span></h3>
   </c:otherwise>
 </c:choose>
@@ -130,6 +170,9 @@
   <c:url var="thisURL" value="${relativeRequestPath}">
     <c:if test="${command.nodename != null}">
       <c:param name="nodename" value="${command.nodename}"/>
+    </c:if>
+    <c:if test="${command.monitoringLocation != null}">
+      <c:param name="monitoringLocation" value="${command.monitoringLocation}"/>
     </c:if>
     <c:if test="${command.iplike != null}">
       <c:param name="iplike" value="${command.iplike}"/>

@@ -420,8 +420,13 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
-        public void setSessionId(String sessionId) {
-           
+        public VaadinApplicationContext getApplicationContext() {
+            return null;
+        }
+
+        @Override
+        public void setApplicationContext(VaadinApplicationContext applicationContext) {
+
         }
 
         @Override
@@ -499,6 +504,11 @@ public class OSGiVerticesUpdateManagerTest {
 
         @Override
         public void selectTopologyProvider(GraphProvider topologyProvider, Callback... callbacks) {
+
+        }
+
+        @Override
+        public void saveLayout() {
 
         }
     }

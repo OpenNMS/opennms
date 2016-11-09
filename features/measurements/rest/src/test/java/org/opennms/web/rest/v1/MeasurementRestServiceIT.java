@@ -136,7 +136,7 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void verifyRelaxMode() throws Exception {
-        sendRequest(GET, "/measurements/should_not_/exist?relaxed=true", 200);
+        sendRequest(GET, "/measurements/should_not_/exist?relaxed=true", 204);
     }
 
     /**

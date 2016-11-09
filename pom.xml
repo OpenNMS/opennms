@@ -1204,8 +1204,8 @@
     <!--
       This is on by default now that root is not required for pinging.
       If you have issues with this, see https://wiki.opennms.org/wiki/ICMP for enabling non-root ping.
-    -->
-    <runPingTests>true</runPingTests>
+      However, we need to set the default in a profile (NMS-8838).
+    <runPingTests>true</runPingTests> -->
 
     <build.skip.tarball>false</build.skip.tarball>
 
@@ -1370,7 +1370,7 @@
     <log4j2Version>2.5</log4j2Version>
     <minaVersion>2.0.13</minaVersion>
     <minionKarafVersion>4.0.5</minionKarafVersion>
-    <newtsVersion>1.4.1</newtsVersion>
+    <newtsVersion>1.4.2</newtsVersion>
     <paxExamVersion>4.8.0</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <protobufVersion>2.6.1</protobufVersion>
@@ -1508,6 +1508,12 @@
       </properties>
     </profile>
     <profile>
+      <id>assemblies</id>
+      <modules>
+        <module>opennms-full-assembly</module>
+      </modules>
+    </profile>
+    <profile>
       <id>build-bamboo</id>
       <modules>
         <module>opennms-full-assembly</module>
@@ -1557,6 +1563,17 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>default-runPingTests</id>
+      <activation>
+        <property>
+          <name>!runPingTests</name>
+        </property>
+      </activation>
+      <properties>
+        <runPingTests>true</runPingTests>
+      </properties>
     </profile>
   </profiles>
   <dependencyManagement>

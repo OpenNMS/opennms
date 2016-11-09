@@ -52,7 +52,7 @@ public class PingCommand extends OsgiCommandSupport {
     private LocationAwarePingClient locationAwarePingClient;
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
-    String m_location = "localhost";
+    String m_location = "Default";
 
     @Option (name="-c", aliases = "--count", description="number of requests")
     int m_count = 1;

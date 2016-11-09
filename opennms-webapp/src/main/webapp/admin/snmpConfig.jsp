@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -78,9 +78,9 @@
 		//validate retryCount
 		var retryCount = new String(document.snmpConfigForm.retryCount.value);
 		if (retryCount != ""
-				&& (!isNumber(retryCount) || parseInt(retryCount) <= 0)) {
+				&& (!isNumber(retryCount) || parseInt(retryCount) < 0)) {
 			alert(retryCount
-					+ " is not a valid Retry Count. Please enter a number greater than 0 or leave it empty.");
+					+ " is not a valid Retry Count. Please enter a number greater than or equal to 0, or leave it empty.");
 			return false;
 		}
 
@@ -222,6 +222,7 @@
 	String contextEngineId = getValue(snmpInfo.getContextEngineId());
 	String contextName = getValue(snmpInfo.getContextName());
 	String enterpriseId = getValue(snmpInfo.getEnterpriseId());
+	String location = getValue(request.getAttribute("location"));
 %>
 
 
@@ -250,6 +251,14 @@ if (request.getAttribute("success") != null) {
             </div>
           </div>
           <div class="form-group">
+            <label for="lookup_location" class="control-label col-sm-3" data-toggle="tooltip" data-placement="right" title="Specify the location for which you want to lookup the SNMP configuration.">
+            Location
+            </label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" name="location" id="lookup_location"/>
+            </div>
+          </div>
+          <div class="form-group">
             <div class="col-sm-9 col-sm-offset-2">
               <button type="submit" class="btn btn-default" name="getConfig">Look up</button>
             </div>
@@ -267,9 +276,9 @@ if (request.getAttribute("success") != null) {
       <div class="panel-body">
 		<p>
 			<b>SNMP Config Lookup:</b> You can look up the actual SNMP
-			configuration for a specific IP. To do so enter the IP Address in the
-			SNMP Config Lookup box and press "Look up". The configuration will
-			then be shown in the "Updateing SNMP Community Names" area.
+			configuration for a specific IP and location. To do so enter the IP Address 
+			and location in the SNMP Config Lookup box and press "Look up". 
+			The configuration will then be shown in the "Updateing SNMP Community Names" area.
 		</p>
 
 		<p>
@@ -338,6 +347,15 @@ if (request.getAttribute("success") != null) {
             </div>
           </div>
 
+          <div class="form-group">
+            <label for="location" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="Specify the location at which SNMP Config needs to be updated">
+            Location:
+            </label>
+            <div class="col-sm-9">
+              <input id="location" name="location" class="form-control" value="<%=location%>">
+            </div>
+          </div>
+          
           <div class="form-group">
             <label for="timeout" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The amount of time, in milliseconds, that OpenNMS will wait for a response from the agent.">
             Timeout:

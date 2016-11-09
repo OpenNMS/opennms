@@ -154,9 +154,9 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         m_eventSubscriber.getEventAnticipator().reset();
 
         if (m_distPollerDao.findAll().size() == 0) {
-            OnmsDistPoller distPoller = new OnmsDistPoller("00000000-0000-0000-0000-000000000000");
+            OnmsDistPoller distPoller = new OnmsDistPoller(DistPollerDao.DEFAULT_DIST_POLLER_ID);
             distPoller.setLabel("localhost");
-            distPoller.setLocation("localhost");
+            distPoller.setLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
             distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
             m_distPollerDao.save(distPoller);
         }
@@ -269,8 +269,8 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-        String foreignSource = "Testie";
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+        final String foreignSource = "Testie";
+        NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
         runScan(scan);
 
         anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
@@ -302,6 +302,12 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
 
+        // NMS-8835: Now send another new suspect event for the same IP address and foreignSource
+        scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+        runScan(scan);
+
+        // The node count should not increase
+        assertEquals(1, getNodeDao().countAll());
     }
 
     @Test(timeout=300000)

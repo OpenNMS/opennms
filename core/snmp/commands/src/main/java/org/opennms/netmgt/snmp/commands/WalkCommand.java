@@ -71,7 +71,7 @@ public class WalkCommand extends OsgiCommandSupport {
         final List<SnmpObjId> snmpObjIds = m_oids.stream()
                     .map(oid -> SnmpObjId.get(oid))
                     .collect(Collectors.toList());
-        final SnmpAgentConfig agent = snmpAgentConfigFactory.getAgentConfig(InetAddress.getByName(m_host));
+        final SnmpAgentConfig agent = snmpAgentConfigFactory.getAgentConfig(InetAddress.getByName(m_host), m_location);
         final CompletableFuture<List<SnmpResult>> future = locationAwareSnmpClient.walk(agent, snmpObjIds)
             .withDescription("snmp:walk")
             .withLocation(m_location)

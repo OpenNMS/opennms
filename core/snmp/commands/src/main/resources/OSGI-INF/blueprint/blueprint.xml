@@ -12,6 +12,11 @@
               <property name="locationAwareSnmpClient" ref="locationAwareSnmpClient"/>
             </action>
         </command>
+        <command name="snmp/show-config">
+            <action class="org.opennms.netmgt.snmp.commands.ShowConfigCommand">
+              <property name="snmpAgentConfigFactory" ref="snmpAgentConfigFactory"/>
+            </action>
+        </command>
     </command-bundle>
 
 </blueprint>
