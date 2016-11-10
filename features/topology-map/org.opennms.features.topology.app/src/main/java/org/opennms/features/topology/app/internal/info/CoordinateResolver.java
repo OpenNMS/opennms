@@ -75,9 +75,12 @@ public class CoordinateResolver {
 
     private final NodeDao nodeDao;
 
-    CoordinateResolver(GeocoderService geocoderService, NodeDao nodeDao) {
+    private final boolean resolveCoordinatesFromAddressString;
+
+    CoordinateResolver(GeocoderService geocoderService, NodeDao nodeDao, boolean resolveCoordinatesFromAddressString) {
         this.geocoderService = Objects.requireNonNull(geocoderService);
         this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.resolveCoordinatesFromAddressString = resolveCoordinatesFromAddressString;
     }
 
     Result resolve(Collection<Integer> nodeIds) {
@@ -95,29 +98,31 @@ public class CoordinateResolver {
                     return geoLocation != null && geoLocation.getLatitude() != null && geoLocation.getLongitude() != null;
                 })
                 .collect(Collectors.toList());
-        final List<OnmsNode> nodesWithAddress = nodesWithGeoLocation.stream()
-                .filter(node -> !Strings.isNullOrEmpty(geoLocation(node).asAddressString()))
-                .collect(Collectors.toList());
-
-        // Retrieve coordinates for nodes with a adress, but not logitude/latitude
-        Map<Integer, Coordinates> nodeIdToCoordinateMapping = new HashMap<>();
-        for (OnmsNode eachNode : nodesWithAddress) {
-            final String addressString = geoLocation(eachNode).asAddressString();
-            try {
-                org.opennms.features.geocoder.Coordinates coordinates = geocoderService.getCoordinates(addressString);
-                if (coordinates != null) {
-                    nodeIdToCoordinateMapping.put(eachNode.getId(), new Coordinates(coordinates.getLongitude(), coordinates.getLatitude()));
-                }
-            } catch (GeocoderException e) {
-                LOG.warn("Couldn't resolve address '%s' for node id: %s, label: %s'", addressString, eachNode.getId(), eachNode.getLabel(), e);
-            }
-        }
+        final Map<Integer, Coordinates> nodeIdToCoordinateMapping = new HashMap<>();
 
         // Add nodesWithLongLat to node id to coordinate mapping
         nodesWithLongLat.forEach(eachNode -> {
             OnmsGeolocation geoLocation = geoLocation(eachNode);
             nodeIdToCoordinateMapping.put(eachNode.getId(), new Coordinates(geoLocation.getLongitude(), geoLocation.getLatitude()));
         });
+
+        // Resolve coordinates from an address string, if it is enabled
+        if (resolveCoordinatesFromAddressString) {
+            // Retrieve coordinates for nodes with an address, but not logitude/latitude
+            nodesWithGeoLocation.stream()
+                .filter(node -> !Strings.isNullOrEmpty(geoLocation(node).asAddressString()))
+                .forEach(eachNode -> {
+                    final String addressString = geoLocation(eachNode).asAddressString();
+                    try {
+                        org.opennms.features.geocoder.Coordinates coordinates = geocoderService.getCoordinates(addressString);
+                        if (coordinates != null) {
+                            nodeIdToCoordinateMapping.put(eachNode.getId(), new Coordinates(coordinates.getLongitude(), coordinates.getLatitude()));
+                        }
+                    } catch (GeocoderException e) {
+                        LOG.warn("Couldn't resolve address '%s' for node id: %s, label: %s'", addressString, eachNode.getId(), eachNode.getLabel(), e);
+                    }
+                });
+        }
         return new Result(nodeIdToCoordinateMapping, nodesWithGeoLocation.stream().collect(Collectors.toMap(node -> node.getId(), node -> geoLocation(node))));
     }
 
