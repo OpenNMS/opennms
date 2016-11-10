@@ -316,7 +316,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 
 	private static EventUtil m_instance = null; 
 
-	public static EventUtil getInstance() {
+	public static synchronized EventUtil getInstance() {
 		if (m_instance == null) {
 			return BeanUtils.getBean("eventDaemonContext", "eventUtil", EventUtil.class);
 		} else {

@@ -27,7 +27,7 @@
             <repository>mvn:${project.groupId}/opennms-topology-runtime-linkd/${project.version}/xml/features</repository>
           </repositories>
           <features>
-            <feature>opennms-topology-runtime-linkd</feature>
+            <feature>opennms-topology-api</feature>
           </features>
         </configuration>
       </plugin>
@@ -37,7 +37,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-linkd</artifactId>
+      <artifactId>opennms-topology-api</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>

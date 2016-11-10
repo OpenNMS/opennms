@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.trapd;
 
-import static org.junit.Assert.assertTrue;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 

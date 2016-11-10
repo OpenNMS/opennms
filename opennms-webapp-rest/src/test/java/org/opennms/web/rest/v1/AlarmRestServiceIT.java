@@ -229,6 +229,14 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         xml = sendRequest(GET, "/alarms/" + alarmId, 200);
         assertTrue(xml.contains("severity=\"NORMAL\""));
 
+        sendPut("/alarms/" + alarmId, "ticketId=12345", 204);
+        xml = sendRequest(GET, "/alarms/" + alarmId, 200);
+        assertTrue(xml.contains("<troubleTicket>12345</troubleTicket>"));
+
+        sendPut("/alarms/" + alarmId, "ticketState=UPDATE_PENDING", 204);
+        xml = sendRequest(GET, "/alarms/" + alarmId, 200);
+        sendPut("/alarms/" + alarmId, "ticketState=UPDATE_PENDING", 204);
+
         alarm = getLastAlarm();
         alarm.setSeverity(OnmsSeverity.MAJOR);
         alarm.setAlarmAckTime(null);

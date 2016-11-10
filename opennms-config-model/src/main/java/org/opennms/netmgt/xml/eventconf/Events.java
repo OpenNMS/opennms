@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -419,22 +420,21 @@ public class Events implements Serializable {
 	
 	public Event findFirstMatchingEvent(org.opennms.netmgt.xml.event.Event matchingEvent) {
 		String key = m_partition.group(matchingEvent);
-		SortedSet<Event> potentialMatches = new TreeSet<Event>(m_nullPartitionedEvents);
+		Collection<Event> potentialMatches = m_nullPartitionedEvents;
 		if (key != null) {
 			List<Event> events = m_partitionedEvents.get(key);
 			if (events != null) {
+			    potentialMatches = new TreeSet<Event>(m_nullPartitionedEvents);
 			    potentialMatches.addAll(events);
 			}
 		}
-			
-			
-		
+
 		for(Event event : potentialMatches) {
 			if (event.matches(matchingEvent)) {
 				return event;
 			}
 		}
-		
+
 		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
 			Events subEvents = loadedEvents.getValue();
 			Event event = subEvents.findFirstMatchingEvent(matchingEvent);
@@ -442,7 +442,7 @@ public class Events implements Serializable {
 				return event;
 			}
 		}
-		
+
 		return null;
 	}
 	
