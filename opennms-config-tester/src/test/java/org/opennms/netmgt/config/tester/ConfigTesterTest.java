@@ -472,11 +472,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testTrendConfiguration() {
-        ignoreConfigFile("trend-configuration.xml");
-    }
-
-    @Test
     public void testUsers() {
         testConfigFile("users.xml");
     }
