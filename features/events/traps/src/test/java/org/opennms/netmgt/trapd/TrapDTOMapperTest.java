@@ -28,19 +28,22 @@
 
 package org.opennms.netmgt.trapd;
 
+import static org.junit.Assert.assertTrue;
+
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DistPollerDaoMinion;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
 import org.snmp4j.PDU;
+import org.snmp4j.PDUv1;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.IpAddress;
@@ -56,7 +59,7 @@ public class TrapDTOMapperTest {
 	public void object2dtoTest() throws UnknownHostException {
 
 		PDU snmp4JV2cTrapPdu = new PDU();
-
+		snmp4JV2cTrapPdu.setType(PDU.TRAP);
 		OID oid = new OID(".1.3.6.1.2.1.1.3.0");
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.sysUpTime, new TimeTicks(5000)));
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(oid)));
@@ -81,7 +84,6 @@ public class TrapDTOMapperTest {
 				new Null(129)));
 		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.3"),
 				new Null(130)));
-		snmp4JV2cTrapPdu.setType(PDU.NOTIFICATION);
 
 		TrapInformation snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
 				InetAddressUtils.ONE_TWENTY_SEVEN, "public",
@@ -91,7 +93,7 @@ public class TrapDTOMapperTest {
 		OnmsDistPoller distPoller = new OnmsDistPoller();
 		distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
 		distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
-		distPoller.setLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+		distPoller.setLocation("localhost");
 		DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
 
 		TrapObjectToDTOProcessor mapper = new TrapObjectToDTOProcessor();
@@ -106,4 +108,42 @@ public class TrapDTOMapperTest {
 
 		// TODO: Add assertions to make sure that conversion worked
 	}
+	
+	@Test
+	public void object2dtoTestV1() throws UnknownHostException {
+		
+		PDUv1 snmp4JV1TrapPdu = new PDUv1();
+		snmp4JV1TrapPdu.setType(PDU.V1TRAP);
+		snmp4JV1TrapPdu.setEnterprise(new OID(".1.3.6.1.6.3.1.1.4.1.0"));
+		snmp4JV1TrapPdu.setGenericTrap(10);
+		snmp4JV1TrapPdu.setSpecificTrap(0);
+		snmp4JV1TrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.0"),
+				new OctetString("mockhost")));
+		snmp4JV1TrapPdu.add(new VariableBinding(new OID(".1.3.6.1.2.1.1.3"),
+				new OctetString("mockhost")));
+		snmp4JV1TrapPdu.add(new VariableBinding(new OID(
+				".1.3.6.1.6.3.1.1.4.1.0"), new OctetString("mockhost")));
+
+		InetAddress inetAddress= InetAddress.getByName("127.0.0.1");;
+		TrapInformation snmp4JV1Trap = new Snmp4JTrapNotifier.Snmp4JV1TrapInformation(
+				inetAddress, new String("public"), snmp4JV1TrapPdu, null);
+		
+		OnmsDistPoller distPoller = new OnmsDistPoller();
+		distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+		distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+		distPoller.setLocation("localhost");
+		DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
+
+		TrapObjectToDTOProcessor mapper = new TrapObjectToDTOProcessor();
+		mapper.setDistPollerDao(distPollerDao);
+
+		TrapDTO trapDto = mapper.object2dto(snmp4JV1Trap);
+		System.out.println("trapDto is : " + trapDto);
+		System.out.println("trapDto.getBody() is : " + trapDto.getBody());
+		System.out.println("trapDto.getCommunity() is : " + trapDto.getHeader(TrapDTO.COMMUNITY));
+
+		TrapNotification snmp4JV2cTrap1 = TrapDTOToObjectProcessor.dto2object(trapDto);
+		
+	}
+	
 }

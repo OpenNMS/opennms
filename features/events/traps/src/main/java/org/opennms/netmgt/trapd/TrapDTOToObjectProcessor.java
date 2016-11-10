@@ -28,12 +28,17 @@
 
 package org.opennms.netmgt.trapd;
 
+import java.util.StringTokenizer;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.opennms.core.camel.MinionDTO;
+import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.InetAddrUtils;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
@@ -62,16 +67,15 @@ public class TrapDTOToObjectProcessor implements Processor {
 	public static TrapNotification dto2object(TrapDTO trapDto) {
 		if (SNMP_V1.equalsIgnoreCase(trapDto.getHeader(TrapDTO.VERSION))) {
 			PDUv1 pdu = new PDUv1();
-			pdu.setType(PDU.NOTIFICATION);
 			pdu.setAgentAddress(new IpAddress(trapDto.getHeader(TrapDTO.SOURCE_ADDRESS)));
 			pdu.setTimestamp(Long.parseLong(trapDto.getHeader(TrapDTO.TIMESTAMP)));
 
 			// TODO: Fill in these values
-			/*
-			pdu.setEnterprise(enterprise);
-			pdu.setGenericTrap(genericTrap);
-			pdu.setSpecificTrap(specificTrap);
-			*/
+			
+			pdu.setEnterprise(new OID(trapDto.getHeader(TrapDTO.ENTERPRISEID)));
+			pdu.setGenericTrap(Integer.parseInt(trapDto.getHeader(TrapDTO.GENERIC)));
+			pdu.setSpecificTrap(Integer.parseInt(trapDto.getHeader(TrapDTO.SPECIFIC)));
+			
 
 			for (SnmpResult snmpResult : trapDto.getResults()) {
 				final int type = snmpResult.getValue().getType();
@@ -97,7 +101,7 @@ public class TrapDTOToObjectProcessor implements Processor {
 		) {
 			PDU pdu = new PDU();
 			pdu.setType(PDU.NOTIFICATION);
-
+			
 			for (SnmpResult snmpResult : trapDto.getResults()) {
 				final int type = snmpResult.getValue().getType();
 				final byte[] value = snmpResult.getValue().getBytes();
@@ -105,19 +109,56 @@ public class TrapDTOToObjectProcessor implements Processor {
 
 				pdu.add(new VariableBinding(oid, ((Snmp4JValue)SnmpUtils.getValueFactory().getValue(type, value)).getVariable()));
 			}
+			
+			
+			
 
 			TrapInformation retval = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
 				InetAddrUtils.addr(trapDto.getHeader(TrapDTO.SOURCE_ADDRESS)),
 				trapDto.getHeader(TrapDTO.COMMUNITY),
 				pdu,
-				null
+				new BasicTrapProcessor()
 			);
+			
+			BasicTrapProcessor trapProcessor =new BasicTrapProcessor();
+			
+			int[] ids = convertStringToInts(trapDto.getHeader(TrapDTO.ENTERPRISEID)); 
+			SnmpObjId entId = new SnmpObjId(ids,false);
+			
+			TrapIdentity trapIdentity=new TrapIdentity(entId, Integer.parseInt(trapDto.getHeader(TrapDTO.GENERIC)),  Integer.parseInt(trapDto.getHeader(TrapDTO.SPECIFIC)));
+			trapProcessor.setTrapIdentity(trapIdentity);
+			retval.setTrapProcessor(trapProcessor);
+			
 			retval.setCreationTime(Long.parseLong(trapDto.getHeader(TrapDTO.CREATION_TIME)));
 			retval.setLocation(trapDto.getHeader(MinionDTO.LOCATION));
 			retval.setSystemId(trapDto.getHeader(MinionDTO.SYSTEM_ID));
+			
 			return retval;
 		} else {
 			throw new IllegalArgumentException("Unrecognized trap version in DTO: " + trapDto.getHeader(TrapDTO.VERSION));
 		}
 	}
+	 private static int[] convertStringToInts(String oid) {
+	    	oid = oid.trim();
+	        if (oid.startsWith(".")) {
+	            oid = oid.substring(1);
+	        }
+	        
+	        final StringTokenizer tokenizer = new StringTokenizer(oid, ".");
+	        int[] ids = new int[tokenizer.countTokens()];
+	        int index = 0;
+	        while (tokenizer.hasMoreTokens()) {
+	            try {
+	                String tok = tokenizer.nextToken();
+	                long value = Long.parseLong(tok);
+	                ids[index] = (int)value;
+	                if (value < 0)
+	                    throw new IllegalArgumentException("String "+oid+" could not be converted to a SnmpObjId. It has a negative for subId "+index);
+	                index++;
+	            } catch(NumberFormatException e) {
+	                throw new IllegalArgumentException("String "+oid+" could not be converted to a SnmpObjId at subId "+index);
+	            }
+	        }
+	        return ids;
+	    }
 }
