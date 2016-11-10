@@ -43,11 +43,11 @@
 	<!-- This whiteboard is injected into the listener instead of being classpath-scanned. -->
 	<bean id="syslogDispatcher" class="org.opennms.core.camel.DispatcherWhiteboard">
 		<argument value="seda:handleMessage"/>
-		
+
 		<property name="context" ref="blueprintBundleContext"/>
-		<property name="messageClass" value="org.opennms.netmgt.syslogd.SyslogConnection"/>
-		<property name="serviceClass" value="org.opennms.netmgt.syslogd.SyslogConnectionHandler"/>
-		<property name="methodName" value="handleSyslogConnection"/>
+		<property name="messageClass" value="org.opennms.netmgt.syslogd.UDPMessageLogDTO"/>
+		<property name="serviceClass" value="org.opennms.netmgt.syslogd.UDPMessageLogDTOHandler"/>
+		<property name="methodName" value="handleUDPMessageLog"/>
 	</bean>
 
 </blueprint>

@@ -104,7 +104,7 @@ public final class SyslogProcessor implements Callable<Void> {
                 LOG.trace("}");
             }
 
-            EventIpcManagerFactory.getIpcManager().sendNow(m_event);
+            EventIpcManagerFactory.getIpcManager().sendNowSync(m_event);
 
             if (m_NewSuspectOnMessage && !m_event.hasNodeid()) {
                 LOG.trace("Syslogd: Found a new suspect {}", m_event.getInterface());

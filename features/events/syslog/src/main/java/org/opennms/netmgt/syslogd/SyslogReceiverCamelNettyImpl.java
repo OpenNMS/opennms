@@ -33,17 +33,31 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.netty.CamelNettyThreadNameDeterminer;
 import org.apache.camel.component.netty.NettyComponent;
 import org.apache.camel.component.netty.NettyConstants;
+import org.apache.camel.component.netty.NettyHelper;
+import org.apache.camel.component.netty.NettyWorkerPoolBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultManagementNameStrategy;
 import org.apache.camel.impl.SimpleRegistry;
+import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.socket.nio.NioWorkerPool;
+import org.jboss.netty.channel.socket.nio.WorkerPool;
 import org.opennms.core.camel.DispatcherWhiteboard;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
@@ -52,9 +66,13 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
+import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * @author Seth
@@ -131,6 +149,38 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         m_distPollerDao = distPollerDao;
     }
 
+    public static class LinkedListAggregationStrategy implements AggregationStrategy {
+        private final Meter packetMeter;
+        
+        public LinkedListAggregationStrategy(Meter packetMeter) {
+            this.packetMeter = Objects.requireNonNull(packetMeter);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
+            if (newExchange == null) {
+                return oldExchange;
+            }
+
+            final ChannelBuffer buffer = newExchange.getIn().getBody(ChannelBuffer.class);
+            final UDPMessageDTO message = new UDPMessageDTO(buffer.toByteBuffer());
+            packetMeter.mark();
+
+            LinkedList<UDPMessageDTO> list = null;
+            if (oldExchange == null) {
+                list = new LinkedList<UDPMessageDTO>();
+                list.add(message);
+                newExchange.getIn().setBody(list);
+                return newExchange;
+            } else {
+                list = (LinkedList<UDPMessageDTO>)oldExchange.getIn().getBody(LinkedList.class);
+                list.add(message);
+                return oldExchange;
+            }
+        }
+    }
+    
     /**
      * The execution context.
      */
@@ -141,11 +191,34 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
 
         // Create some metrics
         Meter packetMeter = METRICS.meter(MetricRegistry.name(getClass(), "packets"));
+        Timer processTimer = METRICS.timer(MetricRegistry.name(getClass(), "process"));
         Meter connectionMeter = METRICS.meter(MetricRegistry.name(getClass(), "connections"));
         Histogram packetSizeHistogram = METRICS.histogram(MetricRegistry.name(getClass(), "packetSize"));
 
+        final JmxReporter reporter = JmxReporter.forRegistry(METRICS).build();
+        reporter.start();
+
+        final ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("SyslogNettyWorker-%d").build();
+        final ArrayBlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(100000);
+        final ThreadPoolExecutor executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                60L, TimeUnit.SECONDS,
+                queue, threadFactory);
+        final NioWorkerPool workerPool = new NioWorkerPool(executor, NettyHelper.DEFAULT_IO_THREADS,
+                new CamelNettyThreadNameDeterminer("NettyWorker", "syslogd"));
+ 
+
+
+        METRICS.register(MetricRegistry.name(getClass(), "queueSize"),
+                new Gauge<Integer>() {
+                    @Override
+                    public Integer getValue() {
+                        return queue.size();
+                    }
+                });
+
         SimpleRegistry registry = new SimpleRegistry();
         registry.put("syslogDispatcher", syslogDispatcher);
+        registry.put("workerPool", workerPool);
 
         //Adding netty component to camel inorder to resolve OSGi loading issues
         NettyComponent nettyComponent = new NettyComponent();
@@ -160,54 +233,40 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         m_camel.setManagementNameStrategy(new DefaultManagementNameStrategy(m_camel, "#name#", null));
 
         m_camel.addComponent("netty", nettyComponent);
+        
+        final String currentSystemId = m_distPollerDao.whoami().getId();
+        final String currentLocation = m_distPollerDao.whoami().getLocation();
 
         try {
             m_camel.addRoutes(new RouteBuilder() {
                 @Override
                 public void configure() throws Exception {
-                    String from = String.format("netty:udp://%s:%s?sync=false&allowDefaultCodec=false&receiveBufferSize=%d&connectTimeout=%d",
+                    String from = String.format("netty:udp://%s:%s?sync=false&allowDefaultCodec=false&receiveBufferSize=%d&connectTimeout=%d&synchronous=true&workerPool=workerPool&orderedThreadPoolExecutor=false",
                         InetAddressUtils.str(m_host),
                         m_port,
                         Integer.MAX_VALUE,
                         SOCKET_TIMEOUT
                     );
-                    
                     from(from)
                     // Polled via JMX
                     .routeId("syslogListen")
-                    //.convertBodyTo(java.nio.ByteBuffer.class)
+                    .aggregate(header(NettyConstants.NETTY_REMOTE_ADDRESS), new LinkedListAggregationStrategy(packetMeter))
+                    .completionSize(1000)
+                    .completionInterval(500)
+                    .parallelProcessing() // JW: TODO: FIXME
                     .process(new Processor() {
+                        @SuppressWarnings("unchecked")
                         @Override
                         public void process(Exchange exchange) throws Exception {
-                            ChannelBuffer buffer = exchange.getIn().getBody(ChannelBuffer.class);
                             // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
                             // we are listening on an InetAddress, it will always be of type InetAddressSocket
-                            InetSocketAddress source = (InetSocketAddress)exchange.getIn().getHeader(NettyConstants.NETTY_REMOTE_ADDRESS); 
-                            // Syslog Handler Implementation to receive message from syslog port and pass it on to handler
-                            
-                            ByteBuffer byteBuffer = buffer.toByteBuffer();
-                            
-                            // Increment the packet counter
-                            packetMeter.mark();
-                            
-                            // Create a metric for the syslog packet size
-                            packetSizeHistogram.update(byteBuffer.remaining());
-                            
-                            SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), byteBuffer, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
-                            exchange.getIn().setBody(connection, SyslogConnection.class);
-
-                            /*
-                            try {
-                                for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {
-                                    connectionMeter.mark();
-                                    handler.handleSyslogConnection(connection);
-                                }
-                            } catch (Throwable e) {
-                                LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
-                            }
-                            */
+                            final InetSocketAddress source = (InetSocketAddress)exchange.getIn().getHeader(NettyConstants.NETTY_REMOTE_ADDRESS); 
+                            final LinkedList<UDPMessageDTO> messages = (LinkedList<UDPMessageDTO>)exchange.getIn().getBody(LinkedList.class);
+                            final UDPMessageLogDTO messageLog = new UDPMessageLogDTO(currentLocation, currentSystemId, source, messages);
+                            exchange.getIn().setBody(messageLog, UDPMessageLogDTO.class);
                         }
-                    }).to("bean:syslogDispatcher?method=dispatch");
+                    })
+                    .to("bean:syslogDispatcher?method=dispatch");
                 }
             });
 

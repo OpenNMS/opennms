@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,31 +28,13 @@
 
 package org.opennms.netmgt.syslogd;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.apache.camel.InOnly;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.camel.MinionDTO;
-import org.opennms.core.ipc.sink.api.Message;
-
-@XmlRootElement(name = "syslog-dto")
-@XmlAccessorType(XmlAccessType.NONE)
-public class SyslogDTO extends MinionDTO implements Message {
-
-	public SyslogDTO() {
-		// No-arg constructor for JAXB
-		super();
-	}
-
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this)
-				.append("systemId", super.getHeaders().get(SYSTEM_ID))
-				.append("location", super.getHeaders().get(LOCATION))
-				.append("sourceAddress", super.getHeaders().get(SOURCE_ADDRESS))
-				.append("sourcePort", super.getHeaders().get(SOURCE_PORT))
-				.append("body", super.getBody()).toString();
-	}
-
+/**
+ * This interface must be {@link InOnly} in order for task submission to
+ * be performed asynchronously.
+ */
+@InOnly
+public interface UDPMessageLogDTOHandler {
+	void handleUDPMessageLog(UDPMessageLogDTO messageLog);
 }

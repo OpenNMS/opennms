@@ -37,4 +37,28 @@
     </property>
   </bean>
 
+  <bean id="udpProcessor" class="org.opennms.netmgt.syslogd.UDPProcessor">
+    <constructor-arg ref="syslogdConfigFactory"/>
+  </bean>
+
+  <bean id="syslogConsumer" class="org.opennms.netmgt.syslogd.sink.SyslogConsumer">
+    <constructor-arg ref="syslogdMetricRegistry"/>
+  </bean>
+
+  <bean id="syslogdMetricRegistry" class="com.codahale.metrics.MetricRegistry" />
+
+  <bean id="syslogdMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+      <constructor-arg ref="syslogdMetricRegistry"/>
+  </bean>
+
+  <bean id="syslogdMetricRegistryDomainedJmxReporterBuilder" factory-bean="syslogdMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+      <constructor-arg value="org.opennms.netmgt.syslogd"/>
+  </bean>
+
+  <bean id="syslogdMetricRegistryJmxReporter"
+        factory-bean="syslogdMetricRegistryDomainedJmxReporterBuilder"
+        factory-method="build"
+        init-method="start"
+        destroy-method="stop" />
+
 </beans>

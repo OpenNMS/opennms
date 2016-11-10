@@ -267,7 +267,7 @@ public class SyslogdLoadIT implements InitializingBean {
     }
 
     public void doTestSyslogReceiver() throws Exception {
-        final int eventCount = 100;
+        final int eventCount = 10000;
         
         List<Integer> foos = new ArrayList<Integer>();
 
