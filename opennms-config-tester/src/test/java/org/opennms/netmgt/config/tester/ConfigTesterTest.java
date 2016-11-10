@@ -318,11 +318,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testPollerConfig() {
-        testConfigFile("poller-config.properties");
-    }
-
-    @Test
     public void testPollerConfiguration() {
         testConfigFile("poller-configuration.xml");
     }
