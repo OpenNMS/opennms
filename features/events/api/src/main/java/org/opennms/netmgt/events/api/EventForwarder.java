@@ -53,6 +53,6 @@ public interface EventForwarder {
      */
     public void sendNow(Log eventLog);
 
-
-
+    public void sendNowSync(Event event);
+    public void sendNowSync(Log eventLog);
 }
