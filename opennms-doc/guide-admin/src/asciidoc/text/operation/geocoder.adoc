@@ -1,0 +1,22 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Geocoder Service
+
+The _Geocoder Service_ is used to resolve geolocation information within _{opennms-product-name}_.
+By default The Google Map API is used to resolve the geolocation information, if available.
+In order to configure the Google Map API the following properties in `etc/org.opennms.features.geocoder.google.cfg` are supported:
+
+[options="header, autowidth"]
+|===
+| Property       | Type         | Default             | Description
+| `clientId`     | `String`     | _empty string_      | The Google Map API `Client ID`.
+                                                        This is required if you exceed the free Google Map API usage.
+                                                        Please refer to the link:https://developers.google.com/maps/documentation/javascript/get-api-key[official documentation] for more information.
+| `clientKey`    | `String`     | _empty string_      | The Google Map API `API Key`.
+                                                        This is required if you exceed the free Google Map API usage.
+                                                        Please refer to the link:https://developers.google.com/maps/documentation/javascript/get-api-key[official documentation] for more information.
+| `timeout`      | `Integer`    | `500`               | The connection timeout in milliseconds the Geocoder tries to resolve a single geolocation.
+|===
+

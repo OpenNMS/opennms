@@ -50,11 +50,13 @@ import com.google.code.geocoder.model.GeocoderRequest;
 public class GoogleGeocoderService implements GeocoderService {
     private static final Logger LOG = LoggerFactory.getLogger(GoogleGeocoderService.class);
 
+    private final int timeout; // in ms
     private AdvancedGeoCoder m_geocoder = null;
     private String m_clientId = null;
     private String m_clientKey = null;
 
-    public GoogleGeocoderService() {
+    public GoogleGeocoderService(int timeout) {
+        this.timeout = Math.max(0, timeout);
     }
 
     public void setClientId(final String clientId) {
@@ -95,6 +97,7 @@ public class GoogleGeocoderService implements GeocoderService {
 
             /* Limit retries... */
             httpClient.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(1, true));
+            httpClient.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, timeout);
 
             LOG.info("Google Geocoder initialized.");
         }
