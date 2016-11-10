@@ -384,9 +384,11 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             assertEquals(1, getNodeDao().countAll());
 
             //Verify node info
-            assertEquals(Integer.valueOf(nextNodeId), getNodeDao().findAll().iterator().next().getId());
-            assertEquals("oldNodeLabel", getNodeDao().findAll().iterator().next().getLabel());
-            assertEquals(NodeLabelSource.HOSTNAME, getNodeDao().findAll().iterator().next().getLabelSource());
+            final OnmsNode beforeNode = getNodeDao().findAll().iterator().next();
+            assertEquals(Integer.valueOf(nextNodeId), beforeNode.getId());
+            assertEquals("oldNodeLabel", beforeNode.getLabel());
+            assertEquals(NodeLabelSource.HOSTNAME, beforeNode.getLabelSource());
+            assertEquals("oldNodeLabel", beforeNode.getIpInterfaces().iterator().next().getIpHostName());
 
             //Verify ipinterface count
             assertEquals("Unexpected number of interfaces found: " + getInterfaceDao().findAll(), 1, getInterfaceDao().countAll());
@@ -409,9 +411,11 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             final ForceRescanScan rescan = m_provisioner.createForceRescanScan(nextNodeId);
             runScan(rescan);
 
-            assertEquals(Integer.valueOf(nextNodeId), getNodeDao().findAll().iterator().next().getId());
-            assertEquals("newNodeLabel", getNodeDao().findAll().iterator().next().getLabel());
-            assertEquals(NodeLabelSource.HOSTNAME, getNodeDao().findAll().iterator().next().getLabelSource());
+            final OnmsNode afterNode = getNodeDao().findAll().iterator().next();
+            assertEquals(Integer.valueOf(nextNodeId), afterNode.getId());
+            assertEquals("newNodeLabel", afterNode.getLabel());
+            assertEquals(NodeLabelSource.HOSTNAME, afterNode.getLabelSource());
+            assertEquals("newNodeLabel", afterNode.getIpInterfaces().iterator().next().getIpHostName());
         } finally {
             m_provisionService.setHostnameResolver(new DefaultHostnameResolver());
         }
