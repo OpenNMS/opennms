@@ -253,6 +253,14 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 primary = node.getIpInterfaces().iterator().next();
             }
 
+            final InetAddress primaryAddr = primary.getIpAddress();
+            final String primaryHostname = getHostnameResolver().getHostname(primaryAddr);
+
+            if (primaryHostname == null && node.getLabel() != null && NodeLabelSource.HOSTNAME.equals((node.getLabelSource()))) {
+                LOG.warn("Previous node label source for address {} was hostname, but it does not currently resolve.  Skipping update.", InetAddressUtils.str(primaryAddr));
+                return;
+            }
+
             for (final OnmsIpInterface iface : node.getIpInterfaces()) {
                 final InetAddress addr = iface.getIpAddress();
                 final String ipAddress = str(addr);
@@ -276,7 +284,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 }
             }
         } else {
-            LOG.debug("updateNodeHostname: skipping update. source = {}", node.getLabelSource());
+            LOG.debug("Node label source ({}) is not host or address. Skipping update.", node.getLabelSource());
         }
     }
 
