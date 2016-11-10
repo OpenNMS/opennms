@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -1340,14 +1341,21 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Transactional
     @Override
     public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource, final String locationString) {
-
         final String effectiveForeignSource = foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource;
+        final String newLocationName = MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID.equals(locationString)? null : locationString;
+
         final OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
 
             @Override
             protected OnmsNode query() {
-                List<OnmsNode> nodes = m_nodeDao.findByForeignSourceAndIpAddress(effectiveForeignSource, ipAddress);
-                return nodes.size() > 0 ? nodes.get(0) : null;
+                return m_nodeDao.findByForeignSourceAndIpAddress(effectiveForeignSource, ipAddress).stream().filter(n -> {
+                    String existingLocationName = null;
+                    final OnmsMonitoringLocation location = n.getLocation();
+                    if (location != null && location.getLocationName() != null && !location.getLocationName().equals(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID)) {
+                        existingLocationName = location.getLocationName();
+                    }
+                    return Objects.equals(existingLocationName, newLocationName);
+                }).findFirst().orElse(null);
             }
 
             @Override
