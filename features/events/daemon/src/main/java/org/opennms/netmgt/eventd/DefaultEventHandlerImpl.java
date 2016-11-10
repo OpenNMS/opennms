@@ -46,7 +46,6 @@ import org.springframework.util.Assert;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.codahale.metrics.Timer.Context;
 
 /**
  * The EventHandler builds Runnables that essentially do all the work on an
@@ -112,46 +111,46 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
             }
 
             for (final Event event : events.getEventCollection()) {
-                try (Context context = processTimer.time()) {
-                    if (getLogEventSummaries() && LOG.isInfoEnabled()) {
-                        LOG.info("Received event: UEI={}, src={}, iface={}, svc={}, time={}, parms={}", event.getUei(), event.getSource(), event.getInterface(), event.getService(), event.getTime(), getPrettyParms(event));
-                    }
+                if (LOG.isInfoEnabled() && getLogEventSummaries()) {
+                    LOG.info("Received event: UEI={}, src={}, iface={}, svc={}, time={}, parms={}", event.getUei(), event.getSource(), event.getInterface(), event.getService(), event.getTime(), getPrettyParms(event));
+                }
 
-                    if (LOG.isDebugEnabled()) {
-                        // Log the uei, source, and other important aspects
-                        final String uuid = event.getUuid();
-                        LOG.debug("Event {");
-                        LOG.debug("  uuid  = {}", (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
-                        LOG.debug("  uei   = {}", event.getUei());
-                        LOG.debug("  src   = {}", event.getSource());
-                        LOG.debug("  iface = {}", event.getInterface());
-                        LOG.debug("  svc   = {}", event.getService());
-                        LOG.debug("  time  = {}", event.getTime());
-                        // NMS-8413: I'm seeing a ConcurrentModificationException in the logs here,
-                        // copy the parm collection to avoid this
-                        List<Parm> parms = new ArrayList<>(event.getParmCollection());
-                        if (parms.size() > 0) {
-                            LOG.debug("  parms {");
-                            for (final Parm parm : parms) {
-                                if ((parm.getParmName() != null) && (parm.getValue().getContent() != null)) {
-                                    LOG.debug("    ({}, {})", parm.getParmName().trim(), parm.getValue().getContent().trim());
-                                }
+                if (LOG.isDebugEnabled()) {
+                    // Log the uei, source, and other important aspects
+                    final String uuid = event.getUuid();
+                    LOG.debug("Event {");
+                    LOG.debug("  uuid  = {}", (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
+                    LOG.debug("  uei   = {}", event.getUei());
+                    LOG.debug("  src   = {}", event.getSource());
+                    LOG.debug("  iface = {}", event.getInterface());
+                    LOG.debug("  svc   = {}", event.getService());
+                    LOG.debug("  time  = {}", event.getTime());
+                    // NMS-8413: I'm seeing a ConcurrentModificationException in the logs here,
+                    // copy the parm collection to avoid this
+                    List<Parm> parms = new ArrayList<>(event.getParmCollection());
+                    if (parms.size() > 0) {
+                        LOG.debug("  parms {");
+                        for (final Parm parm : parms) {
+                            if ((parm.getParmName() != null) && (parm.getValue().getContent() != null)) {
+                                LOG.debug("    ({}, {})", parm.getParmName().trim(), parm.getValue().getContent().trim());
                             }
-                            LOG.debug("  }");
                         }
-                        LOG.debug("}");
+                        LOG.debug("  }");
                     }
+                    LOG.debug("}");
+                }
+            }
 
-                    for (final EventProcessor eventProcessor : m_eventProcessors) {
-                        try {
-                            eventProcessor.process(m_eventLog.getHeader(), event);
-                        } catch (EventProcessorException e) {
-                            LOG.warn("Unable to process event using processor {}; not processing with any later processors.", eventProcessor, e);
-                            break;
-                        } catch (Throwable t) {
-                            LOG.warn("Unknown exception processing event with processor {}; not processing with any later processors.", eventProcessor, t);
-                            break;
-                        }
+            try (Timer.Context context = processTimer.time()) {
+                for (final EventProcessor eventProcessor : m_eventProcessors) {
+                    try {
+                        eventProcessor.process(m_eventLog);
+                    } catch (EventProcessorException e) {
+                        LOG.warn("Unable to process event using processor {}; not processing with any later processors.", eventProcessor, e);
+                        break;
+                    } catch (Throwable t) {
+                        LOG.warn("Unknown exception processing event with processor {}; not processing with any later processors.", eventProcessor, t);
+                        break;
                     }
                 }
             }

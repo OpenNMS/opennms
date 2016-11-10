@@ -39,6 +39,9 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
@@ -101,11 +104,28 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event getEvent() {
-        // The creation time has been used as the time when the event
-        // is stored in the database so update it right before we return
-        // the event object.
-        m_event.setCreationTime(new Date());
+        if (m_event.getCreationTime() == null) {
+            // The creation time has been used as the time when the event
+            // is stored in the database so update it right before we return
+            // the event object.
+            m_event.setCreationTime(new Date());
+        }
         return m_event;
+    }
+
+    public Log getLog() {
+        Event event = getEvent();
+
+        Events events = new Events();
+        events.setEvent(new Event[]{event});
+
+        Header header = new Header();
+        header.setCreated(event.getCreationTime().toString());
+
+        Log log = new Log();
+        log.setHeader(header);
+        log.setEvents(events);
+        return log;
     }
 
     public EventBuilder setUei(final String uei) {
