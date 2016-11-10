@@ -28,11 +28,8 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.util.List;
-
 import org.opennms.netmgt.dao.api.CdpElementDao;
 import org.opennms.netmgt.model.CdpElement;
-import org.slf4j.LoggerFactory;
 
 public class CdpElementDaoHibernate extends AbstractDaoHibernate<CdpElement, Integer> implements CdpElementDao {
 
@@ -60,11 +57,7 @@ public class CdpElementDaoHibernate extends AbstractDaoHibernate<CdpElement, Int
 
 	@Override
 	public CdpElement findByGlobalDeviceId(String deviceId) {
-        List<CdpElement> elements = find("from CdpElement rec where rec.cdpGlobalDeviceId = ? order by rec.id", deviceId);
-        if (elements.size() > 1) {
-            LoggerFactory.getLogger(getClass()).warn("Expected 1 CdpElement for device with id '{}' but found {}. Using CdpElement {} and ignoring others.", deviceId, elements.size(), elements.get(0));
-        }
-        return elements.isEmpty() ? null : elements.get(0);
+        return findUnique("from CdpElement rec where rec.cdpGlobalDeviceId = ? ", deviceId);
 	}
 
     @Override

@@ -261,6 +261,26 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
     }
 
+    @Override
+    public void sendNowSync(Event event) {
+        Objects.requireNonNull(event);
+
+        Events events = new Events();
+        events.addEvent(event);
+
+        Log eventLog = new Log();
+        eventLog.setEvents(events);
+
+        sendNowSync(eventLog);
+    }
+
+    @Override
+    public void sendNowSync(Log eventLog) {
+        Objects.requireNonNull(eventLog);
+        final Runnable runnable = m_eventHandler.createRunnable(eventLog);
+        runnable.run();
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventIpcBroadcaster#broadcastNow(org.opennms.netmgt.xml.event.Event)
      */
@@ -601,4 +621,5 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             return false;
         }
     }
+
 }

@@ -39,6 +39,7 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager.EmptyEventConfDao;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.TrapNotification;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
 public class JsonDeserializationTest {
@@ -86,6 +87,16 @@ public class JsonDeserializationTest {
 					// TODO Auto-generated method stub
 
 				}
+
+                @Override
+                public void sendNowSync(Event event) {
+                    // TODO Auto-generated method stub
+                }
+
+                @Override
+                public void sendNowSync(Log eventLog) {
+                    // TODO Auto-generated method stub
+                }
 			};
 			trapQueu.setEventForwarder(event2);
 			trapQueu.setEventConfDao(event1);

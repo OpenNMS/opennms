@@ -77,4 +77,14 @@ final class EventAccumulator implements EventForwarder {
         }
         LOG.debug("flush(): sent {} events: {}", i, m_events);
     }
+
+    @Override
+    public void sendNowSync(Event event) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sendNowSync(Log eventLog) {
+        throw new UnsupportedOperationException();
+    }
 }

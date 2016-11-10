@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 public class EventForwarderImpl implements EventForwarder {
 
-
 	private static final Logger LOG = LoggerFactory.getLogger(EventForwarderImpl.class);
 
 	private EventToIndex eventToIndex=null;
@@ -60,5 +59,15 @@ public class EventForwarderImpl implements EventForwarder {
 		// TODO Auto-generated method stub
 
 	}
+
+    @Override
+    public void sendNowSync(Event event) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sendNowSync(Log eventLog) {
+        throw new UnsupportedOperationException();
+    }
 
 }

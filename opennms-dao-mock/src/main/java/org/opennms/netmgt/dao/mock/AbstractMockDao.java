@@ -310,5 +310,13 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
         @Override
         public void sendNow(Log eventLog) {
         }
+
+        @Override
+        public void sendNowSync(Event event) {
+        }
+
+        @Override
+        public void sendNowSync(Log eventLog) {
+        }
     }
 }

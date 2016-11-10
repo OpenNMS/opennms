@@ -164,6 +164,16 @@ public class TrapdHandlerKafkaDefaultIT extends CamelBlueprintTest {
 					// Do nothing
 					LOG.info("Got an event: " + event.toString());
 				}
+
+                @Override
+                public void sendNowSync(Event event) {
+                    // TODO Auto-generated method stub
+                }
+
+                @Override
+                public void sendNowSync(Log eventLog) {
+                    // TODO Auto-generated method stub
+                }
 			}, new Properties())
 		);
 

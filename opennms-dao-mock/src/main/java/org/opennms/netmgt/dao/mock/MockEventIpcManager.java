@@ -428,4 +428,14 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
 
         return false;
     }
+
+    @Override
+    public void sendNowSync(Event event) {
+        sendNow(event);
+    }
+
+    @Override
+    public void sendNowSync(Log eventLog) {
+        sendNow(eventLog);
+    }
 }
