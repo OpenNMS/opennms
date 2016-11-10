@@ -318,7 +318,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                     String namespace = m_graphContainer.getBaseTopology().getVertexNamespace();
                     Vertex vertex = m_graphContainer.getBaseTopology().getVertex(namespace, vertexId);
                     if (vertex == null) {
-                        LOG.warn("Vertex with namespace {} and id {} do not exist in the selected Graph Provider {}",
+                        LOG.warn("Vertex with namespace {} and id {} do not exist in the selected provider: '{}'",
                                 namespace, vertexId, m_graphContainer.getBaseTopology().getClass().getSimpleName());
                     } else {
                         refs.add(vertex);
@@ -574,11 +574,18 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         createLayouts();
         setupErrorHandler(); // Set up an error handler for UI-level exceptions
         setupAutoRefresher(); // Add an auto refresh handler to the GraphContainer
-
         loadUserSettings();
-        // the layout must be created BEFORE loading the hop criteria and the semantic zoom level
+
+        // If no Topology Provider was selected (due to loadUserSettings(), fallback to default
+        if (m_graphContainer.getBaseTopology() == null || m_graphContainer.getBaseTopology() == MergingGraphProvider.NULL_PROVIDER) {
+            CheckedOperation defaultTopologySelectorOperation = getDefaultTopologySelectorOperation(m_bundlecontext);
+            Objects.requireNonNull(defaultTopologySelectorOperation, "No default GraphProvider found."); // no default found, abort
+            defaultTopologySelectorOperation.execute(Lists.newArrayList(), new DefaultOperationContext(TopologyUI.this, m_graphContainer, DisplayLocation.MENUBAR));
+        }
+
+        // Add a request handler that parses incoming focusNode and szl query parameters
         TopologyUIRequestHandler handler = new TopologyUIRequestHandler();
-        getSession().addRequestHandler(handler); // Add a request handler that parses incoming focusNode and szl query parameters
+        getSession().addRequestHandler(handler);
         handler.handleRequestParameter(request); // deal with those in init case
 
         // Add the default criteria if we do not have already a criteria set
@@ -587,13 +594,6 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             if (defaultCriteriaList != null) {
                 defaultCriteriaList.forEach(eachCriteria -> m_graphContainer.addCriteria(eachCriteria)); // set default
             }
-        }
-
-        // If no Topology Provider was selected (due to loadUserSettings(), fallback to default
-        if (m_graphContainer.getBaseTopology() == null || m_graphContainer.getBaseTopology() == MergingGraphProvider.NULL_PROVIDER) {
-            CheckedOperation defaultTopologySelectorOperation = getDefaultTopologySelectorOperation(m_bundlecontext);
-            Objects.requireNonNull(defaultTopologySelectorOperation, "No default GraphProvider found."); // no default found, abort
-            defaultTopologySelectorOperation.execute(Lists.newArrayList(), new DefaultOperationContext(TopologyUI.this, m_graphContainer, DisplayLocation.MENUBAR));
         }
 
         // We set the listeners at the end, to not fire them all the time when initializing the UI
@@ -1178,7 +1178,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             final Optional<ServiceReference<CheckedOperation>> linkdTopologySelectorOperationOptional = serviceReferences.stream()
                     .filter(serviceReference -> {
                         String label = (String) serviceReference.getProperty("operation.label");
-                        return label.toLowerCase().equalsIgnoreCase("linkd");
+                        return label.toLowerCase().contains("linkd");
                     })
                     .findFirst();
             if (linkdTopologySelectorOperationOptional.isPresent()) {
