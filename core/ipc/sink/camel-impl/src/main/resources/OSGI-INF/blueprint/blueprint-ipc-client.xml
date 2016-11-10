@@ -25,7 +25,7 @@
         <from uri="direct:sendMessage" />
         <setExchangePattern pattern="InOnly"/>
         <recipientList>
-          <simple>queuingservice:${header.JmsQueueName}</simple>
+          <simple>kafka:taspmoosskafka101.cernerasp.com:9092,taspmoosskafka102.cernerasp.com:9092,taspmoosskafka103.cernerasp.com:9092?topic=syslog&amp;serializerClass=kafka.serializer.StringEncoder</simple>
         </recipientList>
       </route>
     </camelContext>
