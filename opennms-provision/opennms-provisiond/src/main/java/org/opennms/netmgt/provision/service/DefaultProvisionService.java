@@ -262,20 +262,30 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 primary = node.getIpInterfaces().iterator().next();
             }
 
-            if (primary != null) {
-                LOG.debug("Node Label was set by hostname or address.  Re-resolving.");
-                final InetAddress addr = primary.getIpAddress();
+            for (final OnmsIpInterface iface : node.getIpInterfaces()) {
+                final InetAddress addr = iface.getIpAddress();
                 final String ipAddress = str(addr);
-                final String hostname = m_hostnameResolver.getHostname(addr, node.getLocation().getLocationName());
+                final String hostname = getHostnameResolver().getHostname(addr, node.getLocation().getLocationName());
 
-                if (hostname == null || ipAddress.equals(hostname)) {
-                    node.setLabel(ipAddress);
-                    node.setLabelSource(NodeLabelSource.ADDRESS);
+                if (iface.equals(primary)) {
+                    LOG.debug("Node Label was set by hostname or address.  Re-setting.");
+                    if (hostname == null || ipAddress.equals(hostname)) {
+                        node.setLabel(ipAddress);
+                        node.setLabelSource(NodeLabelSource.ADDRESS);
+                    } else {
+                        node.setLabel(hostname);
+                        node.setLabelSource(NodeLabelSource.HOSTNAME);
+                    }
+                }
+
+                if (hostname == null) {
+                    iface.setIpHostName(ipAddress);
                 } else {
-                    node.setLabel(hostname);
-                    node.setLabelSource(NodeLabelSource.HOSTNAME);
+                    iface.setIpHostName(hostname);
                 }
             }
+        } else {
+            LOG.debug("updateNodeHostname: skipping update. source = {}", node.getLabelSource());
         }
     }
 
@@ -1354,7 +1364,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 // Associate the location with the node
                 final OnmsNode node = new OnmsNode(location);
 
-                final String hostname = m_hostnameResolver.getHostname(addr(ipAddress), locationString);
+                final String hostname = getHostnameResolver().getHostname(addr(ipAddress), locationString);
                 if (hostname == null || ipAddress.equals(hostname)) {
                     node.setLabel(ipAddress);
                     node.setLabelSource(NodeLabelSource.ADDRESS);

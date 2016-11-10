@@ -35,13 +35,20 @@ import static org.mockito.Mockito.mock;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
+import org.junit.After;
 import org.junit.Test;
 import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.StrategyResolver;
 
 public class ServiceBasedStrategyResolverTest {
+    @After
+    public void tearDown() {
+        final Properties sysProps = System.getProperties();
+        sysProps.remove("org.opennms.snmp.strategyClass");
+    }
 
     /**
      * Validates all of the code paths in {@link ServiceBasedStrategyResolver#getStrategy}.
@@ -50,20 +57,20 @@ public class ServiceBasedStrategyResolverTest {
     public void canResolveAndFallback() {
         StrategyResolver currentStrategyResolver = SnmpUtils.getStrategyResolver();
         assertTrue("ServiceBasedStrategyResolver should not be used by default.",
-                !(currentStrategyResolver instanceof ServiceBasedStrategyResolver));
+                   !(currentStrategyResolver instanceof ServiceBasedStrategyResolver));
 
         ServiceBasedStrategyResolver.register();
         currentStrategyResolver = SnmpUtils.getStrategyResolver();
         assertTrue("Calling register() should set the strategy resolver.",
-                currentStrategyResolver instanceof ServiceBasedStrategyResolver);
+                   currentStrategyResolver instanceof ServiceBasedStrategyResolver);
 
         final ServiceBasedStrategyResolver serviceBasedResolver = (ServiceBasedStrategyResolver)currentStrategyResolver;
         assertEquals("No services should be registered by default.",
-                0, serviceBasedResolver.getStrategies().size());
+                     0, serviceBasedResolver.getStrategies().size());
 
         SnmpStrategy strategy = SnmpUtils.getStrategy();
         assertEquals("Should fall back to using the ClassBasedStrategyResolver when no strategies are registered",
-                SnmpUtils.getStrategyClassName(), strategy.getClass().getCanonicalName());
+                     SnmpUtils.getStrategyClassName(), strategy.getClass().getCanonicalName());
 
         // Now create and bind a new mock strategy
         SnmpStrategy mockStrategy = mock(SnmpStrategy.class);
@@ -71,24 +78,28 @@ public class ServiceBasedStrategyResolverTest {
         props.put("implementation", "org.opennms.mock.MyMockStrategy");
         serviceBasedResolver.onBind(mockStrategy, props);
 
-        // Grab the mock, as a fall-back
-        strategy = SnmpUtils.getStrategy();
-        assertEquals("Should fall back to using the first regitered strategy when the requested class is not registered"
-                , mockStrategy, strategy);
-
-        // Now use the mock explicitly
-        System.setProperty("org.opennms.snmp.strategyClass", "org.opennms.mock.MyMockStrategy");
-        strategy = SnmpUtils.getStrategy();
-        assertEquals(mockStrategy, strategy);
-
-        // Unbind the mock
-        serviceBasedResolver.onUnbind(mockStrategy, props);
-
-        // Grabbing the strategy should fail now, we fall-back to the ClassBasedResolver
-        // but it won't be able to instantiate our mock strategy
         try {
-            SnmpUtils.getStrategy();
-            fail("Should not be able to instantiate org.opennms.mock.MyMockStrategy");
-        } catch (RuntimeException e) { }
+            // Grab the mock, as a fall-back
+            strategy = SnmpUtils.getStrategy();
+            assertEquals("Should fall back to using the first regitered strategy when the requested class is not registered"
+                         , mockStrategy, strategy);
+
+            // Now use the mock explicitly
+            System.setProperty("org.opennms.snmp.strategyClass", "org.opennms.mock.MyMockStrategy");
+            strategy = SnmpUtils.getStrategy();
+            assertEquals(mockStrategy, strategy);
+
+            // Unbind the mock
+            serviceBasedResolver.onUnbind(mockStrategy, props);
+
+            // Grabbing the strategy should fail now, we fall-back to the ClassBasedResolver
+            // but it won't be able to instantiate our mock strategy
+            try {
+                SnmpUtils.getStrategy();
+                fail("Should not be able to instantiate org.opennms.mock.MyMockStrategy");
+            } catch (RuntimeException e) { }
+        } finally {
+            serviceBasedResolver.onUnbind(mockStrategy, props);
+        }
     }
 }
