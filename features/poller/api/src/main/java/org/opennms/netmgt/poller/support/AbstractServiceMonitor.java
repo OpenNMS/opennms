@@ -28,10 +28,14 @@
 
 package org.opennms.netmgt.poller.support;
 
+import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 import java.util.function.Supplier;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 
@@ -140,4 +144,14 @@ public abstract class AbstractServiceMonitor implements ServiceMonitor {
         return defaultValue;
     }
 
+    public static Properties getServiceProperties(final MonitoredService svc) {
+        final InetAddress addr = InetAddressUtils.addr(svc.getIpAddr());
+        final boolean requireBrackets = addr != null && addr instanceof Inet6Address && !svc.getIpAddr().startsWith("[");
+        final Properties properties = new Properties();
+        properties.put("ipaddr", requireBrackets ? "[" + svc.getIpAddr() + "]" : svc.getIpAddr());
+        properties.put("nodeid", svc.getNodeId());
+        properties.put("nodelabel", svc.getNodeLabel());
+        properties.put("svcname", svc.getSvcName());
+        return properties;
+    }
 }

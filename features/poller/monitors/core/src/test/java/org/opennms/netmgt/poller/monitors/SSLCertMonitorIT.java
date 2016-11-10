@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
@@ -49,15 +48,18 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MonitorTestUtils;
 import org.opennms.netmgt.utils.DnsUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
-import org.easymock.EasyMock;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 @JUnitConfigurationEnvironment
 public class SSLCertMonitorIT {
+
+    // The certificate JUnitHttpServer uses is valid:
+    //   from  Tue Nov 08 14:30:45 CET 2016
+    //   until Fri Nov 03 14:30:45 CET 2017
+    private static final long EXPIRE_DATE = 1509715800000L;
 
     @Before
     public void setUp() throws Exception {
@@ -66,42 +68,16 @@ public class SSLCertMonitorIT {
 
     @Test
     @JUnitHttpServer(port=10342, https=true)
-    public void testNMS4142() throws UnknownHostException {
-        SSLCertMonitor monitor = new SSLCertMonitor();
-        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
-        parameters.put("port", "10342");
-        parameters.put("retry", "0");
-        parameters.put("timeout", "500");
-        parameters.put("verbose", "true");
-        parameters.put("days", "5");
-
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "SSLCert");
-        PollStatus status = monitor.poll(svc, parameters);
-        MockUtil.println("Reason: "+status.getReason());
-        assertFalse(status.isAvailable());
-    }
-
-
-    /**
-     * Test for a valid certificate within a specific time period.
-     *
-     * Test is disabled since the constructors were removed from SSLCertMonitor and the
-     * m_calendar object we used to pass in the current time via setCalendar().
-     */
-    @Test
-    @Ignore
-    @JUnitHttpServer(port=10342, https=true)
     public void testValidDateForCertificate() throws UnknownHostException {
-        /* The certificate JUnitHttpServer uses is valid from Fri Jan 15 17:25:10 CST 2010 to
-         * Thu Apr 15 18:25:10 CDT 2010.
-         */
-        Calendar calExp = GregorianCalendar.getInstance();
-        calExp.setTimeInMillis(1271373909000L - 86400000 * 5);
-        Calendar cal = GregorianCalendar.getInstance();
+        SSLCertMonitor monitor = new SSLCertMonitor() {
+            @Override
+            protected Calendar getCalendarInstance() {
+                final Calendar cal = GregorianCalendar.getInstance();
+                cal.setTimeInMillis(EXPIRE_DATE - 86400000 * 5);
+                return cal;
+            }
+        };
 
-        EasyMock.expect(GregorianCalendar.getInstance()).andReturn(cal);
-        EasyMock.expect(GregorianCalendar.getInstance()).andReturn(calExp);
-        SSLCertMonitor monitor = new SSLCertMonitor();
         Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
         parameters.put("port", "10342");
         parameters.put("retry", "0");
@@ -112,6 +88,105 @@ public class SSLCertMonitorIT {
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "SSLCert");
         PollStatus status = monitor.poll(svc, parameters);
         assertTrue(status.isAvailable());
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, https=true)
+    public void testExpiringDateForCertificate() throws UnknownHostException {
+        SSLCertMonitor monitor = new SSLCertMonitor() {
+            @Override
+            protected Calendar getCalendarInstance() {
+                final Calendar cal = GregorianCalendar.getInstance();
+                cal.setTimeInMillis(EXPIRE_DATE - 86400000 * 4);
+                return cal;
+            }
+        };
+
+        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        parameters.put("port", "10342");
+        parameters.put("retry", "0");
+        parameters.put("timeout", "500");
+        parameters.put("verbose", "true");
+        parameters.put("days", "5");
+
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "SSLCert");
+        PollStatus status = monitor.poll(svc, parameters);
+        assertTrue(status.isUnavailable());
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, https=true)
+    public void testExpiredDateForCertificate() throws UnknownHostException {
+        SSLCertMonitor monitor = new SSLCertMonitor() {
+            @Override
+            protected Calendar getCalendarInstance() {
+                final Calendar cal = GregorianCalendar.getInstance();
+                cal.setTimeInMillis(EXPIRE_DATE - 86400000 * -1);
+                return cal;
+            }
+        };
+
+        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        parameters.put("port", "10342");
+        parameters.put("retry", "0");
+        parameters.put("timeout", "500");
+        parameters.put("verbose", "true");
+        parameters.put("days", "5");
+
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "SSLCert");
+        PollStatus status = monitor.poll(svc, parameters);
+        assertTrue(status.isUnavailable());
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, https=true, vhosts = "test.example.com")
+    public void testHostNameVerificationSucceeds() throws UnknownHostException {
+        SSLCertMonitor monitor = new SSLCertMonitor() {
+            @Override
+            protected Calendar getCalendarInstance() {
+                final Calendar cal = GregorianCalendar.getInstance();
+                cal.setTimeInMillis(EXPIRE_DATE - 86400000 * 5);
+                return cal;
+            }
+        };
+
+        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        parameters.put("port", "10342");
+        parameters.put("retry", "0");
+        parameters.put("timeout", "500");
+        parameters.put("verbose", "true");
+        parameters.put("days", "5");
+        parameters.put("server-name", "${nodelabel}.example.com");
+
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "test", DnsUtils.resolveHostname("localhost", false), "SSLCert");
+        PollStatus status = monitor.poll(svc, parameters);
+        assertTrue(status.isAvailable());
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, https=true)
+    public void testHostNameVerificationFails() throws UnknownHostException {
+        SSLCertMonitor monitor = new SSLCertMonitor() {
+            @Override
+            protected Calendar getCalendarInstance() {
+                final Calendar cal = GregorianCalendar.getInstance();
+                cal.setTimeInMillis(EXPIRE_DATE - 86400000 * 5);
+                return cal;
+            }
+        };
+
+        Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
+        parameters.put("port", "10342");
+        parameters.put("retry", "0");
+        parameters.put("timeout", "500");
+        parameters.put("verbose", "true");
+        parameters.put("days", "5");
+        parameters.put("server-name", "klatschmohnwiese");
+
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "SSLCert");
+        PollStatus status = monitor.poll(svc, parameters);
+
+        assertTrue(status.isUnavailable());
     }
 
     @Test

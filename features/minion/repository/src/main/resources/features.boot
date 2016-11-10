@@ -1,9 +1,9 @@
 # Minion Default Features
 opennms-discoverer
 opennms-syslogd-listener-camel-netty
-opennms-syslogd-handler-kafka
+opennms-syslogd-handler-minion
 opennms-trapd-listener
-opennms-trapd-handler-kafka
+opennms-trapd-handler-minion
 minion-shell
 minion-heartbeat-producer
 minion-snmp-proxy
