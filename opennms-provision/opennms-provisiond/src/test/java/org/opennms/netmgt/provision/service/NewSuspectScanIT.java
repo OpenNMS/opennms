@@ -422,6 +422,79 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
     }
 
     @Test(timeout=300000)
+    public void testWithNoDnsOnRescan() throws Exception {
+        try {
+            final int nextNodeId = m_nodeDao.getNextNodeId();
+
+            //Verify empty database
+            assertEquals(1, getDistPollerDao().countAll());
+            assertEquals(0, getNodeDao().countAll());
+            assertEquals(0, getInterfaceDao().countAll());
+            assertEquals(0, getMonitoredServiceDao().countAll());
+            assertEquals(0, getServiceTypeDao().countAll());
+            assertEquals(0, getSnmpInterfaceDao().countAll());
+
+            m_provisionService.setHostnameResolver(new HostnameResolver() {
+                @Override public String getHostname(final InetAddress addr) {
+                    return "oldNodeLabel";
+                }
+            });
+
+            final EventAnticipator anticipator = m_eventSubscriber.getEventAnticipator();
+            anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+            anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.201")).getEvent());
+            anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+
+            final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null);
+            runScan(scan);
+
+            anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
+
+            //Verify distpoller count
+            assertEquals(1, getDistPollerDao().countAll());
+
+            //Verify node count
+            assertEquals(1, getNodeDao().countAll());
+
+            //Verify node info
+            final OnmsNode beforeNode = getNodeDao().findAll().iterator().next();
+            assertEquals(Integer.valueOf(nextNodeId), beforeNode.getId());
+            assertEquals("oldNodeLabel", beforeNode.getLabel());
+            assertEquals(NodeLabelSource.HOSTNAME, beforeNode.getLabelSource());
+            assertEquals("oldNodeLabel", beforeNode.getIpInterfaces().iterator().next().getIpHostName());
+
+            //Verify ipinterface count
+            assertEquals("Unexpected number of interfaces found: " + getInterfaceDao().findAll(), 1, getInterfaceDao().countAll());
+
+            //Verify ifservices count - discover snmp service on other if
+            assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 0, getMonitoredServiceDao().countAll());
+
+            //Verify service count
+            assertEquals(0, getServiceTypeDao().countAll());
+
+            //Verify snmpInterface count
+            assertEquals(0, getSnmpInterfaceDao().countAll());
+
+            m_provisionService.setHostnameResolver(new HostnameResolver() {
+                @Override public String getHostname(final InetAddress addr) {
+                    return null;
+                }
+            });
+
+            final ForceRescanScan rescan = m_provisioner.createForceRescanScan(nextNodeId);
+            runScan(rescan);
+
+            final OnmsNode afterNode = getNodeDao().findAll().iterator().next();
+            assertEquals(Integer.valueOf(nextNodeId), afterNode.getId());
+            assertEquals("oldNodeLabel", afterNode.getLabel());
+            assertEquals(NodeLabelSource.HOSTNAME, afterNode.getLabelSource());
+            assertEquals("oldNodeLabel", afterNode.getIpInterfaces().iterator().next().getIpHostName());
+        } finally {
+            m_provisionService.setHostnameResolver(new DefaultHostnameResolver());
+        }
+    }
+
+    @Test(timeout=300000)
     // 192.0.2.0/24 reserved by IANA for testing purposes
     @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:no-ipaddrtable.properties")
     public void testScanNewSuspectNoIpAddrTable() throws Exception {
