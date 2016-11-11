@@ -66,6 +66,7 @@ import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
@@ -129,6 +130,9 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
 
     @Autowired
     private DatabasePopulator m_populator;
+
+    @Autowired
+    private LocationAwareDnsLookupClient m_locationAwareDnsLookupClient;
 
     private ForeignSourceRepository m_foreignSourceRepository;
 
@@ -440,7 +444,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             assertEquals(0, getSnmpInterfaceDao().countAll());
 
             m_provisionService.setHostnameResolver(new HostnameResolver() {
-                @Override public String getHostname(final InetAddress addr) {
+                @Override public String getHostname(final InetAddress addr, final String location) {
                     return "oldNodeLabel";
                 }
             });
@@ -450,7 +454,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.201")).getEvent());
             anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-            final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null);
+            final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
             runScan(scan);
 
             anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
@@ -481,7 +485,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             assertEquals(0, getSnmpInterfaceDao().countAll());
 
             m_provisionService.setHostnameResolver(new HostnameResolver() {
-                @Override public String getHostname(final InetAddress addr) {
+                @Override public String getHostname(final InetAddress addr, final String location) {
                     return null;
                 }
             });
@@ -495,7 +499,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             assertEquals(NodeLabelSource.HOSTNAME, afterNode.getLabelSource());
             assertEquals("oldNodeLabel", afterNode.getIpInterfaces().iterator().next().getIpHostName());
         } finally {
-            m_provisionService.setHostnameResolver(new DefaultHostnameResolver());
+            m_provisionService.setHostnameResolver(new DefaultHostnameResolver(m_locationAwareDnsLookupClient));
         }
     }
 

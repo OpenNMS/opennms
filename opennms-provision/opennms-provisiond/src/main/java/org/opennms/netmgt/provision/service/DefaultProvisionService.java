@@ -264,7 +264,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             }
 
             final InetAddress primaryAddr = primary.getIpAddress();
-            final String primaryHostname = getHostnameResolver().getHostname(primaryAddr);
+            final String primaryHostname = getHostnameResolver().getHostname(primaryAddr, node.getLocation().getLocationName());
 
             if (primaryHostname == null && node.getLabel() != null && NodeLabelSource.HOSTNAME.equals((node.getLabelSource()))) {
                 LOG.warn("Previous node label source for address {} was hostname, but it does not currently resolve.  Skipping update.", InetAddressUtils.str(primaryAddr));
