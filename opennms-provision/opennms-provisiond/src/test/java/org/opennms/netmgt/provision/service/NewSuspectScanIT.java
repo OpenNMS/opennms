@@ -475,6 +475,91 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
 
     }
 
+    @Test(timeout=300000)
+    public void testDuplicateIpsInSeparateLocations() throws Exception {
+        runDuplicateIpScan(null, null, "RDU", "ORD");
+    }
+
+    @Test(timeout=300000)
+    public void testDuplicateIpsInSeparateLocationsWithDifferentForeignSource() throws Exception {
+        runDuplicateIpScan("one", "two", "RDU", "ORD");
+    }
+
+    @Test(timeout=300000)
+    public void testDuplicateIpsInSeparateLocationsWithSameForeignSource() throws Exception {
+        runDuplicateIpScan("one", "one", "RDU", "ORD");
+    }
+
+    @Test(timeout=300000)
+    public void testDuplicateIpsInSameLocationWithDifferentForeignSource() throws Exception {
+        runDuplicateIpScan("one", "two", "RDU", "RDU");
+    }
+
+    @Test(timeout=300000)
+    public void testDuplicateIpsInNullAndDefaultLocationWithDifferentForeignSource() throws Exception {
+        runDuplicateIpScan("one", "two", null, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+    }
+
+    @Test(timeout=300000)
+    public void testDuplicateIpsInDefaultAndNullLocationWithDifferentForeignSource() throws Exception {
+        runDuplicateIpScan("one", "two", MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, null);
+    }
+
+    private void runDuplicateIpScan(final String firstForeignSource, final String secondForeignSource, final String firstLocation, final String secondLocation) throws InterruptedException, ExecutionException {
+        int nextNodeId = m_nodeDao.getNextNodeId();
+
+        //Verify empty database
+        assertEquals(1, getDistPollerDao().countAll());
+        assertEquals(0, getNodeDao().countAll());
+        assertEquals(0, getInterfaceDao().countAll());
+        assertEquals(0, getMonitoredServiceDao().countAll());
+        assertEquals(0, getServiceTypeDao().countAll());
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+
+        InetAddress ip = addr("192.0.2.123");
+
+        EventAnticipator anticipator = m_eventSubscriber.getEventAnticipator();
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(ip).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+
+        NewSuspectScan scan = m_provisioner.createNewSuspectScan(ip, firstForeignSource, firstLocation);
+        runScan(scan);
+
+        anticipator.verifyAnticipated(20000, 0, 2000, 0, 0);
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+
+        //Verify ipinterface count
+        assertEquals("Unexpected number of interfaces found: " + getInterfaceDao().findAll(), 1, getInterfaceDao().countAll());
+
+        // Now do it again, with a different location
+        nextNodeId = m_nodeDao.getNextNodeId();
+
+        anticipator = m_eventSubscriber.getEventAnticipator();
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(ip).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+
+        scan = m_provisioner.createNewSuspectScan(ip, secondForeignSource, secondLocation);
+        runScan(scan);
+
+        anticipator.verifyAnticipated(20000, 0, 2000, 0, 0);
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+
+        //Verify node count
+        assertEquals(2, getNodeDao().countAll());
+
+        //Verify ipinterface count
+        assertEquals("Unexpected number of interfaces found: " + getInterfaceDao().findAll(), 2, getInterfaceDao().countAll());
+    }
+
     public void runScan(final Scan scan) throws InterruptedException, ExecutionException {
         final Task t = scan.createTask();
         t.schedule();
