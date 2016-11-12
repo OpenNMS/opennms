@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,36 +28,31 @@
 
 package org.opennms.netmgt.icmp.proxy;
 
-import javax.annotation.PostConstruct;
+import static org.junit.Assert.assertEquals;
 
-import org.opennms.core.rpc.api.RpcClient;
-import org.opennms.core.rpc.api.RpcClientFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.junit.Test;
 
-@Component(value = "locationAwarePingSweepClient")
-public class LocationAwarePingSweepClientImpl implements LocationAwarePingSweepClient {
+public class PingSweepRequestDTOTimeToLiveTest {
 
-    @Autowired
-    private RpcClientFactory rpcClientFactory;
+    @Test
+    public void testCalculateTaskTimeout() throws Exception {
+        PingSweepRequestDTO request = new PingSweepRequestDTO();
 
-    @Autowired
-    private PingSweepRpcModule pingSweepRpcModule;
+        // Make 3 ranges of 5 addresses each
+        for (int i = 0; i < 3; i++) {
+            request.addIpRange(new IPRangeDTO("127.0.1." + ((i * 5) + 1), "127.0.1." + ((i * 5) + 5), 2, 50));
+        }
 
-    private RpcClient<PingSweepRequestDTO, PingSweepResponseDTO> delegate;
-
-    @PostConstruct
-    public void init() {
-        delegate = rpcClientFactory.getClient(pingSweepRpcModule);
+        // Each task is taking 750 ms so totalTaskTimeout = 750 ms * 3 (number of tasks) = 2250 ms
+        // With a (default) rate of 1 packet per second, this should be extended
+        // by 1000 milliseconds per all 15 IP addresses
+        assertEquals(new Long(Math.round(2250 * 1.5) + (15 * 1000)), request.getTimeToLiveMs()); 
     }
 
-    public RpcClient<PingSweepRequestDTO, PingSweepResponseDTO> getDelegate() {
-        return delegate;
+    @Test
+    public void testTimeoutLongMaxValue() throws Exception {
+        PingSweepRequestDTO request = new PingSweepRequestDTO();
+        request.addIpRange(new IPRangeDTO("2000::", "3FFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF", 0, 1));
+        assertEquals(new Long(Long.MAX_VALUE), request.getTimeToLiveMs());
     }
-
-    @Override
-    public PingSweepRequestBuilder ping() {
-        return new PingSweepRequestBuilderImpl(delegate);
-    }
-
 }

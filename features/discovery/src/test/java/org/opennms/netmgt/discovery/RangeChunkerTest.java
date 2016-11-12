@@ -26,14 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.discovery.actors;
+package org.opennms.netmgt.discovery;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
+import java.net.InetAddress;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.network.IPAddress;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
@@ -41,11 +45,17 @@ import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
-import org.opennms.netmgt.discovery.messages.DiscoveryJob;
 import org.opennms.netmgt.model.discovery.IPPollRange;
 
-
 public class RangeChunkerTest {
+
+    private IpAddressFilter ipAddressFilter;
+
+    @Before
+    public void setUp() {
+        ipAddressFilter = mock(IpAddressFilter.class);
+        when(ipAddressFilter.matches(any(), any(InetAddress.class))).thenReturn(true);
+    }
 
 	@Test
 	public void testRangeChunker() throws Exception {
@@ -99,7 +109,7 @@ public class RangeChunkerTest {
 		config.setForeignSource("Datacenter");
 		config.setLocation("RDU");
 
-		printJobs(new RangeChunker().chunk(config));
+		printJobs(new RangeChunker(ipAddressFilter).chunk(config));
 	}
 
 	@Test
@@ -116,14 +126,14 @@ public class RangeChunkerTest {
 			config.addSpecific(specific);
 		}
 
-		List<DiscoveryJob> jobs = new RangeChunker().chunk(config);
+		Map<String, List<DiscoveryJob>> jobs = new RangeChunker(ipAddressFilter).chunk(config);
 		printJobs(jobs);
 
 		// The specifics have been combined into one range
 		assertEquals(1, jobs.size());
-		assertEquals(1, jobs.get(0).getRanges().size());
+		assertEquals(1, jobs.get("123").get(0).getRanges().size());
 
-		IPPollRange range = jobs.get(0).getRanges().iterator().next();
+		IPPollRange range = jobs.get("123").get(0).getRanges().iterator().next();
 		assertEquals("10.0.0.0", new IPAddress(range.getAddressRange().getBegin()).toString());
 		assertEquals("10.0.0.4", new IPAddress(range.getAddressRange().getEnd()).toString());
 	}
@@ -142,12 +152,12 @@ public class RangeChunkerTest {
 			config.addSpecific(specific);
 		}
 
-		List<DiscoveryJob> jobs = new RangeChunker().chunk(config);
+		Map<String, List<DiscoveryJob>> jobs = new RangeChunker(ipAddressFilter).chunk(config);
 		printJobs(jobs);
 
-		assertEquals(2, jobs.size());
-		assertEquals(3, jobs.get(0).getRanges().size());
-		assertEquals(2, jobs.get(1).getRanges().size());
+		assertEquals(2, jobs.get("123").size());
+		assertEquals(3, jobs.get("123").get(0).getRanges().size());
+		assertEquals(2, jobs.get("123").get(1).getRanges().size());
 	}
 
 	@Test
@@ -164,12 +174,12 @@ public class RangeChunkerTest {
 			config.addSpecific(specific);
 		}
 
-		List<DiscoveryJob> jobs = new RangeChunker().chunk(config);
+		Map<String, List<DiscoveryJob>> jobs = new RangeChunker(ipAddressFilter).chunk(config);
 		printJobs(jobs);
 
 		assertEquals(2, jobs.size());
-		assertEquals(3, jobs.get(0).getRanges().size());
-		assertEquals(2, jobs.get(1).getRanges().size());
+		assertEquals(3, jobs.get("123").get(0).getRanges().size());
+		assertEquals(2, jobs.get("456").get(0).getRanges().size());
 	}
 
 	@Test
@@ -186,11 +196,11 @@ public class RangeChunkerTest {
 			config.addSpecific(specific);
 		}
 
-		List<DiscoveryJob> jobs = new RangeChunker().chunk(config);
+		Map<String, List<DiscoveryJob>> jobs = new RangeChunker(ipAddressFilter).chunk(config);
 		printJobs(jobs);
 
-		assertEquals(1, jobs.size());
-		assertEquals(5, jobs.get(0).getRanges().size());
+		assertEquals(1, jobs.get("123").size());
+		assertEquals(5, jobs.get("123").get(0).getRanges().size());
 	}
 
 	@Test
@@ -207,11 +217,19 @@ public class RangeChunkerTest {
 			config.addSpecific(specific);
 		}
 
-		List<DiscoveryJob> jobs = new RangeChunker().chunk(config);
+		Map<String, List<DiscoveryJob>> jobs = new RangeChunker(ipAddressFilter).chunk(config);
 		printJobs(jobs);
 
-		assertEquals(1, jobs.size());
-		assertEquals(5, jobs.get(0).getRanges().size());
+		assertEquals(1, jobs.get("123").size());
+		assertEquals(5, jobs.get("123").get(0).getRanges().size());
+	}
+
+	private static void printJobs(Map<String, List<DiscoveryJob>> jobs) {
+	    jobs.entrySet().stream()
+	        .forEach(j -> {
+	            System.out.println("Location: " + j.getKey());
+	            printJobs(j.getValue());
+	        });
 	}
 
 	/**

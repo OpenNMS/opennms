@@ -29,28 +29,20 @@
 package org.opennms.netmgt.icmp.proxy;
 
 import java.net.InetAddress;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.netmgt.model.discovery.IPPollRange;
-
 public interface PingSweepRequestBuilder {
-    
 
-    PingSweepRequestBuilder withTimeout(long timeout, TimeUnit unit);
+    PingSweepRequestBuilder withLocation(String location);
 
     PingSweepRequestBuilder withPacketSize(int packetSize);
 
-    PingSweepRequestBuilder withRetries(int retries);
+    PingSweepRequestBuilder withPacketsPerSecond(double packetsPerSecond);
 
     PingSweepRequestBuilder withRange(InetAddress begin, InetAddress end);
 
-    PingSweepRequestBuilder withLocation(String location);
-    
-    PingSweepRequestBuilder withForeignSource(String foreignSource);
-    
-    PingSweepRequestBuilder withIpPollRanges(List<IPPollRange> ranges);
+    PingSweepRequestBuilder withRange(InetAddress begin, InetAddress end, int retries, long timeout, TimeUnit timeoutUnit);
 
     CompletableFuture<PingSweepSummary> execute();
 
