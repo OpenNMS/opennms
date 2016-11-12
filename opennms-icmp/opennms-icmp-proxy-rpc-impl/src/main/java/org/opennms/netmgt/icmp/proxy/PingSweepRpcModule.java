@@ -45,7 +45,7 @@ import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
 import org.opennms.core.utils.IteratorUtils;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class PingSweepRpcModule extends AbstractXmlRpcModule<PingSweepRequestDTO
     public static final String RPC_MODULE_ID = "PING-SWEEP";
 
     @Autowired
-    private Pinger pinger;
+    private PingerFactory pingerFactory;
 
     public PingSweepRpcModule() {
         super(PingSweepRequestDTO.class, PingSweepResponseDTO.class);
@@ -95,7 +95,7 @@ public class PingSweepRpcModule extends AbstractXmlRpcModule<PingSweepRequestDTO
                 try {
                     tracker.expectCallbackFor(pollAddress.getAddress());
                     limiter.acquire();
-                    pinger.ping(pollAddress.getAddress(), timeout, request.getRetries(), packetSize, 1, tracker);
+                    pingerFactory.getInstance().ping(pollAddress.getAddress(), timeout, request.getRetries(), packetSize, 1, tracker);
                 } catch (Exception e) {
                     tracker.handleError(pollAddress.getAddress(), null, e);
                     tracker.completeExceptionally(e);
@@ -171,8 +171,8 @@ public class PingSweepRpcModule extends AbstractXmlRpcModule<PingSweepRequestDTO
         return RPC_MODULE_ID;
     }
 
-    public void setPinger(Pinger pinger) {
-        this.pinger = pinger;
+    public void setPingerFactory(PingerFactory pingerFactory) {
+        this.pingerFactory = pingerFactory;
     }
     
     public Iterable<IPPollAddress> getAddresses(List<IPPollRange> ranges) {

@@ -49,13 +49,10 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.minion.core.api.MinionIdentity;
-import org.opennms.netmgt.icmp.Pinger;
-import org.opennms.netmgt.icmp.jna.JnaPinger;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -63,14 +60,10 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-camel.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-icmp.xml", "classpath:/pinger.xml" })
+        "classpath:/META-INF/opennms/applicationContext-rpc-icmp.xml",
+        "classpath:/pinger.xml" })
 @JUnitConfigurationEnvironment
 public class LocationAwarePingSweepClientIT extends CamelBlueprintTest {
-
-    @Bean
-    public Pinger createPinger() {
-        return new JnaPinger();
-    }
 
     private static final String REMOTE_LOCATION_NAME = "remote";
 

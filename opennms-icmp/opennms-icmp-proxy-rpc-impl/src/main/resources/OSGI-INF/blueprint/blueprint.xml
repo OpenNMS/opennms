@@ -12,18 +12,17 @@
 ">
 	<!-- Pinger service -->
 	<reference id="pingerFactory" interface="org.opennms.netmgt.icmp.PingerFactory" />
-	
-    <reference interface="org.opennms.netmgt.icmp.Pinger" id="pinger" />
+
     <service interface="org.opennms.core.rpc.api.RpcModule">
         <bean class="org.opennms.netmgt.icmp.proxy.PingProxyRpcModule">
-            <property name="pinger" ref="pinger" />
+            <property name="pingerFactory" ref="pingerFactory" />
         </bean>
     </service>
-    
-     <service interface="org.opennms.core.rpc.api.RpcModule">
+
+    <service interface="org.opennms.core.rpc.api.RpcModule">
         <bean class="org.opennms.netmgt.icmp.proxy.PingSweepRpcModule">
-            <property name="pinger" ref="pinger" />
+            <property name="pingerFactory" ref="pingerFactory" />
         </bean>
     </service>
-    
+
 </blueprint>

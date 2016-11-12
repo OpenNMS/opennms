@@ -13,5 +13,5 @@
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
   http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
 ">
-    <bean id="pinger" class="org.opennms.netmgt.icmp.jna.JnaPinger"/>
+    <bean id="pingerFactory" class="org.opennms.netmgt.icmp.jna.JnaPingerFactory"/>
 </beans>
