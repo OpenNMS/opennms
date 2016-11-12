@@ -331,8 +331,12 @@ public class QueryManagerDaoImpl implements QueryManager {
 
     @Override
     public void updateServiceLastFail(int nodeId, String ipAddr, String serviceName, Date updateTime) {
+    	if (updateTime == null)
+    		return;
         try {
             OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddress.getByName(ipAddr), serviceName);
+            if (service == null)
+            	return;
             service.setLastFail(updateTime);;
             m_monitoredServiceDao.saveOrUpdate(service);
         } catch (UnknownHostException e) {
