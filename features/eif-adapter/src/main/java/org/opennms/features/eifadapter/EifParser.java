@@ -28,26 +28,54 @@
 
 package org.opennms.features.eifadapter;
 
-import com.google.common.net.InetAddresses;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.net.InetAddresses;
+
 public class EifParser {
 
-    public static final Logger LOG = LoggerFactory.getLogger(EifParser.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EifParser.class);
     private static final int eifStartOffset = 37;
-    enum m_eifSeverities { FATAL, CRITICAL, MINOR, WARNING, OK, INFO, HARMLESS, UNKNOWN }
+
+    enum EifSeverity {
+        FATAL, CRITICAL, MINOR, WARNING, OK, INFO, HARMLESS, UNKNOWN;
+
+        public OnmsSeverity toOnmsSeverity() {
+            switch (this) {
+                case UNKNOWN:
+                    return OnmsSeverity.INDETERMINATE;
+                case HARMLESS:
+                case INFO:
+                case OK:
+                    return OnmsSeverity.NORMAL;
+                case WARNING:
+                    return OnmsSeverity.WARNING;
+                case MINOR:
+                    return OnmsSeverity.MINOR;
+                case CRITICAL:
+                    return OnmsSeverity.MAJOR;
+                case FATAL:
+                    return OnmsSeverity.CRITICAL;
+                default:
+                    throw new IllegalArgumentException("No mapping for " + name() + " found");
+            }
+        }
+    }
 
     public static List<Event> translateEifToOpenNMS(NodeDao nodeDao, StringBuilder eifBuff) {
 
@@ -74,17 +102,18 @@ public class EifParser {
             // Add the translated event to the list
             translatedEvents.add(
                     new EventBuilder("uei.opennms.org/vendor/IBM/EIF/"+eifClass,"eif").
-                            setDescription(eifSlotMap.get("msg")).setNodeid(nodeId).
-                            setSeverity(mapEifSeverity(eifSlotMap.get("severity"))).setParms(parmList).getEvent());
+                            setDescription(eifSlotMap.get("msg"))
+                            .setNodeid(nodeId).
+                            setSeverity(EifSeverity.valueOf(eifSlotMap.get("severity")).toOnmsSeverity().getLabel())
+                            .setParms(parmList).getEvent());
 
         }
 
-        if(translatedEvents.size() > 0) {
-            return translatedEvents;
-        } else {
-            System.err.println("Received a zero-length list");
+        if(translatedEvents.isEmpty()) {
+            LOG.error("Received a zero-length list");
             return null;
         }
+        return translatedEvents;
     }
 
     public static Map<String, String> parseEifSlots(String eifBodyString) {
@@ -164,20 +193,5 @@ public class EifParser {
         }
 
         return nodeId;
-    }
-
-    private static String mapEifSeverity(String eifSeverity) {
-
-        EnumMap<m_eifSeverities, String> eifSeverityMap = new EnumMap<>(m_eifSeverities.class);
-        eifSeverityMap.put(m_eifSeverities.UNKNOWN,"Indeterminate");
-        eifSeverityMap.put(m_eifSeverities.HARMLESS,"Normal");
-        eifSeverityMap.put(m_eifSeverities.INFO,"Normal");
-        eifSeverityMap.put(m_eifSeverities.OK,"Normal");
-        eifSeverityMap.put(m_eifSeverities.WARNING,"Warning");
-        eifSeverityMap.put(m_eifSeverities.MINOR,"Minor");
-        eifSeverityMap.put(m_eifSeverities.CRITICAL,"Major");
-        eifSeverityMap.put(m_eifSeverities.FATAL,"Critical");
-
-        return eifSeverityMap.get(m_eifSeverities.valueOf(eifSeverity));
     }
 }
