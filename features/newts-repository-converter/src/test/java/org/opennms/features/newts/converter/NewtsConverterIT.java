@@ -30,9 +30,11 @@ package org.opennms.features.newts.converter;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
-import org.cassandraunit.JUnitNewtsCassandra;
-import org.cassandraunit.JUnitNewtsCassandraExecutionListener;
+
+import org.hamcrest.Matcher;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
@@ -55,6 +57,7 @@ import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.Timestamp;
 import org.opennms.newts.api.query.ResultDescriptor;
 import org.opennms.newts.api.query.StandardAggregationFunctions;
+import org.opennms.newts.cassandra.NewtsInstance;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -72,21 +75,25 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@TestExecutionListeners({JUnitNewtsCassandraExecutionListener.class,
-                         TemporaryDatabaseExecutionListener.class})
+@TestExecutionListeners({TemporaryDatabaseExecutionListener.class})
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/applicationContext-soa.xml",
                                  "classpath:/META-INF/opennms/applicationContext-newts.xml"})
-@JUnitConfigurationEnvironment(systemProperties={"org.opennms.newts.config.hostname=" + NewtsConverterIT.CASSANDRA_HOST,
-                                                 "org.opennms.newts.config.port=" + NewtsConverterIT.CASSANDRA_PORT,
-                                                 "org.opennms.newts.config.keyspace=" + NewtsConverterIT.CASSANDRA_KEYSPACE,
-                                                 "org.opennms.newts.config.max_batch_delay=0", // No delay
-                                                 "org.opennms.timeseries.strategy=newts"})
-@JUnitTemporaryDatabase()
-@JUnitNewtsCassandra(keyspace=NewtsConverterIT.CASSANDRA_KEYSPACE)
-public class NewtsConverterIT implements TemporaryDatabaseAware {
-    protected final static String CASSANDRA_HOST = "localhost";
-    protected final static int CASSANDRA_PORT = 9043;
-    protected final static String CASSANDRA_KEYSPACE = "newts";
+@JUnitConfigurationEnvironment(systemProperties={
+        "org.opennms.rrd.storeByForeignSource=true",
+        "org.opennms.timeseries.strategy=newts"
+})
+@JUnitTemporaryDatabase
+public class NewtsConverterIT implements TemporaryDatabaseAware<TemporaryDatabase> {
+
+    @ClassRule
+    public static NewtsInstance s_newtsInstance = new NewtsInstance();
+
+    @BeforeClass
+    public static void setUpClass() {
+        System.setProperty("org.opennms.newts.config.hostname", s_newtsInstance.getHost());
+        System.setProperty("org.opennms.newts.config.port", Integer.toString(s_newtsInstance.getPort()));
+        System.setProperty("org.opennms.newts.config.keyspace", s_newtsInstance.getKeyspace());
+    }
 
     private final static Path OPENNMS_HOME;
 

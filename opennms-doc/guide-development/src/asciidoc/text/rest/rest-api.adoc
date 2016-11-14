@@ -79,3 +79,36 @@ The following apply for OpenNMS Horizon 18 and newer.
 * All GET requests are going to return 404 (NOT_FOUND) when a single resource doesn't exist; but will return 400 (BAD_REQUEST), if an intermediate resource doesn't exist. For example, if a specific IP doesn't exist on a valid node, return 404. But, if the IP is valid and the node is not valid, because the node is an intermediate resource, a 400 will be returned.
 * If something not expected is received from the Service/DAO Layer when processing any HTTP request, like an exception, a 500 (INTERNAL_SERVER_ERROR) will be returned.
 * Any problem related with the incoming parameters, like validations, will generate a 400 (BAD_REQUEST).
+
+=== Identifying Resources
+
+Some endpoints deal in resources, which are identified by _Resource IDs_.
+Since every resource is ultimately parented under some node, identifying the node which contains a resource is the first step in constructing a resource ID.
+Two styles are available for identifying the node in a resource ID:
+
+[options="header", cols="5,10,10"]
+|===
+| Style            | Description                                                                           | Example
+| `node[ID]`       | Identifies a node by its database ID, which is always an integer                      | `node[42]`
+| `node[FS:FID]`   | Identifies a node by its foreign-source name and foreign-ID, joined by a single colon | `node[Servers:115da833-0957-4471-b496-a731928c27dd]`
+|===
+
+The node identifier is followed by a period, then a resource-type name and instance name.
+The instance name's characteristics may vary from one resource-type to the next.
+A few examples:
+
+[options="header", cols="5,10"]
+|===
+| Value                              | Description
+| `nodeSnmp[]`                       | Node-level (scalar) performance data for the node in question.
+                                       This type is the only one where the instance identifier is empty.
+| `interfaceSnmp[eth0-04013f75f101]` | A layer-two interface as represented by a row in the SNMP `ifTable`.
+                                       The instance identifier is composed of the interface's `ifName` and its `ifPhysAddress` (if it has one).
+| `dskIndex[_root_fs]`               | The root filesystem of a node running the Net-SNMP management agent.
+|===
+
+Putting it all together, here are a few well-formed resource IDs:
+
+* `node[1].nodeSnmp[]`
+* `node[42].interfaceSnmp[eth0-04013f75f101]`
+* `node[Servers:115da833-0957-4471-b496-a731928c27dd].dskIndex[_root_fs]`

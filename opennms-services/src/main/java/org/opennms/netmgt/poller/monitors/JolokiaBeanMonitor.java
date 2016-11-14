@@ -254,7 +254,7 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
                 LOGGER.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
             } catch (J4pException e) {
-                String reason = "J4pExecptin during Jolokia monitor call: "+ e.getMessage();
+                String reason = J4pException.class.getSimpleName() + " during Jolokia monitor call: "+ e.getMessage();
                 LOGGER.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
             }

@@ -219,8 +219,8 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         Map<String, LinkedList<String>> roleMap = m_useGroups ? parseGroupRoles() 
                                                               : new HashMap<String, LinkedList<String>>();
         Map<String, Boolean> roleAddDefaultMap = new HashMap<String, Boolean>();
-        for (String role : configuredRoles) {
-            String rolename = properties.getProperty("role." + role + ".name");
+        for (final String role : configuredRoles) {
+            final String rolename = properties.getProperty("role." + role + ".name");
             if (rolename == null) {
                   LOG.warn("Role configuration for '{}' does not have 'name' parameter.  Expecting a 'role.{}.name' property. The role will not be usable.", role, role);
                   continue;
@@ -237,7 +237,13 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
 
             String securityRole = Authentication.getSpringSecurityRoleFromOldRoleName(rolename);
             if (securityRole == null) {
-                throw new DataRetrievalFailureException("Could not find Spring Security role mapping for old role name '" + rolename + "' for role '" + role + "'");
+                final String newRolename = role.replaceAll("[^\\p{Alnum}]+", "_");
+                if (newRolename.matches("^[Rr][Oo][Ll][Ee]_")) {
+                    securityRole = newRolename.replaceAll("^[Rr][Oo][Ll][Ee]_", "ROLE_");
+                } else {
+                    securityRole = "ROLE_" + newRolename;
+                }
+                LOG.warn("Role '{}' does not have an old (hardcoded) role name!  Returning '{}'.", role, securityRole);
             }
 
             for (String authUser : authUsers) {

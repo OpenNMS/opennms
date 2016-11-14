@@ -29,17 +29,25 @@
 package org.opennms.netmgt.collection.persistence.newts;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.Collections;
 
-import org.cassandraunit.JUnitNewtsCassandra;
-import org.cassandraunit.JUnitNewtsCassandraExecutionListener;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.support.builder.AttributeType;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
@@ -47,11 +55,11 @@ import org.opennms.newts.api.Results;
 import org.opennms.newts.api.Results.Row;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.Timestamp;
+import org.opennms.newts.cassandra.NewtsInstance;
 import org.opennms.newts.persistence.cassandra.CassandraSampleRepository;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 
 import com.google.common.base.Optional;
 
@@ -62,28 +70,24 @@ import com.google.common.base.Optional;
  * @author jwhite
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    JUnitNewtsCassandraExecutionListener.class
-})
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-newts.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.newts.config.hostname=" + NewtsPersisterIT.CASSANDRA_HOST,
-        "org.opennms.newts.config.port=" + NewtsPersisterIT.CASSANDRA_PORT,
-        "org.opennms.newts.config.keyspace=" + NewtsPersisterIT.NEWTS_KEYSPACE,
-        "org.opennms.newts.config.max_batch_delay=0", // No delay
         "org.opennms.timeseries.strategy=newts"
 })
-@JUnitNewtsCassandra(
-        keyspace=NewtsPersisterIT.NEWTS_KEYSPACE
-)
 public class NewtsPersisterIT {
 
-    protected static final String CASSANDRA_HOST = "localhost";
-    protected static final int CASSANDRA_PORT = 9043;
-    protected static final String NEWTS_KEYSPACE = "newts";
+    @ClassRule
+    public static NewtsInstance s_newtsInstance = new NewtsInstance();
+
+    @BeforeClass
+    public static void setUpClass() {
+        System.setProperty("org.opennms.newts.config.hostname", s_newtsInstance.getHost());
+        System.setProperty("org.opennms.newts.config.port", Integer.toString(s_newtsInstance.getPort()));
+        System.setProperty("org.opennms.newts.config.keyspace", s_newtsInstance.getKeyspace());
+    }
 
     @Autowired
     private NewtsPersisterFactory m_persisterFactory;
@@ -99,12 +103,17 @@ public class NewtsPersisterIT {
         repo.setRrdBaseDir(Paths.get("a","path","that","ends","with","snmp").toFile());
         Persister persister = m_persisterFactory.createPersister(params, repo);
 
+        int nodeId = 1;
+        CollectionAgent agent = mock(CollectionAgent.class);
+        when(agent.getStorageDir()).thenReturn(new File(Integer.toString(nodeId)));
+        NodeLevelResource nodeLevelResource = new NodeLevelResource(nodeId);
+
         // Build a collection set with a single sample
         Timestamp now = Timestamp.now();
-        CollectionSet collectionSet = new CollectionSetBuilder()
-            .withSample(Paths.get("1"), "metrics", "metric", "GAUGE", 900)
-            .withTimestamp(now.asDate())
-            .build();
+        CollectionSet collectionSet = new CollectionSetBuilder(agent)
+                .withNumericAttribute(nodeLevelResource, "metrics", "metric", 900, AttributeType.GAUGE)
+                .withTimestamp(now.asDate())
+                .build();
 
         // Persist
         collectionSet.visit(persister);

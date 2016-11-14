@@ -193,11 +193,16 @@ public abstract class Task {
         }
     }
     
-    void submitIfReady() {
+    final void submitIfReady() {
         if (isReady()) {
-            doSubmit();
-            submitted();
-            completeSubmit();
+            try {
+                doSubmit();
+            } catch (Throwable e) {
+                LOG.error("Unexpected throwable while trying to submit task: " + this, e);
+            } finally {
+                submitted();
+                completeSubmit();
+            }
         }
     }
 
@@ -255,7 +260,7 @@ public abstract class Task {
     /**
      * Called from execute after the 'body' of the task has completed
      */
-    void onComplete() {
+    final void onComplete() {
         completed();
         m_latch.countDown();
     }
@@ -266,9 +271,17 @@ public abstract class Task {
      */
     public void schedule() {
         m_scheduleCalled.set(true);
-        preSchedule();
+        try {
+            preSchedule();
+        } catch (Throwable e) {
+            LOG.error("preSchedule() failed for task " + this, e);
+        }
         getCoordinator().schedule(this);
-        postSchedule();
+        try {
+            postSchedule();
+        } catch (Throwable e) {
+            LOG.error("postSchedule() failed for task " + this, e);
+        }
     }
         
     /**
@@ -332,14 +345,15 @@ public abstract class Task {
     }
 
     /**
-     * Wait for this task to complete or until a timeout occurs
+     * Wait for this task to complete or until a timeout occurs. If the
+     * timeout elapses, then false is returned.
      *
      * @param timeout a long.
      * @param unit a {@link java.util.concurrent.TimeUnit} object.
      * @throws java.lang.InterruptedException if any.
      */
-    public void waitFor(final long timeout, final TimeUnit unit) throws InterruptedException {
-        m_latch.await(timeout, unit);
+    public boolean waitFor(final long timeout, final TimeUnit unit) throws InterruptedException {
+        return m_latch.await(timeout, unit);
     }
     
     /**

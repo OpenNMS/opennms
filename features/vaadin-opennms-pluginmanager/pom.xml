@@ -20,9 +20,10 @@
     <bundle.symbolicName>vaadin-opennms-pluginmanager</bundle.symbolicName>
     <bundle.namespace>org.opennms.features.pluginmgr.vaadin.config.opennms</bundle.namespace>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <pluginmanagerVersion>1.0.1</pluginmanagerVersion>
-    <licencemanagerVersion>1.0.1</licencemanagerVersion>
-    <featuremanagerVersion>1.0.1</featuremanagerVersion>
+    <!-- TODO MOVED TO MAIN POM -->
+    <!-- <pluginmanagerVersion>1.0.1</pluginmanagerVersion> -->
+    <!-- <licencemanagerVersion>1.0.1</licencemanagerVersion> -->
+    <!-- <featuremanagerVersion>1.0.1</featuremanagerVersion> -->
   </properties>
 
   <build>

@@ -519,12 +519,14 @@ if [ "%{skip_compile}" = 1 ]; then
 else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	    -Dopennms.home="%{instprefix}" install
+		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
+		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks install
 fi
 
 echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
+	-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
+	-Dopennms.home="%{instprefix}" -Prun-expensive-tasks -Dbuild.profile=full install
 
 cd opennms-tools
 	../compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
@@ -884,6 +886,15 @@ else
 	echo "done"
 fi
 
+printf -- "- making symlink for $ROOT_INST/jetty-webapps/%{servletdir}/docs... "
+if [ -e "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ] && [ ! -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
+  echo "failed: $ROOT_INST/jetty-webapps/%{servletdir}/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+else
+  rm -rf "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+  ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+  echo "done"
+fi
+
 %postun -p /bin/bash docs
 ROOT_INST="$RPM_INSTALL_PREFIX0"
 SHARE_INST="$RPM_INSTALL_PREFIX1"
@@ -896,6 +907,12 @@ if [ "$1" = 0 ]; then
 	if [ -L "$ROOT_INST/docs" ]; then
 		rm -f "$ROOT_INST/docs"
 	fi
+fi
+
+if [ "$1" = 0 ]; then
+  if [ -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
+    rm -f "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+  fi
 fi
 
 %post -p /bin/bash core

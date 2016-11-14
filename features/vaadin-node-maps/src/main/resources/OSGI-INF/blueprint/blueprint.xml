@@ -164,7 +164,7 @@
 		</cm:default-properties>
 	</cm:property-placeholder>
 
-	<bean id="mapWidget" class="org.opennms.features.vaadin.nodemaps.internal.MapWidgetComponent" scope="prototype" init-method="init">
+	<bean id="mapWidget" class="org.opennms.features.vaadin.nodemaps.internal.MapWidgetComponent" scope="prototype">
 		<property name="nodeDao" ref="nodeDao" />
 		<property name="assetRecordDao" ref="assetDao" />
 		<property name="alarmDao" ref="alarmDao" />

@@ -8,8 +8,8 @@
     <critical-service name="ICMP" />
   </node-outage>
 
-  <package name="cassandra21x">
-    <filter><![CDATA[(IPADDR != '0.0.0.0') & (categoryName == 'Cassandra21x')]]></filter>
+  <package name="cassandra-via-jmx">
+    <filter>IPADDR != '0.0.0.0'</filter>
     <rrd step="300">
       <rra>RRA:AVERAGE:0.5:1:2016</rra>
       <rra>RRA:AVERAGE:0.5:12:1488</rra>
@@ -23,9 +23,8 @@
       <parameter key="timeout" value="3000"/>
       <parameter key="protocol" value="rmi"/>
       <parameter key="urlPath" value="/jmxrmi"/>
-      <parameter key="ds-name" value="cassandra21x"/>
-      <parameter key="friendly-name" value="cassandra21x"/>
-      <parameter key="collection" value="cassandra21x"/>
+      <parameter key="rrd-base-name" value="jmx-cassandra"/>
+      <parameter key="ds-name" value="jmx-cassandra"/>
       <parameter key="thresholding-enabled" value="true"/>
       <parameter key="factory" value="PASSWORD-CLEAR"/>
       <parameter key="username" value="cassandra-username"/>
@@ -36,31 +35,14 @@
       <parameter key="tests.joined" value="storage.Joined"/>
       <parameter key="tests.unreachables" value="empty(storage.UnreachableNodes)"/>
     </service>
-    <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
-    <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
-    <downtime interval="600000" begin="43200000" end="432000000" /><!-- 10m, 12h, 5d -->
-    <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
-  </package>
-
-  <package name="cassandra21x-newts">
-    <filter><![CDATA[(IPADDR != '0.0.0.0') & (catincCassandra21x & catincNewts)]]></filter>
-    <rrd step="300">
-      <rra>RRA:AVERAGE:0.5:1:2016</rra>
-      <rra>RRA:AVERAGE:0.5:12:1488</rra>
-      <rra>RRA:AVERAGE:0.5:288:366</rra>
-      <rra>RRA:MAX:0.5:288:366</rra>
-      <rra>RRA:MIN:0.5:288:366</rra>
-    </rrd>
     <service name="JMX-Cassandra-Newts" interval="300000" user-defined="false" status="on">
       <parameter key="port" value="7199"/>
       <parameter key="retry" value="2"/>
       <parameter key="timeout" value="3000"/>
       <parameter key="protocol" value="rmi"/>
       <parameter key="urlPath" value="/jmxrmi"/>
-      <parameter key="rrd-base-name" value="cassandra21x-newts"/>
-      <parameter key="ds-name" value="cassandra21x-newts"/>
-      <parameter key="friendly-name" value="cassandra21x-newts"/>
-      <parameter key="collection" value="cassandra21x-newts"/>
+      <parameter key="rrd-base-name" value="jmx-cassandra-newts"/>
+      <parameter key="ds-name" value="jmx-cassandra-newts"/>
       <parameter key="thresholding-enabled" value="true"/>
       <parameter key="factory" value="PASSWORD-CLEAR"/>
       <parameter key="username" value="cassandra-username"/>

@@ -210,9 +210,9 @@ public class EventQueryServlet extends HttpServlet {
             Map<String, Object> paramAdditions = new HashMap<String, Object>();
             paramAdditions.put("filter", filterStrings);
 
-            queryString = WebSecurityUtils.sanitizeString(Util.makeQueryString(request, paramAdditions, IGNORE_LIST));
+            queryString = Util.makeQueryString(request, paramAdditions, IGNORE_LIST);
         } else {
-            queryString = WebSecurityUtils.sanitizeString(Util.makeQueryString(request, IGNORE_LIST));
+            queryString = Util.makeQueryString(request, IGNORE_LIST);
         }
 
         response.sendRedirect(redirectUrl + "?" + queryString);

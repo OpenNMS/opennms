@@ -38,6 +38,10 @@
         <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.port:9042}" />
   </bean>
 
+  <bean id="cassandra.ssl" class="java.lang.Boolean">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.ssl:false}" />
+  </bean>
+
   <bean id="cassandra.compression" class="java.lang.String">
         <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.compression:NONE}" />
   </bean>
@@ -68,10 +72,11 @@
 
   <util:constant id="search.cassandra.time-to-live" static-field="org.opennms.netmgt.newts.support.NewtsUtils.TTL" />
 
-  <util:constant id="search.hierarical-indexing" static-field="org.opennms.netmgt.newts.support.NewtsUtils.ENABLE_HIERARCHICAL_INDEXING" />
+  <util:constant id="cassandraIndexingOptions" static-field="org.opennms.netmgt.newts.support.NewtsUtils.INDEXING_OPTIONS" />
 
   <bean id="sampleProcessor.maxThreads" class="java.lang.Integer">
-        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.max_sample_processor_threads:8}" />
+        <!-- This options should always match the number of writer threads. See NMS-8439. -->
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.writer_threads:16}" />
   </bean>
 
   <bean id="search.resourceMetadata.maxCacheEntries" class="java.lang.Long">
@@ -110,7 +115,7 @@
 
   <bean id="resourceIdSplitter" class="org.opennms.newts.cassandra.search.EscapableResourceIdSplitter" />
 
-  <bean id="cassandraSession" class="org.opennms.newts.cassandra.CassandraSession" depends-on="cassandra.port" />
+  <bean id="cassandraSession" class="org.opennms.newts.cassandra.CassandraSessionImpl" depends-on="cassandra.port" />
 
   <bean id="cassandraSearcher" class="org.opennms.newts.cassandra.search.CassandraSearcher" />
 
@@ -124,9 +129,8 @@
     <constructor-arg index="0" ref="cassandraIndexerSampleProcessor" />
   </bean>
 
-  <bean id="sampleProcessorService" class="org.opennms.newts.api.SampleProcessorService" >
-    <constructor-arg index="0" ref="sampleProcessor.maxThreads" />
-    <constructor-arg index="1" ref="sampleProcessors" />
+  <bean id="sampleProcessorService" class="org.opennms.netmgt.newts.support.SimpleSampleProcessorService" >
+    <constructor-arg index="0" ref="sampleProcessors" />
   </bean>
 
   <bean id="cassandraSampleRepository" class="org.opennms.newts.persistence.cassandra.CassandraSampleRepository" depends-on="samples.cassandra.time-to-live" />
@@ -147,4 +151,3 @@
   <onmsgi:service ref="rrdStrategy" interface="org.opennms.netmgt.rrd.RrdStrategy" />
 
 </beans>
-

@@ -16,20 +16,9 @@
           This data source is not XA-capable but is available because it was the default
           datasource on OpenNMS 1.12. It is well tested as a reliable database pool.
 
-
-
-      The following datasources are not "transaction aware" (XA) so are not compatible 
-      with OpenNMS 1.13 and higher which will use Hibernate 4, Spring 3.1+, and the Java 
-      Transaction API (JTA) to perform data access and transaction processing. The 
-      following data sources are obsolete and have been removed from OpenNMS.
-
-      org.opennms.netmgt.config.DBPoolConnectionFactory
-        - Uses DBPool (http://www.snaq.net/java/DBPool/)  An alternate high-performance pool.
-          Extremely experimental.
-      org.opennms.netmgt.config.TomcatJdbcPoolConnectionFactory
-        - Uses Tomcat DBCP (http://people.apache.org/~fhanik/jdbc-pool/jdbc-pool.html)  A
-          highly concurrent pooling API.  Extremely experimental.
-  -->
+      org.opennms.core.db.HikariCPConnectionFactory
+        - Uses HikariCP (http://brettwooldridge.github.io/HikariCP/), a lightweight and extremely fast connection pool
+   -->
   <connection-pool factory="org.opennms.core.db.C3P0ConnectionFactory"
     idleTimeout="600"
     loginTimeout="3"

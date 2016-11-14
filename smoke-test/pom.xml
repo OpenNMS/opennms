@@ -12,6 +12,7 @@
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <nodeVersion>v5.8.0</nodeVersion>
     <npmVersion>3.7.1</npmVersion>
+    <test.fork.count>1</test.fork.count>
   </properties>
   <build>
     <pluginManagement>
@@ -51,6 +52,27 @@
               </configuration>
             </execution>
           </executions>
+        </plugin>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <versionRange>[1.8,)</versionRange>
+                    <goals><goal>run</goal></goals>
+                  </pluginExecutionFilter>
+                  <action><ignore></ignore></action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -107,6 +129,7 @@
             https://jira.atlassian.com/browse/BAM-15446
           -->
           <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+          <forkCount>${test.fork.count}</forkCount>
         </configuration>
         <executions>
           <execution>
@@ -167,6 +190,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-bootstrap</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -189,6 +217,16 @@
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.web</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore-osgi</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient-osgi</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -198,7 +236,7 @@
     <dependency>
       <groupId>org.opennms.smoke</groupId>
       <artifactId>org.opennms.smoke.test-api</artifactId>
-      <version>1-SNAPSHOT</version>
+      <version>2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>

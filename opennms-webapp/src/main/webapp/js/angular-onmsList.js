@@ -212,6 +212,8 @@ function parseContentRange(contentRange) {
 				item: '=',
 				value: '=',
 				valueType: '=',
+				// Optional step attribute for number fields
+				step: '=',
 				onSubmit: '&onSubmit'
 			},
 			templateUrl: 'js/angular-onmsListEditInPlace.html',
@@ -266,6 +268,8 @@ function parseContentRange(contentRange) {
 			scope: {
 				values: '=',
 				valueType: '=',
+				// Optional step attribute for number fields
+				step: '=',
 				onEdit: '&onEdit'
 			},
 			templateUrl: 'js/angular-onmsListEditListInPlace.html',
@@ -321,6 +325,8 @@ function parseContentRange(contentRange) {
 				values: '=',
 				keyType: '=',
 				valueType: '=',
+				// Optional step attribute for number fields
+				step: '=',
 				onEdit: '&onEdit'
 			},
 			templateUrl: 'js/angular-onmsListEditMapInPlace.html',
@@ -398,19 +404,35 @@ function parseContentRange(contentRange) {
 			}
 
 			// Make sure the clause isn't already in the list of search clauses
-			for (var i = 0; i < $scope.query.searchClauses.length; i++) {
-				if (
-					clause.property === $scope.query.searchClauses[i].property &&
-					clause.operator === $scope.query.searchClauses[i].operator &&
-					clause.value === $scope.query.searchClauses[i].value
-				) {
-					return;
-				}
+			if ($scope.containsSearchClause(clause)) {
+				return;
 			}
+
 			// TODO: Add validation?
 			$scope.query.searchClauses.push(angular.copy(clause));
 			$scope.query.searchParam = toFiql($scope.query.searchClauses);
 			$scope.refresh();
+		}
+
+		$scope.containsSearchClause = function(clause) {
+			for (var i = 0; i < $scope.query.searchClauses.length; i++) {
+				if ($scope.clauseEquals(clause, $scope.query.searchClauses[i])) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		$scope.clauseEquals = function(a, b) {
+			if (
+				a.property === b.property &&
+				a.operator === b.operator &&
+				a.value === b.value
+			) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		// Convert an epoch timestamp into String format before adding the search clause

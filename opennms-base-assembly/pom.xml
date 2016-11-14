@@ -139,7 +139,7 @@
           <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.3-1100-jdbc4</version>
+            <version>${postgresqlVersion}</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -332,6 +332,11 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>owasp-encoder-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -751,7 +756,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- TODO: Is this the better place for the following dependency? -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jradius-dependencies</artifactId>
@@ -762,6 +766,23 @@
       <artifactId>org.opennms.features.discovery</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.assemblies</groupId>
+      <artifactId>org.opennms.assemblies.remote-poller-standalone</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- dependency for ReST Elastic Search integration -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpasyncclient-osgi</artifactId>
+         <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
   </dependencies>
 
   <pluginRepositories>

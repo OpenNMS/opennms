@@ -18,3 +18,7 @@
 
 include::text/surveillance-view.adoc[]
 include::text/dashboard.adoc[]
+
+[[gu-alarms]]
+== Alarms
+include::text/alarms/alarm-notes.adoc[]

@@ -44,6 +44,19 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
+  <http pattern="/nrt/**" realm="OpenNMS Realm">
+    <!-- OPTIONS pre-flight requests should always be accepted -->
+    <intercept-url pattern="/nrt/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
+
+    <!-- read-only calls should be allowed for any user -->
+    <intercept-url pattern="/nrt/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
+    <intercept-url pattern="/nrt/**" method="HEAD" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
+
+    <http-basic />
+
+    <custom-filter position="LAST" ref="authFilterEnabler"/>
+  </http>
+
   <!-- Only use BASIC auth for the RESTful API v2 -->
   <http pattern="/api/v2/**" realm="OpenNMS Realm">
     <!-- OPTIONS pre-flight requests should always be accepted -->
@@ -92,6 +105,7 @@
     <intercept-url pattern="/**/mib-compiler" access="ROLE_ADMIN" />
     <intercept-url pattern="/**/admin-*" access="ROLE_ADMIN" />
     <intercept-url pattern="/rtc/post/**" access="ROLE_RTC" />
+    <intercept-url pattern="/element/rescan.jsp" access="ROLE_ADMIN" />
     
     <intercept-url pattern="/frontpage.htm" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/dashboard.jsp" access="ROLE_USER,ROLE_DASHBOARD" />

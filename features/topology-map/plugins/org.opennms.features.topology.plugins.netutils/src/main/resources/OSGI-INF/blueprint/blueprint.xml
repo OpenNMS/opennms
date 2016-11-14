@@ -4,10 +4,10 @@ xsi:schemaLocation="
 http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">	
 
+    <reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" availability="mandatory" />
+
     <cm:property-placeholder persistent-id="org.opennms.features.topology.netutils" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="pingURL" value="ExecCommand.map?command=ping"/>
-            <cm:property name="tracerouteURL" value="ExecCommand.map?command=traceroute"/>
             <cm:property name="eventsURL" value="event/list"/>
             <cm:property name="alarmsURL" value="alarm/list.htm"/>
         	<cm:property name="nodeListURL" value="element/nodeList.htm"/>
@@ -18,10 +18,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     </cm:property-placeholder>
     
     <bean id="pingOperation" class="org.opennms.features.topology.netutils.internal.operations.PingOperation" >
-        <property name="pingURL" value="${pingURL}"/>
-    </bean>
-    <bean id="tracerouteOperation" class="org.opennms.features.topology.netutils.internal.operations.TracerouteOperation" >
-        <property name="tracerouteURL" value="${tracerouteURL}"/>
+        <argument ref="pinger" />
     </bean>
     <bean id="eventsAlarmsOperation" class="org.opennms.features.topology.netutils.internal.operations.EventsAlarmsOperation" >
         <property name="eventsURL" value="${eventsURL}"/>
@@ -43,14 +40,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.contextMenuLocation" value=""/> <!-- SPC-360 -->
         </service-properties>
     </service>
-    
-<!--     <service interface="org.opennms.features.topology.api.Operation" ref="tracerouteOperation"> -->
-<!--         <service-properties> -->
-<!--             <entry key="operation.label" value="Traceroute"/> -->
-<!--             <entry key="operation.menuLocation" value="Device"/> -->
-<!--             <entry key="operation.contextMenuLocation" value=""/> -->
-<!--         </service-properties> -->
-<!--     </service> -->
     
     <service interface="org.opennms.features.topology.api.Operation" ref="eventsAlarmsOperation">
         <service-properties>

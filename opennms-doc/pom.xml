@@ -85,8 +85,7 @@
                             <backend>html5</backend>
                             <doctype>book</doctype>
                             <attributes>
-                                <!--<stylesheet>../../../asciidoctor-default.css</stylesheet>-->
-                                <stylesheet>../../../opennms-horizon.css</stylesheet>
+                                <stylesheet>../../../asciidoctor-default.css</stylesheet>
                             </attributes>
                         </configuration>
                     </execution>
@@ -97,6 +96,7 @@
                             <goal>process-asciidoc</goal>
                         </goals>
                         <configuration>
+                            <skip>${skipPdfGeneration}</skip>
                             <backend>pdf</backend>
                             <doctype>book</doctype>
                             <!-- WARNING callout bullets don't yet work with CodeRay -->

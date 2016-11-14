@@ -654,6 +654,7 @@
     <complexType>
       <attribute name="name" type="string" use="required" />
       <attribute name="value" type="string" use="required" />
+      <attribute name="expand" type="boolean" use="optional" default="false" />
     </complexType>
   </element>
 </schema>

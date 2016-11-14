@@ -28,8 +28,12 @@
 
 package org.opennms.web.rest.v1;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.FileInputStream;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
@@ -52,8 +56,11 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
@@ -77,6 +84,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OutageRestServiceIT.class);
 
     @Autowired
     private ApplicationDao applicationDao;
@@ -111,6 +120,7 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
             public void onPopulate(DatabasePopulator populator, ApplicationDao dao) {
                 OnmsDistPoller distPoller = populator.getDistPollerDao().whoami();
                 outageEvent = populator.buildEvent(distPoller);
+                outageEvent.setEventSeverity(OnmsSeverity.MINOR.getId());
                 outageEvent.setEventCreateTime(new Date(1436881548292L));
                 outageEvent.setEventTime(new Date(1436881548292L));
                 populator.getEventDao().save(outageEvent);
@@ -158,13 +168,111 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @JUnitTemporaryDatabase
     public void testGetAllOutages() throws Exception {
         String xml = sendRequest(GET, "/outages", 200);
+        Assert.assertNotNull(xml);
 
         MockHttpServletRequest jsonRequest = createRequest(m_context, GET, "/outages");
         jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
         String json = sendRequest(jsonRequest, 200);
-
-        Assert.assertNotNull(xml);
         Assert.assertNotNull(json);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testOutageSearches() throws Exception {
+        MockHttpServletRequest jsonRequest = createRequest(m_context, GET, "/outages");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("ipInterface.ipAddress=192.168.1.2");
+        String json = sendRequest(jsonRequest, 200);
+        LOG.debug(json);
+        JSONObject restObject = new JSONObject(json);
+        assertEquals(1, restObject.getJSONArray("outage").length());
+
+        jsonRequest = createRequest(m_context, GET, "/outages");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("comparator=ge&serviceLostEvent.eventSeverity=5"); // OnmsSeverity.MINOR
+        json = sendRequest(jsonRequest, 200);
+        LOG.debug(json);
+        restObject = new JSONObject(json);
+        assertEquals(1, restObject.getJSONArray("outage").length());
+
+        jsonRequest = createRequest(m_context, GET, "/outages");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("comparator=lt&serviceLostEvent.eventSeverity=2"); // OnmsSeverity.CLEARED
+        json = sendRequest(jsonRequest, 200);
+        LOG.debug(json);
+        restObject = new JSONObject(json);
+        assertEquals(2, restObject.getJSONArray("outage").length());
+
+        jsonRequest = createRequest(m_context, GET, "/outages");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("comparator=like&serviceLostEvent.eventLogMsg=Test%25");
+        json = sendRequest(jsonRequest, 200);
+        LOG.debug(json);
+        restObject = new JSONObject(json);
+        assertEquals(3, restObject.getJSONArray("outage").length());
+
+        // Check serviceRegainedEvent filters
+        jsonRequest = createRequest(m_context, GET, "/outages");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("comparator=lt&serviceRegainedEvent.eventSeverity=2"); // OnmsSeverity.CLEARED
+        json = sendRequest(jsonRequest, 200);
+        LOG.debug(json);
+        // There is one test outage that has been resolved
+        restObject = new JSONObject(json);
+        assertEquals(1, restObject.getJSONArray("outage").length());
+
+        jsonRequest = createRequest(m_context, GET, "/outages");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("comparator=like&serviceRegainedEvent.eventLogMsg=Test%25");
+        json = sendRequest(jsonRequest, 200);
+        LOG.debug(json);
+        // There is one test outage that has been resolved
+        restObject = new JSONObject(json);
+        assertEquals(1, restObject.getJSONArray("outage").length());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetOutagesForNode() throws Exception {
+        // Test last week (no outages)
+        MockHttpServletRequest jsonRequest = createRequest(m_context, GET, "/outages/forNode/1");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        String json = sendRequest(jsonRequest, 200);
+        JSONObject restObject = new JSONObject(json);
+        Assert.assertEquals(2, restObject.getJSONArray("outage").length()); // 2 outstanding
+
+        // Test a range with outages
+        long start = 1436846400000l;
+        long end = 1436932800000l;
+        jsonRequest = createRequest(m_context, GET, "/outages/forNode/1");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("start=" + start + "&end=" + end);
+        json = sendRequest(jsonRequest, 200);
+        restObject = new JSONObject(json);
+        for (int i=0; i < restObject.getJSONArray("outage").length(); i++) {
+            JSONObject obj = restObject.getJSONArray("outage").getJSONObject(i);
+            Assert.assertTrue(obj.getLong("ifLostService") > start);
+            Assert.assertTrue(obj.getLong("ifLostService") < end);
+        }
+
+        // Test a range without outages
+        jsonRequest = createRequest(m_context, GET, "/outages/forNode/1");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("start=1436932800000&end=1437019200000");
+        json = sendRequest(jsonRequest, 200);
+        restObject = new JSONObject(json);
+        Assert.assertEquals(2, restObject.getJSONArray("outage").length()); // 2 outstanding
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testIPhone() throws Exception {
+        final Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("limit", "50");
+        parameters.put("orderBy", "ifLostService");
+        parameters.put("order", "desc");
+        String xml = sendRequest(GET, "/outages/forNode/1", parameters, 200);
+        Assert.assertTrue(xml.contains("SNMP"));
     }
 
     @Test

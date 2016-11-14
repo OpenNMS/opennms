@@ -36,9 +36,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 /**
@@ -146,9 +144,9 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         // Add node to a requisition
         clickId("add-node", false);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nodeLabel"))).clear();
-        findElementById("nodeLabel").sendKeys(NODE_LABEL);
+        enterText(By.id("nodeLabel"), NODE_LABEL);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("foreignId"))).clear();
-        findElementById("foreignId").sendKeys(NODE_FOREIGNID);
+        enterText(By.id("foreignId"), NODE_FOREIGNID);
         saveNode();
 
         // Add an IP Interface
@@ -202,25 +200,17 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         WebElement modal = findModal();
         modal.findElement(By.xpath("//div/button[text()='Yes']")).click();
         waitForModalClose();
-        wait.until(new ExpectedCondition<Boolean>() {
-            @Override
-            public Boolean apply(final WebDriver input) {
-                final boolean ret = (getNodesInRequisition(REQUISITION_NAME) == 1 && getNodesInDatabase(REQUISITION_NAME) == 1);
-                try {
-                    clickId("refresh", false);
-                    clickId("refreshDeployedStats", false);
-                } catch (final InterruptedException e) {
-                }
-                return ret;
-            }
-        });
+        wait.until(new WaitForNodesInRequisition(REQUISITION_NAME, 1));
+        wait.until(new WaitForNodesInDatabase(REQUISITION_NAME, 1));
+        clickId("refresh", false);
+        clickId("refreshDeployedStats", false);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[text()='Requisition " + REQUISITION_NAME + " (1 defined, 1 deployed)']")));
 
         // Go to the requisitions page
         clickId("go-back", false);
 
         // Wait until the node has been added to the database, using the ReST API
-        m_driver.get(BASE_URL + "opennms/rest/nodes/" + REQUISITION_NAME + ":" + NODE_FOREIGNID + "/ipinterfaces/" + NODE_IPADDR + "/services/ICMP");
+        m_driver.get(getBaseUrl() + "opennms/rest/nodes/" + REQUISITION_NAME + ":" + NODE_FOREIGNID + "/ipinterfaces/" + NODE_IPADDR + "/services/ICMP");
         m_driver.manage().timeouts().implicitlyWait(2000, TimeUnit.MILLISECONDS);
         try {
             for (int i=0; i<30; i++) {
@@ -237,7 +227,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         }
 
         // Open the nodes list page
-        m_driver.get(BASE_URL + "opennms/");
+        m_driver.get(getBaseUrl() + "opennms/");
         clickMenuItem("Info", "Nodes", "element/nodeList.htm");
 
         try {
