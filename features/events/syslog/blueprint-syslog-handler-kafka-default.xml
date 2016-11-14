@@ -25,7 +25,9 @@
 	</cm:property-placeholder>
 
 	<bean id="syslogConnectionHandlerDefault" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerDefaultImpl"/>
-
+	
+	<bean id="syslogConsumer" class="org.opennms.netmgt.syslogd.sink.SyslogConsumer"/>
+	
 	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
 		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
 	</bean>
@@ -50,20 +52,20 @@
 		<route id="receiveSyslogConnectionViaKafka">
 			<from uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}&amp;consumerStreams={{consumerstreams}}"/>
 			<!-- TODO: Change these to <process> tags once Syslogd is loaded from inside Karaf -->
-			<bean ref="unmarshaller"/>
-			<bean ref="mapper"/>
+			<!-- <bean ref="unmarshaller"/>
+			<bean ref="mapper"/> -->
 			<!-- Update the SyslogdConfig on the message to the local config value -->
-			<bean ref="syslogdConfigProcessor"/>
-			<to uri="seda:syslogkafkaHandler"/>
-		</route>
+<!-- 			<bean ref="syslogdConfigProcessor"/> -->
+<!-- 			<to uri="seda:syslogkafkaHandler"/> -->
+<!-- 		</route> -->
 
-		<route id="syslogHandler">
-			<from uri="seda:syslogkafkaHandler"/>
+<!-- 		<route id="syslogHandler"> -->
+<!-- 			<from uri="seda:syslogkafkaHandler"/> -->
 			<!-- 
 				Pass the message to the default handler which will convert it into
 				an event and broadcast the event.
 			-->
-			<bean ref="syslogConnectionHandlerDefault"/>
+			<bean ref="syslogConsumer?method=handleMessage"/>
 		</route>
 	</camelContext>
 </blueprint>
