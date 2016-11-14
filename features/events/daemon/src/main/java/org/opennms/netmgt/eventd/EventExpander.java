@@ -37,11 +37,12 @@ import java.util.Objects;
 
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.events.api.EventProcessor;
+import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.netmgt.xml.event.Parm;
@@ -122,7 +123,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
     private final Timer expandTimer;
 
     public EventExpander(MetricRegistry registry) {
-        expandTimer = Objects.requireNonNull(registry).timer("events.process.expand");
+        expandTimer = Objects.requireNonNull(registry).timer("eventlogs.process.expand");
     }
 
     /**
@@ -793,11 +794,14 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
     } // end expandEvent()
 
 
-    /** {@inheritDoc} */
     @Override
-    public void process(Header eventHeader, Event event) {
-        try(Context ctx = expandTimer.time()) {
-            expandEvent(event);
+    public void process(Log eventLog) throws EventProcessorException {
+        if (eventLog != null && eventLog.getEvents() != null && eventLog.getEvents().getEvent() != null) {
+            try(Context ctx = expandTimer.time()) {
+                for (Event event : eventLog.getEvents().getEvent()) {
+                    expandEvent(event);
+                }
+            }
         }
     }
 
