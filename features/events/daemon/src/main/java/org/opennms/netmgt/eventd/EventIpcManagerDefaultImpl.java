@@ -506,8 +506,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.state(m_handlerPoolSize != null, "handlerPoolSize not set");
 
         final LinkedBlockingQueue<Runnable> workQueue = m_handlerQueueLength == null ? new LinkedBlockingQueue<>() : new LinkedBlockingQueue<>(m_handlerQueueLength);
-        m_registry.remove("events.queued");
-        m_registry.register("events.queued", new Gauge<Integer>() {
+        m_registry.remove("eventlogs.queued");
+        m_registry.register("eventlogs.queued", new Gauge<Integer>() {
             @Override
             public Integer getValue() {
                 return workQueue.size();

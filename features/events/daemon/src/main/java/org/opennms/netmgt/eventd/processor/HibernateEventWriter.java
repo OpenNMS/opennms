@@ -60,8 +60,9 @@ import org.springframework.dao.DeadlockLoserDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 
 /**
  * EventWriter loads the information in each 'Event' into the database.
@@ -106,10 +107,10 @@ public class HibernateEventWriter implements EventWriter {
     @Autowired
     private EventUtil eventUtil;
 
-    private final Meter writeMeter;
+    private final Timer writeTimer;
 
     public HibernateEventWriter(MetricRegistry registry) {
-        writeMeter = Objects.requireNonNull(registry).meter("events.process.write");
+        writeTimer = Objects.requireNonNull(registry).timer("eventlogs.process.write");
     }
 
     /**
@@ -138,14 +139,21 @@ public class HibernateEventWriter implements EventWriter {
         return true;
     }
 
-    @Transactional
+
     @Override
     public void process(Log eventLog) throws EventProcessorException {
         if (eventLog != null && eventLog.getEvents() != null && eventLog.getEvents().getEvent() != null) {
-            for (Event eachEvent : eventLog.getEvents().getEvent()) {
-                process(eventLog.getHeader(), eachEvent);
+            try (Context context = writeTimer.time()) {
+                // Calling a separate method to insert the events allows us to time the transaction
+                processInTransaction(eventLog);
             }
-            writeMeter.mark(eventLog.getEvents().getEventCount());
+        }
+    }
+
+    @Transactional
+    private void processInTransaction(Log eventLog) throws EventProcessorException {
+        for (Event eachEvent : eventLog.getEvents().getEvent()) {
+            process(eventLog.getHeader(), eachEvent);
         }
     }
 

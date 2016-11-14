@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
@@ -56,10 +57,12 @@ public class EventIpcBroadcastProcessor implements EventProcessor, InitializingB
     private static final Logger LOG = LoggerFactory.getLogger(EventIpcBroadcastProcessor.class);
     private EventIpcBroadcaster m_eventIpcBroadcaster;
 
-    private final Timer broadcastTimer;
+    private final Timer logBroadcastTimer;
+    private final Meter eventBroadcastMeter;
 
     public EventIpcBroadcastProcessor(MetricRegistry registry) {
-        broadcastTimer = Objects.requireNonNull(registry).timer("events.process.broadcast");
+        logBroadcastTimer = Objects.requireNonNull(registry).timer("eventlogs.process.broadcast");
+        eventBroadcastMeter = registry.meter("events.process.broadcast");
     }
 
     /**
@@ -76,8 +79,11 @@ public class EventIpcBroadcastProcessor implements EventProcessor, InitializingB
     @Override
     public void process(Log eventLog) throws EventProcessorException {
         if (eventLog != null && eventLog.getEvents() != null && eventLog.getEvents().getEvent() != null) {
-            for(Event eachEvent : eventLog.getEvents().getEvent()) {
-                process(eventLog.getHeader(), eachEvent);
+            try (Context context = logBroadcastTimer.time()) {
+                for(Event eachEvent : eventLog.getEvents().getEvent()) {
+                    process(eventLog.getHeader(), eachEvent);
+                    eventBroadcastMeter.mark();
+                }
             }
         }
     }
@@ -86,9 +92,7 @@ public class EventIpcBroadcastProcessor implements EventProcessor, InitializingB
         if (event.getLogmsg() != null && event.getLogmsg().getDest().equals("suppress")) {
             LOG.debug("process: skip sending event {} to other daemons because is marked as suppress", event.getUei());
         } else {
-            try (Context context = broadcastTimer.time()) {
-                m_eventIpcBroadcaster.broadcastNow(event);
-            }
+            m_eventIpcBroadcaster.broadcastNow(event);
         }
     }
 

@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
@@ -68,11 +69,14 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
 
     private final Timer processTimer;
 
+    private final Histogram logSizes;
+
     /**
      * <p>Constructor for DefaultEventHandlerImpl.</p>
      */
     public DefaultEventHandlerImpl(MetricRegistry registry) {
-        processTimer = Objects.requireNonNull(registry).timer("events.process");
+        processTimer = Objects.requireNonNull(registry).timer("eventlogs.process");
+        logSizes = registry.histogram("eventlogs.sizes");
     }
 
     /* (non-Javadoc)
@@ -145,6 +149,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                 for (final EventProcessor eventProcessor : m_eventProcessors) {
                     try {
                         eventProcessor.process(m_eventLog);
+                        logSizes.update(events.getEventCount());
                     } catch (EventProcessorException e) {
                         LOG.warn("Unable to process event using processor {}; not processing with any later processors.", eventProcessor, e);
                         break;
