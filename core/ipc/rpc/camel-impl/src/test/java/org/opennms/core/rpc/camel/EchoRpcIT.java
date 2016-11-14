@@ -2,16 +2,30 @@ package org.opennms.core.rpc.camel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Component;
+import org.apache.camel.Endpoint;
+import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
+import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.impl.SimpleRegistry;
+import org.apache.camel.spi.Synchronization;
+import org.apache.camel.spi.UnitOfWork;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.rpc.api.RpcModule;
+import org.opennms.core.rpc.api.RpcRequest;
+import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.rpc.echo.EchoClient;
 import org.opennms.core.rpc.echo.EchoRequest;
 import org.opennms.core.rpc.echo.EchoResponse;
@@ -90,5 +104,64 @@ public class EchoRpcIT {
 
         routeManager.unbind(echoRpcModule);
         context.stop();
+    }
+
+    @Test(timeout=60000)
+    public void checkDefinedTimeout() throws Exception {
+        System.getProperties().setProperty(CamelRpcClientPreProcessor.CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY, "1234");
+
+        SimpleRegistry registry = new SimpleRegistry();
+        CamelContext context = new DefaultCamelContext(registry);
+        context.addComponent("queuingservice", queuingservice);
+
+        CamelRpcRequest<EchoRequest,EchoResponse> wrapper = new CamelRpcRequest<>(new EchoRpcModule(), new EchoRequest());
+
+        CamelRpcClientPreProcessor camelRpcClientPreProcessor = new CamelRpcClientPreProcessor();
+        DefaultExchange defaultExchange = new DefaultExchange(context);
+        defaultExchange.getIn().setBody(wrapper);
+        camelRpcClientPreProcessor.process(defaultExchange);
+
+        context.stop();
+
+        assertEquals(1234L, defaultExchange.getIn().getHeader(CamelRpcConstants.CAMEL_JMS_REQUEST_TIMEOUT_HEADER));
+    }
+
+    @Test(timeout=60000)
+    public void checkUndefinedTimeout() throws Exception {
+        SimpleRegistry registry = new SimpleRegistry();
+        CamelContext context = new DefaultCamelContext(registry);
+        context.addComponent("queuingservice", queuingservice);
+
+        CamelRpcRequest<EchoRequest,EchoResponse> wrapper = new CamelRpcRequest<>(new EchoRpcModule(), new EchoRequest());
+
+        CamelRpcClientPreProcessor camelRpcClientPreProcessor = new CamelRpcClientPreProcessor();
+        DefaultExchange defaultExchange = new DefaultExchange(context);
+        defaultExchange.getIn().setBody(wrapper);
+        camelRpcClientPreProcessor.process(defaultExchange);
+
+        context.stop();
+
+        assertNull(defaultExchange.getIn().getHeader(CamelRpcConstants.CAMEL_JMS_REQUEST_TIMEOUT_HEADER));
+    }
+
+    @Test(timeout=60000)
+    public void checkZeroTimeout() throws Exception {
+        System.getProperties().setProperty(CamelRpcClientPreProcessor.CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY, "0");
+
+        SimpleRegistry registry = new SimpleRegistry();
+        CamelContext context = new DefaultCamelContext(registry);
+        context.addComponent("queuingservice", queuingservice);
+
+        EchoRequest echoRequest = new EchoRequest();
+        CamelRpcRequest<EchoRequest,EchoResponse> wrapper = new CamelRpcRequest<>(new EchoRpcModule(), echoRequest);
+
+        CamelRpcClientPreProcessor camelRpcClientPreProcessor = new CamelRpcClientPreProcessor();
+        DefaultExchange defaultExchange = new DefaultExchange(context);
+        defaultExchange.getIn().setBody(wrapper);
+        camelRpcClientPreProcessor.process(defaultExchange);
+
+        context.stop();
+
+        assertNull(defaultExchange.getIn().getHeader(CamelRpcConstants.CAMEL_JMS_REQUEST_TIMEOUT_HEADER));
     }
 }
