@@ -29,8 +29,10 @@
 package org.opennms.netmgt.icmp.proxy;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.opennms.netmgt.icmp.PingConstants;
 
 public class PingSweepRequestDTOTimeToLiveTest {
 
@@ -63,5 +65,19 @@ public class PingSweepRequestDTOTimeToLiveTest {
         // Verifies that we don't generate TTLs that exceed Long.MAX_VALUE
         request.addIpRange(new IPRangeDTO("2000::", "3FFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF", 0, 1));
         assertEquals(new Long(Long.MAX_VALUE), request.getTimeToLiveMs());
+    }
+
+    @Test
+    public void testTimeoutLessThanLongMaxValueWithDefaultTimeoutRetries() throws Exception {
+        PingSweepRequestDTO request = new PingSweepRequestDTO();
+        request.addIpRange(new IPRangeDTO("127.0.0.1", "127.5.118.25", PingConstants.DEFAULT_TIMEOUT, PingConstants.DEFAULT_RETRIES));
+        assertTrue(Long.MAX_VALUE > request.getTimeToLiveMs()); 
+    }
+
+    @Test
+    public void testTimeoutIntegerMaxValueWithDefaultTimeoutRetries() throws Exception {
+        PingSweepRequestDTO request = new PingSweepRequestDTO();
+        request.addIpRange(new IPRangeDTO("2000::", "3FFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF", PingConstants.DEFAULT_TIMEOUT, PingConstants.DEFAULT_RETRIES));
+        assertEquals(new Long(Long.MAX_VALUE), request.getTimeToLiveMs()); 
     }
 }
