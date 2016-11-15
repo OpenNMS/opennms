@@ -355,3 +355,8 @@ td.onms { font-size: 100%; }
     overflow-y: hidden !important;
     overflow-x: auto;
 }
+
+.v-panel-caption,
+.v-panel-caption-light {
+    color: #464f52;
+}
