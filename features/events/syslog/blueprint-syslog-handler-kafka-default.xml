@@ -26,7 +26,7 @@
 
 	<bean id="syslogConnectionHandlerDefault" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerDefaultImpl"/>
 	
-	<bean id="syslogConsumer" class="org.opennms.netmgt.syslogd.sink.SyslogConsumer"/>
+	<bean id="syslogConsumer" class="org.opennms.netmgt.syslogd.SyslogConsumer"/>
 	
 	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
 		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
@@ -65,7 +65,7 @@
 				Pass the message to the default handler which will convert it into
 				an event and broadcast the event.
 			-->
-			<bean ref="syslogConsumer?method=handleMessage"/>
+			<bean ref="syslogConsumer"/>
 		</route>
 	</camelContext>
 </blueprint>

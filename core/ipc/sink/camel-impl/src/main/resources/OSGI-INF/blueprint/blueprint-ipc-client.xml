@@ -11,6 +11,14 @@
     http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
     ">
     
+    <cm:property-placeholder id="blueipcClinet" persistent-id="org.opennms.netmgt.ipc.client" placeholder-prefix="$[" placeholder-suffix="]" update-strategy="none">
+		<cm:default-properties>
+			<cm:property name="kafkaAddress" value="127.0.0.1:9092" />
+			<cm:property name="kafkatopic" value="syslog" />
+			<cm:property name="includeRawMessage" value="true" />
+		</cm:default-properties>
+	</cm:property-placeholder>
+	
     <!-- Provided by minion-core -->
     <reference id="minionIdentity" interface="org.opennms.minion.core.api.MinionIdentity" />
     
@@ -24,13 +32,10 @@
         <route id="sinkClient">
             <from uri="direct:sendMessage" />
             <setExchangePattern pattern="InOnly"/>
-            <!--  <recipientList>
-             <simple>kafka:taspmoosskafka101.cernerasp.com:9092,taspmoosskafka102.cernerasp.com:9092,taspmoosskafka103.cernerasp.com:9092?topic=syslog&amp;serializerClass=kafka.serializer.StringEncoder</simple>
-             </recipientList>-->
             <setHeader headerName="kafka.PARTITION_KEY">
                 <simple>10</simple>
             </setHeader>
-            <to uri="kafka:taspmoosskafka101.cernerasp.com:9092,taspmoosskafka102.cernerasp.com:9092,taspmoosskafka103.cernerasp.com:9092?topic=syslog&amp;serializerClass=kafka.serializer.StringEncoder"/>
+            <to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
         </route>
     </camelContext>
     
