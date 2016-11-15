@@ -50,8 +50,17 @@ public class PingSweepRequestDTOTimeToLiveTest {
     }
 
     @Test
-    public void testTimeoutLongMaxValue() throws Exception {
+    public void testTimeoutCloseToLongMaxValue() throws Exception {
         PingSweepRequestDTO request = new PingSweepRequestDTO();
+        // Verifies that we generate TTLs that approach Long.MAX_VALUE
+        request.addIpRange(new IPRangeDTO("::1", "::1f:ffff:ffff:ffff", 0, 1));
+        assertEquals(new Long(9020710053623102000L), request.getTimeToLiveMs());
+    }
+
+    @Test
+    public void testTimeoutLargerThanLongMaxValue() throws Exception {
+        PingSweepRequestDTO request = new PingSweepRequestDTO();
+        // Verifies that we don't generate TTLs that exceed Long.MAX_VALUE
         request.addIpRange(new IPRangeDTO("2000::", "3FFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF", 0, 1));
         assertEquals(new Long(Long.MAX_VALUE), request.getTimeToLiveMs());
     }
