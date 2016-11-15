@@ -213,7 +213,7 @@
 </div>
 
       <!-- menu -->
-      <div class="row">
+      <div class="row form-inline">
       <div class="col-md-12">
       <a class="btn btn-default" href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>" title="Remove all search constraints" >View all alarms</a>
       <a class="btn btn-default" href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>
@@ -242,6 +242,15 @@
             <% } %>
         <% } %>
       <% } %>
+
+      <select class="form-control pull-right" onchange="location = this.value;">
+          <option value="<%= makeLimitLink(callback, parms, favorite,  10) %>" ${(parms.getLimit() ==  10) ? 'selected' : ''}> 10</option>
+          <option value="<%= makeLimitLink(callback, parms, favorite,  20) %>" ${(parms.getLimit() ==  20) ? 'selected' : ''}> 20</option>
+          <option value="<%= makeLimitLink(callback, parms, favorite,  50) %>" ${(parms.getLimit() ==  50) ? 'selected' : ''}> 50</option>
+          <option value="<%= makeLimitLink(callback, parms, favorite, 100) %>" ${(parms.getLimit() == 100) ? 'selected' : ''}>100</option>
+          <option value="<%= makeLimitLink(callback, parms, favorite, 500) %>" ${(parms.getLimit() == 500) ? 'selected' : ''}>500</option>
+      </select>
+
       </div>
       </div>
       <!-- end menu -->
@@ -624,6 +633,12 @@
       buffer.append( "</nobr>" );
 
       return( buffer.toString() );
+    }
+
+    public String makeLimitLink( FilterCallback callback, NormalizedQueryParameters params, OnmsFilterFavorite favorite, int limit) {
+        NormalizedQueryParameters alteredParams = new NormalizedQueryParameters(params);
+        alteredParams.setLimit(limit);
+        return callback.createLink(urlBase, alteredParams, favorite);
     }
 
     public String makeLink( FilterCallback callback, NormalizedQueryParameters params, OnmsFilterFavorite favorite) {
