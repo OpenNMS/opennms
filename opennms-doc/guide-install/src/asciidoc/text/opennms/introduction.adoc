@@ -20,7 +20,7 @@ Installing _OpenNMS_ requires the following prerequisites:
 * A configured <<gi-install-opennms-repo-releases, Yum or APT Package Repository>> for your platform (Linux only)
 * Internet access to download and verify _OpenNMS_ packages from the Yum or APT package repositories
 * <<gi-install-oracle-java, Oracle Java SE Development Kit 8>> environment
-* PostgreSQL database version 9.1 until 9.6
+* PostgreSQL database version 9.1 or higher, it has only been tested with PostgreSQL 9.1 through 9.6
 * A time-series database engine to persist long-term performance data:
 ** JRobin: The default choice. JRobin is included inside OpenNMS and doesn't require additional software to be installed.
 ** <<gi-rrdtool-time-series-database, RRDtool>>: A higher performance, file-based database.
