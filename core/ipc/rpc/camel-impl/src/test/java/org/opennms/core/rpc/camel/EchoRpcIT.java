@@ -108,7 +108,7 @@ public class EchoRpcIT {
 
     @Test(timeout=60000)
     public void checkDefinedTimeout() throws Exception {
-        System.getProperties().setProperty(CamelRpcClientPreProcessor.CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY, "1234");
+        System.getProperties().setProperty(CamelRpcClientPreProcessor.CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY, "12345");
 
         SimpleRegistry registry = new SimpleRegistry();
         CamelContext context = new DefaultCamelContext(registry);
@@ -123,7 +123,7 @@ public class EchoRpcIT {
 
         context.stop();
 
-        assertEquals(1234L, defaultExchange.getIn().getHeader(CamelRpcConstants.CAMEL_JMS_REQUEST_TIMEOUT_HEADER));
+        assertEquals(12345L, defaultExchange.getIn().getHeader(CamelRpcConstants.CAMEL_JMS_REQUEST_TIMEOUT_HEADER));
     }
 
     @Test(timeout=60000)
@@ -141,7 +141,7 @@ public class EchoRpcIT {
 
         context.stop();
 
-        assertNull(defaultExchange.getIn().getHeader(CamelRpcConstants.CAMEL_JMS_REQUEST_TIMEOUT_HEADER));
+        assertEquals(CamelRpcClientPreProcessor.CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT, defaultExchange.getIn().getHeader(CamelRpcConstants.CAMEL_JMS_REQUEST_TIMEOUT_HEADER));
     }
 
     @Test(timeout=60000)
@@ -162,6 +162,6 @@ public class EchoRpcIT {
 
         context.stop();
 
-        assertNull(defaultExchange.getIn().getHeader(CamelRpcConstants.CAMEL_JMS_REQUEST_TIMEOUT_HEADER));
+        assertEquals(CamelRpcClientPreProcessor.CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT, defaultExchange.getIn().getHeader(CamelRpcConstants.CAMEL_JMS_REQUEST_TIMEOUT_HEADER));
     }
 }
