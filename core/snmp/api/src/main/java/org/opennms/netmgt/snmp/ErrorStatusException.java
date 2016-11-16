@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,31 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.snmp.mock;
+package org.opennms.netmgt.snmp;
 
-public class ResponsePdu extends TestPdu {
-    private int m_errorStatus;
-    private int m_errorIndex;
+public class ErrorStatusException extends IllegalStateException {
+    private static final long serialVersionUID = 1L;
 
-    public ResponsePdu() {
-        super();
-    }
-    
-    public int getErrorStatus() {
-        return m_errorStatus;
-    }
-    
-    void setErrorStatus(int errorStatus) {
-        m_errorStatus = errorStatus;
-    }
-    
-    public int getErrorIndex() {
-        return m_errorIndex;
-    }
-    
-    void setErrorIndex(int errorIndex) {
-        m_errorIndex = errorIndex;
+    public ErrorStatusException(final ErrorStatus status) {
+        super("SNMP error-status: " + status.toString() + "(" + status.ordinal() + ")");
     }
 
-    
+    public ErrorStatusException(final ErrorStatus status, final Throwable t) {
+        super("SNMP error-status: " + status.toString() + "(" + status.ordinal() + ")", t);
+    }
+
+    public ErrorStatusException(final ErrorStatus status, final String message) {
+        super("SNMP error-status: " + status.toString() + "(" + status.ordinal() + "): " + message);
+    }
+
 }
