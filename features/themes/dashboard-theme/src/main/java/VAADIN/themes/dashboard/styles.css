@@ -356,6 +356,11 @@ td.onms { font-size: 100%; }
     overflow-x: auto;
 }
 
+.v-panel-caption,
+.v-panel-caption-light {
+    color: #464f52;
+}
+
 .severity { color:#000000; padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
 .severity.Critical{ background-color: #F5CDCD; border-top: 2px solid #CC0000 !important; background-image: url(/opennms/images/bgCritical.png); }
 .severity.Major{ background-color: #FFD7CD; border-top: 2px solid #FF3300 !important; background-image: url(/opennms/images/bgMajor.png); }
