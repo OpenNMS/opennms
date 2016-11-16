@@ -39,7 +39,6 @@
                             <!-- To ensure that all JAR files for a feature 
                                 are included in the repository tar.gz file, add the feature to this list. -->
                             <features>
-                                <feature>opennms-discoverer</feature>
                                 <feature>opennms-syslogd-listener-javanet</feature>
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
                                 <feature>opennms-syslogd-listener-nio</feature>

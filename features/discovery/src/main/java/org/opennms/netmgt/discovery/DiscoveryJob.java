@@ -26,17 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.discovery.messages;
+package org.opennms.netmgt.discovery;
 
-import static java.math.MathContext.DECIMAL64;
-
-import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.core.utils.IteratorUtils;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
@@ -45,16 +40,12 @@ import org.opennms.netmgt.model.discovery.IPPollRange;
 
 import com.google.common.base.Preconditions;
 
-public class DiscoveryJob implements Serializable {
-    private static final long serialVersionUID = 3750201609939695254L;
+public class DiscoveryJob {
 
     private final List<IPPollRange> m_ranges;
     private final String m_foreignSource;
     private final String m_location;
     private final double m_packetsPerSecond;
-
-    // TODO: Make this configurable?
-    public static final BigDecimal FUDGE_FACTOR = BigDecimal.valueOf(1.5);
 
     /**
      * Construct a {@link DiscoveryJob}. All ranges must have the 
@@ -79,11 +70,8 @@ public class DiscoveryJob implements Serializable {
         Preconditions.checkState(m_ranges.stream().allMatch(range -> range.getLocation() == null || m_location.equals(range.getLocation())));
     }
 
-    /**
-     * For testing.
-     */
-    public Collection<IPPollRange> getRanges() {
-        return Collections.unmodifiableCollection(m_ranges);
+    public List<IPPollRange> getRanges() {
+        return m_ranges;
     }
 
     public Iterable<IPPollAddress> getAddresses() {
@@ -107,73 +95,26 @@ public class DiscoveryJob implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-       if (obj == null) {
-          return false;
-       }
-       if (getClass() != obj.getClass()) {
-          return false;
-       }
-       final DiscoveryJob other = (DiscoveryJob) obj;
-
-       return com.google.common.base.Objects.equal(this.m_ranges, other.m_ranges) &&
-               com.google.common.base.Objects.equal(this.m_foreignSource, other.m_foreignSource) &&
-               com.google.common.base.Objects.equal(this.m_location, other.m_location);
+    public boolean equals(final Object other) {
+        if (!(other instanceof DiscoveryJob)) {
+            return false;
+        }
+        DiscoveryJob castOther = (DiscoveryJob) other;
+        return Objects.equals(m_ranges, castOther.m_ranges)
+                && Objects.equals(m_foreignSource, castOther.m_foreignSource)
+                && Objects.equals(m_location, castOther.m_location)
+                && Objects.equals(m_packetsPerSecond, castOther.m_packetsPerSecond);
     }
 
     @Override
     public int hashCode() {
-       return com.google.common.base.Objects.hashCode(m_ranges, 
-               m_foreignSource,
-               m_location);
+        return Objects.hash(m_ranges, m_foreignSource, m_location, m_packetsPerSecond);
     }
 
     @Override
     public String toString() {
-       return com.google.common.base.Objects.toStringHelper(this)
-                 .add("foreignSource", m_foreignSource)
-                 .add("location", m_location)
-                 .add("packetsPerSecond", m_packetsPerSecond)
-                 .add("ranges", m_ranges)
-                 .toString();
-    }
-
-    /**
-     * <P>
-     * Returns the total task timeout in milliseconds for all IP ranges.
-     * </P>
-     */
-    public int calculateTaskTimeout() {
-        BigDecimal taskTimeOut = BigDecimal.ZERO;
-        for(final IPPollRange range : m_ranges) {
-            taskTimeOut = taskTimeOut.add(
-                // Take the number of retries
-                BigDecimal.valueOf(range.getRetries())
-                // Add 1 for the original request
-                .add(BigDecimal.ONE, DECIMAL64)
-                // Multiply by the number of addresses
-                .multiply(new BigDecimal(range.getAddressRange().size()), DECIMAL64)
-                // Multiply by the timeout per retry
-                .multiply(BigDecimal.valueOf(range.getTimeout()), DECIMAL64)
-                // Multiply by the fudge factor
-                .multiply(FUDGE_FACTOR, DECIMAL64),
-                DECIMAL64
-            );
-
-            // Add a delay for the rate limiting done with the
-            // m_packetsPerSecond field
-            taskTimeOut = taskTimeOut.add(
-                // Take the number of addresses
-                new BigDecimal(range.getAddressRange().size())
-                // Divide by the number of packets per second
-                .divide(BigDecimal.valueOf(m_packetsPerSecond), DECIMAL64)
-                // 1000 milliseconds
-                .multiply(BigDecimal.valueOf(1000), DECIMAL64),
-                DECIMAL64
-            );
-        }
-        // If the timeout is greater than Integer.MAX_VALUE, just return Integer.MAX_VALUE
-        return taskTimeOut.compareTo(BigDecimal.valueOf(Integer.MAX_VALUE)) >= 0 ? Integer.MAX_VALUE : taskTimeOut.intValue();
+        return String.format("DiscoveryJob[foreignSource=%s, location=%s, packetPerSecond=%s, range=%s]",
+                m_foreignSource, m_location, m_packetsPerSecond, m_ranges);
     }
 
 }

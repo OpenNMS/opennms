@@ -81,7 +81,7 @@ public class LocationAwarePingSweepClientIT extends CamelBlueprintTest {
     private Component queuingservice;
 
     @Autowired
-    private LocationAwarePingSweepClient client;
+    private LocationAwarePingClient client;
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -128,7 +128,7 @@ public class LocationAwarePingSweepClientIT extends CamelBlueprintTest {
      */
     @Test
     public void canPingViaLocalhost() throws InterruptedException, ExecutionException, UnknownHostException {
-        CompletableFuture<PingSweepSummary> future = client.ping()
+        CompletableFuture<PingSweepSummary> future = client.sweep()
                 .withRange(InetAddress.getByName("127.0.0.1"), InetAddress.getByName("127.0.0.10")).execute();
         PingSweepSummary pingSummary = future.get();
         Assert.assertEquals(10, pingSummary.numberOfPingsReturned());
@@ -142,7 +142,7 @@ public class LocationAwarePingSweepClientIT extends CamelBlueprintTest {
      */
     @Test
     public void canPingViaRemoteLocation() throws InterruptedException, ExecutionException, UnknownHostException {
-        final CompletableFuture<PingSweepSummary> future = client.ping()
+        final CompletableFuture<PingSweepSummary> future = client.sweep()
                 .withRange(InetAddress.getByName("127.0.0.1"), InetAddress.getByName("127.0.0.10"))
                 .withLocation(REMOTE_LOCATION_NAME).execute();
         PingSweepSummary pingSummary = future.get();

@@ -26,23 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.discovery.actors;
+package org.opennms.netmgt.discovery;
 
 import java.math.BigInteger;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.network.IPAddress;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.discovery.IpAddressFilter;
-import org.opennms.netmgt.discovery.messages.DiscoveryJob;
 import org.opennms.netmgt.model.discovery.IPPollRange;
 
 import com.google.common.base.Preconditions;
@@ -60,53 +58,13 @@ import com.google.common.collect.Lists;
  */
 public class RangeChunker {
 
-    private static class ForeignSourceLocationKey {
-        private final String m_location;
-        private final String m_foreignSource;
+    private final IpAddressFilter ipAddressFilter;
 
-        public ForeignSourceLocationKey(String foreignSource, String location) {
-            m_location = location;
-            m_foreignSource = foreignSource;
-        }
-
-        public String getForeignSource() {
-            return m_foreignSource;
-        }
-
-        public String getLocation() {
-            return m_location;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) { return false; }
-            if (obj == this) { return true; }
-            if (obj.getClass() != getClass()) {
-                return false;
-            }
-            ForeignSourceLocationKey key = (ForeignSourceLocationKey)obj;
-            return new EqualsBuilder()
-                .append(m_foreignSource, key.getForeignSource())
-                .append(m_location, key.getLocation())
-                .isEquals();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder()
-                .append(m_foreignSource)
-                .append(m_location)
-                .toHashCode();
-        }
+    public RangeChunker(IpAddressFilter ipAddressFilter) {
+        this.ipAddressFilter = Objects.requireNonNull(ipAddressFilter);
     }
 
-    private IpAddressFilter m_ipAddressFilter;
-
-    public void setIpAddressFilter(IpAddressFilter ipAddressFilter) {
-        m_ipAddressFilter = ipAddressFilter;
-    }
-
-    public List<DiscoveryJob> chunk(final DiscoveryConfiguration config) {
+    public Map<String, List<DiscoveryJob>> chunk(final DiscoveryConfiguration config) {
 
         final int chunkSize = (config.getChunkSize() > 0) ? config.getChunkSize() : DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE;
         final double packetsPerSecond = (config.getPacketsPerSecond() > 0.0) ? config.getPacketsPerSecond() : DiscoveryConfigFactory.DEFAULT_PACKETS_PER_SECOND;
@@ -130,7 +88,7 @@ public class RangeChunker {
         return StreamSupport.stream(configFactory.getConfiguredAddresses().spliterator(), false)
             .filter(address -> {
                 // If there is no IP address filter set or the filter matches
-                return m_ipAddressFilter == null || m_ipAddressFilter.matches(address.getLocation(), address.getAddress());
+                return ipAddressFilter.matches(address.getLocation(), address.getAddress());
             })
             // TODO: We could optimize this further by not unrolling IPPollRanges into individual
             // IPPollAddresses during the mapping.
@@ -155,7 +113,7 @@ public class RangeChunker {
                     // Make sure that location is not null so that we can partition on the value
                     range.getLocation() == null ? locationFromConfig : range.getLocation()
                 );
-            }))
+            }, LinkedHashMap::new, Collectors.toList()))
             .entrySet().stream()
             // Flat map one list of IPPollRanges to many chunked DiscoveryJobs
             .flatMap(entry -> {
@@ -190,10 +148,11 @@ public class RangeChunker {
                     // Collect the DiscoveryJobs
                     .collect(Collectors.toList()).stream();
             })
-            .collect(Collectors.toList());
+            .collect(Collectors.groupingBy(job -> job.getLocation(),
+                    LinkedHashMap::new, Collectors.toList()));
     }
 
-    private static boolean isConsecutive(IPPollRange range, IPPollRange address) {
+    protected static boolean isConsecutive(IPPollRange range, IPPollRange address) {
         Preconditions.checkState(BigInteger.ONE.equals(address.getAddressRange().size()));
         return range != null && 
             new IPAddress(range.getAddressRange().getEnd()).isPredecessorOf(new IPAddress(address.getAddressRange().getEnd())) &&
@@ -201,5 +160,40 @@ public class RangeChunker {
             Objects.equals(range.getLocation(), address.getLocation()) &&
             range.getRetries() == address.getRetries() &&
             range.getTimeout() == address.getTimeout();
+    }
+
+    private static class ForeignSourceLocationKey {
+        private final String m_location;
+        private final String m_foreignSource;
+
+        public ForeignSourceLocationKey(String foreignSource, String location) {
+            m_location = location;
+            m_foreignSource = foreignSource;
+        }
+
+        public String getForeignSource() {
+            return m_foreignSource;
+        }
+
+        public String getLocation() {
+            return m_location;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) { return false; }
+            if (obj == this) { return true; }
+            if (obj.getClass() != getClass()) {
+                return false;
+            }
+            ForeignSourceLocationKey other = (ForeignSourceLocationKey)obj;
+            return Objects.equals(this.m_foreignSource, other.m_foreignSource)
+                    && Objects.equals(this.m_location, other.m_location);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(m_foreignSource, m_location);
+        }
     }
 }

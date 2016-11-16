@@ -28,12 +28,9 @@
 
 package org.opennms.netmgt.icmp.proxy;
 
-import static java.math.MathContext.DECIMAL64;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -41,34 +38,18 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.rpc.api.RpcClient;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.PingConstants;
-import org.opennms.netmgt.model.discovery.IPPollRange;
-
-import com.google.common.collect.Maps;
 
 public class PingSweepRequestBuilderImpl implements PingSweepRequestBuilder {
 
-    protected final RpcClient<PingSweepRequestDTO, PingSweepResponseDTO> client;
-    protected long timeout = PingConstants.DEFAULT_TIMEOUT;
-    protected int packetSize = PingConstants.DEFAULT_PACKET_SIZE;
-    protected int retries = PingConstants.DEFAULT_RETRIES;
-    protected String location;
-    protected InetAddress begin;
-    protected InetAddress end;
-    protected String foreignSource;
-    protected List<IPRangeDTO> ranges = new ArrayList<>();
-    public static final BigDecimal FUDGE_FACTOR = BigDecimal.valueOf(1.5);
+    private final RpcClient<PingSweepRequestDTO, PingSweepResponseDTO> client;
+    private int packetSize = PingConstants.DEFAULT_PACKET_SIZE;
+    private double packetsPerSecond = PingConstants.DEFAULT_PACKETS_PER_SECOND;
+    private String location;
+    private List<IPRangeDTO> ranges = new ArrayList<>();
 
     public PingSweepRequestBuilderImpl(RpcClient<PingSweepRequestDTO, PingSweepResponseDTO> client) {
         this.client = Objects.requireNonNull(client);
-    }
-
-    @Override
-    public PingSweepRequestBuilder withTimeout(long timeout, TimeUnit unit) {
-        Objects.requireNonNull(unit);
-        this.timeout = TimeUnit.MILLISECONDS.convert(timeout, unit);
-        return this;
     }
 
     @Override
@@ -78,14 +59,25 @@ public class PingSweepRequestBuilderImpl implements PingSweepRequestBuilder {
     }
 
     @Override
-    public PingSweepRequestBuilder withRetries(int retries) {
-        this.retries = (retries > 0 ? retries : this.retries);
+    public PingSweepRequestBuilder withPacketsPerSecond(double packetsPerSecond) {
+        this.packetsPerSecond = packetsPerSecond;
         return this;
     }
 
     @Override
     public PingSweepRequestBuilder withLocation(String location) {
-        this.location = Objects.requireNonNull(location);
+        this.location = location;
+        return this;
+    }
+
+    @Override
+    public PingSweepRequestBuilder withRange(InetAddress begin, InetAddress end) {
+        return withRange(begin, end, PingConstants.DEFAULT_RETRIES, PingConstants.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public PingSweepRequestBuilder withRange(InetAddress begin, InetAddress end, int retries, long timeout, TimeUnit timeoutUnit) {
+        this.ranges.add(new IPRangeDTO(begin, end, retries, TimeUnit.MILLISECONDS.convert(timeout, timeoutUnit)));
         return this;
     }
 
@@ -94,15 +86,12 @@ public class PingSweepRequestBuilderImpl implements PingSweepRequestBuilder {
         final PingSweepRequestDTO requestDTO = new PingSweepRequestDTO();
         requestDTO.setIpRanges(ranges);
         requestDTO.setLocation(location);
-        requestDTO.setRetries(retries);
         requestDTO.setPacketSize(packetSize);
-        requestDTO.setTimeout(timeout);
-        requestDTO.setForeignSource(foreignSource);
-        requestDTO.setTimeToLiveMs((long) calculateTaskTimeout());
+        requestDTO.setPacketsPerSecond(packetsPerSecond);
 
         return client.execute(requestDTO).thenApply(responseDTO -> {
-            PingSweepSummary summary = new PingSweepSummary();
-            Map<InetAddress, Double> responses = Maps.newConcurrentMap();
+            final PingSweepSummary summary = new PingSweepSummary();
+            final Map<InetAddress, Double> responses = new LinkedHashMap<>();
             for (PingSweepResultDTO result : responseDTO.getPingSweepResult()) {
                 responses.put(result.getAddress(), result.getRtt());
             }
@@ -112,69 +101,8 @@ public class PingSweepRequestBuilderImpl implements PingSweepRequestBuilder {
 
     }
 
-    @Override
-    public PingSweepRequestBuilder withRange(InetAddress begin, InetAddress end) {
-        this.ranges.add(new IPRangeDTO(begin, end));
-        return this;
-    }
-
-    @Override
-    public PingSweepRequestBuilder withIpPollRanges(List<IPPollRange> ranges) {
-        ranges.forEach(range -> {
-            try {
-                InetAddress begin = InetAddress.getByAddress(range.getAddressRange().getBegin());
-                InetAddress end = InetAddress.getByAddress(range.getAddressRange().getEnd());
-                this.ranges.add(new IPRangeDTO(begin, end));
-            } catch (Exception e) {
-                throw new RuntimeException("Unknown ranges");
-            }
-        });
-        return this;
-    }
-
     public RpcClient<PingSweepRequestDTO, PingSweepResponseDTO> getClient() {
         return client;
-    }
-
-    @Override
-    public PingSweepRequestBuilder withForeignSource(String foreignSource) {
-        this.foreignSource = foreignSource;
-        return this;
-    }
-
-    public int calculateTaskTimeout() {
-        BigDecimal taskTimeOut = BigDecimal.ZERO;
-        for (final IPRangeDTO range : ranges) {
-            BigInteger size = InetAddressUtils.difference(InetAddressUtils.getInetAddress(range.getEnd().getAddress()),
-                    InetAddressUtils.getInetAddress(range.getBegin().getAddress())).add(BigInteger.ONE);
-            taskTimeOut = taskTimeOut.add(
-                    // Take the number of retries
-                    BigDecimal.valueOf(retries)
-                            // Add 1 for the original request
-                            .add(BigDecimal.ONE, DECIMAL64)
-                            // Multiply by the number of addresses
-                            .multiply(new BigDecimal(size), DECIMAL64)
-                            // Multiply by the timeout per retry
-                            .multiply(BigDecimal.valueOf(timeout), DECIMAL64)
-                            // Multiply by the fudge factor
-                            .multiply(FUDGE_FACTOR, DECIMAL64),
-                    DECIMAL64);
-
-            // Add a delay for the rate limiting done with the
-            // m_packetsPerSecond field
-            taskTimeOut = taskTimeOut.add(
-                    // Take the number of addresses
-                    new BigDecimal(size)
-                            // Divide by the number of packets per second
-                            .divide(BigDecimal.valueOf(packetSize), DECIMAL64)
-                            // 1000 milliseconds
-                            .multiply(BigDecimal.valueOf(1000), DECIMAL64),
-                    DECIMAL64);
-        }
-        // If the timeout is greater than Integer.MAX_VALUE, just return
-        // Integer.MAX_VALUE
-        return taskTimeOut.compareTo(BigDecimal.valueOf(Integer.MAX_VALUE)) >= 0 ? Integer.MAX_VALUE
-                : taskTimeOut.intValue();
     }
 
 }
