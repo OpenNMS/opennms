@@ -11,10 +11,12 @@
         <cm:default-properties>
             <cm:property name="clientId" value="" />
             <cm:property name="clientKey" value="" />
+			<cm:property name="timeout" value="500"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
 	<bean id="googleGeocoderService" class="org.opennms.features.geocoder.google.GoogleGeocoderService">
+		<argument value="${timeout}" />
 		<property name="clientId" value="${clientId}" />
 		<property name="clientKey" value="${clientKey}" />
 	</bean>

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.lang.management.ManagementFactory;
 import java.util.Map;
 
 import org.opennms.core.spring.BeanUtils;
@@ -66,6 +67,8 @@ public class MinionHeartbeatMonitor extends AbstractServiceMonitor {
         final PollStatus status;
         if (lastSeen <= period) {
             status = PollStatus.available();
+        } else if (ManagementFactory.getRuntimeMXBean().getUptime() < period) {
+            status = PollStatus.unknown("JVM has not been started long enough to process a heartbeat.");
         } else {
             status = PollStatus.unavailable(String.format("Last heartbeat was %.2f seconds ago", lastSeen / 1000.0));
         }

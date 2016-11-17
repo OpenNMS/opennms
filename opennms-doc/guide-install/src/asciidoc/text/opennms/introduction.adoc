@@ -6,7 +6,7 @@
 == Installation Overview
 
 The _OpenNMS_ platform can be installed in several ways.
-This guide describes the installation of the platform on _Red Hat Enterprise Linux (RHEL)_-based, _Debian_-based and _Microsoft Windows_ 
+This guide describes the installation of the platform on _Red Hat Enterprise Linux (RHEL)_-based, _Debian_-based and _Microsoft Windows_
 operating systems. The following abbreviations will be used to refer to the following operating systems:
 
 * _RHEL_: Red Hat Enterprise Linux 6 or higher, CentOS 6 or higher, Fedora 20 or higher
@@ -20,11 +20,15 @@ Installing _OpenNMS_ requires the following prerequisites:
 * A configured <<gi-install-opennms-repo-releases, Yum or APT Package Repository>> for your platform (Linux only)
 * Internet access to download and verify _OpenNMS_ packages from the Yum or APT package repositories
 * <<gi-install-oracle-java, Oracle Java SE Development Kit 8>> environment
-* PostgreSQL database version 9.1 or higher
+* PostgreSQL database version 9.1 or higher, it has only been tested with PostgreSQL 9.1 through 9.6
 * A time-series database engine to persist long-term performance data:
 ** JRobin: The default choice. JRobin is included inside OpenNMS and doesn't require additional software to be installed.
 ** <<gi-rrdtool-time-series-database, RRDtool>>: A higher performance, file-based database.
 ** <<gi-install-ts-newts, Newts>>: The highest performance solution. Newts uses an Apache Cassandra database for clustered scalability.
+
+CAUTION: Please make sure your DNS settings for the OpenNMS server are correct.
+         In case there is an incorrect or missing _A Resource Record_ for the server, OpenNMS might not start correctly.
+         The reason is that the Java security manager cannot be initialized and an _RMI class loader disabled_ exception will be shown.
 
 NOTE: _OpenJDK 8_ can be used, but for production and critical environments _Oracle Java SE Development Kit 8_ is recommended.
 

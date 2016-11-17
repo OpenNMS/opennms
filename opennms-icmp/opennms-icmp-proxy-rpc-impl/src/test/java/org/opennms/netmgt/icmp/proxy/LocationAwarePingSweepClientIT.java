@@ -49,13 +49,10 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.minion.core.api.MinionIdentity;
-import org.opennms.netmgt.icmp.Pinger;
-import org.opennms.netmgt.icmp.jna.JnaPinger;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -63,14 +60,10 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-camel.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-icmp.xml", "classpath:/pinger.xml" })
+        "classpath:/META-INF/opennms/applicationContext-rpc-icmp.xml",
+        "classpath:/pinger.xml" })
 @JUnitConfigurationEnvironment
 public class LocationAwarePingSweepClientIT extends CamelBlueprintTest {
-
-    @Bean
-    public Pinger createPinger() {
-        return new JnaPinger();
-    }
 
     private static final String REMOTE_LOCATION_NAME = "remote";
 
@@ -88,7 +81,7 @@ public class LocationAwarePingSweepClientIT extends CamelBlueprintTest {
     private Component queuingservice;
 
     @Autowired
-    private LocationAwarePingSweepClient client;
+    private LocationAwarePingClient client;
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -135,7 +128,7 @@ public class LocationAwarePingSweepClientIT extends CamelBlueprintTest {
      */
     @Test
     public void canPingViaLocalhost() throws InterruptedException, ExecutionException, UnknownHostException {
-        CompletableFuture<PingSweepSummary> future = client.ping()
+        CompletableFuture<PingSweepSummary> future = client.sweep()
                 .withRange(InetAddress.getByName("127.0.0.1"), InetAddress.getByName("127.0.0.10")).execute();
         PingSweepSummary pingSummary = future.get();
         Assert.assertEquals(10, pingSummary.numberOfPingsReturned());
@@ -149,7 +142,7 @@ public class LocationAwarePingSweepClientIT extends CamelBlueprintTest {
      */
     @Test
     public void canPingViaRemoteLocation() throws InterruptedException, ExecutionException, UnknownHostException {
-        final CompletableFuture<PingSweepSummary> future = client.ping()
+        final CompletableFuture<PingSweepSummary> future = client.sweep()
                 .withRange(InetAddress.getByName("127.0.0.1"), InetAddress.getByName("127.0.0.10"))
                 .withLocation(REMOTE_LOCATION_NAME).execute();
         PingSweepSummary pingSummary = future.get();
