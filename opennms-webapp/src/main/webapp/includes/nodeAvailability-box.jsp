@@ -117,9 +117,11 @@
 
     <%  if (overallRtcValue >= 0) { %>
        <% Interface[] availIntfs = NetworkElementFactory.getInstance(getServletContext()).getActiveInterfacesOnNode(nodeId); %>
+       <% boolean oversized = availIntfs.length > 10; %>
            
         <% for( int i=0; i < availIntfs.length; i++ ) { %>
           <% Interface intf = availIntfs[i]; %>
+          <% if (oversized && ! "P".equals(intf.getIsSnmpPrimary())) { continue; } %>
           <% String ipAddr = intf.getIpAddress(); %>
           
           <c:url var="interfaceLink" value="element/interface.jsp">
