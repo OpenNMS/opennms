@@ -83,6 +83,7 @@
 
 
   <report name="TopN_InOctets" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="TopN_IOWait" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
   <report name="Top10_Response_Weekly" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
   <report name="Top10_Response_This_Month" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
   <report name="Top10_Response_Last_Month" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
