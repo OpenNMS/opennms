@@ -70,15 +70,14 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
         "classpath:/META-INF/opennms/applicationContext-daoEvents.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class SyslogdBroadcastEventProcessorTest {
+public class SyslogdBroadcastEventProcessorIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogdBroadcastEventProcessorTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogdBroadcastEventProcessorIT.class);
 
     private static final String SYSTEM_ID = DistPollerDao.DEFAULT_DIST_POLLER_ID;
     private static final String LOCATION = MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;

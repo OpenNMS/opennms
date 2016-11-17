@@ -80,8 +80,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-
-        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml"
 })
 @JUnitConfigurationEnvironment
