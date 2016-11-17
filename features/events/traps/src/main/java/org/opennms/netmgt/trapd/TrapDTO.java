@@ -42,6 +42,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.camel.MinionDTO;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.SnmpResult;
+import org.snmp4j.smi.OID;
 
 @XmlRootElement(name = "trap-dto")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -53,6 +54,9 @@ public class TrapDTO extends MinionDTO {
 	public static final String VERSION = "version";
 	public static final String TIMESTAMP = "timestamp";
 	public static final String AGENT_ADDRESS = "agentAddress";
+	public static final String GENERIC = "generic";
+	public static final String ENTERPRISEID = "enterpriseId";
+	public static final String SPECIFIC = "specific";
 
 	protected TrapDTO() {
 		// No-arg constructor for JAXB
@@ -68,6 +72,9 @@ public class TrapDTO extends MinionDTO {
 				.append("sourcePort", super.getHeaders().get(SOURCE_PORT))
 				.append("agentAddress", super.getHeaders().get(AGENT_ADDRESS))
 				.append("community", super.getHeaders().get(COMMUNITY))
+				.append("generic", super.getHeaders().get(GENERIC))
+				.append("enterpriseId", super.getHeaders().get(ENTERPRISEID))
+				.append("specific", super.getHeaders().get(SPECIFIC))
 				.append("creationTime", super.getHeaders().get(CREATION_TIME))
 				.append("pduLength", super.getHeaders().get(PDU_LENGTH))
 				.append("timestamp", super.getHeaders().get(TIMESTAMP))
@@ -109,6 +116,18 @@ public class TrapDTO extends MinionDTO {
 
 	public void setResults(List<SnmpResult> results) {
 		this.results = results;
+	}
+	
+	public void setEnterpriseId(OID enterpriseId) {
+		super.putHeader(ENTERPRISEID, enterpriseId.toString());
+	}
+	
+	public void setGeneric(int generic) {
+		super.putHeader(GENERIC, Integer.toString(generic));
+	}
+	
+	public void setSpecific(int specific) {
+		super.putHeader(SPECIFIC, Integer.toString(specific));
 	}
 
 }
