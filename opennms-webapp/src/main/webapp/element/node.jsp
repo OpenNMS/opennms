@@ -233,7 +233,7 @@
 	    if (displayStatus == DisplayStatus.DISPLAY_NO_LINK) {
 	        renderedLinks.add(link.getName());
 	    } else if (displayStatus == DisplayStatus.DISPLAY_LINK) {
-	        renderedLinks.add("<a href=\"" + link.getUrl().replace("%nodeid%", ""+nodeId) + "\">" + link.getName() + "</a>");
+	        renderedLinks.add("<a href=\"" + link.getUrl().replace("%25nodeid%25", ""+nodeId) + "\">" + link.getName() + "</a>");
 	    }
 	}
 	

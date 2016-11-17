@@ -92,6 +92,7 @@ import org.opennms.features.topology.app.internal.ui.SearchBox;
 import org.opennms.features.topology.app.internal.ui.ToolbarPanel;
 import org.opennms.features.topology.app.internal.ui.ToolbarPanelController;
 import org.opennms.features.topology.app.internal.ui.breadcrumbs.BreadcrumbComponent;
+import org.opennms.features.topology.link.TopologyLinkBuilder;
 import org.opennms.osgi.EventConsumer;
 import org.opennms.osgi.OnmsServiceManager;
 import org.opennms.osgi.VaadinApplicationContext;
@@ -199,11 +200,8 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
         private final List<RequestParameterHandler> requestHandlerList;
 
-        private static final String PARAMETER_LAYOUT = "layout";
         private static final String PARAMETER_FOCUS_NODES = "focusNodes";
-        private static final String PARAMETER_FOCUS_VERTICES = "focus-vertices";
-        private static final String PARAMETER_SEMANTIC_ZOOM_LEVEL = "szl";
-        private static final String PARAMETER_GRAPH_PROVIDER = "provider";
+
         public static final String PARAMETER_HISTORY_FRAGMENT = "ui-fragment";
 
         private TopologyUIRequestHandler() {
@@ -255,12 +253,12 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         }
 
         private boolean loadLayout(VaadinRequest request) {
-            String layoutName = request.getParameter(PARAMETER_LAYOUT);
+            String layoutName = request.getParameter(TopologyLinkBuilder.PARAMETER_LAYOUT);
             return executeOperationWithLabel(layoutName);
         }
 
         private boolean loadGraphProvider(VaadinRequest request) {
-            String graphProviderName = request.getParameter(PARAMETER_GRAPH_PROVIDER);
+            String graphProviderName = request.getParameter(TopologyLinkBuilder.PARAMETER_GRAPH_PROVIDER);
             return executeOperationWithLabel(graphProviderName);
         }
 
@@ -289,13 +287,13 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         }
 
         private boolean loadSemanticZoomLevel(VaadinRequest request) {
-            String szl = request.getParameter(PARAMETER_SEMANTIC_ZOOM_LEVEL);
+            String szl = request.getParameter(TopologyLinkBuilder.PARAMETER_SEMANTIC_ZOOM_LEVEL);
             if (szl != null) {
                 try {
                     m_graphContainer.setSemanticZoomLevel(Integer.parseInt(szl));
                     return true;
                 } catch (NumberFormatException e) {
-                    LOG.warn("Invalid SZL found in {} parameter: {}", PARAMETER_SEMANTIC_ZOOM_LEVEL, szl);
+                    LOG.warn("Invalid SZL found in {} parameter: {}", TopologyLinkBuilder.PARAMETER_SEMANTIC_ZOOM_LEVEL, szl);
                 }
             }
             return false;
@@ -303,12 +301,12 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
         private boolean loadVertexHopCriteria(VaadinRequest request) {
             final String nodeIds = request.getParameter(PARAMETER_FOCUS_NODES);
-            String vertexIdInFocus = request.getParameter(PARAMETER_FOCUS_VERTICES);
+            String vertexIdInFocus = request.getParameter(TopologyLinkBuilder.PARAMETER_FOCUS_VERTICES);
             if (nodeIds != null && vertexIdInFocus != null) {
-                LOG.warn("Usage of parameter '{1}' and '{2}'. This is not supported. Skipping parameter '{2}'", PARAMETER_FOCUS_NODES, PARAMETER_FOCUS_VERTICES);
+                LOG.warn("Usage of parameter '{1}' and '{2}'. This is not supported. Skipping parameter '{2}'", PARAMETER_FOCUS_NODES, TopologyLinkBuilder.PARAMETER_FOCUS_VERTICES);
             }
             if (nodeIds != null) {
-                LOG.warn("Usage of deprecated parameter '{}'. Please use '{}' instead.", PARAMETER_FOCUS_NODES, PARAMETER_FOCUS_VERTICES);
+                LOG.warn("Usage of deprecated parameter '{}'. Please use '{}' instead.", PARAMETER_FOCUS_NODES, TopologyLinkBuilder.PARAMETER_FOCUS_VERTICES);
                 vertexIdInFocus = nodeIds;
             }
             if (vertexIdInFocus != null) {

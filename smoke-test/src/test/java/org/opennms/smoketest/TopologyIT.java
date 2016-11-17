@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.features.topology.link.Layout;
+import org.opennms.features.topology.link.TopologyProvider;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
@@ -60,53 +62,6 @@ import com.google.common.collect.Lists;
 public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     private TopologyUIPage topologyUiPage;
-
-    /**
-     * All known layout algorithms.
-     */
-    public static enum Layout {
-        CIRCLE("Circle Layout"),
-        D3("D3 Layout"),
-        FR("FR Layout"),
-        HIERARCHY("Hierarchy Layout"),
-        ISOM("ISOM Layout"),
-        KK("KK Layout"),
-        REAL("Real Ultimate Layout"),
-        SPRING("Spring Layout"),
-        MANUAL("Manual Layout");
-
-        private final String label;
-
-        Layout(String label) {
-            this.label = Objects.requireNonNull(label);
-        }
-
-        public String getLabel() {
-            return label;
-        }
-
-        public static Layout createFromLabel(String label) {
-            for (Layout eachLayout : values()) {
-                if (eachLayout.getLabel().equals(label)) {
-                    return eachLayout;
-                }
-            }
-            return null;
-        }
-    }
-
-    /**
-     * All known topology providers.
-     */
-    public interface TopologyProvider {
-
-        TopologyProvider APPLICATION = () -> "Application";
-        TopologyProvider BUSINESSSERVICE = () -> "Business Services";
-        TopologyProvider VMWARE = () -> "VMware";
-        TopologyProvider ENLINKD = () -> "Enhanced Linkd";
-
-        String getLabel();
-    }
 
     /**
      * Represents a vertex that is focused using
