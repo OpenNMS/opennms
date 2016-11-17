@@ -51,11 +51,13 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DeadlockLoserDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import com.codahale.metrics.MetricRegistry;
@@ -77,9 +79,9 @@ import com.codahale.metrics.Timer.Context;
  * Values for the ' <parms>' block are loaded with each parm name and parm value
  * delimited with the NAME_VAL_DELIM.
  * 
- * @see org.opennms.netmgt.model.events.Constants#MULTIPLE_VAL_DELIM
- * @see org.opennms.netmgt.model.events.Constants#DB_ATTRIB_DELIM
- * @see org.opennms.netmgt.model.events.Constants#NAME_VAL_DELIM
+ * @see org.opennms.netmgt.events.api.EventDatabaseConstants#MULTIPLE_VAL_DELIM
+ * @see org.opennms.netmgt.events.api.EventDatabaseConstants#DB_ATTRIB_DELIM
+ * @see org.opennms.netmgt.events.api.EventDatabaseConstants#NAME_VAL_DELIM
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
@@ -108,7 +110,7 @@ public class HibernateEventWriter implements EventWriter {
     private final Timer writeTimer;
 
     public HibernateEventWriter(MetricRegistry registry) {
-        writeTimer = Objects.requireNonNull(registry).timer("events.process.write");
+        writeTimer = Objects.requireNonNull(registry).timer("eventlogs.process.write");
     }
 
     /**
@@ -137,21 +139,42 @@ public class HibernateEventWriter implements EventWriter {
         return true;
     }
 
+
+    @Override
+    public void process(Log eventLog) throws EventProcessorException {
+        if (eventLog != null && eventLog.getEvents() != null && eventLog.getEvents().getEvent() != null) {
+            try (Context context = writeTimer.time()) {
+                // Calling a separate method to insert the events allows us to time the transaction
+                processInTransaction(eventLog);
+            }
+        }
+    }
+
+    @Transactional
+    private void processInTransaction(Log eventLog) throws EventProcessorException {
+        for (Event eachEvent : eventLog.getEvents().getEvent()) {
+            process(eventLog.getHeader(), eachEvent);
+        }
+    }
+
     /**
      * {@inheritDoc}
      *
      * The method that inserts the event into the database
      */
-    @Override
-    public void process(final Header eventHeader, final Event event) throws EventProcessorException {
+    private void process(final Header eventHeader, final Event event) throws EventProcessorException {
         if (!checkEventSanityAndDoWeProcess(event, "HibernateEventWriter")) {
             return;
         }
 
         LOG.debug("HibernateEventWriter: processing {}, nodeid: {}, ipaddr: {}, serviceid: {}, time: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
 
-        try (Context context = writeTimer.time()) {
-            insertEvent(eventHeader, event);
+        try {
+            final OnmsEvent ovent = createOnmsEvent(eventHeader, event);
+            eventDao.save(ovent);
+
+            // Update the event with the database ID of the event stored in the database
+            event.setDbid(ovent.getId());
         } catch (DeadlockLoserDataAccessException e) {
             throw new EventProcessorException("Encountered deadlock when inserting event: " + event.toString(), e);
         } catch (Throwable e) {
@@ -160,13 +183,13 @@ public class HibernateEventWriter implements EventWriter {
     }
 
     /**
-     * Insert values into the EVENTS table
+     * Creates OnmsEvent to be inserted afterwards.
      * 
      * @exception java.lang.NullPointerException
      *                Thrown if a required resource cannot be found in the
      *                properties file.
      */
-    private void insertEvent(final Header eventHeader, final Event event) {
+    private OnmsEvent createOnmsEvent(final Header eventHeader, final Event event) {
 
         OnmsEvent ovent = new OnmsEvent();
 
@@ -335,11 +358,6 @@ public class HibernateEventWriter implements EventWriter {
             ovent.setEventAckUser(null);
             ovent.setEventAckTime(null);
         }
-
-        eventDao.save(ovent);
-        eventDao.flush();
-
-        // Update the event with the database ID of the event stored in the database
-        event.setDbid(ovent.getId());
+        return ovent;
     }
 }

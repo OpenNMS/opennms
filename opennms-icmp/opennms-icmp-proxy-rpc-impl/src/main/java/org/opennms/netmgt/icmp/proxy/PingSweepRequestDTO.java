@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.icmp.proxy;
 
+import static java.math.MathContext.DECIMAL64;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,31 +42,28 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.rpc.api.RpcRequest;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.icmp.PingConstants;
 
 @XmlRootElement(name = "ping-sweep-request")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PingSweepRequestDTO implements RpcRequest {
 
-    @XmlElement(name = "ip-ranges")
+    private static final BigDecimal FUDGE_FACTOR = BigDecimal.valueOf(1.5);
+
+    @XmlElement(name = "ip-range")
     private List<IPRangeDTO> ipRanges = new ArrayList<>();
 
     @XmlAttribute(name = "location")
     private String location;
 
-    @XmlAttribute(name = "retries")
-    private int retries;
+    @XmlAttribute(name = "packet-size")
+    private Integer packetSize;
 
-    @XmlAttribute(name = "timeout")
-    private long timeout;
+    @XmlAttribute(name = "packets-per-second")
+    private Double packetsPerSecond;
 
-    @XmlElement(name = "packet-size")
-    private int packetSize;
-
-    @XmlElement(name = "foreign-Source")
-    private String foreignSource;
-    
-    private Long ttl;
-
+    @Override
     public String getLocation() {
         return location;
     }
@@ -71,36 +72,20 @@ public class PingSweepRequestDTO implements RpcRequest {
         this.location = location;
     }
 
-    public int getRetries() {
-        return retries;
-    }
-
-    public void setRetries(int retries) {
-        this.retries = retries;
-    }
-
-    public long getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
-    }
-
     public int getPacketSize() {
-        return packetSize;
+        return packetSize != null ? packetSize : PingConstants.DEFAULT_PACKET_SIZE;
     }
 
     public void setPacketSize(int packetSize) {
         this.packetSize = packetSize;
     }
 
-    public String getForeignSource() {
-        return foreignSource;
+    public double getPacketsPerSecond() {
+        return packetsPerSecond != null ? packetsPerSecond : PingConstants.DEFAULT_PACKETS_PER_SECOND;
     }
 
-    public void setForeignSource(String foreignSource) {
-        this.foreignSource = foreignSource;
+    public void setPacketsPerSecond(double packetsPerSecond) {
+        this.packetsPerSecond = packetsPerSecond;
     }
 
     public List<IPRangeDTO> getIpRanges() {
@@ -117,7 +102,7 @@ public class PingSweepRequestDTO implements RpcRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(ipRanges, location, packetSize, retries, timeout);
+        return Objects.hash(ipRanges, location, packetSize);
     }
 
     @Override
@@ -130,18 +115,42 @@ public class PingSweepRequestDTO implements RpcRequest {
             return false;
         PingSweepRequestDTO other = (PingSweepRequestDTO) obj;
         return Objects.equals(this.ipRanges, other.ipRanges) && Objects.equals(this.location, other.location)
-                && Objects.equals(this.packetSize, other.packetSize) && Objects.equals(this.retries, other.retries)
-                && Objects.equals(this.timeout, other.timeout);
+                && Objects.equals(this.packetSize, other.packetSize) && Objects.equals(this.packetsPerSecond, other.packetsPerSecond);
     }
 
     @Override
     public Long getTimeToLiveMs() {
-        return this.ttl;
-    }
-    
+        BigDecimal taskTimeOut = BigDecimal.ZERO;
+        for (final IPRangeDTO range : ipRanges) {
+            BigInteger size = InetAddressUtils.difference(InetAddressUtils.getInetAddress(range.getEnd().getAddress()),
+                    InetAddressUtils.getInetAddress(range.getBegin().getAddress())).add(BigInteger.ONE);
+            taskTimeOut = taskTimeOut.add(
+                    // Take the number of retries
+                    BigDecimal.valueOf(range.getRetries())
+                            // Add 1 for the original request
+                            .add(BigDecimal.ONE, DECIMAL64)
+                            // Multiply by the number of addresses
+                            .multiply(new BigDecimal(size), DECIMAL64)
+                            // Multiply by the timeout per retry
+                            .multiply(BigDecimal.valueOf(range.getTimeout()), DECIMAL64)
+                            // Multiply by the fudge factor
+                            .multiply(FUDGE_FACTOR, DECIMAL64),
+                    DECIMAL64);
 
-    public void setTimeToLiveMs(Long ttl) {
-        this.ttl = ttl;
+            // Add a delay for the rate limiting done with the
+            // packetsPerSecond field
+            taskTimeOut = taskTimeOut.add(
+                    // Take the number of addresses
+                    new BigDecimal(size)
+                            // Divide by the number of packets per second
+                            .divide(BigDecimal.valueOf(getPacketsPerSecond()), DECIMAL64)
+                            // 1000 milliseconds
+                            .multiply(BigDecimal.valueOf(1000), DECIMAL64),
+                    DECIMAL64);
+        }
+        // If the timeout is greater than Long.MAX_VALUE, just return Long.MAX_VALUE
+        return taskTimeOut.compareTo(BigDecimal.valueOf(Long.MAX_VALUE)) >= 0 ? Long.MAX_VALUE
+                : taskTimeOut.longValue();
     }
 
 }

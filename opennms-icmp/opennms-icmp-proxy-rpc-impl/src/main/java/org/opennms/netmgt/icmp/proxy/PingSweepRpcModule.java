@@ -37,6 +37,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -46,6 +47,7 @@ import org.opennms.core.utils.IteratorUtils;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,14 +56,21 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.RateLimiter;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 @Component
 public class PingSweepRpcModule extends AbstractXmlRpcModule<PingSweepRequestDTO, PingSweepResponseDTO> {
 
     public static final String RPC_MODULE_ID = "PING-SWEEP";
 
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("ping-sweep-%d")
+            .build();
+
+    private final ExecutorService executor = Executors.newCachedThreadPool(threadFactory);
+
     @Autowired
-    private Pinger pinger;
+    private PingerFactory pingerFactory;
 
     public PingSweepRpcModule() {
         super(PingSweepRequestDTO.class, PingSweepResponseDTO.class);
@@ -69,33 +78,29 @@ public class PingSweepRpcModule extends AbstractXmlRpcModule<PingSweepRequestDTO
 
     @Override
     public CompletableFuture<PingSweepResponseDTO> execute(PingSweepRequestDTO request) {
-
+        final Pinger pinger = pingerFactory.getInstance();
         final PingSweepResultTracker tracker = new PingSweepResultTracker();
-        final ExecutorService executor = Executors.newFixedThreadPool(1);
-        // IPAddrRange range = new IPAddrRange(request.getBegin(),
-        // request.getEnd());
-        String foreignSource = request.getForeignSource();
+
         String location = request.getLocation();
-        long timeout = request.getTimeout();
         int packetSize = request.getPacketSize();
         List<IPPollRange> ranges = new ArrayList<>();
         for (IPRangeDTO dto : request.getIpRanges()) {
-            IPPollRange pollRange = new IPPollRange(foreignSource, location, dto.getBegin(), dto.getEnd(), timeout, 1);
+            IPPollRange pollRange = new IPPollRange(null, location, dto.getBegin(), dto.getEnd(), dto.getTimeout(), dto.getRetries());
             ranges.add(pollRange);
         }
+
         // Use a RateLimiter to limit the ping packets per second that we send
-        RateLimiter limiter = RateLimiter.create(request.getPacketSize());
+        RateLimiter limiter = RateLimiter.create(request.getPacketsPerSecond());
 
         List<IPPollAddress> addresses = StreamSupport.stream(getAddresses(ranges).spliterator(), false)
                 .filter(j -> j.getAddress() != null).collect(Collectors.toList());
 
         return CompletableFuture.supplyAsync(() -> {
-
             addresses.stream().forEach(pollAddress -> {
                 try {
                     tracker.expectCallbackFor(pollAddress.getAddress());
                     limiter.acquire();
-                    pinger.ping(pollAddress.getAddress(), timeout, request.getRetries(), packetSize, 1, tracker);
+                    pinger.ping(pollAddress.getAddress(), pollAddress.getTimeout(), pollAddress.getRetries(), packetSize, 1, tracker);
                 } catch (Exception e) {
                     tracker.handleError(pollAddress.getAddress(), null, e);
                     tracker.completeExceptionally(e);
@@ -171,8 +176,8 @@ public class PingSweepRpcModule extends AbstractXmlRpcModule<PingSweepRequestDTO
         return RPC_MODULE_ID;
     }
 
-    public void setPinger(Pinger pinger) {
-        this.pinger = pinger;
+    public void setPingerFactory(PingerFactory pingerFactory) {
+        this.pingerFactory = pingerFactory;
     }
     
     public Iterable<IPPollAddress> getAddresses(List<IPPollRange> ranges) {
@@ -182,6 +187,5 @@ public class PingSweepRpcModule extends AbstractXmlRpcModule<PingSweepRequestDTO
         }
         return IteratorUtils.concatIterators(iters);
     }
-
 
 }

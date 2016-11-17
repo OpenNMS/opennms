@@ -44,7 +44,7 @@ import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,7 +110,15 @@ public class MockEventWriter implements EventProcessor, InitializingBean {
     }
 
     @Override
-    public void process(final Header eventHeader, final Event event) throws EventProcessorException {
+    public void process(Log eventLog) throws EventProcessorException {
+        if (eventLog != null && eventLog.getEvents() != null && eventLog.getEvents().getEvent() != null) {
+            for (Event event : eventLog.getEvents().getEvent()) {
+                process(event);
+            }
+        }
+    }
+
+    private void process(final Event event) throws EventProcessorException {
         LOG.debug("Writing event: {}", event);
         final OnmsEvent oe = new OnmsEvent();
         oe.setEventAutoAction((event.getAutoactionCount() > 0) ? AutoAction.format(event.getAutoaction(), EVENT_AUTOACTION_FIELD_SIZE) : null);

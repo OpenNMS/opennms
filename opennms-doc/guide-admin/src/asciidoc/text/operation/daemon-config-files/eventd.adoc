@@ -1,0 +1,21 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-opennms-operation-daemon-config-files-eventd]]
+==== Eventd
+
+[options="header, autowidth"]
+|===
+| Internal Daemon Name | Reload Event
+| _Eventd_            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Eventd'`
+|===
+
+.Eventd configuration file overview
+[options="header, autowidth"]
+|===
+| File                        | Restart Required | Reload Event | Description
+| `eventd-configuration.xml`  | yes              | no           | Configure generic behavior of _Eventd_, i.e. _TCP_ and _UDP_ port numbers with _IP addresses_ to listen for _Events_ and socket timeouts.
+| `eventconf.xml`             | no               | yes          | Main configuration file for _Eventd_.
+| `events/*`                  | no               | yes          | Out-of-the-box, all files in this folder are included via `include` directives in `eventconf.xml`.
+|===

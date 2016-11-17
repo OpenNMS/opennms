@@ -31,7 +31,7 @@ package org.opennms.web.rest.v2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import javax.servlet.ServletContext;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,8 +43,6 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.discovery.DiscoveryTaskExecutor;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -67,11 +65,9 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class DiscoveryRestServiceIT extends AbstractSpringJerseyRestTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryRestServiceIT.class);
+
     @Autowired
     ServiceRegistry serviceRegistry;
-    @Autowired
-    private ServletContext m_context;
 
     public DiscoveryRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -84,8 +80,9 @@ public class DiscoveryRestServiceIT extends AbstractSpringJerseyRestTestCase {
         if (serviceRegistry.findProvider(DiscoveryTaskExecutor.class) == null) {
             serviceRegistry.register(new DiscoveryTaskExecutor() {
                 @Override
-                public void handleDiscoveryTask(DiscoveryConfiguration discoveryConfiguration) {
+                public CompletableFuture<Void> handleDiscoveryTask(DiscoveryConfiguration discoveryConfiguration) {
                     checkConfiguration(discoveryConfiguration);
+                    return CompletableFuture.completedFuture(null);
                 }
             }, DiscoveryTaskExecutor.class);
         }

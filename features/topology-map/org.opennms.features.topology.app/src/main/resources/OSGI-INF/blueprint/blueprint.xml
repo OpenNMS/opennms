@@ -7,13 +7,11 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <cm:property-placeholder id="appConfig" persistent-id="org.opennms.features.topology.app" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="servletAlias" value="/topology"/>
-            <cm:property name="widgetset" value="org.opennms.features.topology.widgetset.gwt.TopologyWidgetset"/>
-            <cm:property name="theme" value="topo_default" />
             <cm:property name="showHeader" value="true" />
             <cm:property name="autoRefresh.enabled" value="false" />
             <cm:property name="autoRefresh.interval" value="60" />
             <cm:property name="hiddenCategoryPrefix" value="" />
+            <cm:property name="resolveCoordinatesFromAddressString" value="true" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -105,8 +103,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="topologyUIFactory">
         <service-properties>
-            <entry key="alias" value="${servletAlias}"/>
-            <entry key="init.widgetset" value="${widgetset}"/>
+            <entry key="alias" value="/topology"/>
+            <entry key="init.widgetset" value="org.opennms.features.topology.widgetset.gwt.TopologyWidgetset"/>
         </service-properties>
     </service>
     
@@ -461,6 +459,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <bean class="org.opennms.features.topology.app.internal.info.LocationInfoPanelItemProvider">
             <argument ref="nodeDao" />
             <argument ref="geocoderService" />
+            <argument value="${resolveCoordinatesFromAddressString}"/>
         </bean>
     </service>
 </blueprint>

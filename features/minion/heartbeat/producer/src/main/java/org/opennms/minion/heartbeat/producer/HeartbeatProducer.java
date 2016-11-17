@@ -54,9 +54,13 @@ public class HeartbeatProducer {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                LOG.info("Sending heartbeat to Minion with id: {} at location: {}",
-                         identity.getId(), identity.getLocation());
-                delegate.send(identityDTO);
+                try {
+                    LOG.info("Sending heartbeat to Minion with id: {} at location: {}",
+                            identity.getId(), identity.getLocation());
+                    delegate.send(identityDTO);
+                } catch (Throwable t) {
+                    LOG.error("An error occured while sending the heartbeat. Will try again in {} ms", PERIOD_MS, t);
+                }
             }
         }, 0, PERIOD_MS);
     }

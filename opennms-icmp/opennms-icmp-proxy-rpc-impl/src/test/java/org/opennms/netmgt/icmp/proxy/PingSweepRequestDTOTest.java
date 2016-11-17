@@ -48,25 +48,24 @@ public class PingSweepRequestDTOTest extends XmlTestNoCastor<PingSweepRequestDTO
     public static Collection<Object[]> data() throws Exception {
         return Arrays.asList(new Object[][] { { getPingSweepRequest(),
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
-                        + "<ping-sweep-request location=\"MINION\" retries=\"2\" timeout=\"1000\">\n"
-                        + "<ip-ranges>\n"
-                        + "    <begin>127.0.0.1</begin>\n" + "    <end>127.0.0.5</end>\n"
-                        +"</ip-ranges>"
-                        + "    <packet-size>64</packet-size>\n" + "</ping-sweep-request>" } });
+                        + "<ping-sweep-request location=\"MINION\" packet-size=\"64\" packets-per-second=\"9.5\">\n"
+                        + "<ip-range begin=\"127.0.0.1\" end=\"127.0.0.5\" retries=\"2\" timeout=\"1000\"/>\n"
+                        + "</ping-sweep-request>" } });
     }
 
     private static Object getPingSweepRequest() throws UnknownHostException {
         PingSweepRequestDTO requestDTO = new PingSweepRequestDTO();
         List<IPRangeDTO> ipRanges = new ArrayList<>();
         IPRangeDTO range = new IPRangeDTO();
+        range.setRetries(2);
+        range.setTimeout(1000);
         range.setBegin(InetAddress.getByName("127.0.0.1"));
         range.setEnd(InetAddress.getByName("127.0.0.5"));
         ipRanges.add(range);
         requestDTO.setIpRanges(ipRanges);
         requestDTO.setLocation("MINION");
         requestDTO.setPacketSize(64);
-        requestDTO.setRetries(2);
-        requestDTO.setTimeout(1000);
+        requestDTO.setPacketsPerSecond(9.5);
 
         return requestDTO;
     }

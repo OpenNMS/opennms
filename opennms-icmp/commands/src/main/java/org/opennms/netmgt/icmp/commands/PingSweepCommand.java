@@ -38,25 +38,29 @@ import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opennms.netmgt.icmp.proxy.LocationAwarePingSweepClient;
+import org.opennms.netmgt.icmp.PingConstants;
+import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
 import org.opennms.netmgt.icmp.proxy.PingSweepSummary;
 
 @Command(scope = "ping", name = "sweep", description = "Ping-Sweep")
 public class PingSweepCommand extends OsgiCommandSupport {
 
-    private LocationAwarePingSweepClient client;
+    private LocationAwarePingClient locationAwarePingClient;
 
-    @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
-    String m_location = "Default";
+    @Option(name = "-l", aliases = "--location", description = "location")
+    String m_location;
 
     @Option(name = "-r", aliases = "--retries", description = "number of retries")
-    int m_retries;
+    int m_retries = PingConstants.DEFAULT_RETRIES;
 
     @Option(name = "-t", aliases = "--timeout", description = "timeout in msec")
-    int m_timeout;
+    int m_timeout = PingConstants.DEFAULT_TIMEOUT;
 
     @Option(name = "-p", aliases = "--packetsize", description = "packet size")
-    int m_packetsize;
+    int m_packetsize = PingConstants.DEFAULT_PACKET_SIZE;
+
+    @Option(name = "-s", aliases = "--pps", description = "packer per second")
+    double m_packetsPerSecond = PingConstants.DEFAULT_PACKETS_PER_SECOND;
 
     @Argument(index = 0, name = "begin", description = "begin address of the IP range to be pinged", required = true, multiValued = false)
     String m_begin;
@@ -66,13 +70,23 @@ public class PingSweepCommand extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
+        final InetAddress begin = InetAddress.getByName(m_begin);
+        final InetAddress end = InetAddress.getByName(m_end);
 
-        System.out.printf("ping:sweep %s  begin=%s   end=%s \n", m_location != null ? "-l " + m_location : "", m_begin,
-                m_end);
+        System.out.printf("Pinging hosts from %s to %s with:\n", begin.getHostAddress(), end.getHostAddress());
+        if (m_location != null) {
+            System.out.printf("\tLocation: %s\n", m_location);
+        }
+        System.out.printf("\tRetries: %d\n", m_retries);
+        System.out.printf("\tTimeout: %d\n", m_timeout);
+        System.out.printf("\tPacket size: %d\n", m_packetsize);
+        System.out.printf("\tPackets per second: %f\n", m_packetsPerSecond);
 
-        final CompletableFuture<PingSweepSummary> future = client.ping()
-                .withRange(InetAddress.getByName(m_begin), InetAddress.getByName(m_end)).withLocation(m_location)
-                .withRetries(m_retries).withTimeout(m_timeout, TimeUnit.MILLISECONDS).withPacketSize(m_packetsize)
+        final CompletableFuture<PingSweepSummary> future = locationAwarePingClient.sweep()
+                .withLocation(m_location)
+                .withRange(begin, end, m_retries, m_timeout, TimeUnit.MILLISECONDS)
+                .withPacketSize(m_packetsize)
+                .withPacketsPerSecond(m_packetsPerSecond)
                 .execute();
 
         while (true) {
@@ -80,16 +94,17 @@ public class PingSweepCommand extends OsgiCommandSupport {
                 try {
                     PingSweepSummary summary = future.get(1, TimeUnit.SECONDS);
                     if (summary.getResponses().isEmpty()) {
-                        System.out.printf("Not able to ping any IPs in given range %s-%s", m_begin, m_end);
+                        System.out.printf("\n\nNone of the IP addresses responsed to our pings.\n");
+                    } else {
+                        System.out.printf("\n\nIP Address\tRound-trip time\n");
+                        summary.getResponses().forEach((address, rtt) -> {
+                            System.out.printf("%s\t%.3f ms\n", address.getHostAddress(), rtt);
+                        });
                     }
-                    System.out.printf("IpAddress : ElapsedTime \n");
-                    summary.getResponses().forEach((address, rtt) -> {
-                        System.out.printf(" %s : %.3f ms  \n", address, rtt);
-                    });
                 } catch (InterruptedException e) {
-                    System.out.println("\nInterrupted.");
+                    System.out.println("\n\nInterrupted.");
                 } catch (ExecutionException e) {
-                    System.out.printf("\n Ping Sweep failed with: %s\n", e);
+                    System.out.printf("\n\nPing Sweep failed with: %s\n", e);
                 }
                 break;
             } catch (TimeoutException e) {
@@ -100,8 +115,8 @@ public class PingSweepCommand extends OsgiCommandSupport {
         return null;
     }
 
-    public void setClient(LocationAwarePingSweepClient client) {
-        this.client = client;
+    public void setLocationAwarePingClient(LocationAwarePingClient locationAwarePingClient) {
+        this.locationAwarePingClient = locationAwarePingClient;
     }
 
 }
