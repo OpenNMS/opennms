@@ -54,7 +54,7 @@ public abstract class SocketUtils {
         return wrapSocketInSslContext(socket, null);
     }
 
-    public static Socket wrapSocketInSslContext(Socket socket, String[] cipherSuites) throws IOException {
+    public static SSLSocket wrapSocketInSslContext(Socket socket, String[] cipherSuites) throws IOException {
         TrustManager[] tm = { new RelaxedX509TrustManager() };
         SSLContext sslContext = null;
         try {
@@ -70,10 +70,9 @@ public abstract class SocketUtils {
         SSLSocketFactory socketFactory = sslContext.getSocketFactory();
         InetAddress inetAddress = socket.getInetAddress();
         String hostAddress = InetAddressUtils.str(inetAddress);
-        Socket wrappedSocket = socketFactory.createSocket(socket, hostAddress, socket.getPort(), true);
+        SSLSocket wrappedSocket = (SSLSocket) socketFactory.createSocket(socket, hostAddress, socket.getPort(), true);
         if (cipherSuites != null && cipherSuites.length > 0) {
-            final SSLSocket sslSocket = (SSLSocket) wrappedSocket;
-            sslSocket.setEnabledCipherSuites(cipherSuites);
+            wrappedSocket.setEnabledCipherSuites(cipherSuites);
         }
         return wrappedSocket;
     }

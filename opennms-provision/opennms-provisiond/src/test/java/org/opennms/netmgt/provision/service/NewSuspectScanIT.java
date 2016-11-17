@@ -66,6 +66,7 @@ import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
@@ -129,6 +130,9 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
 
     @Autowired
     private DatabasePopulator m_populator;
+
+    @Autowired
+    private LocationAwareDnsLookupClient m_locationAwareDnsLookupClient;
 
     private ForeignSourceRepository m_foreignSourceRepository;
 
@@ -388,10 +392,12 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             assertEquals(1, getNodeDao().countAll());
 
             //Verify node info
-            assertEquals(Integer.valueOf(nextNodeId), getNodeDao().findAll().iterator().next().getId());
-            assertEquals("oldNodeLabel", getNodeDao().findAll().iterator().next().getLabel());
-            assertEquals(NodeLabelSource.HOSTNAME, getNodeDao().findAll().iterator().next().getLabelSource());
-            assertEquals(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, getNodeDao().findAll().iterator().next().getLocation().getLocationName());
+            final OnmsNode beforeNode = getNodeDao().findAll().iterator().next();
+            assertEquals(Integer.valueOf(nextNodeId), beforeNode.getId());
+            assertEquals("oldNodeLabel", beforeNode.getLabel());
+            assertEquals(NodeLabelSource.HOSTNAME, beforeNode.getLabelSource());
+            assertEquals(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, beforeNode.getLocation().getLocationName());
+            assertEquals("oldNodeLabel", beforeNode.getIpInterfaces().iterator().next().getIpHostName());
 
             //Verify ipinterface count
             assertEquals("Unexpected number of interfaces found: " + getInterfaceDao().findAll(), 1, getInterfaceDao().countAll());
@@ -414,11 +420,86 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             final ForceRescanScan rescan = m_provisioner.createForceRescanScan(nextNodeId);
             runScan(rescan);
 
-            assertEquals(Integer.valueOf(nextNodeId), getNodeDao().findAll().iterator().next().getId());
-            assertEquals("newNodeLabel", getNodeDao().findAll().iterator().next().getLabel());
-            assertEquals(NodeLabelSource.HOSTNAME, getNodeDao().findAll().iterator().next().getLabelSource());
+            final OnmsNode afterNode = getNodeDao().findAll().iterator().next();
+            assertEquals(Integer.valueOf(nextNodeId), afterNode.getId());
+            assertEquals("newNodeLabel", afterNode.getLabel());
+            assertEquals(NodeLabelSource.HOSTNAME, afterNode.getLabelSource());
+            assertEquals("newNodeLabel", afterNode.getIpInterfaces().iterator().next().getIpHostName());
         } finally {
             m_provisionService.setHostnameResolver(originalHostnameResolver);
+        }
+    }
+
+    @Test(timeout=300000)
+    public void testWithNoDnsOnRescan() throws Exception {
+        try {
+            final int nextNodeId = m_nodeDao.getNextNodeId();
+
+            //Verify empty database
+            assertEquals(1, getDistPollerDao().countAll());
+            assertEquals(0, getNodeDao().countAll());
+            assertEquals(0, getInterfaceDao().countAll());
+            assertEquals(0, getMonitoredServiceDao().countAll());
+            assertEquals(0, getServiceTypeDao().countAll());
+            assertEquals(0, getSnmpInterfaceDao().countAll());
+
+            m_provisionService.setHostnameResolver(new HostnameResolver() {
+                @Override public String getHostname(final InetAddress addr, final String location) {
+                    return "oldNodeLabel";
+                }
+            });
+
+            final EventAnticipator anticipator = m_eventSubscriber.getEventAnticipator();
+            anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+            anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.201")).getEvent());
+            anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+
+            final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
+            runScan(scan);
+
+            anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
+
+            //Verify distpoller count
+            assertEquals(1, getDistPollerDao().countAll());
+
+            //Verify node count
+            assertEquals(1, getNodeDao().countAll());
+
+            //Verify node info
+            final OnmsNode beforeNode = getNodeDao().findAll().iterator().next();
+            assertEquals(Integer.valueOf(nextNodeId), beforeNode.getId());
+            assertEquals("oldNodeLabel", beforeNode.getLabel());
+            assertEquals(NodeLabelSource.HOSTNAME, beforeNode.getLabelSource());
+            assertEquals("oldNodeLabel", beforeNode.getIpInterfaces().iterator().next().getIpHostName());
+
+            //Verify ipinterface count
+            assertEquals("Unexpected number of interfaces found: " + getInterfaceDao().findAll(), 1, getInterfaceDao().countAll());
+
+            //Verify ifservices count - discover snmp service on other if
+            assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 0, getMonitoredServiceDao().countAll());
+
+            //Verify service count
+            assertEquals(0, getServiceTypeDao().countAll());
+
+            //Verify snmpInterface count
+            assertEquals(0, getSnmpInterfaceDao().countAll());
+
+            m_provisionService.setHostnameResolver(new HostnameResolver() {
+                @Override public String getHostname(final InetAddress addr, final String location) {
+                    return null;
+                }
+            });
+
+            final ForceRescanScan rescan = m_provisioner.createForceRescanScan(nextNodeId);
+            runScan(rescan);
+
+            final OnmsNode afterNode = getNodeDao().findAll().iterator().next();
+            assertEquals(Integer.valueOf(nextNodeId), afterNode.getId());
+            assertEquals("oldNodeLabel", afterNode.getLabel());
+            assertEquals(NodeLabelSource.HOSTNAME, afterNode.getLabelSource());
+            assertEquals("oldNodeLabel", afterNode.getIpInterfaces().iterator().next().getIpHostName());
+        } finally {
+            m_provisionService.setHostnameResolver(new DefaultHostnameResolver(m_locationAwareDnsLookupClient));
         }
     }
 
@@ -469,6 +550,91 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         //Verify snmpInterface count
         assertEquals(0, getSnmpInterfaceDao().countAll());
 
+    }
+
+    @Test(timeout=300000)
+    public void testDuplicateIpsInSeparateLocations() throws Exception {
+        runDuplicateIpScan(null, null, "RDU", "ORD");
+    }
+
+    @Test(timeout=300000)
+    public void testDuplicateIpsInSeparateLocationsWithDifferentForeignSource() throws Exception {
+        runDuplicateIpScan("one", "two", "RDU", "ORD");
+    }
+
+    @Test(timeout=300000)
+    public void testDuplicateIpsInSeparateLocationsWithSameForeignSource() throws Exception {
+        runDuplicateIpScan("one", "one", "RDU", "ORD");
+    }
+
+    @Test(timeout=300000)
+    public void testDuplicateIpsInSameLocationWithDifferentForeignSource() throws Exception {
+        runDuplicateIpScan("one", "two", "RDU", "RDU");
+    }
+
+    @Test(timeout=300000)
+    public void testDuplicateIpsInNullAndDefaultLocationWithDifferentForeignSource() throws Exception {
+        runDuplicateIpScan("one", "two", null, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+    }
+
+    @Test(timeout=300000)
+    public void testDuplicateIpsInDefaultAndNullLocationWithDifferentForeignSource() throws Exception {
+        runDuplicateIpScan("one", "two", MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, null);
+    }
+
+    private void runDuplicateIpScan(final String firstForeignSource, final String secondForeignSource, final String firstLocation, final String secondLocation) throws InterruptedException, ExecutionException {
+        int nextNodeId = m_nodeDao.getNextNodeId();
+
+        //Verify empty database
+        assertEquals(1, getDistPollerDao().countAll());
+        assertEquals(0, getNodeDao().countAll());
+        assertEquals(0, getInterfaceDao().countAll());
+        assertEquals(0, getMonitoredServiceDao().countAll());
+        assertEquals(0, getServiceTypeDao().countAll());
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+
+        InetAddress ip = addr("192.0.2.123");
+
+        EventAnticipator anticipator = m_eventSubscriber.getEventAnticipator();
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(ip).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+
+        NewSuspectScan scan = m_provisioner.createNewSuspectScan(ip, firstForeignSource, firstLocation);
+        runScan(scan);
+
+        anticipator.verifyAnticipated(20000, 0, 2000, 0, 0);
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+
+        //Verify ipinterface count
+        assertEquals("Unexpected number of interfaces found: " + getInterfaceDao().findAll(), 1, getInterfaceDao().countAll());
+
+        // Now do it again, with a different location
+        nextNodeId = m_nodeDao.getNextNodeId();
+
+        anticipator = m_eventSubscriber.getEventAnticipator();
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(ip).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+
+        scan = m_provisioner.createNewSuspectScan(ip, secondForeignSource, secondLocation);
+        runScan(scan);
+
+        anticipator.verifyAnticipated(20000, 0, 2000, 0, 0);
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+
+        //Verify node count
+        assertEquals(2, getNodeDao().countAll());
+
+        //Verify ipinterface count
+        assertEquals("Unexpected number of interfaces found: " + getInterfaceDao().findAll(), 2, getInterfaceDao().countAll());
     }
 
     public void runScan(final Scan scan) throws InterruptedException, ExecutionException {

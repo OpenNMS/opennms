@@ -42,4 +42,12 @@ public interface LocationAwarePingClient {
      * @return A request builder to provide additional request options.
      */
     PingRequestBuilder ping(InetAddress inetAddress);
+
+    /**
+     * Pings one or more ranges of addresses.
+     *
+     * @return A request builder to provide the ranges and additional request options.
+     */
+    PingSweepRequestBuilder sweep();
+
 }

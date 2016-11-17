@@ -51,6 +51,8 @@ import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Log;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Meter;
@@ -91,6 +93,9 @@ public class StressCommand extends OsgiCommandSupport {
     @Option(name="-j", aliases="--jexl", description="JEXL expressions", required=false, multiValued=true)
     List<String> jexlExpressions = null;
 
+    @Option(name="-b", aliases="--batch-size", description="The size of the log (batch size)", required=false, multiValued = false)
+    int batchSize = 1;
+
     private final MetricRegistry metrics = new MetricRegistry();
 
     private final Meter eventsGenerated = metrics.meter("events-generated");
@@ -127,9 +132,15 @@ public class StressCommand extends OsgiCommandSupport {
         public void run() {
             final RateLimiter rateLimiter = RateLimiter.create(eventsPerSecondPerThread);
             while (true) {
-                eventForwarder.sendNow(getNextEvent());
-                eventsGenerated.mark();
-                rateLimiter.acquire();
+                Log log = new Log();
+                log.setEvents(new Events());
+                for (int i=0; i<batchSize; i++) {
+                    log.getEvents().getEventCollection().add(getNextEvent());
+                }
+
+                rateLimiter.acquire(batchSize);
+                eventForwarder.sendNow(log);
+                eventsGenerated.mark(batchSize);
                 if (Thread.interrupted()) {
                     break;
                 }
@@ -149,6 +160,7 @@ public class StressCommand extends OsgiCommandSupport {
         numberOfThreads = Math.max(1, numberOfThreads);
         numSeconds = Math.max(1, numSeconds);
         reportIntervalInSeconds = Math.max(1, reportIntervalInSeconds);
+        batchSize = Math.max(1, batchSize);
         boolean useJexl = jexlExpressions != null && jexlExpressions.size() > 0;
 
         // Display the effective settings and rates

@@ -6,7 +6,6 @@
     <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms</groupId>
   <artifactId>org.opennms.icmp.proxy.rpc-impl</artifactId>
   <name>OpenNMS :: Core :: ICMP :: Proxy :: RPC Impl.</name>
   <packaging>bundle</packaging>
@@ -45,7 +44,6 @@
     <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
       <artifactId>org.opennms.core.ipc.rpc.xml</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>

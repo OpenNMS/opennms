@@ -40,6 +40,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -68,6 +69,9 @@ public class AssetRecordResource extends OnmsRestService {
 
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    private AssetRecordDao m_assetRecordDao;
 
     @Autowired
     @Qualifier("eventProxy")
@@ -111,7 +115,7 @@ public class AssetRecordResource extends OnmsRestService {
         if (assetRecord.getGeolocation() == null) {
             assetRecord.setGeolocation(new OnmsGeolocation());
         }
-        LOG.debug("updateAssetRecord: updating category {}", assetRecord);
+        LOG.debug("updateAssetRecord: updating asset {}", assetRecord);
         boolean modified = false;
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(assetRecord);
         wrapper.registerCustomEditor(Date.class, new ISO8601DateEditor());
@@ -125,7 +129,7 @@ public class AssetRecordResource extends OnmsRestService {
         }
         if (modified) {
             LOG.debug("updateAssetRecord: assetRecord {} updated", assetRecord);
-            m_nodeDao.saveOrUpdate(node);
+            m_assetRecordDao.saveOrUpdate(assetRecord);
             try {
                 sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());
             } catch (EventProxyException e) {

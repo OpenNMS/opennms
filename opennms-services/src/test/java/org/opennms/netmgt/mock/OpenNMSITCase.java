@@ -57,7 +57,6 @@ import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
 import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
 import org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor;
-import org.opennms.netmgt.eventd.processor.JdbcEventWriter;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventProcessor;
@@ -183,20 +182,12 @@ public class OpenNMSITCase {
                 eventExpander.setEventUtil(eventUtil);
                 eventExpander.afterPropertiesSet();
 
-                JdbcEventWriter jdbcEventWriter = new JdbcEventWriter();
-                jdbcEventWriter.setEventdServiceManager(eventdServiceManager);
-                jdbcEventWriter.setEventUtil(new EventUtilJdbcImpl());
-                jdbcEventWriter.setDataSource(m_db);
-                jdbcEventWriter.setGetNextIdString("select nextVal('eventsNxtId')"); // for HSQL: "SELECT max(eventId)+1 from events"
-                jdbcEventWriter.afterPropertiesSet();
-                
                 EventIpcBroadcastProcessor eventIpcBroadcastProcessor = new EventIpcBroadcastProcessor(m_registry);
                 eventIpcBroadcastProcessor.setEventIpcBroadcaster(m_eventdIpcMgr);
                 eventIpcBroadcastProcessor.afterPropertiesSet();
 
                 List<EventProcessor> eventProcessors = new ArrayList<EventProcessor>(3);
                 eventProcessors.add(eventExpander);
-                eventProcessors.add(jdbcEventWriter);
                 eventProcessors.add(eventIpcBroadcastProcessor);
                 
                 DefaultEventHandlerImpl eventHandler = new DefaultEventHandlerImpl(m_registry);

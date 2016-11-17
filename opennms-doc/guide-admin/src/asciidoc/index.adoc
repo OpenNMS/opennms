@@ -58,6 +58,10 @@ include::text/webui/jmx-config-generator/cli.adoc[]
 === Heatmap
 include::text/webui/heatmap/introduction.adoc[]
 
+[[ga-admin-ui-trend]]
+=== Trend
+include::text/webui/trend/introduction.adoc[]
+
 [[ga-service-assurance]]
 == Service Assurance
 include::text/service-assurance/introduction.adoc[]
@@ -199,6 +203,7 @@ include::text/enlinkd/layer-3/is-is-discovery.adoc[]
 [[ga-opennms-operation]]
 == Operation
 include::text/operation/ssl/ssl.adoc[]
+include::text/operation/geocoder.adoc[]
 include::text/operation/resourcecli.adoc[]
 include::text/operation/newts-repository-converter.adoc[]
 
@@ -211,7 +216,10 @@ include::text/operation/newts/cassandra-newts-jmx.adoc[]
 
 [[ga-opennms-operation-daemon-config-files]]
 === Daemon Configuration Files
+include::text/operation/daemon-config-files/introduction.adoc[]
+include::text/operation/daemon-config-files/eventd.adoc[]
 include::text/operation/daemon-config-files/notifd.adoc[]
+include::text/operation/daemon-config-files/pollerd.adoc[]
 
 [[ga-opennms-system-properties]]
 == System Properties
@@ -220,8 +228,6 @@ include::text/system-properties/introduction.adoc[]
 [[ga-ticketing]]
 == Ticketing
 include::text/ticketing/introduction.adoc[]
-
-// JIRA Ticketer
 include::text/ticketing/jira.adoc[]
 
 // TSRM Ticketer

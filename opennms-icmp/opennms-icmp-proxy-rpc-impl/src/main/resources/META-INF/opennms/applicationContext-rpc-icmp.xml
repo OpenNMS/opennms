@@ -13,7 +13,5 @@
     <context:component-scan base-package="org.opennms.netmgt.icmp.proxy" />
 
     <onmsgi:service interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient" ref="locationAwarePingClient"/>
-    
-    <onmsgi:service interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingSweepClient" ref="locationAwarePingSweepClient"/>
 
 </beans>
