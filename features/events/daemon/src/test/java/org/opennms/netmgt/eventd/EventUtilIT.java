@@ -111,11 +111,11 @@ public class EventUtilIT {
     @Test
     public void testGetValueOfParm() {
         ExpandableParameterResolverRegistry registry = new ExpandableParameterResolverRegistry();
-        String testString = new ExpandableParameter(AbstractEventUtil.TAG_UEI, registry.getResolver(AbstractEventUtil.TAG_UEI), eventUtil).expand(m_svcLostEvent, Maps.newHashMap());
+        String testString = new ExpandableParameter(AbstractEventUtil.TAG_UEI, eventUtil).expand(m_svcLostEvent, Maps.newHashMap());
         assertEquals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, testString);
         
         m_svcLostEvent.setSeverity(OnmsSeverity.MINOR.getLabel());
-        testString = new ExpandableParameter(AbstractEventUtil.TAG_SEVERITY, registry.getResolver(AbstractEventUtil.TAG_SEVERITY), eventUtil).expand(m_svcLostEvent, Maps.newHashMap());
+        testString = new ExpandableParameter(AbstractEventUtil.TAG_SEVERITY, eventUtil).expand(m_svcLostEvent, Maps.newHashMap());
         assertEquals("Minor", testString);
         
         Event event = MockEventUtil.createNodeLostServiceEvent("Test", m_svc, "noReasonAtAll");

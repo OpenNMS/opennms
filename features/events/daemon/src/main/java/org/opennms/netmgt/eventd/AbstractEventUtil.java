@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.eventd.processor.expandable.EventTemplate;
+import org.opennms.netmgt.eventd.processor.expandable.ExpandableParameterResolver;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -379,6 +380,8 @@ public abstract class AbstractEventUtil implements EventUtil {
 					   return new EventTemplate(key, AbstractEventUtil.this);
 				}
 			 });
+
+	private final ExpandableParameterResolverRegistry resolverRegistry = new ExpandableParameterResolverRegistry();
 
 	public AbstractEventUtil() {
 
@@ -750,4 +753,8 @@ public abstract class AbstractEventUtil implements EventUtil {
 		}
 	}
 
+	@Override
+	public ExpandableParameterResolver getResolver(String token) {
+		return resolverRegistry.getResolver(token);
+	}
 }

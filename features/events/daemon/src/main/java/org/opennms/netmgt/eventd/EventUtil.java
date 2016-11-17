@@ -31,6 +31,7 @@ package org.opennms.netmgt.eventd;
 import java.sql.SQLException;
 import java.util.Map;
 
+import org.opennms.netmgt.eventd.processor.expandable.ExpandableParameterResolver;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -119,4 +120,6 @@ public interface EventUtil {
 	 *             if database error encountered
 	 */
 	String getNodeLabel(long nodeId) throws SQLException;
+
+	ExpandableParameterResolver getResolver(String token);
 }

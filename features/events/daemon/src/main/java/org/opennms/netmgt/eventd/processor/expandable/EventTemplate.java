@@ -31,10 +31,10 @@ package org.opennms.netmgt.eventd.processor.expandable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.eventd.EventUtil;
-import org.opennms.netmgt.eventd.ExpandableParameterResolverRegistry;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class EventTemplate implements ExpandableToken {
 
     private static final char PERCENT = '%';
 
-    private static final String WHITESPACE_PATTERN = ".*\\s(?s).*";
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile(".*\\s(?s).*");
 
     private final String input;
 
@@ -62,13 +62,13 @@ public class EventTemplate implements ExpandableToken {
 
     private final EventUtil eventUtil;
 
-    private final ExpandableParameterResolverRegistry parameterResolverRegistry;
+    private final boolean requiresTransaction;
 
     public EventTemplate(String input, EventUtil eventUtil) {
         this.input = Objects.requireNonNull(input);
         this.eventUtil = Objects.requireNonNull(eventUtil);
-        this.parameterResolverRegistry = new ExpandableParameterResolverRegistry();
         parse();
+        this.requiresTransaction = tokens.stream().filter(t -> t.requiresTransaction()).findAny().isPresent();
     }
 
     /**
@@ -98,14 +98,14 @@ public class EventTemplate implements ExpandableToken {
 
                 // If there's any whitespace in between the % signs, then do not try to
                 // expand it with a parameter value
-                if (parm.matches(WHITESPACE_PATTERN)) {
+                if (WHITESPACE_PATTERN.matcher(parm).matches()) {
                     tokens.add(new ExpandableConstant(PERCENT));
                     tempInp = tempInp.substring(1);
                     LOG.debug("skipping parm: {} because whitespace found in value", parm);
                     continue;
                 }
 
-                tokens.add(new ExpandableParameter(parm, parameterResolverRegistry.getResolver(parm), eventUtil));
+                tokens.add(new ExpandableParameter(parm, eventUtil));
 
                 if (index2 < (inpLen - 1)) {
                     tempInp = tempInp.substring(index2 + 1);
@@ -132,6 +132,6 @@ public class EventTemplate implements ExpandableToken {
     // If we find any token which requires a transaction, the template itself requires a transaction as well
     @Override
     public boolean requiresTransaction() {
-        return tokens.stream().filter(t -> t.requiresTransaction()).findAny().isPresent();
+        return requiresTransaction;
     }
 }

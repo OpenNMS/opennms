@@ -55,9 +55,9 @@ public class ExpandableParameter implements ExpandableToken {
     private final EventUtil eventUtil;
 
 
-    public ExpandableParameter(String token, ExpandableParameterResolver resolver, EventUtil eventUtil) {
+    public ExpandableParameter(String token, EventUtil eventUtil) {
         this.token = Objects.requireNonNull(token);
-        this.resolver = Objects.requireNonNull(resolver);
+        this.resolver = Objects.requireNonNull(eventUtil.getResolver(token));
         this.eventUtil = Objects.requireNonNull(eventUtil);
     }
 
