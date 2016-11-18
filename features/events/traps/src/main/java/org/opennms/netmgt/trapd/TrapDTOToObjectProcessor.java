@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.trapd;
 
-import java.util.StringTokenizer;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.opennms.core.camel.MinionDTO;
@@ -117,7 +115,7 @@ public class TrapDTOToObjectProcessor implements Processor {
 
 			BasicTrapProcessor trapProcessor =new BasicTrapProcessor();
 
-			final int[] ids = convertOidStringToInts(trapDto.getHeader(TrapDTO.ENTERPRISEID)); 
+			final int[] ids = SnmpObjId.convertStringToInts(trapDto.getHeader(TrapDTO.ENTERPRISEID)); 
 			SnmpObjId entId = new SnmpObjId(ids,false);
 
 			TrapIdentity trapIdentity = new TrapIdentity(entId, Integer.parseInt(trapDto.getHeader(TrapDTO.GENERIC)), Integer.parseInt(trapDto.getHeader(TrapDTO.SPECIFIC)));
@@ -132,35 +130,5 @@ public class TrapDTOToObjectProcessor implements Processor {
 		} else {
 			throw new IllegalArgumentException("Unrecognized trap version in DTO: " + trapDto.getHeader(TrapDTO.VERSION));
 		}
-	}
-
-	/**
-	 * TODO: See if there is another version of this method somwehere.
-	 * 
-	 * @param oid
-	 * @return
-	 */
-	private static int[] convertOidStringToInts(String oid) {
-		oid = oid.trim();
-		if (oid.startsWith(".")) {
-			oid = oid.substring(1);
-		}
-
-		final StringTokenizer tokenizer = new StringTokenizer(oid, ".");
-		int[] ids = new int[tokenizer.countTokens()];
-		int index = 0;
-		while (tokenizer.hasMoreTokens()) {
-			try {
-				String tok = tokenizer.nextToken();
-				long value = Long.parseLong(tok);
-				ids[index] = (int)value;
-				if (value < 0)
-					throw new IllegalArgumentException("String "+oid+" could not be converted to a SnmpObjId. It has a negative for subId "+index);
-				index++;
-			} catch(NumberFormatException e) {
-				throw new IllegalArgumentException("String "+oid+" could not be converted to a SnmpObjId at subId "+index);
-			}
-		}
-		return ids;
 	}
 }
