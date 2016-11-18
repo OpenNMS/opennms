@@ -105,5 +105,41 @@ public class SnmpV3User {
     public void setPrivProtocol(String privacyProtocol) {
         this.privProtocol = privacyProtocol;
     }
+    
+    @Override
+	public boolean equals(Object obj) {
+		SnmpV3User snmpv3UserObject = (SnmpV3User) obj;
+		if (compareSnmpV3UsersAttributes(snmpv3UserObject.getAuthPassPhrase(),
+				this.authPassPhrase)||compareSnmpV3UsersAttributes(snmpv3UserObject.getAuthProtocol(),
+						this.authProtocol)||compareSnmpV3UsersAttributes(snmpv3UserObject.getEngineId(),
+								this.engineId)||compareSnmpV3UsersAttributes(snmpv3UserObject.getPrivPassPhrase(),
+										this.privPassPhrase)||compareSnmpV3UsersAttributes(snmpv3UserObject.getPrivProtocol(),
+												this.privProtocol)) {
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		 final int prime = 31;
+	        int result = 1;
+	        result = prime * result + ((authPassPhrase == null) ? 0 : authPassPhrase.hashCode());
+	        result = prime * result + ((authProtocol == null) ? 0 : authProtocol.hashCode());
+	        result = prime * result + ((engineId == null) ? 0 : engineId.hashCode());
+	        result = prime * result + ((privPassPhrase == null) ? 0 : privPassPhrase.hashCode());
+	        result = prime * result + ((privProtocol == null) ? 0 : privProtocol.hashCode());
+	        return result;
+	}
+	
+	 private static boolean compareSnmpV3UsersAttributes(String currentValue, String updatedValue) {
+	        if (currentValue != null && updatedValue != null) {
+	            if (!currentValue.equalsIgnoreCase(updatedValue)) {
+	                return true;
+	            }
+	        }
+	        return false;
+	    }
+
 
 }
