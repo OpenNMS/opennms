@@ -261,6 +261,28 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
     }
 
+    @Override
+    public void sendNowSync(Event event) {
+        Objects.requireNonNull(event);
+
+        Events events = new Events();
+        events.addEvent(event);
+
+        Log eventLog = new Log();
+        eventLog.setEvents(events);
+
+        sendNowSync(eventLog);
+    }
+
+    @Override
+    public void sendNowSync(Log eventLog) {
+        Objects.requireNonNull(eventLog);
+        // Create the runnable and invoke it using the current thread
+        // Also set the logging prefix to ensure that the log messages are
+        // properly routed to eventd's log file
+        Logging.withPrefix(Eventd.LOG4J_CATEGORY, m_eventHandler.createRunnable(eventLog));
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventIpcBroadcaster#broadcastNow(org.opennms.netmgt.xml.event.Event)
      */

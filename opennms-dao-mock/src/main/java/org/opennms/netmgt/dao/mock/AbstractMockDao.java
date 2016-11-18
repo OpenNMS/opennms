@@ -304,11 +304,15 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
 
     public static final class NullEventForwarder implements EventForwarder {
         @Override
-        public void sendNow(Event event) {
-        }
+        public void sendNow(Event event) { }
 
         @Override
-        public void sendNow(Log eventLog) {
-        }
+        public void sendNow(Log eventLog) { }
+
+        @Override
+        public void sendNowSync(Event event) { }
+
+        @Override
+        public void sendNowSync(Log eventLog) { }
     }
 }
