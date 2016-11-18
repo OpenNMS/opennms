@@ -95,9 +95,10 @@ public class NetScalerGroupHealthMonitor extends SnmpMonitorStrategy {
                 }
             };
             TableTracker tracker = new TableTracker(callback, groupStateOid);
-            SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "NetScalerGroupHealthMonitor", tracker);
-            walker.start();
-            walker.waitFor();
+            try (SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "NetScalerGroupHealthMonitor", tracker)) {
+                walker.start();
+                walker.waitFor();
+            }
 
             int totalServers = hostResults.size();
             if (totalServers == 0) {
