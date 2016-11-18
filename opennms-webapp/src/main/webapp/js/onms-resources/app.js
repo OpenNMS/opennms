@@ -119,9 +119,9 @@ angular.module('onms-resources', [
   $scope.graphAll = function() {
     var selected = [];
     for (var key in $scope.filteredResources) {
-      selected.concat(_.map($scope.filteredResources[key], function(r) {
-        return 'resourceId=' + r.id;
-      }));
+      _.each($scope.filteredResources[key], function(r) {
+        selected.push('resourceId=' + r.id);
+      });
     }
     $scope.doGraph(selected);
   };
