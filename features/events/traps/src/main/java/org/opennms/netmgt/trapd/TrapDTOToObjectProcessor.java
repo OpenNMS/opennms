@@ -31,9 +31,12 @@ package org.opennms.netmgt.trapd;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.opennms.core.camel.MinionDTO;
+import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.InetAddrUtils;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
@@ -62,16 +65,13 @@ public class TrapDTOToObjectProcessor implements Processor {
 	public static TrapNotification dto2object(TrapDTO trapDto) {
 		if (SNMP_V1.equalsIgnoreCase(trapDto.getHeader(TrapDTO.VERSION))) {
 			PDUv1 pdu = new PDUv1();
-			pdu.setType(PDU.NOTIFICATION);
 			pdu.setAgentAddress(new IpAddress(trapDto.getHeader(TrapDTO.SOURCE_ADDRESS)));
 			pdu.setTimestamp(Long.parseLong(trapDto.getHeader(TrapDTO.TIMESTAMP)));
 
-			// TODO: Fill in these values
-			/*
-			pdu.setEnterprise(enterprise);
-			pdu.setGenericTrap(genericTrap);
-			pdu.setSpecificTrap(specificTrap);
-			*/
+			// SNMPv1-specific fields
+			pdu.setEnterprise(new OID(trapDto.getHeader(TrapDTO.ENTERPRISEID)));
+			pdu.setGenericTrap(Integer.parseInt(trapDto.getHeader(TrapDTO.GENERIC)));
+			pdu.setSpecificTrap(Integer.parseInt(trapDto.getHeader(TrapDTO.SPECIFIC)));
 
 			for (SnmpResult snmpResult : trapDto.getResults()) {
 				final int type = snmpResult.getValue().getType();
@@ -110,11 +110,22 @@ public class TrapDTOToObjectProcessor implements Processor {
 				InetAddrUtils.addr(trapDto.getHeader(TrapDTO.SOURCE_ADDRESS)),
 				trapDto.getHeader(TrapDTO.COMMUNITY),
 				pdu,
-				null
+				new BasicTrapProcessor()
 			);
+
+			BasicTrapProcessor trapProcessor =new BasicTrapProcessor();
+
+			final int[] ids = SnmpObjId.convertStringToInts(trapDto.getHeader(TrapDTO.ENTERPRISEID)); 
+			SnmpObjId entId = new SnmpObjId(ids,false);
+
+			TrapIdentity trapIdentity = new TrapIdentity(entId, Integer.parseInt(trapDto.getHeader(TrapDTO.GENERIC)), Integer.parseInt(trapDto.getHeader(TrapDTO.SPECIFIC)));
+			trapProcessor.setTrapIdentity(trapIdentity);
+			retval.setTrapProcessor(trapProcessor);
+
 			retval.setCreationTime(Long.parseLong(trapDto.getHeader(TrapDTO.CREATION_TIME)));
 			retval.setLocation(trapDto.getHeader(MinionDTO.LOCATION));
 			retval.setSystemId(trapDto.getHeader(MinionDTO.SYSTEM_ID));
+
 			return retval;
 		} else {
 			throw new IllegalArgumentException("Unrecognized trap version in DTO: " + trapDto.getHeader(TrapDTO.VERSION));
