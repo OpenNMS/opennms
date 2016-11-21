@@ -7,9 +7,11 @@
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
-  <context:annotation-config />
-  <tx:annotation-driven/>
+    <context:annotation-config />
+    <tx:annotation-driven/>
 
-  <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl"/>
+    <bean id="eventdMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+    <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl"/>
 
 </beans>

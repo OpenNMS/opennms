@@ -10,6 +10,8 @@
     <context:annotation-config />
     <tx:annotation-driven/>
 
+    <bean id="eventdMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
     <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl"/>
 
 </beans>
