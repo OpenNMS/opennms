@@ -155,6 +155,16 @@ public class TransactionAwareEventForwarder implements EventForwarder, Initializ
         releasePendingEventsList(pendingEvents);
     }
 
+    @Override
+    public void sendNowSync(Event event) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sendNowSync(Log eventLog) {
+        throw new UnsupportedOperationException();
+    }
+
     public List<Log> requestPendingEventsList() {
         PendingEventsHolder eventsHolder = (PendingEventsHolder) TransactionSynchronizationManager
                 .getResource(m_eventForwarder);
@@ -217,4 +227,5 @@ public class TransactionAwareEventForwarder implements EventForwarder, Initializ
         }
         return (eventsHolder.getPendingEvents() == passedInEvents);
     }
+
 }

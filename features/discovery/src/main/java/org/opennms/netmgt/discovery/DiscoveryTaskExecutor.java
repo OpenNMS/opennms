@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,14 +28,17 @@
 
 package org.opennms.netmgt.discovery;
 
-import org.apache.camel.InOnly;
+import java.util.concurrent.CompletableFuture;
+
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 
-/**
- * This interface must be {@link InOnly} in order for task submission to
- * be performed asynchronously.
- */
-@InOnly
 public interface DiscoveryTaskExecutor {
-	void handleDiscoveryTask(DiscoveryConfiguration message);
+
+    /**
+     * Asynchronously discover the network using the given configuration.
+     *
+     * @param config discovery configuration
+     */
+    CompletableFuture<Void> handleDiscoveryTask(DiscoveryConfiguration config);
+
 }

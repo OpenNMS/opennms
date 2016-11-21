@@ -102,6 +102,8 @@ public class StressCommand extends OsgiCommandSupport {
 
     @Option(name="-i", aliases="--interface", description="The ip interface to associate with the generated event")
     String eventIpInterface = null;
+    @Option(name="-x", aliases="--sync", description="Use synchronous instead of asynchronous calls", required=false, multiValued = false)
+    boolean isSynchronous = false;
 
     private final MetricRegistry metrics = new MetricRegistry();
 
@@ -146,7 +148,11 @@ public class StressCommand extends OsgiCommandSupport {
                 }
 
                 rateLimiter.acquire(batchSize);
-                eventForwarder.sendNow(log);
+                if (isSynchronous) {
+                    eventForwarder.sendNowSync(log);
+                } else {
+                    eventForwarder.sendNow(log);
+                }
                 eventsGenerated.mark(batchSize);
                 if (Thread.interrupted()) {
                     break;
@@ -181,6 +187,8 @@ public class StressCommand extends OsgiCommandSupport {
         System.out.printf("Generating %d events per second accross %d threads for %d seconds\n",
                 eventsPerSecondPerThread, numberOfThreads, numSeconds);
         System.out.printf("\t with UEI: %s\n", eventUei);
+        System.out.printf("\t with batch size: %d\n", batchSize);
+        System.out.printf("\t with synchronous calls: %s\n", isSynchronous);
         System.out.printf("Which will yield an effective\n");
         System.out.printf("\t %.2f events per second\n", eventsPerSecond);
         System.out.printf("\t %.2f total events\n", eventsPerSecond * numSeconds);

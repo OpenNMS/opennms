@@ -29,9 +29,10 @@
 package org.opennms.netmgt.discovery;
 
 import java.net.InetAddress;
+import java.util.Objects;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 
 /**
  * Given a list of managed IP addresses, this filter will match IP addresses not in that
@@ -39,9 +40,15 @@ import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
  */
 public class UnmanagedInterfaceFilter implements IpAddressFilter {
 
+    private final InterfaceToNodeCache interfaceToNodeCache;
+
+    public UnmanagedInterfaceFilter(InterfaceToNodeCache interfaceToNodeCache) {
+        this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
+    }
+
     @Override
     public boolean matches(String location, InetAddress address) {
-        return AbstractInterfaceToNodeCache.getInstance().getNodeId(location, address) < 1;
+        return interfaceToNodeCache.getNodeId(location, address) < 1;
     }
 
     @Override

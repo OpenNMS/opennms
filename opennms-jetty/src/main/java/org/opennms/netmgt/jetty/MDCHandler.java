@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,38 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.icmp.proxy;
+package org.opennms.netmgt.jetty;
 
-import javax.annotation.PostConstruct;
+import java.io.IOException;
 
-import org.opennms.core.rpc.api.RpcClient;
-import org.opennms.core.rpc.api.RpcClientFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-@Component(value = "locationAwarePingSweepClient")
-public class LocationAwarePingSweepClientImpl implements LocationAwarePingSweepClient {
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.opennms.core.logging.Logging;
 
-    @Autowired
-    private RpcClientFactory rpcClientFactory;
-
-    @Autowired
-    private PingSweepRpcModule pingSweepRpcModule;
-
-    private RpcClient<PingSweepRequestDTO, PingSweepResponseDTO> delegate;
-
-    @PostConstruct
-    public void init() {
-        delegate = rpcClientFactory.getClient(pingSweepRpcModule);
-    }
-
-    public RpcClient<PingSweepRequestDTO, PingSweepResponseDTO> getDelegate() {
-        return delegate;
-    }
+public class MDCHandler extends HandlerWrapper {
 
     @Override
-    public PingSweepRequestBuilder ping() {
-        return new PingSweepRequestBuilderImpl(delegate);
+    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        try(Logging.MDCCloseable closeable = Logging.withPrefixCloseable("web")) {
+            super.handle(target,baseRequest,request,response);
+        }
     }
-
 }

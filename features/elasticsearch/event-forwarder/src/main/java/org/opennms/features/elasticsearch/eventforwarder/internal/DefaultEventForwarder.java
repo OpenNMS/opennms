@@ -40,4 +40,14 @@ public class DefaultEventForwarder extends DefaultDispatcher implements CamelEve
 			m_proxy.sendNow(event);
 		}
 	}
+
+    @Override
+    public void sendNowSync(Event event) {
+        sendNow(event);
+    }
+
+    @Override
+    public void sendNowSync(Log eventLog) {
+        sendNow(eventLog);
+    }
 }

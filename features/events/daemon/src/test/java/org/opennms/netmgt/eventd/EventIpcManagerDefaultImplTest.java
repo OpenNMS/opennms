@@ -33,6 +33,8 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventHandler;
@@ -46,6 +48,7 @@ import org.opennms.test.mock.EasyMockUtils;
 import com.codahale.metrics.MetricRegistry;
 
 import junit.framework.TestCase;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * 
@@ -457,7 +460,49 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         
         m_mocks.verifyAll();
     }
-    
+
+    private static class ThreadRecordingEventHandler implements EventHandler {
+        private final AtomicReference<Long> lastThreadId = new AtomicReference<>();
+        private CountDownLatch latch;
+
+        @Override
+        public Runnable createRunnable(Log eventLog) {
+            latch = new CountDownLatch(1);
+            return new Runnable() {
+                @Override
+                public void run() {
+                    lastThreadId.set(Thread.currentThread().getId());
+                    latch.countDown();
+                }
+            };
+        }
+
+        public long getThreadId() {
+            return lastThreadId.get();
+        }
+
+        public void waitForEvent() throws InterruptedException {
+            latch.await();
+        }
+    }
+
+    public void testAsyncVsSyncSendNow() throws InterruptedException {
+        ThreadRecordingEventHandler threadRecordingEventHandler = new ThreadRecordingEventHandler();
+        m_manager.setEventHandler(threadRecordingEventHandler);
+
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testAsyncVsSyncSendNow");
+        Event e = bldr.getEvent();
+
+        // Async: When invoking sendNow, the Runnable should be ran from thread other than the callers
+        m_manager.sendNow(e);
+        threadRecordingEventHandler.waitForEvent();
+        assertNotEquals(Thread.currentThread().getId(), threadRecordingEventHandler.getThreadId());
+
+        // Sync: When invoking sendNowSync, the Runnable should be ran from the callers thread
+        m_manager.sendNowSync(e);
+        assertEquals(Thread.currentThread().getId(), threadRecordingEventHandler.getThreadId());
+    }
+
     public class MockEventListener implements EventListener {
         private List<Event> m_events = new ArrayList<Event>();
         
