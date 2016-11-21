@@ -105,8 +105,19 @@ public class EventForwarderQueueImpl implements EventForwarder {
 	}
 
 	@Override
-	public void sendNow(Log arg0) {
+	public void sendNow(Log eventLog) {
 		// NOT USED
+	}
+
+
+	@Override
+	public void sendNowSync(Event event) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void sendNowSync(Log eventLog) {
+		throw new UnsupportedOperationException();
 	}
 
 	public void init() {

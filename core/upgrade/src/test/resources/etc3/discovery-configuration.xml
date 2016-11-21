@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<discovery-configuration
+        xmlns="http://xmlns.opennms.org/xsd/config/discovery"
+        location="localhost" packets-per-second="1.0"
+        initial-sleep-time="30000" restart-sleep-time="86400000">
+    <specific location="localhost" retries="1" timeout="2000">10.10.10.1</specific>
+    <specific location="pittsboro" retries="1" timeout="2000">10.10.20.1</specific>
+    <specific>10.10.30.1</specific>
+    <include-range location="localhost" retries="1" timeout="2000">
+        <begin>10.10.10.10</begin>
+        <end>10.10.10.20</end>
+    </include-range>
+    <include-range location="pittsboro" retries="1" timeout="2000">
+        <begin>10.10.20.10</begin>
+        <end>10.10.20.20</end>
+    </include-range>
+    <include-range>
+        <begin>10.10.30.10</begin>
+        <end>10.10.30.20</end>
+    </include-range>
+    <exclude-range>
+        <begin>192.168.10.1</begin>
+        <end>192.168.10.10</end>
+    </exclude-range>
+    <exclude-range>
+        <begin>192.168.20.1</begin>
+        <end>192.168.20.10</end>
+    </exclude-range>
+    <exclude-range>
+        <begin>192.168.30.1</begin>
+        <end>192.168.30.10</end>
+    </exclude-range>
+    <include-url location="localhost" retries="1" timeout="2000">10.10.10.1/foo.html</include-url>
+    <include-url location="pittsboro" retries="1" timeout="2000">10.10.20.1/bar.html</include-url>
+    <include-url>10.10.30.1/bar.html</include-url>
+</discovery-configuration>

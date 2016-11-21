@@ -120,6 +120,16 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTest {
 					// Do nothing
 					LOG.info("Got an event: " + event.toString());
 				}
+
+				@Override
+				public void sendNowSync(Event event) {
+					LOG.info("Got an event: {}", event);
+				}
+
+				@Override
+				public void sendNowSync(Log eventLog) {
+					LOG.info("Got an event log: {}", eventLog);
+				}
 			}, new Properties())
 		);
 

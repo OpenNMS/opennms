@@ -61,6 +61,16 @@ final class EventAccumulator implements EventForwarder {
         }
     }
 
+    @Override
+    public void sendNowSync(Event event) {
+        sendNow(event);
+    }
+
+    @Override
+    public void sendNowSync(Log eventLog) {
+        sendNow(eventLog);
+    }
+
     /**
      * Thread-safe and idempotent.
      */
@@ -77,4 +87,5 @@ final class EventAccumulator implements EventForwarder {
         }
         LOG.debug("flush(): sent {} events: {}", i, m_events);
     }
+
 }
