@@ -39,9 +39,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
-import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.LikeRestriction;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
@@ -57,6 +57,8 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.codahale.metrics.MetricRegistry;
 
 public class EventUtilDaoImpl extends AbstractEventUtil {
 
@@ -84,6 +86,12 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
 	private final static Map<String, PropertyDescriptor> assetDescriptorsByName = getDescriptorsForStrings(OnmsAssetRecord.class);
 
 	private final static Map<String, PropertyDescriptor> hwEntityDescriptorsByName = getDescriptorsForStrings(OnmsHwEntity.class);
+
+    public EventUtilDaoImpl() { }
+
+    public EventUtilDaoImpl(MetricRegistry registry) {
+        super(registry);
+    }
 
     @Override
     public String getNodeLabel(long nodeId) {

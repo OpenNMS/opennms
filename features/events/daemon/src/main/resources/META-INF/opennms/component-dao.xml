@@ -12,6 +12,10 @@
   <context:annotation-config />
   <tx:annotation-driven/>
 
-  <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
+  <bean id="eventdMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+  <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl">
+        <constructor-arg ref="eventdMetricRegistry"/>
+  </bean>
 
 </beans>

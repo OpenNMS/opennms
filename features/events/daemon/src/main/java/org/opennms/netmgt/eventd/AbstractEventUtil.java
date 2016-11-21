@@ -49,6 +49,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionOperations;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -373,18 +375,62 @@ public abstract class AbstractEventUtil implements EventUtil {
 	@Autowired
 	private TransactionOperations transactionOperations;
 
-	private final LoadingCache<String, EventTemplate> eventTemplateCache = CacheBuilder.newBuilder()
-			.maximumSize(Long.parseLong(System.getProperty("org.opennms.eventd.eventTemplateCacheSize", "1000")))
-			.build(new CacheLoader<String, EventTemplate>() {
-					public EventTemplate load(String key) throws Exception {
-					   return new EventTemplate(key, AbstractEventUtil.this);
-				}
-			 });
+	private final LoadingCache<String, EventTemplate> eventTemplateCache;
 
 	private final ExpandableParameterResolverRegistry resolverRegistry = new ExpandableParameterResolverRegistry();
 
 	public AbstractEventUtil() {
+	    this(null);
+	}
 
+	public AbstractEventUtil(MetricRegistry registry) {
+	    // Build the cache, and enable statistics collection if we've been given a metric registry
+	    final long maximumCacheSize = Long.parseLong(System.getProperty("org.opennms.eventd.eventTemplateCacheSize", "1000"));
+	    final CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+                .maximumSize(maximumCacheSize);
+	    if (registry != null) {
+	        cacheBuilder.recordStats();
+	    }
+	    eventTemplateCache = cacheBuilder.build(new CacheLoader<String, EventTemplate>() {
+                public EventTemplate load(String key) throws Exception {
+                   return new EventTemplate(key, AbstractEventUtil.this);
+	        }
+	    });
+
+	    if (registry != null) {
+	        // Expose the cache statistics via a series of gauges
+	        registry.register(MetricRegistry.name("eventutil.cache.capacity"),
+	                new Gauge<Long>() {
+	                    @Override
+	                    public Long getValue() {
+	                        return maximumCacheSize;
+	                    }
+	                });
+
+	        registry.register(MetricRegistry.name("eventutil.cache.size"),
+	                new Gauge<Long>() {
+	                    @Override
+	                    public Long getValue() {
+	                        return eventTemplateCache.size();
+	                    }
+	                });
+
+	        registry.register(MetricRegistry.name("eventutil.cache.evictioncount"),
+	                new Gauge<Long>() {
+	                    @Override
+	                    public Long getValue() {
+	                        return eventTemplateCache.stats().evictionCount();
+	                    }
+	                });
+
+	        registry.register(MetricRegistry.name("eventutil.cache.avgloadpenalty"),
+	                new Gauge<Double>() {
+	                    @Override
+	                    public Double getValue() {
+	                        return eventTemplateCache.stats().averageLoadPenalty();
+	                    }
+	                });
+	    }
 	}
 
 	/**
