@@ -30,6 +30,7 @@ STOP_WAIT=5
 export NAME DESC PATH
 
 if [ -f /etc/rc.d/init.d/functions ]; then
+	# shellcheck disable=SC1090,SC1091
 	. /etc/rc.d/init.d/functions
 fi
 
@@ -43,12 +44,13 @@ if [ -r "${SYSCONFDIR}/minion" ]; then
 fi
 
 if [ -r "${MINION_HOME}/minion.conf" ]; then
+	# shellcheck disable=SC1090,SC1091
 	. "${MINION_HOME}/minion.conf"
 fi
 
 validate_icmp() {
 	if [ "$RUNAS" != "root" ]; then
-		if [ `uname -s` = "Linux" ]; then
+		if [ "$(uname -s)" = "Linux" ]; then
 			# validate that we have permissions to ping as non-root
 			_group_range="$(sysctl net.ipv4.ping_group_range 2>/dev/null | cut -d= -f2 | sed -e 's,^ *,,' -e 's, *$,,' -e 's,\t, ,g')"
 			if [ -n "${_group_range}" ]; then
@@ -67,6 +69,7 @@ validate_icmp() {
 					exit 4 # insufficient privilege
 				fi
 			else
+				# shellcheck disable=SC2016
 				>&2 printf 'ERROR: `sysctl net.ipv4.ping_group_range` gave no output! Unable to validate non-root ping support.\n'
 			fi
 		fi
@@ -108,15 +111,14 @@ kill_minion() {
 }
 
 
-ARGS="$@"
 COMMAND="$1"
 
 if [ "$(id -n -u)" "!=" "${RUNAS}" ]; then
 	RUNUSER="$(which runuser 2>/dev/null)"
 	if [ -n "${RUNUSER}" ] && [ -x "${RUNUSER}" ]; then
-		exec "${RUNUSER}" -u "${RUNAS}" "${ME}" "$ARGS"
+		exec "${RUNUSER}" -u "${RUNAS}" "${ME}" "$@"
 	else
-		exec /usr/bin/sudo -u "${RUNAS}" "${ME}" "$ARGS"
+		exec /usr/bin/sudo -u "${RUNAS}" "${ME}" "$@"
 	fi
 fi
 
