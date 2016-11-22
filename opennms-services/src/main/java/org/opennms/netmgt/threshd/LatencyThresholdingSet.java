@@ -51,6 +51,8 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class LatencyThresholdingSet extends ThresholdingSet {
 
+    private final String m_location;
+
     private final ResourceStorageDao m_resourceStorageDao;
 
     /**
@@ -62,9 +64,10 @@ public class LatencyThresholdingSet extends ThresholdingSet {
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      * @param interval a long.
      */
-    public LatencyThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ResourceStorageDao resourceStorageDao) {
+    public LatencyThresholdingSet(int nodeId, String hostAddress, String serviceName, String location, RrdRepository repository, ResourceStorageDao resourceStorageDao) {
         super(nodeId, hostAddress, serviceName, repository);
         m_resourceStorageDao = resourceStorageDao;
+        m_location = location;
     }
 
     /*
@@ -92,7 +95,7 @@ public class LatencyThresholdingSet extends ThresholdingSet {
      */
     /** {@inheritDoc} */
     public List<Event> applyThresholds(String svcName, Map<String, Double> attributes) {
-        LatencyCollectionResource latencyResource = new LatencyCollectionResource(svcName, m_hostAddress);
+        LatencyCollectionResource latencyResource = new LatencyCollectionResource(svcName, m_hostAddress, m_location);
         LatencyCollectionAttributeType latencyType = new LatencyCollectionAttributeType();
         Map<String, CollectionAttribute> attributesMap = new HashMap<String, CollectionAttribute>();
         for (final Entry<String, Double> entry : attributes.entrySet()) {
