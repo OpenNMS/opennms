@@ -45,6 +45,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -128,6 +129,9 @@ public class DefaultTicketerServiceLayerIntegrationTest implements InitializingB
 
         alarm = m_alarmDao.get(alarmId);
         assertEquals(TroubleTicketState.OPEN, alarm.getTTicketState());
+
+        alarm.setSeverity(OnmsSeverity.CLEARED);
+        m_alarmDao.update(alarm);
 
         m_ticketerServiceLayer.closeTicketForAlarm(alarmId,
                                                    alarm.getTTicketId());
