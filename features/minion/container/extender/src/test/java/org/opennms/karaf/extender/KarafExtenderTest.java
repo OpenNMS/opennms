@@ -85,7 +85,8 @@ public class KarafExtenderTest {
         Files.write("feature-4", new File(featuresBootDotD, "features.boot"), Charsets.UTF_8);
 
         // Read and verify
-        assertEquals(Lists.newArrayList(new Feature("(wrap)"),
+        assertEquals(Lists.newArrayList(new Feature("(mvn)"),
+                new Feature("(wrap)"),
                 new Feature("feature-1"),
                 new Feature("feature-2", "18.0.0"),
                 new Feature("feature-3"),

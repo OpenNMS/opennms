@@ -228,6 +228,7 @@ public class KarafExtender {
 
     public List<Feature> getFeaturesBoot() throws IOException {
         final List<Feature> features = Lists.newLinkedList();
+        features.add(new Feature("(mvn)"));
         features.add(new Feature("(wrap)"));
         for (Path featuresBootFile : getFilesIn(m_featuresBootDotD)) {
             features.addAll(getFeaturesIn(featuresBootFile));
