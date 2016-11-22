@@ -121,15 +121,16 @@ public class SnmpV3User {
         if (o == this) {
             return true;
         }
-        if (this.getClass() != o.getClass()) {
+        if (o instanceof SnmpV3User) {
+            final SnmpV3User that = (SnmpV3User)o;
+            return Objects.equals(getAuthPassPhrase(), that.getAuthPassPhrase()) &&
+                Objects.equals(getAuthProtocol(), that.getAuthProtocol()) &&
+                Objects.equals(getEngineId(), that.getEngineId()) &&
+                Objects.equals(getPrivPassPhrase(), that.getPrivPassPhrase()) &&
+                Objects.equals(getPrivProtocol(), that.getPrivProtocol());
+        } else {
             return false;
         }
-        final SnmpV3User that = (SnmpV3User)o;
-        return Objects.equals(getAuthPassPhrase(), that.getAuthPassPhrase()) &&
-            Objects.equals(getAuthProtocol(), that.getAuthProtocol()) &&
-            Objects.equals(getEngineId(), that.getEngineId()) &&
-            Objects.equals(getPrivPassPhrase(), that.getPrivPassPhrase()) &&
-            Objects.equals(getPrivProtocol(), that.getPrivProtocol());
     }
 
     @Override
