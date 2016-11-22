@@ -81,6 +81,91 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Copy all of the blueprint files into the target directory -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-blueprints</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/blueprints/OSGI-INF/blueprint</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}</directory>
+                  <filtering>false</filtering>
+                  <includes>
+                    <include>blueprint*.xml</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Wrap the blueprints that we need in featuresBoot on OpenNMS in JAR files -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>blueprint-syslog-handler-default</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifestEntries>
+                  <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                  <Bundle-SymbolicName>
+                    org.opennms.features.events.syslog.blueprint-syslog-handler-default
+                  </Bundle-SymbolicName>
+                  <Bundle-Version>${opennms.osgi.version}</Bundle-Version>
+                  <DynamicImport-Package>*</DynamicImport-Package>
+                  <!-- Avoid carriage returns here -->
+                  <Import-Package>org.apache.camel,org.opennms.core.camel,org.opennms.netmgt.syslogd</Import-Package>
+                </manifestEntries>
+              </archive>
+              <classifier>blueprint-syslog-handler-default</classifier>
+              <classesDirectory>${project.build.directory}/blueprints</classesDirectory>
+              <includes>
+                <include>OSGI-INF/blueprint/blueprint-syslog-handler-default.xml</include>
+              </includes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>blueprint-syslog-handler-kafka-default</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifestEntries>
+                  <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                  <Bundle-SymbolicName>
+                    org.opennms.features.events.syslog.blueprint-syslog-handler-kafka-default
+                  </Bundle-SymbolicName>
+                  <Bundle-Version>${opennms.osgi.version}</Bundle-Version>
+                  <DynamicImport-Package>*</DynamicImport-Package>
+                  <!-- Avoid carriage returns here -->
+                  <Import-Package>org.apache.camel,org.opennms.core.camel,org.opennms.netmgt.syslogd</Import-Package>
+                </manifestEntries>
+              </archive>
+              <classifier>blueprint-syslog-handler-kafka-default</classifier>
+              <classesDirectory>${project.build.directory}/blueprints</classesDirectory>
+              <includes>
+                <include>OSGI-INF/blueprint/blueprint-syslog-handler-kafka-default.xml</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
