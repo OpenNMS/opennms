@@ -66,6 +66,12 @@
       <artifactId>org.opennms.features.topology.plugins.topo.history</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- is required to build topology links -->
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.link</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     
     <!-- plugins -->
     <dependency>
