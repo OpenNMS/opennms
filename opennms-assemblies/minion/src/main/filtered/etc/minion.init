@@ -29,6 +29,10 @@ STOP_WAIT=5
 
 export NAME DESC PATH
 
+if [ -f /etc/rc.d/init.d/functions ]; then
+	. /etc/rc.d/init.d/functions
+fi
+
 if [ -z "$JAVA_HOME" ]; then
 	JAVA_HOME="$("${MINION_HOME}/bin/find-java.sh" 1.8.0 1.8.9999)"
 fi
@@ -108,7 +112,12 @@ ARGS="$@"
 COMMAND="$1"
 
 if [ "$(id -n -u)" "!=" "${RUNAS}" ]; then
-	exec /usr/bin/sudo -u "${RUNAS}" "${ME}" "$ARGS"
+	RUNUSER="$(which runuser 2>/dev/null)"
+	if [ -n "${RUNUSER}" ] && [ -x "${RUNUSER}" ]; then
+		exec "${RUNUSER}" -u "${RUNAS}" "${ME}" "$ARGS"
+	else
+		exec /usr/bin/sudo -u "${RUNAS}" "${ME}" "$ARGS"
+	fi
 fi
 
 case "$COMMAND" in
