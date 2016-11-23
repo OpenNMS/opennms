@@ -131,4 +131,5 @@ public class SimpleMonitoredService implements MonitoredService {
     public String getNodeLocation() {
         return location;
     }
+
 }
