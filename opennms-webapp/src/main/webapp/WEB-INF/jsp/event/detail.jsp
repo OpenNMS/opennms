@@ -127,8 +127,13 @@
             <td class="col-md-3"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp;"%></td>
           </c:if>
         </tr>
-
-        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+          <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+              <th class="col-md-1">Location</th>
+              <td class="col-md-3"><%=event.getLocation()%></td>
+              <th class="col-md-1">System-ID</th>
+              <td class="col-md-3"><%=event.getSystemId()%></td>
+          </tr>
+          <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
           <th class="col-md-1">Time</th>
           <td class="col-md-3"><fmt:formatDate value="<%=event.getTime()%>" type="BOTH" /></td>
           <th class="col-md-1">Interface</th>
