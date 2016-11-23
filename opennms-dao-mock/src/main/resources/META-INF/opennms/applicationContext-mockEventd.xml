@@ -68,4 +68,6 @@
 		<property name="serviceTypeDao" ref="serviceTypeDao" />
 	</bean>
 
+	<import resource="classpath:/META-INF/opennms/applicationContext-eventUtil.xml" />
+
 </beans>

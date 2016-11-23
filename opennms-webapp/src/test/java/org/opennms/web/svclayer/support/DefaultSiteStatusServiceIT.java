@@ -75,8 +75,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/mockForeignSourceContext.xml",
         "classpath:/testSiteStatusServiceContext.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml"
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 public class DefaultSiteStatusServiceIT implements InitializingBean {

@@ -48,7 +48,6 @@ import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -66,9 +65,6 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
 
 	@Autowired
 	private NodeDao nodeDao;
-	
-	@Autowired
-	private SnmpInterfaceDao snmpInterfaceDao;
 	
 	@Autowired
 	private AssetRecordDao assetRecordDao;

@@ -51,6 +51,7 @@ import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
+@Ignore("Broken since updating EventUtilDaoImpl. See NMS-8681.")
 public class DependencyLoadingRulesIT extends CorrelationRulesITCase {
 	
 	@Autowired

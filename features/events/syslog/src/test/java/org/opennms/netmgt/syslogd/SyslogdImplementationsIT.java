@@ -75,9 +75,9 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/applicationContext-syslogImplementations.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml"
+        "classpath:/applicationContext-syslogImplementations.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
