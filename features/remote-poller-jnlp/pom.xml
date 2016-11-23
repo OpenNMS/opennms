@@ -24,7 +24,7 @@
             <artifactId>webstart-maven-plugin</artifactId>
             <version>${webstartPluginVersion}</version>
             <configuration>
-              <verifyjar>true</verifyjar>
+              <verifyjar>false</verifyjar>
               <canUnsign>true</canUnsign>
               <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
               <sign>
@@ -33,7 +33,7 @@
                 <storepass>${webstart.storepass}</storepass>
                 <alias>${webstart.keyalias}</alias>
                 <dnameCn>${webstart.dnameCn}</dnameCn>
-                <verify>true</verify>
+                <verify>false</verify>
               </sign>
             </configuration>
           </plugin>
