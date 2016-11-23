@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms-es-rest.parent</artifactId>
     <groupId>org.opennms.plugins</groupId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.searchbox</groupId>
@@ -133,7 +133,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>17.0</version>
+      <version>18.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
