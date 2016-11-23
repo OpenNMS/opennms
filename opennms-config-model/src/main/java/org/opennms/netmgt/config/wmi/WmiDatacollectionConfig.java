@@ -26,11 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.nsclient;
+package org.opennms.netmgt.config.wmi;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Objects;
@@ -45,8 +48,10 @@ import java.util.Objects;
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="begin" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="end" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://xmlns.opennms.org/xsd/config/wmi-datacollection}wmi-collection" maxOccurs="unbounded"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="rrdRepository" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -55,75 +60,83 @@ import java.util.Objects;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "range")
-public class Range {
+@XmlType(name = "", propOrder = {
+    "wmiCollection"
+})
+@XmlRootElement(name = "wmi-datacollection-config")
+public class WmiDatacollectionConfig {
 
-    @XmlAttribute(name = "begin", required = true)
-    protected String begin;
-    @XmlAttribute(name = "end", required = true)
-    protected String end;
+    @XmlElement(name = "wmi-collection", required = true)
+    protected List<WmiCollection> wmiCollection;
+    @XmlAttribute(name = "rrdRepository", required = true)
+    protected String rrdRepository;
 
     /**
-     * Gets the value of the begin property.
+     * Gets the value of the wmiCollection property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the wmiCollection property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getWmiCollection().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link WmiCollection }
+     * 
+     * 
+     */
+    public List<WmiCollection> getWmiCollection() {
+        if (wmiCollection == null) {
+            wmiCollection = new ArrayList<WmiCollection>();
+        }
+        return this.wmiCollection;
+    }
+
+    /**
+     * Gets the value of the rrdRepository property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getBegin() {
-        return begin;
+    public String getRrdRepository() {
+        return rrdRepository;
     }
 
     /**
-     * Sets the value of the begin property.
+     * Sets the value of the rrdRepository property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setBegin(String value) {
-        this.begin = value;
-    }
-
-    /**
-     * Gets the value of the end property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEnd() {
-        return end;
-    }
-
-    /**
-     * Sets the value of the end property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setEnd(String value) {
-        this.end = value;
+    public void setRrdRepository(String value) {
+        this.rrdRepository = value;
     }
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof Range)) {
+        if (!(other instanceof WmiDatacollectionConfig)) {
             return false;
         }
-        Range castOther = (Range) other;
-        return Objects.equals(begin, castOther.begin) && Objects.equals(end, castOther.end);
+        WmiDatacollectionConfig castOther = (WmiDatacollectionConfig) other;
+        return Objects.equals(wmiCollection, castOther.wmiCollection)
+                && Objects.equals(rrdRepository, castOther.rrdRepository);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(begin, end);
+        return Objects.hash(wmiCollection, rrdRepository);
     }
 
 }

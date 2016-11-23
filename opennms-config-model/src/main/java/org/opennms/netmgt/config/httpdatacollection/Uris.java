@@ -26,11 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.nsclient;
+package org.opennms.netmgt.config.httpdatacollection;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Objects;
@@ -45,8 +47,9 @@ import java.util.Objects;
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="begin" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="end" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://xmlns.opennms.org/xsd/config/http-datacollection}uri" maxOccurs="unbounded"/&gt;
+ *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -55,75 +58,56 @@ import java.util.Objects;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "range")
-public class Range {
+@XmlType(name = "", propOrder = {
+    "uri"
+})
+@XmlRootElement(name = "uris")
+public class Uris {
 
-    @XmlAttribute(name = "begin", required = true)
-    protected String begin;
-    @XmlAttribute(name = "end", required = true)
-    protected String end;
-
-    /**
-     * Gets the value of the begin property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getBegin() {
-        return begin;
-    }
+    @XmlElement(required = true)
+    protected List<Uri> uri;
 
     /**
-     * Sets the value of the begin property.
+     * Gets the value of the uri property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setBegin(String value) {
-        this.begin = value;
-    }
-
-    /**
-     * Gets the value of the end property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the uri property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEnd() {
-        return end;
-    }
-
-    /**
-     * Sets the value of the end property.
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getUri().add(newItem);
+     * </pre>
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Uri }
+     * 
+     * 
      */
-    public void setEnd(String value) {
-        this.end = value;
+    public List<Uri> getUri() {
+        if (uri == null) {
+            uri = new ArrayList<Uri>();
+        }
+        return this.uri;
     }
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof Range)) {
+        if (!(other instanceof Uris)) {
             return false;
         }
-        Range castOther = (Range) other;
-        return Objects.equals(begin, castOther.begin) && Objects.equals(end, castOther.end);
+        Uris castOther = (Uris) other;
+        return Objects.equals(uri, castOther.uri);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(begin, end);
+        return Objects.hash(uri);
     }
 
 }

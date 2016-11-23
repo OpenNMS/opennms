@@ -26,11 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.nsclient;
+package org.opennms.netmgt.config.datacollction.nsclient;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Objects;
@@ -45,8 +47,9 @@ import java.util.Objects;
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="begin" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="end" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://xmlns.opennms.org/xsd/config/nsclient-datacollection}wpm" maxOccurs="unbounded"/&gt;
+ *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -55,75 +58,58 @@ import java.util.Objects;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "range")
-public class Range {
+@XmlType(name = "", propOrder = {
+    "wpm"
+})
+@XmlRootElement(name = "wpms")
+public class Wpms {
 
-    @XmlAttribute(name = "begin", required = true)
-    protected String begin;
-    @XmlAttribute(name = "end", required = true)
-    protected String end;
-
-    /**
-     * Gets the value of the begin property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getBegin() {
-        return begin;
-    }
+    @XmlElement(required = true)
+    protected List<Wpm> wpm;
 
     /**
-     * Sets the value of the begin property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setBegin(String value) {
-        this.begin = value;
-    }
-
-    /**
-     * Gets the value of the end property.
+     * 							An NSClient Object Group
+     * 						Gets the value of the wpm property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEnd() {
-        return end;
-    }
-
-    /**
-     * Sets the value of the end property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the wpm property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getWpm().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Wpm }
+     * 
+     * 
      */
-    public void setEnd(String value) {
-        this.end = value;
+    public List<Wpm> getWpm() {
+        if (wpm == null) {
+            wpm = new ArrayList<Wpm>();
+        }
+        return this.wpm;
     }
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof Range)) {
+        if (!(other instanceof Wpms)) {
             return false;
         }
-        Range castOther = (Range) other;
-        return Objects.equals(begin, castOther.begin) && Objects.equals(end, castOther.end);
+        Wpms castOther = (Wpms) other;
+        return Objects.equals(wpm, castOther.wpm);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(begin, end);
+        return Objects.hash(wpm);
     }
 
 }

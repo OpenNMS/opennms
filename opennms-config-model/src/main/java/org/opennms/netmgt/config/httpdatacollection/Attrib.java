@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.nsclient;
+package org.opennms.netmgt.config.httpdatacollection;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -45,8 +45,15 @@ import java.util.Objects;
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="begin" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="end" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="alias" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="match-group" use="required"&gt;
+ *         &lt;simpleType&gt;
+ *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}int"&gt;
+ *             &lt;minInclusive value="1"/&gt;
+ *           &lt;/restriction&gt;
+ *         &lt;/simpleType&gt;
+ *       &lt;/attribute&gt;
+ *       &lt;attribute name="type" use="required" type="{http://xmlns.opennms.org/xsd/config/http-datacollection}allowed-types" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -56,74 +63,92 @@ import java.util.Objects;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "range")
-public class Range {
+@XmlRootElement(name = "attrib")
+public class Attrib {
 
-    @XmlAttribute(name = "begin", required = true)
-    protected String begin;
-    @XmlAttribute(name = "end", required = true)
-    protected String end;
+    @XmlAttribute(name = "alias", required = true)
+    protected String alias;
+    @XmlAttribute(name = "match-group", required = true)
+    protected int matchGroup;
+    @XmlAttribute(name = "type", required = true)
+    protected String type;
 
     /**
-     * Gets the value of the begin property.
+     * Gets the value of the alias property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getBegin() {
-        return begin;
+    public String getAlias() {
+        return alias;
     }
 
     /**
-     * Sets the value of the begin property.
+     * Sets the value of the alias property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setBegin(String value) {
-        this.begin = value;
+    public void setAlias(String value) {
+        this.alias = value;
     }
 
     /**
-     * Gets the value of the end property.
+     * Gets the value of the matchGroup property.
+     * 
+     */
+    public int getMatchGroup() {
+        return matchGroup;
+    }
+
+    /**
+     * Sets the value of the matchGroup property.
+     * 
+     */
+    public void setMatchGroup(int value) {
+        this.matchGroup = value;
+    }
+
+    /**
+     * Gets the value of the type property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getEnd() {
-        return end;
+    public String getType() {
+        return type;
     }
 
     /**
-     * Sets the value of the end property.
+     * Sets the value of the type property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setEnd(String value) {
-        this.end = value;
+    public void setType(String value) {
+        this.type = value;
     }
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof Range)) {
+        if (!(other instanceof Attrib)) {
             return false;
         }
-        Range castOther = (Range) other;
-        return Objects.equals(begin, castOther.begin) && Objects.equals(end, castOther.end);
+        Attrib castOther = (Attrib) other;
+        return Objects.equals(alias, castOther.alias) && Objects.equals(matchGroup, castOther.matchGroup)
+                && Objects.equals(type, castOther.type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(begin, end);
+        return Objects.hash(alias, matchGroup, type);
     }
-
 }

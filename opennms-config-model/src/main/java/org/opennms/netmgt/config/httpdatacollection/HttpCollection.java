@@ -26,11 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.nsclient;
+package org.opennms.netmgt.config.httpdatacollection;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Objects;
@@ -45,8 +46,11 @@ import java.util.Objects;
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="begin" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="end" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://xmlns.opennms.org/xsd/config/http-datacollection}rrd"/&gt;
+ *         &lt;element ref="{http://xmlns.opennms.org/xsd/config/http-datacollection}uris"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="default" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -55,75 +59,109 @@ import java.util.Objects;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "range")
-public class Range {
+@XmlType(name = "", propOrder = {
+    "rrd",
+    "uris"
+})
+@XmlRootElement(name = "http-collection")
+public class HttpCollection {
 
-    @XmlAttribute(name = "begin", required = true)
-    protected String begin;
-    @XmlAttribute(name = "end", required = true)
-    protected String end;
+    @XmlElement(required = true)
+    protected Rrd rrd;
+    @XmlElement(required = true)
+    protected Uris uris;
+    @XmlAttribute(name = "name")
+    protected String name;
 
     /**
-     * Gets the value of the begin property.
+     * Gets the value of the rrd property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Rrd }
+     *     
+     */
+    public Rrd getRrd() {
+        return rrd;
+    }
+
+    /**
+     * Sets the value of the rrd property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Rrd }
+     *     
+     */
+    public void setRrd(Rrd value) {
+        this.rrd = value;
+    }
+
+    /**
+     * Gets the value of the uris property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Uris }
+     *     
+     */
+    public Uris getUris() {
+        return uris;
+    }
+
+    /**
+     * Sets the value of the uris property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Uris }
+     *     
+     */
+    public void setUris(Uris value) {
+        this.uris = value;
+    }
+
+    /**
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getBegin() {
-        return begin;
+    public String getName() {
+        if (name == null) {
+            return "default";
+        } else {
+            return name;
+        }
     }
 
     /**
-     * Sets the value of the begin property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setBegin(String value) {
-        this.begin = value;
-    }
-
-    /**
-     * Gets the value of the end property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEnd() {
-        return end;
-    }
-
-    /**
-     * Sets the value of the end property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setEnd(String value) {
-        this.end = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof Range)) {
+        if (!(other instanceof HttpCollection)) {
             return false;
         }
-        Range castOther = (Range) other;
-        return Objects.equals(begin, castOther.begin) && Objects.equals(end, castOther.end);
+        HttpCollection castOther = (HttpCollection) other;
+        return Objects.equals(rrd, castOther.rrd) && Objects.equals(uris, castOther.uris)
+                && Objects.equals(name, castOther.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(begin, end);
+        return Objects.hash(rrd, uris, name);
     }
 
 }
