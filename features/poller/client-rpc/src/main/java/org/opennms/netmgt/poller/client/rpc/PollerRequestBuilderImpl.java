@@ -53,6 +53,8 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     private final List<ServiceMonitorAdaptor> adaptors = new LinkedList<>();
 
+    private Long ttlInMs;
+
     public PollerRequestBuilderImpl(LocationAwarePollerClientImpl client) {
         this.client = client;
     }
@@ -72,6 +74,12 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     @Override
     public PollerRequestBuilder withMonitorClassName(String className) {
         this.serviceMonitor = client.getRegistry().getMonitorByClassName(className);
+        return this;
+    }
+
+    @Override
+    public PollerRequestBuilder withTimeToLive(Long ttlInMs) {
+        this.ttlInMs = ttlInMs;
         return this;
     }
 
@@ -109,6 +117,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         request.setNodeId(service.getNodeId());
         request.setNodeLabel(service.getNodeLabel());
         request.setNodeLocation(service.getNodeLocation());
+        request.setTimeToLiveMs(ttlInMs);
         request.addAttributes(attributes);
 
         // Retrieve the runtime attributes, which may include attributes
