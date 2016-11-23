@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,7 +40,6 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
-import org.opennms.netmgt.xml.eventconf.Snmp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -199,7 +198,7 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
             s_trapsReceived++;
             if ("v1".equals(version)) {
                 s_v1TrapsReceived++;
-            } else if ("v2c".equals(version)) {
+            } else if ("v2c".equals(version) || "v2".equals(version)) {
                 s_v2cTrapsReceived++;
             } else if ("v3".equals(version)) {
                 s_v3TrapsReceived++;
