@@ -48,6 +48,7 @@ import org.apache.commons.jexl2.MapContext;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -96,6 +97,11 @@ public class StressCommand extends OsgiCommandSupport {
     @Option(name="-b", aliases="--batch-size", description="The size of the log (batch size)", required=false, multiValued = false)
     int batchSize = 1;
 
+    @Option(name="-n", aliases="--node-id", description="The node id to associate with the generated event")
+    Integer eventNodeId = null;
+
+    @Option(name="-i", aliases="--interface", description="The ip interface to associate with the generated event")
+    String eventIpInterface = null;
     @Option(name="-x", aliases="--sync", description="Use synchronous instead of asynchronous calls", required=false, multiValued = false)
     boolean isSynchronous = false;
 
@@ -156,6 +162,12 @@ public class StressCommand extends OsgiCommandSupport {
 
         public Event getNextEvent() {
             final EventBuilder eb = new EventBuilder(eventUei, EVENT_SOURCE);
+            if (eventNodeId != null) {
+                eb.setNodeid(eventNodeId.intValue());
+            }
+            if (eventIpInterface != null) {
+                eb.setInterface(InetAddressUtils.addr(eventIpInterface));
+            }
             return eb.getEvent();
         }
     }

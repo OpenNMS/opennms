@@ -73,9 +73,9 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment(systemProperties={
         // Set opennms.ticketer.plugin to a value for unit testing
-        "opennms.ticketer.plugin=org.opennms.netmgt.ticketd.DefaultTicketerServiceLayerIntegrationTest.TestTicketerPlugin"
+        "opennms.ticketer.plugin=org.opennms.netmgt.ticketd.DefaultTicketerServiceLayerIT.TestTicketerPlugin"
 })
-public class DefaultTicketerServiceLayerIntegrationTest implements InitializingBean {
+public class DefaultTicketerServiceLayerIT implements InitializingBean {
     @Autowired
     private TicketerServiceLayer m_ticketerServiceLayer;
 
