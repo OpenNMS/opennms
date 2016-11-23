@@ -38,15 +38,13 @@ import org.opennms.netmgt.snmp.proxy.SNMPRequestBuilder;
 
 public abstract class AbstractSNMPRequestBuilder<T> implements SNMPRequestBuilder<T> {
 
-    public static final Long DEFAULT_TIME_TO_LIVE = 60*1000l;
-
     private final LocationAwareSnmpClientRpcImpl client;
     private final SnmpAgentConfig agent;
     private List<SnmpGetRequestDTO> gets;
     private List<SnmpWalkRequestDTO> walks;
     private String location;
     private String description;
-    private Long timeToLiveInMilliseconds = DEFAULT_TIME_TO_LIVE;
+    private Long timeToLiveInMilliseconds = null;
 
     public AbstractSNMPRequestBuilder(LocationAwareSnmpClientRpcImpl client,
             SnmpAgentConfig agent, List<SnmpGetRequestDTO> gets, List<SnmpWalkRequestDTO> walks) {
@@ -70,7 +68,7 @@ public abstract class AbstractSNMPRequestBuilder<T> implements SNMPRequestBuilde
 
     @Override
     public SNMPRequestBuilder<T> withTimeToLive(long duration, TimeUnit unit) {
-        timeToLiveInMilliseconds  = unit.toMillis(duration);
+        timeToLiveInMilliseconds = unit.toMillis(duration);
         return this;
     }
 

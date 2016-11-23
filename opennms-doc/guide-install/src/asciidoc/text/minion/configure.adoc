@@ -33,21 +33,6 @@ uncomment the `transportConnector` with the `tcp://0.0.0.0:61616` URI.
 If you wish to restrict ActiveMQ connections to only one particular external IP address, you can change `0.0.0.0` to that
 desired IP address.
 
-==== Configure Syslog
-
-To process syslog messages received by a Minion device, you must install the `opennms-syslogd-handler-default` component on OpenNMS.
-
-.Configure the `opennms-syslogd-handler-default` module on _OpenNMS_
-[source]
-----
-[root@localhost /root]# $ ssh -p 8101 admin@localhost
-...
-opennms> config:edit org.opennms.netmgt.syslog.handler.default
-opennms> config:propset brokerUri tcp://127.0.0.1:61616
-opennms> config:update
-opennms> features:install opennms-syslogd-handler-default
-----
-
 [[gi-install-minion-configure]]
 === Configuring Minion
 

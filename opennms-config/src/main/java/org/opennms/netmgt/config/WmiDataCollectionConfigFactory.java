@@ -33,15 +33,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.wmi.WmiCollection;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -75,11 +74,9 @@ public class WmiDataCollectionConfigFactory {
       * <p>Constructor for WmiDataCollectionConfigFactory.</p>
       *
       * @param configFile a {@link java.lang.String} object.
-      * @throws org.exolab.castor.xml.MarshalException if any.
-      * @throws org.exolab.castor.xml.ValidationException if any.
       * @throws java.io.IOException if any.
       */
-     public WmiDataCollectionConfigFactory(String configFile) throws MarshalException, ValidationException, IOException {
+     public WmiDataCollectionConfigFactory(String configFile) throws IOException {
          InputStream is = null;
 
          try {
@@ -96,27 +93,25 @@ public class WmiDataCollectionConfigFactory {
       * <p>Constructor for WmiDataCollectionConfigFactory.</p>
       *
       * @param is a {@link java.io.InputStream} object.
-      * @throws org.exolab.castor.xml.MarshalException if any.
-      * @throws org.exolab.castor.xml.ValidationException if any.
       */
-     public WmiDataCollectionConfigFactory(InputStream is) throws MarshalException, ValidationException {
+     public WmiDataCollectionConfigFactory(InputStream is) throws IOException {
          initialize(is);
      }
 
-     private void initialize(InputStream stream) throws MarshalException, ValidationException {
+     private void initialize(InputStream stream) throws IOException  {
          LOG.debug("initialize: initializing WMI collection config factory.");
-         m_config = CastorUtils.unmarshal(WmiDatacollectionConfig.class, stream);
+         try (InputStreamReader isr = new InputStreamReader(stream)) {
+             m_config = JaxbUtils.unmarshal(WmiDatacollectionConfig.class, isr);
+         }
      }
-     
+
      /**
       * Be sure to call this method before calling getInstance().
       *
       * @throws java.io.IOException if any.
       * @throws java.io.FileNotFoundException if any.
-      * @throws org.exolab.castor.xml.MarshalException if any.
-      * @throws org.exolab.castor.xml.ValidationException if any.
       */
-     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+     public static synchronized void init() throws IOException, FileNotFoundException {
 
          if (m_instance == null) {
              File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.WMI_COLLECTION_CONFIG_FILE_NAME);
@@ -156,10 +151,8 @@ public class WmiDataCollectionConfigFactory {
       *
       * @throws java.io.IOException if any.
       * @throws java.io.FileNotFoundException if any.
-      * @throws org.exolab.castor.xml.MarshalException if any.
-      * @throws org.exolab.castor.xml.ValidationException if any.
       */
-     public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+     public synchronized void reload() throws IOException, FileNotFoundException {
          m_instance = null;
          init();
      }
@@ -170,10 +163,8 @@ public class WmiDataCollectionConfigFactory {
       * read it.
       *
       * @throws java.io.IOException if any.
-      * @throws org.exolab.castor.xml.MarshalException if any.
-      * @throws org.exolab.castor.xml.ValidationException if any.
       */
-     protected void updateFromFile() throws IOException, MarshalException, ValidationException {
+     protected void updateFromFile() throws IOException {
          if (m_loadedFromFile) {
              File surveillanceViewsFile = ConfigFileConstants.getFile(ConfigFileConstants.WMI_COLLECTION_CONFIG_FILE_NAME);
              if (m_lastModified != surveillanceViewsFile.lastModified()) {
@@ -207,9 +198,8 @@ public class WmiDataCollectionConfigFactory {
       * @return a {@link org.opennms.netmgt.config.wmi.WmiCollection} object.
       */
      public WmiCollection getWmiCollection(String collectionName) {
-        WmiCollection[] collections = m_config.getWmiCollection();
          WmiCollection collection = null;
-         for (WmiCollection coll : collections) {
+         for (WmiCollection coll : m_config.getWmiCollection()) {
              if (coll.getName().equalsIgnoreCase(collectionName)) collection = coll;
              break;
          }
@@ -258,7 +248,7 @@ public class WmiDataCollectionConfigFactory {
      public List<String> getRRAList(String cName) {
          WmiCollection collection = getWmiCollection(cName);
          if (collection != null)
-             return collection.getRrd().getRraCollection();
+             return collection.getRrd().getRra();
          else
              return null;
 
