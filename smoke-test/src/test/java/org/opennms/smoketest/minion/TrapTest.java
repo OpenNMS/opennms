@@ -32,7 +32,6 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
-import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.concurrent.Callable;
@@ -57,7 +56,6 @@ import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,24 +98,6 @@ public class TrapTest {
     @Test
     public void canReceiveTraps() throws Exception {
         Date startOfTest = new Date();
-
-        // Install the handler on the OpenNMS system (this should probably be installed by default)
-        final InetSocketAddress sshAddr = minionSystem.getServiceAddress(ContainerAlias.OPENNMS, 8101);
-        try (
-            final SshClient sshClient = new SshClient(sshAddr, "admin", "admin");
-        ) {
-            PrintStream pipe = sshClient.openShell();
-            // Install the syslog and trap handler features
-            pipe.println("features:install opennms-syslogd-handler-default opennms-trapd-handler-default");
-            pipe.println("features:list -i");
-            pipe.println("list");
-            pipe.println("logout");
-            try {
-                await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
-            } finally {
-                LOG.info("Karaf output:\n{}", sshClient.getStdout());
-            }
-        }
 
         final InetSocketAddress trapAddr = minionSystem.getServiceAddress(ContainerAlias.MINION, 1162, "udp");
 

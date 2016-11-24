@@ -68,6 +68,14 @@ public abstract class AbstractXmlSinkModule<T extends Message> implements SinkMo
     }
 
     private <W> XmlHandler<W> createXmlHandler(Class<W> clazz) {
-        return new XmlHandler<>(clazz);
+        try {
+            return new XmlHandler<>(clazz);
+        } catch (Throwable t) {
+            // This is a work-around for some failure in the Minion container
+            // When invoked for the first time, the creation may fail due to
+            // errors of the form "invalid protocol handler: mvn", but subsequent
+            // calls always seem to work
+            return new XmlHandler<>(clazz);
+        }
     }
 }

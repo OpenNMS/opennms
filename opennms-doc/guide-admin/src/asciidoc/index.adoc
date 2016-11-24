@@ -19,6 +19,11 @@
 == Data Choices
 include::text/datachoices.adoc[]
 
+[[ga-role-user-management]]
+== User Management
+include::text/user-management/users.adoc[]
+include::text/user-management/security-roles.adoc[]
+
 [[ga-admin-ui]]
 == Administrative Webinterface
 

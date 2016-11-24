@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.app.internal.ui;
 
+import static org.opennms.features.topology.app.internal.TopologyUI.TopologyUIRequestHandler.PARAMETER_HISTORY_FRAGMENT;
 import static org.opennms.features.topology.app.internal.ui.ToolbarPanelController.ActiveTool;
 
 import org.opennms.features.topology.api.Callbacks;
@@ -37,7 +38,6 @@ import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.app.internal.ManualLayoutAlgorithm;
-import org.opennms.features.topology.app.internal.TopologyUI;
 import org.opennms.features.topology.app.internal.support.IonicIcons;
 import org.opennms.features.topology.app.internal.support.LayoutManager;
 
@@ -196,10 +196,10 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
         Button shareButton = new Button("", FontAwesome.SHARE_SQUARE_O);
         shareButton.setDescription("Share");
         shareButton.addClickListener((x) -> {
-            // create the share link
+            // Create the share link
             String fragment = getUI().getPage().getLocation().getFragment();
-            String url = getUI().getPage().getLocation().toString().replace("#" + getUI().getPage().getLocation().getFragment(), "");
-            String shareLink = String.format("%s?%s=%s", url, TopologyUI.TopologyUIRequestHandler.PARAMETER_HISTORY_FRAGMENT, fragment);
+            String url = getUI().getPage().getLocation().toString().replace("#" + fragment, "");
+            String shareLink = String.format("%s?%s=%s", url, PARAMETER_HISTORY_FRAGMENT, fragment);
 
             // Create the Window
             Window shareWindow = new Window();

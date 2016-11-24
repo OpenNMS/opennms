@@ -62,8 +62,6 @@
 
     <bean id="pollOutagesConfigFactory" class="org.opennms.netmgt.config.PollOutagesConfigFactory" depends-on="pollOutagesConfigFactory-init" factory-method="getInstance"/>
     
-    <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
-    
     <bean id="broadcastEventProcessor" class="org.opennms.netmgt.notifd.BroadcastEventProcessor">
       <property name="notifdConfigManager" ref="notifdConfigFactory" />
       <property name="notificationManager" ref="notificationFactory" />

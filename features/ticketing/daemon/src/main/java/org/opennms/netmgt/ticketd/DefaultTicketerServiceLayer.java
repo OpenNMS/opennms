@@ -62,8 +62,8 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     public static final String SKIP_CREATE_WHEN_CLEARED_SYS_PROP = "opennms.ticketer.skipCreateWhenCleared";
     public static final String SKIP_CLOSE_WHEN_NOT_CLEARED_SYS_PROP = "opennms.ticketer.skipCloseWhenNotCleared";
 
-    private final boolean SKIP_CREATE_WHEN_CLEARED = Boolean.getBoolean(SKIP_CREATE_WHEN_CLEARED_SYS_PROP);
-    private final boolean SKIP_CLOSE_WHEN_NOT_CLEARED = Boolean.getBoolean(SKIP_CLOSE_WHEN_NOT_CLEARED_SYS_PROP);
+    private final boolean SKIP_CREATE_WHEN_CLEARED = Boolean.parseBoolean(System.getProperty(SKIP_CREATE_WHEN_CLEARED_SYS_PROP, Boolean.TRUE.toString()));
+    private final boolean SKIP_CLOSE_WHEN_NOT_CLEARED = Boolean.parseBoolean(System.getProperty(SKIP_CLOSE_WHEN_NOT_CLEARED_SYS_PROP, Boolean.TRUE.toString()));
 
     @Autowired
     private AlarmDao m_alarmDao;

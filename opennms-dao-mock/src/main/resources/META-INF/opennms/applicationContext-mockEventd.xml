@@ -55,8 +55,6 @@
 		<property name="eventIpcBroadcaster" ref="eventIpcManagerImpl" />
 	</bean>
 
-	<bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
-
 	<bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
 		<constructor-arg ref="eventdMetricRegistry"/>
 		<property name="eventConfDao" ref="eventConfDao" />
@@ -69,5 +67,7 @@
 		<property name="nodeDao" ref="nodeDao" />
 		<property name="serviceTypeDao" ref="serviceTypeDao" />
 	</bean>
+
+	<import resource="classpath:/META-INF/opennms/applicationContext-eventUtil.xml" />
 
 </beans>

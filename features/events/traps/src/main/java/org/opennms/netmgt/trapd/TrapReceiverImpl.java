@@ -98,63 +98,46 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
     }
 
     /**
-     * TODO: Add a better .equals() method to {@link SnmpV3User} and replace this
-     * with a collection comparator.
-     * 
      * @param existingSnmpV3UserMap
      * @param updatedSnmpV3Usermap
      */
-    public static boolean compareSnmpV3UsersMap(Map<String, SnmpV3User> existingSnmpV3UserMap, Map<String, SnmpV3User> updatedSnmpV3Usermap) {
+    public static boolean isSnmpV3UsersMapUpdated(final Map<String, SnmpV3User> existingSnmpV3UserMap, final Map<String, SnmpV3User> updatedSnmpV3Usermap) {
 
-        if (existingSnmpV3UserMap.isEmpty() || updatedSnmpV3Usermap.isEmpty()) {
-            return true;
-        }
+        // If the new map is empty, do not update the configuration
+        if (updatedSnmpV3Usermap.isEmpty()) {
+            return false;
+        } 
 
-        for (String securityName : existingSnmpV3UserMap.keySet()) {
-            if (
-                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getAuthPassPhrase(), updatedSnmpV3Usermap.get(securityName).getAuthPassPhrase()) ||
-                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getAuthProtocol(), updatedSnmpV3Usermap.get(securityName).getAuthProtocol()) ||
-                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getEngineId(), updatedSnmpV3Usermap.get(securityName).getEngineId()) ||
-                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getPrivPassPhrase(), updatedSnmpV3Usermap.get(securityName).getPrivPassPhrase()) ||
-                compareSnmpV3UsersAttributes(existingSnmpV3UserMap.get(securityName).getPrivProtocol(), updatedSnmpV3Usermap.get(securityName).getPrivProtocol())
-            ) {
-                return true;
-            }
-        }
-
-        return false;
+        return !existingSnmpV3UserMap.equals(updatedSnmpV3Usermap);
     }
 
-    private static boolean compareSnmpV3UsersAttributes(String currentValue, String updatedValue) {
-        if (currentValue != null && updatedValue != null) {
-            if (!currentValue.equalsIgnoreCase(updatedValue)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean checkForTrapdConfigurationChange(TrapdConfiguration m_trapdConfig) {
-        if (m_trapdConfig.getSnmpTrapPort() != m_snmpTrapPort) {
+    protected boolean checkForTrapdConfigurationChange(TrapdConfiguration trapdConfiguration) {
+        if (trapdConfiguration.getSnmpTrapPort() != m_snmpTrapPort) {
             LOG.info("SNMP trap port has been updated from trapd-confguration.xml.");
             return true;
-        } else if (m_trapdConfig.getSnmpTrapAddress() != null && !m_trapdConfig.getSnmpTrapAddress().equalsIgnoreCase(m_snmpTrapAddress)) {
+        } else if (
+            trapdConfiguration.getSnmpTrapAddress() != null &&
+            !trapdConfiguration.getSnmpTrapAddress().equalsIgnoreCase("*") &&
+            !trapdConfiguration.getSnmpTrapAddress().equalsIgnoreCase(m_snmpTrapAddress)
+        ) {
             LOG.info("SNMP trap address has been updated from trapd-confguration.xml.");
             return true;
         } else {
-            Map<String, SnmpV3User> newSnmpV3Users = getSnmpV3UserMap(m_trapdConfig);
+            Map<String, SnmpV3User> newSnmpV3Users = getSnmpV3UserMap(trapdConfiguration);
 
-            Map<String, SnmpV3User> existingSnmpV3Users = m_snmpV3Users.stream().collect(Collectors.toMap(SnmpV3User::getSecurityName, Function.<SnmpV3User>identity()));
+            Map<String, SnmpV3User> existingSnmpV3Users = m_snmpV3Users.stream().collect(Collectors.toMap(SnmpV3User::getSecurityName, Function.<SnmpV3User>identity(), (a,b) -> {
+                LOG.warn("Multiple SNMPv3 user entries found for security name \"{}\", using entry {}", a.getSecurityName(), a);
+                return a;
+            }));
 
-            if (compareSnmpV3UsersMap(existingSnmpV3Users, newSnmpV3Users) || compareSnmpV3UsersMap(newSnmpV3Users, existingSnmpV3Users)) {
+            if (isSnmpV3UsersMapUpdated(existingSnmpV3Users, newSnmpV3Users) ) {
                 LOG.info("SNMPv3 user list has been updated from trapd-confguration.xml.");
                 return true;
+            } else {
+                return false;
             }
         }
-
-        return false;
     }
-
 
     /**
      * Default constructor
@@ -211,7 +194,7 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
         try {
             InetAddress address = getInetAddress();
             LOG.info("Listening on {}:{}", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
-            SnmpUtils.registerForTraps(this, new BasicTrapProcessorFactory(), address, m_snmpTrapPort, m_snmpV3Users); // Need to clarify 
+            SnmpUtils.registerForTraps(this, new BasicTrapProcessorFactory(), address, m_snmpTrapPort, m_snmpV3Users); // Need to clarify
             m_registeredForTraps = true;
             
             LOG.debug("init: Creating the trap session");
@@ -220,13 +203,13 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
                 Logging.withPrefix("OpenNMS.Manager", new Runnable() {
                     @Override
                     public void run() {
-                        LOG.error("init: Failed to listen on SNMP trap port " + m_snmpTrapPort + ", perhaps something else is already listening?", e);
+                        LOG.error("init: Failed to listen on SNMP trap port {}, perhaps something else is already listening?", m_snmpTrapPort, e);
                     }
                 });
-                LOG.error("init: Failed to listen on SNMP trap port " + m_snmpTrapPort + ", perhaps something else is already listening?", e);
+                LOG.error("init: Failed to listen on SNMP trap port {}, perhaps something else is already listening?", m_snmpTrapPort, e);
                 throw new UndeclaredThrowableException(e, "Failed to listen on SNMP trap port " + m_snmpTrapPort + ", perhaps something else is already listening?");
             } else {
-                LOG.error("init: Failed to initialize SNMP trap socket on port " + m_snmpTrapPort, e);
+                LOG.error("init: Failed to initialize SNMP trap socket on port {}", m_snmpTrapPort, e);
                 throw new UndeclaredThrowableException(e, "Failed to initialize SNMP trap socket on port " + m_snmpTrapPort);
             }
         }
@@ -266,7 +249,10 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
      */
     private static Map<String, SnmpV3User> getSnmpV3UserMap(TrapdConfiguration config) {
         if(config.getSnmpv3UserCollection() != null) {
-            return config.getSnmpv3UserCollection().stream().collect(Collectors.toMap(Snmpv3User::getSecurityName, TrapReceiverImpl::toSnmpV3User));
+            return config.getSnmpv3UserCollection().stream().collect(Collectors.toMap(Snmpv3User::getSecurityName, TrapReceiverImpl::toSnmpV3User, (a,b) -> {
+                LOG.warn("Multiple SNMPv3 user entries found for security name \"{}\", using entry {}", a.getSecurityName(), a);
+                return a;
+            }));
         } else {
             return Collections.emptyMap();
         }
