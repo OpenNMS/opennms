@@ -23,7 +23,7 @@ DESC="Minion"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 MINION_HOME="/opt/minion"
 SYSCONFDIR="${MINION_HOME}/etc"
-RUNAS=minion
+RUNAS=root
 STOP_RETRIES=10
 STOP_WAIT=5
 

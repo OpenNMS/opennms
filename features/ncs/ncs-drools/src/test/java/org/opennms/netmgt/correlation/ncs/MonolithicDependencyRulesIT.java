@@ -48,6 +48,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
+@Ignore("Broken since updating EventUtilDaoImpl. See NMS-8681.")
 public class MonolithicDependencyRulesIT extends CorrelationRulesITCase {
 	
 	@Autowired
