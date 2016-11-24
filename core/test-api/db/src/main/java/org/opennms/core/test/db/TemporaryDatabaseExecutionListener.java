@@ -44,8 +44,8 @@ import javax.sql.DataSource;
 
 import org.junit.Test;
 import org.junit.internal.MethodSorter;
-import org.opennms.core.db.C3P0ConnectionFactory;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.HikariCPConnectionFactory;
 import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
@@ -244,9 +244,10 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
         m_database = m_databases.remove();
 
-        // We should pool connections to simulate the behavior of OpenNMS where we use c3p0,
-        // but we also need to be able to shut down the connection pool reliably after tests
-        // complete which c3p0 isn't great at. So make it configurable.
+        // We should pool connections to simulate the behavior of OpenNMS,
+        // but we also need to be able to shut down the connection pool reliably
+        // after tests complete. Some connection pools aren't great at this
+        // so make it configurable.
         //
         if (jtd.poolConnections()) {
             JdbcDataSource ds = new JdbcDataSource();
@@ -256,7 +257,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
             ds.setUrl(System.getProperty(TemporaryDatabase.URL_PROPERTY, TemporaryDatabase.DEFAULT_URL) + m_database.getTestDatabase());
             ds.setClassName(System.getProperty(TemporaryDatabase.DRIVER_PROPERTY, TemporaryDatabase.DEFAULT_DRIVER));
 
-            C3P0ConnectionFactory pool = new C3P0ConnectionFactory(ds);
+            HikariCPConnectionFactory pool = new HikariCPConnectionFactory(ds);
 
             DataSourceFactory.setInstance(pool);
         } else {

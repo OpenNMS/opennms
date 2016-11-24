@@ -27,7 +27,7 @@
       <documentation>Database connection pool configuration.</documentation>
     </annotation>
     <complexType>
-      <attribute name="factory" type="string" use="optional" default="org.opennms.core.db.C3P0ConnectionFactory">
+      <attribute name="factory" type="string" use="optional" default="org.opennms.core.db.HikariCPConnectionFactory">
         <annotation><documentation>The connection pool implementation to use.</documentation></annotation>
       </attribute>
       <attribute name="idleTimeout" type="int" use="optional" default="600">
