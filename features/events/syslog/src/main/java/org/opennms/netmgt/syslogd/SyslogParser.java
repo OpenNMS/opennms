@@ -34,7 +34,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,22 +54,26 @@ public class SyslogParser {
     private Boolean m_found = null;
     private Boolean m_matched = null;
     private boolean m_traceEnabled = false;
-    
+    private static final Map<String,Class<? extends SyslogParser>> PARSER_CLASSES = new ConcurrentHashMap<>();
+
     public static SyslogParser getParserInstance(SyslogdConfig config, String text) throws MessageDiscardedException {
-        Class<? extends SyslogParser> m_parserClass = null;
-        try {
-            m_parserClass = Class.forName(config.getParser()).asSubclass(SyslogParser.class);
-        } catch (final Exception ex) {
-            LOG.debug("Unable to instantiate Syslog parser class specified in config: {}", config.getParser(), ex);
-            m_parserClass = CustomSyslogParser.class;
+        Class<? extends SyslogParser> parserClass = PARSER_CLASSES.get(config.getParser());
+        if (parserClass == null) {
+            try {
+                parserClass = Class.forName(config.getParser()).asSubclass(SyslogParser.class);
+                PARSER_CLASSES.put(config.getParser(), parserClass);
+            } catch (final Exception ex) {
+                LOG.debug("Unable to instantiate Syslog parser class specified in config: {}", config.getParser(), ex);
+                parserClass = CustomSyslogParser.class;
+            }
         }
 
         final SyslogParser retval;
         try {
-            Constructor<? extends SyslogParser> m = m_parserClass.getConstructor(SyslogdConfig.class, String.class);
+            Constructor<? extends SyslogParser> m = parserClass.getConstructor(SyslogdConfig.class, String.class);
             retval = (SyslogParser)m.newInstance(config, text);
         } catch (final Exception ex) {
-            LOG.debug("Unable to get parser for class '{}'", m_parserClass.getName(), ex);
+            LOG.debug("Unable to get parser for class '{}'", parserClass.getName(), ex);
             throw new MessageDiscardedException(ex);
         }
 
