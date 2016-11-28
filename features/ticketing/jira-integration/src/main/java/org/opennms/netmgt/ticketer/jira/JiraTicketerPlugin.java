@@ -32,37 +32,44 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import org.joda.time.DateTime;
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
+import org.opennms.netmgt.ticketer.jira.cache.Cache;
+import org.opennms.netmgt.ticketer.jira.cache.TimeoutRefreshPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
-import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
 import com.atlassian.jira.rest.client.api.domain.BasicIssue;
+import com.atlassian.jira.rest.client.api.domain.CimFieldInfo;
+import com.atlassian.jira.rest.client.api.domain.CimProject;
 import com.atlassian.jira.rest.client.api.domain.Comment;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.Transition;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
-import com.atlassian.jira.rest.client.auth.AnonymousAuthenticationHandler;
-import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
+import com.google.common.base.Strings;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * OpenNMS Trouble Ticket Plugin API implementation for Atlassian JIRA.
@@ -78,23 +85,39 @@ import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientF
 public class JiraTicketerPlugin implements Plugin {
     private static final Logger LOG = LoggerFactory.getLogger(JiraTicketerPlugin.class);
 
-    protected final JiraRestClientFactory clientFactory = new AsynchronousJiraRestClientFactory();
+    // In order to correctly map (custom) fields, we have to know the meta data, which does not change very often,
+    // therefore we cache it.
+    private final Cache<List<CimProject>> fieldInfoCache;
 
-    protected JiraRestClient getConnection() {
-        try {
-            URI jiraUri = new URL(getProperties().getProperty("jira.host")).toURI();
-            String username = getProperties().getProperty("jira.username");
-            if (username == null || "".equals(username)) {
-                return clientFactory.create(jiraUri, new AnonymousAuthenticationHandler());
-            } else {
-                return clientFactory.createWithBasicHttpAuthentication(jiraUri, getProperties().getProperty("jira.username"), getProperties().getProperty("jira.password"));
-            }
-        } catch (MalformedURLException e) {
-            LOG.error("Failed to parse URL: {}", getProperties().getProperty("jira.host"));
-        } catch (URISyntaxException e) {
-            LOG.error("Failed to parse URI: {}", getProperties().getProperty("jira.host"));
+    private final LoadingCache<CimFieldInfo, Function<String, ?>> fieldMapFunctionCache;
+
+    public JiraTicketerPlugin() {
+        Long cacheReloadTime = getConfig().getCacheReloadTime();
+        if (cacheReloadTime == null || cacheReloadTime < 0) {
+            LOG.warn("Cache Reload time was set to {} ms. Negative or null values are not supported. Setting to 5 minutes.", cacheReloadTime);
+            cacheReloadTime = TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES);
         }
-        return null;
+        fieldMapFunctionCache = CacheBuilder.newBuilder()
+                .maximumSize(100)
+                .expireAfterWrite(cacheReloadTime, TimeUnit.MILLISECONDS)
+                .build(new CacheLoader<CimFieldInfo, Function<String, ?>>() {
+                    @Override
+                    public Function<String, ?> load(CimFieldInfo key) throws Exception {
+                        return new FieldMapperRegistry(getConfig().getProperties()).lookup(key.getSchema().getType(), key.getSchema().getItems());
+                    }
+                });
+        fieldInfoCache = new Cache<>(
+                () -> JiraClientUtils.getIssueMetaData(
+                    getConnection(),
+                    "projects.issuetypes.fields",
+                    getConfig().getIssueTypeId(),
+                    getConfig().getProjectKey()),
+                new TimeoutRefreshPolicy(cacheReloadTime, TimeUnit.NANOSECONDS));
+    }
+
+    protected JiraRestClient getConnection() throws PluginException {
+        Config config = getConfig();
+        return JiraConnectionFactory.createConnection(config.getHost(), config.getUsername(), config.getPassword());
     }
 
     /**
@@ -106,9 +129,6 @@ public class JiraTicketerPlugin implements Plugin {
     @Override
     public Ticket get(String ticketId) throws PluginException {
         JiraRestClient jira = getConnection();
-        if (jira == null) {
-            return null;
-        }
 
         // w00t
         Issue issue;
@@ -137,7 +157,7 @@ public class JiraTicketerPlugin implements Plugin {
      * Convenience method for converting a string representation of
      * the OpenNMS enumerated ticket states.
      *
-     * @param stateIdString
+     * @param ticketStatusName
      * @return the converted <code>org.opennms.api.integration.ticketing.Ticket.State</code>
      */
     private static Ticket.State getStateFromStatusName(String ticketStatusName) {
@@ -145,19 +165,14 @@ public class JiraTicketerPlugin implements Plugin {
         // The values for the properties at these keys should contain
         // a comma-separated list of known JIRA status names that map
         // the respective ticket states
-        Map<Ticket.State, String> ticketStateToPropNameMap = new HashMap<>();
-        ticketStateToPropNameMap.put(Ticket.State.OPEN, "jira.status.open");
-        ticketStateToPropNameMap.put(Ticket.State.CLOSED, "jira.status.closed");
-        ticketStateToPropNameMap.put(Ticket.State.CANCELLED, "jira.status.cancelled");
+        Map<Ticket.State, List<String>> ticketStateToJiraStatusMap = new HashMap<>();
+        ticketStateToJiraStatusMap.put(Ticket.State.OPEN, getConfig().getOpenStatus());
+        ticketStateToJiraStatusMap.put(Ticket.State.CLOSED, getConfig().getCloseStatus());
+        ticketStateToJiraStatusMap.put(Ticket.State.CANCELLED, getConfig().getCancelStatus());
 
-        Properties jiraProperties = getProperties();
-        for (Entry<Ticket.State, String> entry : ticketStateToPropNameMap.entrySet()) {
+        for (Entry<Ticket.State, List<String>> entry : ticketStateToJiraStatusMap.entrySet()) {
             // Grab the value for the given property and all of the names to the set
-            Set<String> knownStateIds = new HashSet<>();
-            String stateIdsProp = jiraProperties.getProperty(entry.getValue());
-            if (stateIdsProp != null) {
-                knownStateIds.addAll(Arrays.asList(stateIdsProp.split(",")));
-            }
+            Set<String> knownStateIds = Sets.newHashSet(entry.getValue());
 
             // If there's a match, return the current ticket state
             if (knownStateIds.contains(ticketStatusName)) {
@@ -167,6 +182,10 @@ public class JiraTicketerPlugin implements Plugin {
 
         // No match, default to open
         return Ticket.State.OPEN;
+    }
+
+    public static Config getConfig() {
+        return new Config(getProperties());
     }
 
     /**
@@ -201,14 +220,17 @@ public class JiraTicketerPlugin implements Plugin {
     public void saveOrUpdate(Ticket ticket) throws PluginException {
 
         JiraRestClient jira = getConnection();
-
+        Config config = getConfig();
         if (ticket.getId() == null || ticket.getId().equals("")) {
             // If we can't find a ticket with the specified ID then create one.
-            IssueInputBuilder builder = new IssueInputBuilder(getProperties().getProperty("jira.project"), Long.valueOf(getProperties().getProperty("jira.type").trim()));
-            builder.setReporterName(getProperties().getProperty("jira.username"));
+            IssueInputBuilder builder = new IssueInputBuilder(
+                    config.getProjectKey(),
+                    config.getIssueTypeId());
+            builder.setReporterName(config.getUsername());
             builder.setSummary(ticket.getSummary());
             builder.setDescription(ticket.getDetails());
-            builder.setDueDate(new DateTime(Calendar.getInstance()));
+
+           populateFields(ticket, builder);
 
             BasicIssue createdIssue;
             try {
@@ -241,7 +263,7 @@ public class JiraTicketerPlugin implements Plugin {
             if (Ticket.State.CLOSED.equals(ticket.getState())) {
                 Comment comment = Comment.valueOf("Issue resolved by OpenNMS.");
                 for (Transition transition : transitions) {
-                    if (getProperties().getProperty("jira.resolve").equals(transition.getName())) {
+                    if (config.getResolveTransitionName().equals(transition.getName())) {
                         LOG.info("Resolving ticket {}", ticket.getId());
                         // Resolve the issue
                         try {
@@ -252,11 +274,11 @@ public class JiraTicketerPlugin implements Plugin {
                         return;
                     }
                 }
-                LOG.warn("Could not resolve ticket {}, no '{}' operation available.", ticket.getId(), getProperties().getProperty("jira.resolve"));
+                LOG.warn("Could not resolve ticket {}, no '{}' operation available.", ticket.getId(), getConfig().getResolveTransitionName());
             } else if (Ticket.State.OPEN.equals(ticket.getState())) {
                 Comment comment = Comment.valueOf("Issue reopened by OpenNMS.");
                 for (Transition transition : transitions) {
-                    if (getProperties().getProperty("jira.reopen").equals(transition.getName())) {
+                    if (getConfig().getReopentransitionName().equals(transition.getName())) {
                         LOG.info("Reopening ticket {}", ticket.getId());
                         // Resolve the issue
                         try {
@@ -267,8 +289,49 @@ public class JiraTicketerPlugin implements Plugin {
                         return;
                     }
                 }
-                LOG.warn("Could not reopen ticket {}, no '{}' operation available.", ticket.getId(), getProperties().getProperty("jira.reopen"));
+                LOG.warn("Could not reopen ticket {}, no '{}' operation available.", ticket.getId(), getConfig().getReopentransitionName());
             }
+        }
+    }
+
+    /**
+     * Convenient method to populate additional fields in the {@link IssueInputBuilder}.
+     * The fields are read from {@link Ticket#getAttributes()}.
+     *
+     * @param ticket The ticket to read the attributes from.
+     * @param builder The builder to set additional fields.
+     */
+    private void populateFields(Ticket ticket, IssueInputBuilder builder) {
+        // Only convert additional attributes to field values, if available
+        if (!ticket.hasAttributes()) {
+            return;
+        }
+        try {
+            final List<String> populatedFields = Lists.newArrayList(); // List of fields already populated
+            final Collection<CimFieldInfo> fields = JiraClientUtils.getFields(fieldInfoCache.get());
+            for (Entry<String, String> eachEntry : ticket.getAttributes().entrySet()) {
+                if (!Strings.isNullOrEmpty(eachEntry.getValue())) { // ignore null or empty values
+                    // Find a field representation in jira
+                    for (CimFieldInfo eachField : fields) {
+                        if (eachEntry.getKey().equals(eachField.getId())) {
+                            final String attributeValue = eachEntry.getValue();
+                            final Object mappedFieldValue = fieldMapFunctionCache.get(eachField).apply(attributeValue);
+                            builder.setFieldValue(eachField.getId(), mappedFieldValue);
+                            populatedFields.add(eachField.getId());
+                            break; // we found a representation, now continue with next attribute
+                        }
+                    }
+                }
+            }
+            if (populatedFields.size() != ticket.getAttributes().size()) {
+                for (String eachKey : ticket.getAttributes().keySet()) {
+                    if (!populatedFields.contains(eachKey)) {
+                        LOG.warn("Ticket attribute '{}' is defined, but was not mapped to a (custom) field in JIRA. Attribute is skipped.", eachKey);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            LOG.error("Could not convert attributes to field values", ex);
         }
     }
 }
