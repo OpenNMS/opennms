@@ -33,10 +33,9 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -81,7 +80,7 @@ public class ConvertToEvent {
 
     private final Event m_event;
 
-    private static final Map<String,Pattern> CACHED_PATTERNS = Collections.synchronizedMap(new WeakHashMap<String,Pattern>());
+    private static final Map<String,Pattern> CACHED_PATTERNS = new ConcurrentHashMap<>();
 
     /**
      * Constructs a new event encapsulation instance based upon the
