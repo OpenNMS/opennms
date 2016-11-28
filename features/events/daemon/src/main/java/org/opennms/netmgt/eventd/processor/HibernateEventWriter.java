@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
@@ -57,7 +58,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DeadlockLoserDataAccessException;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.util.Assert;
 
 import com.codahale.metrics.MetricRegistry;
@@ -88,6 +91,9 @@ import com.codahale.metrics.Timer.Context;
  */
 public class HibernateEventWriter implements EventWriter {
     private static final Logger LOG = LoggerFactory.getLogger(HibernateEventWriter.class);
+    
+    @Autowired
+    private TransactionOperations m_transactionManager;
     
     @Autowired
     private NodeDao nodeDao;
@@ -130,8 +136,8 @@ public class HibernateEventWriter implements EventWriter {
          */
         Assert.notNull(event.getLogmsg(), "event does not have a logmsg");
         if (
-            "donotpersist".equals(event.getLogmsg().getDest()) || 
-            "suppress".equals(event.getLogmsg().getDest())
+            "donotpersist".equalsIgnoreCase(event.getLogmsg().getDest()) || 
+            "suppress".equalsIgnoreCase(event.getLogmsg().getDest())
         ) {
             LOG.debug("{}: uei '{}' marked as '{}'; not processing event.", logPrefix, event.getUei(), event.getLogmsg().getDest());
             return false;
@@ -142,18 +148,32 @@ public class HibernateEventWriter implements EventWriter {
 
     @Override
     public void process(Log eventLog) throws EventProcessorException {
-        if (eventLog != null && eventLog.getEvents() != null && eventLog.getEvents().getEvent() != null) {
-            try (Context context = writeTimer.time()) {
-                // Calling a separate method to insert the events allows us to time the transaction
-                processInTransaction(eventLog);
-            }
-        }
-    }
+        if (eventLog != null && eventLog.getEvents() != null) {
+            final Event[] events = eventLog.getEvents().getEvent();
+            if (events != null && events.length > 0) {
+                final AtomicReference<EventProcessorException> exception = new AtomicReference<>();
 
-    @Transactional
-    private void processInTransaction(Log eventLog) throws EventProcessorException {
-        for (Event eachEvent : eventLog.getEvents().getEvent()) {
-            process(eventLog.getHeader(), eachEvent);
+                // Time the transaction and insertions
+                try (Context context = writeTimer.time()) {
+                    m_transactionManager.execute(new TransactionCallbackWithoutResult() {
+                        @Override
+                        protected void doInTransactionWithoutResult(TransactionStatus status) {
+                            for (Event eachEvent : events) {
+                                try {
+                                    process(eventLog.getHeader(), eachEvent);
+                                } catch (EventProcessorException e) {
+                                    exception.set(e);
+                                    return;
+                                }
+                            }
+                        }
+                    });
+
+                    if (exception.get() != null) {
+                        throw exception.get();
+                    }
+                }
+            }
         }
     }
 
@@ -221,7 +241,7 @@ public class HibernateEventWriter implements EventWriter {
         if (event.hasIfIndex()) {
             ovent.setIfIndex(event.getIfIndex());
         } else {
-        	ovent.setIfIndex(null);
+            ovent.setIfIndex(null);
         }
 
         // systemId
