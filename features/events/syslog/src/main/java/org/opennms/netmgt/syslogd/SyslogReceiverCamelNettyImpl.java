@@ -241,7 +241,7 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
             m_camel.addRoutes(new RouteBuilder() {
                 @Override
                 public void configure() throws Exception {
-                    String from = String.format("netty:udp://%s:%s?sync=false&allowDefaultCodec=false&receiveBufferSize=%d&connectTimeout=%d&synchronous=true&orderedThreadPoolExecutor=false",
+                    String from = String.format("netty:udp://%s:%s?sync=false&allowDefaultCodec=false&receiveBufferSize=%d&connectTimeout=%d&synchronous=true&workerPool=#workerPool&orderedThreadPoolExecutor=false",
                         InetAddressUtils.str(m_host),
                         m_port,
                         Integer.MAX_VALUE,
@@ -251,8 +251,8 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                     // Polled via JMX
                     .routeId("syslogListen")
                     .aggregate(header(NettyConstants.NETTY_REMOTE_ADDRESS), new LinkedListAggregationStrategy(packetMeter))
-                    .completionSize(1000)
-                    .completionInterval(500)
+                    .completionSize(1)
+                    .completionInterval(1)
                     .parallelProcessing() // JW: TODO: FIXME
                     .process(new Processor() {
                         @SuppressWarnings("unchecked")

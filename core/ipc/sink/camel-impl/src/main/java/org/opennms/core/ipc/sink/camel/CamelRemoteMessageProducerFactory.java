@@ -47,10 +47,10 @@ import org.opennms.core.ipc.sink.api.MessageProducerFactory;
  */
 public class CamelRemoteMessageProducerFactory implements MessageProducerFactory {
 
-    @EndpointInject(uri = "direct:sendMessage", context = "sinkClient")
+    @EndpointInject(uri = "seda:sendMessage?size=1000000&blockWhenFull=true", context = "sinkClient")
     private ProducerTemplate template;
 
-    @EndpointInject(uri = "direct:sendMessage", context = "sinkClient")
+    @EndpointInject(uri = "seda:sendMessage?size=1000000&blockWhenFull=true", context = "sinkClient")
     private Endpoint endpoint;
 
     @Override

@@ -128,8 +128,7 @@ public class CamelMessageConsumerManager implements MessageConsumerManager {
         public void configure() throws Exception {
             final JmsQueueNameFactory queueNameFactory = new JmsQueueNameFactory(
                     CamelSinkConstants.JMS_QUEUE_PREFIX, module.getId());
-            from(String.format("kafka:127.0.0.1:9092?topic=syslog&zookeeperHost=127.0.0.1"+
- "&zookeeperPort=2181&groupId=syslogconsumer&consumerStreams=1"))
+            from(String.format("queuingservice:%s", queueNameFactory.getName()))
                 .setExchangePattern(ExchangePattern.InOnly)
                 .process(new CamelSinkServerProcessor(consumerManager, module))
                 .routeId(getRouteId());

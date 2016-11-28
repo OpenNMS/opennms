@@ -26,10 +26,20 @@
 
 	<bean id="syslogConnectionHandlerDefault" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerDefaultImpl"/>
 	
-	<bean id="syslogConsumer" class="org.opennms.netmgt.syslogd.SyslogConsumer"/>
+	<!-- Metrics -->
+    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
+    
+    <!-- Get a reference to the org.opennms.netmgt.events.api.EventForwarder -->
+	<reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
+	
+	<bean id="syslogConsumer" class="org.opennms.netmgt.syslogd.SyslogConsumer">
+		<argument ref="metricRegistry"/>
+		<property name="eventForwarder" ref="eventForwarder"/>
+		<property name="syslogdConfig" ref="syslogdConfig"/>
+	</bean>
 	
 	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
-		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
+		<argument value="org.opennms.netmgt.syslogd.UDPMessageLogDTO" />
 	</bean>
 
 	<bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogDTOToObjectProcessor"/>
@@ -52,8 +62,8 @@
 		<route id="receiveSyslogConnectionViaKafka">
 			<from uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;zookeeperHost={{zookeeperhost}}&amp;zookeeperPort={{zookeeperport}}&amp;groupId={{groupId}}&amp;consumerStreams={{consumerstreams}}"/>
 			<!-- TODO: Change these to <process> tags once Syslogd is loaded from inside Karaf -->
-			<!-- <bean ref="unmarshaller"/>
-			<bean ref="mapper"/> -->
+			<bean ref="unmarshaller"/>
+			<!--<bean ref="mapper"/> -->
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 <!-- 			<bean ref="syslogdConfigProcessor"/> -->
 <!-- 			<to uri="seda:syslogkafkaHandler"/> -->

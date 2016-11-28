@@ -29,6 +29,13 @@ public class SyslogConsumer implements MessageConsumer<UDPMessageLogDTO>, Initia
     
     @Autowired
     private EventForwarder eventForwarder;
+    
+    public SyslogConsumer() {
+    	MetricRegistry registry = new MetricRegistry();
+        handleTimer = registry.timer("handle");
+        toEventTimer = registry.timer("handle.toevent");
+        broadcastTimer = registry.timer("handle.broadcast");
+    }
 
     public SyslogConsumer(MetricRegistry registry) {
         handleTimer = registry.timer("handle");

@@ -27,10 +27,10 @@
       <bundle>blueprint:mvn:org.opennms.features/org.opennms.features.discovery/${project.version}/xml/blueprint-discoverer</bundle>
     </feature>
 
-    <feature name="opennms-syslogd-handler-minion" description="OpenNMS :: Syslogd :: Handler :: Minion" version="${project.version}">
-      <feature>opennms-core-ipc-sink</feature>
-      <feature>opennms-syslogd</feature>
-      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-minion</bundle>
+    <feature name="opennms-syslogd-handler-minion" description="OpenNMS :: Syslogd :: Handler :: Minion" version="${project.version}"> 
+    	<feature>opennms-core-ipc-sink</feature> 
+    	<feature>opennms-syslogd</feature> 
+    	<bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-minion</bundle> 
     </feature>
 
     <feature name="opennms-syslogd-handler-kafka" description="OpenNMS :: Syslogd :: Handler :: Kafka" version="${project.version}">
