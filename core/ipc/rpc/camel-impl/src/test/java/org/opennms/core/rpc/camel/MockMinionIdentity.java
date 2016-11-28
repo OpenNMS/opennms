@@ -26,27 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller;
+package org.opennms.core.rpc.camel;
 
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import org.opennms.minion.core.api.MinionIdentity;
 
-public interface PollerRequestBuilder {
+public class MockMinionIdentity implements MinionIdentity {
 
-    PollerRequestBuilder withService(MonitoredService service);
+    private final String location;
 
-    PollerRequestBuilder withMonitor(ServiceMonitor serviceMonitor);
+    public MockMinionIdentity(String location) {
+        this.location = location;
+    }
 
-    PollerRequestBuilder withMonitorClassName(String className);
+    @Override
+    public String getId() {
+        return "0";
+    }
 
-    PollerRequestBuilder withTimeToLive(Long ttlInMs);
-
-    PollerRequestBuilder withAttribute(String key, Object value);
-
-    PollerRequestBuilder withAttributes(Map<String, Object> attributes);
-
-    PollerRequestBuilder withAdaptor(ServiceMonitorAdaptor adaptor);
-
-    CompletableFuture<PollerResponse> execute();
-
+    @Override
+    public String getLocation() {
+        return location;
+    }
 }

@@ -76,6 +76,8 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
     @XmlElement(name = "attribute")
     private List<PollerAttributeDTO> attributes = new ArrayList<>();
 
+    private Long timeToLiveMs;
+
     public String getLocation() {
         return location;
     }
@@ -175,9 +177,13 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
         return pollerAttributeMap;
     }
 
+    public void setTimeToLiveMs(Long timeToLiveMs) {
+        this.timeToLiveMs = timeToLiveMs;
+    }
+
     @Override
     public Long getTimeToLiveMs() {
-        return null;
+        return timeToLiveMs;
     }
 
     @Override
@@ -189,12 +195,12 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
         return Objects.equals(location, castOther.location) && Objects.equals(className, castOther.className)
                 && Objects.equals(serviceName, castOther.serviceName) && Objects.equals(address, castOther.address)
                 && Objects.equals(nodeId, castOther.nodeId) && Objects.equals(nodeLabel, castOther.nodeLabel)
-                && Objects.equals(attributes, castOther.attributes);
+                && Objects.equals(timeToLiveMs, castOther.timeToLiveMs) && Objects.equals(attributes, castOther.attributes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, className, serviceName, address, nodeId, nodeLabel, attributes);
+        return Objects.hash(location, className, serviceName, address, nodeId, nodeLabel, attributes, timeToLiveMs);
     }
 
 }

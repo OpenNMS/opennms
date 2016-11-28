@@ -84,16 +84,8 @@ public class EchoRpcBlueprintIT extends CamelBlueprintTest {
     @Override
     protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
         services.put(MinionIdentity.class.getName(),
-                new KeyValueHolder<Object, Dictionary>(new MinionIdentity() {
-                    @Override
-                    public String getId() {
-                        return "0";
-                    }
-                    @Override
-                    public String getLocation() {
-                        return REMOTE_LOCATION_NAME;
-                    }
-                }, new Properties()));
+                new KeyValueHolder<Object, Dictionary>(new MockMinionIdentity(REMOTE_LOCATION_NAME),
+                new Properties()));
 
         Properties props = new Properties();
         props.setProperty("alias", "opennms.broker");

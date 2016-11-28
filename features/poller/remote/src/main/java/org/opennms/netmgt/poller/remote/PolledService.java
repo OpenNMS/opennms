@@ -49,7 +49,7 @@ import org.opennms.netmgt.poller.MonitoredService;
  * @version $Id: $
  */
 public class PolledService implements MonitoredService, Serializable, Comparable<PolledService> {
-    
+
     private static final long serialVersionUID = 3L;
 
     private final InetAddress m_address;
@@ -220,5 +220,4 @@ public class PolledService implements MonitoredService, Serializable, Comparable
             .append(this.getServiceId(), that.getServiceId())
             .toComparison();
     }
-
 }

@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
@@ -114,12 +115,16 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     @Override
     public PollStatus poll() {
         try {
-            String packageName = getPackageName();
-            LOG.debug("Polling {} using pkg {}", m_service, packageName);
+            final String packageName = getPackageName();
+            // Use the service's configured interval as the TTL for this request
+            final Long ttlInMs = m_configService.getInterval();
+            LOG.debug("Polling {} with TTL {} using pkg {}",
+                    m_service, ttlInMs, packageName);
 
             PollStatus result = m_locationAwarePollerClient.poll()
                 .withService(m_service)
                 .withMonitor(m_serviceMonitor)
+                .withTimeToLive(ttlInMs)
                 .withAttributes(getParameters())
                 .withAdaptor(m_latencyStoringServiceMonitorAdaptor)
                 .withAdaptor(m_invertedStatusServiceMonitorAdaptor)
@@ -128,6 +133,12 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
             LOG.debug("Finish polling {} using pkg {} result = {}", m_service, packageName, result);
             return result;
         } catch (Throwable e) {
+            final Throwable cause = e.getCause();
+            if (cause != null && cause instanceof RequestTimedOutException) {
+                LOG.warn("No response was received when remotely invoking the poll for {}."
+                        + " Marking the service as UNKNOWN.", m_service);
+                return PollStatus.unknown("No response received for "+m_service+". "+cause);
+            }
             LOG.error("Unexpected exception while polling {}. Marking service as DOWN", m_service, e);
             return PollStatus.down("Unexpected exception while polling "+m_service+". "+e);
         }

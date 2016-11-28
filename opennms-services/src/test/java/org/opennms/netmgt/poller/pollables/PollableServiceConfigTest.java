@@ -29,23 +29,31 @@
 package org.opennms.netmgt.poller.pollables;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -53,10 +61,13 @@ import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.scheduler.Timer;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -99,5 +110,58 @@ public class PollableServiceConfigTest {
                 persisterFactory, resourceStorageDao, m_locationAwarePollerClient);
         PollStatus pollStatus = psc.poll();
         assertThat(pollStatus.getReason(), not(containsString("Unexpected exception")));
+    }
+
+    /**
+     * Verifies that <b>PollStatus.unknown()</b> is returned when the
+     * {@link LocationAwarePollerClient} fails with a {@link RequestTimedOutException}.
+     *
+     * This can happen when no Minions at the given location are available to process
+     * the request, or the request was not completed in time, in which case we cannot
+     * ascertain that the service is UP or DOWN.
+     */
+    @Test
+    public void returnsUnknownOnRequestTimedOutException() throws Exception {
+        // Create a future that fails with a RequestTimedOutException
+        CompletableFuture<PollerResponse> future = new CompletableFuture<>();
+        future.completeExceptionally(new RequestTimedOutException(new Exception("Test")));
+
+        // Now mock the client to always return the future we created above
+        LocationAwarePollerClient client = mock(LocationAwarePollerClient.class, Mockito.RETURNS_DEEP_STUBS);
+        Mockito.when(
+                client.poll()
+                    .withService(any())
+                    .withMonitor(any())
+                    .withTimeToLive(any())
+                    .withAttributes(any())
+                    .withAdaptor(any())
+                    .withAdaptor(any())
+                    .execute()
+        ).thenReturn(future);
+
+        // Mock all of the required objects required to successfully initialize the PollableServiceConfig
+        PollableService pollableSvc = mock(PollableService.class);
+        when(pollableSvc.getSvcName()).thenReturn("SVC");
+
+        Service configuredSvc = new Service();
+        configuredSvc.setName("SVC");
+        Package pkg = mock(Package.class);
+        when(pkg.getServices()).thenReturn(Lists.newArrayList(configuredSvc));
+
+        PollerConfig pollerConfig = mock(PollerConfig.class);
+        PollOutagesConfig pollOutagesConfig = mock(PollOutagesConfig.class);
+        Timer timer = mock(Timer.class);
+        PersisterFactory persisterFactory = mock(PersisterFactory.class);
+        ResourceStorageDao resourceStorageDao = mock(ResourceStorageDao.class);
+
+        final PollableServiceConfig psc = new PollableServiceConfig(pollableSvc, pollerConfig,
+                pollOutagesConfig, pkg, timer,
+                persisterFactory, resourceStorageDao, client);
+
+        // Trigger the poll
+        PollStatus pollStatus = psc.poll();
+
+        // Verify
+        assertThat(pollStatus.isUnknown(), is(true));
     }
 }

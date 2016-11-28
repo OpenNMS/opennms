@@ -26,27 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller;
+package org.opennms.core.rpc.api;
 
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+/**
+ * Thrown when no response was received from a remote system
+ * before the request's time to live expired.
+ *
+ * @author jesse
+ */
+public class RequestTimedOutException extends Exception {
 
-public interface PollerRequestBuilder {
+    private static final long serialVersionUID = -6129623493993788846L;
 
-    PollerRequestBuilder withService(MonitoredService service);
-
-    PollerRequestBuilder withMonitor(ServiceMonitor serviceMonitor);
-
-    PollerRequestBuilder withMonitorClassName(String className);
-
-    PollerRequestBuilder withTimeToLive(Long ttlInMs);
-
-    PollerRequestBuilder withAttribute(String key, Object value);
-
-    PollerRequestBuilder withAttributes(Map<String, Object> attributes);
-
-    PollerRequestBuilder withAdaptor(ServiceMonitorAdaptor adaptor);
-
-    CompletableFuture<PollerResponse> execute();
-
+    public RequestTimedOutException(Throwable cause) {
+        super(cause);
+    }
 }

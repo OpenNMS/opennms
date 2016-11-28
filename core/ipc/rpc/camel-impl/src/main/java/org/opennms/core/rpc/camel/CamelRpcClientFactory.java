@@ -33,8 +33,10 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.camel.Endpoint;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangeTimedOutException;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.spi.Synchronization;
+import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.api.RpcModule;
@@ -74,7 +76,13 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                     }
                     @Override
                     public void onFailure(Exchange exchange) {
-                        future.completeExceptionally(exchange.getException());
+                        // Wrap timeout exceptions within a RequestTimedOutException
+                        final ExchangeTimedOutException timeoutException = exchange.getException(ExchangeTimedOutException.class);
+                        if (timeoutException != null) {
+                            future.completeExceptionally(new RequestTimedOutException(exchange.getException()));
+                        } else {
+                            future.completeExceptionally(exchange.getException());
+                        }
                     }
                 });
                 return future;
