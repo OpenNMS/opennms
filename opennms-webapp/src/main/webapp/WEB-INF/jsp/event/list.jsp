@@ -49,6 +49,7 @@
 <%@page import="org.opennms.web.api.Util" %>
 <%@page import="org.opennms.web.tags.FavoriteTag" %>
 <%@page import="org.opennms.core.utils.WebSecurityUtils"%>
+<%@ page import="com.google.common.base.Strings" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -365,12 +366,14 @@
 							<th width="1%">&nbsp;</th>
 						<% } %>
           <% } %>
-          <th width="1%"> <%=this.makeSortLink(callback, parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID"        , favorite)%></th>
-          <th width="10%"><%=this.makeSortLink(callback, parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  , favorite)%></th>
-          <th width="19%"><%=this.makeSortLink(callback, parms, SortStyle.TIME,      SortStyle.REVERSE_TIME,      "time",      "Time"      , favorite)%></th>
-          <th width="25%"><%=this.makeSortLink(callback, parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node"      , favorite)%></th>
-          <th width="16%"><%=this.makeSortLink(callback, parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface" , favorite)%></th>
-          <th width="15%"><%=this.makeSortLink(callback, parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service"   , favorite)%></th>
+          <th width="01%"><%=this.makeSortLink(callback, parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID"        , favorite)%></th>
+          <th width="06%"><%=this.makeSortLink(callback, parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  , favorite)%></th>
+          <th width="10%"><%=this.makeSortLink(callback, parms, SortStyle.TIME,      SortStyle.REVERSE_TIME,      "time",      "Time"      , favorite)%></th>
+          <th width="05%"><%=this.makeSortLink(callback, parms, SortStyle.LOCATION,  SortStyle.REVERSE_LOCATION,  "location",  "Location"  , favorite)%></th>
+          <th width="19%"><%=this.makeSortLink(callback, parms, SortStyle.SYSTEMID,  SortStyle.REVERSE_SYSTEMID,  "systemid",  "System-ID" , favorite)%></th>
+          <th width="18%"><%=this.makeSortLink(callback, parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node"      , favorite)%></th>
+          <th width="14%"><%=this.makeSortLink(callback, parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface" , favorite)%></th>
+          <th width="13%"><%=this.makeSortLink(callback, parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service"   , favorite)%></th>
         </tr>
         </thead>     
       <% for( int i=0; i < events.length; i++ ) {
@@ -409,7 +412,37 @@
             </nobr>
           </td>
           <td class="divider">
-	    <% if(events[i].getNodeId() != 0 && events[i].getNodeLabel()!= null ) { %>
+              <% if(!Strings.isNullOrEmpty(events[i].getLocation())) { %>
+              <% Filter locationFilter = new LocationFilter(events[i].getLocation()); %>
+              <%=events[i].getLocation()%></a>
+
+              <% if( !parms.getFilters().contains(locationFilter) ) { %>
+              <nobr>
+                  <a href="<%=this.makeLink(callback, parms, locationFilter, true, favorite)%>" class="filterLink" title="Show only events for this location">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, new NegativeLocationFilter(events[i].getLocation()), true, favorite)%>" class="filterLink" title="Do not show events for this location">${addNegativeFilter}</a>
+              </nobr>
+              <% } %>
+              <% } else { %>
+              &nbsp;
+              <% } %>
+          </td>
+          <td class="divider">
+              <% if(!Strings.isNullOrEmpty(events[i].getSystemId())) { %>
+              <% Filter systemIdFilter = new SystemIdFilter(events[i].getSystemId()); %>
+              <%=events[i].getSystemId()%></a>
+
+              <% if( !parms.getFilters().contains(systemIdFilter) ) { %>
+              <nobr>
+                  <a href="<%=this.makeLink(callback, parms, systemIdFilter, true, favorite)%>" class="filterLink" title="Show only events for this system Id">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, new NegativeSystemIdFilter(events[i].getSystemId()), true, favorite)%>" class="filterLink" title="Do not show events for this system Id">${addNegativeFilter}</a>
+              </nobr>
+              <% } %>
+              <% } else { %>
+              &nbsp;
+              <% } %>
+          </td>
+          <td class="divider">
+	        <% if(events[i].getNodeId() != 0 && events[i].getNodeLabel()!= null ) { %>
               <% Filter nodeFilter = new NodeFilter(events[i].getNodeId(), pageContext.getServletContext()); %>
               <% String[] labels = this.getNodeLabels( events[i].getNodeLabel() ); %>
               <a href="element/node.jsp?node=<%=events[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
@@ -473,7 +506,7 @@
         </tr>
         
         <tr valign="top" class="severity-<%= events[i].getSeverity().getLabel() %>">
-          <td colspan="4">
+          <td colspan="6">
             <% if(events[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(events[i].getUei()); %>
                 <%=events[i].getUei()%>
@@ -493,7 +526,7 @@
         </tr>
        
         <tr valign="top" class="severity-<%= events[i].getSeverity().getLabel() %>">
-          <td colspan="5"><%=WebSecurityUtils.sanitizeString(events[i].getLogMessage(), true)%></td>
+          <td colspan="7"><%=WebSecurityUtils.sanitizeString(events[i].getLogMessage(), true)%></td>
         </tr>
        
       <% } /*end for*/%>
