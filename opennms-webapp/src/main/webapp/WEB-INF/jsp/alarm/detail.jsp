@@ -411,7 +411,7 @@
 <form class="form-inline" method="post" action="alarm/ticket/update.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-default" type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null) ? true : false %>"/>
+    <form:input class="form-control btn btn-default" type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null || alarm.getTTicketId() == null) %>"/>
 </form>
 
 <form class="form-inline" method="post" action="alarm/ticket/close.htm">
