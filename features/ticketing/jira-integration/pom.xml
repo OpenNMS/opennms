@@ -9,7 +9,6 @@
     <artifactId>jira-troubleticketer</artifactId>
     <packaging>bundle</packaging>
     <name>OpenNMS :: Features :: Ticketing :: JIRA</name>
-
     <build>
       <plugins>
         <plugin>
@@ -27,16 +26,28 @@
             <artifactId>features-maven-plugin</artifactId>
             <configuration>
                 <bundles>
-                    <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
-                    <bundle>mvn:org.opennms.features/jira-client/${project.version}</bundle>
                     <bundle>mvn:org.opennms.features/jira-troubleticketer/${project.version}</bundle>
                 </bundles>
             </configuration>
         </plugin>
       </plugins>
     </build>
-
     <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.console</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.opennms.features.ticketing</groupId>
             <artifactId>org.opennms.features.ticketing.api</artifactId>
@@ -60,17 +71,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>atlassian-public</id>
-            <name>Atlassian public repo</name>
-            <url>http://maven.atlassian.com/content/repositories/atlassian-public/</url>
-        </repository>
-        <repository>
-            <id>atlassian-public-mirror</id>
-            <name>Atlassian public repo</name>
-            <url>http://maven.opennms.org/content/repositories/atlassian-public/</url>
-        </repository>
-    </repositories>
 </project>
