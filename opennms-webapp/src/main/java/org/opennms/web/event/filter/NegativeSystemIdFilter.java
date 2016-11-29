@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -32,41 +32,24 @@ import org.opennms.web.filter.NotEqualOrNullFilter;
 import org.opennms.web.filter.SQLType;
 
 public class NegativeSystemIdFilter extends NotEqualOrNullFilter<String> {
-    /** Constant <code>TYPE="systemIdNot"</code> */
     public static final String TYPE = "systemIdNot";
     private String m_systemId;
 
-    /**
-     * <p>Constructor for SystemIdFilter.</p>
-     *
-     * @param systemId a string.
-     */
     public NegativeSystemIdFilter(String systemId) {
         super(TYPE, SQLType.STRING, "EVENTS.SYSTEMID", "distPoller.id", systemId);
         m_systemId = systemId;
     }
 
-    /**
-     * <p>getTextDescription</p>
-     *
-     * @return a {@link String} object.
-     */
     @Override
     public String getTextDescription() {
         return ("systemId is not " + m_systemId);
     }
 
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link String} object.
-     */
     @Override
     public String toString() {
         return ("<WebEventRepository.NegativeSystemIdFilter: " + getDescription() + ">");
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -32,41 +32,24 @@ import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
 public class LocationFilter extends EqualsFilter<String> {
-    /** Constant <code>TYPE="location"</code> */
     public static final String TYPE = "location";
     private String m_location;
 
-    /**
-     * <p>Constructor for LocationFilter.</p>
-     *
-     * @param location a string.
-     */
     public LocationFilter(String location) {
         super(TYPE, SQLType.STRING, "MONITORINGSYSTEMS.LOCATION", "distPoller.location", location);
         m_location = location;
     }
 
-    /**
-     * <p>getTextDescription</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     @Override
     public String getTextDescription() {
         return (TYPE + "=" + m_location);
     }
 
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     @Override
     public String toString() {
         return ("<WebEventRepository.LocationFilter: " + getDescription() + ">");
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;

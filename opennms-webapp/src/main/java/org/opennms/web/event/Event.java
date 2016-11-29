@@ -679,20 +679,10 @@ public class Event {
         return (eventDisplay);
     }
 
-    /**
-     * <p>Getter for the field <code>systemId</code>.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getSystemId() {
         return systemId;
     }
 
-    /**
-     * <p>Getter for the field <code>location</code>.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getLocation() {
         return location;
     }
