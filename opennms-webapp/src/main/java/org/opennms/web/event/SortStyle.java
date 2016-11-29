@@ -199,7 +199,7 @@ public enum SortStyle {
             clause = " ORDER BY LOCATION ASC";
             break;
 
-            default:
+        default:
             throw new IllegalArgumentException("Unknown SortStyle: " + this);
         }
     
