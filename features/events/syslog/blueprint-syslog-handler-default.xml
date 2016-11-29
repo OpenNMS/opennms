@@ -23,6 +23,7 @@
 			<cm:property name="queueName">
 				<bean factory-ref="queueNameFactory" factory-method="getName"/>
 			</cm:property>
+			<cm:property name="timeout" value="15" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -50,7 +51,7 @@
 
         <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
 	<bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
-		<property name="timeout" value="15"/>
+		<property name="timeout" value="syslogHandlerDefaultProperties:{{timeout}}"/>
 	</bean>
 
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->

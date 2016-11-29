@@ -15,6 +15,7 @@
         <cm:default-properties>
             <cm:property name="trapd.listen.interface" value="127.0.0.1" />
             <cm:property name="trapd.listen.port" value="1162" />
+            <cm:property name="trapd.listen.timeout" value="15" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -25,7 +26,7 @@
 
 	 <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
     <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
-        <property name="timeout" value="15"/>
+        <property name="timeout" value="trapHandlerDefaultProperties:{{trapd.listen.timeout}}"/>
     </bean>
 
     <!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
