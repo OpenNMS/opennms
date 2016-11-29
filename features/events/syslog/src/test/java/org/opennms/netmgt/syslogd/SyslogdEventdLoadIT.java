@@ -36,10 +36,10 @@ import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
@@ -47,7 +47,9 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
 import org.opennms.core.spring.BeanUtils;
@@ -94,7 +96,13 @@ import com.codahale.metrics.MetricRegistry;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class SyslogdEventdLoadIT implements InitializingBean {
+
     private static final Logger LOG = LoggerFactory.getLogger(SyslogdEventdLoadIT.class);
+
+    private static final int TEST_TIMEOUT = 120000;
+
+    @Rule
+    public Timeout timeout = new Timeout(TEST_TIMEOUT, TimeUnit.MILLISECONDS);
 
     private EventCounter m_eventCounter;
 
@@ -110,7 +118,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
 
     @Autowired
     private Eventd m_eventd;
-    
+
     private Syslogd m_syslogd;
 
     private SyslogdConfigFactory m_config;
@@ -126,7 +134,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-    	MockLogAppender.setupLogging(true, "DEBUG");
+        MockLogAppender.setupLogging(true, "WARN");
 
         loadSyslogConfiguration("/etc/syslogd-loadtest-configuration.xml");
 
@@ -167,7 +175,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         }
     }
 
-    private void startSyslogdGracefully() throws SocketException {
+    private void startSyslogdJavaNet() throws Exception {
         m_syslogd = new Syslogd();
 
         SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(m_config);
@@ -180,10 +188,10 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
 
-    @Test(timeout=120000)
+    @Test
     @Transactional
     public void testDefaultSyslogd() throws Exception {
-        startSyslogdGracefully();
+        startSyslogdJavaNet();
 
         int eventCount = 100;
         
@@ -207,20 +215,26 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         }
 
         long mid = System.currentTimeMillis();
-        m_eventCounter.waitForFinish(120000);
+        System.err.println(String.format("Sent %d packets in %d milliseconds", eventCount, mid - start));
+
+        m_eventCounter.waitForFinish(TEST_TIMEOUT);
         long end = System.currentTimeMillis();
-        
+
+        System.err.println(String.format("Events expected: %d, events received: %d", eventCount, m_eventCounter.getCount()));
+
         final long total = (end - start);
         final double eventsPerSecond = (eventCount * 1000.0 / total);
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
+
+        assertEquals(eventCount, m_eventCounter.getCount());
     }
 
-    @Test(timeout=120000)
+    @Test
     @Transactional
     public void testRfcSyslog() throws Exception {
         loadSyslogConfiguration("/etc/syslogd-rfc-configuration.xml");
 
-        startSyslogdGracefully();
+        startSyslogdJavaNet();
 
         m_eventCounter.anticipate();
 
@@ -238,17 +252,17 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         messageLog = m_syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
         m_syslogSinkConsumer.handleMessage(messageLog);
 
-        m_eventCounter.waitForFinish(120000);
+        m_eventCounter.waitForFinish(TEST_TIMEOUT);
         
         assertEquals(1, m_eventCounter.getCount());
     }
 
-    @Test(timeout=120000)
+    @Test
     @Transactional
     public void testNGSyslog() throws Exception {
         loadSyslogConfiguration("/etc/syslogd-syslogng-configuration.xml");
 
-        startSyslogdGracefully();
+        startSyslogdJavaNet();
 
         m_eventCounter.anticipate();
 
@@ -266,14 +280,14 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         messageLog = m_syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
         m_syslogSinkConsumer.handleMessage(messageLog);
 
-        m_eventCounter.waitForFinish(120000);
+        m_eventCounter.waitForFinish(TEST_TIMEOUT);
 
         assertEquals(1, m_eventCounter.getCount());
     }
 
-    @Test(timeout=120000)
+    @Test
     @Transactional
-    public void testEventd() throws Exception {
+    public void testEventdSingleEventLog() throws Exception {
         m_eventd.start();
 
         EventProxy ep = createEventProxy();
@@ -281,7 +295,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         Log eventLog = new Log();
         Events events = new Events();
         eventLog.setEvents(events);
-        
+
         int eventCount = 10000;
         m_eventCounter.setAnticipated(eventCount);
 
@@ -298,18 +312,20 @@ public class SyslogdEventdLoadIT implements InitializingBean {
             events.addEvent(thisEvent);
         }
 
-        long start = System.currentTimeMillis();
-        ep.send(eventLog);
-        long mid = System.currentTimeMillis();
-        // wait up to 2 minutes for the events to come through
-        m_eventCounter.waitForFinish(120000);
-        long end = System.currentTimeMillis();
+        try {
+            final long start = System.currentTimeMillis();
+            ep.send(eventLog);
+            final long mid = System.currentTimeMillis();
+            // wait up to 2 minutes for the events to come through
+            m_eventCounter.waitForFinish(TEST_TIMEOUT);
+            final long end = System.currentTimeMillis();
 
-        m_eventd.stop();
-
-        final long total = (end - start);
-        final double eventsPerSecond = (eventCount * 1000.0 / total);
-        System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
+            final long total = (end - start);
+            final double eventsPerSecond = (eventCount * 1000.0 / total);
+            System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
+        } finally {
+            m_eventd.stop();
+        }
     }
 
     private static EventProxy createEventProxy() throws UnknownHostException {
@@ -325,7 +341,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         proxyAddr = InetAddressUtils.addr(proxyHostName);
 
         if (proxyAddr == null) {
-        	proxy = new TcpEventProxy();
+            proxy = new TcpEventProxy();
         } else {
             proxy = new TcpEventProxy(new InetSocketAddress(proxyAddr, Integer.parseInt(proxyHostPort)), Integer.parseInt(proxyHostTimeout));
         }
@@ -375,7 +391,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         public void onEvent(final Event e) {
             final int current = m_eventCount.incrementAndGet();
             if (current % 100 == 0) {
-                System.err.println(current + " < " + m_expectedCount);
+                System.err.println(current + " out of " + m_expectedCount + " expected events received");
             }
         }
 
