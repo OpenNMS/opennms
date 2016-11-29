@@ -197,14 +197,14 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     private volatile int m_eventDelay = 20;
 
     private boolean m_synchronous = true;
-    
+
     private ScheduledExecutorService m_scheduler = null;
 
-	private EventExpander m_expander = null;
+    private EventExpander m_expander = null;
 
-	private SendNowHook m_sendNowHook;
+    private SendNowHook m_sendNowHook;
 
-	private int m_numSchedulerThreads = 1;
+    private int m_numSchedulerThreads = 1;
 
     public MockEventIpcManager() {
         m_anticipator = new EventAnticipator();
@@ -269,7 +269,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     public void removeEventListener(final EventListener listener, final String uei) {
         m_listeners.remove(new ListenerKeeper(listener, Collections.singleton(uei)));
     }
-    
+
     public synchronized void setEventDelay(final int millis) {
         m_eventDelay  = millis;
     }
@@ -422,6 +422,13 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     public void reset() {
         m_listeners = new ArrayList<ListenerKeeper>();
         m_anticipator.reset();
+    }
+
+    public void resetScheduler() {
+        if (m_scheduler != null) {
+            m_scheduler.shutdown();
+        }
+        m_scheduler = null;
     }
 
     @Override
