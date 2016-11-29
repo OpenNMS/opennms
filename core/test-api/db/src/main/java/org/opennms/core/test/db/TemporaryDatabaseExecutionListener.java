@@ -258,6 +258,9 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
             ds.setClassName(System.getProperty(TemporaryDatabase.DRIVER_PROPERTY, TemporaryDatabase.DEFAULT_DRIVER));
 
             HikariCPConnectionFactory pool = new HikariCPConnectionFactory(ds);
+            // NMS-8911: Reduce the max connection lifetime so that HikariCP recycles 
+            // connections more aggressively during tests
+            pool.setMaxLifetime(500);
 
             DataSourceFactory.setInstance(pool);
         } else {
