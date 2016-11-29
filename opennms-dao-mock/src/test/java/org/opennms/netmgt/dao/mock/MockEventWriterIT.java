@@ -51,7 +51,6 @@ import org.springframework.test.context.ContextConfiguration;
         //"classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
         //"classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
-        //"classpath:/META-INF/opennms/applicationContext-mockEventd.xml"
 })
 @JUnitConfigurationEnvironment
 public class MockEventWriterIT {
