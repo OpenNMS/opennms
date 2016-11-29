@@ -42,7 +42,6 @@
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.api</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>

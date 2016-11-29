@@ -121,37 +121,35 @@ public abstract class SnmpUtils {
 
         final List<SnmpValue> results = new ArrayList<SnmpValue>();
         
-        SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
-   
+        try(SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
             @Override
             protected void storeResult(SnmpResult res) {
                 results.add(res.getValue());
             }
-           
-        });
-        walker.start();
-        walker.waitFor();
+        })) {
+            walker.start();
+            walker.waitFor();
+        }
         return results;
     }
-    
+
     public static Map<SnmpInstId, SnmpValue> getOidValues(SnmpAgentConfig agentConfig, String name, SnmpObjId oid) 
 	throws InterruptedException {
 
         final Map<SnmpInstId, SnmpValue> results = new LinkedHashMap<SnmpInstId, SnmpValue>();
         
-        SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
-   
+        try(SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
             @Override
             protected void storeResult(SnmpResult res) {
                 results.put(res.getInstance(), res.getValue());
             }
-           
-        });
-	walker.start();
-	walker.waitFor();
+        })) {
+            walker.start();
+            walker.waitFor();
+        }
         return results;
     }
-    
+
     public static void setConfig(Properties config) {
         sm_config = config;
     }

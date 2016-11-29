@@ -152,9 +152,10 @@ public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
     public void canWalkIpAddressTableDirectly() throws InterruptedException {
         // Gather the list of IP addresses
         final IPAddressGatheringTracker tracker = new IPAddressGatheringTracker();
-        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, tracker.getDescription(), tracker);
-        walker.start();
-        walker.waitFor();
+        try(SnmpWalker walker = SnmpUtils.createWalker(agentConfig, tracker.getDescription(), tracker)) {
+            walker.start();
+            walker.waitFor();
+        }
         ExpectedResults.compareToKnownIpAddressList(tracker.getIpAddresses());
 
         // Now determine their interface indices using a different type of tracker
@@ -163,9 +164,10 @@ public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
             ipAddrs.add(new SnmpInstId(InetAddressUtils.toOid(InetAddressUtils.addr(ipAddr))));
         }
         IpAddrTable ipAddrTable = new IpAddrTable(agentConfig.getAddress(), ipAddrs);
-        walker = SnmpUtils.createWalker(agentConfig, "ipAddrTable", ipAddrTable);
-        walker.start();
-        walker.waitFor();
+        try(SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ipAddrTable", ipAddrTable)) {
+            walker.start();
+            walker.waitFor();
+        }
         ExpectedResults.compareToKnownIfIndices(ipAddrTable.getIfIndices());
     }
 

@@ -28,19 +28,13 @@
 
 package org.opennms.netmgt.snmp;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public abstract class SnmpWalker implements AutoCloseable {
 
-public abstract class SnmpWalker implements Closeable {
-	
-	private static final transient Logger LOG = LoggerFactory.getLogger(SnmpWalker.class);
-    
     protected abstract static class WalkerPduBuilder extends PduBuilder {
         protected WalkerPduBuilder(int maxVarsPerPdu) {
             super(maxVarsPerPdu);
@@ -169,11 +163,6 @@ public abstract class SnmpWalker implements Closeable {
 
     private void finish() {
         signal();
-        try {
-            close();
-        } catch (IOException e) {
-            LOG.error("{}: Unexpected Error occured closing SNMP session for: {}", getName(), m_address, e);
-        }
         // Trigger the callback after the latch was decreased and the session was closed.
         if (m_callback != null) {
             Throwable t = null;
@@ -189,7 +178,7 @@ public abstract class SnmpWalker implements Closeable {
     }
 
     @Override
-    public abstract void close() throws IOException;
+    public abstract void close();
 
     public final String getName() {
         return m_name;
@@ -207,7 +196,7 @@ public abstract class SnmpWalker implements Closeable {
     public void waitFor() throws InterruptedException {
         m_signal.await();
     }
-    
+
     public boolean waitFor(long timeout) throws InterruptedException {
         return m_signal.await(timeout, TimeUnit.MILLISECONDS);
         /*
