@@ -57,6 +57,7 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Rrd;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -224,6 +225,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         expect(svc.getNodeId()).andReturn(1);
         expect(svc.getIpAddr()).andReturn("127.0.0.1").atLeastOnce();
         expect(svc.getSvcName()).andReturn("ICMP").atLeastOnce();
+        expect(svc.getNodeLocation()).andReturn(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).atLeastOnce();
 
         ServiceMonitor service = new MockServiceMonitor(rtValues);
 
