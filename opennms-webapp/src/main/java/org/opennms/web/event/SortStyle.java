@@ -48,13 +48,17 @@ public enum SortStyle {
     SERVICE("service"),
     POLLER("poller"),
     ID("id"),
+    SYSTEMID("systemid"),
+    LOCATION("location"),
     REVERSE_SEVERITY("rev_severity"),
     REVERSE_TIME("rev_time"),
     REVERSE_NODE("rev_node"),
     REVERSE_INTERFACE("rev_interface"),
     REVERSE_SERVICE("rev_service"),
     REVERSE_POLLER("rev_poller"),
-    REVERSE_ID("rev_id");
+    REVERSE_ID("rev_id"),
+    REVERSE_SYSTEMID("rev_systemid"),
+    REVERSE_LOCATION("rev_location");
 
     /** Constant <code>m_sortStylesString</code> */
     private static final Map<String, SortStyle> m_sortStylesString;
@@ -178,7 +182,23 @@ public enum SortStyle {
         case REVERSE_ID:
             clause = " ORDER BY EVENTID ASC";
             break;
-    
+
+        case SYSTEMID:
+            clause = " ORDER BY SYSTEMID DESC";
+            break;
+
+        case REVERSE_SYSTEMID:
+            clause = " ORDER BY SYSTEMID ASC";
+            break;
+
+        case LOCATION:
+            clause = " ORDER BY LOCATION DESC";
+            break;
+
+        case REVERSE_LOCATION:
+            clause = " ORDER BY LOCATION ASC";
+            break;
+
         default:
             throw new IllegalArgumentException("Unknown SortStyle: " + this);
         }

@@ -60,6 +60,7 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -67,6 +68,7 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsRestrictions;
@@ -113,6 +115,9 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     @Autowired
     private MonitoringLocationDao m_monitoringLocationDao;
+
+    @Autowired
+    private MonitoringSystemDao m_monitoringSystemDao;
     
 	@Autowired
 	private PlatformTransactionManager m_transactionManager;
@@ -970,5 +975,9 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     public List<OnmsMonitoringLocation> getMonitoringLocations() {
         return m_monitoringLocationDao.findAll().stream().sorted((a,b) -> a.getLocationName().compareTo(b.getLocationName())).collect(Collectors.toList());
+    }
+
+    public List<OnmsMonitoringSystem> getMonitoringSystems() {
+        return m_monitoringSystemDao.findAll().stream().sorted((a,b) -> a.getId().compareTo(b.getId())).collect(Collectors.toList());
     }
 }
