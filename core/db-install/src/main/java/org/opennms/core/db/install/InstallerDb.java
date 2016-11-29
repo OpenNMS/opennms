@@ -907,6 +907,14 @@ public class InstallerDb {
                     if (constraint.getType() != Constraint.CHECK) {
                         Assert.state(constraintColumns.size() > 0, "constraint '" + constraint.getName() + "' has no constrained columns");
 
+                        // If the constraint is a foreign key constraint, make sure that the number
+                        // of local and foreign columns matches
+                        Assert.state(
+                            constraint.getType() != Constraint.FOREIGN_KEY ||
+                            constraint.getColumns().size() == constraint.getForeignColumns().size(),
+                            "number of foreign key constraint columns doesn't match number of foreign columns"
+                        );
+
                     	for (final String constrainedName : constraintColumns) {
                     		final Column constrained = findColumn(columns, constrainedName);
                     		if (constrained == null) {

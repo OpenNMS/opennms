@@ -440,12 +440,12 @@ public class Constraint {
         }
 
         //Finally, check if the constraint is a foreign key constraint (the most complex)
-        m = Pattern.compile("(?i)constraint (\\S+)\\s+"
-                + "foreign key\\s+\\(([^\\(\\)]+)\\)\\s+"
-                + "references\\s+(\\S+)"
-                + "(?:\\s+\\(([^\\(\\)]+)\\))?"
-                + "(\\s+on\\s+delete\\s+(?:(cascade)|(restrict)|(set\\s+null)|(set\\s+default)))?"
-                + "(\\s+on\\s+update\\s+cascade)?").matcher(constraintSQL);
+        m = Pattern.compile("(?i)constraint (\\S+)\\s+" // 1
+                + "foreign key\\s+\\(([^\\(\\)]+)\\)\\s+" // 2
+                + "references\\s+(\\S+)" // 3
+                + "(?:\\s+\\(([^\\(\\)]+)\\))?" // 4
+                + "(\\s+on\\s+delete\\s+(?:(cascade)|(restrict)|(set\\s+null)|(set\\s+default)))?" // 5,6,7,8,9
+                + "(\\s+on\\s+update\\s+cascade)?").matcher(constraintSQL); // 10
         if (!m.matches()) {
             throw new Exception("Cannot parse constraint: " + constraintSQL);
         }
