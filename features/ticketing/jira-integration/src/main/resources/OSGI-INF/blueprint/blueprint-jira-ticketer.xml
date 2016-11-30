@@ -15,10 +15,37 @@
 ">
 
   <bean id="jiraTicketerPlugin" class="org.opennms.netmgt.ticketer.jira.JiraTicketerPlugin" />
-
   <service id="jiraTicketerPluginService" ref="jiraTicketerPlugin" interface="org.opennms.api.integration.ticketing.Plugin">
     <service-properties>
       <entry key="registration.export" value="true" />
     </service-properties>
   </service>
+
+  <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+    <command name="jira/list-components">
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListComponentsCommand"/>
+    </command>
+    <command name="jira/list-issue-types">
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListIssueTypesCommand"/>
+    </command>
+    <command name="jira/list-priorities">
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListPrioritiesCommand"/>
+    </command>
+    <command name="jira/list-projects">
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListProjectsCommand"/>
+    </command>
+    <command name="jira/list-versions">
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListVersionsCommand"/>
+    </command>
+    <command name="jira/list-fields">
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListFieldsCommand"/>
+    </command>
+    <command name="jira/show-config">
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ShowConfigCommand"/>
+    </command>
+    <command name="jira/verify">
+      <action class="org.opennms.netmgt.ticketer.jira.commands.VerifyCommand"/>
+    </command>
+  </command-bundle>
+
 </blueprint>
