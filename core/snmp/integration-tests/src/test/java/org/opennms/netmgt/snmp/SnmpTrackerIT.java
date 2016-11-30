@@ -178,12 +178,13 @@ public class SnmpTrackerIT implements InitializingBean {
         config.setVersion(SnmpAgentConfig.VERSION2C);
         config.setMaxVarsPerPdu(maxVarsPerPdu);
         config.setMaxRepetitions(maxRepetitions);
-        final SnmpWalker walker = SnmpUtils.createWalker(config, "test", c);
-        assertNotNull(walker);
-        walker.start();
-        walker.waitFor();
+        try(final SnmpWalker walker = SnmpUtils.createWalker(config, "test", c)) {
+            assertNotNull(walker);
+            walker.start();
+            walker.waitFor();
+        }
     }
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);

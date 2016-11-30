@@ -203,6 +203,7 @@ public class MockLogAppender {
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.quartz", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.snmp4j", "ERROR");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.snmp4j.agent", "ERROR");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.snmp4j.transport", "WARN");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework.beans.factory.support", "WARN");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework.context.support", "WARN");

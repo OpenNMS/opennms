@@ -182,13 +182,15 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
             tracker.startAttempt();
 
             TableTracker tableTracker = new TableTracker(callback, serviceNameOidId, serviceStatusOidId);
-            SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "HostResourceSwRunMonitor", tableTracker);
-            walker.start();
-            walker.waitFor();
-            String error = walker.getErrorMessage();
-            if (error != null && !error.trim().equals("")) {
-                LOG.warn(error);
-                return PollStatus.unavailable(error);
+            try(SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "HostResourceSwRunMonitor", tableTracker)) {
+                walker.start();
+                walker.waitFor();
+
+                String error = walker.getErrorMessage();
+                if (error != null && !error.trim().equals("")) {
+                    LOG.warn(error);
+                    return PollStatus.unavailable(error);
+                }
             }
 
             // Iterate over the list of running services

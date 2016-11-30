@@ -223,9 +223,10 @@ public class MockSnmpStrategyTest {
     public void testTracker() throws Exception {
         final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.5.1.1"));
 
-        SnmpWalker walker = walk(ct, 10, 3);
-        walker.start();
-        walker.waitFor();
+        try(SnmpWalker walker = walk(ct, 10, 3)) {
+            walker.start();
+            walker.waitFor();
+        }
         assertEquals("number of columns returned must match test data", Long.valueOf(9).longValue(), ct.getCount());
     }
 
@@ -234,20 +235,22 @@ public class MockSnmpStrategyTest {
         final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.5.1.1"));
         final SnmpAgentConfig sac = getAgentConfig();
         sac.setPort(12345);
-        final SnmpWalker walker = SnmpUtils.createWalker(sac, "test", ct);
-        assertNotNull(walker);
-        walker.start();
-        walker.waitFor();
+        try(final SnmpWalker walker = SnmpUtils.createWalker(sac, "test", ct)) {
+            assertNotNull(walker);
+            walker.start();
+            walker.waitFor();
+        }
         assertEquals("it should match no columns (timeout)", Long.valueOf(0).longValue(), ct.getCount());
     }
 
     @Test
     public void testCallbackOnTrackerSuccess() throws Exception {
         final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.5.1.1"));
-        final SnmpWalker walker = walk(ct, 10, 3);
-        final CompletableFuture<Long> future = toCompletableFuture(ct, walker);
-        walker.start();
-        assertEquals("number of columns returned must match test data", Long.valueOf(9), future.get());
+        try(final SnmpWalker walker = walk(ct, 10, 3)) {
+            final CompletableFuture<Long> future = toCompletableFuture(ct, walker);
+            walker.start();
+            assertEquals("number of columns returned must match test data", Long.valueOf(9), future.get());
+        }
     }
 
     @Test
@@ -258,10 +261,11 @@ public class MockSnmpStrategyTest {
         final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.5.1.1"));
         final SnmpAgentConfig sac = getAgentConfig();
         sac.setPort(12345);
-        final SnmpWalker walker = SnmpUtils.createWalker(sac, "test", ct);
-        walker.start();
-        final CompletableFuture<Long> future = toCompletableFuture(ct, walker);
-        future.get();
+        try(final SnmpWalker walker = SnmpUtils.createWalker(sac, "test", ct)) {
+            walker.start();
+            final CompletableFuture<Long> future = toCompletableFuture(ct, walker);
+            future.get();
+        }
     }
 
     private static CompletableFuture<Long> toCompletableFuture(CountingColumnTracker ct, SnmpWalker walker) {

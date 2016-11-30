@@ -6,6 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
@@ -30,6 +33,13 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, SnmpMultiResponseDTO> {
 
     public static final String RPC_MODULE_ID = "SNMP";
+
+    private final ExecutorService reaperExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "SNMP-Proxy-RPC-Session-Reaper");
+        }
+    });
 
     public SnmpProxyRpcModule() {
         super(SnmpRequestDTO.class, SnmpMultiResponseDTO.class);
@@ -96,10 +106,22 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
         walker.setCallback(new SnmpWalkCallback() {
             @Override
             public void complete(SnmpWalker tracker, Throwable t) {
-                if (t != null) {
-                    future.completeExceptionally(t);
-                } else {
-                    future.complete(responsesByCorrelationId.values());
+                try {
+                    if (t != null) {
+                        future.completeExceptionally(t);
+                    } else {
+                        future.complete(responsesByCorrelationId.values());
+                    }
+                } finally {
+                    // Close the tracker using a separate thread
+                    // This allows the SnmpWalker to clean up properly instead
+                    // of interrupting execution as it's executing the callback
+                    reaperExecutor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            tracker.close();
+                        }
+                    });
                 }
             }
         });

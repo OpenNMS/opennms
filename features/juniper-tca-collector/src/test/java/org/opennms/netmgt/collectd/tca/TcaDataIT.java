@@ -105,10 +105,11 @@ public class TcaDataIT implements InitializingBean {
 		InetAddress localhost = InetAddressUtils.getInetAddress(TEST_IP_ADDRESS);
 		SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(localhost);
 		TcaData data = new TcaData(localhost);
-		SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "TcaCollector for " + localhost, data);
-		walker.start();
-		walker.waitFor();
-		Assert.assertFalse(walker.failed());
+		try(SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "TcaCollector for " + localhost, data)) {
+	        walker.start();
+	        walker.waitFor();
+	        Assert.assertFalse(walker.failed());
+		}
 		Assert.assertFalse(data.isEmpty());
 		Assert.assertEquals(2, data.getEntries().size());
 	}

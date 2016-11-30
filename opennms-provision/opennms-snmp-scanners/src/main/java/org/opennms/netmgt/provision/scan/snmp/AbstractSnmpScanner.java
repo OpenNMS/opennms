@@ -118,14 +118,11 @@ public class AbstractSnmpScanner implements Scanner {
         }
 
         SnmpAgentConfig agentConfig = m_snmpAgentConfigFactory.getAgentConfig(agentAddress, null);
-        
-        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, getName(), createCollectionTracker(context));
-        walker.start();
-        
-        walker.waitFor();
-        
-        
-        
+
+        try(SnmpWalker walker = SnmpUtils.createWalker(agentConfig, getName(), createCollectionTracker(context))) {
+            walker.start();
+            walker.waitFor();
+        }
     }
 
     /**
