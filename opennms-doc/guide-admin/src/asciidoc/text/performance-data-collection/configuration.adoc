@@ -1,0 +1,24 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-collectd-configuration]]
+=== Collectd Configuration
+
+.Configuration and log files related to Collectd
+[options="header, autowidth"]
+|===
+| File                                            | Description
+| `$OPENNMS_HOME/etc/collectd-configuration.xml`  | Configuration file for global collectd daemon and collectors configuration
+| `$OPENNMS_HOME/logs/collectd.log`               | Log file for all collectors and the global _Collectd_ daemon
+| `$OPENNMS_HOME/etc/snmp-graph.properties`       | RRD graph definitions for performance data measurements
+| `$OPENNMS_HOME/etc/snmp-graph.properties.d`     | Default folder for storing additional RRD graph definitions for performance data measurements
+| `$OPENNMS_HOME/etc/events/opennms.events.xml`   | Event definitions for _Collectd_, i.e. _dataCollectionSucceeded_, and _dataCollectionFailed_
+|===
+
+To change the behavior for performance data collection, the `collectd-configuration.xml` file can be modified.
+The configuration file is structured in the following parts:
+
+* _Global daemon config_: Define the size of the used _Thread Pool_ to run _Collectors_ in parallel.
+* _Collection packages_: Packages to allow the grouping of configuration parameters for _Collectors_.
+* _Collection service association_: Based on the name of the collection service, the implementation for application or network management protocols are assigned.

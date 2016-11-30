@@ -1,0 +1,52 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+==== SnmpCollector
+
+The _SnmpCollector_ is used to collect performance data through the SNMP protocol.
+
+===== Collector Facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.collectd.SnmpCollector`
+| Remote Enabled | 
+|===
+
+===== Collector Parameters
+
+.Collector specific parameters for the SnmpCollector
+[options="header, autowidth"]
+|===
+| Parameter              | Description                                                                    | Required | Default value
+| `collection`           | The name of the _SNMP Collection_ to use.                                      | required | 
+| `thresholding-enabled` | Whether collected performance data shall be tested against thresholdsvice.     | optional | 
+| `timeout`              | Timeout in milliseconds to wait for SNMP responses.                            | optional | 
+|===
+
+===== SNMP Collection Configuration
+
+_SNMP Collection_ are defined in the `etc/datacollection-config.xml` and `etc/datacollection.d/*.xml` files.
+
+[source, xml]
+----
+<?xml version="1.0"?>
+<datacollection-config rrd-repository="/var/lib/opennms/rrd/snmp/">
+    <snmp-collection name="default" snmpStorageFlag="select">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+
+        <include-collection dataCollectionGroup="MIB2"/>
+        <include-collection dataCollectionGroup="3Com"/>
+        ...
+        <include-collection dataCollectionGroup="VMware-Cim"/>
+    </snmp-collection>
+</datacollection-config>
+----
+
+~
