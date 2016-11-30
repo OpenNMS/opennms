@@ -162,7 +162,15 @@ public class Ticket {
     public String getId() {
         return m_id;
     }
-    
+
+    public boolean hasId() {
+        return m_id != null && !m_id.isEmpty();
+    }
+
+    public boolean hasAttributes() {
+        return m_attributes != null && !m_attributes.isEmpty();
+    }
+
     /**
      * The TicketerPlugin should set the ID.
      *
