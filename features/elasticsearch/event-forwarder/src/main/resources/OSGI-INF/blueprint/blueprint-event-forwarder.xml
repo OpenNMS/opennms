@@ -78,7 +78,7 @@
     <property name="cache" ref="nodeDataCache"/>
   </bean>
 
-  <bean id="indexNameFunction" class="org.opennms.features.elasticsearch.eventforwarder.internal.IndexNameFunction">
+  <bean id="indexNameFunction" class="org.opennms.core.camel.IndexNameFunction">
     <argument value="yyyy.MM"/>
   </bean>
 
