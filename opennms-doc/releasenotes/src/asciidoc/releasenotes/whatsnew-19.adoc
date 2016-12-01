@@ -4,7 +4,15 @@
 === Important Upgrade Notes
 
 * *Simple Topology Provider*: The Simple Topology Provider has been removed. A new GraphML Topology Provider is introduced and should be used instead.
-
+* *Cassandra JMX Metrics*: The default value for the `friendly-name` attribute on the `JMX-Cassandra` collection service has changed from `cassandra21x` to `cassandra`.
+This changes the path in which the metrics are stored.
+If you have already been collecting these metrics and wish to preserve them, you can ignore this change when merging your configuration.
+* *Jetty 9.3.x Upgrade*: Jetty has been upgraded from `8.1.x` to the latest `9.3.x`.
+If you have a custom `jetty.xml` in your `etc` folder, you will need to migrate your changes.
+Use `etc/examples/jetty.xml` as a starting point.
+* *Drools 6.4.0 Upgrade*: Drools has been upgraded from `6.0.1.Final` to `6.4.0.Final`.
+If you have custom Drools rules, they may need to be revised.
+The compiler used in `6.4.0` is stricter than the compiler in previous versions.
 
 === New Features
 * GraphML Topology Provider: A new Topology Provider which reads GraphML formatted graphs and displays them in the the Topology UI.
