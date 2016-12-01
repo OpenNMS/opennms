@@ -77,24 +77,41 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
     public void setTrapdConfig(TrapdConfiguration newTrapdConfig) {
 
         if (checkForTrapdConfigurationChange(newTrapdConfig)) {
-
-            LOG.info("Stopping TrapReceiver service to reload configuration...");
-            stop();
-            LOG.info("TrapReceiver service has been stopped.");
-
-            m_snmpTrapPort = newTrapdConfig.getSnmpTrapPort();
-            m_snmpTrapAddress = newTrapdConfig.getSnmpTrapAddress();
-            synchronized(m_snmpV3Users) {
-                m_snmpV3Users.clear();
-                if (newTrapdConfig.getSnmpv3UserCollection() != null) {
-                    m_snmpV3Users.addAll(newTrapdConfig.getSnmpv3UserCollection().stream().map(TrapReceiverImpl::toSnmpV3User).collect(Collectors.toList()));
-                }
-            }
-
-            LOG.info("Restarting the TrapReceiver service...");
-            start();
-            LOG.info("TrapReceiver service has been restarted.");
+            restartTrapReceiverAndRun(() -> {
+                m_snmpTrapPort = newTrapdConfig.getSnmpTrapPort();
+                m_snmpTrapAddress = newTrapdConfig.getSnmpTrapAddress();
+                updateSnmpV3Users(newTrapdConfig);
+            });
         }
+    }
+
+    public void setSnmpV3Users(final TrapdConfiguration newTrapdConfig) {
+        if (checkForSnmpV3ConfigurationChange(newTrapdConfig)) {
+            restartTrapReceiverAndRun(() -> {
+                updateSnmpV3Users(newTrapdConfig);
+            });
+        }
+    }
+
+    private void updateSnmpV3Users(final TrapdConfiguration newTrapdConfig) {
+        synchronized(m_snmpV3Users) {
+            m_snmpV3Users.clear();
+            if (newTrapdConfig.getSnmpv3UserCollection() != null) {
+                m_snmpV3Users.addAll(newTrapdConfig.getSnmpv3UserCollection().stream().map(TrapReceiverImpl::toSnmpV3User).collect(Collectors.toList()));
+            }
+        }
+    }
+
+    private void restartTrapReceiverAndRun(final Runnable runnable) {
+        LOG.info("Stopping TrapReceiver service to reload configuration...");
+        stop();
+        LOG.info("TrapReceiver service has been stopped.");
+
+        runnable.run();
+
+        LOG.info("Restarting the TrapReceiver service...");
+        start();
+        LOG.info("TrapReceiver service has been restarted.");
     }
 
     /**
@@ -123,19 +140,22 @@ public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener 
             LOG.info("SNMP trap address has been updated from trapd-confguration.xml.");
             return true;
         } else {
-            Map<String, SnmpV3User> newSnmpV3Users = getSnmpV3UserMap(trapdConfiguration);
+            return checkForSnmpV3ConfigurationChange(trapdConfiguration);
+        }
+    }
 
-            Map<String, SnmpV3User> existingSnmpV3Users = m_snmpV3Users.stream().collect(Collectors.toMap(SnmpV3User::getSecurityName, Function.<SnmpV3User>identity(), (a,b) -> {
-                LOG.warn("Multiple SNMPv3 user entries found for security name \"{}\", using entry {}", a.getSecurityName(), a);
-                return a;
-            }));
+    protected boolean checkForSnmpV3ConfigurationChange(TrapdConfiguration trapdConfiguration) {
+        final Map<String, SnmpV3User> newSnmpV3Users = getSnmpV3UserMap(trapdConfiguration);
+        final Map<String, SnmpV3User> existingSnmpV3Users = m_snmpV3Users.stream().collect(Collectors.toMap(SnmpV3User::getSecurityName, Function.<SnmpV3User>identity(), (a,b) -> {
+            LOG.warn("Multiple SNMPv3 user entries found for security name \"{}\", using entry {}", a.getSecurityName(), a);
+            return a;
+        }));
 
-            if (isSnmpV3UsersMapUpdated(existingSnmpV3Users, newSnmpV3Users) ) {
-                LOG.info("SNMPv3 user list has been updated from trapd-confguration.xml.");
-                return true;
-            } else {
-                return false;
-            }
+        if (isSnmpV3UsersMapUpdated(existingSnmpV3Users, newSnmpV3Users) ) {
+            LOG.info("SNMPv3 user list has been updated from trapd-confguration.xml.");
+            return true;
+        } else {
+            return false;
         }
     }
 
