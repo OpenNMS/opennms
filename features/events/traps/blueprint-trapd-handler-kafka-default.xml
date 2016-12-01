@@ -68,11 +68,11 @@
 			<!-- TODO: Change these to <process> tags once Trapd is loaded from inside Karaf -->
 			<bean ref="unmarshaller"/>
 			<bean ref="mapper"/>
-			<to uri="seda:trapHandler"/>
-		</route>
+<!-- 			<to uri="seda:trapHandler"/> -->
+<!-- 		</route> -->
 
-		<route id="trapHandler">
-			<from uri="seda:trapHandler" />
+<!-- 		<route id="trapHandler"> -->
+<!-- 			<from uri="seda:trapHandler" /> -->
 			<!--
 				Pass the message to the default handler which will convert it into 
 				an event and broadcast the event.
