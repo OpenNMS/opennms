@@ -36,7 +36,7 @@
             <bean ref="restClient" method="getSnmpV3Users"/>
             <bean ref="unmarshaller" />
             <to uri="bean:trapdConfig?method=onUpdate" />
-            <bean ref="trapReceiver" method="setTrapdConfig" />
+            <bean ref="trapReceiver" method="setSnmpV3Users" />
         </route>
     </camelContext>
 
