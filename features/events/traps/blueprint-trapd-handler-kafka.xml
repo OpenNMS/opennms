@@ -27,7 +27,7 @@
 	<bean id="partitionKeyGenerator" class="org.opennms.core.camel.RandomPartitionKeyGenerator"/>
 
 	<bean id="trapdNotificationHandlerCamel" class="org.opennms.netmgt.trapd.TrapNotificationHandlerCamelImpl">
-		<argument value="seda:handleMessage?size={{sedaQueueSize}}?blockWhenFull={{blockWhenFullFlag}}"/>
+		<argument value="seda:handleMessage?size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFullFlag}}"/>
 	</bean>
 
 	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapdNotificationHandlerCamel"/>
