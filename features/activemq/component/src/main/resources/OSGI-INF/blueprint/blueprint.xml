@@ -15,7 +15,7 @@
 
 	<ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]" >
 		<ext:default-properties>
-			<ext:property name="org.opennms.activemq.broker.url" value="tcp://localhost:61616" />
+			<ext:property name="org.opennms.activemq.broker.url" value="failover:tcp://localhost:61616" />
 			<ext:property name="org.opennms.activemq.broker.username" value="" />
 			<ext:property name="org.opennms.activemq.broker.password" value="" />
 			<ext:property name="org.opennms.activemq.client.max-connections" value="8" />
