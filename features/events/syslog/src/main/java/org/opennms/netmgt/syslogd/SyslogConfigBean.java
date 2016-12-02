@@ -46,6 +46,7 @@ public final class SyslogConfigBean implements SyslogdConfig {
 	private String m_parser;
 	private String m_discardUei;
 	private boolean m_newSuspectOnMessage;
+	private int m_noOfThreads;
 
 	@Override
 	public int getSyslogPort() {
@@ -127,6 +128,15 @@ public final class SyslogConfigBean implements SyslogdConfig {
 
 	public void setDiscardUei(String discardUei) {
 		m_discardUei = discardUei;
+	}
+
+	@Override
+	public int getNoOfThreads() {
+		return m_noOfThreads;
+	}
+
+	public void setNoOfThreads(int m_noOfThreads) {
+		this.m_noOfThreads = m_noOfThreads;
 	}
 
 }

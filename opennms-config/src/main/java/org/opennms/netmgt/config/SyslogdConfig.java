@@ -108,5 +108,13 @@ public interface SyslogdConfig {
      * @return a {@link java.lang.String} object.
      */
     String getDiscardUei();
+    
+    /**
+     * <p>getSyslogPort</p>
+     *
+     * @return a int.
+     */
+    int getNoOfThreads();
+    
 }
 

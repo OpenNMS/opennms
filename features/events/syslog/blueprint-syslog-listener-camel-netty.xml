@@ -17,6 +17,7 @@
 		<cm:default-properties>
 			<cm:property name="syslog.listen.interface" value="0.0.0.0" />
 			<cm:property name="syslog.listen.port" value="1514" />
+			<cm:property name="syslog.no.threads" value="100" />
 			<cm:property name="sedaQueueSize" value="10000" />
 			<cm:property name="blockWhenFull" value="true" />
 		</cm:default-properties>
@@ -25,6 +26,7 @@
 	<bean id="syslogConfig" class="org.opennms.netmgt.syslogd.SyslogConfigBean">
 		<property name="syslogPort" value="${syslog.listen.port}" />
 		<property name="listenAddress" value="${syslog.listen.interface}" />
+		<property name="noOfThreads" value="${syslog.no.threads}" />
 	</bean>
 
 	<reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>

@@ -209,6 +209,12 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
     public synchronized String getDiscardUei() {
         return m_config.getConfiguration().getDiscardUei();
     }
+    
+	@Override
+	public int getNoOfThreads() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
     /**
      * Parse import-file tags and add all uei-matchs and hide-messages.
@@ -244,4 +250,6 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
             }
         }
     }
+
+
 }
