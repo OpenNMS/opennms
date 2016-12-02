@@ -448,4 +448,60 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
         cal.add( Calendar.DATE, -1 );
         return cal.getTime();
     }
+
+    @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    public void testLocationFilter(){
+        LocationFilter filter1 = new LocationFilter("Default");
+
+        Event[] events1 = getMatchingDaoEvents(filter1);
+        assertEquals(2, events1.length);
+
+        LocationFilter filter2 = new LocationFilter("Non-Default");
+
+        Event[] events2 = getMatchingDaoEvents(filter2);
+        assertEquals(0, events2.length);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    public void testSystemIdFilter(){
+        SystemIdFilter filter1 = new SystemIdFilter(m_dbPopulator.getDistPollerDao().whoami().getId());
+
+        Event[] events1 = getMatchingDaoEvents(filter1);
+        assertEquals(2, events1.length);
+
+        SystemIdFilter filter2 = new SystemIdFilter("99999999-9999-9999-9999-999999999999");
+
+        Event[] events2 = getMatchingDaoEvents(filter2);
+        assertEquals(0, events2.length);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    public void testNegativeLocationFilter(){
+        NegativeLocationFilter filter1 = new NegativeLocationFilter("Default");
+
+        Event[] events1 = getMatchingDaoEvents(filter1);
+        assertEquals(0, events1.length);
+
+        NegativeLocationFilter filter2 = new NegativeLocationFilter("Non-Default");
+
+        Event[] events2 = getMatchingDaoEvents(filter2);
+        assertEquals(2, events2.length);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    public void testNegativeSystemIdFilter(){
+        NegativeSystemIdFilter filter1 = new NegativeSystemIdFilter(m_dbPopulator.getDistPollerDao().whoami().getId());
+
+        Event[] events1 = getMatchingDaoEvents(filter1);
+        assertEquals(0, events1.length);
+
+        NegativeLocationFilter filter2 = new NegativeLocationFilter("99999999-9999-9999-9999-999999999999");
+
+        Event[] events2 = getMatchingDaoEvents(filter2);
+        assertEquals(2, events2.length);
+    }
 }

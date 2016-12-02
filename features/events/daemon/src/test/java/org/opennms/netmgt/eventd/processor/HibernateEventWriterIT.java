@@ -32,26 +32,38 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.UUID;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProcessor;
+import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * This class tests some of the quirky behaviors of persisting events.
@@ -68,8 +80,6 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-
-        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml"
 })
 @JUnitConfigurationEnvironment
@@ -84,6 +94,9 @@ public class HibernateEventWriterIT {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private EventDao eventDao;
 
     /**
      * Tests writing nulls to postgres db and the db encoding.
@@ -112,7 +125,7 @@ public class HibernateEventWriterIT {
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+        m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
 
         final String parms = jdbcTemplate.queryForObject("SELECT eventParms FROM events LIMIT 1", String.class);
@@ -132,7 +145,8 @@ public class HibernateEventWriterIT {
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+
+        m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
 
         final String descr = jdbcTemplate.queryForObject("SELECT eventDescr FROM events LIMIT 1", String.class);
@@ -153,7 +167,7 @@ public class HibernateEventWriterIT {
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+        m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
 
         String minionId = jdbcTemplate.queryForObject("SELECT systemId FROM events LIMIT 1", String.class);
@@ -163,7 +177,7 @@ public class HibernateEventWriterIT {
         jdbcTemplate.execute(String.format("INSERT INTO monitoringsystems (id, location, type) VALUES ('%s', 'Hello World', '%s')", systemId, OnmsMonitoringSystem.TYPE_MINION));
 
         event = bldr.getEvent();
-        m_eventWriter.process(null, event);
+        m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
 
         minionId = jdbcTemplate.queryForObject("SELECT systemId FROM events LIMIT 1", String.class);
@@ -183,7 +197,7 @@ public class HibernateEventWriterIT {
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+        m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
 
         final String logMessage = jdbcTemplate.queryForObject("SELECT eventLogmsg FROM events LIMIT 1", String.class);
@@ -278,7 +292,7 @@ public class HibernateEventWriterIT {
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+        m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
         
         assertEquals("event count", 1, jdbcTemplate.queryForInt("select count(*) from events"));

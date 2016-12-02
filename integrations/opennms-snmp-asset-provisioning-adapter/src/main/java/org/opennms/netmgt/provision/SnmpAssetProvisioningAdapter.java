@@ -141,9 +141,8 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		});
 
 		SnmpAgentConfig agentConfig = null;
-		agentConfig = m_snmpConfigDao.getAgentConfig(ipaddress);
-
-		String locationName = node.getLocation() != null ? node.getLocation().getLocationName() : null;
+        String locationName = node.getLocation() != null ? node.getLocation().getLocationName() : null;
+        agentConfig = m_snmpConfigDao.getAgentConfig(ipaddress, locationName);
 
 		final OnmsAssetRecord asset = node.getAssetRecord();
 		m_config.getReadLock().lock();
@@ -266,9 +265,9 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 			}
 		});
 
-		final SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipaddress);
 
-		final String locationName = node.getLocation() != null ? node.getLocation().getLocationName() : null;
+        final String locationName = node.getLocation() != null ? node.getLocation().getLocationName() : null;
+        final SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipaddress, locationName);
 
 		final OnmsAssetRecord asset = node.getAssetRecord();
 		m_config.getReadLock().lock();

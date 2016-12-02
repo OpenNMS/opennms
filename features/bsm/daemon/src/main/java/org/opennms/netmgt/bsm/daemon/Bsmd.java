@@ -53,6 +53,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,15 +189,23 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         });
     }
 
-    private void verifyReductionKey(String uei, String reductionKey) {
+    private void verifyReductionKey(String uei, String expectedReductionKey) {
         List<org.opennms.netmgt.xml.eventconf.Event> eventsForUei = m_eventConfDao.getEvents(uei);
-        if (eventsForUei.size() != 1) {
-            throw new IllegalStateException("Could not find a unique event definition for uei: " + uei);
+        if (eventsForUei == null) {
+            LOG.warn("Could not find an event with uei '{}'.");
+            return;
         }
-        org.opennms.netmgt.xml.eventconf.Event event = eventsForUei.get(0);
-        if (!reductionKey.equals(event.getAlarmData().getReductionKey())) {
-            throw new IllegalStateException(String.format("Unsupported reduction key '%s' for uei '%s'.",
-                    event.getAlarmData().getReductionKey(), uei));
+        if (eventsForUei.size() != 1) {
+            LOG.warn("Could not find a unique event definition for uei '{}'.", uei);
+            return;
+        }
+        AlarmData alarmData = eventsForUei.get(0).getAlarmData();
+        if (alarmData == null) {
+            LOG.warn("Could not find alarm data for event with uei '{}'.", uei);
+            return;
+        }
+        if (!expectedReductionKey.equals(alarmData.getReductionKey())) {
+            LOG.warn("Expected reduction key '{}' for uei '{}' but found '{}'.", expectedReductionKey, uei, alarmData.getReductionKey());
         }
     }
 

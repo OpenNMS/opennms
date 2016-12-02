@@ -204,7 +204,11 @@ public class Event {
      * Whether the event is displayable.
      */
     protected Boolean eventDisplay;
-    
+
+    protected String systemId;
+
+    protected String location;
+
     /**
      * Empty constructor to create an empty <code>Event</code> instance. All
      * fields will hold the default values.
@@ -673,5 +677,13 @@ public class Event {
      */
     public Boolean getEventDisplay() {
         return (eventDisplay);
+    }
+
+    public String getSystemId() {
+        return systemId;
+    }
+
+    public String getLocation() {
+        return location;
     }
 }

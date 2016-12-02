@@ -3,10 +3,9 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-icmp</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms</groupId>
   <artifactId>org.opennms.icmp.proxy.rpc-impl</artifactId>
   <name>OpenNMS :: Core :: ICMP :: Proxy :: RPC Impl.</name>
   <packaging>bundle</packaging>
@@ -21,6 +20,11 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <Import-Package>
+              org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
+              org.eclipse.persistence.internal.jaxb;resolution:=optional,
+              *
+            </Import-Package>
             <!--  don't export anything this is implementation only -->
             <Export-Package></Export-Package>
           </instructions>
@@ -38,9 +42,8 @@
       <artifactId>org.opennms.core.camel</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.ipc..rpc</groupId>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
       <artifactId>org.opennms.core.ipc.rpc.xml</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>

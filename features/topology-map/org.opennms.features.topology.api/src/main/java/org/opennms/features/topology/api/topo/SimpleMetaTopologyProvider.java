@@ -33,6 +33,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
+
 import com.google.common.collect.Lists;
 
 /**
@@ -68,6 +70,19 @@ public class SimpleMetaTopologyProvider implements MetaTopologyProvider {
     @Override
     public List<GraphProvider> getGraphProviders() {
         return Lists.newArrayList(graphProviders);
+    }
+
+    @Override
+    public GraphProvider getGraphProviderBy(String namespace) {
+        return getGraphProviders()
+                .stream()
+                .filter(provider -> provider.getVertexNamespace().equals(namespace))
+                .findFirst().orElse(null);
+    }
+
+    @Override
+    public BreadcrumbStrategy getBreadcrumbStrategy() {
+        return BreadcrumbStrategy.NONE;
     }
 
     public void setPreferredLayout(String preferredLayout) {

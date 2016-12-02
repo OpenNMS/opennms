@@ -30,6 +30,8 @@ package org.opennms.features.topology.api.topo;
 
 import java.util.Collection;
 
+import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
+
 public interface MetaTopologyProvider {
 
     GraphProvider getDefaultGraphProvider();
@@ -38,4 +40,7 @@ public interface MetaTopologyProvider {
 
     Collection<VertexRef> getOppositeVertices(VertexRef vertexRef);
 
+    GraphProvider getGraphProviderBy(String namespace);
+
+    BreadcrumbStrategy getBreadcrumbStrategy();
 }

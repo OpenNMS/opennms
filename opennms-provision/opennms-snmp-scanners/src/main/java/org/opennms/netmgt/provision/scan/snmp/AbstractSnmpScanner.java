@@ -116,16 +116,13 @@ public class AbstractSnmpScanner implements Scanner {
         if (agentAddress == null) {
             return;
         }
-        
-        SnmpAgentConfig agentConfig = m_snmpAgentConfigFactory.getAgentConfig(agentAddress);
-        
-        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, getName(), createCollectionTracker(context));
-        walker.start();
-        
-        walker.waitFor();
-        
-        
-        
+
+        SnmpAgentConfig agentConfig = m_snmpAgentConfigFactory.getAgentConfig(agentAddress, null);
+
+        try(SnmpWalker walker = SnmpUtils.createWalker(agentConfig, getName(), createCollectionTracker(context))) {
+            walker.start();
+            walker.waitFor();
+        }
     }
 
     /**

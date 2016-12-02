@@ -105,6 +105,7 @@ import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.netmgt.config.tl1d.Tl1dConfiguration;
 import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
+import org.opennms.netmgt.config.trend.TrendConfiguration;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
@@ -210,8 +211,8 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "email-northbounder-configuration.xml", EmailNorthbounderConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "groups.xml", Groupinfo.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "devices/motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "devices/motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "jasper-reports.xml", LocalJasperReports.class, Impl.JAXB);
         addFile(Source.CONFIG, "jmx-config.xml", JmxConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "jms-northbounder-configuration.xml", JmsNorthbounderConfig.class, Impl.JAXB);
@@ -256,6 +257,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "tl1d-configuration.xml", Tl1dConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "translator-configuration.xml", EventTranslatorConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "trend-configuration.xml", TrendConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "users.xml", Userinfo.class, Impl.CASTOR);
         addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, Impl.CASTOR);
@@ -264,7 +266,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "tl1d-configuration.xml", Tl1dConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "wmi-config.xml", WmiConfig.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "javamail-configuration.xml", JavamailConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "provisiond-configuration.xml", ProvisiondConfiguration.class, Impl.CASTOR);

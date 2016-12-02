@@ -109,7 +109,7 @@
 
 <#-- hide the header if not displayed in a toplevel window (iFrame) -->
 <script type='text/javascript'>
-if (window.location != window.parent.location) {
+if (window.location != window.parent.location && window.name.indexOf("-with-header") == -1) {
   // Hide the header
   $("#header").hide();
   // Remove any padding from the body

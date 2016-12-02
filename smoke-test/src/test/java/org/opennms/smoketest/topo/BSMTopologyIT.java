@@ -39,10 +39,10 @@ import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.smoketest.BSMAdminIT;
 import org.opennms.smoketest.BSMAdminIT.BsmAdminPage;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.smoketest.TopologyIT.TopologyProvider;
 import org.opennms.smoketest.TopologyIT.TopologyUIPage;
 import org.opennms.smoketest.TopologyIT.VisibleVertex;
 
@@ -71,7 +71,7 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
         try {
             // Open up the Topology UI and select the Business Services topology provider
             topologyUiPage.open();
-            topologyUiPage.selectTopologyProvider(TopologyProvider.BUSINESSSERVICE);
+            topologyUiPage.selectTopologyProvider(TopologyProvider.BUSINESS_SERVICE);
 
             // Remove any existing vertices from focus
             topologyUiPage.clearFocus();

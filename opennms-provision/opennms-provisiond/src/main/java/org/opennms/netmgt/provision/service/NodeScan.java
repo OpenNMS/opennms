@@ -546,7 +546,8 @@ public class NodeScan implements Scan {
                 Assert.notNull(getAgentConfigFactory(), "agentConfigFactory was not injected");
 
                 try {
-                    final SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress());
+                    String locationName = node.getLocation()== null ? null : node.getLocation().getLocationName();
+                    final SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress(), locationName);
                     m_provisionService.getLocationAwareSnmpClient().walk(agentConfig, tracker)
                         .withDescription("IP address tables")
                         .withLocation(getLocationName())
@@ -577,7 +578,8 @@ public class NodeScan implements Scan {
 
         public void detectPhysicalInterfaces(final BatchTask currentPhase) {
             if (isAborted()) { return; }
-            final SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress());
+            String locationName = getLocation()== null ? null : getLocation().getLocationName();
+            final SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress(), locationName);
             Assert.notNull(getAgentConfigFactory(), "agentConfigFactory was not injected");
 
             final PhysInterfaceTableTracker physIfTracker = new PhysInterfaceTableTracker() {

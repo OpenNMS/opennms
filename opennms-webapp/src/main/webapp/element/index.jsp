@@ -34,9 +34,8 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.web.element.*,
-		org.opennms.web.asset.*
-		"
-%>
+		org.opennms.web.asset.*,
+		org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation"%>
 
 <%!
     protected AssetModel model;
@@ -52,6 +51,8 @@
     Map<String,Integer> serviceNameMap = new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
     List<String> serviceNameList = new ArrayList<String>(serviceNameMap.keySet());
     Collections.sort(serviceNameList);
+
+    List<OnmsMonitoringLocation> monitoringLocations = NetworkElementFactory.getInstance(getServletContext()).getMonitoringLocations();
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -150,16 +151,16 @@
               </div> <!-- column -->
             </div> <!-- row -->
 
-            <%-- search by service --%>
+            <%-- search by location --%>
             <div class="row top-buffer">
               <div class="col-md-12">
                 <form role="form" class="form-inline pull-right" action="element/nodeList.htm" method="get">
                   <input type="hidden" name="listInterfaces" value="false"/>
                   <div class="form-group">
-                    <label for="byservice_service">Providing service:</label>
-                    <select class="form-control" id="byservice_service" name="service">
-                      <% for (String name : serviceNameList) { %>
-                        <option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
+                    <label for="bymonitoringLocation_monitoringLocation">Location:</label>
+                    <select class="form-control" id="bymonitoringLocation_monitoringLocation" name="monitoringLocation">
+                      <% for (OnmsMonitoringLocation monitoringLocation : monitoringLocations) { %>
+                        <option value="<%=monitoringLocation.getLocationName()%>"><%=monitoringLocation.getLocationName()%></option>
                       <% } %>
                     </select>
                   </div>
@@ -167,6 +168,24 @@
                 </form>
               </div> <!-- column -->
             </div> <!-- row -->
+
+              <%-- search by service --%>
+              <div class="row top-buffer">
+                <div class="col-md-12">
+                  <form role="form" class="form-inline pull-right" action="element/nodeList.htm" method="get">
+                    <input type="hidden" name="listInterfaces" value="false"/>
+                    <div class="form-group">
+                      <label for="byservice_service">Providing service:</label>
+                      <select class="form-control" id="byservice_service" name="service">
+                        <% for (String name : serviceNameList) { %>
+                        <option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
+                        <% } %>
+                      </select>
+                    </div>
+                    <button type="submit" class="btn btn-default">Search</button>
+                  </form>
+                </div> <!-- column -->
+              </div> <!-- row -->
 
             <%-- search by MAC --%>
             <div class="row top-buffer">

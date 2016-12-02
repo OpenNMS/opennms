@@ -28,9 +28,7 @@
 
 package org.opennms.features.topology.api.support.breadcrumbs;
 
-import static org.opennms.features.topology.api.topo.Criteria.getSingleCriteriaForGraphContainer;
-
-import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -38,56 +36,51 @@ import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.opennms.features.topology.api.Callbacks;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexRefAdapter;
-import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.VertexRef;
+
+import com.google.common.collect.Lists;
 
 /**
  * Element to describe a breadcrumb.
  *
  * @author mvrueden
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name="breadcrumb")
 public class Breadcrumb implements ClickListener {
 
-    @XmlElement(name="label")
-    private String label;
+    @XmlElement(name="source-vertex")
+    @XmlElementWrapper(name="source-vertices")
+    @XmlJavaTypeAdapter(value= VertexRefAdapter.class)
+    private List<VertexRef> sourceVertices = Lists.newArrayList();
 
     @XmlElement(name="target-namespace")
     private String targetNamespace;
-
-    @XmlElement(name="source-vertex")
-    @XmlJavaTypeAdapter(value= VertexRefAdapter.class)
-    private VertexRef sourceVertex;
 
     // JAXB-Constructor
     protected Breadcrumb() {
 
     }
 
-    public Breadcrumb(String label, String targetNamespace, VertexRef sourceVertex) {
-        this.label = Objects.requireNonNull(label);
-        this.targetNamespace = Objects.requireNonNull(targetNamespace);
-        this.sourceVertex = sourceVertex;
+    public Breadcrumb(String namespace, VertexRef vertex) {
+        this.targetNamespace = namespace;
+        this.sourceVertices.add(vertex);
     }
 
-    public String getLabel() {
-        return label;
+    public Breadcrumb(String targetNamespace, List<VertexRef> vertices) {
+        this.targetNamespace = targetNamespace;
+        this.sourceVertices = Lists.newArrayList(vertices);
     }
 
-    public VertexRef getSourceVertex() {
-        return sourceVertex;
-    }
-
-    public String getTargetNamespace() {
-        return targetNamespace;
+    public Breadcrumb(String targetNamespace) {
+        this.targetNamespace = targetNamespace;
     }
 
     @Override
@@ -100,9 +93,8 @@ public class Breadcrumb implements ClickListener {
         }
         if (obj instanceof Breadcrumb) {
             Breadcrumb other = (Breadcrumb) obj;
-            boolean equals = Objects.equals(label, other.label)
-                    && Objects.equals(targetNamespace, other.targetNamespace)
-                    && Objects.equals(sourceVertex, other.sourceVertex);
+            boolean equals = Objects.equals(targetNamespace, other.targetNamespace)
+                    && Objects.equals(sourceVertices, other.sourceVertices);
             return equals;
         }
         return false;
@@ -110,72 +102,22 @@ public class Breadcrumb implements ClickListener {
 
     @Override
     public int hashCode() {
-        return Objects.hash(label, targetNamespace, sourceVertex);
+        return Objects.hash(targetNamespace, sourceVertices);
     }
 
     @Override
     public void clicked(GraphContainer graphContainer) {
-        // Only navigate if namespace is different, otherwise we would switch to the current layer
-        if (!graphContainer.getBaseTopology().getVertexNamespace().equals(targetNamespace)) {
-            navigateTo(graphContainer);
+        BreadcrumbCriteria criteria = Criteria.getSingleCriteriaForGraphContainer(graphContainer, BreadcrumbCriteria.class, false);
+        if (criteria != null) {
+            criteria.handleClick(this, graphContainer);
         }
     }
 
-    public void navigateTo(GraphContainer graphContainer) {
-        Objects.requireNonNull(graphContainer);
-        GraphProvider targetGraphProvider = graphContainer.getMetaTopologyProvider().getGraphProviders()
-                .stream()
-                .filter(eachGraphProvider -> eachGraphProvider.getVertexNamespace().equals(getTargetNamespace()))
-                .findFirst()
-                .get();
-        navigateTo(graphContainer, this, targetGraphProvider);
+    public String getTargetNamespace() {
+        return targetNamespace;
     }
 
-    private static void navigateTo(GraphContainer graphContainer, Breadcrumb breadcrumb, GraphProvider targetGraphProvider) {
-        // Get the Breadcrumb (before) navigating, otherwise it is lost
-        BreadcrumbCriteria breadcrumbCriteria = getSingleCriteriaForGraphContainer(graphContainer, BreadcrumbCriteria.class, true);
-
-        // If no breadcrumb is defined yet, add the starting point (<Layer Name> > <Source Vertex Name>)
-        if (breadcrumbCriteria.isEmpty()) {
-            final GraphProvider graphProvider = graphContainer.getBaseTopology();
-            breadcrumbCriteria.setNewRoot(new Breadcrumb(graphProvider.getTopologyProviderInfo().getName(), graphProvider.getVertexNamespace(), null));
-        }
-
-        // Only navigate if namespace is different, otherwise we would switch to the same target,
-        // which does not make any sense
-        if (!graphContainer.getBaseTopology().getVertexNamespace().equals(targetGraphProvider.getVertexNamespace())) {
-            graphContainer.selectTopologyProvider(targetGraphProvider,
-                    Callbacks.clearCriteria(),
-                    Callbacks.applyDefaultSemanticZoomLevel(),
-                    (theGraphContainer, theGraphProvider) -> theGraphContainer.addCriteria(breadcrumbCriteria));
-        }
-
-        // Update Criteria for Breadcrumbs
-        breadcrumbCriteria.setNewRoot(breadcrumb);
-        VertexRef sourceVertex = breadcrumb.getSourceVertex();
-        // If we have a source, add the opposite vertices to focus
-        if (sourceVertex != null) {
-            // Find the vertices in other graphs that this vertex links to
-            final Collection<VertexRef> oppositeVertices = graphContainer.getMetaTopologyProvider().getOppositeVertices(sourceVertex);
-
-            // Filter the vertices for those matching the target namespace
-            final String targetNamespace = targetGraphProvider.getVertexNamespace();
-            final List<VertexRef> targetVertices = oppositeVertices.stream()
-                    .filter(v -> v.getNamespace().matches(targetNamespace))
-                    .collect(Collectors.toList());
-
-            // Add the target vertices to focus
-            targetVertices.stream().forEach(v -> graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(v)));
-
-            // If target vertices are empty, apply default focus
-            if (targetVertices.isEmpty()) {
-                Callbacks.applyDefaultCriteria().callback(graphContainer, targetGraphProvider);
-            }
-        } else {
-            Callbacks.applyDefaultCriteria().callback(graphContainer, targetGraphProvider);
-        }
-
-        // Render
-        graphContainer.redoLayout();
+    public List<VertexRef> getSourceVertices() {
+        return sourceVertices.stream().sorted(Comparator.comparing(VertexRef::getLabel)).collect(Collectors.toList());
     }
 }

@@ -28,11 +28,14 @@
 
 package org.opennms.netmgt.bsm.daemon;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.core.profiler.ProfilerAspect.humanReadable;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -52,6 +55,8 @@ import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -65,11 +70,14 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionOperations;
+
+import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -80,7 +88,6 @@ import org.springframework.transaction.support.TransactionOperations;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-bsmd.xml"
@@ -88,6 +95,11 @@ import org.springframework.transaction.support.TransactionOperations;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
 public class BsmdIT {
+
+    private static final ArrayList<String> REQUIRED_EVENT_UEIS = Lists.newArrayList(
+            EventConstants.NODE_LOST_SERVICE_EVENT_UEI,
+            EventConstants.NODE_DOWN_EVENT_UEI,
+            EventConstants.INTERFACE_DOWN_EVENT_UEI);
 
     @Autowired
     private DistPollerDao m_distPollerDao;
@@ -270,6 +282,60 @@ public class BsmdIT {
         long diff = timer.stop();
         Assert.assertTrue("Bsmd took " + humanReadable(diff) + " to start but only 30 seconds are considered reasonable. Please optimize startup time.",
                 diff <= 30 * 1000 /* 30 seconds */);
+    }
+
+    @Test
+    public void verifyStartupWithoutRequiredEventData() throws Exception {
+        // Verify Pre-Condition
+        REQUIRED_EVENT_UEIS.forEach(eachUei -> {
+            List<org.opennms.netmgt.xml.eventconf.Event> events = m_bsmd.getEventConfDao().getEvents(eachUei);
+            Assert.assertTrue("Expected null or empty events with uei '" + eachUei + "'", events == null || events.isEmpty());
+        });
+
+        // Verify start up
+        m_bsmd.setVerifyReductionKeys(true);
+        m_bsmd.start();
+    }
+
+    @Test
+    public void verifyStartupWithoutAlarmData() throws Exception {
+        // Load custom events
+        DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
+        eventConfDao.setConfigResource(new ClassPathResource("/eventconf.xml"));
+        eventConfDao.afterPropertiesSet();
+
+        // Remove Alarm Data
+        REQUIRED_EVENT_UEIS.forEach(eventUei -> eventConfDao.getEvents(eventUei).get(0).setAlarmData(null));
+
+        // Verify that the alarm data is actually null
+        m_bsmd.setEventConfDao(eventConfDao);
+        REQUIRED_EVENT_UEIS.forEach(eventUei -> {
+            Assert.assertEquals(1, m_bsmd.getEventConfDao().getEvents(eventUei).size());
+            Assert.assertNull(m_bsmd.getEventConfDao().getEvents(eventUei).get(0).getAlarmData());
+        });
+
+        // Verify start up with null alarm data
+
+        m_bsmd.setVerifyReductionKeys(true);
+        m_bsmd.start();
+    }
+
+    @Test
+    public void verifyStartupWithChangedReductionKey() throws Exception {
+        // Load custom events
+        DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
+        eventConfDao.setConfigResource(new ClassPathResource("/eventconf.xml"));
+        eventConfDao.afterPropertiesSet();
+
+        // change reduction key
+        REQUIRED_EVENT_UEIS.forEach(uei -> eventConfDao.getEvents(uei).get(0).getAlarmData().setReductionKey("custom"));
+
+        // verify that reduction key actually changed
+        REQUIRED_EVENT_UEIS.forEach(uei -> Assert.assertEquals("custom", eventConfDao.getEvents(uei).get(0).getAlarmData().getReductionKey()));
+
+        m_bsmd.setEventConfDao(eventConfDao);
+        m_bsmd.setVerifyReductionKeys(true);
+        m_bsmd.start();
     }
 
     private OnmsAlarm createAlarm() {

@@ -7,24 +7,24 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <cm:property-placeholder id="appConfig" persistent-id="org.opennms.features.topology.app" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="servletAlias" value="/topology"/>
-            <cm:property name="widgetset" value="org.opennms.features.topology.widgetset.gwt.TopologyWidgetset"/>
-            <cm:property name="theme" value="topo_default" />
             <cm:property name="showHeader" value="true" />
             <cm:property name="autoRefresh.enabled" value="false" />
             <cm:property name="autoRefresh.interval" value="60" />
             <cm:property name="hiddenCategoryPrefix" value="" />
+            <cm:property name="resolveCoordinatesFromAddressString" value="true" />
         </cm:default-properties>
     </cm:property-placeholder>
 
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
     <reference id="geocoderService" interface="org.opennms.features.geocoder.GeocoderService" availability="mandatory" />
+    <reference id="layoutDao" interface="org.opennms.netmgt.topology.persistence.api.LayoutDao" availability="mandatory" />
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
         <argument ref="menuManager"/>
         <argument ref="historyManager"/>
         <argument ref="veGraphContainer" />
         <argument ref="iconRepoManager"/>
+        <argument ref="layoutManager"/>
         <argument ref="transactionOperations"/>
         <property name="widgetManager" ref="widgetManager"/>
         <property name="headerProvider" ref="onmsHeaderProvider" />
@@ -36,6 +36,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <argument ref="providerManager" />
         <property name="bundleContext" ref="blueprintBundleContext" />
         <property name="autoRefreshSupport" ref="defaultAutoRefreshSupport"/>
+        <property name="layoutManager" ref="layoutManager" />
     </bean>
 
     <!--  Header reference -->
@@ -102,8 +103,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="topologyUIFactory">
         <service-properties>
-            <entry key="alias" value="${servletAlias}"/>
-            <entry key="init.widgetset" value="${widgetset}"/>
+            <entry key="alias" value="/topology"/>
+            <entry key="init.widgetset" value="org.opennms.features.topology.widgetset.gwt.TopologyWidgetset"/>
         </service-properties>
     </service>
     
@@ -162,7 +163,13 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </service>
     
     <bean id="menuManager" class="org.opennms.features.topology.app.internal.menu.MenuManager" />
-    
+
+    <!-- Set up Layout Manager -->
+    <bean id="layoutManager" class="org.opennms.features.topology.app.internal.support.LayoutManager">
+        <argument ref="layoutDao"/>
+        <argument ref="transactionOperations"/>
+    </bean>
+
     <reference-list interface="org.opennms.features.topology.api.Operation" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="menuManager">
         </reference-listener>
@@ -255,7 +262,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
             <entry key="operation.menuLocation" value="View"/>
             <entry key="operation.label" value="Manual Layout?group=layout"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.ManualLayoutOperation"/>
+        <bean class="org.opennms.features.topology.app.internal.operations.ManualLayoutOperation">
+            <argument ref="layoutManager"/>
+        </bean>
     </service>
 
     <service interface="org.opennms.features.topology.api.Operation" >
@@ -265,6 +274,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.RedoLayoutOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.label" value="Clear Focus?group=additions"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.ClearFocusOperation"/>
     </service>
 
     <service interface="org.opennms.features.topology.api.Operation" >
@@ -409,7 +426,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </reference>
 
 	<bean id="topoMapsLink" class="org.opennms.features.topology.app.internal.TopoMapNavEntry">
-		<property name="url" value="topology?focusNodes=%nodeid%&amp;szl=1" />
 		<property name="name" value="View in Topology" />
 	</bean>
 
@@ -442,6 +458,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <bean class="org.opennms.features.topology.app.internal.info.LocationInfoPanelItemProvider">
             <argument ref="nodeDao" />
             <argument ref="geocoderService" />
+            <argument value="${resolveCoordinatesFromAddressString}"/>
         </bean>
     </service>
 </blueprint>

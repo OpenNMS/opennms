@@ -37,6 +37,8 @@
 <%@page import="org.opennms.util.ilr.Collector"%>
 <%@page import="java.io.*"%>
 <%@page import="org.slf4j.*"%>
+<%@page import="org.opennms.web.element.NetworkElementFactory"%>
+<%@ page import="org.opennms.util.ilr.ServiceCollector" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
@@ -318,7 +320,20 @@ pageContext.setAttribute("searchString",searchString);
               <tr class="Critical">
           </c:otherwise>
       </c:choose>
-      <td><a href="element/node.jsp?node=${svcCollector.parsedServiceID}">${svcCollector.serviceID}</a></td>
+		  <%
+			  String nodeLabel = null;
+			  final ServiceCollector svcCollector = (ServiceCollector) pageContext.getAttribute("svcCollector");
+			  try {
+				  final int nodeId = Integer.parseInt(svcCollector.getParsedServiceID());
+				  nodeLabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId);
+				  if (nodeLabel == null) {
+					  nodeLabel = "No label found for nodeId " + nodeId;
+				  }
+			  } catch (NumberFormatException e) {
+				  nodeLabel = "Error parsing nodeId";
+			  }
+		  %>
+      <td><a href="element/node.jsp?node=${svcCollector.parsedServiceID}"><%=nodeLabel%><br/>${svcCollector.serviceID}</a></td>
       <td align="right">${svcCollector.collectionCount}</td>
       <td align="right">${svcCollector.averageCollectionDuration}</td>
       <td align="right">${svcCollector.averageDurationBetweenCollections}</td>

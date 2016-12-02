@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.container</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -205,9 +205,9 @@
             <feature>opennms-dao-api</feature>
             <feature>opennms-dao</feature>
             <feature>opennms-discovery</feature>
-            <feature>opennms-discovery-daemon</feature>
             <feature>opennms-events-api</feature>
             <feature>opennms-events-daemon</feature>
+            <feature>opennms-events-commands</feature>
             <feature>opennms-icmp-api</feature>
             <feature>opennms-icmp-jna</feature>
             <feature>opennms-icmp-jni</feature>
@@ -620,6 +620,13 @@
     <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.commands</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.commands</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

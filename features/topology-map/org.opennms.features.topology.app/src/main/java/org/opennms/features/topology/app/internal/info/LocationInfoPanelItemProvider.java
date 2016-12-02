@@ -57,10 +57,12 @@ public class LocationInfoPanelItemProvider implements InfoPanelItemProvider {
 
     private final GeocoderService geocoderService;
     private final NodeDao nodeDao;
+    private final boolean resolveCoordinatesFromAddressString;
 
-    public LocationInfoPanelItemProvider(NodeDao nodeDao, GeocoderService geocoderService) {
+    public LocationInfoPanelItemProvider(NodeDao nodeDao, GeocoderService geocoderService, boolean resolveCoordinatesFromAddressString) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.geocoderService = Objects.requireNonNull(geocoderService);
+        this.resolveCoordinatesFromAddressString = resolveCoordinatesFromAddressString;
     }
 
     @Override
@@ -70,11 +72,10 @@ public class LocationInfoPanelItemProvider implements InfoPanelItemProvider {
                 .filter(v -> v.getNodeID() != null)
                 .map(v -> v.getNodeID())
                 .collect(Collectors.toSet());
-
         if (nodeIds.isEmpty()) {
             return Collections.emptyList();
         }
-        final CoordinateResolver.Result result = new CoordinateResolver(geocoderService, nodeDao).resolve(nodeIds);
+        final CoordinateResolver.Result result = new CoordinateResolver(geocoderService, nodeDao, resolveCoordinatesFromAddressString).resolve(nodeIds);
         final List<Marker> markers = vertices.stream()
                 .filter(v -> result.getCoordinates(v.getNodeID()) != null)
                 .map(v -> {

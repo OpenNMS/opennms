@@ -55,6 +55,7 @@ public class OnmsDistPoller extends OnmsMonitoringSystem implements Serializable
      * @param id a {@link java.lang.String} object.
      */
     public OnmsDistPoller(String id) {
-        super(id, "localhost");
+        // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
+        super(id, "Default");
     }
 }

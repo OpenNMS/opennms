@@ -153,14 +153,15 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 	protected void collect() throws CollectionException {
 		try {
 			TcaData tracker = new TcaData(m_agent.getAddress());
-			SnmpWalker walker = SnmpUtils.createWalker(m_agent.getAgentConfig(), "TcaCollector for " + m_agent.getHostAddress(), tracker);
-			walker.start();
-			LOG.debug("collect: successfully instantiated TCA Collector for {}", m_agent.getHostAddress());
+			try(SnmpWalker walker = SnmpUtils.createWalker(m_agent.getAgentConfig(), "TcaCollector for " + m_agent.getHostAddress(), tracker)) {
+    			walker.start();
+    			LOG.debug("collect: successfully instantiated TCA Collector for {}", m_agent.getHostAddress());
 
-			walker.waitFor();
-			LOG.info("collect: node TCA query for address {} complete.", m_agent.getHostAddress());
+    			walker.waitFor();
+    			LOG.info("collect: node TCA query for address {} complete.", m_agent.getHostAddress());
 
-			verifySuccessfulWalk(walker);
+    			verifySuccessfulWalk(walker);
+			}
 			process(tracker);
 
 			m_status = ServiceCollector.COLLECTION_SUCCEEDED;

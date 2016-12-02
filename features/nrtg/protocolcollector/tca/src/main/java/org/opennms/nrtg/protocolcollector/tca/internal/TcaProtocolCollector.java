@@ -133,16 +133,16 @@ public class TcaProtocolCollector implements ProtocolCollector {
 
         CollectionTracker tracker = new AggregateTracker(trackers);
 
-        SnmpWalker walker = m_snmpStrategy.createWalker(snmpAgentConfig, "SnmpProtocolCollector for " + snmpAgentConfig.getAddress(), tracker);
-
-        walker.start();
-        try {
-            walker.waitFor();
-        } catch (InterruptedException e) {
-            // TODO What should we do here
+        try(SnmpWalker walker = m_snmpStrategy.createWalker(snmpAgentConfig, "SnmpProtocolCollector for " + snmpAgentConfig.getAddress(), tracker)) {
+            walker.start();
+            try {
+                walker.waitFor();
+            } catch (InterruptedException e) {
+                logger.error("Interuppted while waiting for collector. Results may be incomplete.", e);
+            }
         }
+
         return collectionJob;
-        
     }
 
     /*

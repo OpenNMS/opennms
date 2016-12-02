@@ -233,7 +233,7 @@
 	    if (displayStatus == DisplayStatus.DISPLAY_NO_LINK) {
 	        renderedLinks.add(link.getName());
 	    } else if (displayStatus == DisplayStatus.DISPLAY_LINK) {
-	        renderedLinks.add("<a href=\"" + link.getUrl().replace("%nodeid%", ""+nodeId) + "\">" + link.getName() + "</a>");
+	        renderedLinks.add("<a href=\"" + link.getUrl().replace("%25nodeid%25", ""+nodeId) + "\">" + link.getName() + "</a>");
 	    }
 	}
 	
@@ -346,14 +346,12 @@ function confirmAssetEdit() {
       <a href="<c:out value="${hardwareLink}"/>">Hardware Info</a>
     </li>
 
-    <c:if test="${fn:length( model.intfs ) >= 10}">
-      <c:url var="intfAvailabilityLink" value="element/availability.jsp">
-        <c:param name="node" value="${model.id}"/>
-      </c:url>
-      <li>
-        <a href="<c:out value="${intfAvailabilityLink}"/>">Availability</a>
-      </li>
-    </c:if>
+    <c:url var="intfAvailabilityLink" value="element/availability.jsp">
+      <c:param name="node" value="${model.id}"/>
+    </c:url>
+    <li>
+      <a href="<c:out value="${intfAvailabilityLink}"/>">Availability</a>
+    </li>
 
     <c:if test="${! empty model.statusSite}">
       <c:url var="siteLink" value="siteStatusView.htm">

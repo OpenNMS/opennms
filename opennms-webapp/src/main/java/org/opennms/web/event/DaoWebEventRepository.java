@@ -65,7 +65,6 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DaoWebEventRepository.class);
 
-    
     @Autowired
     EventDao m_eventDao;
     
@@ -79,7 +78,8 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         criteria.createAlias("alarm", "alarm", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
-        
+        criteria.createAlias("distPoller", "distPoller", OnmsCriteria.LEFT_JOIN);
+
         criteria.add(new EventDisplayFilter("Y").getCriterion());
         
         eventCriteria.visit(new EventCriteriaVisitor<RuntimeException>(){
@@ -129,6 +129,12 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
                 case TIME:
                     criteria.addOrder(Order.desc("eventTime"));
                     break;
+                case LOCATION:
+                    criteria.addOrder(Order.desc("distPoller.location"));
+                    break;
+                case SYSTEMID:
+                    criteria.addOrder(Order.desc("distPoller.id"));
+                    break;
                 case REVERSE_ID:
                     criteria.addOrder(Order.asc("id"));
                     break;
@@ -150,7 +156,12 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
                 case REVERSE_TIME:
                     criteria.addOrder(Order.asc("eventTime"));
                     break;
-                
+                case REVERSE_LOCATION:
+                    criteria.addOrder(Order.asc("distPoller.location"));
+                    break;
+                case REVERSE_SYSTEMID:
+                    criteria.addOrder(Order.asc("distPoller.id"));
+                    break;
                 }
             }
             
@@ -195,6 +206,10 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         event.troubleTicket = onmsEvent.getEventTTicket();
         event.troubleTicketState = onmsEvent.getEventTTicketState();
         event.uei = onmsEvent.getEventUei();
+        if (onmsEvent.getDistPoller() != null) {
+            event.location = onmsEvent.getDistPoller().getLocation();
+            event.systemId = onmsEvent.getDistPoller().getId();
+        }
         return event;
     }
 
@@ -316,7 +331,4 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
             m_eventDao.update(event);
         }
     }
-    
-
-
 }

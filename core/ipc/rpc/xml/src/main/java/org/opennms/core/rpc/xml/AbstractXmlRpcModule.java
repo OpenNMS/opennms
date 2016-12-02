@@ -34,6 +34,8 @@ import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.xml.XmlHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link RpcModule} that uses JaxbUtils for marshaling and unmarshaling requests.
@@ -41,6 +43,8 @@ import org.opennms.core.xml.XmlHandler;
  * @author jwhite
  */
 public abstract class AbstractXmlRpcModule<S extends RpcRequest,T extends RpcResponse> implements RpcModule<S, T>  {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractXmlRpcModule.class);
 
     private final Class<S> requestClazz;
     private final Class<T> responseClazz;
@@ -99,10 +103,11 @@ public abstract class AbstractXmlRpcModule<S extends RpcRequest,T extends RpcRes
         try {
             return new XmlHandler<>(clazz);
         } catch (Throwable t) {
-            // This is a work-around for some failure in the Minion container
+            // NMS-8793: This is a work-around for some failure in the Minion container
             // When invoked for the first time, the creation may fail due to
             // errors of the form "invalid protocol handler: mvn", but subsequent
             // calls always seem to work
+            LOG.warn("Creating the XmlHandler failed. Retrying.", t);
             return new XmlHandler<>(clazz);
         }
     }

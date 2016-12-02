@@ -30,6 +30,7 @@ package org.opennms.netmgt.eventd;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.netmgt.events.api.EventHandler;
 import org.opennms.netmgt.events.api.EventProcessor;
@@ -42,6 +43,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
+
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 
 /**
  * The EventHandler builds Runnables that essentially do all the work on an
@@ -62,12 +67,18 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
 
     private boolean m_logEventSummaries;
 
+    private final Timer processTimer;
+
+    private final Histogram logSizes;
+
     /**
      * <p>Constructor for DefaultEventHandlerImpl.</p>
      */
-    public DefaultEventHandlerImpl() {
+    public DefaultEventHandlerImpl(MetricRegistry registry) {
+        processTimer = Objects.requireNonNull(registry).timer("eventlogs.process");
+        logSizes = registry.histogram("eventlogs.sizes");
     }
-    
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventHandler#createRunnable(org.opennms.netmgt.xml.event.Log)
      */
@@ -104,7 +115,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
             }
 
             for (final Event event : events.getEventCollection()) {
-                if (getLogEventSummaries() && LOG.isInfoEnabled()) {
+                if (LOG.isInfoEnabled() && getLogEventSummaries()) {
                     LOG.info("Received event: UEI={}, src={}, iface={}, svc={}, time={}, parms={}", event.getUei(), event.getSource(), event.getInterface(), event.getService(), event.getTime(), getPrettyParms(event));
                 }
 
@@ -132,10 +143,13 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                     }
                     LOG.debug("}");
                 }
+            }
 
+            try (Timer.Context context = processTimer.time()) {
                 for (final EventProcessor eventProcessor : m_eventProcessors) {
                     try {
-                        eventProcessor.process(m_eventLog.getHeader(), event);
+                        eventProcessor.process(m_eventLog);
+                        logSizes.update(events.getEventCount());
                     } catch (EventProcessorException e) {
                         LOG.warn("Unable to process event using processor {}; not processing with any later processors.", eventProcessor, e);
                         break;

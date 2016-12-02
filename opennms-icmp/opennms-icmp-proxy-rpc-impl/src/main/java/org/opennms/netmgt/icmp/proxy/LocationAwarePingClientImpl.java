@@ -29,7 +29,6 @@
 package org.opennms.netmgt.icmp.proxy;
 
 import java.net.InetAddress;
-import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.PostConstruct;
 
@@ -38,7 +37,7 @@ import org.opennms.core.rpc.api.RpcClientFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component(value="locationAwarePingClient")
+@Component(value = "locationAwarePingClient")
 public class LocationAwarePingClientImpl implements LocationAwarePingClient {
 
     @Autowired
@@ -47,20 +46,26 @@ public class LocationAwarePingClientImpl implements LocationAwarePingClient {
     @Autowired
     private PingProxyRpcModule pingProxyRpcModule;
 
-    private RpcClient<PingRequestDTO, PingResponseDTO> delegate;
+    @Autowired
+    private PingSweepRpcModule pingSweepRpcModule;
 
-    private CompletableFuture<PingResponseDTO> execute(PingRequestDTO request) {
-        return delegate.execute(request);
-    }
+    private RpcClient<PingRequestDTO, PingResponseDTO> pingProxyDelegate;
+
+    private RpcClient<PingSweepRequestDTO, PingSweepResponseDTO> pingSweepDelegate;
 
     @PostConstruct
     public void init() {
-        delegate = rpcClientFactory.getClient(pingProxyRpcModule);
+        pingProxyDelegate = rpcClientFactory.getClient(pingProxyRpcModule);
+        pingSweepDelegate = rpcClientFactory.getClient(pingSweepRpcModule);
     }
 
     @Override
     public PingRequestBuilder ping(InetAddress inetAddress) {
-        return new PingRequestBuilderImpl(delegate)
-                .withInetAddress(inetAddress);
+        return new PingRequestBuilderImpl(pingProxyDelegate).withInetAddress(inetAddress);
+    }
+
+    @Override
+    public PingSweepRequestBuilder sweep() {
+        return new PingSweepRequestBuilderImpl(pingSweepDelegate);
     }
 }

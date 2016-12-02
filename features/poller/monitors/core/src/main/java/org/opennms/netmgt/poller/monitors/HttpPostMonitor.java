@@ -48,12 +48,12 @@ import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -156,7 +156,7 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
 
         final String hostAddress = InetAddressUtils.str(ipAddr);
 
-        LOG.debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
+        LOG.debug("poll: address = {}, port = {}, {}", hostAddress, port, tracker);
 
         // Give it a whirl
         PollStatus serviceStatus = PollStatus.unavailable();
@@ -193,17 +193,17 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
                 ub.setPort(port);
                 ub.setPath(strURI);
 
-                LOG.debug("HttpPostMonitor: Constructed URL is " + ub.toString());
+                LOG.debug("HttpPostMonitor: Constructed URL is {}", ub);
 
                 HttpPost post = new HttpPost(ub.build());
                 post.setEntity(postReq);
                 CloseableHttpResponse response = clientWrapper.execute(post);
 
-                LOG.debug("HttpPostMonitor: Status Line is " + response.getStatusLine());
+                LOG.debug("HttpPostMonitor: Status Line is {}", response.getStatusLine());
 
                 if (response.getStatusLine().getStatusCode() > 399) {
-                    LOG.info("HttpPostMonitor: Got response status code " + response.getStatusLine().getStatusCode());
-                    LOG.debug("HttpPostMonitor: Received server response: " + response.getStatusLine());
+                    LOG.info("HttpPostMonitor: Got response status code {}", response.getStatusLine().getStatusCode());
+                    LOG.debug("HttpPostMonitor: Received server response: {}", response.getStatusLine());
                     LOG.debug("HttpPostMonitor: Failing on bad status code");
                     serviceStatus = PollStatus.unavailable("HTTP(S) Status code " + response.getStatusLine().getStatusCode());
                     break;
@@ -219,11 +219,11 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
                 if (Strresponse == null)
                     continue;
 
-                LOG.debug("HttpPostMonitor: banner = " + Strresponse);
-                LOG.debug("HttpPostMonitor: responseTime= " + responseTime + "ms");
+                LOG.debug("HttpPostMonitor: banner = {}", Strresponse);
+                LOG.debug("HttpPostMonitor: responseTime= {}ms", responseTime);
 
                 //Could it be a regex?
-                if (strBannerMatch.charAt(0)=='~'){
+                if (!Strings.isNullOrEmpty(strBannerMatch) && strBannerMatch.startsWith("~")) {
                     if (!Strresponse.matches(strBannerMatch.substring(1))) {
                         serviceStatus = PollStatus.unavailable("Banner does not match Regex '"+strBannerMatch+"'");
                         break;

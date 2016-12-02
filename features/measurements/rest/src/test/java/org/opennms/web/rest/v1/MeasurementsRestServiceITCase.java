@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v1;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -270,6 +271,33 @@ public abstract class MeasurementsRestServiceITCase {
 
         // Perform the query - this must fail
         m_svc.query(request);
+    }
+
+    @Test
+    public void canRetrieveNoMeasurementsInRelaxedMode() throws Exception {
+        // Enable relaxed mode
+        QueryRequest request = new QueryRequest();
+        request.setRelaxed(true);
+        request.setStart(1414602000000L);
+        request.setEnd(1417046400000L);
+        request.setStep(1000L);
+        request.setMaxRows(700);
+
+        // Query for some attribute that doesn't exist, on an existing resource
+        Source notIfInOctetsAvg = new Source();
+        notIfInOctetsAvg.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        notIfInOctetsAvg.setAttribute("notIfInOctets");
+        notIfInOctetsAvg.setAggregation("AVERAGE");
+        notIfInOctetsAvg.setLabel("notIfInOctets");
+        request.setSources(Lists.newArrayList(notIfInOctetsAvg));
+
+        // Perform the query
+        try {
+            m_svc.query(request);
+            fail("HTTP 204 exception expected.");
+        } catch (WebApplicationException ex) {
+            assertEquals(204, ex.getResponse().getStatus());
+        }
     }
 
     protected static String findRrdtool() {

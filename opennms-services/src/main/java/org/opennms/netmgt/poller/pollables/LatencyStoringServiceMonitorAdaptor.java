@@ -130,7 +130,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
             if (m_thresholdingSet == null) {
                 RrdRepository repository = new RrdRepository();
                 repository.setRrdBaseDir(new File(rrdPath));
-                m_thresholdingSet = new LatencyThresholdingSet(service.getNodeId(), service.getIpAddr(), service.getSvcName(), repository, m_resourceStorageDao);
+                m_thresholdingSet = new LatencyThresholdingSet(service.getNodeId(), service.getIpAddr(), service.getSvcName(), service.getNodeLocation(), repository, m_resourceStorageDao);
             }
             LinkedHashMap<String, Double> attributes = new LinkedHashMap<String, Double>();
             for (String ds : entries.keySet()) {
@@ -170,7 +170,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
         // 2) If multiple entries are present, the DSs are created in the same order that they
         //    appear in the map
 
-        LatencyCollectionResource latencyResource = new LatencyCollectionResource(service.getSvcName(), service.getIpAddr());
+        LatencyCollectionResource latencyResource = new LatencyCollectionResource(service.getSvcName(), service.getIpAddr(), service.getNodeLocation());
         for (final Entry<String, Number> entry : entries.entrySet()) {
             final String ds = entry.getKey();
             final Number value = entry.getValue() != null ? entry.getValue() : Double.NaN;

@@ -11,10 +11,19 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <reference interface="org.opennms.netmgt.icmp.Pinger" id="pinger" />
+    <!-- Pinger service -->
+    <reference id="pingerFactory" interface="org.opennms.netmgt.icmp.PingerFactory" />
+
     <service interface="org.opennms.core.rpc.api.RpcModule">
         <bean class="org.opennms.netmgt.icmp.proxy.PingProxyRpcModule">
-            <property name="pinger" ref="pinger" />
+            <property name="pingerFactory" ref="pingerFactory" />
         </bean>
     </service>
+
+    <service interface="org.opennms.core.rpc.api.RpcModule">
+        <bean class="org.opennms.netmgt.icmp.proxy.PingSweepRpcModule">
+            <property name="pingerFactory" ref="pingerFactory" />
+        </bean>
+    </service>
+
 </blueprint>

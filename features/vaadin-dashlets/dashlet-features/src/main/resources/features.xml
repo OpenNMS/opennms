@@ -45,6 +45,7 @@
   <feature name="dashlet-topology" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: Topology">
     <feature>opennms-core</feature>
     <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-topology/${pom.version}</bundle>
+    <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.link/${pom.version}</bundle>
   </feature>
   <feature name="dashlet-surveillance" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: Surveillance">
     <feature>opennms-core</feature>

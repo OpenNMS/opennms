@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -262,20 +263,38 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 primary = node.getIpInterfaces().iterator().next();
             }
 
-            if (primary != null) {
-                LOG.debug("Node Label was set by hostname or address.  Re-resolving.");
-                final InetAddress addr = primary.getIpAddress();
-                final String ipAddress = str(addr);
-                final String hostname = m_hostnameResolver.getHostname(addr, node.getLocation().getLocationName());
+            final InetAddress primaryAddr = primary.getIpAddress();
+            final String primaryHostname = getHostnameResolver().getHostname(primaryAddr, node.getLocation().getLocationName());
 
-                if (hostname == null || ipAddress.equals(hostname)) {
-                    node.setLabel(ipAddress);
-                    node.setLabelSource(NodeLabelSource.ADDRESS);
+            if (primaryHostname == null && node.getLabel() != null && NodeLabelSource.HOSTNAME.equals((node.getLabelSource()))) {
+                LOG.warn("Previous node label source for address {} was hostname, but it does not currently resolve.  Skipping update.", InetAddressUtils.str(primaryAddr));
+                return;
+            }
+
+            for (final OnmsIpInterface iface : node.getIpInterfaces()) {
+                final InetAddress addr = iface.getIpAddress();
+                final String ipAddress = str(addr);
+                final String hostname = getHostnameResolver().getHostname(addr, node.getLocation().getLocationName());
+
+                if (iface.equals(primary)) {
+                    LOG.debug("Node Label was set by hostname or address.  Re-setting.");
+                    if (hostname == null || ipAddress.equals(hostname)) {
+                        node.setLabel(ipAddress);
+                        node.setLabelSource(NodeLabelSource.ADDRESS);
+                    } else {
+                        node.setLabel(hostname);
+                        node.setLabelSource(NodeLabelSource.HOSTNAME);
+                    }
+                }
+
+                if (hostname == null) {
+                    iface.setIpHostName(ipAddress);
                 } else {
-                    node.setLabel(hostname);
-                    node.setLabelSource(NodeLabelSource.HOSTNAME);
+                    iface.setIpHostName(hostname);
                 }
             }
+        } else {
+            LOG.debug("Node label source ({}) is not host or address. Skipping update.", node.getLabelSource());
         }
     }
 
@@ -1330,13 +1349,21 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Transactional
     @Override
     public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource, final String locationString) {
+        final String effectiveForeignSource = foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource;
+        final String newLocationName = MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID.equals(locationString)? null : locationString;
 
-        OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
+        final OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
 
             @Override
             protected OnmsNode query() {
-                List<OnmsNode> nodes = m_nodeDao.findByForeignSourceAndIpAddress(FOREIGN_SOURCE_FOR_DISCOVERED_NODES, ipAddress);
-                return nodes.size() > 0 ? nodes.get(0) : null;
+                return m_nodeDao.findByForeignSourceAndIpAddress(effectiveForeignSource, ipAddress).stream().filter(n -> {
+                    String existingLocationName = null;
+                    final OnmsMonitoringLocation location = n.getLocation();
+                    if (location != null && location.getLocationName() != null && !location.getLocationName().equals(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID)) {
+                        existingLocationName = location.getLocationName();
+                    }
+                    return Objects.equals(existingLocationName, newLocationName);
+                }).findFirst().orElse(null);
             }
 
             @Override
@@ -1353,7 +1380,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 // Associate the location with the node
                 final OnmsNode node = new OnmsNode(location);
 
-                final String hostname = m_hostnameResolver.getHostname(addr(ipAddress), locationString);
+                final String hostname = getHostnameResolver().getHostname(addr(ipAddress), locationString);
                 if (hostname == null || ipAddress.equals(hostname)) {
                     node.setLabel(ipAddress);
                     node.setLabelSource(NodeLabelSource.ADDRESS);
@@ -1362,7 +1389,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     node.setLabelSource(NodeLabelSource.HOSTNAME);
                 }
 
-                node.setForeignSource(foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource);
+                node.setForeignSource(effectiveForeignSource);
                 node.setType(NodeType.ACTIVE);
                 node.setLastCapsdPoll(now);
 
@@ -1379,9 +1406,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         }.execute();
 
         if (node != null) {
-            if (foreignSource != null) {
+            if (effectiveForeignSource != null) {
                 node.setForeignId(node.getNodeId());
-                createUpdateRequistion(ipAddress, node, foreignSource);
+                createUpdateRequistion(ipAddress, node, effectiveForeignSource);
             }
 
             // we do this here rather than in the doInsert method because
