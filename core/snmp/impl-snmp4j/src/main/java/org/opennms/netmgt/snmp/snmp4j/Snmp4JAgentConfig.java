@@ -332,6 +332,13 @@ public class Snmp4JAgentConfig {
 
     public Snmp createSnmpSession() throws IOException {
         TransportMapping<?> transport = new DefaultUdpTransportMapping();
+		/*
+		 * Listen for incoming messages. For connection oriented transports,
+		 * this method needs to be called before sendMessage(A, byte[],
+		 * org.snmp4j.TransportStateReference) is called for the first time.
+		 * Based on http://www.snmp4j.org/doc/org/snmp4j/TransportMapping.html#listen()
+		 */
+        transport.listen();
         Snmp session = new Snmp(transport);
         
         if (isSnmpV3()) {

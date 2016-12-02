@@ -80,6 +80,7 @@ public class EventdTrapStresser {
 			m_postgresAddress = args[4];
 
 		setIpAddresses();
+		/*Data Base Part has been commented for now*/
 		// if (m_postgresAddress != null)
 		// dataBaseConnect();
 
@@ -97,6 +98,7 @@ public class EventdTrapStresser {
 		builderV2 = createBuilderV2();
 
 		executeStressTest();
+		/*Data Base Part has been commented for now*/
 		// if (m_postgresAddress != null)
 		// eventsTableCount();
 
