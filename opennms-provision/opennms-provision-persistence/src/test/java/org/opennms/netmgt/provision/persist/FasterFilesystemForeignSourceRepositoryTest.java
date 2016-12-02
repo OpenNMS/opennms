@@ -37,10 +37,19 @@ import java.util.Set;
 
 import org.joda.time.Duration;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.http.annotations.JUnitHttpServer;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.test.context.ContextConfiguration;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations="classpath:org/opennms/netmgt/provision/persist/emptyContext.xml")
 public class FasterFilesystemForeignSourceRepositoryTest {
 
     @Test
@@ -116,6 +125,25 @@ public class FasterFilesystemForeignSourceRepositoryTest {
         RequisitionNode node = testReq.getNode("1234");
         assertNotNull(node);
         assertEquals("node1", node.getNodeLabel());
+    }
+
+    @Test
+    @JUnitHttpServer(port=9162)
+    public void testImportHttpSource() throws Exception {
+
+        FileSystemBuilder bldr = new FileSystemBuilder("target", "testGetForeignSource");
+
+        File fsDir = bldr.dir("foreignSource").file("test.xml", fs("test")).file("noreq.xml", fs("noreq")).pop();
+        File reqDir = bldr.dir("requisitions").file("test.xml", req("test")).file("pending.xml", req("pending")).pop();
+
+        FasterFilesystemForeignSourceRepository repo = repo(fsDir, reqDir);
+
+        Resource resource = new UrlResource("http://localhost:9162/requisition-test.xml");
+        Requisition req = repo.importResourceRequisition(resource);
+        assertNotNull(req);
+        System.err.println(JaxbUtils.marshal(req));
+        assertNotNull(req.getNode("4243"));
+        assertNotNull(req.getNode("4244"));
     }
 
     private static FasterFilesystemForeignSourceRepository repo(File foreignSourceDir, File requisitionDir) throws Exception {
