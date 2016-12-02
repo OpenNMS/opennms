@@ -109,7 +109,7 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
 
         m_host = config.getListenAddress() == null ? addr("0.0.0.0"): addr(config.getListenAddress());
         m_port = config.getSyslogPort();
-        m_noOfThreads = config.getNoOfThreads();
+        m_noOfThreads = (0 == config.getNoOfThreads())?Integer.MAX_VALUE : config.getNoOfThreads();
         m_config = config;
     }
 

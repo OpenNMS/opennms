@@ -17,7 +17,7 @@
 		<cm:default-properties>
 			<cm:property name="syslog.listen.interface" value="0.0.0.0" />
 			<cm:property name="syslog.listen.port" value="1514" />
-			<cm:property name="syslog.no.threads" value="100" />
+			<cm:property name="syslog.no.threads" value="0" />
 			<cm:property name="sedaQueueSize" value="10000" />
 			<cm:property name="blockWhenFull" value="true" />
 		</cm:default-properties>
