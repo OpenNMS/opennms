@@ -32,38 +32,26 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.UUID;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventProcessor;
-import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Events;
-import org.opennms.netmgt.xml.event.Header;
-import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * This class tests some of the quirky behaviors of persisting events.
@@ -95,9 +83,6 @@ public class HibernateEventWriterIT {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private EventDao eventDao;
-
     /**
      * Tests writing nulls to postgres db and the db encoding.
      * @throws SQLException
@@ -105,7 +90,7 @@ public class HibernateEventWriterIT {
     @Test
     public void testWriteEventWithNull() throws Exception {
         EventBuilder bldr = new EventBuilder("testUei", "testSource");
-        bldr.setLogDest("logndisplay");
+        bldr.setLogDest(HibernateEventWriter.LOG_MSG_DEST_LOG_AND_DISPLAY);
         bldr.addParam("test", "testVal");
         final String testVal2 = "valWith\u0000Null\u0000";
         bldr.addParam("test2", testVal2);
@@ -139,7 +124,7 @@ public class HibernateEventWriterIT {
     @Test
     public void testWriteEventDescrWithNull() throws Exception {
         EventBuilder bldr = new EventBuilder("testUei", "testSource");
-        bldr.setLogDest("logndisplay");
+        bldr.setLogDest(HibernateEventWriter.LOG_MSG_DEST_LOG_AND_DISPLAY);
 
         bldr.setDescription("abc\u0000def");
 
@@ -191,7 +176,7 @@ public class HibernateEventWriterIT {
     @Test
 	public void testWriteEventLogmsgWithNull() throws Exception {
         EventBuilder bldr = new EventBuilder("testUei", "testSource");
-        bldr.setLogDest("logndisplay");
+        bldr.setLogDest(HibernateEventWriter.LOG_MSG_DEST_LOG_AND_DISPLAY);
 
         bldr.setLogMessage("abc\u0000def");
 
@@ -287,7 +272,7 @@ public class HibernateEventWriterIT {
         jdbcTemplate.update("insert into service (serviceId, serviceName) values (?, ?)", new Object[] { serviceId, serviceName });
         
         EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "someSource");
-        bldr.setLogMessage("logndisplay");
+        bldr.setLogMessage(HibernateEventWriter.LOG_MSG_DEST_LOG_AND_DISPLAY);
         bldr.setService(serviceName);
 
         Event event = bldr.getEvent();
