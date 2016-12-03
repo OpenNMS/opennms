@@ -15,11 +15,12 @@
 
 	<ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]" >
 		<ext:default-properties>
-			<ext:property name="org.opennms.activemq.broker.url" value="tcp://localhost:61616" />
+			<ext:property name="org.opennms.activemq.broker.url" value="failover:tcp://localhost:61616" />
 			<ext:property name="org.opennms.activemq.broker.username" value="" />
 			<ext:property name="org.opennms.activemq.broker.password" value="" />
 			<ext:property name="org.opennms.activemq.client.max-connections" value="8" />
 			<ext:property name="org.opennms.activemq.client.concurrent-consumers" value="10" />
+			<ext:property name="org.opennms.activemq.client.idle-timeout" value="30000" />
 		</ext:default-properties>
 	</ext:property-placeholder>
 
@@ -34,6 +35,7 @@
 		init-method="start" destroy-method="stop">
 		<property name="maxConnections" value="$[org.opennms.activemq.client.max-connections]" />
 		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="idleTimeout" value="$[org.opennms.activemq.client.idle-timeout]" />
 	</bean>
 
 	<bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">

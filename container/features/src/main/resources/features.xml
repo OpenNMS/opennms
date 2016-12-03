@@ -41,6 +41,7 @@
     </feature>
 
     <feature name="opennms-activemq-component" description="OpenNMS :: Features :: ActiveMQ :: Component" version="${project.version}">
+      <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.pool/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.component/${project.version}</bundle>
     </feature>
 
