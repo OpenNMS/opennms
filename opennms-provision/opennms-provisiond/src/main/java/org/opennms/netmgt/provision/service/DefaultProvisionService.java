@@ -1350,19 +1350,17 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource, final String locationString) {
         final String effectiveForeignSource = foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource;
-        final String newLocationName = MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID.equals(locationString)? null : locationString;
+        final String effectiveLocationName = MonitoringLocationDao.isDefaultLocationName(locationString) ? null : locationString;
 
         final OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
 
             @Override
             protected OnmsNode query() {
+                // Find all of the nodes in the target requisition with the given IP address
                 return m_nodeDao.findByForeignSourceAndIpAddress(effectiveForeignSource, ipAddress).stream().filter(n -> {
-                    String existingLocationName = null;
-                    final OnmsMonitoringLocation location = n.getLocation();
-                    if (location != null && location.getLocationName() != null && !location.getLocationName().equals(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID)) {
-                        existingLocationName = location.getLocationName();
-                    }
-                    return Objects.equals(existingLocationName, newLocationName);
+                    // Now filter the nodes by location
+                    final String existingLocationName = MonitoringLocationDao.getLocationNameOrNullIfDefault(n);
+                    return Objects.equals(existingLocationName, effectiveLocationName);
                 }).findFirst().orElse(null);
             }
 
@@ -1408,7 +1406,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         if (node != null) {
             if (effectiveForeignSource != null) {
                 node.setForeignId(node.getNodeId());
-                createUpdateRequistion(ipAddress, node, effectiveForeignSource);
+                createUpdateRequistion(ipAddress, node, effectiveLocationName, effectiveForeignSource);
             }
 
             // we do this here rather than in the doInsert method because
@@ -1420,7 +1418,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     }
 
-    private boolean createUpdateRequistion(final String addrString, final OnmsNode node, String m_foreignSource) {
+    private boolean createUpdateRequistion(final String addrString, final OnmsNode node, final String locationName, String m_foreignSource) {
         LOG.debug("Creating/Updating requistion {} for newSuspect {}...", m_foreignSource, addrString);
         try {
             Requisition r = null;
@@ -1446,6 +1444,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             rn.setBuilding(m_foreignSource);
             rn.setForeignId(node.getForeignId());
             rn.setNodeLabel(node.getLabel());
+            rn.setLocation(locationName);
             r.putNode(rn);
             m_foreignSourceRepository.save(r);
             m_foreignSourceRepository.flush();
