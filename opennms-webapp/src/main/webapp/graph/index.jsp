@@ -58,47 +58,54 @@
 
   <div class="row" ng-show="hasResources">
     <div class="col-md-6">
-      <div class="radio">
-        <label>
-          <input type="radio" name="reportTarget" value="graph/results.htm" ng-model="endUrl"/>
-          Standard Resource Performance Reports
-        </label>
-        <br/>
-        <br/>
-        <label>
-          <input type="radio" name="reportTarget" value="graph/adhoc2.jsp" ng-model="endUrl"/>
-          Custom Resource Performance Reports
-        </label>
-        <br/>
-        <br/>
-      </div>
-      <div class="table-responsive">
-        <div class="input-group">
-          <span class="input-group-addon">
-            <span class="glyphicon glyphicon-search"></span>
-          </span>
-          <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="resourceFilter"></input>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Resources</h3>
         </div>
-        <table class="table table-condensed">
-          <thead>
-            <tr>
-              <th>Resources</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr ng-click="goTo(resource.id)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
-              <td>{{ resource.label }}</td>
-            </tr>
-         </tbody>
-        </table>
+        <div class="panel-body">
+          <div class="radio">
+            <label>
+              <input type="radio" name="reportTarget" value="graph/results.htm" ng-model="endUrl"/>
+              Standard Resource Performance Reports
+            </label>
+            <br/>
+            <br/>
+            <label>
+              <input type="radio" name="reportTarget" value="graph/adhoc2.jsp" ng-model="endUrl"/>
+              Custom Resource Performance Reports
+            </label>
+            <br/>
+            <br/>
+          </div>
+          <div class="table-responsive">
+            <div class="input-group">
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-search"></span>
+              </span>
+              <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="resourceFilter"></input>
+            </div>
+            <table class="table table-striped table-condensed table-hover">
+              <thead>
+                <tr>
+                  <th>Resources</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-click="goTo(resource.id)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
+                  <td>{{ resource.label }}</td>
+                </tr>
+             </tbody>
+            </table>
+          </div>
+          <ul uib-pagination class="pagination-sm"
+            total-items="totalItems"
+            num-pages="numPages"
+            ng-model="currentPage"
+            max-size="maxSize"
+            boundary-links="true"
+            ng-show="filteredResources.length > pageSize"></ul>
+        </div>
       </div>
-      <ul uib-pagination class="pagination-sm"
-        total-items="totalItems"
-        num-pages="numPages"
-        ng-model="currentPage"
-        max-size="maxSize"
-        boundary-links="true"
-        ng-show="filteredResources.length > pageSize"></ul>
     </div>
     <div class="col-md-6">
       <div class="panel panel-default">
