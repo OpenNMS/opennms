@@ -45,9 +45,9 @@
 		<route id="syslogMarshal">
 			<from uri="seda:handleMessage?concurrentConsumers={{concurrentConsumers}}&amp;size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}" />
 
-			<setHeader headerName="includeRawMessage">
+		<!--  	<setHeader headerName="includeRawMessage">
 				<simple resultType="java.lang.Boolean">properties:includeRawMessage</simple>
-			</setHeader>
+			</setHeader>-->
 
 			<!-- Marshal the message to XML
 			<process ref="mapper"/> -->
