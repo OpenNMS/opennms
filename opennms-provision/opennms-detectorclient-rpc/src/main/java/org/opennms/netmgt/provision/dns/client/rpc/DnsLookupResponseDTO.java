@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RpcResponse;
 
 @XmlRootElement(name = "dns-lookup-response")
@@ -44,8 +45,14 @@ public class DnsLookupResponseDTO implements RpcResponse {
     @XmlAttribute(name = "host-response")
     private String hostResponse;
 
-    @XmlAttribute(name = "failure-message")
-    private String failureMessage;
+    @XmlAttribute(name = "error")
+    private String error;
+
+    public DnsLookupResponseDTO() { }
+ 
+    public DnsLookupResponseDTO(Throwable ex) {
+        error = RemoteExecutionException.toErrorMessage(ex);
+    }
 
     public String getHostResponse() {
         return hostResponse;
@@ -55,21 +62,14 @@ public class DnsLookupResponseDTO implements RpcResponse {
         this.hostResponse = hostResponse;
     }
 
-    public String getFailureMessage() {
-        return failureMessage;
-    }
-
-    public void setFailureMessage(String failureMessage) {
-        this.failureMessage = failureMessage;
-    }
-
-    public boolean didFailWithError() {
-        return failureMessage != null && !failureMessage.isEmpty();
+    @Override
+    public String getErrorMessage() {
+        return error;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hostResponse, failureMessage);
+        return Objects.hash(hostResponse, error);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class DnsLookupResponseDTO implements RpcResponse {
             return false;
         DnsLookupResponseDTO other = (DnsLookupResponseDTO) obj;
         return Objects.equals(this.hostResponse, other.hostResponse)
-                && Objects.equals(this.failureMessage, other.failureMessage);
+                && Objects.equals(this.error, other.error);
     }
 
 }

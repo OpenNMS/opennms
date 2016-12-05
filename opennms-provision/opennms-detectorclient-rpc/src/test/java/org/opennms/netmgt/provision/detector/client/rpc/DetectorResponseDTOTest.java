@@ -45,20 +45,20 @@ public class DetectorResponseDTOTest extends XmlTestNoCastor<DetectorResponseDTO
     public static Collection<Object[]> data() throws Exception {
         return Arrays.asList(new Object[][] {
             {
-                getDetectorResponse(),
+                getDetectedResponse(),
                 "<?xml version=\"1.0\"?>\n" +
-                "<detector-response detected=\"true\" failure-message=\"classCast exception\">" +
+                "<detector-response detected=\"true\">" +
                 "<attribute key=\"vendor\">MOO</attribute>" +
                 "</detector-response>"
             }
         });
     }
 
-    public static DetectorResponseDTO getDetectorResponse() {
+    public static DetectorResponseDTO getDetectedResponse() {
         DetectorResponseDTO response = new DetectorResponseDTO();
         response.setDetected(true);
-        response.setFailureMessage("classCast exception");
         response.addAttribute("vendor", "MOO");
         return response;
     }
+
 }

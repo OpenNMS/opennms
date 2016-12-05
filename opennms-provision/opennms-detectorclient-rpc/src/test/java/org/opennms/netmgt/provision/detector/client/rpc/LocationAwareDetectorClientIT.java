@@ -162,31 +162,29 @@ public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
         assertEquals(false, isDetected);
 
         // Error on detection with synchronous detector
-        boolean caughtException = false;
         try {
             locationAwareDetectorClient.detect()
                 .withLocation(REMOTE_LOCATION_NAME)
                 .withClassName(ExceptionalSyncServiceDetector.class.getCanonicalName())
                 .withAddress(InetAddress.getLoopbackAddress())
                 .execute().get();
+            fail("Exception was not thrown.");
         } catch (ExecutionException e) {
-            assertEquals("Failure on sync detection.", e.getCause().getMessage());
-            caughtException = true;
+            final String message = e.getCause().getMessage();
+            assertTrue(message, message.contains("Failure on sync detection."));
         }
-        assertTrue("Did not catch exception", caughtException);
 
         // Error on detection with asynchronous detector
-        caughtException = false;
         try {
             locationAwareDetectorClient.detect()
                 .withLocation(REMOTE_LOCATION_NAME)
                 .withClassName(ExceptionalAsyncServiceDetector.class.getCanonicalName())
                 .withAddress(InetAddress.getLoopbackAddress())
                 .execute().get();
+            fail("Exception was not thrown.");
         } catch (ExecutionException e) {
-            assertEquals("Failure on async detection.", e.getCause().getMessage());
-            caughtException = true;
+            final String message = e.getCause().getMessage();
+            assertTrue(message, message.contains("Failure on async detection."));
         }
-        assertTrue("Did not catch exception", caughtException);
     }
 }

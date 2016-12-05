@@ -43,28 +43,32 @@ public class DnsLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequ
     }
 
     @Override
+    public DnsLookupResponseDTO createResponseWithException(Throwable ex) {
+        return new DnsLookupResponseDTO(ex);
+    }
+
+    @Override
     public String getId() {
         return RPC_MODULE_ID;
     }
 
     @Override
     public CompletableFuture<DnsLookupResponseDTO> execute(DnsLookupRequestDTO request) {
-        String hostRequest = request.getHostRequest();
-        QueryType queryType = request.getQueryType();
-        DnsLookupResponseDTO dto = new DnsLookupResponseDTO();
+        final CompletableFuture<DnsLookupResponseDTO> future = new CompletableFuture<DnsLookupResponseDTO>();
         try {
-            InetAddress addr = InetAddressUtils.addr(hostRequest);
+            final InetAddress addr = InetAddressUtils.addr(request.getHostRequest());
+            final DnsLookupResponseDTO dto = new DnsLookupResponseDTO();
+            final QueryType queryType = request.getQueryType();
             if (queryType.equals(QueryType.LOOKUP)) {
                 dto.setHostResponse(addr.getHostAddress());
             } else if (queryType.equals(QueryType.REVERSE_LOOKUP)) {
                 dto.setHostResponse(addr.getCanonicalHostName());
             }
+            future.complete(dto);
         } catch (Exception e) {
-            dto.setFailureMessage(e.getMessage());
+            future.completeExceptionally(e);
         }
-        CompletableFuture<DnsLookupResponseDTO> response = new CompletableFuture<DnsLookupResponseDTO>();
-        response.complete(dto);
-        return response;
+        return future;
     }
 
 }

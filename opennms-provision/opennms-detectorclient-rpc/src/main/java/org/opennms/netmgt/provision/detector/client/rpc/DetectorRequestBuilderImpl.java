@@ -152,22 +152,13 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         // Execute the request
         return client.getDelegate().execute(detectorRequestDTO)
             .thenApply(response -> {
-                if (!response.didFailWithError()) {
-                    // Notify the factory that a request was successfully executed
-                    try {
-                        factory.afterDetect(request, response, nodeId);
-                    } catch (Throwable t) {
-                        LOG.error("Error while processing detect callback.", t);
-                    }
+                // Notify the factory that a request was successfully executed
+                try {
+                    factory.afterDetect(request, response, nodeId);
+                } catch (Throwable t) {
+                    LOG.error("Error while processing detect callback.", t);
                 }
-                return response;
-            })
-            .thenApply(response -> {
-                if (response.didFailWithError()) {
-                    throw new RuntimeException(response.getFailureMessage());
-                } else {
-                    return response.isDetected();
-                }
+                return response.isDetected();
             });
     }
 }
