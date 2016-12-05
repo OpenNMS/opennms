@@ -36,7 +36,7 @@
 		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
 	</bean>
 
-	<bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogObjectToDTOProcessor"/>
+	<!--  <bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogObjectToDTOProcessor"/>-->
 
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
 	<camelContext id="syslogdHandlerKafkaContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
