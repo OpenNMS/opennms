@@ -28,6 +28,7 @@
 
 package org.opennms.core.rpc.camel;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.Endpoint;
@@ -36,6 +37,8 @@ import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeTimedOutException;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.spi.Synchronization;
+import org.opennms.core.logging.Logging;
+import org.opennms.core.logging.Logging.MDCCloseable;
 import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.core.rpc.api.RpcClient;
@@ -68,33 +71,42 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                     return module.execute(request);
                 }
 
+                // Save the context map and restore it on callback
+                final Map<String, String> clientContextMap = Logging.getCopyOfContextMap();
+
                 // Wrap the request in a CamelRpcRequest and forward it to the Camel route
                 final CompletableFuture<T> future = new CompletableFuture<>();
                 template.asyncCallbackSendBody(endpoint, new CamelRpcRequest<>(module, request), new Synchronization() {
                     @Override
                     public void onComplete(Exchange exchange) {
-                        try {
-                           final T response = module.unmarshalResponse(exchange.getOut().getBody(String.class));
-                           if (response.getErrorMessage() != null) {
-                               future.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
-                           } else {
-                               future.complete(response);
-                           }
+                        try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
+                            final T response = module.unmarshalResponse(exchange.getOut().getBody(String.class));
+                            if (response.getErrorMessage() != null) {
+                                future.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
+                            } else {
+                                future.complete(response);
+                            }
                         } catch (Throwable ex) {
                             LOG.error("Unmarshalling a response in RPC module {} failed.", module, ex);
                             future.completeExceptionally(ex);
                         }
+                        // Ensure that future log statements on this thread are routed properly
+                        Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                     }
 
                     @Override
                     public void onFailure(Exchange exchange) {
-                        // Wrap timeout exceptions within a RequestTimedOutException
-                        final ExchangeTimedOutException timeoutException = exchange.getException(ExchangeTimedOutException.class);
-                        if (timeoutException != null) {
-                            future.completeExceptionally(new RequestTimedOutException(exchange.getException()));
-                        } else {
-                            future.completeExceptionally(exchange.getException());
+                        try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
+                            // Wrap timeout exceptions within a RequestTimedOutException
+                            final ExchangeTimedOutException timeoutException = exchange.getException(ExchangeTimedOutException.class);
+                            if (timeoutException != null) {
+                                future.completeExceptionally(new RequestTimedOutException(exchange.getException()));
+                            } else {
+                                future.completeExceptionally(exchange.getException());
+                            }
                         }
+                        // Ensure that future log statements on this thread are routed properly
+                        Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                     }
                 });
                 return future;

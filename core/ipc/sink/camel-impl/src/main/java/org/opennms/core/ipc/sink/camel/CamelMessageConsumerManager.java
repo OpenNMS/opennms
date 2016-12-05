@@ -36,6 +36,8 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.core.logging.Logging;
+import org.opennms.core.logging.Logging.MDCCloseable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.camel.JmsQueueNameFactory;
@@ -80,14 +82,16 @@ public class CamelMessageConsumerManager implements MessageConsumerManager {
             return;
         }
 
-        LOG.info("Registering consumer: {}", consumer);
-        final SinkModule<Message> module = (SinkModule<Message>)consumer.getModule();
-        consumersByModule.put(module, (MessageConsumer<Message>)consumer);
-        if (!routeIdsByModule.containsKey(module)) {
-            LOG.info("Creating route for module: {}", module);
-            final DynamicIpcRouteBuilder routeBuilder = new DynamicIpcRouteBuilder(context, this, (SinkModule<Message>)consumer.getModule());
-            context.addRoutes(routeBuilder);
-            routeIdsByModule.put(module, routeBuilder.getRouteId());
+        try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
+            LOG.info("Registering consumer: {}", consumer);
+            final SinkModule<Message> module = (SinkModule<Message>)consumer.getModule();
+            consumersByModule.put(module, (MessageConsumer<Message>)consumer);
+            if (!routeIdsByModule.containsKey(module)) {
+                LOG.info("Creating route for module: {}", module);
+                final DynamicIpcRouteBuilder routeBuilder = new DynamicIpcRouteBuilder(context, this, (SinkModule<Message>)consumer.getModule());
+                context.addRoutes(routeBuilder);
+                routeIdsByModule.put(module, routeBuilder.getRouteId());
+            }
         }
     }
 
@@ -99,14 +103,16 @@ public class CamelMessageConsumerManager implements MessageConsumerManager {
             return;
         }
 
-        LOG.info("Unregistering consumer: {}", consumer);
-        final SinkModule<Message> module = (SinkModule<Message>)consumer.getModule();
-        consumersByModule.remove(module, (MessageConsumer<Message>)consumer);
-        if (consumersByModule.get(module).size() < 1 && routeIdsByModule.containsKey(module)) {
-            LOG.info("Destroying route for module: {}", module);
-            final String routeId = routeIdsByModule.get(module);
-            context.stopRoute(routeId);
-            context.removeRoute(routeId);
+        try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
+            LOG.info("Unregistering consumer: {}", consumer);
+            final SinkModule<Message> module = (SinkModule<Message>)consumer.getModule();
+            consumersByModule.remove(module, (MessageConsumer<Message>)consumer);
+            if (consumersByModule.get(module).size() < 1 && routeIdsByModule.containsKey(module)) {
+                LOG.info("Destroying route for module: {}", module);
+                final String routeId = routeIdsByModule.get(module);
+                context.stopRoute(routeId);
+                context.removeRoute(routeId);
+            }
         }
     }
 

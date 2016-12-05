@@ -96,6 +96,12 @@ public abstract class Logging {
         return new MDCCloseable(mdc);
     }
 
+    public static MDCCloseable withContextMapCloseable(final Map<String, String> contextMap) {
+        final Map<String, String> mdc = Logging.getCopyOfContextMap();
+        Logging.setContextMap(contextMap);
+        return new MDCCloseable(mdc);
+    }
+
     public static Runnable preserve(final Runnable runnable) {
         final Map<String, String> parentMdc = Logging.getCopyOfContextMap();
         return new Runnable() {
