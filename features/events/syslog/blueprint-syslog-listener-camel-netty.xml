@@ -20,6 +20,7 @@
 			<cm:property name="syslog.no.threads" value="0" />
 			<cm:property name="sedaQueueSize" value="10000" />
 			<cm:property name="blockWhenFull" value="true" />
+			<cm:property name="limitConcurrentConsumers" value="false" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -46,7 +47,7 @@
 	<!-- Register a whiteboard of SyslogConnectionHandlers. -->
 	<!-- This whiteboard is injected into the listener instead of being classpath-scanned. -->
 	<bean id="syslogDispatcher" class="org.opennms.core.camel.DispatcherWhiteboard">
-		<argument value="seda:handleMessage?size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}"/>
+		<argument value="seda:handleMessage?size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}"/>
 		
 		<property name="context" ref="blueprintBundleContext"/>
 		<property name="messageClass" value="org.opennms.netmgt.syslogd.SyslogConnection"/>

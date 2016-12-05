@@ -28,30 +28,77 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.net.InetAddress;
+import java.nio.ByteBuffer;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.camel.MinionDTO;
+import org.opennms.core.utils.InetAddressUtils;
 
 @XmlRootElement(name = "syslog-dto")
 @XmlAccessorType(XmlAccessType.NONE)
-public class SyslogDTO extends MinionDTO {
+public class SyslogDTO {
+	
+	public String SYSTEM_ID = "systemId";
+	public String LOCATION = "location";
+	public String SOURCE_ADDRESS = "sourceAddress";
+	public String SOURCE_PORT = "sourcePort";
+	
+	private ByteBuffer m_body;
+	
+	public SyslogDTO(InetAddress sourceAddress,String sourcePort, ByteBuffer byteBuffer, String systemId, String location){
+		this.SOURCE_ADDRESS = InetAddressUtils.str(sourceAddress);
+		this.SOURCE_PORT = sourcePort;
+		this.SYSTEM_ID = systemId;
+		this.LOCATION = location;
+		this.m_body = byteBuffer;
+	}
 
-	public SyslogDTO() {
-		// No-arg constructor for JAXB
-		super();
+	@XmlAttribute
+	public String getSystemId() {
+		return SYSTEM_ID;
+	}
+
+	@XmlAttribute
+	public String getLocation() {
+		return LOCATION;
+	}
+
+	@XmlAttribute
+	public String getSourceAddress() {
+		return SOURCE_ADDRESS;
+	}
+
+	@XmlAttribute
+	public String getSourcePort() {
+		return SOURCE_PORT;
+	}
+
+	@XmlAttribute
+	public byte[] getBody() {
+		m_body.rewind();
+        byte[] retval = new byte[m_body.remaining()];
+        m_body.get(retval);
+        m_body.rewind();
+        return retval;
+	}
+
+	public void setBody(ByteBuffer m_body) {
+		this.m_body = m_body;
 	}
 
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this)
-				.append("systemId", super.getHeaders().get(SYSTEM_ID))
-				.append("location", super.getHeaders().get(LOCATION))
-				.append("sourceAddress", super.getHeaders().get(SOURCE_ADDRESS))
-				.append("sourcePort", super.getHeaders().get(SOURCE_PORT))
-				.append("body", super.getBody()).toString();
+				.append("systemId",getSystemId())
+				.append("location", getLocation())
+				.append("sourceAddress", getSourceAddress())
+				.append("sourcePort", getSourcePort())
+				.append("body", getBody()).toString();
 	}
 
 }

@@ -6,10 +6,10 @@ import org.apache.camel.ProducerTemplate;
 
 public class CustomSyslogHandler implements SyslogConnectionHandler{
 	
-    @EndpointInject(uri = "seda:handleMessage?size=1000000&blockWhenFull=true", context = "syslogdHandlerKafkaContext")
+    @EndpointInject(uri = "seda:handleMessage?size=100000&blockWhenFull=true", context = "syslogdHandlerKafkaContext")
     private ProducerTemplate template;
 
-    @EndpointInject(uri = "seda:handleMessage?size=1000000&blockWhenFull=true", context = "syslogdHandlerKafkaContext")
+    @EndpointInject(uri = "seda:handleMessage?size=100000&blockWhenFull=true", context = "syslogdHandlerKafkaContext")
     private Endpoint endpoint;
     
 

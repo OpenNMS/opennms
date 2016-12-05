@@ -21,6 +21,7 @@
 			<cm:property name="sedaQueueSize" value="10000" />
 			<cm:property name="concurrentConsumers" value="10" />
 			<cm:property name="blockWhenFull" value="true" />
+			<cm:property name="limitConcurrentConsumers" value="false" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -42,14 +43,14 @@
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerKafkaProperties" />
 
 		<route id="syslogMarshal">
-			<from uri="seda:handleMessage?concurrentConsumers={{concurrentConsumers}}&amp;size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}" />
+			<from uri="seda:handleMessage?concurrentConsumers={{concurrentConsumers}}&amp;size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}" />
 
 			<setHeader headerName="includeRawMessage">
 				<simple resultType="java.lang.Boolean">properties:includeRawMessage</simple>
 			</setHeader>
 
-			<!-- Marshal the message to XML -->
-			<process ref="mapper"/>
+			<!-- Marshal the message to XML
+			<process ref="mapper"/> -->
 			<process ref="marshaller"/>
 
 <!-- 			<to uri="seda:sendMessage"/> -->
