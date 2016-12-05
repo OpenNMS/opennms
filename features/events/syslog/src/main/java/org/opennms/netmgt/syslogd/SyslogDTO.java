@@ -50,7 +50,12 @@ public class SyslogDTO {
 	
 	private ByteBuffer m_body;
 	
+	public SyslogDTO(){
+		
+	}
+	
 	public SyslogDTO(InetAddress sourceAddress,String sourcePort, ByteBuffer byteBuffer, String systemId, String location){
+
 		this.SOURCE_ADDRESS = InetAddressUtils.str(sourceAddress);
 		this.SOURCE_PORT = sourcePort;
 		this.SYSTEM_ID = systemId;
