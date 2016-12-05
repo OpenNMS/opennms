@@ -36,14 +36,19 @@ import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeTimedOutException;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.spi.Synchronization;
+import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CamelRpcClientFactory implements RpcClientFactory {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CamelRpcServerProcessor.class);
 
     private String location;
 
@@ -69,11 +74,18 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                     @Override
                     public void onComplete(Exchange exchange) {
                         try {
-                            future.complete(module.unmarshalResponse(exchange.getOut().getBody(String.class)));
+                           final T response = module.unmarshalResponse(exchange.getOut().getBody(String.class));
+                           if (response.getErrorMessage() != null) {
+                               future.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
+                           } else {
+                               future.complete(response);
+                           }
                         } catch (Throwable ex) {
+                            LOG.error("Unmarshalling a response in RPC module {} failed.", module, ex);
                             future.completeExceptionally(ex);
                         }
                     }
+
                     @Override
                     public void onFailure(Exchange exchange) {
                         // Wrap timeout exceptions within a RequestTimedOutException

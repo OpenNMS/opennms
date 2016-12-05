@@ -35,19 +35,27 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RpcResponse;
 
 @XmlRootElement(name="echo-response")
 @XmlAccessorType(XmlAccessType.NONE)
 public class EchoResponse implements RpcResponse {
 
+    @XmlAttribute(name="error")
+    private String error;
+
     @XmlAttribute(name="message")
     private String message;
 
     public EchoResponse() { }
-    
+
     public EchoResponse(String message) {
         this.message = message;
+    }
+
+    public EchoResponse(Throwable t) {
+        this.error = RemoteExecutionException.toErrorMessage(t);
     }
 
     public void setMessage(String message) {
@@ -59,8 +67,13 @@ public class EchoResponse implements RpcResponse {
     }
 
     @Override
+    public String getErrorMessage() {
+        return error;
+    }
+
+    @Override
     public int hashCode() {
-        return Objects.hash(message);
+        return Objects.hash(message, error);
     }
 
     @Override
@@ -72,11 +85,12 @@ public class EchoResponse implements RpcResponse {
         if (getClass() != obj.getClass())
             return false;
         final EchoResponse other = (EchoResponse) obj;
-        return Objects.equals(this.message, other.message);
+        return Objects.equals(this.message, other.message) &&
+                Objects.equals(this.error, other.error);
     }
 
     @Override
     public String toString() {
-        return String.format("EchoResponse[message=%s]", message);
+        return String.format("EchoResponse[message=%s, error=%s]", message, error);
     }
 }

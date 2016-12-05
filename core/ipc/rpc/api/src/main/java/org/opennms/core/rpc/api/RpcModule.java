@@ -63,4 +63,16 @@ public interface RpcModule<S extends RpcRequest, T extends RpcResponse> extends 
      */
     T unmarshalResponse(String response);
 
+    /**
+     * Called when the {@link RpcModule} throws an exception while executing a request.
+     *
+     * This function should return a new {@link RpcResponse} that stores a string-based representation
+     * of the exception that occurred and make this available via {@link RpcResponse#getErrorMessage()}
+     * once un-marshaled.
+     *
+     * @param ex the exception that occurred
+     * @return a {@link RpcResponse} that stores the exception
+     */
+    T createResponseWithException(Throwable ex);
+
 }
