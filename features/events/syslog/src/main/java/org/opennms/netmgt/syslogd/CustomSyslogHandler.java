@@ -4,7 +4,7 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
 
-public class CustomSyslogHandler implements SyslogConnectionHandler{
+public class CustomSyslogHandler implements SyslogDTOHandler{
 	
     @EndpointInject(uri = "seda:handleMessage?size=100000&blockWhenFull=true", context = "syslogdHandlerKafkaContext")
     private ProducerTemplate template;
@@ -14,7 +14,7 @@ public class CustomSyslogHandler implements SyslogConnectionHandler{
     
 
 	@Override
-	public void handleSyslogConnection(SyslogConnection message) {
+	public void handleSyslogDTO(SyslogDTO message) {
 		template.sendBody(endpoint,message);
 		
 	}

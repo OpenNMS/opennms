@@ -50,9 +50,9 @@
 		<argument value="seda:handleMessage?size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}"/>
 		
 		<property name="context" ref="blueprintBundleContext"/>
-		<property name="messageClass" value="org.opennms.netmgt.syslogd.SyslogConnection"/>
-		<property name="serviceClass" value="org.opennms.netmgt.syslogd.SyslogConnectionHandler"/>
-		<property name="methodName" value="handleSyslogConnection"/>
+		<property name="messageClass" value="org.opennms.netmgt.syslogd.SyslogDTO"/>
+		<property name="serviceClass" value="org.opennms.netmgt.syslogd.SyslogDTOHandler"/>
+		<property name="methodName" value="handleSyslogDTO"/>
 	</bean>
 
 </blueprint>
