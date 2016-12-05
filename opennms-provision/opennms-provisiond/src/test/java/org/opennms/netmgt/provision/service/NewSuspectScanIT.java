@@ -71,6 +71,8 @@ import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -312,6 +314,57 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
 
         // The node count should not increase
         assertEquals(1, getNodeDao().countAll());
+    }
+
+    @Test(timeout=300000)
+    public void testScanNewSuspectWithForeignSourceAndLocation() throws Exception {
+        final int nextNodeId = m_nodeDao.getNextNodeId();
+
+        //Verify empty database
+        assertEquals(1, getDistPollerDao().countAll());
+        assertEquals(0, getNodeDao().countAll());
+        assertEquals(0, getInterfaceDao().countAll());
+        assertEquals(0, getMonitoredServiceDao().countAll());
+        assertEquals(0, getServiceTypeDao().countAll());
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+
+        final EventAnticipator anticipator = m_eventSubscriber.getEventAnticipator();
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.201")).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
+
+        final String foreignSource = "Testie";
+        final String locationName = "!" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource, locationName);
+        runScan(scan);
+
+        anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+
+        //Verify ipinterface count
+        assertEquals("Unexpected number of interfaces found: " + getInterfaceDao().findAll(), 1, getInterfaceDao().countAll());
+
+        //Verify ifservices count - discover snmp service on other if
+        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 0, getMonitoredServiceDao().countAll());
+
+        //Verify service count
+        assertEquals(0, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+
+        // HZN-960: Verify that the location name was properly set on the node in the requisition
+        final Requisition requisition = m_foreignSourceRepository.getRequisition(foreignSource);
+        final List<RequisitionNode> requisitionNodes = requisition.getNodes();
+        assertEquals(1, requisitionNodes.size());
+
+        final RequisitionNode requisitionNode = requisitionNodes.get(0);
+        assertEquals(locationName, requisitionNode.getLocation());
     }
 
     @Test(timeout=300000)
