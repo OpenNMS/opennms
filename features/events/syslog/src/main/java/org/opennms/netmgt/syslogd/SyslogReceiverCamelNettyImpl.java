@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.kafka.KafkaComponent;
 import org.apache.camel.component.netty.CamelNettyThreadNameDeterminer;
 import org.apache.camel.component.netty.NettyComponent;
 import org.apache.camel.component.netty.NettyConstants;
@@ -169,6 +170,7 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
 
         //Adding netty component to camel inorder to resolve OSGi loading issues
         NettyComponent nettyComponent = new NettyComponent();
+        KafkaComponent kafka = new KafkaComponent();
         m_camel = new DefaultCamelContext(registry);
 
         // Set the context name so that it shows up nicely in JMX
@@ -180,6 +182,7 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         m_camel.setManagementNameStrategy(new DefaultManagementNameStrategy(m_camel, "#name#", null));
 
         m_camel.addComponent("netty", nettyComponent);
+        m_camel.addComponent("kafka", kafka);
 
         try {
             m_camel.addRoutes(new RouteBuilder() {
@@ -216,6 +219,9 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             //SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), byteBuffer, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
                             SyslogDTO connection = new SyslogDTO(source.getAddress(),source.getPort(), byteBuffer,m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
                             exchange.getIn().setBody(connection, SyslogDTO.class);
+                            buffer =null;
+                            source=null;
+                            byteBuffer=null;
 
                             /*
                             try {
