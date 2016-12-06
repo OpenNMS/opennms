@@ -234,9 +234,16 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             }
                             */
                         }
-                    }).to("bean:syslogDispatcher?method=dispatch");
+                    }).to("direct:sendToKafka");
                 }
             });
+            m_camel.addRoutes(new RouteBuilder() {
+				@Override
+				public void configure() throws Exception {
+					from("direct:sendToKafka")
+					.to("kafka:taspmoosskafka101.cernerasp.com:9092,taspmoosskafka102.cernerasp.com:9092,taspmoosskafka103.cernerasp.com:9092?topic=syslog&serializerClass=kafka.serializer.StringEncoder");
+				}
+			});
 
             m_camel.start();
         } catch (Throwable e) {
