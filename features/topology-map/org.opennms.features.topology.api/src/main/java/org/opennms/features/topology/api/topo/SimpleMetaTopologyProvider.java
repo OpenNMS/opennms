@@ -90,7 +90,8 @@ public class SimpleMetaTopologyProvider implements MetaTopologyProvider {
     }
 
     @Override
-    public void reload() {
+    public void reload(String namespace) {
+        // not differentiable, always reload the underlying GraphProvider
         graphProvider.refresh();
     }
 

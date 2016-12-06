@@ -88,7 +88,7 @@ public class BreadcrumbPathCalculatorTest {
             }
 
             @Override
-            public void reload() {
+            public void reload(String namespace) {
                 layer1.refresh();
                 layer2.refresh();
                 layer3.refresh();
@@ -99,7 +99,7 @@ public class BreadcrumbPathCalculatorTest {
                 return getGraphProviders().stream().map(g -> g.getNamespace()).collect(Collectors.joining(":"));
             }
         };
-        metaTopologyProvider.reload();
+        metaTopologyProvider.reload(null);
 
         DefaultTopologyService topologyService = new DefaultTopologyService();
         topologyService.onBind(metaTopologyProvider, Maps.newHashMap());

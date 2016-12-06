@@ -150,7 +150,8 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
 
     @Override
     public void refresh() {
-        // TODO: How to handle refresh()?
+        // Refresh is handled by the MetaTopologyProvider as one GraphML file may represent
+        // multiple layers (GraphMLTopologyProviders)
     }
 
     @Override

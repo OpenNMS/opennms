@@ -14,6 +14,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
             <cm:property name="autoRefresh.enabled" value="false" />
             <cm:property name="autoRefresh.interval" value="60" />
             <cm:property name="hiddenCategoryPrefix" value="" />
+            <cm:property name="topologyServiceCacheTimeout" value="60" /> <!-- seconds -->
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -138,9 +139,10 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <!-- Topology Service -->
     <bean id="topologyService" class="org.opennms.features.topology.app.internal.service.DefaultTopologyService" >
+        <argument value="${topologyServiceCacheTimeout}"/>
         <property name="bundleContext" ref="blueprintBundleContext"/>
-        <property name="autoRefresh" value="true" />
     </bean>
+
     <service ref="topologyService" interface="org.opennms.features.topology.api.TopologyService" />
     <reference-list interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" availability="mandatory">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="topologyService"/>

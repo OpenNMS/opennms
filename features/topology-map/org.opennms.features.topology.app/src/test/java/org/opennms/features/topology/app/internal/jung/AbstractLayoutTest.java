@@ -74,7 +74,7 @@ public abstract class AbstractLayoutTest {
 
         final DefaultTopologyService topologyService = new DefaultTopologyService();
         final MetaTopologyProvider metaTopologyProvider = new SimpleMetaTopologyProvider(getGraphProvider());
-        metaTopologyProvider.reload();
+        metaTopologyProvider.reload(null);
         topologyService.onBind(metaTopologyProvider, Maps.newHashMap());
 
         final VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();

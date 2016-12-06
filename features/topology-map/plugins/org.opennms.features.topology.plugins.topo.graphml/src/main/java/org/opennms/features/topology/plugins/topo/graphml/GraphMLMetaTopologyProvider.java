@@ -80,9 +80,9 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
 
     private VertexRef getVertex(GraphMLNode node) {
         return graphsByNamespace.values().stream()
-            .map(g -> g.getVertex(g.getNamespace(), node.getId()))
-            .filter(v -> v != null)
-            .findFirst().orElse(null);
+                .map(g -> g.getVertex(g.getNamespace(), node.getId()))
+                .filter(v -> v != null)
+                .findFirst().orElse(null);
     }
 
     @Override
@@ -93,7 +93,6 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
                 .collect(Collectors.joining(":"));
     }
 
-    @Override
     public void reload() {
         graphsByNamespace.clear();
         oppositeVertices.clear();
@@ -135,6 +134,11 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
         } catch (InvalidGraphException | IOException e) {
             LOG.error(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void reload(String namespace) {
+        reload(); // The GraphMLTopologyProvider cannot be reloaded partially, so we always reload everything
     }
 
     @Override

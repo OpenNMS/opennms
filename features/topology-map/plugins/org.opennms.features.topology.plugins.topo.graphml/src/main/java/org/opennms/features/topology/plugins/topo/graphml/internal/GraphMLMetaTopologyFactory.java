@@ -107,7 +107,7 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 					.collect(Collectors.toSet());
 			registerService(pid, IconRepository.class, new GraphMLIconRepository(iconKeys));
 
-			// Create a OSGi aware script engine manager
+			// Create an OSGi aware script engine manager
 			final ScriptEngineManager scriptEngineManager = new OSGiScriptEngineManager(m_bundleContext);
 			metaTopologyProvider.getGraphProviders().forEach(it -> {
 				// Find Topology Provider

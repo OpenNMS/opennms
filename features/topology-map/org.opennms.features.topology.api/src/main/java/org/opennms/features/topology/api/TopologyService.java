@@ -38,6 +38,6 @@ public interface TopologyService {
 
     GraphProvider getGraphProvider(String metaTopologyId, String namespace);
 
-    MetaTopologyProvider getMetaTopologyProvider(String m_metaTopologyId);
+    MetaTopologyProvider getMetaTopologyProvider(String metaTopologyId);
 
 }

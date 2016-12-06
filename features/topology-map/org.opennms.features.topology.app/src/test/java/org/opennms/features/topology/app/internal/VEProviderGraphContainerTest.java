@@ -172,7 +172,7 @@ public class VEProviderGraphContainerTest {
 
 
 		MetaTopologyProvider metaTopologyProvider = new SimpleMetaTopologyProvider(m_graphProvider);
-		metaTopologyProvider.reload();
+		metaTopologyProvider.reload(m_graphProvider.getNamespace());
 		DefaultTopologyService topologyService = new DefaultTopologyService();
 		topologyService.onBind(metaTopologyProvider, Maps.newHashMap());
 
@@ -205,9 +205,8 @@ public class VEProviderGraphContainerTest {
         VertexHopGraphProvider vertexHopGraphProvider = new VertexHopGraphProvider(m_graphProvider);
 
         DefaultTopologyService topologyService = new DefaultTopologyService();
-        topologyService.setAutoRefresh(false);
         SimpleMetaTopologyProvider simpleMetaTopologyProvider = new SimpleMetaTopologyProvider(vertexHopGraphProvider);
-        simpleMetaTopologyProvider.reload();
+        simpleMetaTopologyProvider.reload(vertexHopGraphProvider.getNamespace());
         topologyService.onBind(simpleMetaTopologyProvider, Maps.newHashMap());
 
 		// Wrap the test GraphProvider in a VertexHopGraphProvider
