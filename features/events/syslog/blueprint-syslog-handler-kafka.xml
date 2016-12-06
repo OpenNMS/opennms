@@ -50,8 +50,8 @@
 			</setHeader>-->
 
 			<!-- Marshal the message to XML
-			<process ref="mapper"/> -->
-			<process ref="marshaller"/>
+			<process ref="mapper"/> 
+			<process ref="marshaller"/>-->
 
 <!-- 			<to uri="seda:sendMessage"/> -->
 <!-- 		</route> -->

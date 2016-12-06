@@ -42,7 +42,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.kafka.KafkaComponent;
 import org.apache.camel.component.netty.CamelNettyThreadNameDeterminer;
 import org.apache.camel.component.netty.NettyComponent;
 import org.apache.camel.component.netty.NettyConstants;
@@ -55,6 +54,7 @@ import org.jboss.netty.channel.socket.nio.NioWorkerPool;
 import org.opennms.core.camel.DispatcherWhiteboard;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.slf4j.Logger;
@@ -68,7 +68,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 /**
  * @author Seth
  */
-public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
+public class SyslogReceiverCamelNettyImpl implements SyslogReceiver,Processor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverCamelNettyImpl.class);
     
@@ -170,7 +170,6 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
 
         //Adding netty component to camel inorder to resolve OSGi loading issues
         NettyComponent nettyComponent = new NettyComponent();
-        KafkaComponent kafka = new KafkaComponent();
         m_camel = new DefaultCamelContext(registry);
 
         // Set the context name so that it shows up nicely in JMX
@@ -182,7 +181,6 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         m_camel.setManagementNameStrategy(new DefaultManagementNameStrategy(m_camel, "#name#", null));
 
         m_camel.addComponent("netty", nettyComponent);
-        m_camel.addComponent("kafka", kafka);
 
         try {
             m_camel.addRoutes(new RouteBuilder() {
@@ -219,9 +217,6 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             //SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), byteBuffer, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
                             SyslogDTO connection = new SyslogDTO(source.getAddress(),source.getPort(), byteBuffer,m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
                             exchange.getIn().setBody(connection, SyslogDTO.class);
-                            buffer =null;
-                            source=null;
-                            byteBuffer=null;
 
                             /*
                             try {
@@ -234,16 +229,9 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             }
                             */
                         }
-                    }).to("direct:sendToKafka");
+                    }).to("bean:syslogDispatcher?method=dispatch");
                 }
             });
-            m_camel.addRoutes(new RouteBuilder() {
-				@Override
-				public void configure() throws Exception {
-					from("direct:sendToKafka")
-					.to("kafka:taspmoosskafka101.cernerasp.com:9092,taspmoosskafka102.cernerasp.com:9092,taspmoosskafka103.cernerasp.com:9092?topic=syslog&serializerClass=kafka.serializer.StringEncoder");
-				}
-			});
 
             m_camel.start();
         } catch (Throwable e) {
@@ -258,4 +246,20 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
     public void setSyslogDispatcher(DispatcherWhiteboard syslogDispatcher) {
         this.syslogDispatcher = syslogDispatcher;
     }
+
+	@Override
+	public void process(Exchange exchange) throws Exception {
+        ChannelBuffer buffer = exchange.getIn().getBody(ChannelBuffer.class);
+        // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
+        // we are listening on an InetAddress, it will always be of type InetAddressSocket
+        InetSocketAddress source = (InetSocketAddress)exchange.getIn().getHeader(NettyConstants.NETTY_REMOTE_ADDRESS); 
+        // Syslog Handler Implementation to receive message from syslog port and pass it on to handler
+        
+        ByteBuffer byteBuffer = buffer.toByteBuffer();
+        
+        //SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), byteBuffer, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
+        SyslogDTO connection = new SyslogDTO(source.getAddress(),source.getPort(), byteBuffer,m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
+        exchange.getIn().setBody(JaxbUtils.marshal(connection), String.class);
+		
+	}
 }
