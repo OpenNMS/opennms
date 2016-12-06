@@ -55,18 +55,18 @@ public enum ErrorStatus {
     },
     BAD_VALUE {
         @Override public boolean isFatal() {
-            return false;
+            return false; // should be true (OpenNMS doesn't do sets), but fall through for bad agents
         }
         @Override public boolean retry() {
-            return true;
+            return false;
         }
     },
     READ_ONLY {
         @Override public boolean isFatal() {
-            return false;
+            return false; // should be true (OpenNMS doesn't do sets), but fall through for bad agents
         }
         @Override public boolean retry() {
-            return true;
+            return false;
         }
     },
     GEN_ERR {
@@ -87,74 +87,74 @@ public enum ErrorStatus {
     },
     WRONG_TYPE {
         @Override public boolean isFatal() {
-            return true;
+            return false; // should be true (OpenNMS doesn't do sets), but fall through for bad agents
         }
         @Override public boolean retry() {
-            return true;
+            return false;
         }
     },
     WRONG_LENGTH {
         @Override public boolean isFatal() {
-            return true;
+            return false; // should be true (OpenNMS doesn't do sets), but fall through for bad agents
         }
         @Override public boolean retry() {
-            return true;
+            return false;
         }
     },
     WRONG_ENCODING {
         @Override public boolean isFatal() {
-            return true;
+            return false; // should be true (OpenNMS doesn't do sets), but fall through for bad agents
         }
         @Override public boolean retry() {
-            return true;
+            return false;
         }
     },
     WRONG_VALUE {
         @Override public boolean isFatal() {
-            return true;
+            return false; // should be true (OpenNMS doesn't do sets), but fall through for bad agents
         }
         @Override public boolean retry() {
-            return true;
+            return false;
         }
     },
     NO_CREATION {
         @Override public boolean isFatal() {
-            return false;
+            return false; // should be true (OpenNMS doesn't do sets), but fall through for bad agents
         }
         @Override public boolean retry() {
-            return true;
+            return false;
         }
     },
     INCONSISTENT_VALUE {
         @Override public boolean isFatal() {
-            return false;
+            return false; // should be true (OpenNMS doesn't do sets), but fall through for bad agents
         }
         @Override public boolean retry() {
-            return true;
+            return false;
         }
     },
     RESOURCE_UNAVAILABLE {
         @Override public boolean isFatal() {
-            return false;
+            return false; // should be true (OpenNMS doesn't do sets), but fall through for bad agents
         }
         @Override public boolean retry() {
-            return true;
+            return false;
         }
     },
     COMMIT_FAILED {
         @Override public boolean isFatal() {
-            return false;
+            return false; // should be true (OpenNMS doesn't do sets), but fall through for bad agents
         }
         @Override public boolean retry() {
-            return true;
+            return false;
         }
     },
     UNDO_FAILED {
         @Override public boolean isFatal() {
-            return false;
+            return false; // should be true (OpenNMS doesn't do sets), but fall through for bad agents
         }
         @Override public boolean retry() {
-            return true;
+            return false;
         }
     },
     AUTHORIZATION_ERROR {
@@ -167,18 +167,18 @@ public enum ErrorStatus {
     },
     NOT_WRITABLE {
         @Override public boolean isFatal() {
-            return false;
+            return false; // should be true (OpenNMS doesn't do sets), but fall through for bad agents
         }
         @Override public boolean retry() {
-            return true;
+            return false;
         }
     },
     INCONSISTENT_NAME {
         @Override public boolean isFatal() {
-            return false;
+            return false; // should be true (OpenNMS doesn't do sets), but fall through for bad agents
         }
         @Override public boolean retry() {
-            return true;
+            return false;
         }
     };
     
