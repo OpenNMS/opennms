@@ -35,6 +35,7 @@
 	import="org.opennms.web.api.Authentication,
 		org.opennms.core.db.DataSourceFactory,
 		org.opennms.core.resource.Vault,
+		org.opennms.core.utils.TimeSeries,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.core.utils.DBUtils,
 		java.sql.Connection
@@ -59,18 +60,6 @@
    	  d.cleanUp();
    	}
 %> 
-
-<%
-    String tsStrategy = System.getProperty("org.opennms.timeseries.strategy");
-    String tsDescr = "Unknown (" + tsStrategy + ")";
-    if ("rrd".equals(tsStrategy)) {
-        tsDescr = "RRD (RRDTool or JRobin)";
-    } else if ("newts".equals(tsStrategy)) {
-        tsDescr = "Newts";
-    } else if ("evaluate".equals(tsStrategy)) {
-        tsDescr = "Evaluate (sizing mode, all data discarded)";
-    }
-%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="About" />
@@ -141,7 +130,7 @@
   </tr>
   <tr>
     <th>Time-Series Strategy:</th>
-    <td><%=tsDescr%></td>
+    <td><%=TimeSeries.getTimeseriesStrategy().getDescr()%></td>
   </tr>
 </table>
 </div>

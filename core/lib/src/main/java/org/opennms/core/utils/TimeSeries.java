@@ -27,6 +27,20 @@ public abstract class TimeSeries {
         public String getName() {
             return m_name;
         }
+
+        public String getDescr() {
+            switch (m_name) {
+                case RRD_TIME_SERIES_STRATEGY_NAME:
+                    return "RRD (RRDTool or JRobin)";
+
+                case NEWTS_TIME_SERIES_STRATEGY_NAME:
+                    return "Newts";
+
+                case EVALUETE_TIME_SERIES_STRATEGY_NAME:
+                    return "Evaluate (Sizing mode, all data discarded)";
+            }
+	    return m_name;
+        }
     }
 
     protected TimeSeries() {
