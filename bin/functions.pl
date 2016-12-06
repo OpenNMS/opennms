@@ -83,17 +83,42 @@ delete $ENV{'M2_HOME'};
 
 # maven options
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
-$OOSNMP_TRUSTSTORE = File::Spec->catfile($PREFIX, 'bin', 'oosnmp.net.trustStore');
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	$MAVEN_OPTS = "-XX:PermSize=512m -XX:MaxPermSize=1g -Xmx2g -XX:ReservedCodeCacheSize=512m -Djavax.net.ssl.trustStore=$OOSNMP_TRUSTSTORE -Djavax.net.ssl.trustStorePassword=password";
+	$MAVEN_OPTS = "-Xmx2048m -XX:ReservedCodeCacheSize=512m";
+}
 
+if (not $MAVEN_OPTS =~ /\:PermSize/) {
+	$MAVEN_OPTS .= " -XX:PermSize=512m";
+}
+
+if (not $MAVEN_OPTS =~ /MaxPermSize/) {
+	$MAVEN_OPTS .= " -XX:MaxPermSize=1g";
+}
+
+if (not $MAVEN_OPTS =~ /-Xmx/) {
+	$MAVEN_OPTS .= "-Xmx2048m";
+}
+
+if (not $MAVEN_OPTS =~ /ReservedCodeCacheSize/) {
+	$MAVEN_OPTS .= " -XX:ReservedCodeCacheSize=512m";
+}
+
+if (not $MAVEN_OPTS =~ /TieredCompilation/) {
+	# Improve startup speed by disabling collection of extra profiling information during compiles since they're not
+	# long-running enough for them to be a net-win for performance.
+	$MAVEN_OPTS .= " -XX:+TieredCompilation -XX:TieredStopAtLevel=1";
+}
+
+if (not $MAVEN_OPTS =~ /UseGCOverheadLimit/) {
 	# The concurrent collector will throw an OutOfMemoryError if too much time is being spent in garbage collection: if
 	# more than 98% of the total time is spent in garbage collection and less than 2% of the heap is recovered, an
 	# OutOfMemoryError will be thrown. This feature is designed to prevent applications from running for an extended
 	# period of time while making little or no progress because the heap is too small. If necessary, this feature can
 	# be disabled by adding the option -XX:-UseGCOverheadLimit to the command line.
 	$MAVEN_OPTS .= " -XX:-UseGCOverheadLimit";
+}
 
+if (not $MAVEN_OPTS =~ /UseParallelGC/) {
 	# If (a) peak application performance is the first priority and (b) there are no pause time requirements or pauses
 	# of one second or longer are acceptable, then select the parallel collector with -XX:+UseParallelGC and
 	# (optionally) enable parallel compaction with -XX:+UseParallelOldGC.
