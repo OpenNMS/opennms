@@ -28,15 +28,17 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpElement.CdpGlobalDeviceIdFormat;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.ErrorStatus;
+import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>Dot1dBaseGroup holds the dot1dBridge.dot1dBase group properties
@@ -143,12 +145,22 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
 
     /** {@inheritDoc} */
     protected void reportGenErr(final String msg) {
-        LOG.warn("Error retrieving systemGroup: {}", msg);
+        LOG.warn("Error retrieving CDP global group: {}", msg);
     }
 
     /** {@inheritDoc} */
     protected void reportNoSuchNameErr(final String msg) {
-        LOG.info("Error retrieving systemGroup: {}", msg);
+        LOG.info("Error retrieving CDP global group: {}", msg);
+    }
+
+    @Override
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        LOG.warn("Fatal error retrieving CDP global group: {}", ex.getMessage(), ex);
+    }
+
+    @Override
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        LOG.info("Non-fatal error ({}) retrieving CDP global group: {}", status, status.retry()? "Retrying." : "Giving up.");
     }
 
     /**

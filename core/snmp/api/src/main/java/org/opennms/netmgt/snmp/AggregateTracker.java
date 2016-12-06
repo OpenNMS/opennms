@@ -32,9 +32,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class AggregateTracker extends CollectionTracker {
     private static final class ChildTrackerPduBuilder extends PduBuilder {
         private List<SnmpObjId> m_oids = new ArrayList<SnmpObjId>();
@@ -144,8 +141,7 @@ public class AggregateTracker extends CollectionTracker {
     }
 
     private static class ChildTrackerResponseProcessor implements ResponseProcessor {
-        private static Logger LOG = LoggerFactory.getLogger(AggregateTracker.class);
-
+        private final CollectionTracker m_tracker;
         private final int m_repeaters;
         private final PduBuilder m_pduBuilder;
         private final int m_nonRepeaters;
@@ -153,7 +149,8 @@ public class AggregateTracker extends CollectionTracker {
         
         private int m_currResponseIndex = 0;
         
-        public ChildTrackerResponseProcessor(PduBuilder pduBuilder, List<ChildTrackerPduBuilder> builders, int nonRepeaters, int repeaters) {
+        public ChildTrackerResponseProcessor(final CollectionTracker tracker, final PduBuilder pduBuilder, final List<ChildTrackerPduBuilder> builders, final int nonRepeaters, final int repeaters) {
+            m_tracker = tracker;
             m_repeaters = repeaters;
             m_pduBuilder = pduBuilder;
             m_nonRepeaters = nonRepeaters;
@@ -209,11 +206,11 @@ public class AggregateTracker extends CollectionTracker {
                     throw new IllegalArgumentException("Unable to handle tooBigError when maxVarsPerPdu = "+maxVarsPerPdu);
                 }
                 m_pduBuilder.setMaxVarsPerPdu(maxVarsPerPdu/2);
-                LOG.warn("Reducing maxVarsPerPdu for this request to {}", m_pduBuilder.getMaxVarsPerPdu());
+                m_tracker.reportTooBigErr("Reducing maxVarsPerPDU for this request.");
                 return true;
             } else if (status.isFatal()) {
                 final ErrorStatusException ex = new ErrorStatusException(status);
-                LOG.debug("Fatal Error: {}", status, ex);
+                m_tracker.reportFatalErr(ex);
                 throw ex;
             } else {
                 return processChildError(errorStatus, errorIndex);
@@ -320,6 +317,6 @@ public class AggregateTracker extends CollectionTracker {
         
         // construct a response processor that tracks the changes and informs the response processors
         // for the child trackers
-        return new ChildTrackerResponseProcessor(parentBuilder, builders, nonRepeaters, repeaters);
+        return new ChildTrackerResponseProcessor(this, parentBuilder, builders, nonRepeaters, repeaters);
     }
 }
