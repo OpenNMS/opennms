@@ -60,6 +60,18 @@
    	}
 %> 
 
+<%
+    String tsStrategy = System.getProperty("org.opennms.timeseries.strategy");
+    String tsDescr = "Unknown (" + tsStrategy + ")";
+    if ("rrd".equals(tsStrategy)) {
+        tsDescr = "RRD (RRDTool or JRobin)";
+    } else if ("newts".equals(tsStrategy)) {
+        tsDescr = "Newts";
+    } else if ("evaluate".equals(tsStrategy)) {
+        tsDescr = "Evaluate (sizing mode, all data discarded)";
+    }
+%>
+
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="About" />
   <jsp:param name="headTitle" value="About" />
@@ -126,6 +138,10 @@
   <tr>
     <th>Database Version:</th>
     <td><%=dbVersion%></td>
+  </tr>
+  <tr>
+    <th>Time-Series Strategy:</th>
+    <td><%=tsDescr%></td>
   </tr>
 </table>
 </div>
