@@ -570,12 +570,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 	public String getSource() {
 		return "enlinkd";
 	}
-	
-    public SnmpAgentConfig getSnmpAgentConfig(InetAddress ipaddr) {
-    	return SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
+
+    public SnmpAgentConfig getSnmpAgentConfig(InetAddress ipaddr, String location) {
+    	return SnmpPeerFactory.getInstance().getAgentConfig(ipaddr, location);
     }
-    
-    
+
     public long getInitialSleepTime() {
     	return m_linkdConfig.getInitialSleepTime();
     }
