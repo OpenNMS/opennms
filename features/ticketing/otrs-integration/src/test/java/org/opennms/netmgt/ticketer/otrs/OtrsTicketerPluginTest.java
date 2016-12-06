@@ -84,7 +84,7 @@ public class OtrsTicketerPluginTest extends TestCase {
     }
 
     private boolean isRunTest() {
-        return Boolean.getBoolean(getRunTestProperty());
+        return Boolean.parseBoolean(System.getProperty(getRunTestProperty()));
     }
 
     private String getRunTestProperty() {

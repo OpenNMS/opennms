@@ -101,7 +101,7 @@ public class BundleContextHistoryManagerTest  {
 
         historyManager = new BundleContextHistoryManager(bundleContextMock);
         historyManager.onBind(new CircleLayoutOperation());
-        historyManager.onBind(new ManualLayoutOperation());
+        historyManager.onBind(new ManualLayoutOperation(null));
         historyManager.onBind(new FRLayoutOperation());
         historyManager.onBind(new SimpleLayoutOperation());
         historyManager.onBind(new ISOMLayoutOperation());

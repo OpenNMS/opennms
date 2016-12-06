@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.app.internal.operations;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -38,9 +37,6 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,19 +133,4 @@ public class MetaTopologySelectorOperation extends AbstractCheckedOperation {
                     .ifPresent(p -> container.selectTopologyProvider(p));
         }
     }
-
-	public static MetaTopologySelectorOperation createOperationForDefaultGraphProvider(BundleContext bundleContext, String filterCriteria) {
-		try {
-			Collection<ServiceReference<MetaTopologyProvider>> serviceReferences = bundleContext.getServiceReferences(MetaTopologyProvider.class, filterCriteria);
-			if (!serviceReferences.isEmpty()) {
-				ServiceReference<?> reference = serviceReferences.iterator().next();
-				return new MetaTopologySelectorOperation(
-						(MetaTopologyProvider) bundleContext.getService(reference),
-						(String) reference.getProperty("label"));
-			}
-		} catch (InvalidSyntaxException e) {
-			LOG.error("Could not query BundleContext for services", e);
-		}
-		return null;
-	}
 }

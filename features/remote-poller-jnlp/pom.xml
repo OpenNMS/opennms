@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -24,13 +24,16 @@
             <artifactId>webstart-maven-plugin</artifactId>
             <version>${webstartPluginVersion}</version>
             <configuration>
+              <verifyjar>false</verifyjar>
+              <canUnsign>true</canUnsign>
+              <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
               <sign>
                 <keystore>${webstart.keystore}</keystore>
                 <keypass>${webstart.keypass}</keypass>
                 <storepass>${webstart.storepass}</storepass>
                 <alias>${webstart.keyalias}</alias>
                 <dnameCn>${webstart.dnameCn}</dnameCn>
-                <verify>true</verify>
+                <verify>false</verify>
               </sign>
             </configuration>
           </plugin>
@@ -202,11 +205,9 @@
         </executions>
         <configuration>
           <templateDirectory>src/main/jnlp</templateDirectory>
-          <outputJarVersions>false</outputJarVersions>
-          <verbose>false</verbose>
-          <verifyjar>true</verifyjar>
-          <canUnsign>true</canUnsign>
-          <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
+          <excludeTransitive>false</excludeTransitive>
+          <outputJarVersions>true</outputJarVersions>
+          <verbose>true</verbose>
           <updateManifestEntries>
             <!--
               Application name that is displayed on the Security Warning

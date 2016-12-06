@@ -39,6 +39,8 @@ public interface PollerRequestBuilder {
 
     PollerRequestBuilder withMonitorClassName(String className);
 
+    PollerRequestBuilder withTimeToLive(Long ttlInMs);
+
     PollerRequestBuilder withAttribute(String key, Object value);
 
     PollerRequestBuilder withAttributes(Map<String, Object> attributes);

@@ -96,6 +96,7 @@ Requires:	jicmp6 >= 2.0.0
 Requires(pre):	%{jdk}
 Requires:	%{jdk}
 Obsoletes:	opennms < 1.3.11
+Obsoletes: opennms-plugin-protocol-xml
 
 %description core
 The core backend.  This package contains the main daemon responsible
@@ -239,8 +240,6 @@ Requires(pre):	%{name}-plugin-protocol-nsclient
 Requires:	%{name}-plugin-protocol-nsclient
 Requires(pre):	%{name}-plugin-protocol-radius
 Requires:	%{name}-plugin-protocol-radius
-Requires(pre):	%{name}-plugin-protocol-xml
-Requires:	%{name}-plugin-protocol-xml
 Requires(pre):	%{name}-plugin-protocol-xmp
 Requires:	%{name}-plugin-protocol-xmp
 Requires(pre):	%{name}-plugin-collector-vtdxml-handler
@@ -439,19 +438,6 @@ monitor, and Spring Security authorization mechanism for RADIUS.
 %{extrainfo2}
 
 
-%package plugin-protocol-xml
-Summary:	XML Collector
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-protocol-xml
-The XML protocol plugin provides a collector for XML data.
-
-%{extrainfo}
-%{extrainfo2}
-
-
 %package plugin-protocol-xmp
 Summary:	XMP Poller
 Group:		Applications/System
@@ -482,8 +468,8 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 Summary:	VTD-XML Collection Handler
 Group:		Applications/System
 License:	GPL
-Requires(pre):	%{name}-plugin-protocol-xml = %{version}-%{release}
-Requires:	%{name}-plugin-protocol-xml = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-collector-vtdxml-handler
 The XML Collection Handler for Standard and 3GPP XMLs based on VTD-XML.
@@ -624,7 +610,6 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'ncs-northbounder-configuration.xml' | \
 	grep -v 'drools-engine.d/ncs' | \
-	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'jira.properties' | \
 	grep -v 'jms-northbounder-configuration.xml' | \
@@ -636,7 +621,6 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
-	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
@@ -648,7 +632,6 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'ncs-northbounder-configuration.xml' | \
 	grep -v 'ncs.xml' | \
 	grep -v 'drools-engine.d/ncs' | \
-	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'jira.properties' | \
 	grep -v 'jms-northbounder-configuration.xml' | \
@@ -660,7 +643,6 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
-	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
@@ -684,7 +666,6 @@ find %{buildroot}%{sharedir} ! -type d | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/contrib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
-	grep -v 'xml-collector' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/lib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
@@ -701,7 +682,6 @@ find %{buildroot}%{instprefix}/lib ! -type d | \
 	grep -v 'org.opennms.protocols.dhcp' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
-	grep -v 'org.opennms.protocols.xml' | \
 	grep -v 'org.opennms.protocols.xmp' | \
 	grep -v 'opennms-vtdxml-collector-handler' | \
 	grep -v 'provisioning-adapter' | \
@@ -870,16 +850,6 @@ rm -rf %{buildroot}
 %{instprefix}/lib/gnu-crypto*.jar
 %{instprefix}/lib/jradius-*.jar
 %{instprefix}/lib/org.opennms.protocols.radius*.jar
-
-%files plugin-protocol-xml
-%defattr(664 root root 775)
-%config(noreplace) %{instprefix}/etc/xml-*.xml
-%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/xml-*.xml
-%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/*datacollection*/3gpp*
-%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/snmp-graph.properties.d/3gpp*
-%{instprefix}/lib/org.opennms.protocols.xml-*.jar
-%attr(755,root,root) %{instprefix}/contrib/xml-collector/3gpp*
-%{sharedir}/etc-pristine/xml-*.xml
 
 %files plugin-protocol-xmp
 %defattr(664 root root 775)

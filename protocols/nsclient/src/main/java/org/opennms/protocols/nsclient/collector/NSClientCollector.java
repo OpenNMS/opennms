@@ -37,8 +37,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -53,9 +51,9 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
-import org.opennms.netmgt.config.nsclient.Attrib;
-import org.opennms.netmgt.config.nsclient.NsclientCollection;
-import org.opennms.netmgt.config.nsclient.Wpm;
+import org.opennms.netmgt.config.datacollction.nsclient.Attrib;
+import org.opennms.netmgt.config.datacollction.nsclient.NsclientCollection;
+import org.opennms.netmgt.config.datacollction.nsclient.Wpm;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.nsclient.NSClientAgentConfig;
@@ -178,10 +176,10 @@ public class NSClientCollector implements ServiceCollector {
         // check scheduled nodes to see if that group should be collected
         NsclientCollection collection = NSClientDataCollectionConfigFactory.getInstance().getNSClientCollection(collectionName);
         NSClientAgentState agentState = m_scheduledNodes.get(agent.getNodeId());
-        
+
         NSClientCollectionResource collectionResource = new NSClientCollectionResource(agent);
         SingleResourceCollectionSet collectionSet = new SingleResourceCollectionSet(collectionResource, new Date());
-        
+
         for (Wpm wpm : collection.getWpms().getWpm()) {
             //All NSClient Perfmon counters are per node
             AttributeGroupType attribGroupType=new AttributeGroupType(wpm.getName(), AttributeGroupType.IF_TYPE_ALL);
@@ -261,12 +259,6 @@ public class NSClientCollector implements ServiceCollector {
         LOG.debug("initialize: Initializing NSClientPeerFactory");
         try {
             NSClientPeerFactory.init();
-        } catch (MarshalException e) {
-            LOG.error("initialize: Error marshalling configuration.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            LOG.error("initialize: Error validating configuration.", e);
-            throw new UndeclaredThrowableException(e);
         } catch (IOException e) {
             LOG.error("initialize: Error reading configuration", e);
             throw new UndeclaredThrowableException(e);
@@ -277,12 +269,6 @@ public class NSClientCollector implements ServiceCollector {
         LOG.debug("initialize: Initializing collector: {}", NSClientCollector.class);
         try {
             NSClientDataCollectionConfigFactory.init();
-        } catch (MarshalException e) {
-            LOG.error("initialize: Error marshalling configuration.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            LOG.error("initialize: Error validating configuration.", e);
-            throw new UndeclaredThrowableException(e);
         } catch (FileNotFoundException e) {
             LOG.error("initialize: Error locating configuration.", e);
             throw new UndeclaredThrowableException(e);

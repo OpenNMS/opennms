@@ -75,4 +75,64 @@
     </update>
   </changeSet>
 
+  <!-- Topology Layout Table -->
+  <changeSet author="mvrueden" id="19.0.0-create-topology-layout-tables">
+      <!-- The layout -->
+      <createTable tableName="topo_layout" >
+        <column name="id" type="text">
+          <constraints nullable="false"/>
+        </column>
+        <column name="created" type="DATETIME">
+          <constraints nullable="false"/>
+        </column>
+        <column name="creator" type="text">
+          <constraints nullable="false"/>
+        </column>
+        <column name="updated" type="DATETIME">
+          <constraints nullable="false"/>
+        </column>
+        <column name="updator" type="text">
+          <constraints nullable="false"/>
+        </column>
+        <column name="last_used" type="DATETIME"/>
+      </createTable>
+      <addPrimaryKey tableName="topo_layout" columnNames="id" constraintName="topo_layout_pkey" />
+
+      <!-- Coordinates of vertex in layout -->
+      <createTable tableName="topo_vertex_position" >
+        <column name="id" type="integer">
+          <constraints nullable="false"/>
+        </column>
+        <column name="x" type="integer">
+          <constraints nullable="false"/>
+        </column>
+        <column name="y" type="integer">
+          <constraints nullable="false"/>
+        </column>
+        <column name="vertex_namespace" type="text">
+          <constraints nullable="false"/>
+        </column>
+        <column name="vertex_id" type="text">
+          <constraints nullable="false"/>
+        </column>
+      </createTable>
+      <addPrimaryKey tableName="topo_vertex_position" columnNames="id" constraintName="topo_vertex_position_pkey" />
+
+      <!-- Relationship table from layout to coordinates -->
+      <createTable tableName="topo_layout_vertex_positions" >
+        <column name="vertex_position_id" type="integer">
+          <constraints nullable="false"/>
+        </column>
+        <column name="layout_id" type="text">
+          <constraints nullable="false"/>
+        </column>
+      </createTable>
+      <addForeignKeyConstraint constraintName="fk_topo_layout_vertex_positions_layout_id"
+                               baseTableName="topo_layout_vertex_positions" baseColumnNames="layout_id"
+                               referencedTableName="topo_layout" referencedColumnNames="id" onDelete="CASCADE"/>
+      <addForeignKeyConstraint constraintName="fk_topo_layout_vertex_positions_vertex_position_id"
+                              baseTableName="topo_layout_vertex_positions" baseColumnNames="vertex_position_id"
+                              referencedTableName="topo_vertex_position" referencedColumnNames="id" onDelete="CASCADE"/>
+  </changeSet>
+
 </databaseChangeLog>

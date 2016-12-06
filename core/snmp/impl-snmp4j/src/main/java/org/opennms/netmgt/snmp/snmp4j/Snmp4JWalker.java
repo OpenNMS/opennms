@@ -231,9 +231,13 @@ public class Snmp4JWalker extends SnmpWalker {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (m_session != null) {
-            m_session.close();
+            try {
+                m_session.close();
+            } catch (IOException e) {
+                LOG.error("{}: Unexpected Error occured closing SNMP session for: {}", getName(), m_agentConfig, e);
+            }
             m_session = null;
         }
     }

@@ -74,7 +74,8 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
 	 * @throws SQLException
 	 *             if database error encountered
 	 */
-    protected String getNodeLabel(long nodeId) throws SQLException {
+	@Override
+    public String getNodeLabel(long nodeId) throws SQLException {
 
 		String nodeLabel = null;
 		java.sql.Connection dbConn = null;
@@ -117,22 +118,8 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
 		return nodeLabel;
 	}
 
-	/**
-	 * Retrieve ifAlias from the snmpinterface table of the database given a particular
-	 * nodeId and ipAddr.
-	 *
-     * @deprecated Replace with standard DAO calls instead of using JDBC
-	 * @param nodeId
-	 *            Node identifier
-	 * @param ipAddr
-	 *            Interface IP address
-	 *
-	 * @return ifAlias Retreived ifAlias
-	 *
-	 * @throws SQLException
-	 *             if database error encountered
-	 */
-    protected String getIfAlias(long nodeId, String ipaddr) throws SQLException {
+	@Override
+    public String getIfAlias(long nodeId, String ipaddr) throws SQLException {
 		
 		String ifAlias = null;
 		java.sql.Connection dbConn = null;
@@ -171,15 +158,8 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
 		return ifAlias;
 	}
 
-    /**
-     * Helper method.
-     * 
-     * @deprecated Replace with standard DAO calls instead of using JDBC
-     * @param parm
-     * @param event
-     * @return The value of an asset field based on the nodeid of the event 
-     */
-    protected String getAssetFieldValue(String parm, long nodeId) {
+    @Override
+    public String getAssetFieldValue(String parm, long nodeId) {
         String retParmVal = null;
         int end = parm.lastIndexOf(ASSET_END_SUFFIX);
         // The "asset[" start of this parameter is 6 characters long
@@ -223,14 +203,7 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
         return retParmVal;
     }
 
-    /**
-     * Helper method.
-     * 
-     * @deprecated Replace with standard DAO calls instead of using JDBC
-     * @param parm
-     * @param event
-     * @return The value of a hardware field based on the nodeid of the event 
-     */
+    @Override
     public String getHardwareFieldValue(String parm, long nodeId) {
         String retParmVal = null;
         int end = parm.lastIndexOf(HARDWARE_END_SUFFIX);
@@ -349,7 +322,7 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
 	 *             if database error encountered
 	 */
     @Override
-    protected String getForeignSource(long nodeId) throws SQLException {
+    public String getForeignSource(long nodeId) throws SQLException {
         String foreignSource = null;
         java.sql.Connection dbConn = null;
         try {

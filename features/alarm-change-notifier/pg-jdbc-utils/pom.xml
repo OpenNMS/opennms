@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.plugins</groupId>
     <artifactId>alarm-change-notifier.parent</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
 
   <!-- LicenceAuthenticator -->
@@ -96,7 +96,7 @@
     <dependency>
       <groupId>org.opennms.plugins</groupId>
       <artifactId>alarm-change-notifier.rewrap-pgjdbc-ng</artifactId>
-      <version>19.0.0-SNAPSHOT</version>
+      <version>20.0.0-SNAPSHOT</version>
       <scope>provided</scope>
       <type>pom</type>
     </dependency>

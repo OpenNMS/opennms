@@ -47,6 +47,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.features.topology.link.Layout;
+import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.TopologyIT;
 
@@ -78,7 +80,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         topologyUIPage = new TopologyIT.TopologyUIPage(this, getBaseUrl());
         topologyUIPage.open();
         // Select EnLinkd, otherwise the "GraphML Topology Provider (test-graph)" is always pre-selected due to history restoration
-        topologyUIPage.selectTopologyProvider(TopologyIT.TopologyProvider.ENLINKD);
+        topologyUIPage.selectTopologyProvider(TopologyProvider.ENLINKD);
     }
 
     @After
@@ -115,7 +117,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         assertEquals(4, topologyUIPage.getVisibleVertices().size());
 
         // Verify that the layout is the D3 Layout as this layer does not provide a preferredLayout
-        assertEquals(TopologyIT.Layout.D3, topologyUIPage.getSelectedLayout());
+        assertEquals(Layout.D3, topologyUIPage.getSelectedLayout());
 
         // Switch Layer
         topologyUIPage.selectLayer("Markets");
@@ -170,6 +172,17 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
                 focusVertex(topologyUIPage, "Acme:regions:", "South Region"),
                 focusVertex(topologyUIPage, "Acme:regions:", "West Region")
         ), focusedVertices); // all elements should be focused
+    }
+
+    @Test
+    public void verifySaveLayoutButton() {
+        topologyUIPage.selectTopologyProvider(() -> LABEL);
+        assertEquals(false, topologyUIPage.getSaveLayoutButton().isEnabled()); // it should be disabled
+
+        topologyUIPage.selectLayout(Layout.MANUAL);
+        assertEquals(true, topologyUIPage.getSaveLayoutButton().isEnabled()); // now it should be enabled
+        topologyUIPage.getSaveLayoutButton().click();
+        assertEquals(false, topologyUIPage.getSaveLayoutButton().isEnabled()); // it should be disabled after save
     }
 
     private boolean existsGraph() throws IOException {

@@ -34,6 +34,7 @@ import java.util.Set;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.osgi.VaadinApplicationContext;
 
 import com.vaadin.data.Property;
 
@@ -91,6 +92,8 @@ public interface GraphContainer extends DisplayState {
 
     Graph getGraph();
 
+    void setApplicationContext(VaadinApplicationContext applicationContext);
+
     AutoRefreshSupport getAutoRefreshSupport();
 
     boolean hasAutoRefreshSupport();
@@ -106,8 +109,7 @@ public interface GraphContainer extends DisplayState {
     // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
     String getSessionId();
 
-    // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
-    void setSessionId(String sessionId);
+    VaadinApplicationContext getApplicationContext();
 
     void setDirty(boolean dirty);
     
@@ -135,4 +137,6 @@ public interface GraphContainer extends DisplayState {
     IconManager getIconManager();
 
     void setIconManager(IconManager iconManager);
+
+    void saveLayout();
 }

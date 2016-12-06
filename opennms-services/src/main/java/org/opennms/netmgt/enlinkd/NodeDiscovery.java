@@ -273,7 +273,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
      */
     public SnmpAgentConfig getPeer() {
-        return m_linkd.getSnmpAgentConfig(getTarget());
+        return m_linkd.getSnmpAgentConfig(getTarget(), m_node.getLocation());
     }
 
     /**

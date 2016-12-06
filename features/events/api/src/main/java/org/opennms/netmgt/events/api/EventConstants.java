@@ -925,6 +925,11 @@ public abstract class EventConstants {
     public static final String PARM_SNMP_WRITE_COMMUNITY_STRING = "writeCommunityString";
 
     /**
+     * The SNMP write community string when sent as an event parm.
+     */
+    public static final String PARM_SNMP_LOCATION = "location";
+
+    /**
      * Service monitor qualifier when sent as an event parm
      */
     public static final String PARM_QUALIFIER = "qualifier";

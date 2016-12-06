@@ -118,7 +118,7 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
             sb.append("</h2>");
 
             if (nodeListBuilder.length() > 0) {
-                sb.append("<p><a " + TARGET_BLANK + " href=\"topology?focusNodes=" + nodeListBuilder.toString() + "\">View in Topology Map</a>");
+                sb.append("<p><a " + TARGET_BLANK + " href=\"topology?provider=Enhanced+Linkd&focus-vertices=" + nodeListBuilder.toString() + "\">View in Topology Map</a>");
             }
 
             sb.append("<table class=\"node-marker-list\">").append(nodeBuilder).append("</table>");
@@ -154,7 +154,7 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
         // TODO: THIS IS AWFUL
         final StringBuilder sb = new StringBuilder();
         sb.append("<h2>Node <a class=\"node\" href=\"element/node.jsp?node=").append(marker.getNodeId()).append("\" " + TARGET_NONE + ">").append(marker.getNodeLabel()).append("</a></h2>");
-        sb.append("<p><a " + TARGET_BLANK + " href=\"topology?focusNodes=" + marker.getNodeId() + "\">View in Topology Map</a>");
+        sb.append("<p><a " + TARGET_BLANK + " href=\"topology?provider=Enhanced+Linkd&focus-vertices=" + marker.getNodeId() + "\">View in Topology Map</a>");
         sb.append("<p>");
         sb.append("Description: ").append(marker.getDescription()).append("<br/>");
         sb.append("Maint.&nbsp;Contract: ").append(marker.getMaintContract()).append("<br/>");

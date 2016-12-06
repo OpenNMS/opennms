@@ -318,11 +318,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testPollerConfig() {
-        testConfigFile("poller-config.properties");
-    }
-
-    @Test
     public void testPollerConfiguration() {
         testConfigFile("poller-configuration.xml");
     }
@@ -469,6 +464,11 @@ public class ConfigTesterTest {
     @Test
     public void testTrapdConfiguration() {
         testConfigFile("trapd-configuration.xml");
+    }
+
+    @Test
+    public void testTrendConfiguration() {
+        ignoreConfigFile("trend-configuration.xml");
     }
 
     @Test

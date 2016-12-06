@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.snmp;
 
-import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

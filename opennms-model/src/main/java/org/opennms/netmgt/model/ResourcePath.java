@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * An abstract path used to represent a resource or its parent.
@@ -17,6 +18,9 @@ import java.util.List;
  * @author jwhite
  */
 public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> {
+
+    private static final Pattern SANITIZE_PATH_PATTERN = Pattern.compile("[^a-zA-Z0-9.-]");
+    private static final String SANITIZE_PATH_PLACEHOLDER = "_";
 
     private final List<String> m_elements = new ArrayList<String>();
 
@@ -172,4 +176,10 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
         return this.toString().compareTo(other.toString());
     }
 
+    public static String sanitize(String path) {
+        if (path == null) {
+            return null;
+        }
+        return SANITIZE_PATH_PATTERN.matcher(path).replaceAll(SANITIZE_PATH_PLACEHOLDER);
+    }
 }

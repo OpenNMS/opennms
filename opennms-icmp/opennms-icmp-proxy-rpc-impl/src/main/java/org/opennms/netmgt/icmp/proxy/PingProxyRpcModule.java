@@ -31,7 +31,7 @@ package org.opennms.netmgt.icmp.proxy;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
-import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +41,7 @@ public class PingProxyRpcModule extends AbstractXmlRpcModule<PingRequestDTO, Pin
     public static final String RPC_MODULE_ID = "PING";
 
     @Autowired
-    private Pinger pinger;
+    private PingerFactory pingerFactory;
 
     public PingProxyRpcModule() {
         super(PingRequestDTO.class, PingResponseDTO.class);
@@ -51,7 +51,7 @@ public class PingProxyRpcModule extends AbstractXmlRpcModule<PingRequestDTO, Pin
     public CompletableFuture<PingResponseDTO> execute(PingRequestDTO request) {
         final PingResultTracker tracker = new PingResultTracker();
         try {
-            pinger.ping(
+            pingerFactory.getInstance().ping(
                     request.getInetAddress(),
                     request.getTimeout(),
                     request.getRetries(),
@@ -69,7 +69,7 @@ public class PingProxyRpcModule extends AbstractXmlRpcModule<PingRequestDTO, Pin
         return RPC_MODULE_ID;
     }
 
-    public void setPinger(Pinger pinger) {
-        this.pinger = pinger;
+    public void setPingerFactory(PingerFactory pingerFactory) {
+        this.pingerFactory = pingerFactory;
     }
 }

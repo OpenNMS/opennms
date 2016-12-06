@@ -16,9 +16,23 @@
 
   <context:annotation-config />
 
-  <bean id="queuingservice" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetClass" value="org.apache.activemq.camel.component.ActiveMQComponent"/>
-    <property name="targetMethod" value="activeMQComponent"/>
-    <property name="arguments" value="vm://localhost?create=false"/>
+  <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="vm://localhost?create=false" />
   </bean>
+
+  <bean id="pooledConnectionFactory" class="org.opennms.features.activemq.PooledConnectionFactory"
+    init-method="start" destroy-method="stop">
+    <property name="maxConnections" value="1" />
+    <property name="connectionFactory" ref="jmsConnectionFactory" />
+  </bean>
+
+  <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+    <property name="connectionFactory" ref="pooledConnectionFactory" />
+    <property name="concurrentConsumers" value="1" />
+  </bean>
+
+  <bean id="queuingservice" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <property name="configuration" ref="jmsConfig" />
+  </bean>
+
 </beans>

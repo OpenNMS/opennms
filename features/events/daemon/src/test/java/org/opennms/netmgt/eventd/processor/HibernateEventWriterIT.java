@@ -68,8 +68,6 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-
-        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml"
 })
 @JUnitConfigurationEnvironment
@@ -92,7 +90,7 @@ public class HibernateEventWriterIT {
     @Test
     public void testWriteEventWithNull() throws Exception {
         EventBuilder bldr = new EventBuilder("testUei", "testSource");
-        bldr.setLogDest("logndisplay");
+        bldr.setLogDest(HibernateEventWriter.LOG_MSG_DEST_LOG_AND_DISPLAY);
         bldr.addParam("test", "testVal");
         final String testVal2 = "valWith\u0000Null\u0000";
         bldr.addParam("test2", testVal2);
@@ -112,7 +110,7 @@ public class HibernateEventWriterIT {
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+        m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
 
         final String parms = jdbcTemplate.queryForObject("SELECT eventParms FROM events LIMIT 1", String.class);
@@ -126,13 +124,14 @@ public class HibernateEventWriterIT {
     @Test
     public void testWriteEventDescrWithNull() throws Exception {
         EventBuilder bldr = new EventBuilder("testUei", "testSource");
-        bldr.setLogDest("logndisplay");
+        bldr.setLogDest(HibernateEventWriter.LOG_MSG_DEST_LOG_AND_DISPLAY);
 
         bldr.setDescription("abc\u0000def");
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+
+        m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
 
         final String descr = jdbcTemplate.queryForObject("SELECT eventDescr FROM events LIMIT 1", String.class);
@@ -153,7 +152,7 @@ public class HibernateEventWriterIT {
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+        m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
 
         String minionId = jdbcTemplate.queryForObject("SELECT systemId FROM events LIMIT 1", String.class);
@@ -163,7 +162,7 @@ public class HibernateEventWriterIT {
         jdbcTemplate.execute(String.format("INSERT INTO monitoringsystems (id, location, type) VALUES ('%s', 'Hello World', '%s')", systemId, OnmsMonitoringSystem.TYPE_MINION));
 
         event = bldr.getEvent();
-        m_eventWriter.process(null, event);
+        m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
 
         minionId = jdbcTemplate.queryForObject("SELECT systemId FROM events LIMIT 1", String.class);
@@ -177,13 +176,13 @@ public class HibernateEventWriterIT {
     @Test
 	public void testWriteEventLogmsgWithNull() throws Exception {
         EventBuilder bldr = new EventBuilder("testUei", "testSource");
-        bldr.setLogDest("logndisplay");
+        bldr.setLogDest(HibernateEventWriter.LOG_MSG_DEST_LOG_AND_DISPLAY);
 
         bldr.setLogMessage("abc\u0000def");
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+        m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
 
         final String logMessage = jdbcTemplate.queryForObject("SELECT eventLogmsg FROM events LIMIT 1", String.class);
@@ -273,12 +272,12 @@ public class HibernateEventWriterIT {
         jdbcTemplate.update("insert into service (serviceId, serviceName) values (?, ?)", new Object[] { serviceId, serviceName });
         
         EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "someSource");
-        bldr.setLogMessage("logndisplay");
+        bldr.setLogMessage(HibernateEventWriter.LOG_MSG_DEST_LOG_AND_DISPLAY);
         bldr.setService(serviceName);
 
         Event event = bldr.getEvent();
         assertEquals(new Integer(0), event.getDbid());
-        m_eventWriter.process(null, event);
+        m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
         
         assertEquals("event count", 1, jdbcTemplate.queryForInt("select count(*) from events"));

@@ -33,8 +33,29 @@ import org.apache.camel.Processor;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
+import org.opennms.core.utils.PropertiesUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CamelRpcClientPreProcessor implements Processor {
+    private static final Logger LOG = LoggerFactory.getLogger(CamelRpcClientPreProcessor.class);
+
+    public static final String CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY = "org.opennms.jms.timeout";
+    public static final long CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT = 20000L;
+    protected final Long CAMEL_JMS_REQUEST_TIMEOUT;
+
+    public CamelRpcClientPreProcessor() {
+        long camelJmsRequestTimeout = PropertiesUtils.getProperty(System.getProperties(), CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY, CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT);
+
+        if (camelJmsRequestTimeout <= 0L) {
+            LOG.error("Invalid value {} for property {} - must be greater than zero!", camelJmsRequestTimeout, CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY);
+            camelJmsRequestTimeout = CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT;
+        }
+
+        LOG.debug("Value {} set for property {}", camelJmsRequestTimeout, CAMEL_JMS_REQUEST_TIMEOUT_PROPERTY);
+
+        CAMEL_JMS_REQUEST_TIMEOUT = camelJmsRequestTimeout;
+    }
 
     @Override
     public void process(Exchange exchange) {
@@ -43,7 +64,7 @@ public class CamelRpcClientPreProcessor implements Processor {
         final JmsQueueNameFactory queueNameFactory = new JmsQueueNameFactory(CamelRpcConstants.JMS_QUEUE_PREFIX,
                 wrapper.getModule().getId(), wrapper.getRequest().getLocation());
         exchange.getIn().setHeader(CamelRpcConstants.JMS_QUEUE_NAME_HEADER, queueNameFactory.getName());
-        exchange.getIn().setHeader(CamelRpcConstants.CAMEL_JMS_REQUEST_TIMEOUT_HEADER, wrapper.getRequest().getTimeToLiveMs());
+        exchange.getIn().setHeader(CamelRpcConstants.CAMEL_JMS_REQUEST_TIMEOUT_HEADER, wrapper.getRequest().getTimeToLiveMs() != null ? wrapper.getRequest().getTimeToLiveMs() : CAMEL_JMS_REQUEST_TIMEOUT);
         final String request = wrapper.getModule().marshalRequest((RpcRequest)wrapper.getRequest());
         exchange.getIn().setBody(request);
     }

@@ -42,5 +42,7 @@ public interface PingConstants {
     public static final int DEFAULT_TIMEOUT = 800;
     /** Constant <code>DEFAULT_PACKET_SIZE=64</code> */
     public static final int DEFAULT_PACKET_SIZE = 64;
-    
+    /** Constant <code>DEFAULT_PACKETS_PER_SECOND=3</code> */
+    public static final double DEFAULT_PACKETS_PER_SECOND = 1.0;
+
 }

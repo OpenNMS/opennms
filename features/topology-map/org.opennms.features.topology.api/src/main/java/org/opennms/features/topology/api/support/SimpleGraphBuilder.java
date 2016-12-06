@@ -78,6 +78,16 @@ public class SimpleGraphBuilder {
 		m_currentVertex.setStyleName(styleName);
 		return this;
 	}
+
+	public SimpleGraphBuilder vX(int x) {
+		m_currentVertex.setX(x);
+		return this;
+	}
+
+	public SimpleGraphBuilder vY(int y) {
+		m_currentVertex.setY(y);
+		return this;
+	}
 	
 	public SimpleGraphBuilder edge(String id, String srcId, String tgtId) {
 		

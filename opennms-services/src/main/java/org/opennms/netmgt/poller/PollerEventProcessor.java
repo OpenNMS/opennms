@@ -476,7 +476,7 @@ final class PollerEventProcessor implements EventListener {
         }
         if (isPoller) {
             LOG.info("reloadConfigHandler: reloading poller configuration");
-            final String targetFile = ConfigFileConstants.getFileName(ConfigFileConstants.POLLER_CONF_FILE_NAME);
+            final String targetFile = ConfigFileConstants.getFileName(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
             EventBuilder ebldr = null;
             try {
                 getPollerConfig().update();

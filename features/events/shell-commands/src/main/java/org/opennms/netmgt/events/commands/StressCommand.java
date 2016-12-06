@@ -48,9 +48,12 @@ import org.apache.commons.jexl2.MapContext;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Log;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Meter;
@@ -91,6 +94,17 @@ public class StressCommand extends OsgiCommandSupport {
     @Option(name="-j", aliases="--jexl", description="JEXL expressions", required=false, multiValued=true)
     List<String> jexlExpressions = null;
 
+    @Option(name="-b", aliases="--batch-size", description="The size of the log (batch size)", required=false, multiValued = false)
+    int batchSize = 1;
+
+    @Option(name="-n", aliases="--node-id", description="The node id to associate with the generated event")
+    Integer eventNodeId = null;
+
+    @Option(name="-i", aliases="--interface", description="The ip interface to associate with the generated event")
+    String eventIpInterface = null;
+    @Option(name="-x", aliases="--sync", description="Use synchronous instead of asynchronous calls", required=false, multiValued = false)
+    boolean isSynchronous = false;
+
     private final MetricRegistry metrics = new MetricRegistry();
 
     private final Meter eventsGenerated = metrics.meter("events-generated");
@@ -127,9 +141,19 @@ public class StressCommand extends OsgiCommandSupport {
         public void run() {
             final RateLimiter rateLimiter = RateLimiter.create(eventsPerSecondPerThread);
             while (true) {
-                eventForwarder.sendNow(getNextEvent());
-                eventsGenerated.mark();
-                rateLimiter.acquire();
+                Log log = new Log();
+                log.setEvents(new Events());
+                for (int i=0; i<batchSize; i++) {
+                    log.getEvents().getEventCollection().add(getNextEvent());
+                }
+
+                rateLimiter.acquire(batchSize);
+                if (isSynchronous) {
+                    eventForwarder.sendNowSync(log);
+                } else {
+                    eventForwarder.sendNow(log);
+                }
+                eventsGenerated.mark(batchSize);
                 if (Thread.interrupted()) {
                     break;
                 }
@@ -138,6 +162,12 @@ public class StressCommand extends OsgiCommandSupport {
 
         public Event getNextEvent() {
             final EventBuilder eb = new EventBuilder(eventUei, EVENT_SOURCE);
+            if (eventNodeId != null) {
+                eb.setNodeid(eventNodeId.intValue());
+            }
+            if (eventIpInterface != null) {
+                eb.setInterface(InetAddressUtils.addr(eventIpInterface));
+            }
             return eb.getEvent();
         }
     }
@@ -149,6 +179,7 @@ public class StressCommand extends OsgiCommandSupport {
         numberOfThreads = Math.max(1, numberOfThreads);
         numSeconds = Math.max(1, numSeconds);
         reportIntervalInSeconds = Math.max(1, reportIntervalInSeconds);
+        batchSize = Math.max(1, batchSize);
         boolean useJexl = jexlExpressions != null && jexlExpressions.size() > 0;
 
         // Display the effective settings and rates
@@ -156,6 +187,8 @@ public class StressCommand extends OsgiCommandSupport {
         System.out.printf("Generating %d events per second accross %d threads for %d seconds\n",
                 eventsPerSecondPerThread, numberOfThreads, numSeconds);
         System.out.printf("\t with UEI: %s\n", eventUei);
+        System.out.printf("\t with batch size: %d\n", batchSize);
+        System.out.printf("\t with synchronous calls: %s\n", isSynchronous);
         System.out.printf("Which will yield an effective\n");
         System.out.printf("\t %.2f events per second\n", eventsPerSecond);
         System.out.printf("\t %.2f total events\n", eventsPerSecond * numSeconds);

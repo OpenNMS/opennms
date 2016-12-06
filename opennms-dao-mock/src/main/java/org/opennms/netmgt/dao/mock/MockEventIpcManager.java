@@ -307,7 +307,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     }
 
     @Override
-    public synchronized void sendNow(final Event event) {
+    public void sendNow(final Event event) {
+        sendNow(event, isSynchronous());
+    }
+
+    public synchronized void sendNow(final Event event, boolean synchronous) {
         // Expand the event parms
         if (m_expander != null) {
             m_expander.expandEvent(event);
@@ -364,6 +368,18 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     public void sendNow(final Log eventLog) {
         for (final Event event : eventLog.getEvents().getEventCollection()) {
             sendNow(event);
+        }
+    }
+
+    @Override
+    public void sendNowSync(Event event) {
+        sendNow(event, true);
+    }
+
+    @Override
+    public void sendNowSync(Log eventLog) {
+        for (final Event event : eventLog.getEvents().getEventCollection()) {
+            sendNow(event, true);
         }
     }
 

@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.app.internal.ui;
 
+import org.opennms.features.topology.app.internal.support.LayoutManager;
+
 import com.vaadin.data.Property;
 
 public interface ToolbarPanelController {
@@ -39,6 +41,8 @@ public interface ToolbarPanelController {
     void refreshUI();
 
     void saveHistory();
+
+    void saveLayout();
 
     void setActiveTool(ActiveTool activeTool);
 
@@ -53,4 +57,6 @@ public interface ToolbarPanelController {
     int getSemanticZoomLevel();
 
     Property<Double> getScaleProperty();
+
+    LayoutManager getLayoutManager();
 }

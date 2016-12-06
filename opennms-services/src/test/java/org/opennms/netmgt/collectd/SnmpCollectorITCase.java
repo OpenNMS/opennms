@@ -316,6 +316,10 @@ public abstract class SnmpCollectorITCase extends OpenNMSITCase {
     }
 
     protected void waitForSignal() throws InterruptedException {
-        m_walker.waitFor();
+        try {
+            m_walker.waitFor();
+        } finally {
+            m_walker.close();
+        }
     }
 }
