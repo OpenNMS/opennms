@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
@@ -52,24 +53,24 @@ public abstract class GenericURLConnection extends URLConnection {
     private final Logger logger = LoggerFactory.getLogger(GenericURLConnection.class);
 
     /**
-     * URL for connection
+     * URI for connection
      */
-    private URL m_url;
+    private URI m_uri;
 
     /**
-     * User and password delimiter for URL user:pass@host
+     * User and password delimiter for URI user:pass@host
      */
     private static final String USERINFO_DELIMITER = ":";
 
     /**
-     * Default encoding for URL
+     * Default encoding for URI
      */
     private static final String UTF8_ENCODING = "UTF-8";
 
     /**
-     * Delimiter for URL arguments
+     * Delimiter for URI arguments
      */
-    private static final String URL_QUERY_ARGS_DELIMITERS = "[&;]";
+    private static final String URI_QUERY_ARGS_DELIMITERS = "[&;]";
 
     /**
      * Delimiter for argument and values
@@ -84,20 +85,22 @@ public abstract class GenericURLConnection extends URLConnection {
     /**
      * Default constructor
      *
-     * @param url a {java.net.URL} object
+     * @param uri a {java.net.URI} object
      */
-    protected GenericURLConnection(URL url) {
-        super(url);
-        this.m_url = url;
+    protected GenericURLConnection(URI uri) throws java.net.MalformedURLException {
+
+        super(uri.toURL());
+
+        this.m_uri = uri;
     }
 
     /**
-     * Get user name from a given URL
+     * Get user name from a given URI
      *
      * @return a {@link java.lang.String} user name
      */
     protected String getUsername() {
-        String userInfo = this.m_url.getUserInfo();
+        String userInfo = this.m_uri.getUserInfo();
         if (userInfo != null) {
             if (userInfo.contains(USERINFO_DELIMITER)) {
                 String[] userName = userInfo.split(USERINFO_DELIMITER);
@@ -107,18 +110,18 @@ public abstract class GenericURLConnection extends URLConnection {
                 return userInfo; // no password just a user name
             }
         } else {
-            logger.warn("No credentials for URL connection configured.");
+            logger.warn("No credentials for URI connection configured.");
             return null; // no user info
         }
     }
 
     /**
-     * Get password from a given url
+     * Get password from a given URI
      *
      * @return a {@link java.lang.String} password
      */
     protected String getPassword() {
-        String userInfo = this.m_url.getUserInfo();
+        String userInfo = this.m_uri.getUserInfo();
         if (userInfo != null) {
             if (userInfo.contains(USERINFO_DELIMITER)) {
                 String[] userPass = userInfo.split(USERINFO_DELIMITER);
@@ -128,20 +131,20 @@ public abstract class GenericURLConnection extends URLConnection {
                 return EMPTY_STRING; // user name defined without password
             }
         } else {
-            logger.warn("No credentials for URL connection configured.");
+            logger.warn("No credentials for URI connection configured.");
             return null; // no user info
         }
     }
 
     /**
-     * Get all URL query arguments
+     * Get all URI query arguments
      *
      * @return a {@link java.util.HashMap} with arguments as key value map
      */
     protected Map<String, String> getQueryArgs() {
         HashMap<String, String> hashMap = new HashMap<String, String>();
 
-        String queryString = this.m_url.getQuery();
+        String queryString = this.m_uri.getQuery();
 
         if (queryString != null) {
 
@@ -149,11 +152,11 @@ public abstract class GenericURLConnection extends URLConnection {
                 queryString = URLDecoder.decode(queryString, UTF8_ENCODING);
             } catch (UnsupportedEncodingException e) {
                 // Your system does not support UTF-8 encoding
-                logger.error("Unsupported " + UTF8_ENCODING + " encoding for URL query string: '{}'. Error message: '{}'", queryString, e.getMessage());
+                logger.error("Unsupported " + UTF8_ENCODING + " encoding for URI query string: '{}'. Error message: '{}'", queryString, e.getMessage());
             }
 
             // queryString is everthing behind "?"
-            String[] queryArgs = queryString.split(URL_QUERY_ARGS_DELIMITERS);
+            String[] queryArgs = queryString.split(URI_QUERY_ARGS_DELIMITERS);
 
             for (String queryArg : queryArgs) {
 
