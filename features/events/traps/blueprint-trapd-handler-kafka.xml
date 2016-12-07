@@ -49,7 +49,7 @@
 		<propertyPlaceholder id="properties" location="blueprint:trapdHandlerKafkaProperties" />
 
 		<route id="trapMarshal">
-			<from uri="seda:handleMessage?concurrentConsumers={{concurrentConsumers}}&amp;blockWhenFull={{blockWhenFullFlag}}&amp;size={{sedaQueueSize}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}"/>
+			<from uri="seda:handleMessage?concurrentConsumers={{concurrentConsumers}}&amp;size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFullFlag}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}"/>
 
 			<setHeader headerName="includeRawMessage">
 				<simple resultType="java.lang.Boolean">properties:includeRawMessage</simple>
