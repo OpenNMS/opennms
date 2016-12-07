@@ -28,18 +28,38 @@
 
 package org.opennms.core.rpc.api;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
- * The response of an RPC call.
+ * Thrown when an error occurred processing the request on the remote
+ * system.
  *
- * @author jwhite
+ * @author jesse
  */
-public interface RpcResponse {
+public class RemoteExecutionException extends Exception {
+
+    private static final long serialVersionUID = 2002562170814461170L;
+
+    public RemoteExecutionException(String message) {
+        super(message);
+    }
 
     /**
-     * Returns an error message if an error occurred, or {@code null} otherwise.
+     * Utility function for converting a {@link Throwable} to a {@link String}.
      *
-     * @return an error message if an error occurred, or {@code null} otherwise
+     * @param t the exception
+     * @return a string that contains the exception message and the stack trace
      */
-    String getErrorMessage();
+    public static String toErrorMessage(Throwable t) {
+        if (t == null) {
+            return null;
+        }
+
+        final StringWriter strackTrace = new StringWriter();
+        final PrintWriter pw = new PrintWriter(strackTrace);
+        t.printStackTrace(pw);
+        return strackTrace.toString();
+    }
 
 }

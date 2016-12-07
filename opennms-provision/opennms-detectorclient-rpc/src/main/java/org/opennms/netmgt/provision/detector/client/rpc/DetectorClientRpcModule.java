@@ -110,15 +110,19 @@ public class DetectorClientRpcModule extends AbstractXmlRpcModule<DetectorReques
                     }
                 });
             } catch (Throwable t) {
-                DetectorResponseDTO responseDTO = new DetectorResponseDTO();
-                responseDTO.setDetected(false);
-                responseDTO.setFailureMessage(t.getMessage());
-                future.complete(responseDTO);
+                future.completeExceptionally(t);
             }
             return future;
         } else {
-            throw new IllegalArgumentException("Unsupported detector type.");
+            final CompletableFuture<DetectorResponseDTO> future = new CompletableFuture<>();
+            future.completeExceptionally(new IllegalArgumentException("Unsupported detector type."));
+            return future;
         }
+    }
+
+    @Override
+    public DetectorResponseDTO createResponseWithException(Throwable ex) {
+        return new DetectorResponseDTO(ex);
     }
 
     @Override

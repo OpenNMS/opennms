@@ -34,17 +34,28 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RpcResponse;
 
 @XmlRootElement(name = "ping-sweep-response")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PingSweepResponseDTO implements RpcResponse {
 
+    @XmlAttribute(name="error")
+    private String error;
+
     @XmlElement(name = "pinger-result")
-    List<PingSweepResultDTO> pingSweepResult = new ArrayList<>();
+    private List<PingSweepResultDTO> pingSweepResult = new ArrayList<>(0);
+
+    public PingSweepResponseDTO() { }
+
+    public PingSweepResponseDTO(Throwable ex) {
+        error = RemoteExecutionException.toErrorMessage(ex);
+    }
 
     public List<PingSweepResultDTO> getPingSweepResult() {
         return pingSweepResult;
@@ -59,8 +70,13 @@ public class PingSweepResponseDTO implements RpcResponse {
     }
 
     @Override
+    public String getErrorMessage() {
+        return error;
+    }
+
+    @Override
     public int hashCode() {
-        return Objects.hash(pingSweepResult);
+        return Objects.hash(pingSweepResult, error);
     }
 
     @Override
@@ -72,7 +88,8 @@ public class PingSweepResponseDTO implements RpcResponse {
         if (getClass() != obj.getClass())
             return false;
         PingSweepResponseDTO other = (PingSweepResponseDTO) obj;
-        return Objects.equals(this.pingSweepResult, other.pingSweepResult);
+        return Objects.equals(this.pingSweepResult, other.pingSweepResult) &&
+                Objects.equals(this.error, other.error);
     }
 
 }

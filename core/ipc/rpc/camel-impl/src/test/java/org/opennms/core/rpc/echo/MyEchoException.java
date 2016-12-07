@@ -26,20 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.rpc.api;
+package org.opennms.core.rpc.echo;
 
-/**
- * The response of an RPC call.
- *
- * @author jwhite
- */
-public interface RpcResponse {
+public class MyEchoException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-    /**
-     * Returns an error message if an error occurred, or {@code null} otherwise.
-     *
-     * @return an error message if an error occurred, or {@code null} otherwise
-     */
-    String getErrorMessage();
-
+    public MyEchoException(String message) {
+        super(message);
+    }
 }

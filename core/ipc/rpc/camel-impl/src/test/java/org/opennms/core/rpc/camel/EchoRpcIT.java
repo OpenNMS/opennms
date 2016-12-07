@@ -45,11 +45,13 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.core.rpc.echo.EchoClient;
 import org.opennms.core.rpc.echo.EchoRequest;
 import org.opennms.core.rpc.echo.EchoResponse;
 import org.opennms.core.rpc.echo.EchoRpcModule;
+import org.opennms.core.rpc.echo.MyEchoException;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -58,7 +60,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
@@ -118,6 +119,55 @@ public class EchoRpcIT {
         EchoResponse expectedResponse = new EchoResponse("HELLO!!!");
         EchoResponse actualResponse = echoClient.execute(request).get();
         assertEquals(expectedResponse, actualResponse);
+
+        routeManager.unbind(echoRpcModule);
+        context.stop();
+    }
+
+    /**
+     * Verifies that the future fails with the original exception if
+     * an error occurs when executing locally.
+     */
+    @Test(timeout=60000)
+    public void futureFailsWithOriginalExceptionWhenExecutingLocally() throws InterruptedException, ExecutionException {
+        EchoRequest request = new EchoRequest("Oops!");
+        request.shouldThrow(true);
+        try {
+            echoClient.execute(request).get();
+            fail();
+        } catch (ExecutionException e) {
+            assertEquals("Oops!", e.getCause().getMessage());
+            assertEquals(MyEchoException.class, e.getCause().getClass());
+        }
+    }
+
+    /**
+     * Verifies that the future fails with a {@code RemoteExecutionException} when
+     * if an error occurs when executing remotely.
+     */
+    @Test(timeout=60000)
+    public void futureFailsWithRemoteExecutionExceptionWhenExecutingRemotely() throws Exception {
+        assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
+        EchoRpcModule echoRpcModule = new EchoRpcModule();
+
+        SimpleRegistry registry = new SimpleRegistry();
+        CamelContext context = new DefaultCamelContext(registry);
+        context.addComponent("queuingservice", queuingservice);
+
+        CamelRpcServerRouteManager routeManager = new CamelRpcServerRouteManager(context,
+                new MockMinionIdentity(REMOTE_LOCATION_NAME));
+        routeManager.bind(echoRpcModule);
+
+        EchoRequest request = new EchoRequest("Oops!");
+        request.shouldThrow(true);
+        request.setLocation(REMOTE_LOCATION_NAME);
+        try {
+            echoClient.execute(request).get();
+            fail();
+        } catch (ExecutionException e) {
+            assertTrue(e.getCause().getMessage(), e.getCause().getMessage().contains("Oops!"));
+            assertEquals(RemoteExecutionException.class, e.getCause().getClass());
+        }
 
         routeManager.unbind(echoRpcModule);
         context.stop();

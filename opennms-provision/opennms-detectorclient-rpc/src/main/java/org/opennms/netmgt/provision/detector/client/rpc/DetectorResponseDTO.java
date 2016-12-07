@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.netmgt.provision.DetectResults;
 
@@ -47,11 +48,11 @@ import org.opennms.netmgt.provision.DetectResults;
 @XmlAccessorType(XmlAccessType.NONE)
 public class DetectorResponseDTO implements DetectResults, RpcResponse {
 
+    @XmlAttribute(name = "error")
+    private String error;
+
     @XmlAttribute(name = "detected")
     private boolean detected;
-
-    @XmlAttribute(name = "failure-message")
-    private String failureMessage;
 
     @XmlElement(name = "attribute")
     private List<DetectorAttributeDTO> attributes = new ArrayList<>();
@@ -69,7 +70,7 @@ public class DetectorResponseDTO implements DetectResults, RpcResponse {
 
     public DetectorResponseDTO(Throwable t) {
         setDetected(false);
-        setFailureMessage(t.getMessage());
+        error = RemoteExecutionException.toErrorMessage(t);
     }
 
     public boolean isDetected() {
@@ -78,18 +79,6 @@ public class DetectorResponseDTO implements DetectResults, RpcResponse {
 
     public void setDetected(boolean detected) {
         this.detected = detected;
-    }
-
-    public String getFailureMessage() {
-        return failureMessage;
-    }
-
-    public void setFailureMessage(String failureMesage) {
-        this.failureMessage = failureMesage;
-    }
-
-    public boolean didFailWithError() {
-        return failureMessage != null && !failureMessage.isEmpty();
     }
 
     public List<DetectorAttributeDTO> getAttributes() {
@@ -122,7 +111,7 @@ public class DetectorResponseDTO implements DetectResults, RpcResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(detected, failureMessage, attributes);
+        return Objects.hash(detected, error, attributes);
     }
 
     @Override
@@ -135,8 +124,13 @@ public class DetectorResponseDTO implements DetectResults, RpcResponse {
             return false;
         DetectorResponseDTO other = (DetectorResponseDTO) obj;
         return Objects.equals(this.detected, other.detected) &&
-                Objects.equals(this.failureMessage, other.failureMessage) &&
+                Objects.equals(this.error, other.error) &&
                 Objects.equals(this.attributes, other.attributes);
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return error;
     }
 
 }
