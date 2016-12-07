@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,25 +28,20 @@
 
 package org.opennms.netmgt.syslogd;
 
-import org.opennms.netmgt.config.SyslogdConfig;
+import java.nio.ByteBuffer;
 
-/**
- * This processor will update the {@link SyslogdConfig} on a
- * {@link SyslogConnection} so that it can be processed according
- * to the new configuration.
- * 
- * @author Seth
- */
-public class SyslogdConfigProcessor {
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-	private final SyslogdConfig m_config;
+public class ByteBufferXmlAdapter extends XmlAdapter<byte[], ByteBuffer> {
 
-	public SyslogdConfigProcessor(SyslogdConfig config) {
-		m_config = config;
-	}
+    @Override
+    public ByteBuffer unmarshal(byte[] bytes) throws Exception {
+        return ByteBuffer.wrap(bytes);
+    }
 
-	public SyslogConnection process(SyslogConnection connection) {
-		connection.setConfig(m_config);
-		return connection;
-	}
+    @Override
+    public byte[] marshal(ByteBuffer bb) throws Exception {
+        return bb.array();
+    }
+
 }
