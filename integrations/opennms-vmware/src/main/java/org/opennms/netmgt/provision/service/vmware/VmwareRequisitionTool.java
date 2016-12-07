@@ -31,7 +31,7 @@ package org.opennms.netmgt.provision.service.vmware;
 import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -68,33 +68,41 @@ public abstract class VmwareRequisitionTool {
         }
 
         String urlString = arguments.remove(0).replaceFirst("vmware", "http"); // Internal trick to avoid confusions.
-        URL url = new URL(urlString);
+        URI uri = new URI(urlString);
 
         // Parse vmware-config.xml and retrieve the credentials to avoid initialize Spring
-        if (url.getUserInfo() == null) {
+        if (uri.getUserInfo() == null) {
+
+            System.out.println("Couldn't figure out user information from parguments, trying to get it from vmware-config.xml"));
+
             File cfg = new File(ConfigFileConstants.getFilePathString(), "vmware-config.xml");
             if (cfg.exists()) {
                 String username = null;
                 String password = null;
+
                 VmwareConfig config = JaxbUtils.unmarshal(VmwareConfig.class, cfg);
                 for (VmwareServer srv : config.getVmwareServerCollection()) {
-                    if (srv.getHostname().equals(url.getHost())) {
+                    if (srv.getHostname().equals(uri.getHost())) {
                         username = srv.getUsername();
                         password = srv.getPassword();
                     }
                 }
+
                 if (username == null || password == null) {
-                    throw new IllegalArgumentException("Can't retrieve credentials for " + url.getHost() + " from " + cfg);
+                    throw new IllegalArgumentException("Can't retrieve credentials for " + uri.getHost() + " from " + cfg);
                 }
+
                 int i = urlString.lastIndexOf("//");
                 if (i > 0) {
                     urlString = urlString.substring(0, i + 2) + username + ':' + password + '@' + urlString.substring(i + 2);
                 }
-                url = new URL(urlString);
+
+        	uri = new URI(urlString);
             }
         }
 
-        VmwareRequisitionUrlConnection c = new VmwareRequisitionUrlConnection(url) {
+
+        VmwareRequisitionUrlConnection c = new VmwareRequisitionUrlConnection(uri) {
             @Override
             protected Requisition getExistingRequisition() {
                 // This is not elegant but it is necessary to avoid booting Spring
