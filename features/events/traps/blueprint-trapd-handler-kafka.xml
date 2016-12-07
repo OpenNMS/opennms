@@ -21,13 +21,14 @@
 			<cm:property name="sedaQueueSize" value="1000" />
 			<cm:property name="concurrentConsumers" value="4" />
 			<cm:property name="blockWhenFullFlag" value="false" />
+			<cm:property name="limitConcurrentConsumers" value="false" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
 	<bean id="partitionKeyGenerator" class="org.opennms.core.camel.RandomPartitionKeyGenerator"/>
 
 	<bean id="trapdNotificationHandlerCamel" class="org.opennms.netmgt.trapd.TrapNotificationHandlerCamelImpl">
-		<argument value="seda:handleMessage?size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFullFlag}}"/>
+		<argument value="seda:handleMessage"/>
 	</bean>
 
 	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapdNotificationHandlerCamel"/>
@@ -48,7 +49,7 @@
 		<propertyPlaceholder id="properties" location="blueprint:trapdHandlerKafkaProperties" />
 
 		<route id="trapMarshal">
-			<from uri="seda:handleMessage?concurrentConsumers={{concurrentConsumers}}&amp;size={{sedaQueueSize}}"/>
+			<from uri="seda:handleMessage?concurrentConsumers={{concurrentConsumers}}&amp;blockWhenFull={{blockWhenFullFlag}}&amp;size={{sedaQueueSize}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}"/>
 
 			<setHeader headerName="includeRawMessage">
 				<simple resultType="java.lang.Boolean">properties:includeRawMessage</simple>
