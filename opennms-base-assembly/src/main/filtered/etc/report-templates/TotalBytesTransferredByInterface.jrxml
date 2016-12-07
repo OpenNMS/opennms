@@ -43,10 +43,6 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 		<parameterDescription><![CDATA[The URL of the Measurements API]]></parameterDescription>
 		<defaultValueExpression><![CDATA["http://localhost:8980/opennms/rest/measurements"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="MEASUREMENT_INTERVAL" class="java.lang.Integer">
-		<parameterDescription><![CDATA[The time interval between two measurement samples]]></parameterDescription>
-		<defaultValueExpression><![CDATA[300]]></defaultValueExpression>
-	</parameter>
 	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String">
 		<parameterDescription><![CDATA[The username to use to authenticate against the Measurement API]]></parameterDescription>
 		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>

@@ -13,7 +13,13 @@
 	<parameter name="MEASUREMENT_URL" class="java.lang.String"/>
 	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String"/>
 	<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String"/>
-	<parameter name="MEASUREMENT_INTERVAL" class="java.lang.Integer"/>
+	<parameter name="MEASUREMENT_INTERVAL" class="java.lang.Integer" isForPrompting="false">
+		<parameterDescription><![CDATA[The time interval between two measurement samples]]></parameterDescription>
+		<defaultValueExpression><![CDATA[300]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MEASUREMENT_INTERVAL_millisecond" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{MEASUREMENT_INTERVAL} * 1000]]></defaultValueExpression>
+	</parameter>
 	<parameter name="nodeid" class="java.lang.Integer"/>
 	<parameter name="foreignsource" class="java.lang.String"/>
 	<parameter name="foreignid" class="java.lang.String"/>
@@ -39,7 +45,7 @@
 		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
 	</parameter>
 	<queryString language="measurement">
-		<![CDATA[<query-request step="String.valueOf($P{MEASUREMENT_INTERVAL} * 1000)" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="5000">
+		<![CDATA[<query-request step="$P{MEASUREMENT_INTERVAL_millisecond}" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="5000">
   <source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" fallback-attribute="ifInOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
   <source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" fallback-attribute="ifOutOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
 </query-request>]]>
