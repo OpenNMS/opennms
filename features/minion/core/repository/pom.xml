@@ -36,7 +36,7 @@
                                 <descriptor>mvn:org.opennms.features.minion/core-features/${project.version}/xml</descriptor>
                             </descriptors>
                             <!-- To ensure that all JAR files for a feature 
-                                are included in the repository tar.gz file, add the feature to this list. -->
+                                are included in the repository tar.bz2 file, add the feature to this list. -->
                             <features>
                                 <!-- Minion Core Features -->
                                 <feature>minion-core</feature>

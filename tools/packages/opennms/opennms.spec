@@ -55,7 +55,7 @@ License:		LGPL/AGPL
 Group:			Applications/System
 BuildArch:		noarch
 
-Source:			%{name}-source-%{version}-%{releasenumber}.tar.gz
+Source:			%{name}-source-%{version}-%{releasenumber}.tar.bz2
 URL:			http://www.opennms.org/
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
@@ -480,7 +480,7 @@ VTD-XML is very fast GPL library for parsing XMLs with XPath Suppoer.
 
 %prep
 
-tar -xvzf %{_sourcedir}/%{name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
+tar -xvjf %{_sourcedir}/%{name}-source-%{version}-%{release}.tar.bz2 -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -548,7 +548,7 @@ echo "=== UNTAR BUILD ==="
 
 mkdir -p %{buildroot}%{instprefix}
 
-tar zxvf %{_builddir}/%{name}-%{version}-%{release}/target%{buildroot}.tar.gz -C %{buildroot}%{instprefix}
+tar jxvf %{_builddir}/%{name}-%{version}-%{release}/target%{buildroot}.tar.bz2 -C %{buildroot}%{instprefix}
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
@@ -593,7 +593,7 @@ install -m 755 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.ini
 install -m 640 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/opennms-remote-poller
 rm -rf %{buildroot}%{instprefix}/contrib/remote-poller
 
-rm -rf %{buildroot}%{instprefix}/lib/*.tar.gz
+rm -rf %{buildroot}%{instprefix}/lib/*.tar.bz2 %{buildroot}%{instprefix}/lib/*.tar.gz
 
 # Remove all duplicate JARs from /system and symlink them to the JARs in /lib to save disk space
 for FILE in %{buildroot}%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find %{buildroot}%{instprefix}/system -name $BASENAME`; do rm -f $SYSFILE; ln -s /opt/opennms/lib/$BASENAME $SYSFILE; done; done

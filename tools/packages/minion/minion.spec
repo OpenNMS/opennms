@@ -44,7 +44,7 @@ License:       LGPL/AGPL
 Group:         Applications/System
 BuildArch:     noarch
 
-Source:        %{_name}-source-%{version}-%{releasenumber}.tar.gz
+Source:        %{_name}-source-%{version}-%{releasenumber}.tar.bz2
 URL:           http://www.opennms.org/wiki/Minion
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
@@ -110,7 +110,7 @@ Minion Default Features
 
 %prep
 
-tar zxf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
+tar jxf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.bz2 -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -155,7 +155,7 @@ fi
 
 # Extract the minion assembly
 mkdir -p %{buildroot}%{minioninstprefix}
-tar zxf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz -C %{buildroot}%{minioninstprefix} --strip-components=1
+tar jxf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.bz2 -C %{buildroot}%{minioninstprefix} --strip-components=1
 
 # Remove the data directory
 rm -rf %{buildroot}%{minioninstprefix}/data

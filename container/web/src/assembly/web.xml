@@ -21,7 +21,7 @@
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <scope>provided</scope>
             <includes>
-                <include>org.opennms.container:org.opennms.container.karaf:tar.gz:${project.version}</include>
+                <include>org.opennms.container:org.opennms.container.karaf:tar.bz2:${project.version}</include>
             </includes>
         </dependencySet>
         <dependencySet>

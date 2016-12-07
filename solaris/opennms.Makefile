@@ -32,11 +32,11 @@
 #
 
 TOPONMSDIR:sh= cd .. ; pwd
-OPENNMSTGZSH = ls ${TOPONMSDIR}/target/opennms-*.tar.gz
+OPENNMSTGZSH = ls ${TOPONMSDIR}/target/opennms-*.tar.bz2
 OPENNMSTGZ   = ${OPENNMSTGZSH:sh}
 
-#SRCVERSIONSH= echo ${OPENNMSTGZ} | sed -e 's/.*opennms-//' -e 's/\.tar\.gz//'
-SRCVERSIONSH= echo ${OPENNMSTGZ} | sed -e 's/.*\///' -e 's/\.tar\.gz//'
+#SRCVERSIONSH= echo ${OPENNMSTGZ} | sed -e 's/.*opennms-//' -e 's/\.tar\.bz2//'
+SRCVERSIONSH= echo ${OPENNMSTGZ} | sed -e 's/.*\///' -e 's/\.tar\.bz2//'
 SRCVERSIONSHORT  = ${SRCVERSIONSH:sh}
 REVISIONSH  = svn info ${TOPONMSDIR} 2> /dev/null | grep Revision: | awk '{ print $$2 }'
 REVISION    = ${REVISIONSH:sh}

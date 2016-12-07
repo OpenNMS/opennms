@@ -2420,7 +2420,7 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-full-assembly</artifactId>
         <version>${project.version}</version>
-        <type>tar.gz</type>
+        <type>tar.bz2</type>
         <classifier>dist</classifier>
       </dependency>
       <dependency>
@@ -2688,14 +2688,14 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-webapp</artifactId>
         <version>${project.version}</version>
-        <type>tar.gz</type>
+        <type>tar.bz2</type>
         <classifier>meta-inf</classifier>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-webapp</artifactId>
         <version>${project.version}</version>
-        <type>tar.gz</type>
+        <type>tar.bz2</type>
         <classifier>lib</classifier>
       </dependency>
       <dependency>

@@ -20,7 +20,7 @@ License:       LGPL/AGPL
 Group:         Applications/System
 BuildArch:     noarch
 
-Source:        centric-troubleticketer.tar.gz
+Source:        centric-troubleticketer.tar.bz2
 URL:           http://www.opennms.org/index.php/CentricCRM_Trouble_Ticket_Plugin
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
@@ -52,7 +52,7 @@ mvn -Droot.dir="%{instprefix}" $EXTRA_OPTIONS -Dmaven.test.skip.exec=true packag
 
 %install
 install -d -m 755 $RPM_BUILD_ROOT%{instprefix}
-tar -C $RPM_BUILD_ROOT%{instprefix} -xvzf target/centric-troubleticketer-*.tar.gz
+tar -C $RPM_BUILD_ROOT%{instprefix} -xvjf target/centric-troubleticketer-*.tar.bz2
 chmod 644 $RPM_BUILD_ROOT%{instprefix}/lib/*.jar
 # HACK ALERT!
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/commons-io-*.jar

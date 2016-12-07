@@ -49,7 +49,7 @@
             <groupId>org.opennms.container</groupId>
             <artifactId>org.opennms.container.karaf</artifactId>
             <version>${project.version}</version>
-            <type>tar.gz</type>
+            <type>tar.bz2</type>
             <scope>provided</scope>
         </dependency>
         <dependency>

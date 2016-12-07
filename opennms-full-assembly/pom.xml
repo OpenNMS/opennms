@@ -361,7 +361,7 @@
     <dependency>
       <groupId>org.opennms.container</groupId>
       <artifactId>org.opennms.container.karaf</artifactId>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -389,7 +389,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-webapp</artifactId>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>meta-inf</classifier>
       <version>${project.version}</version>
     </dependency>
@@ -402,21 +402,21 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-base-assembly</artifactId>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <version>${project.version}</version>
       <classifier>daemon</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-base-assembly</artifactId>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <version>${project.version}</version>
       <classifier>log4j2</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms.doc</groupId>
       <artifactId>guide-all</artifactId>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <version>${project.version}</version>
       <classifier>docs</classifier>
     </dependency>
@@ -424,7 +424,7 @@
       <groupId>org.opennms.assemblies</groupId>
       <artifactId>org.opennms.assemblies.xsds</artifactId>
       <version>${project.version}</version>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
@@ -436,7 +436,7 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-jetty</artifactId>
       <version>${project.version}</version>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>etc</classifier>
     </dependency>
     <dependency>
@@ -465,14 +465,14 @@
       <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.dhcp</artifactId>
       <version>${project.version}</version>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>etc</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.dhcp</artifactId>
       <version>${project.version}</version>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>lib</classifier>
     </dependency>
     <dependency>
@@ -484,7 +484,7 @@
       <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.nsclient</artifactId>
       <version>${project.version}</version>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>etc</classifier>
     </dependency>
     <dependency>
@@ -501,14 +501,14 @@
       <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.xml</artifactId>
       <version>${project.version}</version>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>etc</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.xml</artifactId>
       <version>${project.version}</version>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>contrib</classifier>
     </dependency>
     <dependency>
@@ -529,14 +529,14 @@
       <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.xmp</artifactId>
       <version>${project.version}</version>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>etc</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.xmp</artifactId>
       <version>${project.version}</version>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>lib</classifier>
     </dependency>
     <dependency>
@@ -554,14 +554,14 @@
       <groupId>org.opennms.protocols</groupId>
       <artifactId>selenium-monitor</artifactId>
       <version>${project.version}</version>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>etc</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
       <artifactId>selenium-monitor</artifactId>
       <version>${project.version}</version>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>lib</classifier>
     </dependency>
     <dependency>
@@ -580,7 +580,7 @@
       <groupId>org.opennms.features.ncs</groupId>
       <artifactId>org.opennms.features.ncs.ncs-drools</artifactId>
       <version>${project.version}</version>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>etc</classifier>
     </dependency>
     <dependency>
@@ -591,7 +591,7 @@
       <groupId>org.opennms.features.ncs</groupId>
       <artifactId>org.opennms.features.ncs.ncs-northbounder</artifactId>
       <version>${project.version}</version>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>etc</classifier>
     </dependency>
     <dependency>
@@ -603,7 +603,7 @@
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
       <version>${project.version}</version>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <classifier>etc</classifier>
     </dependency>
 

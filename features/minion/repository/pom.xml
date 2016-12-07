@@ -37,7 +37,7 @@
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</descriptor>
                             </descriptors>
                             <!-- To ensure that all JAR files for a feature 
-                                are included in the repository tar.gz file, add the feature to this list. -->
+                                are included in the repository tar.bz2 file, add the feature to this list. -->
                             <features>
                                 <feature>opennms-syslogd-listener-javanet</feature>
                                 <feature>opennms-syslogd-listener-camel-netty</feature>

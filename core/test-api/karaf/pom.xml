@@ -49,7 +49,7 @@
             </goals>
             <configuration>
               <useRepositoryLayout>true</useRepositoryLayout>
-              <excludeTypes>tar.gz</excludeTypes>
+              <excludeTypes>tar.gz,tar.bz2</excludeTypes>
               <excludeGroupIds>org.opennms</excludeGroupIds>
               <outputDirectory>${project.build.directory}/paxexam/test-repo</outputDirectory>
             </configuration>

@@ -7,7 +7,7 @@
     <id>karaf</id>
 
     <formats>
-        <format>tar.gz</format>
+        <format>tar.bz2</format>
     </formats>
 
     <includeBaseDirectory>false</includeBaseDirectory>    
@@ -22,7 +22,7 @@
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <scope>provided</scope>
             <includes>
-                <include>org.opennms.container:org.opennms.container.standalone:tar.gz:${project.version}</include>
+                <include>org.opennms.container:org.opennms.container.standalone:tar.bz2:${project.version}</include>
             </includes>
             <unpackOptions>
                 <excludes>

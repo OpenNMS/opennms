@@ -26,7 +26,7 @@
       <outputDirectory></outputDirectory>
       <outputFileNameMapping></outputFileNameMapping>
       <includes>
-        <include>org.opennms.features:org.opennms.features.juniper-tca-collector:tar.gz:etc:${project.version}</include>
+        <include>org.opennms.features:org.opennms.features.juniper-tca-collector:tar.bz2:etc:${project.version}</include>
       </includes>
     </dependencySet>
   </dependencySets>

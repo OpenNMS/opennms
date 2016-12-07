@@ -149,7 +149,7 @@
   </p>
   <p>
     The source for this release can be downloaded
-    <a href="source/opennms-<%=Vault.getProperty("version.display")%>-source.tar.gz">here</a>.
+    <a href="source/opennms-<%=Vault.getProperty("version.display")%>-source.tar.bz2">here</a>.
   </p>
   <p>
     This program is free software; you can redistribute it and/or

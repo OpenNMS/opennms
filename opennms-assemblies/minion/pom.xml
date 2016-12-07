@@ -65,7 +65,7 @@
                   <artifactId>repository</artifactId>
                   <version>${project.version}</version>
                   <classifier>repo</classifier>
-                  <type>tar.gz</type>
+                  <type>tar.bz2</type>
                   <outputDirectory>${project.build.directory}/default</outputDirectory>
                 </artifactItem>
                 <artifactItem>
@@ -73,7 +73,7 @@
                   <artifactId>core-repository</artifactId>
                   <version>${project.version}</version>
                   <classifier>repo</classifier>
-                  <type>tar.gz</type>
+                  <type>tar.bz2</type>
                   <outputDirectory>${project.build.directory}/core</outputDirectory>
                 </artifactItem>
                 <artifactItem>
@@ -81,7 +81,7 @@
                   <artifactId>opennms-base-assembly</artifactId>
                   <version>${project.version}</version>
                   <classifier>daemon</classifier>
-                  <type>tar.gz</type>
+                  <type>tar.bz2</type>
                   <outputDirectory>${project.build.directory}/base-assembly</outputDirectory>
                   <includes>bin/find-java.sh</includes>
                 </artifactItem>
@@ -121,21 +121,21 @@
       <artifactId>core-repository</artifactId>
       <version>${project.version}</version>
       <classifier>repo</classifier>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.minion</groupId>
       <artifactId>repository</artifactId>
       <version>${project.version}</version>
       <classifier>repo</classifier>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-base-assembly</artifactId>
       <version>${project.version}</version>
       <classifier>daemon</classifier>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
     </dependency>
   </dependencies>
 </project>

@@ -24,7 +24,7 @@
             </goals>
             <configuration>
               <useRepositoryLayout>true</useRepositoryLayout>
-              <excludeTypes>tar.gz</excludeTypes>
+              <excludeTypes>tar.gz,tar.bz2</excludeTypes>
               <!-- TODO: Remove this when we add tests for OpenNMS features -->
               <excludeGroupIds>org.opennms</excludeGroupIds>
               <outputDirectory>${project.build.directory}/paxexam/test-repo</outputDirectory>
@@ -166,7 +166,7 @@
     <dependency>
       <groupId>org.opennms.container</groupId>
       <artifactId>karaf</artifactId>
-      <type>tar.gz</type>
+      <type>tar.bz2</type>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

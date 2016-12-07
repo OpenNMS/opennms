@@ -71,7 +71,7 @@
                   <groupId>org.opennms</groupId>
                   <artifactId>opennms</artifactId>
                   <version>${project.version}</version>
-                  <type>tar.gz</type>
+                  <type>tar.bz2</type>
                   <classifier>source</classifier>
                 </artifactItem>
               </artifactItems>
