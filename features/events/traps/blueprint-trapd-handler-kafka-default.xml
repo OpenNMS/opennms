@@ -21,7 +21,6 @@
 			<cm:property name="zookeeperport" value="2181"/>
 			<cm:property name="groupId" value="trapdconsumer"/>
 			<cm:property name="consumerstreams" value="1"/>	
-			<cm:property name="timeout" value="15" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -55,8 +54,7 @@
 	</bean>
 	 <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
 	<bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
-<!-- 		<property name="timeout" value="15"/> -->
-			<property name="timeout" value="trapHandlerDefaultProperties:{{timeout}}"/>
+		<property name="timeout" value="15"/>
 	</bean>
 
 	<bean id="mapper" class="org.opennms.netmgt.trapd.TrapDTOToObjectProcessor"/>
