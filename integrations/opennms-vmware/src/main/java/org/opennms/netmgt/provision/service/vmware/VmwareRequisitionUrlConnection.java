@@ -569,7 +569,8 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         }
         logger.debug("Successfully created new VIJava access object for host {}", m_hostname);
 
-        logger.debug("Connecting VIJava access for host {} ...", m_hostname);
+        logger.debug("Connecting VIJava access for host {} with username {} ...", m_hostname, (m_username == null) ? "NULL" : m_username);
+
         try {
             vmwareViJavaAccess.connect();
         } catch (MalformedURLException e) {
