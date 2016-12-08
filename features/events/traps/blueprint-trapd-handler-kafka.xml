@@ -21,7 +21,6 @@
 			<cm:property name="sedaQueueSize" value="1000" />
 			<cm:property name="concurrentConsumers" value="4" />
 			<cm:property name="blockWhenFullFlag" value="false" />
-			<cm:property name="limitConcurrentConsumers" value="false" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
