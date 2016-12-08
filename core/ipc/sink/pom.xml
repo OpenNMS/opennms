@@ -13,6 +13,7 @@
   <modules>
     <module>api</module>
     <module>camel-impl</module>
+    <module>mock-impl</module>
     <module>xml</module>
   </modules>
 </project>
