@@ -45,3 +45,6 @@ _Service Configurations_ contains common _Service Attributes_ as well as _Collec
 <3> Marker to say if service is user defined, used specifically for UI purposes.
 <4> Service is collected only if on.
 
+[[ga-performance-management-collectd-configuration-xml]]
+.Configuration overview for data collection with Collectd
+image::performance-management/02_collectd-configuration-xml.png[]

@@ -1,6 +1,7 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../images
+:imagesdir: ../../../../images
+
 ==== SnmpCollector
 
 The _SnmpCollector_ is used to collect performance data through the SNMP protocol.
@@ -49,4 +50,6 @@ _SNMP Collection_ are defined in the `etc/datacollection-config.xml` and `etc/da
 </datacollection-config>
 ----
 
-~
+[[ga-performance-management-collectors-snmp-datacollection-configuration]]
+.Configuration overview for SNMP data collection
+image::performance-management/collectors/01_snmp-datacollection-configuration.png[]
