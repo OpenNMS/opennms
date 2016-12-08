@@ -134,7 +134,7 @@ public class CamelMessageConsumerManager implements MessageConsumerManager {
         public void configure() throws Exception {
             final JmsQueueNameFactory queueNameFactory = new JmsQueueNameFactory(
                     CamelSinkConstants.JMS_QUEUE_PREFIX, module.getId());
-            from(String.format("queuingservice:%s", queueNameFactory.getName()))
+            from(String.format("queuingservice:%s?concurrentConsumers=%d", queueNameFactory.getName(), module.getNumConsumerThreads()))
                 .setExchangePattern(ExchangePattern.InOnly)
                 .process(new CamelSinkServerProcessor(consumerManager, module))
                 .routeId(getRouteId());

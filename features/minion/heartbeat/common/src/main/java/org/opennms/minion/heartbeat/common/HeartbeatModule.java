@@ -43,4 +43,9 @@ public class HeartbeatModule extends AbstractXmlSinkModule<MinionIdentityDTO> {
         return MODULE_ID;
     }
 
+    @Override
+    public int getNumConsumerThreads() {
+        return 1;
+    }
+
 }

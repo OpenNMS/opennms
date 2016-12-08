@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,29 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.camel;
+package org.opennms.core.ipc.sink.test;
 
 import java.util.Objects;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.opennms.core.ipc.sink.api.Message;
+import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.test.ThreadLocker;
 
-public class CamelSinkServerProcessor implements Processor {
+/**
+ * This {@link MessageConsumer} is used to verify the number of threads
+ * that are consuming messages.
+ *
+ * @author jwhite
+ */
+public class ThreadLockingMessageConsumer<T extends Message> extends ThreadLocker implements MessageConsumer<T> {
 
-    private final CamelMessageConsumerManager consumerManager;
-    private final SinkModule<Message> module;
+    private final SinkModule<T> module;
 
-    public CamelSinkServerProcessor(CamelMessageConsumerManager consumerManager, SinkModule<Message> module) {
-        this.consumerManager = Objects.requireNonNull(consumerManager);
+    public ThreadLockingMessageConsumer(SinkModule<T> module) {
         this.module = Objects.requireNonNull(module);
     }
 
     @Override
-    public void process(Exchange exchange) {
-        final String messageAsString = exchange.getIn().getBody(String.class);
-        final Message message = module.unmarshal(messageAsString);
-        consumerManager.dispatch(module, message);
+    public SinkModule<T> getModule() {
+        return module;
+    }
+
+    @Override
+    public void handleMessage(T message) {
+        park();
     }
 }

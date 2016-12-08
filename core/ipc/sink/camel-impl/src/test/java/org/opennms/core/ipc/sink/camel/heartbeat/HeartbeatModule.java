@@ -32,8 +32,15 @@ import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
 
 public class HeartbeatModule extends AbstractXmlSinkModule<Heartbeat> {
 
+    public static final HeartbeatModule INSTANCE = new HeartbeatModule();
+
     public HeartbeatModule() {
         super(Heartbeat.class);
+    }
+
+    @Override
+    public int getNumConsumerThreads() {
+        return 1;
     }
 
     @Override

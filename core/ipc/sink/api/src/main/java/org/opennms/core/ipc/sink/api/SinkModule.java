@@ -45,6 +45,11 @@ public interface SinkModule<T extends Message> {
     String getId();
 
     /**
+     * The number of threads used to consume from the broker.
+     */
+    int getNumConsumerThreads();
+
+    /**
      * Marshals the message to a string.
      */
     String marshal(T message);
@@ -53,4 +58,5 @@ public interface SinkModule<T extends Message> {
      * Unmarshals the message from a string.
      */
     T unmarshal(String message);
+
 }
