@@ -73,7 +73,7 @@ public abstract class VmwareRequisitionTool {
         // Parse vmware-config.xml and retrieve the credentials to avoid initialize Spring
         if (uri.getUserInfo() == null) {
 
-            System.out.println("Couldn't figure out user information from parguments, trying to get it from vmware-config.xml"));
+            System.out.println("Couldn't figure out user information from parguments, trying to get it from vmware-config.xml");
 
             File cfg = new File(ConfigFileConstants.getFilePathString(), "vmware-config.xml");
             if (cfg.exists()) {
