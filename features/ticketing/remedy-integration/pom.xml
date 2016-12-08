@@ -20,10 +20,6 @@
 					</execution>
 				</executions>
 				<configuration>
-					<urls>
-						<url>file:///${project.basedir}/src/main/wsdl/HPD_IncidentInterface_WS.wsdl</url>
-						<url>file:///${project.basedir}/src/main/wsdl/HPD_IncidentInterface_Create_WS.wsdl</url>
-					</urls>
 					<packageSpace>
 						org.opennms.integration.remedy.ticketservice
 					</packageSpace>
