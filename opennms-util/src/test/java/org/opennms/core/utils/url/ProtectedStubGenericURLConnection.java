@@ -29,8 +29,7 @@
 package org.opennms.core.utils.url;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
+import java.net.URL;
 
 /**
  * <p>ProtectedStubGenericURLConnection class.</p>
@@ -44,8 +43,8 @@ import java.net.URI;
  */
 public class ProtectedStubGenericURLConnection extends GenericURLConnection {
 
-    protected ProtectedStubGenericURLConnection(URI uri) throws MalformedURLException {
-        super(uri);
+    protected ProtectedStubGenericURLConnection(URL url) {
+        super(url);
     }
 
     @Override

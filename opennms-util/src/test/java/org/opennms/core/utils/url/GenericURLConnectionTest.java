@@ -32,8 +32,7 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.net.URI;
-import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * <p>GenericURLConnectionTest class.</p>
@@ -46,25 +45,25 @@ public class GenericURLConnectionTest extends TestCase {
 
     private GenericURLConnection m_genericURLConnection;
 
-    private URI m_baseUrl;
+    private URL m_baseUrl;
 
-    private URI m_userOnlyUrl;
+    private URL m_userOnlyUrl;
 
-    private URI m_userPassUrl;
+    private URL m_userPassUrl;
 
-    private URI m_baseUrlPathQueryString;
+    private URL m_baseUrlPathQueryString;
 
     @Before
     @Override
     public void setUp() throws Exception {
-        m_baseUrl = new URI("http://host.subdomain.domain.tld");
-        m_userOnlyUrl = new URI("http://user@host.subdomain.domain.tld");
-        m_userPassUrl = new URI("http://user:pass@host.subdomain.domain.tld");
-        m_baseUrlPathQueryString = new URI("http://host.subdomain.domain.tld/path1/path2?arg1=value1&arg2=value2&arg3=value3");
+        m_baseUrl = new URL("http://host.subdomain.domain.tld");
+        m_userOnlyUrl = new URL("http://user@host.subdomain.domain.tld");
+        m_userPassUrl = new URL("http://user:pass@host.subdomain.domain.tld");
+        m_baseUrlPathQueryString = new URL("http://host.subdomain.domain.tld/path1/path2?arg1=value1&arg2=value2&arg3=value3");
     }
 
     @Test
-    public void testUrlComponents() throws MalformedURLException {
+    public void testUrlComponents() {
         m_genericURLConnection = new StubGenericURLConnection(m_baseUrl);
         assertEquals("Test host", m_genericURLConnection.getURL().getHost(), "host.subdomain.domain.tld");
         assertEquals("Test port", m_genericURLConnection.getURL().getPort(), -1);
@@ -73,43 +72,43 @@ public class GenericURLConnectionTest extends TestCase {
     }
 
     @Test
-    public void testBaseUrlUsername() throws MalformedURLException {
+    public void testBaseUrlUsername() {
         m_genericURLConnection = new StubGenericURLConnection(m_baseUrl);
         assertNull("Test user URL", m_genericURLConnection.getUsername());
     }
 
     @Test
-    public void testBaseUrlPassword() throws MalformedURLException {
+    public void testBaseUrlPassword() {
         m_genericURLConnection = new StubGenericURLConnection(m_baseUrl);
         assertNull("Test base URL", m_genericURLConnection.getPassword());
     }
 
     @Test
-    public void testUserOnlyUrlUsername() throws MalformedURLException {
+    public void testUserOnlyUrlUsername() {
         m_genericURLConnection = new StubGenericURLConnection(m_userOnlyUrl);
         assertEquals("Test user only URL", m_genericURLConnection.getUsername(), "user");
     }
 
     @Test
-    public void testUserOnlyUrlPassword() throws MalformedURLException {
+    public void testUserOnlyUrlPassword() {
         m_genericURLConnection = new StubGenericURLConnection(m_userOnlyUrl);
         assertEquals("Test user only URL", m_genericURLConnection.getPassword(), "");
     }
 
     @Test
-    public void testUserPassUrlUsername() throws MalformedURLException {
+    public void testUserPassUrlUsername() {
         m_genericURLConnection = new StubGenericURLConnection(m_userPassUrl);
         assertEquals("Test user pass URL", m_genericURLConnection.getUsername(), "user");
     }
 
     @Test
-    public void testUserPassUrlPassword() throws MalformedURLException {
+    public void testUserPassUrlPassword() {
         m_genericURLConnection = new StubGenericURLConnection(m_userPassUrl);
         assertEquals("Test user pass URL", m_genericURLConnection.getPassword(), "pass");
     }
 
     @Test
-    public void testQueryString() throws MalformedURLException {
+    public void testQueryString() {
         m_genericURLConnection = new StubGenericURLConnection(m_baseUrlPathQueryString);
         assertEquals("Argument 1", m_genericURLConnection.getQueryArgs().get("arg1"), "value1");
         assertEquals("Argument 2", m_genericURLConnection.getQueryArgs().get("arg2"), "value2");
@@ -117,7 +116,7 @@ public class GenericURLConnectionTest extends TestCase {
     }
 
     @Test
-    public void testQueryStringWithPath() throws MalformedURLException {
+    public void testQueryStringWithPath() {
         m_genericURLConnection = new StubGenericURLConnection(m_baseUrlPathQueryString);
         assertEquals("Full path", m_genericURLConnection.getURL().getPath(), "/path1/path2");
     }
