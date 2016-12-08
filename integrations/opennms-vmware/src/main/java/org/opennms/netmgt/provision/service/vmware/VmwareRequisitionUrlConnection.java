@@ -121,14 +121,14 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
     /**
      * Constructor for creating an instance of this class.
      *
-     * @param uri the URI to use
+     * @param url the URL to use
      * @throws MalformedURLException
      * @throws RemoteException
      */
-    public VmwareRequisitionUrlConnection(URI uri) throws MalformedURLException, RemoteException {
-        super(uri);
+    public VmwareRequisitionUrlConnection(URL url) throws MalformedURLException, RemoteException {
+        super(url);
 
-        m_hostname = uri.getHost();
+        m_hostname = url.getHost();
 
         m_username = getUsername();
         m_password = getPassword();
@@ -187,7 +187,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             m_importVMSuspended = true;
         }
 
-        String path = uri.getPath();
+        String path = url.getPath();
 
         path = path.replaceAll("^/", "");
         path = path.replaceAll("/$", "");
