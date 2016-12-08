@@ -29,8 +29,7 @@
 package org.opennms.core.utils.url;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
+import java.net.URL;
 
 /**
  * <p>StubGenericURLConnection class.</p>
@@ -41,10 +40,10 @@ import java.net.URI;
  * @version $Id: $
  * @since 1.8.1
  */
-public class StubGenericURLConnection extends GenericURLConnection {
+public class StubGenericURLConnection extends GenericURLConnection{
 
-    public StubGenericURLConnection(URI uri) throws MalformedURLException {
-        super (uri);
+    public StubGenericURLConnection(URL url) {
+        super (url);
     }
 
     @Override
