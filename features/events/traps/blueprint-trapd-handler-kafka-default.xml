@@ -21,6 +21,7 @@
 			<cm:property name="zookeeperport" value="2181"/>
 			<cm:property name="groupId" value="trapdconsumer"/>
 			<cm:property name="consumerstreams" value="1"/>	
+			<cm:property name="executorQueueSize" value="1" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -47,6 +48,7 @@
 	<bean id="trapNotificationHandlerDefault" class="org.opennms.netmgt.trapd.TrapNotificationHandlerDefaultImpl">
 		<property name="interfaceToNodeCache" ref="interfaceToNodeCache"/>
 		<property name="processorFactory" ref="processorFactory"/>
+]		<property name="executorQueueSize" value="${executorQueueSize}" />
 	</bean>
 
 	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
