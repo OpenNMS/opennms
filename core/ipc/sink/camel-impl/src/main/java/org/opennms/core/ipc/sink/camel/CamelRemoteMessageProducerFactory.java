@@ -28,6 +28,7 @@
 
 package org.opennms.core.ipc.sink.camel;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,14 +56,16 @@ public class CamelRemoteMessageProducerFactory implements MessageProducerFactory
 
     @Override
     public <T extends Message> MessageProducer<T> getProducer(SinkModule<T> module) {
+        final JmsQueueNameFactory queueNameFactory = new JmsQueueNameFactory(
+                CamelSinkConstants.JMS_QUEUE_PREFIX, module.getId());
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(CamelSinkConstants.JMS_QUEUE_NAME_HEADER, queueNameFactory.getName());
+        final Map<String, Object> immutableHeaders = Collections.unmodifiableMap(headers);
+
         return new MessageProducer<T>() {
             @Override
             public void send(T message) {
-                final JmsQueueNameFactory queueNameFactory = new JmsQueueNameFactory(
-                        CamelSinkConstants.JMS_QUEUE_PREFIX, module.getId());
-                Map<String, Object> headers = new HashMap<>();
-                headers.put(CamelSinkConstants.JMS_QUEUE_NAME_HEADER, queueNameFactory.getName());
-                template.sendBodyAndHeaders(endpoint, module.marshal(message), headers);
+                template.sendBodyAndHeaders(endpoint, module.marshal(message), immutableHeaders);
             }
         };
     }
