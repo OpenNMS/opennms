@@ -210,11 +210,6 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
         return m_config.getConfiguration().getDiscardUei();
     }
     
-	@Override
-	public int getNoOfThreads() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
     /**
      * Parse import-file tags and add all uei-matchs and hide-messages.

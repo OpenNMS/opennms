@@ -54,7 +54,6 @@ import org.jboss.netty.channel.socket.nio.NioWorkerPool;
 import org.opennms.core.camel.DispatcherWhiteboard;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.slf4j.Logger;
@@ -68,7 +67,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 /**
  * @author Seth
  */
-public class SyslogReceiverCamelNettyImpl implements SyslogReceiver,Processor {
+public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverCamelNettyImpl.class);
     
@@ -79,8 +78,6 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver,Processor {
     private final InetAddress m_host;
 
     private final int m_port;
-    
-    private int m_noOfThreads;
 
     private final SyslogdConfig m_config;
 
@@ -93,8 +90,13 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver,Processor {
      * objects to multiple channels such as AMQ and Kafka.
      */
     private DispatcherWhiteboard syslogDispatcher;
+    
+    private int sedaQueueSize;
+    
+    private int noOfThreads;
 
-    /**
+
+	/**
      * Construct a new receiver
      *
      * @param sock
@@ -110,7 +112,6 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver,Processor {
 
         m_host = config.getListenAddress() == null ? addr("0.0.0.0"): addr(config.getListenAddress());
         m_port = config.getSyslogPort();
-        m_noOfThreads = (0 == config.getNoOfThreads())?Integer.MAX_VALUE : config.getNoOfThreads();
         m_config = config;
     }
 
@@ -155,10 +156,9 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver,Processor {
         Meter packetMeter = METRICS.meter(MetricRegistry.name(getClass(), "packets"));
         Meter connectionMeter = METRICS.meter(MetricRegistry.name(getClass(), "connections"));
         Histogram packetSizeHistogram = METRICS.histogram(MetricRegistry.name(getClass(), "packetSize"));
-        
         final ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("SyslogNettyWorker-%d").build();
-        final ArrayBlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(100000);
-        final ThreadPoolExecutor executor = new ThreadPoolExecutor(0, m_noOfThreads,
+        final ArrayBlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(sedaQueueSize);
+        final ThreadPoolExecutor executor = new ThreadPoolExecutor(0, noOfThreads,
                 60L, TimeUnit.SECONDS,
                 queue, threadFactory);
         final NioWorkerPool workerPool = new NioWorkerPool(executor, NettyHelper.DEFAULT_IO_THREADS,
@@ -181,12 +181,13 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver,Processor {
         m_camel.setManagementNameStrategy(new DefaultManagementNameStrategy(m_camel, "#name#", null));
 
         m_camel.addComponent("netty", nettyComponent);
+        
 
         try {
             m_camel.addRoutes(new RouteBuilder() {
                 @Override
                 public void configure() throws Exception {
-                    String from = String.format("netty:udp://%s:%s?sync=false&allowDefaultCodec=false&receiveBufferSize=%d&connectTimeout=%d&synchronous=true&workerPool=#workerPool&orderedThreadPoolExecutor=false",
+                    String from = String.format("netty:udp://%s:%s?sync=false&allowDefaultCodec=false&receiveBufferSize=%d&connectTimeout=%d&workerPool=#workerPool&orderedThreadPoolExecutor=false",
                         InetAddressUtils.str(m_host),
                         m_port,
                         Integer.MAX_VALUE,
@@ -215,6 +216,7 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver,Processor {
                             packetSizeHistogram.update(byteBuffer.remaining());
                             
                             //SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), byteBuffer, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
+                            //exchange.getIn().setBody(connection, SyslogConnection.class);
                             SyslogDTO connection = new SyslogDTO(source.getAddress(),source.getPort(), byteBuffer,m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
                             exchange.getIn().setBody(connection, SyslogDTO.class);
 
@@ -247,19 +249,19 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver,Processor {
         this.syslogDispatcher = syslogDispatcher;
     }
 
-	@Override
-	public void process(Exchange exchange) throws Exception {
-        ChannelBuffer buffer = exchange.getIn().getBody(ChannelBuffer.class);
-        // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
-        // we are listening on an InetAddress, it will always be of type InetAddressSocket
-        InetSocketAddress source = (InetSocketAddress)exchange.getIn().getHeader(NettyConstants.NETTY_REMOTE_ADDRESS); 
-        // Syslog Handler Implementation to receive message from syslog port and pass it on to handler
-        
-        ByteBuffer byteBuffer = buffer.toByteBuffer();
-        
-        //SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), byteBuffer, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
-        SyslogDTO connection = new SyslogDTO(source.getAddress(),source.getPort(), byteBuffer,m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
-        exchange.getIn().setBody(JaxbUtils.marshal(connection), String.class);
-		
+	public int getSedaQueueSize() {
+		return sedaQueueSize;
+	}
+
+	public void setSedaQueueSize(int sedaQueueSize) {
+		this.sedaQueueSize = sedaQueueSize;
+	}
+	
+    public int getNoOfThreads() {
+		return noOfThreads;
+	}
+
+	public void setNoOfThreads(int noOfThreads) {
+		this.noOfThreads = noOfThreads;
 	}
 }

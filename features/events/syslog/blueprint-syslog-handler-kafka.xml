@@ -31,10 +31,10 @@
 
 	<service interface="org.opennms.netmgt.syslogd.SyslogDTOHandler" ref="syslogConnectionHandlerCamel"/>
 
-	<!-- Camel Event marshalling processor -->
+	<!-- Camel Event marshalling processor 
 	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
 		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
-	</bean>
+	</bean>-->
 
 	<!--  <bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogObjectToDTOProcessor"/>-->
 
@@ -43,23 +43,8 @@
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerKafkaProperties" />
 
 		<route id="syslogMarshal">
-			<from uri="seda:handleMessage?concurrentConsumers={{concurrentConsumers}}&amp;size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}" />
+			<from uri="seda:handleMessage?size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}" />
 
-		<!--  	<setHeader headerName="includeRawMessage">
-				<simple resultType="java.lang.Boolean">properties:includeRawMessage</simple>
-			</setHeader>-->
-
-			<!-- Marshal the message to XML
-			<process ref="mapper"/> 
-			<process ref="marshaller"/>-->
-
-<!-- 			<to uri="seda:sendMessage"/> -->
-<!-- 		</route> -->
-
-<!-- 		<route id="syslogSendKafka"> -->
-<!-- 			<from uri="seda:sendMessage?concurrentConsumers=4" /> -->
-
-			<!-- HZN-862: Use ByteArrayPartitioner instead of this key generator -->
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
 			</setHeader>
