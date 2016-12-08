@@ -124,7 +124,7 @@
 
     <route id="toElasticsearch" autoStartup="true" startupOrder="5" errorHandlerRef="noErrorHandler">
         <from uri="seda:ES"/>
-        <log message="ES: ${body.toString()}"/>
+        <log loggingLevel="DEBUG" message="ES: ${body.toString()}"/>
         <to uri="elasticsearch://{{elasticsearchCluster}}?operation=INDEX&amp;ip={{elasticsearchIp}}"/>
     </route>
 
