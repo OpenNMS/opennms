@@ -28,16 +28,15 @@
 
 package org.opennms.netmgt.measurements.model;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.junit.runners.Parameterized;
+import org.opennms.core.test.xml.XmlTestNoCastor;
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
-
-import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class QueryResponseTest extends XmlTestNoCastor<QueryResponse> {
 
@@ -54,9 +53,13 @@ public class QueryResponseTest extends XmlTestNoCastor<QueryResponse> {
 
         response.setTimestamps(Lists.newArrayList(1L, 2L));
 
-        final Map<String, double[]> columns = Maps.newLinkedHashMap();
-        columns.put("x", new double[]{1.0d, 1.1d});
-        columns.put("y", new double[]{2.0d, 2.1d});
+        final String[] labels = {"x", "y"};
+        final QueryResponse.WrappedPrimitive[] columns = {
+                new QueryResponse.WrappedPrimitive(new double[]{1.0d, 1.1d}),
+                new QueryResponse.WrappedPrimitive(new double[]{2.0d, 2.1d}),
+        };
+
+        response.setLabels(labels);
         response.setColumns(columns);
 
         return Arrays.asList(new Object[][]{{

@@ -162,16 +162,16 @@ public class QueryResponse {
         }
     }
 
-    public void setColumns(final Map<String, double[]> columns) {
-        final int N = columns.keySet().size();
-        this.labels = new String[N];
-        this.columns = new WrappedPrimitive[N];
-        int k = 0;
-        for (final Map.Entry<String, double[]> entry : columns.entrySet()) {
-            this.labels[k] = entry.getKey();
-            this.columns[k++] = new WrappedPrimitive(entry.getValue());
-        }
-    }
+//    public void setColumns(final Map<String, double[]> columns) {
+//        final int N = columns.keySet().size();
+//        this.labels = new String[N];
+//        this.columns = new WrappedPrimitive[N];
+//        int k = 0;
+//        for (final Map.Entry<String, double[]> entry : columns.entrySet()) {
+//            this.labels[k] = entry.getKey();
+//            this.columns[k++] = new WrappedPrimitive(entry.getValue());
+//        }
+//    }
 
     @XmlElement(name="constants")
     public List<QueryConstant> getConstants() {
