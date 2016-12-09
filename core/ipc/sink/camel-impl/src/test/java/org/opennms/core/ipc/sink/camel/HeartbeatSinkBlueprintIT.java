@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.camel.Component;
@@ -50,6 +49,7 @@ import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.MessageProducer;
 import org.opennms.core.ipc.sink.api.MessageProducerFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.core.ipc.sink.camel.HeartbeatSinkPerfIT.HeartbeatGenerator;
 import org.opennms.core.ipc.sink.camel.heartbeat.Heartbeat;
 import org.opennms.core.ipc.sink.camel.heartbeat.HeartbeatModule;
 import org.opennms.core.ipc.sink.test.ThreadLockingMessageConsumer;
@@ -61,8 +61,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
-
-import com.google.common.util.concurrent.RateLimiter;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -164,55 +162,22 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
         CompletableFuture<Integer> future = consumer.waitForThreads(NUM_CONSUMER_THREADS);
         consumerManager.registerConsumer(consumer);
 
-        HeartbeatGenerator generator = new HeartbeatGenerator(100.0);
+        MessageProducerFactory remoteMessageProducerFactory = context.getRegistry().lookupByNameAndType("camelRemoteMessageProducerFactory", MessageProducerFactory.class);
+        MessageProducer<Heartbeat> producer = remoteMessageProducerFactory.getProducer(HeartbeatModule.INSTANCE);
+
+        HeartbeatGenerator generator = new HeartbeatGenerator(producer, 100.0);
         generator.start();
 
         // Wait until we have NUM_CONSUMER_THREADS locked
         future.get();
 
         // Take a snooze
-        Thread.sleep(TimeUnit.SECONDS.toMillis(15));
+        Thread.sleep(TimeUnit.SECONDS.toMillis(5));
 
         // Verify that there aren't more than NUM_CONSUMER_THREADS waiting
         assertEquals(0, consumer.getNumExtraThreadsWaiting());
 
         generator.stop();
-    }
-
-    public class HeartbeatGenerator {
-        Thread thread;
-
-        final double rate;
-        final AtomicBoolean stopped = new AtomicBoolean(false);
-
-        public HeartbeatGenerator(double rate) {
-            this.rate = rate;
-        }
-
-        public synchronized void start() {
-            stopped.set(false);
-            final RateLimiter rateLimiter = RateLimiter.create(rate);
-            thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    MessageProducerFactory remoteMessageProducerFactory = context.getRegistry().lookupByNameAndType("camelRemoteMessageProducerFactory", MessageProducerFactory.class);
-                    MessageProducer<Heartbeat> remoteProducer = remoteMessageProducerFactory.getProducer(HeartbeatModule.INSTANCE);
-                    while(!stopped.get()) {
-                        rateLimiter.acquire();
-                        remoteProducer.send(new Heartbeat());
-                    }
-                }
-            });
-            thread.start();
-        }
-
-        public synchronized void stop() throws InterruptedException {
-            stopped.set(true);
-            if (thread != null) {
-                thread.join();
-                thread = null;
-            }
-        }
     }
 
 }
