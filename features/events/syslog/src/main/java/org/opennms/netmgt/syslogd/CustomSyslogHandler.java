@@ -25,9 +25,7 @@ public class CustomSyslogHandler implements SyslogDTOHandler{
 
 	@Override
 	public void handleSyslogDTO(SyslogDTO message) {
-		Map<String, Object> headers = new HashMap<>();
-        headers.put(KafkaConstants.PARTITION_KEY, randomPartitionKeyGenerator.getPartitionKey());
-		template.sendBodyAndHeader(endpoint,JaxbUtils.marshal(message),headers);
+		template.sendBody(endpoint,JaxbUtils.marshal(message));
 		
 	}
 
