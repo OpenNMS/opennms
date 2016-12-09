@@ -161,7 +161,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     }
 
     private void addCriteriaForMonitoringLocation(OnmsCriteria criteria, String monitoringLocation) {
-        criteria.add(Restrictions.ilike("node.location.locationName", monitoringLocation, MatchMode.ANYWHERE));
+        criteria.add(Restrictions.eq("node.location.locationName", monitoringLocation));
     }
 
     private static void addCriteriaForMib2Parm(OnmsCriteria criteria, String mib2Parm, String mib2ParmValue, String mib2ParmMatchType) {
