@@ -27,7 +27,9 @@
 
 	<bean id="partitionKeyGenerator" class="org.opennms.core.camel.RandomPartitionKeyGenerator"/>
 
-	<bean id="syslogConnectionHandlerCamel" class="org.opennms.netmgt.syslogd.CustomSyslogHandler"/>
+	<bean id="syslogConnectionHandlerCamel" class="org.opennms.netmgt.syslogd.CustomSyslogHandler">
+		<property name="randomPartitionKeyGenerator" ref="partitionKeyGenerator"/>
+	</bean>
 
 	<service interface="org.opennms.netmgt.syslogd.SyslogDTOHandler" ref="syslogConnectionHandlerCamel"/>
 
@@ -44,11 +46,7 @@
 
 		<route id="syslogMarshal">
 			<from uri="seda:handleMessage?size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}" />
-
-			<setHeader headerName="kafka.PARTITION_KEY">
-				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
-			</setHeader>
-
+			
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
 			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>
