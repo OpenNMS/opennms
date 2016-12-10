@@ -29,7 +29,7 @@
 package org.opennms.netmgt.collection.support;
 
 import java.util.Date;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -40,7 +40,7 @@ import org.opennms.netmgt.collection.api.ServiceCollector;
  */
 public abstract class MultiResourceCollectionSet<T extends CollectionResource> extends AbstractCollectionSet {
 	private int m_status = ServiceCollector.COLLECTION_FAILED;
-	private final Set<T> m_collectionResources = new HashSet<T>();
+	private final Set<T> m_collectionResources = new LinkedHashSet<T>();
 	private Date m_timestamp;
 
 	@Override
