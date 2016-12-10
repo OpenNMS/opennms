@@ -34,22 +34,33 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.opennms.core.wsman.WSManClientFactory;
+import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
+import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResourceWithoutInstance;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
+import org.opennms.netmgt.config.datacollection.Parameter;
+import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
+import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.config.wsman.Attrib;
 import org.opennms.netmgt.config.wsman.Collection;
 import org.opennms.netmgt.config.wsman.Group;
@@ -57,6 +68,7 @@ import org.opennms.netmgt.config.wsman.WsmanConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy;
 import org.opennms.netmgt.model.OnmsNode;
 import org.w3c.dom.Node;
 
@@ -78,7 +90,7 @@ public class WSManCollectorTest {
         CollectionAgent agent = mock(CollectionAgent.class);
         when(agent.getStorageDir()).thenReturn(new java.io.File(""));
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
-        Resource resource = mock(NodeLevelResource.class);
+        Supplier<Resource> resourceSupplier = () -> mock(NodeLevelResource.class);
 
         XMLTag xmlTag = XMLDoc.newDocument(true).addRoot("body")
                 .addTag("DCIM_ComputerSystem")
@@ -97,7 +109,7 @@ public class WSManCollectorTest {
             .map(el -> (Node)el)
             .collect(Collectors.toList());
 
-        WsManCollector.processEnumerationResults(group, builder, resource, nodes);
+        WsManCollector.processEnumerationResults(group, builder, resourceSupplier, nodes);
 
         // Verify
         Map<String, CollectionAttribute> attributesByName = getAttributes(builder.build());
@@ -133,7 +145,7 @@ public class WSManCollectorTest {
         CollectionAgent agent = mock(CollectionAgent.class);
         when(agent.getStorageDir()).thenReturn(new java.io.File(""));
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
-        Resource resource = mock(NodeLevelResource.class);
+        Supplier<Resource> resourceSupplier = () -> mock(NodeLevelResource.class);
 
         XMLTag xmlTag = XMLDoc.newDocument(true).addRoot("body")
                 .addTag("DCIM_ComputerSystem")
@@ -156,7 +168,7 @@ public class WSManCollectorTest {
             .map(el -> (Node)el)
             .collect(Collectors.toList());
 
-        WsManCollector.processEnumerationResults(group, builder, resource, nodes);
+        WsManCollector.processEnumerationResults(group, builder, resourceSupplier, nodes);
 
         // Verify
         Map<String, CollectionAttribute> attributesByName = getAttributes(builder.build());
@@ -185,7 +197,7 @@ public class WSManCollectorTest {
         CollectionAgent agent = mock(CollectionAgent.class);
         when(agent.getStorageDir()).thenReturn(new java.io.File(""));
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
-        Resource resource = mock(NodeLevelResource.class);
+        Supplier<Resource> resourceSupplier = () -> mock(NodeLevelResource.class);
 
         XMLTag xmlTag = XMLDoc.newDocument(true).addRoot("body")
                 .addTag("DCIM_NumericSensor")
@@ -200,7 +212,7 @@ public class WSManCollectorTest {
             .map(el -> (Node)el)
             .collect(Collectors.toList());
 
-        WsManCollector.processEnumerationResults(group, builder, resource, nodes);
+        WsManCollector.processEnumerationResults(group, builder, resourceSupplier, nodes);
 
         // Verify
         Map<String, CollectionAttribute> attributesByName = getAttributes(builder.build());
@@ -241,12 +253,98 @@ public class WSManCollectorTest {
         assertEquals(0, getAttributes(collectionSet).size());
     }
 
+
+    /**
+     * NMS-8924: Verifies that the generated collection set includes a resource
+     * for every node (XML) in the response.
+     */
+    @Test
+    public void canGenerateManyResources() {
+        // Define our resource type, and create a supplier that returns a new instance on every call
+        NodeLevelResource node = mock(NodeLevelResource.class);
+        ResourceType rt = new ResourceType();
+        rt.setName("wsProcIndex");
+        rt.setLabel("Processor (wsman)");
+        rt.setResourceLabel("Processor (${wmiOSCpuName})");
+        StorageStrategy strategy = new StorageStrategy();
+        strategy.setClazz(SiblingColumnStorageStrategy.class.getCanonicalName());
+        strategy.addParameter(new Parameter("sibling-column-name", "wmiOSCpuName"));
+        rt.setStorageStrategy(strategy);
+        PersistenceSelectorStrategy pstrategy = new PersistenceSelectorStrategy();
+        pstrategy.setClazz(PersistAllSelectorStrategy.class.getCanonicalName());
+        rt.setPersistenceSelectorStrategy(pstrategy);
+        Supplier<Resource> resourceSupplier = () -> new GenericTypeResourceWithoutInstance(node, rt);
+
+        // Define our group
+        Group group = new Group();
+        group.setName("windows-os-wmi-processor");
+        addAttribute(group, "Name", "wmiOSCpuName", "string");
+        addAttribute(group, "InterruptsPersec", "wmiOSCpuIntsPerSec", "Gauge");
+        addAttribute(group, "PercentProcessorTime", "wmiOSCpuPctProcTime", "Gauge");
+        addAttribute(group, "PercentDPCTime", "wmiOSCpuPctDPCTime", "Gauge");
+        addAttribute(group, "PercentInterruptTime", "wmiOSCpuPctIntrTime", "Gauge");
+        addAttribute(group, "PercentUserTime", "wmiOSCpuPctUserTime", "Gauge");
+
+        // Mock the agent
+        CollectionAgent agent = mock(CollectionAgent.class);
+        when(agent.getStorageDir()).thenReturn(new java.io.File(""));
+        CollectionSetBuilder builder = new CollectionSetBuilder(agent);
+
+        // Sample data
+        XMLTag xmlTag = XMLDoc.newDocument(true).addRoot("body")
+                .addTag("Win32_PerfFormattedData_PerfOS_Processor")
+                    .addTag("Name").setText("c0")
+                    .addTag("InterruptsPersec").setText("95")
+                    .gotoRoot()
+                .addTag("Win32_PerfFormattedData_PerfOS_Processor")
+                    .addTag("Name").setText("c1")
+                    .addTag("InterruptsPersec").setText("100");
+
+        List<Node> nodes = xmlTag.gotoRoot().getChildElement().stream()
+            .map(el -> (Node)el)
+            .collect(Collectors.toList());
+
+        // Process the data and generate the collection set
+        WsManCollector.processEnumerationResults(group, builder, resourceSupplier, nodes);
+
+        // Verify the result
+        assertEquals(Arrays.asList(
+                "wsProcIndex/c0/windows-os-wmi-processor/wmiOSCpuName[c0,null]",
+                "wsProcIndex/c0/windows-os-wmi-processor/wmiOSCpuIntsPerSec[null,95.0]",
+                "wsProcIndex/c1/windows-os-wmi-processor/wmiOSCpuName[c1,null]",
+                "wsProcIndex/c1/windows-os-wmi-processor/wmiOSCpuIntsPerSec[null,100.0]"),
+                flatten(builder.build()));
+    }
+
     private static void addAttribute(Group group, String name, String alias, String type) {
         Attrib attr = new Attrib();
         attr.setName(name);
         attr.setAlias(alias);
         attr.setType(type);
         group.addAttrib(attr);
+    }
+
+    private static List<String> flatten(CollectionSet collectionSet) {
+        final List<String> strings = new ArrayList<>();
+        collectionSet.visit(new AbstractCollectionSetVisitor() {
+            CollectionResource resource;
+            AttributeGroup group;
+
+            @Override
+            public void visitResource(CollectionResource resource) {
+                this.resource = resource;
+            }
+            @Override
+            public void visitGroup(AttributeGroup group) {
+                this.group = group;
+            }
+            @Override
+            public void visitAttribute(CollectionAttribute attribute) {
+                strings.add(String.format("%s/%s/%s[%s,%s]", resource.getPath(), group.getName(),
+                        attribute.getName(),attribute.getStringValue(),attribute.getNumericValue()));
+            }
+        });
+        return strings;
     }
 
     private static Map<String, CollectionAttribute> getAttributes(CollectionSet collectionSet) {
