@@ -43,8 +43,8 @@ import org.opennms.core.wsman.WSManEndpoint;
 import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
 import org.opennms.core.wsman.exceptions.InvalidResourceURI;
 import org.opennms.core.wsman.exceptions.WSManException;
-import org.opennms.core.wsman.utils.RetryNTimesLoop;
 import org.opennms.core.wsman.utils.ResponseHandlingUtils;
+import org.opennms.core.wsman.utils.RetryNTimesLoop;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
@@ -52,7 +52,6 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.support.builder.AttributeType;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.CollectionStatus;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResourceWithoutInstance;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
@@ -145,9 +144,8 @@ public class WsManCollector implements ServiceCollector {
             } catch (WSManException e) {
                 // If collecting any individual group fails, mark the collection set as
                 // failed, and abort trying to collect any other groups
-                LOG.warn("Collecting group named {} on {} failed.", group.getName(), agent);
-                collectionSetBuilder.withStatus(CollectionStatus.FAILED);
-                break;
+                throw new CollectionException(String.format("Collecting group '%s' on %s failed with '%s'. See logs for details.",
+                        group.getName(), agent, e.getMessage()), e);
             }
         }
 
