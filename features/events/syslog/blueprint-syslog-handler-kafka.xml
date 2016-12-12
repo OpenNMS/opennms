@@ -44,14 +44,14 @@
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerKafkaProperties" />
 
 		<route id="syslogMarshal">
-			<from uri="seda:handleMessage?size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}&amp;producerType={{producerType}}" />
+			<from uri="seda:handleMessage?size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}" />
 
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
 			</setHeader>
 
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
-			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
+			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder&amp;producerType={{producerType}}"/>
 		</route>
 	</camelContext>
 
