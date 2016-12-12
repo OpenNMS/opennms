@@ -826,7 +826,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
      * @throws RemoteException
      */
     private boolean checkForAttribute(ManagedEntity managedEntity) throws RemoteException {
-        logger.debug("Getting custom attributes from VMware management server {} : ManagedEntity {} (ID: {})", m_hostname, managedEntity.getName(), managedEntity.getMOR().getVal());
+        logger.debug("Getting Managed entity custom attributes from VMware management server {} : ManagedEntity {} (ID: {})", m_hostname, managedEntity.getName(), managedEntity.getMOR().getVal());
         Map<String,String> attribMap = getCustomAttributes(managedEntity);
 
         Set<String> keySet = new TreeSet<String>();
@@ -838,10 +838,13 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
 
 	// Using new parameter specification
         if (!keySet.isEmpty()) {
+       	    logger.debug("_[customAttributeName] provisioning attributes specified. Making sure Managed Entity {} has the requested custom attributes", managedEntity.getName());
             boolean ok = true;
             for (String keyName : keySet) {
+       	        logger.debug("Looking up for custom attribute {} with value {}", keyName, m_args.get(keyName));
                 String attribValue = attribMap.get(StringUtils.removeStart(keyName, "_"));
                 if (attribValue == null) {
+       	            logger.debug("No custom attribute named {} found for Managed Entity {}", keyName, managedEntity.getName());
                     ok = false;
                 } else {
                     String keyValue = m_args.get(keyName);
@@ -859,9 +862,11 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         String key = m_args.get("key");
         String value = m_args.get("value");
         if (key == null && value == null) {
+      	    logger.debug("No custom attributes required for provisioning Managed Entity {}.", managedEntity.getName());
             return true;
         }
         if (key == null || value == null) {
+      	    logger.error("Not provisioning Manged Entiry {}: Using old key/value parameters, but either 'key' or 'value' parameter isn't set.", managedEntity.getName());
             return false;
         }
         String attribValue = attribMap.get(key);
@@ -873,6 +878,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             }
         }
 
+    	logger.debug("No custom attributes named {} found for Managed Entity {}", key, managedEntity.getName());
         return false;
     }
 
