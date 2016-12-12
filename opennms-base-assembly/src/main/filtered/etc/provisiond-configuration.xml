@@ -108,6 +108,12 @@
          Bound this services to imported host systems, values should be seperated by ','.
          Default: VMware-ManagedEntity,VMware-HostSystem,VMwareCim-HostSystem
 
+       username -
+         The username to use to authenticate against the VMware vCenter server. 
+
+       password - 
+         The password to use to authenticate against the VMware vCenter server       
+ 
        key -
          Use this key to lookup a user defined attributes for entities being imported, only virtual machines
          and host systems with a matching key=value pair will be imported. Can only be in conjunction with the 'value'
@@ -136,6 +142,7 @@
        vmware://vcenter.mydomain.org?importHostPoweredOff=true
        vmware://172.16.123.100/vCenterImport?key=shouldImport;value=1
        vmware://172.16.123.100/vCenterImport?_shouldImport=1
+       vmware://172.16.123.100/vCenterImport?_shouldImport=1;username=opennms;password=secret
        vmware://[2001:db8:0:8d3:0:8a2e:70:7344]?virtualMachineServices=VM-SERVICE1,VM-SERVICE2
 
   <requisition-def import-name="the-import-name-to-use" import-url-resource="vmware://ip-address-or-hostname/foreignSource-Name?parameters">
