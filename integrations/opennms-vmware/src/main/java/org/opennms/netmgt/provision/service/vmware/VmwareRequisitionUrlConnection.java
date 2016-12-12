@@ -134,8 +134,8 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
 
         m_args = getQueryArgs();
 
-        m_username = getQueryParameter("username");
-        m_password = getQueryParameter("password");
+        m_username = m_args.get("username");
+        m_password = m_args.get("password");
 
         logger.debug("Found username parameter {}", (m_username == null) ? "NULL" : m_username );
 
@@ -206,20 +206,6 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             }
         } else {
             throw new MalformedURLException("Error processing path element of URL (vmware://username:password@host[/foreign-source]?keyA=valueA;keyB=valueB;...)");
-        }
-    }
-
-    /**
-     * Returns a parameter's value.
-     *
-     * @param key          the parameter's name
-     * @return String 	   the parameter's value
-     */
-    private String getQueryParameter(String key) {
-        if (m_args.get(key) == null) {
-            return null;
-        } else {
-            return m_args.get(key);
         }
     }
 
