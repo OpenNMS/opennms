@@ -205,7 +205,7 @@ public class HeartbeatSinkPerfIT extends CamelBlueprintTest {
         }
     }
 
-    public static class HeartbeatConsumer implements MessageConsumer<Heartbeat> {
+    public static class HeartbeatConsumer implements MessageConsumer<Heartbeat, Heartbeat> {
 
         private final HeartbeatModule heartbeatModule;
         private final Meter receivedMeter;
@@ -216,7 +216,7 @@ public class HeartbeatSinkPerfIT extends CamelBlueprintTest {
         }
 
         @Override
-        public SinkModule<Heartbeat> getModule() {
+        public SinkModule<Heartbeat, Heartbeat> getModule() {
             return heartbeatModule;
         }
 

@@ -26,28 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.mock;
+package org.opennms.core.ipc.sink.aggregation;
 
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
+import org.opennms.core.ipc.sink.api.MessageProducer;
 import org.opennms.core.ipc.sink.api.SinkModule;
 
-public class MockMessageConsumerManager implements MessageConsumerManager {
+/**
+ * A {@link MessageProducer} that applies the {@link SinkModule}'s {@link AggregationPolicy}
+ * using the {@link Aggregator}.
+ *
+ * @author jwhite
+ */
+public abstract class AggregatingMessageProducer<S extends Message, T extends Message> implements MessageProducer<S> {
 
-    @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message) {
-        // pass
+    private final Aggregator<S,T> aggregator;
+
+    public AggregatingMessageProducer(SinkModule<S, T> module) {
+        aggregator = new Aggregator<>(module, this);
     }
 
     @Override
-    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
+    public void send(S message) {
+        final T bucket = aggregator.aggregate(message);
+        if (bucket != null) {
+            // This bucket is ready to be dispatched
+            dispatch(bucket);
+        }
     }
+
+    public abstract void dispatch(T message);
 
     @Override
-    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
+    public void close() throws Exception {
+        aggregator.close();
     }
-
 }

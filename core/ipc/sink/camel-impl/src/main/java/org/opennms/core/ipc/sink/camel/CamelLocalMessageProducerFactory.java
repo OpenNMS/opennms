@@ -28,10 +28,9 @@
 
 package org.opennms.core.ipc.sink.camel;
 
-import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageProducer;
-import org.opennms.core.ipc.sink.api.MessageProducerFactory;
+import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.core.ipc.sink.common.AbstractMessageProducerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -39,19 +38,13 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author jwhite
  */
-public class CamelLocalMessageProducerFactory implements MessageProducerFactory {
+public class CamelLocalMessageProducerFactory extends AbstractMessageProducerFactory<Void> {
 
     @Autowired
     private CamelMessageConsumerManager messageConsumerManager;
 
     @Override
-    public <T extends Message> MessageProducer<T> getProducer(SinkModule<T> module) {
-        return new MessageProducer<T>() {
-            @Override
-            public void send(T message) {
-                messageConsumerManager.dispatch(module, message);
-            }
-        };
+    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
+        messageConsumerManager.dispatch(module, message);
     }
-
 }

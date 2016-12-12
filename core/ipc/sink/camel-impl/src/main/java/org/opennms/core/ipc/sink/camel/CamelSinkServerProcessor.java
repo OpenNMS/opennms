@@ -38,9 +38,9 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 public class CamelSinkServerProcessor implements Processor {
 
     private final CamelMessageConsumerManager consumerManager;
-    private final SinkModule<Message> module;
+    private final SinkModule<?, Message> module;
 
-    public CamelSinkServerProcessor(CamelMessageConsumerManager consumerManager, SinkModule<Message> module) {
+    public CamelSinkServerProcessor(CamelMessageConsumerManager consumerManager, SinkModule<?, Message> module) {
         this.consumerManager = Objects.requireNonNull(consumerManager);
         this.module = Objects.requireNonNull(module);
     }

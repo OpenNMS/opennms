@@ -26,28 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.mock;
+package org.opennms.core.ipc.sink.api;
 
-import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.core.ipc.sink.api.SinkModule;
+/**
+ * Defines should messages should be aggregated.
+ *
+ * @author jwhite
+ *
+ * @param <S> type of message that will be sent by the producers
+ * @param <T> type of message that will be received by the consumers
+ */
+public interface AggregationPolicy<S, T extends Message> {
 
-public class MockMessageConsumerManager implements MessageConsumerManager {
+    int getCompletionSize();
 
-    @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message) {
-        // pass
-    }
+    int getCompletionIntervalMs();
 
-    @Override
-    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
-    }
+    Object key(S message);
 
-    @Override
-    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
-    }
+    T aggregate(T oldBucket, S newMessage);
 
 }

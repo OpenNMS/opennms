@@ -1,6 +1,5 @@
 package org.opennms.core.ipc.sink.test;
 
-import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageProducer;
 import org.opennms.test.ThreadLocker;
 
@@ -10,9 +9,14 @@ import org.opennms.test.ThreadLocker;
  *
  * @author jwhite
  */
-public class ThreadLockingMessageProducer<T extends Message> extends ThreadLocker implements MessageProducer<T> {
+public class ThreadLockingMessageProducer<S> extends ThreadLocker implements MessageProducer<S> {
     @Override
-    public void send(T message) {
+    public void send(S message) {
         park();
+    }
+
+    @Override
+    public void close() throws Exception {
+        // pass
     }
 }

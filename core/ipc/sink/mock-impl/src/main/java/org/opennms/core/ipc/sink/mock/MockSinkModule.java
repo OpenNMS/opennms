@@ -28,26 +28,34 @@
 
 package org.opennms.core.ipc.sink.mock;
 
+import org.opennms.core.ipc.sink.api.AggregationPolicy;
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 
-public class MockMessageConsumerManager implements MessageConsumerManager {
+public class MockSinkModule<S extends Message, T extends Message> implements SinkModule<S, T> {
 
     @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message) {
-        // pass
+    public String getId() {
+        return getClass().getCanonicalName();
     }
 
     @Override
-    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
+    public int getNumConsumerThreads() {
+        return 1;
     }
 
     @Override
-    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
+    public String marshal(T message) {
+        return null;
     }
 
+    @Override
+    public T unmarshal(String message) {
+        return null;
+    }
+
+    @Override
+    public AggregationPolicy<S, T> getAggregationPolicy() {
+        return null;
+    }
 }

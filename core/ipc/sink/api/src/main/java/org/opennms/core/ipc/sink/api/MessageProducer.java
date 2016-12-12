@@ -35,8 +35,8 @@ package org.opennms.core.ipc.sink.api;
  *
  * @author jwhite
  */
-public interface MessageProducer<T extends Message> {
+public interface MessageProducer<S> extends AutoCloseable {
 
-    void send(T message);
+    void send(S message);
 
 }

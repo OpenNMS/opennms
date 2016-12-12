@@ -62,7 +62,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
-public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, InitializingBean {
+public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, MinionIdentityDTO>, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(HeartbeatConsumer.class);
 
@@ -239,8 +239,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO>, In
     }
 
     @Override
-    public SinkModule<MinionIdentityDTO> getModule() {
+    public SinkModule<MinionIdentityDTO, MinionIdentityDTO> getModule() {
         return heartbeatModule;
     }
-
 }

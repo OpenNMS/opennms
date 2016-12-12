@@ -35,6 +35,6 @@ package org.opennms.core.ipc.sink.api;
  */
 public interface MessageProducerFactory {
 
-    <T extends Message> MessageProducer<T> getProducer(SinkModule<T> module);
+    <S extends Message, T extends Message> MessageProducer<S> getProducer(SinkModule<S, T> module);
 
 }

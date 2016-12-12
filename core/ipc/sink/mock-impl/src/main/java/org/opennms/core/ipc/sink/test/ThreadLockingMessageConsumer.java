@@ -41,16 +41,16 @@ import org.opennms.test.ThreadLocker;
  *
  * @author jwhite
  */
-public class ThreadLockingMessageConsumer<T extends Message> extends ThreadLocker implements MessageConsumer<T> {
+public class ThreadLockingMessageConsumer<S extends Message, T extends Message> extends ThreadLocker implements MessageConsumer<S, T> {
 
-    private final SinkModule<T> module;
+    private final SinkModule<S, T> module;
 
-    public ThreadLockingMessageConsumer(SinkModule<T> module) {
+    public ThreadLockingMessageConsumer(SinkModule<S, T> module) {
         this.module = Objects.requireNonNull(module);
     }
 
     @Override
-    public SinkModule<T> getModule() {
+    public SinkModule<S, T> getModule() {
         return module;
     }
 

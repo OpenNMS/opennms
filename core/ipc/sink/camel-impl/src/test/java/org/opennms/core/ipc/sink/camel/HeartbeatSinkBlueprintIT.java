@@ -123,9 +123,9 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
         HeartbeatModule module = new HeartbeatModule();
 
         AtomicInteger heartbeatCount = new AtomicInteger();
-        consumerManager.registerConsumer(new MessageConsumer<Heartbeat>() {
+        consumerManager.registerConsumer(new MessageConsumer<Heartbeat, Heartbeat>() {
             @Override
-            public SinkModule<Heartbeat> getModule() {
+            public SinkModule<Heartbeat, Heartbeat> getModule() {
                 return module;
             }
 
@@ -156,7 +156,7 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
             }
         };
 
-        ThreadLockingMessageConsumer<Heartbeat> consumer =
+        ThreadLockingMessageConsumer<Heartbeat, Heartbeat> consumer =
                 new ThreadLockingMessageConsumer<>(parallelHeartbeatModule);
 
         CompletableFuture<Integer> future = consumer.waitForThreads(NUM_CONSUMER_THREADS);

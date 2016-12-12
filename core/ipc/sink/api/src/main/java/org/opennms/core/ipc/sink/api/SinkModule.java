@@ -29,13 +29,18 @@
 package org.opennms.core.ipc.sink.api;
 
 /**
- * Defines how the messages will be routed and marshaled/unmarshaled over the wire.
+ * Defines how the messages will be routed and marshalled/unmarshalled over the wire.
+ *
+ * Messages can be aggregated by an optional {@link AggregationPolicy}.
+ * If aggregation is not used, the message type sent by the producers must match
+ * the message type received by the consumers.
  *
  * @author jwhite
  *
- * @param <T> type of message
+ * @param <S> type of message that will be sent by the producers
+ * @param <T> type of message that will be received by the consumers
  */
-public interface SinkModule<T extends Message> {
+public interface SinkModule<S extends Message, T extends Message> {
 
     /**
      * Globally unique identifier.
@@ -58,5 +63,16 @@ public interface SinkModule<T extends Message> {
      * Unmarshals the message from a string.
      */
     T unmarshal(String message);
+
+    /**
+     * Defines how messages should be combined, and when they
+     * should be "released".
+     *
+     * Modules that do not wish to use aggregation can return {@code null}.
+     *
+     * @return the {@link AggregationPolicy} used to combine messages, or {@code null}
+     * if the messages should not be combined.
+     */
+    AggregationPolicy<S,T> getAggregationPolicy();
 
 }
