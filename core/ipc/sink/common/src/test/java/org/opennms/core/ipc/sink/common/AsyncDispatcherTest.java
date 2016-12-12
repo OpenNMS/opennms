@@ -50,7 +50,7 @@ public class AsyncDispatcherTest {
 
     private SinkModule<MyMessage, MyMessage> module = new MockSinkModule<>();
 
-    @Test
+    @Test(timeout=3*60*1000)
     public void testConcurrentAndQueuing() throws Exception {
         final int QUEUE_SIZE = 100;
         final int NUM_THREADS = 16;
@@ -103,9 +103,7 @@ public class AsyncDispatcherTest {
         asyncDispatcher.close();
     }
 
-    private static class MyMessage implements Message {
-        
-    }
+    private static class MyMessage implements Message { }
 
     public static class ThreadLockingDispatcherFactory extends AbstractMessageDispatcherFactory<Void> {
         private final AtomicInteger numMessageDispatched = new AtomicInteger(0);
@@ -120,7 +118,7 @@ public class AsyncDispatcherTest {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <S extends Message, T extends Message> SyncDispatcher<S> createSyncDispatcher(SinkModule<S, T> module) {
+        protected <S extends Message, T extends Message> SyncDispatcher<S> createSyncDispatcher(DispatcherState<Void,S,T> state) {
             return (ThreadLockingSyncDispatcher<S>)threadLockingSyncDispatcher;
         }
 

@@ -40,6 +40,8 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 
+import com.codahale.metrics.JmxReporter;
+
 /**
  * Message dispatcher that sends messages via JMS.
  *
@@ -53,6 +55,8 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     @EndpointInject(uri = "direct:sendMessage", context = "sinkClient")
     private Endpoint endpoint;
 
+    private JmxReporter reporter;
+
     public <S extends Message, T extends Message> Map<String, Object> getModuleMetadata(SinkModule<S, T> module) {
         // Pre-compute the JMS headers instead of recomputing them every dispatch
         final JmsQueueNameFactory queueNameFactory = new JmsQueueNameFactory(
@@ -65,5 +69,19 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     @Override
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Map<String, Object> headers, T message) {
         template.sendBodyAndHeaders(endpoint, module.marshal((T)message), headers);
+    }
+
+    public void registerJmxReporter() {
+        reporter = JmxReporter.forRegistry(getMetrics())
+                .inDomain(CamelLocalMessageDispatcherFactory.class.getPackage().getName())
+                .build();
+        reporter.start();
+    }
+
+    public void unregisterJmxReporter() {
+        if (reporter != null) {
+            reporter.close();
+            reporter = null;
+        }
     }
 }

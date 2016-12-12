@@ -41,14 +41,16 @@ import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
-public class AsyncDispatcherImpl<S extends Message, T extends Message> implements AsyncDispatcher<S>  {
+public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implements AsyncDispatcher<S>  {
 
     private static final Logger LOG = LoggerFactory.getLogger(AsyncDispatcherImpl.class);
 
@@ -62,23 +64,32 @@ public class AsyncDispatcherImpl<S extends Message, T extends Message> implement
     final LinkedBlockingQueue<Runnable> queue;
     final ExecutorService executor;
 
-    public AsyncDispatcherImpl(SinkModule<S, T> module, AsyncPolicy asyncPolicy, SyncDispatcher<S> syncDispatcher) {
-        Objects.requireNonNull(module);
+    public AsyncDispatcherImpl(DispatcherState<W,S,T> state, AsyncPolicy asyncPolicy, SyncDispatcher<S> syncDispatcher) {
+        Objects.requireNonNull(state);
         Objects.requireNonNull(asyncPolicy);
         this.syncDispatcher = Objects.requireNonNull(syncDispatcher);
 
         queue = new LinkedBlockingQueue<Runnable>(asyncPolicy.getQueueSize());
+        state.getMetrics().register(MetricRegistry.name(state.getModule().getId(), "queue-size"), new Gauge<Integer>() {
+            @Override
+            public Integer getValue() {
+                return queue.size();
+            }
+        });
+        final Counter droppedCounter = state.getMetrics().counter(MetricRegistry.name(state.getModule().getId(), "dropped"));
+
         executor = new ThreadPoolExecutor(
                 asyncPolicy.getNumThreads(),
                 asyncPolicy.getNumThreads(),
                 1000L,
                 TimeUnit.MILLISECONDS,
                 queue,
-                new LogPreservingThreadFactory("OpenNMS.Sink.AsyncDispatcher." + module.getId(), Integer.MAX_VALUE),
+                new LogPreservingThreadFactory("OpenNMS.Sink.AsyncDispatcher." + state.getModule().getId(), Integer.MAX_VALUE),
                 new RejectedExecutionHandler() {
                     @Override
                     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                        rateLimittedLogger.warn("Task was rejected. Dropping message for {}.", module.getId());
+                        rateLimittedLogger.warn("Task was rejected. Dropping message for {}.", state.getModule().getId());
+                        droppedCounter.inc();
                     }
                 }
             );
@@ -102,6 +113,4 @@ public class AsyncDispatcherImpl<S extends Message, T extends Message> implement
         syncDispatcher.close();
         executor.shutdown();
     }
-
-
 }

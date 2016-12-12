@@ -31,14 +31,17 @@ package org.opennms.core.ipc.sink.camel;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.codahale.metrics.JmxReporter;
 
 /**
  * Message producer that dispatches the messages directly the consumers.
  *
  * @author jwhite
  */
-public class CamelLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> {
+public class CamelLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> implements InitializingBean {
 
     @Autowired
     private CamelMessageConsumerManager messageConsumerManager;
@@ -46,5 +49,13 @@ public class CamelLocalMessageDispatcherFactory extends AbstractMessageDispatche
     @Override
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
         messageConsumerManager.dispatch(module, message);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        final JmxReporter reporter = JmxReporter.forRegistry(getMetrics())
+                .inDomain(CamelLocalMessageDispatcherFactory.class.getPackage().getName())
+                .build();
+        reporter.start();
     }
 }

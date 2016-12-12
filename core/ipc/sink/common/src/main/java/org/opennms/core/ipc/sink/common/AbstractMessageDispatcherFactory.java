@@ -36,43 +36,89 @@ import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer.Context;
+
+/**
+ * This class does all the hard work of building and maintaining the state of the message
+ * dispatchers so that concrete implementations only need to focus on dispatching the messages.
+ *
+ * Different types of dispatches are created based on whether or not the module is using aggregation.
+ *
+ * Asynchronous dispatchers use a queue and a thread pool to delegate to a suitable synchronous dispatcher.
+ *
+ * @author jwhite
+ *
+ * @param <W> type of module specific state or meta-data, use <code>Void</code> if none is used
+ */
 public abstract class AbstractMessageDispatcherFactory<W> implements MessageDispatcherFactory {
 
     public abstract <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, W metadata, T message);
 
+    private final MetricRegistry metrics = new MetricRegistry();
+
+    /**
+     * Invokes dispatch within a timer context.
+     */
+    private <S extends Message, T extends Message> void timedDispatch(DispatcherState<W, S,T> state, T message) {
+        try (Context ctx = state.getDispatchTimer().time()) {
+            dispatch(state.getModule(), state.getMetaData(), message);
+        }
+    }
+
+    /**
+     * Optionally build meta-data or state information for the module which will
+     * be passed on all the calls to {@link #dispatch}.
+     *
+     * This is useful for calculating things like message headers which are
+     * re-used on every dispatch.
+     *
+     * @param module
+     * @return
+     */
     public <S extends Message, T extends Message> W getModuleMetadata(SinkModule<S, T> module) {
         return null;
     }
 
     @Override
     public <S extends Message, T extends Message> SyncDispatcher<S> createSyncDispatcher(SinkModule<S, T> module) {
-        final W metadata = getModuleMetadata(module);
-        if (module.getAggregationPolicy() != null) {
-            return new AggregatingMessageProducer<S,T>(module) {
-                @Override
-                public void dispatch(T message) {
-                    AbstractMessageDispatcherFactory.this.dispatch(module, metadata, message);
-                }
-            };
-        } else {
-            // No aggregation strategy is set, dispatch directly to reduce overhead
-            return new DirectDispatcher<>(module, metadata);
-        }
+        final DispatcherState<W,S,T> state = new DispatcherState<>(this, module);
+        return createSyncDispatcher(state);
     }
 
     @Override
     public <S extends Message, T extends Message> AsyncDispatcher<S> createAsyncDispatcher(SinkModule<S, T> module, AsyncPolicy asyncPolicy) {
-        final SyncDispatcher<S> syncDispatcher = createSyncDispatcher(module);
-        return new AsyncDispatcherImpl<>(module, asyncPolicy, syncDispatcher);
+        final DispatcherState<W,S,T> state = new DispatcherState<>(this, module);
+        final SyncDispatcher<S> syncDispatcher = createSyncDispatcher(state);
+        return new AsyncDispatcherImpl<>(state, asyncPolicy, syncDispatcher);
+    }
+
+    protected <S extends Message, T extends Message> SyncDispatcher<S> createSyncDispatcher(DispatcherState<W,S,T> state) {
+        final SinkModule<S,T> module = state.getModule();
+        if (module.getAggregationPolicy() != null) {
+            // Aggregate the message before dispatching them
+            return new AggregatingMessageProducer<S,T>(module) {
+                @Override
+                public void dispatch(T message) {
+                    AbstractMessageDispatcherFactory.this.timedDispatch(state, message);
+                }
+                @Override
+                public void close() throws Exception {
+                    super.close();
+                    state.close();
+                }
+            };
+        } else {
+            // No aggregation strategy is set, dispatch directly to reduce overhead
+            return new DirectDispatcher<>(state);
+        }
     }
 
     private class DirectDispatcher<S extends Message, T extends Message> implements SyncDispatcher<S> {
-        private final SinkModule<S, T> module;
-        private final W metadata;
+        private final DispatcherState<W, S, T> state;
 
-        public DirectDispatcher(SinkModule<S, T> module, W metadata) {
-            this.module = module;
-            this.metadata = metadata;
+        public DirectDispatcher(DispatcherState<W, S,T> state) {
+            this.state = state;
         }
 
         @SuppressWarnings("unchecked")
@@ -80,13 +126,16 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
         public void send(S message) {
             // Cast S to T, modules that do not use an AggregationPolicty
             // must have the same types for S and T
-            AbstractMessageDispatcherFactory.this.dispatch(module, metadata, (T)message);
+            AbstractMessageDispatcherFactory.this.timedDispatch(state, (T)message);
         }
 
         @Override
-        public void close() {
-            // pass
+        public void close() throws Exception {
+            state.close();
         }
     }
 
+    protected MetricRegistry getMetrics() {
+        return metrics;
+    }
 }
