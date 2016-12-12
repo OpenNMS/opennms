@@ -813,7 +813,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
      * <p>The new implementation allows the user to use a regular expression for the value:</p>
      * <ul><li>key=location&value=~North.*</li></ul>
      * <p>As an alternative, now it is possible to specify several parameters on the query.
-     * The rule is to add an underscore character ('_') before the patameter's name and use similar rules for the value:</p>
+     * The rule is to add an underscore character ('_') before the parameter's name and use similar rules for the value:</p>
      * <ul><li>_location=~North.*</li></ul>
      * <p>With the new parameter specification, it is possible to pass several attributes. The managed entity must match
      * all of them to be accepted.</p>
@@ -836,6 +836,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             }
         }
 
+	// Using new parameter specification
         if (!keySet.isEmpty()) {
             boolean ok = true;
             for (String keyName : keySet) {
@@ -854,20 +855,15 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             return ok;
         }
 
+        // Using old parameter specification
         String key = m_args.get("key");
         String value = m_args.get("value");
-
-        // if key/value is not set, return true
         if (key == null && value == null) {
             return true;
         }
-
-        // if only key or value is set, return false
         if (key == null || value == null) {
             return false;
         }
-
-        // now search for the correct key/value pair
         String attribValue = attribMap.get(key);
         if (attribValue != null) {
             if (value.startsWith("~")) {
