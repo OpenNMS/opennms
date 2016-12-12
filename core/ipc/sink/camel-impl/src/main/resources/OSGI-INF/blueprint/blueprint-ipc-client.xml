@@ -17,8 +17,8 @@
     <!-- Provided by minion-core -->
     <reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)" />
 
-    <bean id="camelRemoteMessageProducerFactory" class="org.opennms.core.ipc.sink.camel.CamelRemoteMessageProducerFactory" />
-    <service ref="camelRemoteMessageProducerFactory" interface="org.opennms.core.ipc.sink.api.MessageProducerFactory"/>
+    <bean id="camelRemoteMessageDispatcherFactory" class="org.opennms.core.ipc.sink.camel.CamelRemoteMessageDispatcherFactory" />
+    <service ref="camelRemoteMessageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
 
     <camelContext id="sinkClient" xmlns="http://camel.apache.org/schema/blueprint">
       <route id="sinkClient">

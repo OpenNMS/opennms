@@ -46,9 +46,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.core.ipc.sink.api.MessageProducer;
-import org.opennms.core.ipc.sink.api.MessageProducerFactory;
+import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.core.ipc.sink.api.SyncDispatcher;
 import org.opennms.core.ipc.sink.camel.HeartbeatSinkPerfIT.HeartbeatGenerator;
 import org.opennms.core.ipc.sink.camel.heartbeat.Heartbeat;
 import org.opennms.core.ipc.sink.camel.heartbeat.HeartbeatModule;
@@ -83,7 +83,7 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
     private Component queuingservice;
 
     @Autowired
-    private MessageProducerFactory localMessageProducerFactory;
+    private MessageDispatcherFactory localMessageDispatcherFactory;
 
     @Autowired
     private MessageConsumerManager consumerManager;
@@ -135,13 +135,13 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
             }
         });
 
-        MessageProducer<Heartbeat> localProducer = localMessageProducerFactory.getProducer(module);
-        localProducer.send(new Heartbeat());
+        SyncDispatcher<Heartbeat> localDispatcher = localMessageDispatcherFactory.createSyncDispatcher(module);
+        localDispatcher.send(new Heartbeat());
         await().atMost(1, MINUTES).until(() -> heartbeatCount.get(), equalTo(1));
 
-        MessageProducerFactory remoteMessageProducerFactory = context.getRegistry().lookupByNameAndType("camelRemoteMessageProducerFactory", MessageProducerFactory.class);
-        MessageProducer<Heartbeat> remoteProducer = remoteMessageProducerFactory.getProducer(module);
-        remoteProducer.send(new Heartbeat());
+        MessageDispatcherFactory remoteMessageDispatcherFactory = context.getRegistry().lookupByNameAndType("camelRemoteMessageDispatcherFactory", MessageDispatcherFactory.class);
+        SyncDispatcher<Heartbeat> remoteDispatcher = remoteMessageDispatcherFactory.createSyncDispatcher(module);
+        remoteDispatcher.send(new Heartbeat());
         await().atMost(1, MINUTES).until(() -> heartbeatCount.get(), equalTo(2));
     }
 
@@ -162,10 +162,10 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
         CompletableFuture<Integer> future = consumer.waitForThreads(NUM_CONSUMER_THREADS);
         consumerManager.registerConsumer(consumer);
 
-        MessageProducerFactory remoteMessageProducerFactory = context.getRegistry().lookupByNameAndType("camelRemoteMessageProducerFactory", MessageProducerFactory.class);
-        MessageProducer<Heartbeat> producer = remoteMessageProducerFactory.getProducer(HeartbeatModule.INSTANCE);
+        MessageDispatcherFactory remoteMessageDispatcherFactory = context.getRegistry().lookupByNameAndType("camelRemoteMessageDispatcherFactory", MessageDispatcherFactory.class);
+        SyncDispatcher<Heartbeat> dispatcher = remoteMessageDispatcherFactory.createSyncDispatcher(HeartbeatModule.INSTANCE);
 
-        HeartbeatGenerator generator = new HeartbeatGenerator(producer, 100.0);
+        HeartbeatGenerator generator = new HeartbeatGenerator(dispatcher, 100.0);
         generator.start();
 
         // Wait until we have NUM_CONSUMER_THREADS locked

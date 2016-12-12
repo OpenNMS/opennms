@@ -42,14 +42,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageProducer;
-import org.opennms.core.ipc.sink.api.MessageProducerFactory;
+import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.core.ipc.sink.common.AbstractMessageProducerFactory;
+import org.opennms.core.ipc.sink.api.SyncDispatcher;
+import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 
 public class AggregationTest {
 
@@ -60,10 +59,9 @@ public class AggregationTest {
 
     private final List<Object> dispatchedMessages = new ArrayList<>();
 
-    private final MessageProducerFactory capturingProducerFactory = new AbstractMessageProducerFactory<Void>() {
+    private final MessageDispatcherFactory capturingMessageDispatcherFactory = new AbstractMessageDispatcherFactory<Void>() {
         @Override
-        public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata,
-                T message) {
+        public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
             dispatchedMessages.add(message);
         }
     };
@@ -71,11 +69,11 @@ public class AggregationTest {
     @Test
     public void noAggregateUsingIdentityFunction() throws Exception {
         SinkModuleWithIdentityAggregate aggregatingSinkModule = new SinkModuleWithIdentityAggregate();
-        try(MessageProducer<UDPPacketLog> producer = capturingProducerFactory.getProducer(aggregatingSinkModule)) {
+        try(SyncDispatcher<UDPPacketLog> dispatcher = capturingMessageDispatcherFactory.createSyncDispatcher(aggregatingSinkModule)) {
             for (byte i = 0; i < 10; i++) {
                 UDPPacket packet = new UDPPacket(localhost, ByteBuffer.wrap(new byte[]{i}));
                 UDPPacketLog packetLog = new UDPPacketLog(packet);
-                producer.send(packetLog);
+                dispatcher.send(packetLog);
                 // The same message should have been immediately dispatched
                 assertEquals(dispatchedMessages.get(i), packetLog);
             }
@@ -85,10 +83,10 @@ public class AggregationTest {
     @Test
     public void noAggregateUsingMapFunction() throws Exception {
         SinkModuleWithMappingAggregate aggregatingSinkModule = new SinkModuleWithMappingAggregate();
-        try(MessageProducer<UDPPacket> producer = capturingProducerFactory.getProducer(aggregatingSinkModule)) {
+        try(SyncDispatcher<UDPPacket> dispatcher = capturingMessageDispatcherFactory.createSyncDispatcher(aggregatingSinkModule)) {
             for (byte i = 0; i < 10; i++) {
                 UDPPacket packet = new UDPPacket(localhost, ByteBuffer.wrap(new byte[]{i}));
-                producer.send(packet);
+                dispatcher.send(packet);
                 // The message should have been wrapped in a UDPPacketLog
                 // and immediately dispatched
                 UDPPacketLog packetLog = new UDPPacketLog(packet);
@@ -100,10 +98,10 @@ public class AggregationTest {
     @Test
     public void aggregateWithoutInterval() throws Exception {
         SinkModuleWithAggregateNoInterval aggregatingSinkModule = new SinkModuleWithAggregateNoInterval();
-        try(MessageProducer<UDPPacket> producer = capturingProducerFactory.getProducer(aggregatingSinkModule)) {
+        try(SyncDispatcher<UDPPacket> dispatcher = capturingMessageDispatcherFactory.createSyncDispatcher(aggregatingSinkModule)) {
             for (byte i = 0; i < 10 * COMPLETION_SIZE; i++) {
                 UDPPacket packet = new UDPPacket(localhost, ByteBuffer.wrap(new byte[]{(byte)i}));
-                producer.send(packet);
+                dispatcher.send(packet);
             }
             // The message should have been aggregated
             assertEquals(10, dispatchedMessages.size());
@@ -113,11 +111,11 @@ public class AggregationTest {
     @Test
     public void aggregateWithInterval() throws Exception {
         SinkModuleWithAggregateAndInterval aggregatingSinkModule = new SinkModuleWithAggregateAndInterval();
-        try(MessageProducer<UDPPacket> producer = capturingProducerFactory.getProducer(aggregatingSinkModule)) {
+        try(SyncDispatcher<UDPPacket> dispatcher = capturingMessageDispatcherFactory.createSyncDispatcher(aggregatingSinkModule)) {
             // Send less than COMPLETION_SIZE packets
             assertThat(COMPLETION_SIZE, greaterThan(1));
             UDPPacket packet = new UDPPacket(localhost, ByteBuffer.wrap(new byte[]{(byte)42}));
-            producer.send(packet);
+            dispatcher.send(packet);
 
             // Now wait until the aggregate is dispatched
             await().atMost(4 * COMPLETION_INTERVAL_MS, MILLISECONDS)
@@ -193,7 +191,7 @@ public class AggregationTest {
         }
     }
 
-    private static class SinkModuleWithIdentityAggregate extends AbstractSinkModule<UDPPacketLog, UDPPacketLog> {
+    public static class SinkModuleWithIdentityAggregate extends AbstractSinkModule<UDPPacketLog, UDPPacketLog> {
         @Override
         public AggregationPolicy<UDPPacketLog, UDPPacketLog> getAggregationPolicy() {
             return new IdentityAggregationPolicy<UDPPacketLog>();

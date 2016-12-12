@@ -29,12 +29,14 @@
 package org.opennms.core.ipc.sink.common;
 
 import org.opennms.core.ipc.sink.aggregation.AggregatingMessageProducer;
+import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageProducer;
-import org.opennms.core.ipc.sink.api.MessageProducerFactory;
+import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.core.ipc.sink.api.SyncDispatcher;
 
-public abstract class AbstractMessageProducerFactory<W> implements MessageProducerFactory {
+public abstract class AbstractMessageDispatcherFactory<W> implements MessageDispatcherFactory {
 
     public abstract <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, W metadata, T message);
 
@@ -43,26 +45,32 @@ public abstract class AbstractMessageProducerFactory<W> implements MessageProduc
     }
 
     @Override
-    public <S extends Message, T extends Message> MessageProducer<S> getProducer(SinkModule<S, T> module) {
+    public <S extends Message, T extends Message> SyncDispatcher<S> createSyncDispatcher(SinkModule<S, T> module) {
         final W metadata = getModuleMetadata(module);
         if (module.getAggregationPolicy() != null) {
             return new AggregatingMessageProducer<S,T>(module) {
                 @Override
                 public void dispatch(T message) {
-                    AbstractMessageProducerFactory.this.dispatch(module, metadata, message);
+                    AbstractMessageDispatcherFactory.this.dispatch(module, metadata, message);
                 }
             };
         } else {
             // No aggregation strategy is set, dispatch directly to reduce overhead
-            return new DirectMessageProducer<>(module, metadata);
+            return new DirectDispatcher<>(module, metadata);
         }
     }
 
-    private class DirectMessageProducer<S extends Message, T extends Message> implements MessageProducer<S> {
+    @Override
+    public <S extends Message, T extends Message> AsyncDispatcher<S> createAsyncDispatcher(SinkModule<S, T> module, AsyncPolicy asyncPolicy) {
+        final SyncDispatcher<S> syncDispatcher = createSyncDispatcher(module);
+        return new AsyncDispatcherImpl<>(module, asyncPolicy, syncDispatcher);
+    }
+
+    private class DirectDispatcher<S extends Message, T extends Message> implements SyncDispatcher<S> {
         private final SinkModule<S, T> module;
         private final W metadata;
 
-        public DirectMessageProducer(SinkModule<S, T> module, W metadata) {
+        public DirectDispatcher(SinkModule<S, T> module, W metadata) {
             this.module = module;
             this.metadata = metadata;
         }
@@ -72,7 +80,7 @@ public abstract class AbstractMessageProducerFactory<W> implements MessageProduc
         public void send(S message) {
             // Cast S to T, modules that do not use an AggregationPolicty
             // must have the same types for S and T
-            AbstractMessageProducerFactory.this.dispatch(module, metadata, (T)message);
+            AbstractMessageDispatcherFactory.this.dispatch(module, metadata, (T)message);
         }
 
         @Override
@@ -80,4 +88,5 @@ public abstract class AbstractMessageProducerFactory<W> implements MessageProduc
             // pass
         }
     }
+
 }

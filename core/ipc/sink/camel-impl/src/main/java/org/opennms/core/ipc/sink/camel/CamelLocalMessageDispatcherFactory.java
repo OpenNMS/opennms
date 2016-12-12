@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,39 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.aggregation;
+package org.opennms.core.ipc.sink.camel;
 
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.core.ipc.sink.api.SyncDispatcher;
+import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * A {@link MessageProducer} that applies the {@link SinkModule}'s {@link AggregationPolicy}
- * using the {@link Aggregator}.
+ * Message producer that dispatches the messages directly the consumers.
  *
  * @author jwhite
  */
-public abstract class AggregatingMessageProducer<S extends Message, T extends Message> implements SyncDispatcher<S> {
+public class CamelLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> {
 
-    private final Aggregator<S,T> aggregator;
-
-    public AggregatingMessageProducer(SinkModule<S, T> module) {
-        aggregator = new Aggregator<>(module, this);
-    }
+    @Autowired
+    private CamelMessageConsumerManager messageConsumerManager;
 
     @Override
-    public void send(S message) {
-        final T bucket = aggregator.aggregate(message);
-        if (bucket != null) {
-            // This bucket is ready to be dispatched
-            dispatch(bucket);
-        }
-    }
-
-    public abstract void dispatch(T message);
-
-    @Override
-    public void close() throws Exception {
-        aggregator.close();
+    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
+        messageConsumerManager.dispatch(module, message);
     }
 }

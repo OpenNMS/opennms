@@ -29,12 +29,25 @@
 package org.opennms.core.ipc.sink.api;
 
 /**
- * Generates a producer for the given {@link SinkModule}.
+ * Generates a dispatcher for the given {@link SinkModule}.
  *
  * @author jwhite
  */
-public interface MessageProducerFactory {
+public interface MessageDispatcherFactory {
 
-    <S extends Message, T extends Message> MessageProducer<S> getProducer(SinkModule<S, T> module);
+    /**
+     * Creates a new synchronous dispatcher that will lock the calling thread when
+     * dispatching messages.
+     */
+    <S extends Message, T extends Message> SyncDispatcher<S> createSyncDispatcher(SinkModule<S, T> module);
 
+    /**
+     * Creates a new asynchronous dispatcher that will return immediately once
+     * the message has been successfully queued for dispatch.
+     *
+     * The message will be dispatched by a background thread.
+     *
+     * If the queue is full the message will be dropped.
+     */
+    <S extends Message, T extends Message> AsyncDispatcher<S> createAsyncDispatcher(SinkModule<S, T> module, AsyncPolicy asyncPolicy);
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,25 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.camel;
-
-import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.core.ipc.sink.common.AbstractMessageProducerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+package org.opennms.core.ipc.sink.api;
 
 /**
- * Message producer that dispatches the messages directly the consumers.
+ * Defines should messages should be asynchronously dispatched.
  *
  * @author jwhite
  */
-public class CamelLocalMessageProducerFactory extends AbstractMessageProducerFactory<Void> {
+public interface AsyncPolicy {
+    
+    int getQueueSize();
 
-    @Autowired
-    private CamelMessageConsumerManager messageConsumerManager;
+    int getNumThreads();
 
-    @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
-        messageConsumerManager.dispatch(module, message);
-    }
 }

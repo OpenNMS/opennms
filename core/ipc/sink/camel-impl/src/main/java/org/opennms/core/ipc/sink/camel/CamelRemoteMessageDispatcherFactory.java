@@ -38,14 +38,14 @@ import org.apache.camel.ProducerTemplate;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.core.ipc.sink.common.AbstractMessageProducerFactory;
+import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 
 /**
- * Message producer that sends messages via JMS.
+ * Message dispatcher that sends messages via JMS.
  *
  * @author jwhite
  */
-public class CamelRemoteMessageProducerFactory extends AbstractMessageProducerFactory<Map<String, Object>> {
+public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Map<String, Object>> {
 
     @EndpointInject(uri = "direct:sendMessage", context = "sinkClient")
     private ProducerTemplate template;

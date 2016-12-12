@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,15 +28,19 @@
 
 package org.opennms.core.ipc.sink.api;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
- * Used to send/dispatch messages.
+ * Used to asynchronously dispatch messages.
  *
- * Instances of these should be created by the {@link MessageProducerFactory}.
+ * Instances of these should be created by the {@link MessageDispatcherFactory}.
  *
  * @author jwhite
  */
-public interface MessageProducer<S> extends AutoCloseable {
+public interface AsyncDispatcher<S extends Message> extends AutoCloseable {
 
-    void send(S message);
+    CompletableFuture<S> send(S message);
+
+    int getQueueSize();
 
 }

@@ -40,8 +40,22 @@
       <artifactId>guava</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.swrve</groupId>
+      <artifactId>rate-limited-logger</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.lib</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.mock-impl</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
