@@ -26,7 +26,7 @@
 
 	 <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
     <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
-        <property name="timeout" value="trapHandlerDefaultProperties:{{trapd.listen.timeout}}"/>
+        <property name="timeout" value="${trapd.listen.timeout}"/>
     </bean>
 
     <!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
