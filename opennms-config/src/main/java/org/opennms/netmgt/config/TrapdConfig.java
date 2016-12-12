@@ -30,43 +30,14 @@ package org.opennms.netmgt.config;
 
 import java.util.List;
 
-import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.snmp.SnmpV3User;
 
-/**
- * <p>TrapdConfig interface.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public interface TrapdConfig {
-	public abstract String getSnmpTrapAddress();
+	String getSnmpTrapAddress();
 	
-    /**
-     * <p>getSnmpTrapPort</p>
-     *
-     * @return a int.
-     */
-    public abstract int getSnmpTrapPort();
+    int getSnmpTrapPort();
 
-    /**
-     * <p>getNewSuspectOnTrap</p>
-     *
-     * @return a boolean.
-     */
-    public abstract boolean getNewSuspectOnTrap();
+    boolean getNewSuspectOnTrap();
 
-    /**
-     * <p>getSnmpV3Users</p>
-     *
-     * @return a java.util.List.
-     */
-    public abstract List<SnmpV3User> getSnmpV3Users();
-    
-    
-    /**
-     * @param config
-     * Updates the SNMP Address,Port and Users information
-     */
-    public abstract void onUpdate(TrapdConfiguration config);
+    List<SnmpV3User> getSnmpV3Users();
 }

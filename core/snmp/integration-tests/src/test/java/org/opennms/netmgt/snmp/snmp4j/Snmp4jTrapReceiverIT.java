@@ -43,7 +43,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -51,10 +50,8 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV3User;
-import org.opennms.netmgt.snmp.TrapNotification;
+import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
-import org.opennms.netmgt.snmp.TrapProcessor;
-import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.CommandResponder;
@@ -71,7 +68,7 @@ import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
-public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapProcessorFactory, CommandResponder {
+public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements CommandResponder {
     private static final Logger LOG = LoggerFactory.getLogger(Snmp4jTrapReceiverIT.class);
 
     private int m_trapCount;
@@ -161,7 +158,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapPro
         final TestTrapListener trapListener = new TestTrapListener();
         SnmpV3User user = new SnmpV3User("opennmsUser", "MD5", "0p3nNMSv3", "DES", "0p3nNMSv3");
         try {
-            strategy.registerForTraps(trapListener, this, getAgentAddress(), 9162, Collections.singletonList(user));
+            strategy.registerForTraps(trapListener, getAgentAddress(), 9162, Collections.singletonList(user));
             sendTraps(strategy, SnmpConfiguration.AUTH_PRIV);
             await().atMost(5, SECONDS).until(() -> m_trapCount, equalTo(2));
         } catch (final IOException e) {
@@ -194,7 +191,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapPro
         try {
             long start = System.currentTimeMillis();
 
-            strategy.registerForTraps(trapListener, this, getAgentAddress(), 9162, Collections.singletonList(user));
+            strategy.registerForTraps(trapListener, getAgentAddress(), 9162, Collections.singletonList(user));
             sendTraps(strategy, SnmpConfiguration.NOAUTH_NOPRIV);
             await().atMost(5, SECONDS).until(() -> m_trapCount, equalTo(2));
         } catch (final IOException e) {
@@ -225,7 +222,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapPro
         try {
             long start = System.currentTimeMillis();
 
-            strategy.registerForTraps(trapListener, this, getAgentAddress(), 9162, null);
+            strategy.registerForTraps(trapListener, getAgentAddress(), 9162, null);
             sendTraps(strategy, SnmpConfiguration.NOAUTH_NOPRIV);
             await().atMost(5, SECONDS).until(() -> m_trapCount, equalTo(2));
         } catch (final IOException e) {
@@ -249,11 +246,6 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapPro
          */
         assertEquals(1, trapListener.getReceivedTrapCount());
         strategy.clearUsers();
-    }
-
-    @Override
-    public TrapProcessor createTrapProcessor() {
-        return new TestTrapProcessor();
     }
 
     @Override
@@ -308,20 +300,16 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapPro
     }
 
     private final class TestTrapListener implements TrapNotificationListener {
-        private List<TrapNotification> m_traps = new ArrayList<TrapNotification>();
+        private List<TrapInformation> m_traps = new ArrayList<>();
         private List<String> m_errors = new ArrayList<String>();
 
         @Override
-        public void trapReceived(final TrapNotification trapNotification) {
-            LOG.debug("Received Trap... {}", trapNotification);
-
-            if (trapNotification != null) {
-                LOG.debug(trapNotification.getClass().getName());
-                TestTrapProcessor processor = (TestTrapProcessor)trapNotification.getTrapProcessor();
-                LOG.debug("processor is {}", processor);
+        public void trapReceived(final TrapInformation trapInformation) {
+            LOG.debug("Received Trap... {}", trapInformation);
+            if (trapInformation != null) {
+                LOG.debug(trapInformation.getClass().getName());
             }
-
-            m_traps.add(trapNotification);
+            m_traps.add(trapInformation);
             m_trapCount++;
         }
 
@@ -340,11 +328,4 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapPro
         }
     }
 
-    private static final class TestTrapProcessor extends BasicTrapProcessor {
-        @Override
-        public void setVersion(String version) {
-            super.setVersion(version);
-            LOG.debug("Processed Trap with version: {}", version);
-        }
-    }
 }

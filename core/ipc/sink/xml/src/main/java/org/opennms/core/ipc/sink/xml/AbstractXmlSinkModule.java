@@ -62,6 +62,18 @@ public abstract class AbstractXmlSinkModule<T extends Message> implements SinkMo
         return getXmlHandler().unmarshal(message);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        return getClass() == obj.getClass();
+    }
+
     private XmlHandler<T> getXmlHandler() {
         XmlHandler<T> xmlHandler = messageXmlHandler.get();
         if (xmlHandler == null) {

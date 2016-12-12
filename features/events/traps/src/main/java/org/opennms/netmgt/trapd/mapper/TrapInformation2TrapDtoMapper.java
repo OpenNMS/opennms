@@ -26,23 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.trapd;
+package org.opennms.netmgt.trapd.mapper;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.snmp.BasicTrapProcessor;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
-import org.opennms.netmgt.snmp.snmp4j.Snmp4JUtils;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValue;
+import org.opennms.netmgt.trapd.TrapDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
@@ -50,65 +49,35 @@ import org.snmp4j.PDUv1;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 
-public class TrapObjectToDTOProcessor implements Processor {
-	public static final Logger LOG = LoggerFactory.getLogger(TrapObjectToDTOProcessor.class);
+public class TrapInformation2TrapDtoMapper {
+	public static final Logger LOG = LoggerFactory.getLogger(TrapInformation2TrapDtoMapper.class);
 
-	private DistPollerDao m_distPollerDao;
+	private final DistPollerDao distPollerDao;
 
-	private static final String SNMP_V1 = "v1";
-	private static final String SNMP_V2 = "v2";
-	private static final String SNMP_V3 = "v3";
-
-	public static final String INCLUDE_RAW_MESSAGE = "includeRawMessage";
-	public static final boolean INCLUDE_RAW_MESSAGE_DEFAULT = Boolean.FALSE;
-
-	public void setDistPollerDao(DistPollerDao distPollerDao) {
-		this.m_distPollerDao = distPollerDao;
-	}
-
-	@Override
-	public void process(final Exchange exchange) throws Exception {
-		final TrapInformation object = exchange.getIn().getBody(TrapInformation.class);
-		boolean trapRawMessageFlag = (boolean)exchange.getIn().getHeader(INCLUDE_RAW_MESSAGE);
-		exchange.getIn().setBody(object2dto(object, trapRawMessageFlag), TrapDTO.class);
+	public TrapInformation2TrapDtoMapper(DistPollerDao distPollerDao) {
+		this.distPollerDao = Objects.requireNonNull(distPollerDao);
 	}
 
 	public TrapDTO object2dto(TrapInformation trapInfo) {
-		return object2dto(trapInfo, INCLUDE_RAW_MESSAGE_DEFAULT);
-	}
-
-	public TrapDTO object2dto(TrapInformation trapInfo, boolean trapRawMessageFlag) {
-
-		TrapDTO trapDTO = new TrapDTO();
-
+		final OnmsDistPoller distPoller = distPollerDao.whoami();
+		final TrapDTO trapDTO = new TrapDTO();
 		String version = trapInfo.getVersion();
 
-		String id = m_distPollerDao.whoami().getId();
-		String location = m_distPollerDao.whoami().getLocation();
+		if ("v1".equalsIgnoreCase(trapInfo.getVersion())) {
 
-		if (version.equalsIgnoreCase(SNMP_V1)) {
-
+			// TODO MVR add joesnmp stuff as well
 			Snmp4JTrapNotifier.Snmp4JV1TrapInformation v1Trap = (Snmp4JTrapNotifier.Snmp4JV1TrapInformation)trapInfo;
 			String community = v1Trap.getCommunity();
 			InetAddress trapAddress = v1Trap.getTrapAddress();
 			PDUv1 pdu = v1Trap.getPdu();
 
-			if(trapRawMessageFlag){
-				try {
-					byte[] byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0, community, pdu);
-					trapDTO.setBody(byteArray);
-				} catch (Throwable e) {
-					LOG.warn("Unable to convert PDU into bytes: {}", e.getMessage());
-				}
-			}
-
 			trapDTO.setAgentAddress(v1Trap.getAgentAddress());
 			trapDTO.setCommunity(community);
 			trapDTO.setCreationTime(v1Trap.getCreationTime());
-			trapDTO.setLocation(location);
+			trapDTO.setLocation(distPoller.getLocation());
 			trapDTO.setPduLength(v1Trap.getPduLength());
 			trapDTO.setSourceAddress(trapAddress);
-			trapDTO.setSystemId(id);
+			trapDTO.setSystemId(distPoller.getId());
 			// NOTE: This value is an SNMP TimeTicks value, not an epoch timestamp
 			trapDTO.setTimestamp(v1Trap.getTimeStamp());
 			trapDTO.setVersion(version);
@@ -116,7 +85,7 @@ public class TrapObjectToDTOProcessor implements Processor {
 			trapDTO.setGeneric(pdu.getGenericTrap());
 			trapDTO.setSpecific(pdu.getSpecificTrap());
 
-			List<SnmpResult> results = new ArrayList<SnmpResult>();
+			List<SnmpResult> results = new ArrayList<>();
 
 			for (final VariableBinding varBind : pdu.getVariableBindings()) {
 				final SnmpObjId oid = SnmpObjId.get(varBind.getOid().toString());
@@ -127,41 +96,29 @@ public class TrapObjectToDTOProcessor implements Processor {
 
 			trapDTO.setResults(results);
 		} else if (
-			version.equalsIgnoreCase(SNMP_V2) ||
-			version.equalsIgnoreCase(SNMP_V3)
-		) {
+			"v2".equalsIgnoreCase(version) ||
+			"v3".equalsIgnoreCase(version)) {
 
 			Snmp4JTrapNotifier.Snmp4JV2TrapInformation v2Trap = (Snmp4JTrapNotifier.Snmp4JV2TrapInformation)trapInfo;
 			String community = v2Trap.getCommunity();
 			InetAddress trapAddress = v2Trap.getTrapAddress();
 			PDU pdu = v2Trap.getPdu();
 
-			if(trapRawMessageFlag){
-				try {
-					byte[] byteArray = Snmp4JUtils.convertPduToBytes(trapAddress, 0, community, pdu);
-					trapDTO.setBody(byteArray);
-				} catch (Throwable e) {
-					LOG.warn("Unable to convert PDU into bytes: {}", e.getMessage());
-				}
-			}
-
 			trapDTO.setAgentAddress(v2Trap.getAgentAddress());
 			trapDTO.setCommunity(community);
 			trapDTO.setCreationTime(v2Trap.getCreationTime());
-			trapDTO.setLocation(location);
+			trapDTO.setLocation(distPoller.getLocation());
 			trapDTO.setPduLength(v2Trap.getPduLength());
 			trapDTO.setSourceAddress(trapAddress);
-			trapDTO.setSystemId(id);
+			trapDTO.setSystemId(distPoller.getId());
 			// NOTE: This value is an SNMP TimeTicks value, not an epoch timestamp
 			trapDTO.setTimestamp(v2Trap.getTimeStamp());
 			trapDTO.setVersion(version);
+			trapDTO.setEnterpriseId(new OID(v2Trap.getTrapIdentity().getEnterpriseId()));
+			trapDTO.setGeneric(v2Trap.getTrapIdentity().getGeneric());
+			trapDTO.setSpecific(v2Trap.getTrapIdentity().getSpecific());
 
-			BasicTrapProcessor trapsProcessor = (BasicTrapProcessor)v2Trap.getTrapProcessor();
-			trapDTO.setEnterpriseId(new OID(trapsProcessor.getTrapIdentity().getEnterpriseId()));
-			trapDTO.setGeneric(trapsProcessor.getTrapIdentity().getGeneric());
-			trapDTO.setSpecific(trapsProcessor.getTrapIdentity().getSpecific());
-
-			List<SnmpResult> results = new ArrayList<SnmpResult>();
+			List<SnmpResult> results = new ArrayList<>();
 
 			for (final VariableBinding varBind : pdu.getVariableBindings()) {
 				final SnmpObjId oid = SnmpObjId.get(varBind.getOid().toString());

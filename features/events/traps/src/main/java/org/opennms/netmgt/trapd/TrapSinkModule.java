@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,14 +28,29 @@
 
 package org.opennms.netmgt.trapd;
 
-import org.apache.camel.InOnly;
-import org.opennms.netmgt.snmp.TrapNotification;
+import java.util.Objects;
 
-/**
- * This interface must be {@link InOnly} in order for trap handling to
- * be performed asynchronously.
- */
-@InOnly
-public interface TrapNotificationHandler {
-	void handleTrapNotification(TrapNotification message);
+import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
+import org.opennms.netmgt.config.TrapdConfig;
+
+// TODO MVR make raw_include_body configurable and put in trapdconfig probably :)
+public class TrapSinkModule extends AbstractXmlSinkModule<TrapDTO> {
+
+    private final TrapdConfig config;
+
+    public TrapSinkModule(TrapdConfig trapdConfig) {
+        super(TrapDTO.class);
+        this.config = Objects.requireNonNull(trapdConfig);
+    }
+
+    @Override
+    public String getId() {
+        return "Trap";
+    }
+
+    @Override
+    public int getNumConsumerThreads() {
+        // TODO MVR merge with branch feature/sink-aggregate
+        return Runtime.getRuntime().availableProcessors() * 2;
+    }
 }

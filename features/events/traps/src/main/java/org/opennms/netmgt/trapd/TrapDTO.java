@@ -38,76 +38,79 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.camel.MinionDTO;
+import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.snmp4j.smi.OID;
 
+import com.google.common.base.MoreObjects;
+
 @XmlRootElement(name = "trap-dto")
 @XmlAccessorType(XmlAccessType.NONE)
-public class TrapDTO extends MinionDTO {
+public class TrapDTO extends MinionDTO implements Message {
 
-	public static final String COMMUNITY = "community";
-	public static final String CREATION_TIME = "creationTime";
-	public static final String PDU_LENGTH = "pduLength";
-	public static final String VERSION = "version";
-	public static final String TIMESTAMP = "timestamp";
-	public static final String AGENT_ADDRESS = "agentAddress";
-	public static final String GENERIC = "generic";
-	public static final String ENTERPRISEID = "enterpriseId";
-	public static final String SPECIFIC = "specific";
+	private static final String COMMUNITY = "community";
+	private static final String CREATION_TIME = "creationTime";
+	private static final String PDU_LENGTH = "pduLength";
+	private static final String VERSION = "version";
+	private static final String TIMESTAMP = "timestamp";
+	private static final String AGENT_ADDRESS = "agentAddress";
+	private static final String GENERIC = "generic";
+	private static final String ENTERPRISEID = "enterpriseId";
+	private static final String SPECIFIC = "specific";
 
-	protected TrapDTO() {
-		// No-arg constructor for JAXB
-		super();
+	// No-arg constructor for JAXB
+	public TrapDTO() {
+
 	}
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this)
-				.append("systemId", super.getHeaders().get(SYSTEM_ID))
-				.append("location", super.getHeaders().get(LOCATION))
-				.append("sourceAddress", super.getHeaders().get(SOURCE_ADDRESS))
-				.append("sourcePort", super.getHeaders().get(SOURCE_PORT))
-				.append("agentAddress", super.getHeaders().get(AGENT_ADDRESS))
-				.append("community", super.getHeaders().get(COMMUNITY))
-				.append("generic", super.getHeaders().get(GENERIC))
-				.append("enterpriseId", super.getHeaders().get(ENTERPRISEID))
-				.append("specific", super.getHeaders().get(SPECIFIC))
-				.append("creationTime", super.getHeaders().get(CREATION_TIME))
-				.append("pduLength", super.getHeaders().get(PDU_LENGTH))
-				.append("timestamp", super.getHeaders().get(TIMESTAMP))
-				.append("version", super.getHeaders().get(VERSION))
-				.append("body", super.getBody()).toString();
+		return MoreObjects.toStringHelper(this)
+				.add("systemId", getHeaders().get(SYSTEM_ID))
+				.add("location", getHeaders().get(LOCATION))
+				.add("sourceAddress", getHeaders().get(SOURCE_ADDRESS))
+				.add("sourcePort", getHeaders().get(SOURCE_PORT))
+				.add("agentAddress", getHeaders().get(AGENT_ADDRESS))
+				.add("community", getHeaders().get(COMMUNITY))
+				.add("generic", getHeaders().get(GENERIC))
+				.add("enterpriseId", getHeaders().get(ENTERPRISEID))
+				.add("specific", getHeaders().get(SPECIFIC))
+				.add("creationTime", getHeaders().get(CREATION_TIME))
+				.add("pduLength", getHeaders().get(PDU_LENGTH))
+				.add("timestamp", getHeaders().get(TIMESTAMP))
+				.add("version", getHeaders().get(VERSION))
+				.add("body", getBody()).toString();
 	}
 
 	@XmlElementWrapper(name = "results")
 	@XmlElement(name = "result")
-	private List<SnmpResult> results = new ArrayList<>(0);
+	private List<SnmpResult> results = new ArrayList<>();
 
 	public void setCommunity(String m_community) {
-		super.putHeader(COMMUNITY, m_community);
+		putHeader(COMMUNITY, m_community);
 	}
 
 	public void setCreationTime(long m_creationTime) {
-		super.putHeader(CREATION_TIME, String.valueOf(m_creationTime));
+		putHeader(CREATION_TIME, String.valueOf(m_creationTime));
 	}
 
 	public void setPduLength(int m_pduLength) {
-		super.putHeader(PDU_LENGTH, String.valueOf(m_pduLength));
+		putHeader(PDU_LENGTH, String.valueOf(m_pduLength));
 	}
 
 	public void setVersion(String m_version) {
-		super.putHeader(VERSION, m_version);
+		putHeader(VERSION, m_version);
 	}
 
 	public void setTimestamp(Long m_timestamp) {
-		super.putHeader(TIMESTAMP, Long.toString(m_timestamp));
+		putHeader(TIMESTAMP, Long.toString(m_timestamp));
 	}
 
 	public void setAgentAddress(InetAddress m_agentAddress) {
-		super.putHeader(AGENT_ADDRESS, InetAddressUtils.str(m_agentAddress));
+		putHeader(AGENT_ADDRESS, InetAddressUtils.str(m_agentAddress));
 	}
 
 	public List<SnmpResult> getResults() {
@@ -119,15 +122,50 @@ public class TrapDTO extends MinionDTO {
 	}
 	
 	public void setEnterpriseId(OID enterpriseId) {
-		super.putHeader(ENTERPRISEID, enterpriseId.toString());
+		putHeader(ENTERPRISEID, enterpriseId.toString());
 	}
 	
 	public void setGeneric(int generic) {
-		super.putHeader(GENERIC, Integer.toString(generic));
+		putHeader(GENERIC, Integer.toString(generic));
 	}
 	
 	public void setSpecific(int specific) {
-		super.putHeader(SPECIFIC, Integer.toString(specific));
+		putHeader(SPECIFIC, Integer.toString(specific));
 	}
 
+	public String getVersion() {
+		return getHeader(VERSION);
+	}
+
+	public long getTimestamp() {
+		return Long.parseLong(getHeader(TIMESTAMP));
+	}
+
+	public String getEnterpriseId() {
+		return getHeader(ENTERPRISEID);
+	}
+
+	public int getGeneric() {
+		return Integer.parseInt(getHeader(GENERIC));
+	}
+
+	public int getSpecific() {
+		return Integer.parseInt(getHeader(SPECIFIC));
+	}
+
+	public InetAddress getAgentAddress() {
+		return InetAddrUtils.addr(getHeader(TrapDTO.AGENT_ADDRESS));
+	}
+
+	public String getCommunity() {
+		return getHeader(COMMUNITY);
+	}
+
+	public long getCreationTime() {
+		return Long.parseLong(getHeader(TrapDTO.CREATION_TIME));
+	}
+
+	public InetAddress getSourceAddress() {
+		return InetAddrUtils.addr(getHeader(TrapDTO.SOURCE_ADDRESS));
+	}
 }

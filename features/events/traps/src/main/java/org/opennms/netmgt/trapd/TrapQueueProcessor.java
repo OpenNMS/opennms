@@ -31,19 +31,20 @@ package org.opennms.netmgt.trapd;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
-import java.util.concurrent.Callable;
+import java.util.Objects;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.snmp.TrapNotification;
+import org.opennms.netmgt.snmp.TrapInformation;
+import org.opennms.netmgt.trapd.jmx.TrapdInstrumentation;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
 
 /**
  * The TrapQueueProcessor handles the conversion of V1 and V2 traps to events
@@ -60,10 +61,12 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  *  
  */
-class TrapQueueProcessor implements Callable<Void>, InitializingBean {
-	
+public class TrapQueueProcessor implements InitializingBean {
+
+    public static final TrapdInstrumentation trapdInstrumentation = new TrapdInstrumentation();
+
     private static final Logger LOG = LoggerFactory.getLogger(TrapQueueProcessor.class);
-	
+
     /**
      * The name of the local host.
      */
@@ -85,30 +88,16 @@ class TrapQueueProcessor implements Callable<Void>, InitializingBean {
      */
     private EventConfDao m_eventConfDao;
 
-    private TrapNotification m_trapNotification;
-    
-    private static long s_trapsReceived = 0;
-    
-    private static long s_v1TrapsReceived = 0;
-    
-    private static long s_v2cTrapsReceived = 0;
-    
-    private static long s_v3TrapsReceived = 0;
-    
-    private static long s_vUnknownTrapsReceived = 0;
-    
-    private static long s_trapsDiscarded = 0;
-    
-    private static long s_trapsErrored = 0;
+    private InterfaceToNodeCache m_interfaceToNodeCache;
 
     /**
      * Process a V2 trap and convert it to an event for transmission.
-     * 
+     *
      * <p>
      * From RFC2089 ('Mapping SNMPv2 onto SNMPv1'), section 3.3 ('Processing an
      * outgoing SNMPv2 TRAP')
      * </p>
-     * 
+     *
      * <p>
      * <strong>2b </strong>
      * <p>
@@ -162,34 +151,30 @@ class TrapQueueProcessor implements Callable<Void>, InitializingBean {
      * then the enterprise field is set to snmpTrapOID.0 value and the last 1
      * subid is truncated from that value.
      * </p>
-     * 
+     *
      * <p>
      * In any event, the snmpTrapEnterprise.0 varBind (if present) is ignored in
      * this case.
      * </p>
      */
-    @Override
-    public Void call() {
+
+    public void process(final TrapInformation trap) {
         try {
-            processTrapEvent(((EventCreator)m_trapNotification.getTrapProcessor()).getEvent());
+            final EventCreator eventCreator = new EventCreator(m_interfaceToNodeCache);
+            final Event event = eventCreator.getEvent(trap);
+            processTrapEvent((event));
         } catch (IllegalArgumentException e) {
             LOG.info(e.getMessage());
         } catch (Throwable e) {
             LOG.error("Unexpected error processing trap: {}", e, e);
-            s_trapsErrored++;
+            trapdInstrumentation.incErrorCount();
         }
-        return null;
     }
 
-    /**
-     * <p>processTrapEvent</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     private void processTrapEvent(final Event event) {
-    	final InetAddress trapInterface = event.getInterfaceAddress();
+        final InetAddress trapInterface = event.getInterfaceAddress();
 
-    	final org.opennms.netmgt.xml.eventconf.Event econf = m_eventConfDao.findByEvent(event);
+        final org.opennms.netmgt.xml.eventconf.Event econf = m_eventConfDao.findByEvent(event);
         if (econf == null || econf.getUei() == null) {
             event.setUei("uei.opennms.org/default/trap");
         } else {
@@ -198,26 +183,16 @@ class TrapQueueProcessor implements Callable<Void>, InitializingBean {
 
         if (event.getSnmp() != null) {
             final String version = event.getSnmp().getVersion();
-            s_trapsReceived++;
-            if ("v1".equals(version)) {
-                s_v1TrapsReceived++;
-            } else if ("v2c".equals(version) || "v2".equals(version)) {
-                s_v2cTrapsReceived++;
-            } else if ("v3".equals(version)) {
-                s_v3TrapsReceived++;
-            } else {
-                s_vUnknownTrapsReceived++;
-                LOG.warn("Received a trap with an unknown SNMP protocol version '{}'", version);
-            }
+            trapdInstrumentation.incTrapsReceivedCount(version);
         }
-        
+
         if (econf != null) {
             final Logmsg logmsg = econf.getLogmsg();
             if (logmsg != null) {
                 final String dest = logmsg.getDest();
                 if ("discardtraps".equals(dest)) {
                     LOG.debug("Trap discarded due to matching event having logmsg dest == discardtraps");
-                    s_trapsDiscarded++;
+                    trapdInstrumentation.incDiscardCount();
                     return;
                 }
             }
@@ -236,13 +211,6 @@ class TrapQueueProcessor implements Callable<Void>, InitializingBean {
         }
     }
 
-    /**
-     * Send a newSuspect event for the interface
-     * 
-     * @param trapInterface
-     *            The interface for which the newSuspect event is to be
-     *            generated
-     */
     private void sendNewSuspectEvent(String trapInterface) {
         // construct event with 'trapd' as source
         EventBuilder bldr = new EventBuilder(org.opennms.netmgt.events.api.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
@@ -253,107 +221,28 @@ class TrapQueueProcessor implements Callable<Void>, InitializingBean {
         m_eventForwarder.sendNow(bldr.getEvent());
     }
 
-    /**
-     * The constructor
-     */
-    public TrapQueueProcessor() {
-    }
 
-    /**
-     * <p>getEventConfDao</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.api.EventConfDao} object.
-     */
-    public EventConfDao getEventConfDao() {
-        return m_eventConfDao;
-    }
-
-    /**
-     * <p>setEventConfDao</p>
-     *
-     * @param eventConfDao a {@link org.opennms.netmgt.config.api.EventConfDao} object.
-     */
-    public void setEventConfDao(EventConfDao eventConfDao) {
+    void setEventConfDao(EventConfDao eventConfDao) {
         m_eventConfDao = eventConfDao;
     }
 
-    /**
-     * <p>getEventMgr</p>
-     *
-     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
-     */
-    public EventForwarder getEventForwarder() {
-        return m_eventForwarder;
-    }
-
-    /**
-     * <p>setEventMgr</p>
-     *
-     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
-     */
-    public void setEventForwarder(EventForwarder eventForwarder) {
+    void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
-    /**
-     * <p>isNewSuspect</p>
-     *
-     * @return a {@link java.lang.Boolean} object.
-     */
-    public Boolean isNewSuspect() {
-        return m_newSuspect;
-    }
-
-    /**
-     * <p>setNewSuspect</p>
-     *
-     * @param newSuspect a {@link java.lang.Boolean} object.
-     */
-    public void setNewSuspect(Boolean newSuspect) {
+    void setNewSuspect(Boolean newSuspect) {
         m_newSuspect = newSuspect;
     }
 
-    public TrapNotification getTrapNotification() {
-        return m_trapNotification;
-    }
-
-    public void setTrapNotification(TrapNotification info) {
-        m_trapNotification = info;
+    void setInterfaceToNodeCache(InterfaceToNodeCache interfaceToNodeCache) {
+        m_interfaceToNodeCache = interfaceToNodeCache;
     }
 
     @Override
     public void afterPropertiesSet() throws IllegalStateException {
-        Assert.state(m_eventConfDao != null, "property eventConfDao must be set");
-        Assert.state(m_eventForwarder != null, "property eventForwarder must be set");
-        Assert.state(m_newSuspect != null, "property newSuspect must be set");
-        Assert.state(m_trapNotification != null, "property trapNotification must be set");
-    }
-    
-    public static long getTrapsReceived() {
-        return s_trapsReceived;
-    }
-    
-    public static long getV1TrapsReceived() {
-        return s_v1TrapsReceived;
-    }
-    
-    public static long getV2cTrapsReceived() {
-        return s_v2cTrapsReceived;
-    }
-    
-    public static long getV3TrapsReceived() {
-        return s_v3TrapsReceived;
-    }
-    
-    public static long getVersionUnknownTrapsReceived() {
-        return s_vUnknownTrapsReceived;
-    }
-    
-    public static long getTrapsDiscarded() {
-        return s_trapsDiscarded;
-    }
-    
-    public static long getTrapsErrored() {
-        return s_trapsErrored;
+        Objects.requireNonNull(m_eventConfDao, "property eventConfDao must be set");
+        Objects.requireNonNull(m_eventForwarder, "property eventForwarder must be set");
+        Objects.requireNonNull(m_newSuspect, "property newSuspect must be set");
+        Objects.requireNonNull(m_interfaceToNodeCache, "property interfaceToNodeCache must be set");
     }
 }

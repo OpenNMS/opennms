@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,35 +28,26 @@
 
 package org.opennms.netmgt.snmp;
 
-import java.net.InetAddress;
+import java.util.Objects;
 
-import org.opennms.netmgt.snmp.SnmpValue;
+/**
+ * Transport object, to transport the {@link SnmpObjId} and {@link SnmpValue} objects as a tuple.
+ */
+public class SnmpVarBindDTO {
 
-public interface TrapProcessor {
+    private final SnmpObjId objId;
+    private final SnmpValue value;
 
-    void setCreationTime(long creationTime);
+    public SnmpVarBindDTO(SnmpObjId objId, SnmpValue value) {
+        this.objId = Objects.requireNonNull(objId);
+        this.value = Objects.requireNonNull(value);
+    }
 
-    void setLocation(String location);
+    public SnmpObjId getSnmpObjectId() {
+        return objId;
+    }
 
-    void setCommunity(String community);
-
-    void setSystemId(String systemId);
-
-    /**
-     * Set the SNMP TimeTicks value to the sysUpTime of the agent that
-     * generated the trap. Note that the units for this value are 1/100ths
-     * of a second instead of milliseconds.
-     */
-    void setTimeStamp(long timeStamp);
-
-    void setVersion(String version);
-
-    void setAgentAddress(InetAddress agentAddress);
-
-    void processVarBind(SnmpObjId name, SnmpValue value);
-
-    void setTrapAddress(InetAddress trapAddress);
-
-    void setTrapIdentity(TrapIdentity trapIdentity);
-
+    public SnmpValue getSnmpValue() {
+        return value;
+    }
 }

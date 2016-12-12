@@ -32,15 +32,12 @@ package org.opennms.netmgt.trapd;
 import org.junit.BeforeClass;
 
 /**
- * Snmp4JTrapHandlerTest
+ * {@link TrapHandlerITCase} which uses the snmp strategy {@link org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy}.
  *
  * @author brozow
  */
 public class Snmp4JTrapHandlerIT extends TrapHandlerITCase {
 
-    /**
-     * @throws java.lang.Exception
-     */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         System.setProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");

@@ -8,11 +8,15 @@
   <bean id="newSuspectOnTrap" class="java.lang.Boolean">
     <constructor-arg><value>true</value></constructor-arg>
   </bean>
-  
+
   <bean id="snmpTrapPort" class="java.lang.Integer">
     <constructor-arg><value>10000</value></constructor-arg>
   </bean>
-  
+
+  <!-- TODO MVR use mockfactory instead -->
+  <!-- Import this for the MessageProducerFactory -->
+  <import resource="classpath:/META-INF/opennms/applicationContext-ipc-sink-server-camel.xml" />
+
   <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao" init-method="reload">
     <property name="configResource"><value>classpath:/org/opennms/netmgt/trapd/eventconf.xml</value></property>
   </bean>

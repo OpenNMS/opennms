@@ -30,18 +30,16 @@ package org.opennms.netmgt.trapd;
 
 import javax.annotation.Resource;
 
-import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.snmp.TrapNotification;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * This factory constructs {@link TrapQueueProcessor} instances.
  */
-public class TrapQueueProcessorFactory implements InitializingBean {
+public class TrapQueueProcessorFactory {
 
     /**
      * Whether or not a newSuspect event should be generated with a trap from an
@@ -50,72 +48,27 @@ public class TrapQueueProcessorFactory implements InitializingBean {
     @Resource(name="newSuspectOnTrap")
     private Boolean m_newSuspectOnTrap;
 
-    /**
-     * @return the newSuspectOnTrap
-     */
-    public Boolean getNewSuspect() {
-        return m_newSuspectOnTrap;
-    }
-
-    /**
-     * @param newSuspectOnTrap the newSuspectOnTrap to set
-     */
-    public void setNewSuspect(Boolean newSuspectOnTrap) {
-        m_newSuspectOnTrap = newSuspectOnTrap;
-    }
-
-    /**
-     * The event IPC manager to which we send events created from traps.
-     */
-    private EventForwarder m_eventForwarder;
-
-    /**
-     * @return the eventMgr
-     */
-    public EventForwarder getEventForwarder() {
-        return m_eventForwarder;
-    }
-
-    /**
-     * @param eventForwarder the eventMgr to set
-     */
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        m_eventForwarder = eventForwarder;
-    }
-
-    /**
-     * The event configuration DAO that we use to convert from traps to events.
-     */
     @Autowired
     private EventConfDao m_eventConfDao;
 
-    public EventConfDao getEventConfDao() {
-        return m_eventConfDao;
+    @Autowired
+    @Qualifier("eventIpcManager")
+    private EventForwarder m_eventForwarder;
+
+    @Autowired
+    private InterfaceToNodeCache m_interfaceToNodeCache;
+
+    public TrapQueueProcessor getInstance() {
+        TrapQueueProcessor processor = new TrapQueueProcessor();
+        processor.setEventConfDao(m_eventConfDao);
+        processor.setEventForwarder(m_eventForwarder);
+        processor.setNewSuspect(m_newSuspectOnTrap);
+        processor.setInterfaceToNodeCache(m_interfaceToNodeCache);
+        processor.afterPropertiesSet();
+        return processor;
     }
 
-    public void setEventConfDao(EventConfDao eventConfDao) {
-        this.m_eventConfDao = eventConfDao;
-    }
-
-    /**
-     * The constructor
-     */
-    public TrapQueueProcessorFactory() {
-    }
-
-    public TrapQueueProcessor getInstance(TrapNotification info) {
-        TrapQueueProcessor retval = new TrapQueueProcessor();
-        retval.setEventConfDao(m_eventConfDao);
-        retval.setEventForwarder(m_eventForwarder);
-        retval.setNewSuspect(m_newSuspectOnTrap);
-        retval.setTrapNotification(info);
-        retval.afterPropertiesSet();
-        return retval;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-        Assert.state(m_eventForwarder != null, "eventForwarder must be set");
+    void setNewSuspect(boolean newSuspectOnTrap) {
+        m_newSuspectOnTrap = newSuspectOnTrap;
     }
 }
