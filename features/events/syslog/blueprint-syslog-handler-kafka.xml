@@ -22,6 +22,7 @@
 			<cm:property name="concurrentConsumers" value="10" />
 			<cm:property name="blockWhenFull" value="true" />
 			<cm:property name="limitConcurrentConsumers" value="false" />
+			<cm:property name="producerType" value="async" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -43,7 +44,7 @@
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerKafkaProperties" />
 
 		<route id="syslogMarshal">
-			<from uri="seda:handleMessage?size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}" />
+			<from uri="seda:handleMessage?size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}&amp;producerType={{producerType}}" />
 
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
