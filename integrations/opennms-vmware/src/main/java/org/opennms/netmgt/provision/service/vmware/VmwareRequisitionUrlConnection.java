@@ -134,6 +134,12 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
 
         m_args = getQueryArgs();
 
+        // Old scheme isn't supported anymore
+	if (!Strings.isNullOrEmpty(url.getUserInfo())) {
+            logger.error("Old user credentials detected. Provisioning aborted for host {}.", m_hostname);
+            throw new MalformedURLException("UserInfo in the vmware URL is no longer supported. Please use the new query parameter scheme 'vmware://<vcenter_server_fqdn>?username=<username>;password=<password>;....' .")   
+        }
+
         m_username = m_args.get("username");
         m_password = m_args.get("password");
 
@@ -205,7 +211,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                 m_foreignSource = pathElements[0];
             }
         } else {
-            throw new MalformedURLException("Error processing path element of URL (vmware://username:password@host[/foreign-source]?keyA=valueA;keyB=valueB;...)");
+            throw new MalformedURLException("Error processing path element of URL (vmware://host[/foreign-source]?keyA=valueA;keyB=valueB;...)");
         }
     }
 
@@ -556,6 +562,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
 
         logger.debug("Creating new VIJava access object for host {} ...", m_hostname);
         if ((m_username == null || "".equals(m_username)) || (m_password == null || "".equals(m_password))) {
+            logger.notice("No credentials found for connecting to host {}, trying anonymously...", m_hostname);
             try {
                 vmwareViJavaAccess = new VmwareViJavaAccess(m_hostname);
             } catch (MarshalException e) {
