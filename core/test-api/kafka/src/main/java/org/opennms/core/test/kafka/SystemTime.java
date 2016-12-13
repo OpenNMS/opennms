@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,40 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.common;
+package org.opennms.core.test.kafka;
 
-import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.test.ThreadLocker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import kafka.utils.Time;
 
-/**
- * This {@link MessageConsumer} is used to verify the number of threads
- * that are consuming messages.
- *
- * @author jwhite
- */
-public class ThreadLockingMessageConsumer<S extends Message, T extends Message> extends ThreadLocker implements MessageConsumer<S, T> {
-    private static final Logger LOG = LoggerFactory.getLogger(ThreadLockingMessageConsumer.class);
-
-    private final SinkModule<S, T> module;
-
-    public ThreadLockingMessageConsumer(SinkModule<S, T> module) {
-        this.module = Objects.requireNonNull(module);
+public class SystemTime implements Time {
+    @Override
+    public long milliseconds() {
+        return System.currentTimeMillis();
     }
 
     @Override
-    public SinkModule<S, T> getModule() {
-        return module;
+    public long nanoseconds() {
+        return System.nanoTime();
     }
 
     @Override
-    public void handleMessage(final T message) {
-        LOG.debug("handling message: {} ({} extra threads waiting)", message, getNumExtraThreadsWaiting());
-        park();
+    public void sleep(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    @Override
+    public long hiResClockMs() {
+        return TimeUnit.NANOSECONDS.toMillis(nanoseconds());
     }
 }

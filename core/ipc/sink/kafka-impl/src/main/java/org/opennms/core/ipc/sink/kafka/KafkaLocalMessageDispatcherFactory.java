@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,40 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.common;
-
-import java.util.Objects;
+package org.opennms.core.ipc.sink.kafka;
 
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.test.ThreadLocker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.codahale.metrics.JmxReporter;
 
 /**
- * This {@link MessageConsumer} is used to verify the number of threads
- * that are consuming messages.
+ * Dispatches the messages directly the consumers.
  *
- * @author jwhite
+ * @author ranger
  */
-public class ThreadLockingMessageConsumer<S extends Message, T extends Message> extends ThreadLocker implements MessageConsumer<S, T> {
-    private static final Logger LOG = LoggerFactory.getLogger(ThreadLockingMessageConsumer.class);
+public class KafkaLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> implements InitializingBean {
 
-    private final SinkModule<S, T> module;
+    @Autowired
+    private KafkaMessageConsumerManager messageConsumerManager;
 
-    public ThreadLockingMessageConsumer(SinkModule<S, T> module) {
-        this.module = Objects.requireNonNull(module);
+    public <S extends Message, T extends Message> void dispatch(final SinkModule<S, T> module, final Void metadata, final T message) {
+        messageConsumerManager.dispatch(module, message);
     }
 
     @Override
-    public SinkModule<S, T> getModule() {
-        return module;
-    }
-
-    @Override
-    public void handleMessage(final T message) {
-        LOG.debug("handling message: {} ({} extra threads waiting)", message, getNumExtraThreadsWaiting());
-        park();
+    public void afterPropertiesSet() throws Exception {
+        final JmxReporter reporter = JmxReporter.forRegistry(getMetrics())
+                .inDomain(KafkaLocalMessageDispatcherFactory.class.getPackage().getName())
+                .build();
+        reporter.start();
     }
 }

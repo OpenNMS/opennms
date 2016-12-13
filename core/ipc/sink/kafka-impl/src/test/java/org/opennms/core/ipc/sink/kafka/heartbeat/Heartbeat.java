@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,40 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.common;
+package org.opennms.core.ipc.sink.kafka.heartbeat;
 
-import java.util.Objects;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.test.ThreadLocker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * This {@link MessageConsumer} is used to verify the number of threads
- * that are consuming messages.
- *
- * @author jwhite
- */
-public class ThreadLockingMessageConsumer<S extends Message, T extends Message> extends ThreadLocker implements MessageConsumer<S, T> {
-    private static final Logger LOG = LoggerFactory.getLogger(ThreadLockingMessageConsumer.class);
+@XmlRootElement(name="heartbeat")
+@XmlAccessorType(XmlAccessType.NONE)
+public class Heartbeat implements Message {
 
-    private final SinkModule<S, T> module;
-
-    public ThreadLockingMessageConsumer(SinkModule<S, T> module) {
-        this.module = Objects.requireNonNull(module);
-    }
-
-    @Override
-    public SinkModule<S, T> getModule() {
-        return module;
-    }
-
-    @Override
-    public void handleMessage(final T message) {
-        LOG.debug("handling message: {} ({} extra threads waiting)", message, getNumExtraThreadsWaiting());
-        park();
-    }
 }

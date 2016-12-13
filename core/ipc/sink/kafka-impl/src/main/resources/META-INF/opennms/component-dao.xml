@@ -7,7 +7,7 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
        ">
 
-    <!-- Conditionally load the Camel Sink -->
-    <bean class="org.opennms.core.ipc.sink.camel.ConditionalCamelSinkContext"/>
+    <!-- Conditionally load the Kafka Sink -->
+    <bean class="org.opennms.core.ipc.sink.kafka.ConditionalKafkaSinkContext"/>
 
 </beans>
