@@ -137,7 +137,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         // Old scheme isn't supported anymore
 	if (!Strings.isNullOrEmpty(url.getUserInfo())) {
             logger.error("Old user credentials detected. Provisioning aborted for host {}.", m_hostname);
-            throw new MalformedURLException("UserInfo in the vmware URL is no longer supported. Please use the new query parameter scheme 'vmware://<vcenter_server_fqdn>?username=<username>;password=<password>;....' .")   
+            throw new MalformedURLException("UserInfo in vmware URL is no longer supported. Please use the new query parameter scheme 'vmware://<vcenter_server_fqdn>?username=<username>;password=<password>;....' .")   
         }
 
         m_username = m_args.get("username");
