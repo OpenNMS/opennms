@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,30 +28,129 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.io.UnsupportedEncodingException;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Callable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.camel.MinionDTO;
+import org.opennms.core.network.InetAddressXmlAdapter;
+import org.opennms.netmgt.config.SyslogdConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@XmlRootElement(name = "syslog-dto")
+/**
+ * <p>This class is a {@link Callable} task that is responsible for converting
+ * the syslog payload into an OpenNMS event by using the {@link ConvertToEvent}
+ * class.</p>
+ *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ */
+@XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-public class SyslogDTO extends MinionDTO {
+public class SyslogDTO {
 
-	public SyslogDTO() {
-		// No-arg constructor for JAXB
-		super();
-	}
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogDTO.class);
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this)
-				.append("systemId", super.getHeaders().get(SYSTEM_ID))
-				.append("location", super.getHeaders().get(LOCATION))
-				.append("sourceAddress", super.getHeaders().get(SOURCE_ADDRESS))
-				.append("sourcePort", super.getHeaders().get(SOURCE_PORT))
-				.append("body", super.getBody()).toString();
-	}
+    private String m_systemId;
+    private String m_location;
+    private InetAddress m_sourceAddress;
+    private int m_port;
+    private ByteBuffer m_bytes;
+
+    /**
+     * No-arg constructor so that we can preallocate this object for use with
+     * an LMAX Disruptor or use it with JAXB.
+     */
+    public SyslogDTO() {
+    }
+
+
+    public SyslogDTO(final InetAddress sourceAddress, final int port, final ByteBuffer bytes,  final String systemId, final String location) {
+        if (systemId == null) {
+            throw new IllegalArgumentException("System ID cannot be null");
+        } else if (location == null) {
+            throw new IllegalArgumentException("Location cannot be null");
+        } else if (sourceAddress == null) {
+            throw new IllegalArgumentException("Source address cannot be null");
+        } else if (bytes == null) {
+            throw new IllegalArgumentException("Bytes cannot be null");
+        }
+
+        m_systemId = systemId;
+        m_location = location;
+        m_sourceAddress = sourceAddress;
+        m_port = port;
+        m_bytes = bytes;
+
+    }
+
+    @XmlAttribute
+    public String getSystemId() {
+        return m_systemId;
+    }
+
+    public void setSystemId(String systemId) {
+        m_systemId = systemId;
+    }
+
+    @XmlAttribute
+    public String getLocation() {
+        return m_location;
+    }
+
+    public void setLocation(String location) {
+        m_location = location;
+    }
+
+    @XmlAttribute
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+    public InetAddress getSourceAddress() {
+        return m_sourceAddress;
+    }
+
+    public void setSourceAddress(InetAddress sourceAddress) {
+        m_sourceAddress = sourceAddress;
+    }
+
+    @XmlAttribute
+    public int getPort() {
+        return m_port;
+    }
+
+    public void setPort(int port) {
+        m_port = port;
+    }
+
+    public ByteBuffer getByteBuffer() {
+        return m_bytes;
+    }
+
+    public void setByteBuffer(ByteBuffer bytes) {
+        m_bytes = bytes;
+    }
+
+    @XmlAttribute
+    public byte[] getBytes() {
+        m_bytes.rewind();
+        byte[] retval = new byte[m_bytes.remaining()];
+        m_bytes.get(retval);
+        m_bytes.rewind();
+        return retval;
+    }
+
+    public void setBytes(byte[] bytes) {
+        m_bytes = ByteBuffer.wrap(bytes);
+    }
 
 }

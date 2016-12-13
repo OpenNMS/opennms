@@ -17,6 +17,10 @@
 		<cm:default-properties>
 			<cm:property name="syslog.listen.interface" value="0.0.0.0" />
 			<cm:property name="syslog.listen.port" value="1514" />
+			<cm:property name="syslog.no.threads" value="0" />
+			<cm:property name="sedaQueueSize" value="1000" />
+			<cm:property name="blockWhenFull" value="true" />
+			<cm:property name="limitConcurrentConsumers" value="false" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -31,6 +35,8 @@
 		<argument ref="syslogConfig" />
 		<property name="distPollerDao" ref="distPollerDao"/>
 		<property name="syslogDispatcher" ref="syslogDispatcher" />
+		<property name="sedaQueueSize" value="${sedaQueueSize}" />
+		<property name="noOfThreads" value="${syslog.no.threads}" />
 	</bean>
 
 	<bean class="java.lang.Thread" init-method="start">
@@ -42,12 +48,12 @@
 	<!-- Register a whiteboard of SyslogConnectionHandlers. -->
 	<!-- This whiteboard is injected into the listener instead of being classpath-scanned. -->
 	<bean id="syslogDispatcher" class="org.opennms.core.camel.DispatcherWhiteboard">
-		<argument value="seda:handleMessage"/>
+		<argument value="seda:handleMessage??size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}"/>
 		
 		<property name="context" ref="blueprintBundleContext"/>
-		<property name="messageClass" value="org.opennms.netmgt.syslogd.SyslogConnection"/>
-		<property name="serviceClass" value="org.opennms.netmgt.syslogd.SyslogConnectionHandler"/>
-		<property name="methodName" value="handleSyslogConnection"/>
+		<property name="messageClass" value="org.opennms.netmgt.syslogd.SyslogDTO"/>
+		<property name="serviceClass" value="org.opennms.netmgt.syslogd.SyslogDTOHandler"/>
+		<property name="methodName" value="handleSyslogDTO"/>
 	</bean>
 
 </blueprint>

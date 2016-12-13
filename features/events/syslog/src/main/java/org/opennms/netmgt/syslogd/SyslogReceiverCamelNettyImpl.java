@@ -34,16 +34,23 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.netty.CamelNettyThreadNameDeterminer;
 import org.apache.camel.component.netty.NettyComponent;
 import org.apache.camel.component.netty.NettyConstants;
+import org.apache.camel.component.netty.NettyHelper;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultManagementNameStrategy;
 import org.apache.camel.impl.SimpleRegistry;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.socket.nio.NioWorkerPool;
 import org.opennms.core.camel.DispatcherWhiteboard;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
@@ -55,6 +62,7 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * @author Seth
@@ -82,8 +90,13 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
      * objects to multiple channels such as AMQ and Kafka.
      */
     private DispatcherWhiteboard syslogDispatcher;
+    
+    private int sedaQueueSize;
+    
+    private int noOfThreads;
 
-    /**
+
+	/**
      * Construct a new receiver
      *
      * @param sock
@@ -143,9 +156,17 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         Meter packetMeter = METRICS.meter(MetricRegistry.name(getClass(), "packets"));
         Meter connectionMeter = METRICS.meter(MetricRegistry.name(getClass(), "connections"));
         Histogram packetSizeHistogram = METRICS.histogram(MetricRegistry.name(getClass(), "packetSize"));
+        final ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("SyslogNettyWorker-%d").build();
+        final ArrayBlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(sedaQueueSize);
+        final ThreadPoolExecutor executor = new ThreadPoolExecutor(0, noOfThreads,
+                60L, TimeUnit.SECONDS,
+                queue, threadFactory);
+        final NioWorkerPool workerPool = new NioWorkerPool(executor, NettyHelper.DEFAULT_IO_THREADS,
+                new CamelNettyThreadNameDeterminer("NettyWorker", "syslogd"));
 
         SimpleRegistry registry = new SimpleRegistry();
         registry.put("syslogDispatcher", syslogDispatcher);
+        registry.put("workerPool", workerPool);
 
         //Adding netty component to camel inorder to resolve OSGi loading issues
         NettyComponent nettyComponent = new NettyComponent();
@@ -160,12 +181,13 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         m_camel.setManagementNameStrategy(new DefaultManagementNameStrategy(m_camel, "#name#", null));
 
         m_camel.addComponent("netty", nettyComponent);
+        
 
         try {
             m_camel.addRoutes(new RouteBuilder() {
                 @Override
                 public void configure() throws Exception {
-                    String from = String.format("netty:udp://%s:%s?sync=false&allowDefaultCodec=false&receiveBufferSize=%d&connectTimeout=%d",
+                    String from = String.format("netty:udp://%s:%s?sync=false&allowDefaultCodec=false&receiveBufferSize=%d&connectTimeout=%d&workerPool=#workerPool&orderedThreadPoolExecutor=false",
                         InetAddressUtils.str(m_host),
                         m_port,
                         Integer.MAX_VALUE,
@@ -193,8 +215,10 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             // Create a metric for the syslog packet size
                             packetSizeHistogram.update(byteBuffer.remaining());
                             
-                            SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), byteBuffer, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
-                            exchange.getIn().setBody(connection, SyslogConnection.class);
+                            //SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), byteBuffer, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
+                            //exchange.getIn().setBody(connection, SyslogConnection.class);
+                            SyslogDTO connection = new SyslogDTO(source.getAddress(),source.getPort(), byteBuffer,m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation());
+                            exchange.getIn().setBody(connection, SyslogDTO.class);
 
                             /*
                             try {
@@ -224,4 +248,20 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
     public void setSyslogDispatcher(DispatcherWhiteboard syslogDispatcher) {
         this.syslogDispatcher = syslogDispatcher;
     }
+
+	public int getSedaQueueSize() {
+		return sedaQueueSize;
+	}
+
+	public void setSedaQueueSize(int sedaQueueSize) {
+		this.sedaQueueSize = sedaQueueSize;
+	}
+	
+    public int getNoOfThreads() {
+		return noOfThreads;
+	}
+
+	public void setNoOfThreads(int noOfThreads) {
+		this.noOfThreads = noOfThreads;
+	}
 }

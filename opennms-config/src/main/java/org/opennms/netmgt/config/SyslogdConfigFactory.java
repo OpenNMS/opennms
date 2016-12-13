@@ -209,6 +209,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
     public synchronized String getDiscardUei() {
         return m_config.getConfiguration().getDiscardUei();
     }
+    
 
     /**
      * Parse import-file tags and add all uei-matchs and hide-messages.
@@ -244,4 +245,6 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
             }
         }
     }
+
+
 }

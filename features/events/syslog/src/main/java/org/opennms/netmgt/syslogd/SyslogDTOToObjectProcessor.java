@@ -24,7 +24,7 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
+ *******************************************************************************//*
 
 package org.opennms.netmgt.syslogd;
 
@@ -59,3 +59,4 @@ public class SyslogDTOToObjectProcessor implements Processor {
 		return syslog;
 	}
 }
+*/

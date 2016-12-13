@@ -5,10 +5,8 @@
 	xsi:schemaLocation="
 		http://www.osgi.org/xmlns/blueprint/v1.0.0 
 		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-
 		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
 		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
-
 		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
@@ -54,11 +52,11 @@
 			<bean ref="mapper"/>
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>
-			<to uri="seda:syslogkafkaHandler"/>
-		</route>
+<!-- 			<to uri="seda:syslogkafkaHandler"/> -->
+<!-- 		</route> -->
 
-		<route id="syslogHandler">
-			<from uri="seda:syslogkafkaHandler"/>
+<!-- 		<route id="syslogHandler"> -->
+<!-- 			<from uri="seda:syslogkafkaHandler"/> -->
 			<!-- 
 				Pass the message to the default handler which will convert it into
 				an event and broadcast the event.

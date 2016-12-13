@@ -18,52 +18,40 @@
 			<cm:property name="kafkaAddress" value="127.0.0.1:9092" />
 			<cm:property name="kafkatopic" value="syslog" />
 			<cm:property name="includeRawMessage" value="true" />
+			<cm:property name="sedaQueueSize" value="10000" />
+			<cm:property name="concurrentConsumers" value="10" />
+			<cm:property name="blockWhenFull" value="true" />
+			<cm:property name="limitConcurrentConsumers" value="false" />
+			<cm:property name="producerType" value="async" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
 	<bean id="partitionKeyGenerator" class="org.opennms.core.camel.RandomPartitionKeyGenerator"/>
 
-	<bean id="syslogConnectionHandlerCamel" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerCamelImpl">
-		<argument value="seda:handleMessage"/>
-	</bean>
+	<bean id="syslogConnectionHandlerCamel" class="org.opennms.netmgt.syslogd.CustomSyslogHandler"/>
 
-	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
+	<service interface="org.opennms.netmgt.syslogd.SyslogDTOHandler" ref="syslogConnectionHandlerCamel"/>
 
-	<!-- Camel Event marshalling processor -->
+	<!-- Camel Event marshalling processor 
 	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
 		<argument value="org.opennms.netmgt.syslogd.SyslogDTO" />
-	</bean>
+	</bean>-->
 
-	<bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogObjectToDTOProcessor"/>
+	<!--  <bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogObjectToDTOProcessor"/>-->
 
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
 	<camelContext id="syslogdHandlerKafkaContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerKafkaProperties" />
 
 		<route id="syslogMarshal">
-			<from uri="seda:handleMessage?concurrentConsumers=4" />
+			<from uri="seda:handleMessage?size={{sedaQueueSize}}&amp;blockWhenFull={{blockWhenFull}}&amp;limitConcurrentConsumers={{limitConcurrentConsumers}}" />
 
-			<setHeader headerName="includeRawMessage">
-				<simple resultType="java.lang.Boolean">properties:includeRawMessage</simple>
-			</setHeader>
-
-			<!-- Marshal the message to XML -->
-			<process ref="mapper"/>
-			<process ref="marshaller"/>
-
-			<to uri="seda:sendMessage"/>
-		</route>
-
-		<route id="syslogSendKafka">
-			<from uri="seda:sendMessage?concurrentConsumers=4" />
-
-			<!-- HZN-862: Use ByteArrayPartitioner instead of this key generator -->
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
 			</setHeader>
 
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
-			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
+			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder&amp;producerType={{producerType}}"/>
 		</route>
 	</camelContext>
 
