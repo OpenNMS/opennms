@@ -21,6 +21,7 @@
 			<cm:property name="zookeeperport" value="2181"/>
 			<cm:property name="groupId" value="trapdconsumer"/>
 			<cm:property name="consumerstreams" value="1"/>	
+			<cm:property name="executorQueueSize" value="1" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -47,6 +48,7 @@
 	<bean id="trapNotificationHandlerDefault" class="org.opennms.netmgt.trapd.TrapNotificationHandlerDefaultImpl">
 		<property name="interfaceToNodeCache" ref="interfaceToNodeCache"/>
 		<property name="processorFactory" ref="processorFactory"/>
+]		<property name="executorQueueSize" value="${executorQueueSize}" />
 	</bean>
 
 	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
@@ -68,11 +70,11 @@
 			<!-- TODO: Change these to <process> tags once Trapd is loaded from inside Karaf -->
 			<bean ref="unmarshaller"/>
 			<bean ref="mapper"/>
-			<to uri="seda:trapHandler"/>
-		</route>
+<!-- 			<to uri="seda:trapHandler"/> -->
+<!-- 		</route> -->
 
-		<route id="trapHandler">
-			<from uri="seda:trapHandler" />
+<!-- 		<route id="trapHandler"> -->
+<!-- 			<from uri="seda:trapHandler" /> -->
 			<!--
 				Pass the message to the default handler which will convert it into 
 				an event and broadcast the event.
