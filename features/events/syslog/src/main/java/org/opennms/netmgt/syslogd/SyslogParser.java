@@ -34,15 +34,17 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 
 public class SyslogParser {
@@ -54,19 +56,21 @@ public class SyslogParser {
     private Boolean m_found = null;
     private Boolean m_matched = null;
     private boolean m_traceEnabled = false;
-    private static final Map<String,Class<? extends SyslogParser>> PARSER_CLASSES = new ConcurrentHashMap<>();
-
-    public static SyslogParser getParserInstance(SyslogdConfig config, String text) throws MessageDiscardedException {
-        Class<? extends SyslogParser> parserClass = PARSER_CLASSES.get(config.getParser());
-        if (parserClass == null) {
-            try {
-                parserClass = Class.forName(config.getParser()).asSubclass(SyslogParser.class);
-                PARSER_CLASSES.put(config.getParser(), parserClass);
-            } catch (final Exception ex) {
-                LOG.debug("Unable to instantiate Syslog parser class specified in config: {}", config.getParser(), ex);
-                parserClass = CustomSyslogParser.class;
+    private static final LoadingCache<String,Class<? extends SyslogParser>> PARSER_CLASSES = CacheBuilder.newBuilder().build(
+        new CacheLoader<String,Class<? extends SyslogParser>>() {
+            public Class<? extends SyslogParser> load(String className) {
+                try {
+                    return Class.forName(className).asSubclass(SyslogParser.class);
+                } catch (final Exception e) {
+                    LOG.debug("Unable to instantiate Syslog parser class specified in config: {}", className, e);
+                    return CustomSyslogParser.class;
+                }
             }
         }
+    );
+
+    public static SyslogParser getParserInstance(SyslogdConfig config, String text) throws MessageDiscardedException {
+        Class<? extends SyslogParser> parserClass = PARSER_CLASSES.getUnchecked(config.getParser());
 
         final SyslogParser retval;
         try {
