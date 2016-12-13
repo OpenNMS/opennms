@@ -1,0 +1,17 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-collectd-global-configuration]]
+==== Global Collectd Configuration
+
+.Global configuration parameters for Collectd
+[source, xml]
+----
+<collectd-configuration xmlns="http://xmlns.opennms.org/xsd/config/collectd" <1>
+                      threads="50"> <2>
+----
+
+<1> XML namespace of this configuration file
+<2> Size of the _Thread Pool_ to run _Collectors_ in parallel
+

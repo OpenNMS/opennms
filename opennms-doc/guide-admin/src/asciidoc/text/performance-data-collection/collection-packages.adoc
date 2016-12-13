@@ -1,0 +1,50 @@
+
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-collectd-packages]]
+=== Collection Packages
+
+To define more complex collection configuration it is possible to group _Service_ configurations into _Collection Packages_.
+They allow to assign to _Nodes_ different _Service Configurations_.
+To assign a _Collection Package_ to nodes the link:http://www.opennms.org/wiki/Filters[Rules/Filters] syntax can be used.
+
+Multiple packages can be configured, and an interface can exist in more than one package.
+This gives great flexibility to how the service levels will be determined for a given device.
+The order how _Collection Packages_ are defined is important when _IP Interfaces_ match multiple _Collection Packages_ with the same _Service_ configuration.
+The last _Collection Package_ on the service will be applied.
+This can be used to define a less specific catch all filter for a default configuration.
+A more specific _Collection Package_ can be used to overwrite the default setting.
+
+.Collection Package Attributes
+[source, xml]
+----
+<package name="package1"<1>
+  remote="false"> <2>
+----
+<1> Unique name of the collection package.
+<2> Define whether this collection package is for a remote collection or not.
+
+[[ga-collectd-packages-services]]
+==== Service Configurations
+
+_Service Configurations_ define what _Collector_ to use, as well as how to use it.
+_Service Configurations_ contains common _Service Attributes_ as well as _Collector_ specific parameters.
+
+.Service Configuration Attributes
+[source, xml]
+----
+<service name="SNMP"<1>
+  interval=300000 <2>
+  user-defined="false" <3>
+  status="on"> <4>
+----
+<1> Service Configuration name. It is later mapped to a specific _Collector_ implementation.
+<2> The interval at which the service is to be collected. (in milliseconds).
+<3> Marker to say if service is user defined, used specifically for UI purposes.
+<4> Service is collected only if on.
+
+[[ga-performance-management-collectd-configuration-xml]]
+.Configuration overview for data collection with Collectd
+image::performance-management/02_collectd-configuration-xml.png[]

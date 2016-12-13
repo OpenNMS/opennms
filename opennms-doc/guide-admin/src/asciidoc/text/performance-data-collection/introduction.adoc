@@ -1,4 +1,8 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../images
+:imagesdir: ../../../images
 
+In _OpenNMS_ collection of performance data is done by the _Collectd_ daemon.
+To run these tests _Collectors_ are scheduled and run in parallel in a _Thread Pool_.
+
+This section describes how to configure _Collectd_ for performance data collection with all available _Collectors_ coming with _OpenNMS_.
