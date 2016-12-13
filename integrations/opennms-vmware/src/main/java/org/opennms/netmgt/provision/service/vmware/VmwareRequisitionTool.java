@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -71,7 +72,7 @@ public abstract class VmwareRequisitionTool {
         URL url = new URL(urlString);
 
         // Old scheme isn't supported anymore
-        if (!Strings.isNullOrEmpty(url.getUserInfo())) {
+        if (url.getUserInfo() != null && !url.getUserInfo().isEmpty()) {
             throw new MalformedURLException("UserInfo in vmware URL is no longer supported. Please use the new query parameter scheme 'vmware://<vcenter_server_fqdn>?username=<username;password=<password>;...'");
         }
 
