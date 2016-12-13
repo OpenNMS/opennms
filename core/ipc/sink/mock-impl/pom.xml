@@ -29,7 +29,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.core.ipc.sink</groupId>
-      <artifactId>org.opennms.core.ipc.sink.api</artifactId>
+      <artifactId>org.opennms.core.ipc.sink.common</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

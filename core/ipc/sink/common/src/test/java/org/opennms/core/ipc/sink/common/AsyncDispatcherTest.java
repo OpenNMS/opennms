@@ -35,27 +35,30 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.core.ipc.sink.api.SyncDispatcher;
-import org.opennms.core.ipc.sink.mock.MockSinkModule;
-import org.opennms.core.ipc.sink.test.ThreadLockingSyncDispatcher;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AsyncDispatcherTest {
 
-    private SinkModule<MyMessage, MyMessage> module = new MockSinkModule<>();
+    @Mock
+    private SinkModule<MyMessage, MyMessage> module;
+
+    private static class MyMessage implements Message { }
 
     @Test(timeout=3*60*1000)
     public void testConcurrentAndQueuing() throws Exception {
         final int QUEUE_SIZE = 100;
         final int NUM_THREADS = 16;
 
-        ThreadLockingDispatcherFactory threadLockingDispatcherFactory = new ThreadLockingDispatcherFactory();
+        ThreadLockingDispatcherFactory<MyMessage> threadLockingDispatcherFactory = new ThreadLockingDispatcherFactory<>();
         AsyncDispatcher<MyMessage> asyncDispatcher = threadLockingDispatcherFactory.createAsyncDispatcher(module, new AsyncPolicy() {
             @Override
             public int getQueueSize() {
@@ -101,39 +104,5 @@ public class AsyncDispatcherTest {
         await().atMost(1, MINUTES).until(() -> threadLockingDispatcherFactory.getNumMessageDispatched(),
                 greaterThan(QUEUE_SIZE));
         asyncDispatcher.close();
-    }
-
-    private static class MyMessage implements Message { }
-
-    public static class ThreadLockingDispatcherFactory extends AbstractMessageDispatcherFactory<Void> {
-        private final AtomicInteger numMessageDispatched = new AtomicInteger(0);
-
-        private final ThreadLockingSyncDispatcher<?> threadLockingSyncDispatcher = new ThreadLockingSyncDispatcher<MyMessage>() {
-            @Override
-            public void send(MyMessage message) {
-                super.send(message);
-                numMessageDispatched.incrementAndGet();
-            }
-        };
-
-        @SuppressWarnings("unchecked")
-        @Override
-        protected <S extends Message, T extends Message> SyncDispatcher<S> createSyncDispatcher(DispatcherState<Void,S,T> state) {
-            return (ThreadLockingSyncDispatcher<S>)threadLockingSyncDispatcher;
-        }
-
-        @Override
-        public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
-            throw new IllegalStateException();
-        }
-
-        @SuppressWarnings("unchecked")
-        public <S extends Message> ThreadLockingSyncDispatcher<S> getThreadLockingSyncDispatcher() {
-            return (ThreadLockingSyncDispatcher<S>)threadLockingSyncDispatcher;
-        }
-
-        public int getNumMessageDispatched() {
-            return numMessageDispatched.get();
-        }
     }
 }

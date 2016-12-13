@@ -26,36 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.test;
-
-import java.util.Objects;
+package org.opennms.core.ipc.sink.mock;
 
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.test.ThreadLocker;
+import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 
 /**
- * This {@link MessageConsumer} is used to verify the number of threads
- * that are consuming messages.
+ * A simple {@link MessageProducerFactory} that handles all messages with a single consumer.
+ *
+ * Used for testing.
  *
  * @author jwhite
  */
-public class ThreadLockingMessageConsumer<S extends Message, T extends Message> extends ThreadLocker implements MessageConsumer<S, T> {
+public class MockMessageDispatcherFactory<U extends Message, V extends Message> extends AbstractMessageDispatcherFactory<Void> {
 
-    private final SinkModule<S, T> module;
+    private MessageConsumer<U,V> consumer;
 
-    public ThreadLockingMessageConsumer(SinkModule<S, T> module) {
-        this.module = Objects.requireNonNull(module);
+    @SuppressWarnings("unchecked")
+    @Override
+    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
+        if (consumer != null) {
+            consumer.handleMessage((V)message);
+        }
     }
 
-    @Override
-    public SinkModule<S, T> getModule() {
-        return module;
+    public MessageConsumer<U, V> getConsumer() {
+        return consumer;
     }
 
-    @Override
-    public void handleMessage(T message) {
-        park();
+    public void setConsumer(MessageConsumer<U, V> consumer) {
+        this.consumer = consumer;
     }
 }

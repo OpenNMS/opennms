@@ -52,7 +52,7 @@ import org.opennms.core.ipc.sink.api.SyncDispatcher;
 import org.opennms.core.ipc.sink.camel.HeartbeatSinkPerfIT.HeartbeatGenerator;
 import org.opennms.core.ipc.sink.camel.heartbeat.Heartbeat;
 import org.opennms.core.ipc.sink.camel.heartbeat.HeartbeatModule;
-import org.opennms.core.ipc.sink.test.ThreadLockingMessageConsumer;
+import org.opennms.core.ipc.sink.common.ThreadLockingMessageConsumer;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
