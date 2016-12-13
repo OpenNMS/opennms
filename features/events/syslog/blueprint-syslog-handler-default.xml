@@ -61,21 +61,21 @@
 			<from uri="queuingservice:{{queueName}}?concurrentConsumers=8"/>
 			<!-- No performance improvement with asyncConsumer -->
 			<!-- <from uri="activemq:{{queueName}}?asyncConsumer=true&amp;concurrentConsumers=8"/> -->
-			<to uri="seda:unmarshalMessage"/>
+			<to uri="seda:unmarshalMessage?size=25000"/>
 		</route>
 
 		<route id="unmarshalSyslogConnection">
-			<from uri="seda:unmarshalMessage?concurrentConsumers=8"/>
+			<from uri="seda:unmarshalMessage?concurrentConsumers=8&amp;size=25000&amp;blockWhenFull=true"/>
 			<!-- TODO: Change these to <process> tags once Syslogd is loaded from inside Karaf -->
 			<bean ref="unmarshaller"/>
 			<bean ref="mapper"/>
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>
-			<to uri="seda:syslogHandler"/>
+			<to uri="seda:syslogHandler?size=25000"/>
 		</route>
 
 		<route id="handleSyslogConnection">
-			<from uri="seda:syslogHandler?concurrentConsumers=8"/>
+			<from uri="seda:syslogHandler?concurrentConsumers=8&amp;size=25000&amp;blockWhenFull=true"/>
 			<!-- 
 				Pass the message to the default handler which will convert it into
 				an event and broadcast the event.

@@ -66,7 +66,7 @@
 			</setHeader>
 
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
-			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
+			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder&amp;producerType=async"/>
 		</route>
 	</camelContext>
 </blueprint>
