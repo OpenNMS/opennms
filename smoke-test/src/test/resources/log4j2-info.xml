@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WARN here is just for internal log4j messages and does not effect logging in general -->
+<configuration status="WARN" monitorInterval="60">
+
+  <!--
+      The logging in OpenNMS is designed to associate a 'prefix' with each thread that runs.
+      This prefix is used to indicate what 'subsystem' the thread is doing work for so that
+      logging for the subsystem can all be directed to the same log.  The way this needs to work 
+      in the code is that when a thread is doing work for subsystem (ie when it starts a method for
+      this system) it sets its prefix in a ThreadLocal way.  All logs on this thread will then
+      get logged to that 'prefix' file.  After the thread is done doing the work (that is before the 
+      method returns) the prefix needs to be set back to the prefix it had before.  Failure to do that 
+      will cause all subsequent work done by this thread to log to the wrong place.  
+    
+      If log messages are appearing in the wrong log, it is a bug on the part of the developers of the 
+      subsystem that is receiving the log messages because they are not restoring the log prefix 
+      correctly when their thread is finished. 
+
+      If your log messages are showing up in uncategorized.log, it indicates that the subsystem making calls
+      to your code is not properly setting a prefix when being called.
+  -->
+
+  <properties>
+    <property name="prefix">uncategorized</property>
+    <property name="logdir">/opt/opennms/logs</property>
+  </properties>
+
+  <!--
+    This section specifies how log messages are directed to log files.  The below indicates
+    the log messages are sent to files of the form logs/${prefix}.log.  Each message is placed in 
+    a log file corresponding to its MDC prefix.  This happens even if the prefix is not specified
+    above.
+    It is possible to add additional appenders to this section while debugging if you would
+    like messages to be logged in some other way.  See http://logging.apache.org/log4j/2.x/ for details.
+  -->
+  <appenders>
+    <Routing name="RoutingAppender">
+      <Routes pattern="$${ctx:prefix}">
+        <Route>
+          <RollingFile name="Rolling-${ctx:prefix}" fileName="${logdir}/${ctx:prefix}.log"
+                       filePattern="${logdir}/${ctx:prefix}.%i.log.gz">
+            <PatternLayout>
+              <pattern>%d %-5p [%t] %c{1.}: %m%n</pattern>
+            </PatternLayout>
+
+            <!-- Rotate logs at 100MB-->
+            <SizeBasedTriggeringPolicy size="100MB" />
+
+            <!-- Rotate through 4 logs -->
+            <DefaultRolloverStrategy max="4" fileIndex="min" />
+          </RollingFile>
+        </Route>
+          <!--
+	      This route in configured specifically for the instrumentation log so it can be parsed
+              by the instrumentation log reader.  It does not compress the logs and has modified
+              pattern.
+	  -->
+        <Route key="instrumentation">
+          <RollingFile name="Rolling-instrumentation" fileName="${logdir}/instrumentation.log"
+                       filePattern="${logdir}/instrumentation.%i.log">
+            <PatternLayout>
+              <!-- the logging class is not included here since its is verbose and always the same -->
+              <pattern>%d %-5p [%t] %m%n</pattern>
+            </PatternLayout>
+
+            <!-- Rotate logs at 100MB-->
+            <SizeBasedTriggeringPolicy size="100MB" />
+
+            <!-- Rotate through 4 logs -->
+            <DefaultRolloverStrategy max="4" fileIndex="min" />
+          </RollingFile>
+        </Route>
+      </Routes>
+    </Routing>
+  </appenders>
+
+  <loggers>
+
+    <!-- we always want this at info for the instrumentation log reader -->
+    <logger name="org.opennms.netmgt.collectd.DefaultCollectdInstrumentation" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <!-- 
+      Set the threshold for individual loggers that may be too chatty at the default 
+      level for their prefix.
+    -->
+    <logger name="com.google.gwt.user.server" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="com.mchange" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="httpclient" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="net.sf.jasperreports" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.apache.bsf" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.apache.commons" additivity="false" level="WARN">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.apache.coyote" additivity="false" level="WARN">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.apache.mina.filter.logging" additivity="false" level="WARN">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.asteriskjava" additivity="false" level="WARN">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.eclipse.jetty.webapp" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.exolab.castor" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.gwtwidgets" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.hibernate" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.hibernate.sql" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.hibernate.cfg.annotations.EntityBinder" additivity="false" level="WARN">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.mortbay" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.quartz" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.springframework" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="snaq.db" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="com.datastax.driver" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+
+    <!-- Allow any message to pass through the root logger -->
+    <root level="DEBUG">
+      <!-- 
+        Each category/log can be set to one of TRACE, INFO, DEBUG, WARN, ERROR
+
+        This section of the setting the log level based on Logging prefix. Log messages that are logged
+        without a prefix work as if the prefix were 'uncategorized'.
+
+        The KeyValuePair specifies a prefix and a log level for messages that have the prefix.
+
+        The defaultThreshold is for log messages that do not match any configured KeyValuePair.
+
+        None of the below of the KeyValuePairs are actually necessary but are just to indicate
+        some well known prefixes in the log or to override the defaultThreshold for a given prefix.
+      -->
+      <DynamicThresholdFilter key="prefix" defaultThreshold="DEBUG">
+        <!-- always leave instrumentation logging at INFO -->
+        <KeyValuePair key="instrumentation"      value="INFO" />
+        <KeyValuePair key="access-point-monitor" value="INFO" />
+        <KeyValuePair key="ackd"                 value="INFO" />
+        <KeyValuePair key="actiond"              value="INFO" />
+        <KeyValuePair key="alarmd"               value="INFO" />
+        <KeyValuePair key="asterisk-gateway"     value="INFO" />
+        <KeyValuePair key="archiver"             value="INFO" />
+        <KeyValuePair key="bsmd"                 value="INFO" />
+        <KeyValuePair key="collectd"             value="INFO" />
+        <KeyValuePair key="correlator"           value="INFO" />
+        <KeyValuePair key="dhcpd"                value="INFO" />
+        <KeyValuePair key="discovery"            value="INFO" />
+        <KeyValuePair key="eventd"               value="INFO" />
+        <KeyValuePair key="event-translator"     value="INFO" />
+        <KeyValuePair key="icmp"                 value="INFO" />
+        <KeyValuePair key="jetty-server"         value="INFO" />
+        <KeyValuePair key="enlinkd"              value="INFO" />
+        <KeyValuePair key="manager"              value="DEBUG" />
+        <KeyValuePair key="map"                  value="INFO" />
+        <KeyValuePair key="notifd"               value="INFO" />
+        <KeyValuePair key="oss-qosd"             value="INFO" />
+        <KeyValuePair key="oss-qosdrx"           value="INFO" />
+        <KeyValuePair key="passive"              value="INFO" />
+        <KeyValuePair key="poller"               value="INFO" />
+        <KeyValuePair key="provisiond"           value="INFO" />
+        <KeyValuePair key="queued"               value="INFO" />
+        <KeyValuePair key="reportd"              value="INFO" />
+        <KeyValuePair key="reports"              value="INFO" />
+        <KeyValuePair key="rtc"                  value="INFO" />
+        <KeyValuePair key="statsd"               value="INFO" />
+        <KeyValuePair key="scriptd"              value="INFO" />
+        <KeyValuePair key="snmp-poller"          value="INFO" />
+        <KeyValuePair key="syslogd"              value="INFO" />
+        <KeyValuePair key="threshd"              value="INFO" />
+        <KeyValuePair key="tl1d"                 value="INFO" />
+        <KeyValuePair key="trapd"                value="INFO" />
+        <KeyValuePair key="trouble-ticketer"     value="INFO" />
+        <KeyValuePair key="vacuumd"              value="INFO" />
+        <KeyValuePair key="web"                  value="INFO" />
+      </DynamicThresholdFilter>
+
+      <appender-ref ref="RoutingAppender"/>
+
+    </root>
+  </loggers>
+
+</configuration>
+
