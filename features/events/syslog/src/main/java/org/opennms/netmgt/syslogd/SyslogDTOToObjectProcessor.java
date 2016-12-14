@@ -24,14 +24,12 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************//*
+ *******************************************************************************/
 
 package org.opennms.netmgt.syslogd;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.opennms.core.camel.MinionDTO;
-import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,16 +45,12 @@ public class SyslogDTOToObjectProcessor implements Processor {
 	public static SyslogConnection dto2object(SyslogDTO syslogDto) {
 		SyslogConnection syslog = new SyslogConnection();
 
-		syslog.setLocation(syslogDto.getHeader(MinionDTO.LOCATION));
-		syslog.setSourceAddress(InetAddressUtils.getInetAddress(syslogDto.getHeader(MinionDTO.SOURCE_ADDRESS)));
-		syslog.setPort(Integer.parseInt(syslogDto.getHeader(MinionDTO.SOURCE_PORT)));
-		syslog.setSystemId(syslogDto.getHeader(MinionDTO.SYSTEM_ID));
-
-		if(syslogDto.getBody() != null && syslogDto.getBody().length > 0){
-			syslog.setBytes(syslogDto.getBody());
-		}
+		syslog.setLocation(syslogDto.getLocation());
+		syslog.setSourceAddress(syslogDto.getSourceAddress());
+		syslog.setPort(syslogDto.getPort());
+		syslog.setSystemId(syslogDto.getSystemId());
+		syslog.setBytes(syslogDto.getBytes());
 
 		return syslog;
 	}
 }
-*/
