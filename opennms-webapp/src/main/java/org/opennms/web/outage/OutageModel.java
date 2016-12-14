@@ -73,8 +73,9 @@ public abstract class OutageModel {
             PreparedStatement stmt = conn.prepareStatement(""
             		+ "SELECT DISTINCT \n" + 
             		"         outages.outageid, outages.iflostservice, outages.ifregainedservice, node.nodeID, \n" + 
-            		"         node.nodeLabel, \n" + 
-            		"         ipinterface.ipaddr, \n" + 
+            		"         node.nodeLabel, \n" +
+                    "         node.location, \n" +
+                    "         ipinterface.ipaddr, \n" +
             		"         ipinterface.iphostname, \n" + 
             		"         service.servicename, \n" + 
             		"         ifservices.serviceId \n" + 
@@ -124,7 +125,7 @@ public abstract class OutageModel {
             d.watch(conn);
             
             PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT DISTINCT node.nodeid, outages.iflostservice as timeDown, outages.ifregainedservice as timeUp, node.nodelabel "
+                    "SELECT DISTINCT node.nodeid, node.location, outages.iflostservice as timeDown, outages.ifregainedservice as timeUp, node.nodelabel "
                         + "FROM outages, node, ipinterface, ifservices "
                         + "WHERE node.nodeid=ipinterface.nodeid "
                         + "AND ipinterface.id=ifservices.ipinterfaceid AND ifservices.id=outages.ifserviceid "
@@ -205,6 +206,8 @@ public abstract class OutageModel {
             outage.serviceId = rs.getInt("serviceid");
 
             outage.nodeLabel = rs.getString("nodeLabel");
+
+            outage.location = rs.getString("location");
 
             outage.hostname = rs.getString("iphostname");
 
