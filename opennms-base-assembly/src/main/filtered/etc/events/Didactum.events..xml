@@ -1,0 +1,27 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.46501.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>5</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/vendor/didactum/DIDACTUM-SYSTEM-MIB/ctlUnitTrapNotification</uei>
+        <event-label>DIDACTUM-SYSTEM-MIB defined trap event: ctlUnitTrapNotification</event-label>
+        <descr>
+            &lt;p>Didactum EMS trap&lt;/p>&lt;table>&lt;/table>
+        </descr>
+        <logmsg dest="logndisplay">&lt;p>
+            ctlUnitTrapNotification trap received&lt;/p>
+        </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+</events>
