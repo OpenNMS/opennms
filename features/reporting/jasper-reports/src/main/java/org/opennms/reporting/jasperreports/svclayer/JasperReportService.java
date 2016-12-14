@@ -408,6 +408,7 @@ public class JasperReportService implements ReportService {
 
         // Filter parameter for sub reports
         for (JRParameter parameter : mainReport.getParameters()) {
+            LOG.debug("buildSubreport: found main report parameter {} whose class is {}", parameter.getName(), parameter.getValueClassName());
             // We need only parameter for Sub reports and we *DON'T* need the default parameter JASPER_REPORT
             if ("net.sf.jasperreports.engine.JasperReport".equals(parameter.getValueClassName()) && !"JASPER_REPORT".equals(parameter.getName())) {
                 subreportMap.put(parameter.getName(), parameter.getValueClassName());
@@ -420,7 +421,7 @@ public class JasperReportService implements ReportService {
         }
 
         for (final Map.Entry<String,Object> entry : subreportMap.entrySet()) {
-            LOG.debug("Key: {} - Value: {}", entry.getKey(), entry.getValue());
+            LOG.debug("Main jasper report {}: Found subreport parameter Key: {} - Value: {}", mainReportId, entry.getKey(), entry.getValue());
         }
         return subreportMap;
     }
@@ -433,6 +434,7 @@ public class JasperReportService implements ReportService {
         try {
             Logging.withPrefix(LOG4J_CATEGORY, new Callable<Void>() {
                 @Override public Void call() throws Exception {
+                    LOG.debug("Rendering jasper report {}", reportId);
                     final JasperReport jasperReport = getJasperReport(reportId);
                     final Map<String, Object> jrReportParms = buildJRparameters(reportParms, jasperReport.getParameters());
                     jrReportParms.putAll(buildSubreport(reportId, jasperReport));
@@ -564,9 +566,11 @@ public class JasperReportService implements ReportService {
     private JasperReport getJasperReport(String reportId) throws ReportException {
         try {
             JasperReport report = JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId));
+            LOG.debug("Compiling jasper report {}, reportId);
             for (Object eachKey : System.getProperties().keySet()) {
                 String eachStringKey = (String) eachKey;
                 if (eachStringKey.startsWith("net.sf.jasperreports")) {
+                    LOG.debug("Adding property {} with value {}", eachStringKey, System.getProperty(eachStringKey));
                     report.setProperty(eachStringKey, System.getProperty(eachStringKey));
                 }
             }
