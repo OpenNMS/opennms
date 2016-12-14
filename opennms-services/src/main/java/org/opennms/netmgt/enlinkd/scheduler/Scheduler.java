@@ -260,7 +260,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 
 	/**
 	 * This method is used to unschedule a ready runnable in the system.
-	 * The runnuble is removed from all queue interval where is found.
+	 * The runnable is removed from all queue interval where is found.
 	 *
 	 * @param runnable
 	 *            The element to remove from queue intervals.
@@ -268,10 +268,9 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	public synchronized void unschedule(ReadyRunnable runnable) {
 	    LOG.debug("unschedule: Removing all {}", runnable.getInfo());
 		
-		boolean done = false;
 		synchronized(m_queues) {
 		  Iterator<Long> iter = m_queues.keySet().iterator();
-		  while (iter.hasNext() && !done) {
+		  while (iter.hasNext()) {
 		
 			Long key = iter.next();
 			unschedule(runnable, key.longValue());
@@ -594,24 +593,27 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 					do {
 						try {
 							readyRun = in.peek();
-							if (readyRun != null && readyRun.isReady()) {
+							if (readyRun != null)
+                                                            // Pop the interface/readyRunnable from the
+                                                            // queue for execution.
+                                                            //
+                                                            in.remove();
+							    
+							if (readyRun.isReady()) {
 							    LOG.debug("run: found ready runnable {}", readyRun.getInfo());
 
-								// Pop the interface/readyRunnable from the
-								// queue for execution.
-								//
-								in.remove();
 
 								// Add runnable to the execution queue
 								m_runner.execute(readyRun);
 								++runned;
+							} else {
+                                                            LOG.debug("run: not ready ready runnable {}", readyRun.getInfo());
+							    in.add(readyRun);
 							}
 						} catch (InterruptedException ex) {
 							return; // jump all the way out
 						}
-					} while (readyRun != null && readyRun.isReady()
-							&& --maxLoops > 0);
-
+					} while (readyRun != null && --maxLoops > 0);
 				}
 				
 			}
