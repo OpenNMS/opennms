@@ -579,4 +579,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             return m_linkdConfig.getRescanInterval(); 
     }
 
+    public int getMaxbft() {
+        return m_linkdConfig.getMaxBft();
+    }
 }

@@ -488,4 +488,9 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         return "BridgeLinkDiscovery";
     }
 
+    @Override
+    public boolean isReady() {
+        LOG.info("isReady: node: {}, maxBft {}, updateMapsixe {}.", getNodeId(),m_linkd.getMaxbft(),m_linkd.getQueryManager().getUpdateBftMap().size());
+        return m_linkd.getQueryManager().getUpdateBftMap().size() < m_linkd.getMaxbft();
+    }
 }
