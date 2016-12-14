@@ -50,6 +50,15 @@
 				</annotation>
 			</attribute>
 
+			<attribute name="max_bft" type="int"
+				use="optional" default="1">
+				<annotation>
+					<documentation>
+						Max bridge forwarding table to hold in memory.
+					</documentation>
+				</annotation>
+			</attribute>
+
 			<attribute name="use-cdp-discovery" type="boolean"
 				use="optional" default="true">
 				<annotation>
