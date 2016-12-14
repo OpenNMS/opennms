@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.eventd.processor.expandable;
 
-import org.opennms.netmgt.eventd.StandardExpandableParameterResolvers;
 import org.opennms.netmgt.eventd.EventUtil;
+import org.opennms.netmgt.eventd.StandardExpandableParameterResolvers;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -39,9 +39,11 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public interface ExpandableParameterResolver {
 
-    String getValue(String parm, Event event, EventUtil eventUtil);
+    String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil);
 
     boolean matches(String parm);
+
+    String parse(String parm);
 
     boolean requiresTransaction();
 }
