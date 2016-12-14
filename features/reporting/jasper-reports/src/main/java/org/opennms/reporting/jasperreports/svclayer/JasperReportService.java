@@ -55,6 +55,9 @@ import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
+import net.sf.jasperreports.engine.JRSubreport;
+import net.sf.jasperreports.engine.util.JRVisitorSupport;
+import net.sf.jasperreports.engine.util.JRElementsVisitor;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
@@ -566,7 +569,30 @@ public class JasperReportService implements ReportService {
     private JasperReport getJasperReport(String reportId) throws ReportException {
         try {
             JasperReport report = JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId));
-            LOG.debug("Compiling jasper report {}, reportId);
+            LOG.debug("jasper report {} has been compiled (was it needed)", reportId);
+
+            // This block make sure that all compiled subreports are up-to-date
+            JRElementsVisitor.visitReport(report, new JRVisitorSupport(){
+               @Override
+               public void visitSubreport(JRSubreport subreport){
+                   try {
+                       String subreportExpression = subreport.getExpression().getText();
+                       String compiledSubreportName = subreportExpression.substring(1,subreportExpression.length()-1);
+                       String sourceSubreportName = compiledSubreportName.replace(".jasper",".jrxml");
+                       LOG.debug("Visiting subreport {}", sourceSubreportName);
+                       File compiledSubreport = new File(compiledSubreportName);
+                       File sourceSubreport = new File(sourceSubreportName);
+                       if(!compiledSubreport.exists() || compiledSubreport.lastModified() < sourceSubreport.lastModified()) {
+                           LOG.info(sourceSubreportName + " needs to be compiled.");
+                           JasperCompileManager.compileReportToFile(sourceSubreportName,compiledSubreportName);
+                           LOG.info(sourceSubreportName + " compiled.");
+                        }
+                   } catch (JRException e) {
+                       LOG.error("unable to compile jasper subreport", e);
+                   }
+                }
+            });
+
             for (Object eachKey : System.getProperties().keySet()) {
                 String eachStringKey = (String) eachKey;
                 if (eachStringKey.startsWith("net.sf.jasperreports")) {
