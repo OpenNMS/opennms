@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -69,14 +70,31 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
         Objects.requireNonNull(asyncPolicy);
         this.syncDispatcher = Objects.requireNonNull(syncDispatcher);
 
-        queue = new LinkedBlockingQueue<Runnable>(asyncPolicy.getQueueSize());
+        final RejectedExecutionHandler rejectedExecutionHandler;
+        if (asyncPolicy.isBlockWhenFull()) {
+            queue = new OfferBlockingQueue<>(asyncPolicy.getQueueSize());
+            rejectedExecutionHandler = new ThreadPoolExecutor.AbortPolicy();
+        } else {
+            queue = new LinkedBlockingQueue<Runnable>(asyncPolicy.getQueueSize());
+            // Reject and increase the dropped counter when the queue is full
+            final Counter droppedCounter = state.getMetrics().counter(MetricRegistry.name(state.getModule().getId(), "dropped"));
+            rejectedExecutionHandler = new RejectedExecutionHandler() {
+                @Override
+                public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
+                    droppedCounter.inc();
+                    throw new RejectedExecutionException("Task " + r.toString() +
+                            " rejected from " +
+                            e.toString());
+                }
+            };
+        }
+
         state.getMetrics().register(MetricRegistry.name(state.getModule().getId(), "queue-size"), new Gauge<Integer>() {
             @Override
             public Integer getValue() {
                 return queue.size();
             }
         });
-        final Counter droppedCounter = state.getMetrics().counter(MetricRegistry.name(state.getModule().getId(), "dropped"));
 
         executor = new ThreadPoolExecutor(
                 asyncPolicy.getNumThreads(),
@@ -85,22 +103,51 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
                 TimeUnit.MILLISECONDS,
                 queue,
                 new LogPreservingThreadFactory("OpenNMS.Sink.AsyncDispatcher." + state.getModule().getId(), Integer.MAX_VALUE),
-                new RejectedExecutionHandler() {
-                    @Override
-                    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                        rateLimittedLogger.warn("Task was rejected. Dropping message for {}.", state.getModule().getId());
-                        droppedCounter.inc();
-                    }
-                }
+                rejectedExecutionHandler
             );
+    }
+
+    /**
+     * Blocks calls to {@link LinkedBlockingQueue#offer(Object)}, converting
+     * these to calls to {@link LinkedBlockingQueue#put(Object)}.
+     *
+     * This is used to block the calling thread when trying to execute
+     * tasks when the queue is already full.
+     *
+     * Make sure that corePoolSize == maximumPoolSize if using
+     * this in an ExecutorService.
+     */
+    private static class OfferBlockingQueue<E> extends LinkedBlockingQueue<E> {
+        private static final long serialVersionUID = 1L;
+
+        public OfferBlockingQueue(int capacity) {
+            super(capacity);
+        }
+
+        @Override
+        public boolean offer(E e) {
+            try {
+                put(e);
+                return true;
+            } catch(InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+            return false;
+        }
     }
 
     @Override
     public CompletableFuture<S> send(S message) {
-        return CompletableFuture.supplyAsync(() -> {
-            syncDispatcher.send(message);
-            return message;
-        }, executor);
+        try {
+            return CompletableFuture.supplyAsync(() -> {
+                syncDispatcher.send(message);
+                return message;
+            }, executor);
+        } catch (RejectedExecutionException ree) {
+            final CompletableFuture<S> future = new CompletableFuture<>();
+            future.completeExceptionally(ree);
+            return future;
+        }
     }
 
     @Override

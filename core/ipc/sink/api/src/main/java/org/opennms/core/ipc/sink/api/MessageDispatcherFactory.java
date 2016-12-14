@@ -42,12 +42,10 @@ public interface MessageDispatcherFactory {
     <S extends Message, T extends Message> SyncDispatcher<S> createSyncDispatcher(SinkModule<S, T> module);
 
     /**
-     * Creates a new asynchronous dispatcher that will return immediately once
-     * the message has been successfully queued for dispatch.
+     * Creates a new dispatcher used to send messages asynchronously.
      *
-     * The message will be dispatched by a background thread.
-     *
-     * If the queue is full the message will be dropped.
+     * The behavior of the asynchronous dispatcher is defined
+     * by the module's {@link AsyncPolicy}.
      */
-    <S extends Message, T extends Message> AsyncDispatcher<S> createAsyncDispatcher(SinkModule<S, T> module, AsyncPolicy asyncPolicy);
+    <S extends Message, T extends Message> AsyncDispatcher<S> createAsyncDispatcher(SinkModule<S, T> module);
 }

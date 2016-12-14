@@ -29,6 +29,7 @@
 package org.opennms.core.ipc.sink.mock;
 
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
+import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 
@@ -56,6 +57,11 @@ public class MockSinkModule<S extends Message, T extends Message> implements Sin
 
     @Override
     public AggregationPolicy<S, T> getAggregationPolicy() {
+        return null;
+    }
+
+    @Override
+    public AsyncPolicy getAsyncPolicy() {
         return null;
     }
 }

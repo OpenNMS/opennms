@@ -44,6 +44,7 @@ import java.util.Objects;
 
 import org.junit.Test;
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
+import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -295,6 +296,11 @@ public class AggregationTest {
 
         @Override
         public T unmarshal(String message) {
+            return null;
+        }
+
+        @Override
+        public AsyncPolicy getAsyncPolicy() {
             return null;
         }
     }

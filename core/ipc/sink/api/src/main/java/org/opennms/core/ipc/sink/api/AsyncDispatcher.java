@@ -39,8 +39,21 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface AsyncDispatcher<S extends Message> extends AutoCloseable {
 
+    /**
+     * Asynchronously send the given message and return a future
+     * that is resolved once the message was successfully dispatched.
+     *
+     * @param message the message to send
+     * @return a future that is resolved once the message was dispatched
+     */
     CompletableFuture<S> send(S message);
 
+    /**
+     * Returns the number of messages that are currently queued
+     * awaiting for dispatch.
+     *
+     * @return current queue size
+     */
     int getQueueSize();
 
 }

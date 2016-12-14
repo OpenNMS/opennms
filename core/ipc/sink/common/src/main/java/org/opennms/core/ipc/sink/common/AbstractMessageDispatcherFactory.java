@@ -28,9 +28,10 @@
 
 package org.opennms.core.ipc.sink.common;
 
+import java.util.Objects;
+
 import org.opennms.core.ipc.sink.aggregation.AggregatingMessageProducer;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -43,7 +44,7 @@ import com.codahale.metrics.Timer.Context;
  * This class does all the hard work of building and maintaining the state of the message
  * dispatchers so that concrete implementations only need to focus on dispatching the messages.
  *
- * Different types of dispatches are created based on whether or not the module is using aggregation.
+ * Different types of dispatchers are created based on whether or not the module is using aggregation.
  *
  * Asynchronous dispatchers use a queue and a thread pool to delegate to a suitable synchronous dispatcher.
  *
@@ -82,15 +83,18 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
 
     @Override
     public <S extends Message, T extends Message> SyncDispatcher<S> createSyncDispatcher(SinkModule<S, T> module) {
+        Objects.requireNonNull(module, "module cannot be null");
         final DispatcherState<W,S,T> state = new DispatcherState<>(this, module);
         return createSyncDispatcher(state);
     }
 
     @Override
-    public <S extends Message, T extends Message> AsyncDispatcher<S> createAsyncDispatcher(SinkModule<S, T> module, AsyncPolicy asyncPolicy) {
+    public <S extends Message, T extends Message> AsyncDispatcher<S> createAsyncDispatcher(SinkModule<S, T> module) {
+        Objects.requireNonNull(module, "module cannot be null");
+        Objects.requireNonNull(module.getAsyncPolicy(), "module must have an AsyncPolicy");
         final DispatcherState<W,S,T> state = new DispatcherState<>(this, module);
         final SyncDispatcher<S> syncDispatcher = createSyncDispatcher(state);
-        return new AsyncDispatcherImpl<>(state, asyncPolicy, syncDispatcher);
+        return new AsyncDispatcherImpl<>(state, module.getAsyncPolicy(), syncDispatcher);
     }
 
     protected <S extends Message, T extends Message> SyncDispatcher<S> createSyncDispatcher(DispatcherState<W,S,T> state) {

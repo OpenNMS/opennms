@@ -29,14 +29,41 @@
 package org.opennms.core.ipc.sink.api;
 
 /**
- * Defines should messages should be asynchronously dispatched.
+ * Defines the behavior of asynchronous dispatching.
  *
  * @author jwhite
  */
 public interface AsyncPolicy {
-    
+
+    /**
+     * Maximum number of messages that can be queued awaiting
+     * for dispatch.
+     *
+     * @return queue size
+     */
     int getQueueSize();
 
+    /**
+     * Number of background threads that will be used to
+     * dispatch messages from the queue.
+     *
+     * @return number of threads
+     */
     int getNumThreads();
 
+    /**
+     * Used to control the behavior of a dispatch when the queue
+     * is full.
+     *
+     * When <code>true</code> the calling thread will be blocked
+     * until the queue can accept the message, or the thread is
+     * interrupted.
+     *
+     * When <code>false</code> the dispatch will return a future
+     * with a {@link java.util.concurrent.RejectedExecutionException}/
+     *
+     * @return whether or not the thread calling dispatch
+     * should block when the queue is full
+     */
+    boolean isBlockWhenFull();
 }

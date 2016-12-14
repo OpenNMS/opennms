@@ -29,7 +29,7 @@
 package org.opennms.core.ipc.sink.api;
 
 /**
- * Defines how the messages will be routed and marshalled/unmarshalled over the wire.
+ * Defines how the messages will be routed and marshaled/unmarshaled over the wire.
  *
  * Messages can be aggregated by an optional {@link AggregationPolicy}.
  * If aggregation is not used, the message type sent by the producers must match
@@ -75,4 +75,11 @@ public interface SinkModule<S extends Message, T extends Message> {
      */
     AggregationPolicy<S,T> getAggregationPolicy();
 
+    /**
+     * Defines how messages should be asynchronously dispatched.
+     *
+     * @return the {@link AsyncPolicy} used when asynchronously dispatching
+     * messages for this module.
+     */
+    AsyncPolicy getAsyncPolicy();
 }
