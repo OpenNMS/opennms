@@ -26,28 +26,42 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.mock;
+package org.opennms.core.ipc.sink.common;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.core.ipc.sink.api.SyncDispatcher;
 
-public class MockMessageConsumerManager implements MessageConsumerManager {
+public class ThreadLockingDispatcherFactory<U extends Message> extends AbstractMessageDispatcherFactory<Void> {
+    private final AtomicInteger numMessageDispatched = new AtomicInteger(0);
 
+    private final ThreadLockingSyncDispatcher<?> threadLockingSyncDispatcher = new ThreadLockingSyncDispatcher<U>() {
+        @Override
+        public void send(U message) {
+            super.send(message);
+            numMessageDispatched.incrementAndGet();
+        }
+    };
+
+    @SuppressWarnings("unchecked")
     @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message) {
-        // pass
+    protected <S extends Message, T extends Message> SyncDispatcher<S> createSyncDispatcher(DispatcherState<Void,S,T> state) {
+        return (ThreadLockingSyncDispatcher<S>)threadLockingSyncDispatcher;
     }
 
     @Override
-    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
+    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
+        throw new IllegalStateException();
     }
 
-    @Override
-    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
+    @SuppressWarnings("unchecked")
+    public <S extends Message> ThreadLockingSyncDispatcher<S> getThreadLockingSyncDispatcher() {
+        return (ThreadLockingSyncDispatcher<S>)threadLockingSyncDispatcher;
     }
 
+    public int getNumMessageDispatched() {
+        return numMessageDispatched.get();
+    }
 }

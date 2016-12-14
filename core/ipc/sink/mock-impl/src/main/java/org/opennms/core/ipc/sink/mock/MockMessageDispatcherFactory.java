@@ -30,24 +30,33 @@ package org.opennms.core.ipc.sink.mock;
 
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 
-public class MockMessageConsumerManager implements MessageConsumerManager {
+/**
+ * A simple {@link MessageProducerFactory} that handles all messages with a single consumer.
+ *
+ * Used for testing.
+ *
+ * @author jwhite
+ */
+public class MockMessageDispatcherFactory<U extends Message, V extends Message> extends AbstractMessageDispatcherFactory<Void> {
 
+    private MessageConsumer<U,V> consumer;
+
+    @SuppressWarnings("unchecked")
     @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message) {
-        // pass
+    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
+        if (consumer != null) {
+            consumer.handleMessage((V)message);
+        }
     }
 
-    @Override
-    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
+    public MessageConsumer<U, V> getConsumer() {
+        return consumer;
     }
 
-    @Override
-    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
+    public void setConsumer(MessageConsumer<U, V> consumer) {
+        this.consumer = consumer;
     }
-
 }

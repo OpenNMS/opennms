@@ -26,28 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.mock;
+package org.opennms.core.ipc.sink.common;
 
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.core.ipc.sink.api.SyncDispatcher;
+import org.opennms.test.ThreadLocker;
 
-public class MockMessageConsumerManager implements MessageConsumerManager {
-
+/**
+ * This {@link SyncDispatcher} is used to verify the number of threads
+ * that are producing messages.
+ *
+ * @author jwhite
+ */
+public class ThreadLockingSyncDispatcher<S extends Message> extends ThreadLocker implements SyncDispatcher<S> {
     @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message) {
-        // pass
+    public void send(S message) {
+        park();
     }
 
     @Override
-    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception {
+    public void close() throws Exception {
         // pass
     }
-
-    @Override
-    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
-    }
-
 }

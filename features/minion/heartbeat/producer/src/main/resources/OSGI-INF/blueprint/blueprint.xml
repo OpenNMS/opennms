@@ -9,11 +9,11 @@
 
     <reference id="minion" interface="org.opennms.minion.core.api.MinionIdentity" />
 
-    <reference id="messageProducerFactory" interface="org.opennms.core.ipc.sink.api.MessageProducerFactory" />
+    <reference id="messageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory" />
 
     <bean id="heartbeatProducer" class="org.opennms.minion.heartbeat.producer.HeartbeatProducer" destroy-method="cancel">
         <argument ref="minion"/>
-        <argument ref="messageProducerFactory"/>
+        <argument ref="messageDispatcherFactory"/>
     </bean>
 
 </blueprint>

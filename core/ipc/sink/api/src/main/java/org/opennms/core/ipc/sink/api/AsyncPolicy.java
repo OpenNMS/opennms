@@ -26,28 +26,44 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.mock;
+package org.opennms.core.ipc.sink.api;
 
-import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.core.ipc.sink.api.SinkModule;
+/**
+ * Defines the behavior of asynchronous dispatching.
+ *
+ * @author jwhite
+ */
+public interface AsyncPolicy {
 
-public class MockMessageConsumerManager implements MessageConsumerManager {
+    /**
+     * Maximum number of messages that can be queued awaiting
+     * for dispatch.
+     *
+     * @return queue size
+     */
+    int getQueueSize();
 
-    @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message) {
-        // pass
-    }
+    /**
+     * Number of background threads that will be used to
+     * dispatch messages from the queue.
+     *
+     * @return number of threads
+     */
+    int getNumThreads();
 
-    @Override
-    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
-    }
-
-    @Override
-    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
-    }
-
+    /**
+     * Used to control the behavior of a dispatch when the queue
+     * is full.
+     *
+     * When <code>true</code> the calling thread will be blocked
+     * until the queue can accept the message, or the thread is
+     * interrupted.
+     *
+     * When <code>false</code> the dispatch will return a future
+     * with a {@link java.util.concurrent.RejectedExecutionException}/
+     *
+     * @return whether or not the thread calling dispatch
+     * should block when the queue is full
+     */
+    boolean isBlockWhenFull();
 }

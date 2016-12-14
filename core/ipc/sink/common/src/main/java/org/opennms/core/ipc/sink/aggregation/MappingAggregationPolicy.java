@@ -26,28 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.mock;
+package org.opennms.core.ipc.sink.aggregation;
 
+import org.opennms.core.ipc.sink.api.AggregationPolicy;
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.core.ipc.sink.api.SinkModule;
 
-public class MockMessageConsumerManager implements MessageConsumerManager {
+/**
+ * An aggregation policy that performs a simple map operation
+ * on the given message.
+ *
+ * @author jwhite
+ */
+public abstract class MappingAggregationPolicy<S, T extends Message> implements AggregationPolicy<S, T> {
+
+    public abstract T map(S message);
 
     @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message) {
-        // pass
+    public Object key(S message) {
+        return message;
     }
 
     @Override
-    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
+    public int getCompletionSize() {
+        return 1;
     }
 
     @Override
-    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
+    public int getCompletionIntervalMs() {
+        return 0;
+    }
+
+    @Override
+    public T aggregate(T oldBucket, S newMessage) {
+        return map(newMessage);
     }
 
 }

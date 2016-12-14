@@ -30,7 +30,7 @@
     <constructor-arg ref="sinkServer"/>
   </bean>
 
-  <bean id="camelLocalMessageProducerFactory" class="org.opennms.core.ipc.sink.camel.CamelLocalMessageProducerFactory" />
+  <bean id="camelLocalMessageDispatcherFactory" class="org.opennms.core.ipc.sink.camel.CamelLocalMessageDispatcherFactory" />
 
   <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
   <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">

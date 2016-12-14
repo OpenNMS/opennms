@@ -26,28 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.mock;
+package org.opennms.core.ipc.sink.aggregation;
 
+import org.opennms.core.ipc.sink.api.AggregationPolicy;
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.core.ipc.sink.api.SinkModule;
 
-public class MockMessageConsumerManager implements MessageConsumerManager {
+/**
+ * An aggregation policy that returns the original unmodified
+ * message as the aggregate.
+ *
+ * @author jwhite
+ */
+public class IdentityAggregationPolicy<T extends Message> implements AggregationPolicy<T, T> {
 
     @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message) {
-        // pass
+    public Object key(T message) {
+        return message;
     }
 
     @Override
-    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
+    public T aggregate(T oldBucket, T newMessage) {
+        return newMessage;
     }
 
     @Override
-    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
+    public int getCompletionSize() {
+        return 1;
+    }
+
+    @Override
+    public int getCompletionIntervalMs() {
+        return 0;
     }
 
 }

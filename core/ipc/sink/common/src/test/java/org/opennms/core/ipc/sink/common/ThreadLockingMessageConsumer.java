@@ -26,28 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.mock;
+package org.opennms.core.ipc.sink.common;
+
+import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.test.ThreadLocker;
 
-public class MockMessageConsumerManager implements MessageConsumerManager {
+/**
+ * This {@link MessageConsumer} is used to verify the number of threads
+ * that are consuming messages.
+ *
+ * @author jwhite
+ */
+public class ThreadLockingMessageConsumer<S extends Message, T extends Message> extends ThreadLocker implements MessageConsumer<S, T> {
 
-    @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message) {
-        // pass
+    private final SinkModule<S, T> module;
+
+    public ThreadLockingMessageConsumer(SinkModule<S, T> module) {
+        this.module = Objects.requireNonNull(module);
     }
 
     @Override
-    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
+    public SinkModule<S, T> getModule() {
+        return module;
     }
 
     @Override
-    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
+    public void handleMessage(T message) {
+        park();
     }
-
 }

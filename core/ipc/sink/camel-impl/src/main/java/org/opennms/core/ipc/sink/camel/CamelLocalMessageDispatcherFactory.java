@@ -28,30 +28,34 @@
 
 package org.opennms.core.ipc.sink.camel;
 
-import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageProducer;
-import org.opennms.core.ipc.sink.api.MessageProducerFactory;
+import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.codahale.metrics.JmxReporter;
 
 /**
  * Message producer that dispatches the messages directly the consumers.
  *
  * @author jwhite
  */
-public class CamelLocalMessageProducerFactory implements MessageProducerFactory {
+public class CamelLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> implements InitializingBean {
 
     @Autowired
     private CamelMessageConsumerManager messageConsumerManager;
 
     @Override
-    public <T extends Message> MessageProducer<T> getProducer(SinkModule<T> module) {
-        return new MessageProducer<T>() {
-            @Override
-            public void send(T message) {
-                messageConsumerManager.dispatch(module, message);
-            }
-        };
+    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
+        messageConsumerManager.dispatch(module, message);
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        final JmxReporter reporter = JmxReporter.forRegistry(getMetrics())
+                .inDomain(CamelLocalMessageDispatcherFactory.class.getPackage().getName())
+                .build();
+        reporter.start();
+    }
 }

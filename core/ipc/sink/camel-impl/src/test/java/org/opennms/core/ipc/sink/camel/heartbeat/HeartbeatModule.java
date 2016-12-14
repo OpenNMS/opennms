@@ -28,9 +28,11 @@
 
 package org.opennms.core.ipc.sink.camel.heartbeat;
 
+import org.opennms.core.ipc.sink.api.AggregationPolicy;
+import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
 
-public class HeartbeatModule extends AbstractXmlSinkModule<Heartbeat> {
+public class HeartbeatModule extends AbstractXmlSinkModule<Heartbeat, Heartbeat> {
 
     public static final HeartbeatModule INSTANCE = new HeartbeatModule();
 
@@ -46,6 +48,18 @@ public class HeartbeatModule extends AbstractXmlSinkModule<Heartbeat> {
     @Override
     public String getId() {
         return "Hearbeat";
+    }
+
+    @Override
+    public AggregationPolicy<Heartbeat, Heartbeat> getAggregationPolicy() {
+        // No aggregation
+        return null;
+    }
+
+    @Override
+    public AsyncPolicy getAsyncPolicy() {
+        // Only synchronous dispatching
+        return null;
     }
 
 }

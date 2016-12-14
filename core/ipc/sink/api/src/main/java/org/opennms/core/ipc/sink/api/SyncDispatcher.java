@@ -26,28 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.mock;
+package org.opennms.core.ipc.sink.api;
 
-import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.core.ipc.sink.api.SinkModule;
+/**
+ * Used to synchronously dispatch messages.
+ *
+ * Instances of these should be created by the {@link MessageDispatcherFactory}.
+ *
+ * @author jwhite
+ */
+public interface SyncDispatcher<S extends Message> extends AutoCloseable {
 
-public class MockMessageConsumerManager implements MessageConsumerManager {
-
-    @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message) {
-        // pass
-    }
-
-    @Override
-    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
-    }
-
-    @Override
-    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        // pass
-    }
+    void send(S message);
 
 }
