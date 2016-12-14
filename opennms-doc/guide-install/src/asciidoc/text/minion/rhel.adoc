@@ -2,16 +2,26 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+[[gi-install-minion]]
+=== Installing Minion
+
+This section describes how to install the _Minion_ and how to configure it to communicate with a central _{opennms-product-name}_ instance.
+
+Installing a distributed _{opennms-product-name}_ requires:
+
+* Instance of _{opennms-product-name}_ needs to be same version as _Minion_ Packages
+* Packages are only available as _RPMs_ for _RHEL_-based systems
+* _{opennms-product-name}_ needs to be installed and the communication to the _ReST_ and _ActiveMQ_ endpoints is possible
+
 [[gi-install-minion-rhel]]
-=== RHEL
+==== RHEL
 
 NOTE: This description was built on _RHEL 7_ and _CentOS 7.1_.
 
-==== Install Minion
+Start by <<gi-install-rhel-repository,setting up the OpenNMS Yum repository>> and <<gi-install-oracle-java,installing Java>>.
 
-Start by <<gi-install-opennms-yum-repo,setting up the OpenNMS Yum repository>> and <<gi-install-oracle-java,installing Java>>.
-
-NOTE: OpenNMS Minion currently requires a JDK. See http://issues.opennms.org/browse/HZN-620[HZN-620] for details.
+NOTE: _Minion_ currently requires a JDK.
+      See http://issues.opennms.org/browse/HZN-620[HZN-620] for details.
 
 Once the _Yum_ repository has been configured:
 
@@ -42,61 +52,7 @@ The _Minion_ packages setup the following directory structure:
 └── system
 ----
 
-[[gi-install-minion-rhel-ping]]
-==== Configure Linux to Allow Non-Root ICMP
-
-By default, Linux does not allow regular users to perform `ping` operations from arbitrary programs (including Java).  To enable the Minion to ping properly, you must set a sysctl option.
-
-.Enable User Ping (Running System)
-[source, shell]
-----
-# run this command as root to allow ping by any user (does not survive reboots)
-sysctl net.ipv4.ping_group_range='0 429496729'
-----
-
-If you wish to restrict the range further, use the GID for the user the Minion will run as, rather than `429496729`.
-
-To enable this permanently, create a file in `/etc/sysctl.d/` to set the range:
-
-./etc/sysctl.d/99-zzz-non-root-icmp.conf
-[source, shell]
-----
-# we start this filename with "99-zzz-" to make sure it's last, after anything else that might have set it
-net.ipv4.ping_group_range=0 429496729
-----
-
-[[gi-install-minion-rhel-trapd]]
-==== Configure Minion to Receive Traps
-
-If you wish your Minion to listen to SNMP traps, you will need to configure your firewall to port forward from the priviledged trap port (162) to the Minion's default trap listener on port 1162.
-
-.Forward 1162 to 162 with Firewalld
-[source, shell]
-----
-# enable masquerade to allow port-forwards
-firewall-cmd --add-masquerade
-# forward port 162 TCP and UDP to port 162 on localhost
-firewall-cmd --add-forward-port=port=162:proto=udp:toport=1162:toaddr=127.0.0.1
-firewall-cmd --add-forward-port=port=162:proto=tcp:toport=1162:toaddr=127.0.0.1
-----
-
-[[gi-install-minion-rhel-syslogd]]
-==== Configure Minion to Receive Syslog Messages
-
-If you wish your Minion to listen to syslog messages, you will need to configure your firewall to port forward from the priviledged syslog port (514) to the Minion's default syslog listener on port 1514.
-
-.Forward 1514 to 514 with Firewalld
-[source, shell]
-----
-# enable masquerade to allow port-forwards
-firewall-cmd --add-masquerade
-# forward port 514 TCP and UDP to port 514 on localhost
-firewall-cmd --add-forward-port=port=514:proto=udp:toport=1514:toaddr=127.0.0.1
-firewall-cmd --add-forward-port=port=514:proto=tcp:toport=1514:toaddr=127.0.0.1
-----
-
-[[gi-install-minion-rhel-init]]
-==== Initialize Minion
+After successful installation a `minion` service can be started and enabled using _systemd_ commands.
 
 .System startup configuration for _Minion_
 [source, shell]
