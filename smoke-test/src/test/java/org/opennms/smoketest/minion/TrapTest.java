@@ -99,7 +99,7 @@ public class TrapTest {
     public void canReceiveTraps() throws Exception {
         Date startOfTest = new Date();
 
-        final InetSocketAddress trapAddr = minionSystem.getServiceAddress(ContainerAlias.MINION, 1162, "udp");
+        final InetSocketAddress trapAddr = minionSystem.getServiceAddress(ContainerAlias.MINION1, 1162, "udp");
 
         // Connect to the postgresql container
         InetSocketAddress pgsql = minionSystem.getServiceAddress(ContainerAlias.POSTGRES, 5432);

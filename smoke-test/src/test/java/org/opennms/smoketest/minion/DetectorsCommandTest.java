@@ -141,7 +141,7 @@ public class DetectorsCommandTest {
 
     @Test
     public void canLoadDetectorsOnMinion() throws Exception {
-        final InetSocketAddress sshAddr = m_testEnvironment.getServiceAddress(ContainerAlias.MINION, 8201);
+        final InetSocketAddress sshAddr = m_testEnvironment.getServiceAddress(ContainerAlias.MINION1, 8201);
         await().atMost(3, MINUTES).pollInterval(15, SECONDS).pollDelay(0, SECONDS)
             .until(() -> listAndVerifyDetectors("Minion", sshAddr), hasSize(0));
     }
