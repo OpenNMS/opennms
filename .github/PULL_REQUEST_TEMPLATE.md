@@ -9,4 +9,4 @@ Please use the [JIRA](https://issues.opennms.org) issue number and create a link
 
 * JIRA: http://issues.opennms.org/browse/${JIRA-ISSUE-NUMBER}
 
-Our [continuous integration system](http://bamboo.internal.opennms.com:8085) will test and veriy your changes.
+Our [continuous integration system](http://bamboo.internal.opennms.com:8085) will test and verify your changes.
