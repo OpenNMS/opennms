@@ -48,8 +48,15 @@ public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandl
 	 */
 	public static final int TRAP_PROCESSOR_THREADS = Runtime.getRuntime().availableProcessors();
 
+	/**
+	 * Maximum size of the backlog queue for event processing.
+	 * 
+	 * TODO: Make this configurable
+	 */
+	public static final int QUEUE_SIZE = 25000;
+
 	private final ExecutorFactory m_executorFactory = new ExecutorFactoryJavaImpl();
-	private final ExecutorService m_processorExecutor = m_executorFactory.newExecutor(TRAP_PROCESSOR_THREADS, Integer.MAX_VALUE, "OpenNMS.Trapd", "trapProcessors");
+	private final ExecutorService m_processorExecutor = m_executorFactory.newExecutor(TRAP_PROCESSOR_THREADS, QUEUE_SIZE, "OpenNMS.Trapd", "trapProcessors");
 
 	private TrapQueueProcessorFactory m_processorFactory;
 
