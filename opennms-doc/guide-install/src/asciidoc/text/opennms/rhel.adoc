@@ -5,8 +5,7 @@
 [[gi-install-opennms]]
 == OpenNMS
 
-After configuring the package repository, you are ready to install the _OpenNMS_ packages,
-configure the database, and initialize the _OpenNMS_ platform.
+After configuring the package repository, you are ready to install the _{opennms-product-name}_ packages, configure the database, and initialize the _{opennms-product-name}_ platform.
 
 [[gi-install-opennms-rhel]]
 === RHEL

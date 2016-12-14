@@ -39,10 +39,11 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -319,7 +320,7 @@ final class TcpStreamHandler implements Runnable {
 
             // process the events
             if (events != null && events.length != 0) {
-                final List<Event> okEvents = new ArrayList<Event>(events.length);
+                final Collection<Event> okEvents = new LinkedHashSet<>(events.length);
 
                 /*
                  * This synchronization loop will hold onto the lock

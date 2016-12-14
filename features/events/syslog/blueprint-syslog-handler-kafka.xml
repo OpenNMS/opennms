@@ -24,7 +24,7 @@
 	<bean id="partitionKeyGenerator" class="org.opennms.core.camel.RandomPartitionKeyGenerator"/>
 
 	<bean id="syslogConnectionHandlerCamel" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerCamelImpl">
-		<argument value="seda:handleMessage"/>
+		<argument value="seda:handleMessage?size=25000"/>
 	</bean>
 
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
@@ -41,7 +41,7 @@
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerKafkaProperties" />
 
 		<route id="syslogMarshal">
-			<from uri="seda:handleMessage?concurrentConsumers=4" />
+			<from uri="seda:handleMessage?concurrentConsumers=8&amp;size=25000&amp;blockWhenFull=true" />
 
 			<setHeader headerName="includeRawMessage">
 				<simple resultType="java.lang.Boolean">properties:includeRawMessage</simple>
@@ -51,11 +51,11 @@
 			<process ref="mapper"/>
 			<process ref="marshaller"/>
 
-			<to uri="seda:sendMessage"/>
+			<to uri="seda:sendMessage?size=25000"/>
 		</route>
 
 		<route id="syslogSendKafka">
-			<from uri="seda:sendMessage?concurrentConsumers=4" />
+			<from uri="seda:sendMessage?concurrentConsumers=8&amp;size=25000&amp;blockWhenFull=true" />
 
 			<!-- HZN-862: Use ByteArrayPartitioner instead of this key generator -->
 			<setHeader headerName="kafka.PARTITION_KEY">
@@ -63,7 +63,7 @@
 			</setHeader>
 
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
-			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
+			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder&amp;producerType=async"/>
 		</route>
 	</camelContext>
 

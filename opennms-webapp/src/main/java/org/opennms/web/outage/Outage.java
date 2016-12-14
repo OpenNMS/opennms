@@ -72,6 +72,8 @@ public class Outage {
 
     protected String building;
 
+    protected String location;
+
     /**
      * <p>Constructor for Outage.</p>
      */
@@ -294,6 +296,14 @@ public class Outage {
         return (this.getLostServiceTime());
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     /**
      * <p>toString</p>
      *
@@ -307,6 +317,7 @@ public class Outage {
             .append("IP Address", getIpAddress())
             .append("Hostname", getHostname())
             .append("Node Label", getNodeLabel())
+            .append("Location", getLocation())
             .append("Service Name", getServiceName())
             .append("Lost Service Time", getLostServiceTime())
             .append("Regained Service Time", getRegainedServiceTime())
