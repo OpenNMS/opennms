@@ -30,17 +30,20 @@ package org.opennms.netmgt.reporting.service;
 
 
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.dao.api.ReportdConfigurationDao;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.Trigger;
+import org.quartz.TriggerKey;
+import org.quartz.impl.JobDetailImpl;
+import org.quartz.impl.matchers.GroupMatcher;
+import org.quartz.impl.triggers.CronTriggerImpl;
 import org.quartz.spi.JobFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,20 +135,16 @@ public class ReportScheduler implements InitializingBean, DisposableBean {
     
     private void printCurrentSchedule() {
         try {
-            
-            
-            LOG.info("calendarNames: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getCalendarNames()));
+            LOG.info("calendarNames: {}", String.join(", ", getScheduler().getCalendarNames().toArray(new String[0])));
             LOG.info("current executing jobs: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getCurrentlyExecutingJobs().toArray()));
-            LOG.info("current job names: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getJobNames(JOB_GROUP)));
+            LOG.info("current job names: {}", getScheduler().getJobKeys(GroupMatcher.<JobKey>groupEquals(JOB_GROUP)).stream().map(JobKey::getName).collect(Collectors.joining(", ")));
             LOG.info("scheduler metadata: {}", getScheduler().getMetaData());
-            LOG.info("trigger names: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getTriggerNames(JOB_GROUP)));
-
-            Iterator<String> it = Arrays.asList(getScheduler().getTriggerNames(JOB_GROUP)).iterator();
-            while (it.hasNext()) {
-                String triggerName = it.next();
-                CronTrigger t = (CronTrigger) getScheduler().getTrigger(triggerName, JOB_GROUP);
+            LOG.info("trigger names: {}", getScheduler().getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(JOB_GROUP)).stream().map(TriggerKey::getName).collect(Collectors.joining(", ")));
+            
+            for (TriggerKey key : getScheduler().getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(JOB_GROUP))) {
+                CronTrigger t = (CronTrigger)getScheduler().getTrigger(key);
                 StringBuilder sb = new StringBuilder("trigger: ");
-                sb.append(triggerName);
+                sb.append(key.getName());
                 sb.append(", calendar name: ");
                 sb.append(t.getCalendarName());
                 sb.append(", cron expression: ");
@@ -176,12 +175,12 @@ public class ReportScheduler implements InitializingBean, DisposableBean {
 
             for(Report report : m_configDao.getReports()) {
                 JobDetail detail = null;
-                Trigger trigger = null;
+                CronTriggerImpl trigger = null;
 
                 try {
-                    detail = new JobDetail(report.getReportName(), JOB_GROUP, ReportJob.class, false, false, false);
+                    detail = new JobDetailImpl(report.getReportName(), JOB_GROUP, ReportJob.class, false, false);
                     detail.getJobDataMap().put(ReportJob.KEY, report);
-                    trigger = new CronTrigger(report.getReportName(), JOB_GROUP, report.getCronSchedule());
+                    trigger = new CronTriggerImpl(report.getReportName(), JOB_GROUP, report.getCronSchedule());
                     trigger.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING);
                     getScheduler().scheduleJob(detail, trigger);
 
@@ -198,18 +197,13 @@ public class ReportScheduler implements InitializingBean, DisposableBean {
     private void removeCurrentJobsFromSchedule()  {
         synchronized (m_lock) {
             try {
-
-            Iterator<String> it = Arrays.asList(m_scheduler.getJobNames(JOB_GROUP)).iterator();
-            while (it.hasNext()) {
-                String jobName = it.next();
-               
-                    getScheduler().deleteJob(jobName, JOB_GROUP);
-            }
-        
-            } catch (SchedulerException e) {
-                    LOG.error("removeCurrentJobsFromSchedule: {}", e.getMessage(), e);
+                for (JobKey key : m_scheduler.getJobKeys(GroupMatcher.<JobKey>groupEquals(JOB_GROUP))) {
+                    getScheduler().deleteJob(key);
                 }
-            }        
+            } catch (SchedulerException e) {
+                LOG.error("removeCurrentJobsFromSchedule: {}", e.getMessage(), e);
+            }
+        }
     }
 
     /**

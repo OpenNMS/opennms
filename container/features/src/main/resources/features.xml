@@ -412,8 +412,8 @@
       <bundle>mvn:org.opennms/jicmp6-api/2.0.1</bundle>
     </feature>
     
-    <feature name="quartz" description="quartz" version="1.6.5">
-      <bundle>wrap:mvn:org.opensymphony.quartz/quartz/1.6.5</bundle>
+    <feature name="quartz" description="quartz" version="${quartzVersion}">
+      <bundle>wrap:mvn:org.quartz-scheduler/quartz/${quartzVersion}</bundle>
     </feature>
     
     <feature name="twitter4j" description="twitter4j" version="3.0.6">

@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.poller.remote;
 
-import org.springframework.scheduling.quartz.SimpleTriggerBean;
+import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 /**
  * <p>PolledServiceTrigger class.</p>
@@ -36,7 +36,7 @@ import org.springframework.scheduling.quartz.SimpleTriggerBean;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class PolledServiceTrigger extends SimpleTriggerBean {
+public class PolledServiceTrigger extends SimpleTriggerFactoryBean {
 	
 	private static final long serialVersionUID = -3224274965842979439L;
 
@@ -46,11 +46,13 @@ public class PolledServiceTrigger extends SimpleTriggerBean {
 	 * @param polledService a {@link org.opennms.netmgt.poller.remote.PolledService} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public PolledServiceTrigger(PolledService polledService) throws Exception {
+	public PolledServiceTrigger(PollJobDetail jobDetail) throws Exception {
 		super();
 
+		final PolledService polledService = (PolledService)jobDetail.getJobDataMap().get(PollJobDetail.JOB_DATA_MAP_KEY_POLLEDSERVICE);
 		setName(polledService.getNodeId()+':'+polledService.getIpAddr()+':'+polledService.getSvcName());
 		setRepeatInterval(polledService.getPollModel().getPollInterval());
+		setJobDetail(jobDetail);
 
 		afterPropertiesSet();
 	}

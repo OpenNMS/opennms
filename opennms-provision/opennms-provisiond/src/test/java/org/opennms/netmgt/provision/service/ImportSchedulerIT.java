@@ -33,7 +33,6 @@ import static org.junit.Assert.fail;
 import java.util.Calendar;
 
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -41,8 +40,6 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -50,9 +47,12 @@ import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerListener;
+import org.quartz.impl.JobDetailImpl;
+import org.quartz.impl.triggers.SimpleTriggerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -101,7 +101,7 @@ public class ImportSchedulerIT implements InitializingBean {
         
         RequisitionDef def = m_dao.getDefs().get(0);
         
-        JobDetail detail = new JobDetail("test", ImportScheduler.JOB_GROUP, ImportJob.class, false, false, false);
+        JobDetail detail = new JobDetailImpl("test", ImportScheduler.JOB_GROUP, ImportJob.class, false, false);
         detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource());
         detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, def.getRescanExisting());
 
@@ -120,7 +120,7 @@ public class ImportSchedulerIT implements InitializingBean {
         
         final MyBoolWrapper callTracker = new MyBoolWrapper();
         
-        m_importScheduler.getScheduler().addTriggerListener(new TriggerListener() {
+        m_importScheduler.getScheduler().getListenerManager().addTriggerListener(new TriggerListener() {
             
             
             @Override
@@ -129,7 +129,7 @@ public class ImportSchedulerIT implements InitializingBean {
             }
 
             @Override
-            public void triggerComplete(Trigger trigger, JobExecutionContext context, int triggerInstructionCode) {
+            public void triggerComplete(Trigger trigger, JobExecutionContext context, Trigger.CompletedExecutionInstruction triggerInstructionCode) {
                 LOG.info("triggerComplete called on trigger listener");
                 callTracker.setCalled(true);
             }
@@ -167,8 +167,7 @@ public class ImportSchedulerIT implements InitializingBean {
         Calendar testCal = Calendar.getInstance();
         testCal.add(Calendar.SECOND, 5);
         
-        Trigger trigger = new SimpleTrigger("test", ImportScheduler.JOB_GROUP, testCal.getTime());
-        trigger.addTriggerListener("TestTriggerListener");
+        SimpleTriggerImpl trigger = new SimpleTriggerImpl("test", ImportScheduler.JOB_GROUP, testCal.getTime());
         m_importScheduler.getScheduler().scheduleJob(detail, trigger);
         m_importScheduler.start();
         
