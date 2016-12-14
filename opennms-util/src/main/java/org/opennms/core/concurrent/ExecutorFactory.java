@@ -29,6 +29,7 @@
 package org.opennms.core.concurrent;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionHandler;
 
 /**
  * This factory is used to create {@link ExecutorService} thread pools for use by
@@ -84,4 +85,21 @@ public interface ExecutorFactory {
 	 * @return An ExecutorService pool
 	 */
 	ExecutorService newExecutor(int threads, int queueSize, String daemonName, String executorName);
+
+	/**
+	 * Construct a new {@link ExecutorService} with a specified queue size for 
+	 * the backlog of tasks. When the queue is full, the specified 
+	 * {@link RejectedExecutionHandler} will be used.
+	 * 
+	 * For CPU-intensive tasks, it is a good idea to use the value of
+	 * {@link Runtime#availableProcessors()} (or a reasonable multiple of it
+	 * based on the tasks) for the <code>threads</code> parameter to ensure 
+	 * that the CPU is fully utilized.
+	 * 
+	 * @param threads
+	 * @param daemonName
+	 * @param executorName
+	 * @return An ExecutorService pool
+	 */
+	ExecutorService newExecutor(int threads, int queueSize, String daemonName, String executorName, RejectedExecutionHandler handler);
 }

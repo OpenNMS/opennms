@@ -51,6 +51,7 @@
     <constructor-arg ref="eventdMetricRegistry"/>
     <property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize"/>
     <property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength"/>
+    <property name="handlerBlockWhenFull" ref="eventIpcManagerHandlerBlockWhenFull"/>
     <property name="eventHandler" ref="eventdEventHandler"/>
   </bean>
 
@@ -75,8 +76,9 @@
 
   <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
   <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
+  <bean id="eventIpcManagerHandlerBlockWhenFull" factory-bean="eventdConfigManager" factory-method="getBlockWhenFull"/>
   <bean id="shouldLogEventSummaries" factory-bean="eventdConfigManager" factory-method="shouldLogEventSummaries"/>
-  
+
   <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
     <constructor-arg ref="eventdMetricRegistry"/>
     <property name="eventProcessors">

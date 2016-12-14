@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.eventd;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.opennms.netmgt.events.api.EventConstants;
@@ -44,17 +46,20 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 
 import junit.framework.TestCase;
-import static org.junit.Assert.assertNotEquals;
 
 /**
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class EventIpcManagerDefaultImplTest extends TestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(EventIpcManagerDefaultImplTest.class);
+
     private EasyMockUtils m_mocks = new EasyMockUtils();
     private EventIpcManagerDefaultImpl m_manager;
     private EventHandler m_eventHandler = m_mocks.createMock(EventHandler.class);
@@ -501,6 +506,182 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         // Sync: When invoking sendNowSync, the Runnable should be ran from the callers thread
         m_manager.sendNowSync(e);
         assertEquals(Thread.currentThread().getId(), threadRecordingEventHandler.getThreadId());
+    }
+
+    public void testDoNotBlockWhenFullWithSlowEventHandler() throws InterruptedException {
+        AtomicInteger counter = new AtomicInteger();
+
+        EventHandler handler = new EventHandler() {
+            @Override
+            public Runnable createRunnable(Log eventLog) {
+                return new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                        }
+                        counter.incrementAndGet();
+                    }
+                };
+            }
+        };
+
+        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
+        manager.setEventHandler(handler);
+        manager.setHandlerPoolSize(1);
+        manager.setHandlerQueueLength(5);
+        manager.setHandlerBlockWhenFull(false);
+        manager.afterPropertiesSet();
+
+        // Send 10 events. The first one will be executed on the handler thread,
+        // the next 5 will be enqueued, then the last 4 will be discarded because
+        // the queue is full. After the time has expired, the first 6 events will 
+        // have passed through the handler.
+        //
+        for (int i = 0; i < 10; i++) {
+            EventBuilder bldr = new EventBuilder("uei.opennms.org/foo/" + i, "testDiscardWhenFullWithSlowEventListener");
+            Event e = bldr.getEvent();
+            manager.sendNow(e);
+        }
+
+        Thread.sleep(5000);
+
+        assertEquals(6, counter.get());
+    }
+
+    public void testBlockWhenFullWithSlowEventHandler() throws InterruptedException {
+        AtomicInteger counter = new AtomicInteger();
+
+        EventHandler handler = new EventHandler() {
+            @Override
+            public Runnable createRunnable(Log eventLog) {
+                return new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                        }
+                        counter.incrementAndGet();
+                    }
+                };
+            }
+        };
+
+        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
+        manager.setEventHandler(handler);
+        manager.setHandlerPoolSize(1);
+        manager.setHandlerQueueLength(5);
+        manager.setHandlerBlockWhenFull(true);
+        manager.afterPropertiesSet();
+
+        // Send 10 events. The first one will be executed on the handler thread,
+        // the next 5 will be enqueued, then each sendNow() will block until there
+        // is room to add the event to the queue. Eventually, all events will be
+        // processed.
+        //
+        for (int i = 0; i < 10; i++) {
+            EventBuilder bldr = new EventBuilder("uei.opennms.org/foo/" + i, "testDiscardWhenFullWithSlowEventListener");
+            Event e = bldr.getEvent();
+            manager.sendNow(e);
+        }
+
+        Thread.sleep(5000);
+
+        assertEquals(10, counter.get());
+    }
+
+    public void testDoNotBlockWhenFullWithSlowEventListener() throws InterruptedException {
+        AtomicInteger counter = new AtomicInteger();
+
+        EventListener slowListener = new EventListener() {
+            @Override
+            public String getName() {
+                return "testDiscardWhenFullWithSlowEventListener";
+            }
+
+            @Override
+            public void onEvent(Event event) {
+                LOG.info("Hello, here is event: " + event.getUei());
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                }
+                counter.incrementAndGet();
+            }
+        };
+
+        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
+        manager.setHandlerPoolSize(1);
+        manager.setHandlerQueueLength(5);
+        manager.setHandlerBlockWhenFull(false);
+        DefaultEventHandlerImpl handler = new DefaultEventHandlerImpl(m_registry);
+        manager.setEventHandler(handler);
+        manager.afterPropertiesSet();
+
+        manager.addEventListener(slowListener);
+
+        // Send 10 events. The first one will be executed on the listener thread,
+        // the next 5 will be enqueued, then the last 4 will be discarded because
+        // the queue is full. After the time has expired, the first 6 events will 
+        // have passed through the listener.
+        //
+        for (int i = 0; i < 10; i++) {
+            EventBuilder bldr = new EventBuilder("uei.opennms.org/foo/" + i, "testDiscardWhenFullWithSlowEventListener");
+            Event e = bldr.getEvent();
+            manager.broadcastNow(e);
+        }
+
+        Thread.sleep(5000);
+
+        assertEquals(6, counter.get());
+    }
+
+    public void testBlockWhenFullWithSlowEventListener() throws InterruptedException {
+        AtomicInteger counter = new AtomicInteger();
+
+        EventListener slowListener = new EventListener() {
+            @Override
+            public String getName() {
+                return "testDiscardWhenFullWithSlowEventListener";
+            }
+
+            @Override
+            public void onEvent(Event event) {
+                LOG.info("Hello, here is event: " + event.getUei());
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                }
+                counter.incrementAndGet();
+            }
+        };
+
+        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
+        manager.setHandlerPoolSize(1);
+        manager.setHandlerQueueLength(5);
+        manager.setHandlerBlockWhenFull(true);
+        DefaultEventHandlerImpl handler = new DefaultEventHandlerImpl(m_registry);
+        manager.setEventHandler(handler);
+        manager.afterPropertiesSet();
+
+        manager.addEventListener(slowListener);
+
+        // Send 10 events. The first one will be executed on the handler thread,
+        // the next 5 will be enqueued, then each sendNow() will block until there
+        // is room to add the event to the queue. Eventually, all events will be
+        // processed.
+        //
+        for (int i = 0; i < 10; i++) {
+            EventBuilder bldr = new EventBuilder("uei.opennms.org/foo/" + i, "testDiscardWhenFullWithSlowEventListener");
+            Event e = bldr.getEvent();
+            manager.broadcastNow(e);
+        }
+
+        Thread.sleep(5000);
+
+        assertEquals(10, counter.get());
     }
 
     public class MockEventListener implements EventListener {

@@ -88,6 +88,14 @@
         </simpleType>
       </attribute>
 
+      <attribute name="blockWhenFull" type="boolean" use="optional" default="false">
+        <annotation>
+          <documentation>Whether to block when the incoming event
+          queue (if a maximum size is specified with queueLength) is full.
+          The default value is false.</documentation>
+        </annotation>
+      </attribute>
+
       <attribute name="getNextEventID" type="string" use="optional">
         <annotation>
           <documentation>SQL query to get next value of the 'nodeNxtId'

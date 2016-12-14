@@ -178,7 +178,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
      */
     @Override
     public void afterPropertiesSet() throws IllegalStateException {
-        Assert.state(m_eventProcessors != null, "property eventPersisters must be set");
+        Assert.state(m_eventProcessors != null, "property eventProcessors must be set");
     }
 
     /**

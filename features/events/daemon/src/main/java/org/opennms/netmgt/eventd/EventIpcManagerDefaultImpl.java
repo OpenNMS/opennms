@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -45,6 +46,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
+import org.opennms.core.concurrent.OfferBlockingQueue;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.events.api.EventHandler;
 import org.opennms.netmgt.events.api.EventIpcBroadcaster;
@@ -121,8 +123,10 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     private EventHandler m_eventHandler;
 
     private Integer m_handlerPoolSize;
-    
+
     private Integer m_handlerQueueLength;
+
+    private boolean m_handlerBlockWhenFull;
 
     private final MetricRegistry m_registry;
 
@@ -146,20 +150,38 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         /**
          * Constructor
          */
-        EventListenerExecutor(EventListener listener, Integer handlerQueueLength) {
+        EventListenerExecutor(EventListener listener, Integer handlerQueueLength, boolean handlerBlockWhenFull) {
             m_listener = listener;
-            // You could also do Executors.newSingleThreadExecutor() here
+
+            BlockingQueue<Runnable> queue = null;
+
+            // If the handler queue size isn't set, use an unbounded queue
+            if (handlerQueueLength == null) {
+                queue = new LinkedBlockingQueue<>();
+            } else {
+                if (handlerBlockWhenFull) {
+                    // If the size is set and blocking is enabled, use a queue
+                    // that blocks on insertions when the queue is full
+                    queue = new OfferBlockingQueue<>(handlerQueueLength);
+                } else {
+                    // Otherwise use a normal queue that will trigger rejected
+                    // executions if it fills up
+                    queue = new LinkedBlockingQueue<>(handlerQueueLength);
+                }
+            }
+
             m_delegateThread = new ThreadPoolExecutor(
                     1,
                     1,
                     0L,
                     TimeUnit.MILLISECONDS,
-                    handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(handlerQueueLength),
+                    queue,
                     // This ThreadFactory will ensure that the log prefix of the calling thread
                     // is used for all events that this listener handles. Therefore, if Notifd
                     // registers for an event then all logs for handling that event will end up
                     // inside notifd.log.
                     new LogPreservingThreadFactory(m_listener.getName(), 1),
+                    // If blocking is enabled, we shouldn't reach this handler so only log discards
                     new RejectedExecutionHandler() {
                         @Override
                         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
@@ -174,7 +196,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                 @Override
                 public void run() {
                     try {
-                        LOG.debug("run: calling onEvent on {} for event {} dbid {} with time {}", m_listener.getName(), event.getUei(), event.getDbid(), event.getTime());
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("run: calling onEvent on {} for event {} dbid {} with time {}", m_listener.getName(), event.getUei(), event.getDbid(), event.getTime());
+                        }
 
                         // Make sure we restore our log4j logging prefix after onEvent is called
                         Map<String,String> mdc = Logging.getCopyOfContextMap();
@@ -475,7 +499,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             return;
         }
         
-        EventListenerExecutor listenerThread = new EventListenerExecutor(listener, m_handlerQueueLength);
+        EventListenerExecutor listenerThread = new EventListenerExecutor(listener, m_handlerQueueLength, m_handlerBlockWhenFull);
         m_listenerThreads.put(listener.getName(), listenerThread);
     }
 
@@ -527,7 +551,25 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.state(m_eventHandler != null, "eventHandler not set");
         Assert.state(m_handlerPoolSize != null, "handlerPoolSize not set");
 
-        final LinkedBlockingQueue<Runnable> workQueue = m_handlerQueueLength == null ? new LinkedBlockingQueue<>() : new LinkedBlockingQueue<>(m_handlerQueueLength);
+        BlockingQueue<Runnable> queue = null;
+
+        // If the handler queue size isn't set, use an unbounded queue
+        if (m_handlerQueueLength == null) {
+            queue = new LinkedBlockingQueue<>();
+        } else {
+            if (m_handlerBlockWhenFull) {
+                // If the size is set and blocking is enabled, use a queue
+                // that blocks on insertions when the queue is full
+                queue = new OfferBlockingQueue<>(m_handlerQueueLength);
+            } else {
+                // Otherwise use a normal queue that will trigger rejected
+                // executions if it fills up
+                queue = new LinkedBlockingQueue<>(m_handlerQueueLength);
+            }
+        }
+
+        final BlockingQueue<Runnable> workQueue = queue;
+
         m_registry.remove("eventlogs.queued");
         m_registry.register("eventlogs.queued", new Gauge<Integer>() {
             @Override
@@ -551,7 +593,14 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                     0L,
                     TimeUnit.MILLISECONDS,
                     workQueue,
-                    new LogPreservingThreadFactory(EventIpcManagerDefaultImpl.class.getSimpleName(), m_handlerPoolSize)
+                    new LogPreservingThreadFactory(EventIpcManagerDefaultImpl.class.getSimpleName(), m_handlerPoolSize),
+                    // If blocking is enabled, we shouldn't reach this handler so only log discards
+                    new RejectedExecutionHandler() {
+                        @Override
+                        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                            LOG.warn("Event handler queue is full, discarding event");
+                        }
+                    }
                 );
             }
             
@@ -613,6 +662,14 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     public void setHandlerQueueLength(int size) {
         Assert.state(m_eventHandlerPool == null, "handlerQueueLength property cannot be set after afterPropertiesSet() is called");
         m_handlerQueueLength = size;
+    }
+
+    public boolean getHandlerBlockWhenFull() {
+        return m_handlerBlockWhenFull;
+    }
+
+    public void setHandlerBlockWhenFull(final boolean handlerBlockWhenFull) {
+        m_handlerBlockWhenFull = handlerBlockWhenFull;
     }
 
     @Override
