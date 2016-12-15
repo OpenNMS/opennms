@@ -311,7 +311,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     @Test
     public void testNullEvent() throws Exception {
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("event argument must not be null"));
+        ta.anticipate(new IllegalArgumentException("Incoming event was null, aborting"));
         try {
             m_alarmd.getPersister().persist(null);
         } catch (Throwable t) {
