@@ -71,13 +71,8 @@ public abstract class VmwareRequisitionTool {
         String urlString = arguments.remove(0).replaceFirst("vmware", "http"); // Internal trick to avoid confusions.
         URL url = new URL(urlString);
 
-        // Old scheme isn't supported anymore
-        if (url.getUserInfo() != null && !url.getUserInfo().isEmpty()) {
-            throw new MalformedURLException("UserInfo in vmware URL is no longer supported. Please use the new query parameter scheme 'vmware://<vcenter_server_fqdn>?username=<username;password=<password>;...'");
-        }
-
         // Parse vmware-config.xml and retrieve the credentials to avoid initialize Spring
-        if ( ! url.getQuery().contains("username") ) {
+        if ( ! url.getQuery().contains("username") && url.getUserInfo() == null ) {
             File cfg = new File(ConfigFileConstants.getFilePathString(), "vmware-config.xml");
             if (cfg.exists()) {
                 String username = null;
