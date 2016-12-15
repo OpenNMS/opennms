@@ -21,7 +21,7 @@ Access to the _SNMP Agent_ is configured through the _SNMP configuration_ in the
 |===
 | Parameter              | Description                                                                    | Required | Default value
 | `collection`           | The name of the _SNMP Collection_ to use.                                      | required | `default`
-| `thresholding-enabled` | Whether collected performance data shall be tested against thresholdsvice.     | optional | `true`
+| `thresholding-enabled` | Whether collected performance data shall be tested against thresholds.         | optional | `true`
 | `timeout`              | Timeout in milliseconds to wait for SNMP responses.                            | optional | _SNMP_ configuration
 |===
 
@@ -50,9 +50,9 @@ _SNMP Collection_ are defined in the `etc/datacollection-config.xml` and `etc/da
     </snmp-collection>
 </datacollection-config>
 ----
-<1> Directory to persisist _RRD_ files on the file system, ignored if _NewTS_ is used as time series storage.
+<1> Directory where to persist _RRD_ files on the file system, ignored if _NewTS_ is used as time series storage.
 <2> Name of the _SNMP_ data collection referenced in the _Collection Package_ in `collectd-configuration.xml`.
-<3> Configure SNMP MIB-II interface metric collection behavior, _all_ means metrics from all interfaces, _primary_ only interface which is provisioned as  _primary_ interface, _select_ is manual selected interfaces from the _Web UI_.
+<3> Configure SNMP MIB-II interface metric collection behavior: _all_ means collect metrics from all interfaces, _primary_ only from interface provisioned as  _primary_ interface, _select_ only from manualy selected interfaces from the _Web UI_.
 <4> _RRD_ archive configuration for this set of performance metrics, ignored when _NewTS_ is used as time series storage.
 <5> Include device or application specific performance metric _OIDS_ to collect.
 
