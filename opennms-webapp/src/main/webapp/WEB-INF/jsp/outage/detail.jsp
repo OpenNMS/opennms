@@ -128,7 +128,7 @@
         </tr>
         <tr>
           <th>Service</th>
-          <td colspan="5">
+          <td>
             <% if( outage.getServiceName() != null ) { %>
               <% if( outage.getIpAddress() != null && outage.getNodeId() > 0 ) { %>
                 <c:url var="serviceLink" value="element/service.jsp">
@@ -142,6 +142,14 @@
               <% } %>
             <% } else {%>
               &nbsp;
+            <% } %>
+          </td>
+          <th>Location</th>
+          <td colspan="3">
+            <% if( outage.getLocation() != null ) { %>
+            <%=outage.getLocation()%>
+            <% } else { %>
+            &nbsp;
             <% } %>
           </td>
         </tr>

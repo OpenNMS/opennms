@@ -36,17 +36,17 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 public class MockMessageConsumerManager implements MessageConsumerManager {
 
     @Override
-    public <T extends Message> void dispatch(SinkModule<T> module, T message) {
+    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message) {
         // pass
     }
 
     @Override
-    public <T extends Message> void registerConsumer(MessageConsumer<T> consumer) throws Exception {
+    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception {
         // pass
     }
 
     @Override
-    public <T extends Message> void unregisterConsumer(MessageConsumer<T> consumer) throws Exception {
+    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
         // pass
     }
 

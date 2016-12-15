@@ -26,36 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.test;
-
-import java.util.Objects;
+package org.opennms.core.ipc.sink.aggregation;
 
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.test.ThreadLocker;
+import org.opennms.core.ipc.sink.api.SyncDispatcher;
 
 /**
- * This {@link MessageConsumer} is used to verify the number of threads
- * that are consuming messages.
+ * A {@link MessageProducer} that applies the {@link SinkModule}'s {@link AggregationPolicy}
+ * using the {@link Aggregator}.
  *
  * @author jwhite
  */
-public class ThreadLockingMessageConsumer<T extends Message> extends ThreadLocker implements MessageConsumer<T> {
+public abstract class AggregatingMessageProducer<S extends Message, T extends Message> implements SyncDispatcher<S> {
 
-    private final SinkModule<T> module;
+    private final Aggregator<S,T> aggregator;
 
-    public ThreadLockingMessageConsumer(SinkModule<T> module) {
-        this.module = Objects.requireNonNull(module);
+    public AggregatingMessageProducer(SinkModule<S, T> module) {
+        aggregator = new Aggregator<>(module, this);
     }
 
     @Override
-    public SinkModule<T> getModule() {
-        return module;
+    public void send(S message) {
+        final T bucket = aggregator.aggregate(message);
+        if (bucket != null) {
+            // This bucket is ready to be dispatched
+            dispatch(bucket);
+        }
     }
 
+    public abstract void dispatch(T message);
+
     @Override
-    public void handleMessage(T message) {
-        park();
+    public void close() throws Exception {
+        aggregator.close();
     }
 }

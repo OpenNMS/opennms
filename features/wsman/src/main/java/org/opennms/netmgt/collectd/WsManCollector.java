@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.opennms.core.spring.BeanUtils;
@@ -42,8 +43,8 @@ import org.opennms.core.wsman.WSManEndpoint;
 import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
 import org.opennms.core.wsman.exceptions.InvalidResourceURI;
 import org.opennms.core.wsman.exceptions.WSManException;
-import org.opennms.core.wsman.utils.RetryNTimesLoop;
 import org.opennms.core.wsman.utils.ResponseHandlingUtils;
+import org.opennms.core.wsman.utils.RetryNTimesLoop;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
@@ -51,7 +52,6 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.support.builder.AttributeType;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.CollectionStatus;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResourceWithoutInstance;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
@@ -144,9 +144,8 @@ public class WsManCollector implements ServiceCollector {
             } catch (WSManException e) {
                 // If collecting any individual group fails, mark the collection set as
                 // failed, and abort trying to collect any other groups
-                LOG.warn("Collecting group named {} on {} failed.", group.getName(), agent);
-                collectionSetBuilder.withStatus(CollectionStatus.FAILED);
-                break;
+                throw new CollectionException(String.format("Collecting group '%s' on %s failed with '%s'. See logs for details.",
+                        group.getName(), agent, e.getMessage()), e);
             }
         }
 
@@ -156,15 +155,17 @@ public class WsManCollector implements ServiceCollector {
     private void collectGroupUsing(Group group, CollectionAgent agent, WSManClient client, int retries, CollectionSetBuilder builder) throws CollectionException {
         // Determine the appropriate resource type
         final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
-        Resource effectiveResource = nodeResource;
+        Supplier<Resource> resourceSupplier = () -> nodeResource;
         if (!"node".equalsIgnoreCase(group.getResourceType())) {
             final ResourceType resourceType = m_resourceTypesDao.getResourceTypeByName(group.getResourceType());
             if (resourceType == null) {
                 throw new CollectionException("No resource type found with name '" + group.getResourceType() + "'.");
             }
-            effectiveResource = new GenericTypeResourceWithoutInstance(nodeResource, resourceType);
+            resourceSupplier = () -> new GenericTypeResourceWithoutInstance(nodeResource, resourceType);
         }
-        LOG.debug("Using resource {} for group named {}", effectiveResource, group.getName());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Using resource {} for group named {}", resourceSupplier.get(), group.getName());
+        }
 
         // Enumerate
         List<Node> nodes = Lists.newLinkedList();
@@ -187,14 +188,17 @@ public class WsManCollector implements ServiceCollector {
         LOG.debug("Found {} nodes.", nodes.size());
 
         // Process the results
-        processEnumerationResults(group, builder, effectiveResource, nodes);
+        processEnumerationResults(group, builder, resourceSupplier, nodes);
     }
 
     /**
      * Used to build a {@link CollectionSet} from the enumeration results.
      */
-    public static void processEnumerationResults(Group group, CollectionSetBuilder builder, Resource resource, List<Node> nodes) {
+    public static void processEnumerationResults(Group group, CollectionSetBuilder builder, Supplier<Resource> resourceSupplier, List<Node> nodes) {
         for (Node node : nodes) {
+            // Call the resource supplier for every node process, this may create a new
+            // resource, or use the instance that was last returned when processing this group
+            final Resource resource = resourceSupplier.get();
             final ListMultimap<String, String> elementValues = ResponseHandlingUtils.toMultiMap(node);
             LOG.debug("Element values: {}", elementValues);
 

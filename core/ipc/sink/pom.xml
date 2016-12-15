@@ -12,6 +12,7 @@
   <name>OpenNMS :: Core :: IPC :: Sink</name>
   <modules>
     <module>api</module>
+    <module>common</module>
     <module>camel-impl</module>
     <module>mock-impl</module>
     <module>xml</module>
