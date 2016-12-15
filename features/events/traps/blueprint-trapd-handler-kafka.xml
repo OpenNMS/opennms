@@ -43,6 +43,9 @@
 	<bean id="mapper" class="org.opennms.netmgt.trapd.TrapObjectToDTOProcessor">
 		<property name="distPollerDao" ref="distPollerDao"/>
 	</bean>
+	
+	<bean id="kafkaProcessor" class="org.opennms.netmgt.trapd.TrapsKafkaProcessor"/>
+	
 
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
 	<camelContext id="trapdHandlerKafkaContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
@@ -65,12 +68,21 @@
 <!-- 			<from uri="seda:sendMessage?concurrentConsumers=4"/> -->
 
 			<!-- HZN-862: Use ByteArrayPartitioner instead of this key generator -->
-			<setHeader headerName="kafka.PARTITION_KEY">
-				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
-			</setHeader>
+<!-- 			<setHeader headerName="kafka.PARTITION_KEY"> -->
+<!-- 				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple> -->
+<!-- 			</setHeader> -->
 
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
-			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
+<!-- 			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/> -->
+
+			<setHeader headerName="kafkaAddress">
+				<simple resultType="java.lang.String">properties:kafkaAddress</simple>
+			</setHeader>
+			<setHeader headerName="kafkaTopic">
+				<simple resultType="java.lang.String">properties:kafkatopic</simple>
+			</setHeader>
+			
+			<process ref="kafkaProcessor"/>
 		</route>
 	</camelContext>
 </blueprint>

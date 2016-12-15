@@ -32,6 +32,7 @@
       <feature>minion-core-api</feature>
       <feature>opennms-dao-minion</feature>
       <feature>opennms-syslogd</feature>
+      <bundle dependency="true">wrap:mvn:org.apache.kafka/kafka-clients/0.9.0.0$Bundle-Version=0.3&amp;Export-Package=*;-noimport:=true;version="0.9.0.0"</bundle>
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-kafka</bundle>
     </feature>
 
@@ -48,6 +49,7 @@
       <feature>minion-core-api</feature>
       <feature>opennms-dao-minion</feature>
       <feature>opennms-trapd</feature>
+      <bundle dependency="true">wrap:mvn:org.apache.kafka/kafka-clients/0.8.2.1$Bundle-Version=0.3&amp;Export-Package=*;-noimport:=true;version="0.8.2.1"</bundle>
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-kafka</bundle>
     </feature>
 

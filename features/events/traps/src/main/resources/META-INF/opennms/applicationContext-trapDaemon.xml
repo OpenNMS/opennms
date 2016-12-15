@@ -43,4 +43,10 @@
   
   <bean id="snmpTrapPort" factory-bean="trapdConfig" factory-method="getSnmpTrapPort"/>
   
+  <bean id="producerFactory" class="org.opennms.netmgt.trapd.kafka.KafkaProducerFactory"/>  
+  
+  <bean id="kafkaProducerImpl" class="org.opennms.netmgt.trapd.kafka.KafkaProducerImpl">
+      <property name="producerFactory" ref="producerFactory"/>
+  </bean>
+    
 </beans>

@@ -48,10 +48,10 @@ public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandl
 	 */
 	public static final int TRAP_PROCESSOR_THREADS = Runtime.getRuntime().availableProcessors();
 	
-    private int executorQueueSize;
+    //private int m_executorQueueSize;
 
 	private final ExecutorFactory m_executorFactory = new ExecutorFactoryJavaImpl();
-	private final ExecutorService m_processorExecutor = m_executorFactory.newExecutor(TRAP_PROCESSOR_THREADS, executorQueueSize, "OpenNMS.Trapd", "trapProcessors"); // male queueSize configurable
+	private final ExecutorService m_processorExecutor = m_executorFactory.newExecutor(TRAP_PROCESSOR_THREADS, Integer.MAX_VALUE, "OpenNMS.Trapd", "trapProcessors"); // male queueSize configurable
 
 	private TrapQueueProcessorFactory m_processorFactory;
 
@@ -99,12 +99,19 @@ public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandl
 		m_cache = cache;
 	}
 	
-    public int getExecutorQueueSize() {
-		return executorQueueSize;
-	}
+	/**
+	 * @return the m_executorQueueSize
+	 */
+//	public int getExecutorQueueSize() {
+//		return m_executorQueueSize;
+//	}
 
-	public void setNoOfThreads(int executorQueueSize) {
-		this.executorQueueSize = executorQueueSize;
-	}
+	/**
+	 * @param m_executorQueueSize the m_executorQueueSize to set
+	 */
+//	public void setExecutorQueueSize(int m_executorQueueSize) {
+//		this.m_executorQueueSize = m_executorQueueSize;
+//	}
+
 
 }

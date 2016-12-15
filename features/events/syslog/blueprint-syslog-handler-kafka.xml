@@ -36,6 +36,19 @@
 
 	<bean id="mapper" class="org.opennms.netmgt.syslogd.SyslogObjectToDTOProcessor"/>
 
+	<bean id="kafkaProcessor" class="org.opennms.netmgt.syslogd.SyslogKafkaProcessor"/>
+	
+  	<bean id="producerFactory" class="org.opennms.netmgt.syslogd.kafka.KafkaProducerFactory">
+  		<property name="kafkaAddress" ref="${kafkaAddress}"/>
+    	<property name="kafkaTopic" ref="${kafkatopic}"/>
+  	</bean>  
+  
+  	<bean id="kafkaProducerImpl" class="org.opennms.netmgt.syslogd.kafka.KafkaProducerImpl">
+    	<property name="producerFactory" ref="producerFactory"/>
+    	<property name="kafkaAddress" ref="${kafkaAddress}"/>
+    	<property name="kafkaTopic" ref="${kafkatopic}"/>
+  	</bean>	
+
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
 	<camelContext id="syslogdHandlerKafkaContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerKafkaProperties" />
@@ -58,12 +71,22 @@
 			<from uri="seda:sendMessage?concurrentConsumers=4" />
 
 			<!-- HZN-862: Use ByteArrayPartitioner instead of this key generator -->
-			<setHeader headerName="kafka.PARTITION_KEY">
-				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple>
-			</setHeader>
+<!-- 			<setHeader headerName="kafka.PARTITION_KEY"> -->
+<!-- 				<simple>${bean:partitionKeyGenerator.getPartitionKey()}</simple> -->
+<!-- 			</setHeader> -->
 
 			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
-			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
+<!-- 			<to uri="kafka:{{kafkaAddress}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/> -->
+			
+			<setHeader headerName="kafkaAddress">
+				<simple resultType="java.lang.String">properties:kafkaAddress</simple>
+			</setHeader>
+			<setHeader headerName="kafkaTopic">
+				<simple resultType="java.lang.String">properties:kafkatopic</simple>
+			</setHeader>
+			
+<!-- 			<process ref="kafkaProcessor"/> -->
+			<bean ref="kafkaProducerImpl"/>
 		</route>
 	</camelContext>
 

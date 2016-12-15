@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.syslogd;
+package org.opennms.netmgt.trapd.kafka;
 
-import java.net.InetAddress;
-import java.util.Random;
+import org.springframework.beans.factory.InitializingBean;
 
-import org.opennms.core.utils.InetAddressUtils;
+/**
+ * This factory constructs {@link KafkaCustomProducer} instances.
+ */
+public class KafkaProducerFactory implements InitializingBean {
 
-import kafka.producer.Partitioner;
+    /**
+     * The constructor
+     */
+    public KafkaProducerFactory() {
+    }
 
-public class SyslogdKafkaPartitioner implements Partitioner {
+    public KafkaCustomProducer getInstance() {
+    	KafkaCustomProducer kafkaProducer = new KafkaCustomProducer();
+        return kafkaProducer;
+    }
 
 	@Override
-	public int partition(Object arg0, int a_numPartitions) {
-
-		SyslogConnection syslogConn = (SyslogConnection)arg0;
-		InetAddress sourceAddress = syslogConn.getSourceAddress();
-		int partition = 0;
-		Random rnd = new Random();
-		if(sourceAddress == null) {
-			partition =  rnd.nextInt(255);
-		} else {
-			String stringKey = InetAddressUtils.toIpAddrString(sourceAddress);
-			int offset = stringKey.lastIndexOf('.');
-			if (offset > 0) {
-				partition = Integer.parseInt( stringKey.substring(offset+1)) % a_numPartitions;
-			}
-		}
-		return partition;
+	public void afterPropertiesSet() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
