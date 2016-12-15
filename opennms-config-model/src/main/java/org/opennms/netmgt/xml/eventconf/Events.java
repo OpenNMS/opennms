@@ -40,12 +40,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.TreeSet;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -110,7 +112,10 @@ public class Events implements Serializable {
 	
 	@XmlTransient
 	private List<Event> m_nullPartitionedEvents;
-	
+
+	@XmlTransient
+	private Map<String, Event> m_eventsByUei = new HashMap<String, Event>();
+
         @XmlTransient
         private List<Event> m_wildcardEvents;
         
@@ -414,11 +419,21 @@ public class Events implements Serializable {
 				}
 			}
 		}
-		
-		
 	}
-	
+
+
+
 	public Event findFirstMatchingEvent(org.opennms.netmgt.xml.event.Event matchingEvent) {
+		// Atempt to match the event definition by UEI
+		final String ueiToMatch = matchingEvent.getUei();
+		if (ueiToMatch != null) {
+			final Event matchedEvent = m_eventsByUei.get(ueiToMatch);
+			if (matchedEvent != null) {
+				return matchedEvent;
+			}
+		}
+
+		// If the UEI match failed, fallback to searching with the matchers through the partitions
 		String key = m_partition.group(matchingEvent);
 		Collection<Event> potentialMatches = m_nullPartitionedEvents;
 		if (key != null) {
@@ -483,7 +498,7 @@ public class Events implements Serializable {
 	
 	public void initialize(Partition partition, EventOrdering eventOrdering) {
 	    
-	        m_ordering = eventOrdering;
+		m_ordering = eventOrdering;
 	    
 		for(Event event : m_events) {
 			event.initialize(m_ordering.next());
@@ -496,6 +511,34 @@ public class Events implements Serializable {
 			events.initialize(partition, m_ordering.subsequence());
 		}
 
+		indexEventsByUei();
+	}
+
+	private void indexEventsByUei() {
+		m_eventsByUei.clear();
+		final Set<String> filesProcessed = new HashSet<>();
+		indexEventsByUei(this, filesProcessed);
+	}
+
+	private void indexEventsByUei(Events eventFile, Set<String> filesProcessed) {
+		for(Event event : eventFile.m_events) {
+			final String uei = event.getUei();
+			if (uei == null) {
+				// Skip events with no UEI
+				continue;
+			}
+			// Don't overwrite existing keys, first one wins
+			m_eventsByUei.putIfAbsent(uei, event);
+		}
+
+		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+			if (filesProcessed.contains(loadedEvents.getKey())) {
+				// We already processed this file, don't recurse - avoid stack overflows
+				continue;
+			}
+			filesProcessed.add(loadedEvents.getKey());
+			indexEventsByUei(loadedEvents.getValue(), filesProcessed);
+		}
 	}
 
 	public Events getLoadEventsByFile(String relativePath) {
