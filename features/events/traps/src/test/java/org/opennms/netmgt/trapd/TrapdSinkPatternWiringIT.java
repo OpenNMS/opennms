@@ -36,14 +36,15 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import javax.jms.MessageProducer;
+
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.core.ipc.sink.api.MessageProducer;
-import org.opennms.core.ipc.sink.api.MessageProducerFactory;
+import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.mock.MockMessageConsumerManager;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
@@ -74,18 +75,17 @@ public class TrapdSinkPatternWiringIT extends CamelBlueprintTest {
 
     @Override
     protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-        final MessageProducerFactory mockMessageProducerFactory = mock(MessageProducerFactory.class);
-        when(mockMessageProducerFactory.getProducer(Mockito.any(TrapSinkModule.class)))
+        final MessageDispatcherFactory mockMessageDispatcherFactory = mock(MessageDispatcherFactory.class);
+        when(mockMessageDispatcherFactory.createAsyncDispatcher(Mockito.any(TrapSinkModule.class)))
             .thenAnswer(invocation -> {
-                // register call
-                messageProcessedLatch.countDown();
+                messageProcessedLatch.countDown(); // register call
                 return mock(MessageProducer.class);
             });
 
         // add mocked services to osgi mocked container (Felix Connect)
         services.put(MessageConsumerManager.class.getName(), asService(new MockMessageConsumerManager(), null, null));
-        services.put(MessageProducerFactory.class.getName(), asService(mockMessageProducerFactory, null, null));
-        services.put(RestClient.class.getName(), asService(Mockito.mock(RestClient.class), null, null));
+        services.put(MessageDispatcherFactory.class.getName(), asService(mockMessageDispatcherFactory, null, null));
+        services.put(RestClient.class.getName(), asService(mock(RestClient.class), null, null));
         services.put(DistPollerDao.class.getName(), asService(distPollerDao, null, null));
     }
 

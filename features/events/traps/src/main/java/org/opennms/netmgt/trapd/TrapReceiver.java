@@ -34,11 +34,8 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Objects;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.opennms.core.ipc.sink.api.MessageProducer;
-import org.opennms.core.ipc.sink.api.MessageProducerFactory;
+import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
@@ -47,53 +44,37 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
-import org.opennms.netmgt.trapd.mapper.TrapInformation2TrapDtoMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class TrapReceiver implements TrapNotificationListener {
+public class TrapReceiver implements TrapNotificationListener, TrapReceiverService {
     private static final Logger LOG = LoggerFactory.getLogger(TrapReceiver.class);
 
-    // For test purposes only
-    @Resource(name="snmpTrapAddress")
-    private String m_snmpTrapAddress;
-
-    // For test purposes only
-    @Resource(name="snmpTrapPort")
-    private Integer m_snmpTrapPort;
-
     @Autowired
-    private MessageProducerFactory m_messageProducerFactory;
+    private MessageDispatcherFactory m_messageDispatcherFactory;
 
     @Autowired
     private DistPollerDao m_distPollerDao;
 
     private boolean m_registeredForTraps;
 
-    private TrapdConfig config;
+    private TrapdConfig m_config;
 
-    private MessageProducer<TrapDTO> m_producer;
+    private AsyncDispatcher<TrapInformationWrapper> m_producer;
 
     public TrapReceiver(final TrapdConfig config) throws SocketException {
         Objects.requireNonNull(config, "Config cannot be null");
-        this.config = config;
-    }
-
-    // This is for test purposes only and should be addressable with custom spring configuration.
-    // This only works if we update to Spring 4.2. See https://jira.spring.io/browse/SPR-9567.
-    @PostConstruct
-    public void init() {
-        TrapdConfigBean config = new TrapdConfigBean(this.config);
-        config.setSnmpTrapAddress(m_snmpTrapAddress);
-        config.setSnmpTrapPort(m_snmpTrapPort);
-        this.config = config; // overwrite config
+        m_config = config;
     }
 
     @Override
     public void trapReceived(TrapInformation trapInformation) {
-        TrapDTO trapDTO = new TrapInformation2TrapDtoMapper(m_distPollerDao).object2dto(trapInformation);
-        getMessageProducer().send(trapDTO);
+        try {
+            getMessageDispatcher().send(new TrapInformationWrapper(trapInformation));
+        } catch (IllegalArgumentException ex) {
+            LOG.error("Received trap {} is not valid and cannot be processed.", trapInformation, ex);
+        }
     }
 
     @Override
@@ -102,11 +83,11 @@ public class TrapReceiver implements TrapNotificationListener {
     }
 
     public void start() {
-        final int m_snmpTrapPort = config.getSnmpTrapPort();
+        final int m_snmpTrapPort = m_config.getSnmpTrapPort();
         final InetAddress address = getInetAddress();
         try {
             LOG.info("Listening on {}:{}", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
-            SnmpUtils.registerForTraps(this, address, m_snmpTrapPort, config.getSnmpV3Users());
+            SnmpUtils.registerForTraps(this, address, m_snmpTrapPort, m_config.getSnmpV3Users());
             m_registeredForTraps = true;
             
             LOG.debug("init: Creating the trap session");
@@ -131,16 +112,22 @@ public class TrapReceiver implements TrapNotificationListener {
         try {
             if (m_registeredForTraps) {
                 LOG.debug("stop: Closing SNMP trap session.");
-                SnmpUtils.unregisterForTraps(this, getInetAddress(), config.getSnmpTrapPort());
+                SnmpUtils.unregisterForTraps(this, getInetAddress(), m_config.getSnmpTrapPort());
+                m_registeredForTraps = false;
                 LOG.debug("stop: SNMP trap session closed.");
             } else {
-                LOG.debug("stop: not attemping to closing SNMP trap session--it was never opened");
+                LOG.debug("stop: not attemping to closing SNMP trap session--it was never opened or already closed.");
             }
-
+            if (m_producer != null) {
+                m_producer.close();
+                m_producer = null;
+            }
         } catch (final IOException e) {
             LOG.warn("stop: exception occurred closing session", e);
         } catch (final IllegalStateException e) {
             LOG.debug("stop: The SNMP session was already closed", e);
+        } catch (final Exception e) {
+            LOG.warn("stop: exception occured closing m_producer", e);
         }
     }
 
@@ -154,14 +141,14 @@ public class TrapReceiver implements TrapNotificationListener {
     public void setSnmpV3Users(final TrapdConfiguration newTrapdConfig) {
         TrapdConfigBean newTrapdConfigBean = new TrapdConfigBean(newTrapdConfig);
         if (hasSnmpV3UsersChanged(newTrapdConfigBean)) {
-            TrapdConfigBean clone = new TrapdConfigBean(this.config);
+            TrapdConfigBean clone = new TrapdConfigBean(m_config);
             clone.setSnmpV3Users(newTrapdConfigBean.getSnmpV3Users());
             restartWithNewConfig(clone);
         }
     }
 
-    public void setMessageProducerFactory(MessageProducerFactory messageProducerFactory) {
-        m_messageProducerFactory = Objects.requireNonNull(messageProducerFactory);
+    public void setMessageDispatcherFactory(MessageDispatcherFactory messageDispatcherFactory) {
+        m_messageDispatcherFactory = Objects.requireNonNull(messageDispatcherFactory);
     }
 
     public void setDistPollerDao(DistPollerDao distPollerDao) {
@@ -175,7 +162,7 @@ public class TrapReceiver implements TrapNotificationListener {
         LOG.info("TrapReceiver service has been stopped.");
 
         // We set new config
-        this.config = newConfig;
+        m_config = newConfig;
 
         // We start with new config
         LOG.info("Restarting the TrapReceiver service...");
@@ -184,28 +171,29 @@ public class TrapReceiver implements TrapNotificationListener {
     }
 
     private InetAddress getInetAddress() {
-        if (config.getSnmpTrapAddress().equals("*")) {
+        if (m_config.getSnmpTrapAddress().equals("*")) {
             return null;
         }
-        return InetAddressUtils.addr(config.getSnmpTrapAddress());
+        return InetAddressUtils.addr(m_config.getSnmpTrapAddress());
     }
 
-    private MessageProducer getMessageProducer() {
+    // We only want to create the messageDispatcher once
+    private AsyncDispatcher<TrapInformationWrapper> getMessageDispatcher() {
         if (m_producer == null) {
-            Objects.requireNonNull(m_messageProducerFactory);
-            m_producer = m_messageProducerFactory.getProducer(new TrapSinkModule(config));
+            Objects.requireNonNull(m_messageDispatcherFactory);
+            m_producer = m_messageDispatcherFactory.createAsyncDispatcher(new TrapSinkModule(m_config, m_distPollerDao.whoami()));
         }
         return m_producer;
     }
 
     protected boolean hasConfigurationChanged(TrapdConfig newConfig) {
-        if (newConfig.getSnmpTrapPort() != config.getSnmpTrapPort()) {
+        if (newConfig.getSnmpTrapPort() != m_config.getSnmpTrapPort()) {
             LOG.info("SNMP trap port has been updated from trapd-confguration.xml.");
             return true;
         } else if (
                 newConfig.getSnmpTrapAddress() != null
                         && !newConfig.getSnmpTrapAddress().equalsIgnoreCase("*")
-                        && !newConfig.getSnmpTrapAddress().equalsIgnoreCase(config.getSnmpTrapAddress())) {
+                        && !newConfig.getSnmpTrapAddress().equalsIgnoreCase(m_config.getSnmpTrapAddress())) {
             LOG.info("SNMP trap address has been updated from trapd-confguration.xml.");
             return true;
         } else {
@@ -218,6 +206,11 @@ public class TrapReceiver implements TrapNotificationListener {
         if (newConfig.getSnmpV3Users().isEmpty()) {
             return false;
         }
-        return !newConfig.getSnmpV3Users().equals(config.getSnmpV3Users());
+        return !newConfig.getSnmpV3Users().equals(m_config.getSnmpV3Users());
+    }
+
+    @Override
+    public TrapdConfig getTrapReceiverConfig() {
+        return new TrapdConfigBean(m_config);
     }
 }

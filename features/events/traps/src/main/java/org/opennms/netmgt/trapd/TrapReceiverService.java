@@ -26,38 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.mock;
+package org.opennms.netmgt.trapd;
 
-import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
-import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.opennms.netmgt.config.TrapdConfig;
 
-/**
- * A simple {@link MessageDispatcherFactory} that handles all messages with a single consumer.
- *
- * Used for testing.
- *
- * @author jwhite
- */
-public class MockMessageDispatcherFactory<U extends Message, V extends Message> extends AbstractMessageDispatcherFactory<Void> {
+public interface TrapReceiverService {
 
-    private MessageConsumer<U,V> consumer;
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
-        if (consumer != null) {
-            consumer.handleMessage((V)message);
-        }
-    }
-
-    public MessageConsumer<U, V> getConsumer() {
-        return consumer;
-    }
-
-    public void setConsumer(MessageConsumer<U, V> consumer) {
-        this.consumer = consumer;
-    }
+    TrapdConfig getTrapReceiverConfig();
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,42 +30,31 @@ package org.opennms.netmgt.trapd;
 
 import javax.annotation.PostConstruct;
 
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.netmgt.config.TrapdConfig;
-import org.opennms.netmgt.snmp.TrapInformation;
-import org.opennms.netmgt.trapd.mapper.TrapDto2TrapInformationMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class TrapDTOMessageConsumer implements MessageConsumer<TrapDTO> {
-	private static final Logger LOG = LoggerFactory.getLogger(TrapDTOMessageConsumer.class);
+/**
+ * This bean manually overwrites the current {@link TrapdConfig} to use for tests.
+ *
+ * This should be done by simply overwrite the desired bean, but that cannot be done due to an issue in Spring,
+ * but was fixed in Spring 4.2. See https://jira.spring.io/browse/SPR-9567 for more details.
+ * As soon as we update to Spring 4.2. this should be migrated to a @Configuration and the init()
+ * method should be migrated to a @Bean("trapdConfig") instead.
+ */
+public class TrapdConfigConfigUpdater {
 
-	@Autowired
-	private MessageConsumerManager messageConsumerManager;
+    @Autowired
+    private TrapdConfig m_config;
 
-	@Autowired
-	private TrapQueueProcessorFactory factory;
-
-	@Autowired
-	private TrapdConfig config;
-
-
-	@Override
-	public SinkModule<TrapDTO> getModule() {
-		return new TrapSinkModule(config);
-	}
-
-	@PostConstruct
-	public void init() throws Exception {
-		messageConsumerManager.registerConsumer(this);
-	}
-
-	@Override
-	public void handleMessage(TrapDTO message) {
-		final TrapInformation trapInformation = TrapDto2TrapInformationMapper.dto2object(message);
-		factory.getInstance().process(trapInformation);
-	}
+    // Hacky way of overwriting configuration settings for test execution.
+    @PostConstruct
+    public void init() {
+        TrapdConfigBean config = new TrapdConfigBean(m_config);
+        config.setSnmpTrapPort(10000); // default 162 is only available as root
+        config.setNewSuspectOnTrap(true); // default is false
+        config.setBatchSize(1);
+        config.setQueueSize(1);
+        config.setBatchIntervalMs(0);
+        m_config.update(config);
+    }
 }

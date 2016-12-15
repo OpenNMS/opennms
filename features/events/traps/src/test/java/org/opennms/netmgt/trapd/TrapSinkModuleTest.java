@@ -30,47 +30,31 @@ package org.opennms.netmgt.trapd;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.model.OnmsDistPoller;
 
 public class TrapSinkModuleTest {
 
-    private class MockModule implements SinkModule<Message> {
-        @Override
-        public String getId() {
-            return "id";
-        }
-
-        @Override
-        public int getNumConsumerThreads() {
-            return 0;
-        }
-
-        @Override
-        public String marshal(Message message) {
-            return "";
-        }
-
-        @Override
-        public Message unmarshal(String message) {
-            return null;
-        }
-    }
-
     @Test
     public void testEqualsAndHashCode() throws Exception {
+        SinkModule<Message, Message> mockModule = Mockito.mock(SinkModule.class);
+        Mockito.when(mockModule.getId()).thenReturn("id");
+
+        OnmsDistPoller distPollerMock = Mockito.mock(OnmsDistPoller.class);
+
         TrapdConfig config = new TrapdConfigBean();
-        final TrapSinkModule module = new TrapSinkModule(config);
+        final TrapSinkModule module = new TrapSinkModule(config, distPollerMock);
         Assert.assertEquals(module, module);
         Assert.assertEquals(module.hashCode(), module.hashCode());
 
-        final TrapSinkModule other = new TrapSinkModule(config);
+        final TrapSinkModule other = new TrapSinkModule(config, distPollerMock);
         Assert.assertEquals(module, other);
         Assert.assertEquals(module.hashCode(), other.hashCode());
 
-        final SinkModule otherImpl = new MockModule();
-        Assert.assertNotEquals(module, otherImpl);
-        Assert.assertNotEquals(module.hashCode(), otherImpl.hashCode());
+        Assert.assertNotEquals(module, mockModule);
+        Assert.assertNotEquals(module.hashCode(), mockModule.hashCode());
     }
 }

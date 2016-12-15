@@ -26,38 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.mock;
+package org.opennms.netmgt.trapd;
+
+import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
-import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.opennms.netmgt.snmp.TrapInformation;
 
 /**
- * A simple {@link MessageDispatcherFactory} that handles all messages with a single consumer.
+ * Wrapper to make the {@link TrapInformation} object Sink API compatible, without adding the dependency to the sink-api module.
  *
- * Used for testing.
- *
- * @author jwhite
+ * @author mvrueden
  */
-public class MockMessageDispatcherFactory<U extends Message, V extends Message> extends AbstractMessageDispatcherFactory<Void> {
+public class TrapInformationWrapper implements Message {
 
-    private MessageConsumer<U,V> consumer;
+    private final TrapInformation trapInformation;
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
-        if (consumer != null) {
-            consumer.handleMessage((V)message);
-        }
+    public TrapInformationWrapper(TrapInformation trapInformation) throws IllegalArgumentException {
+        this.trapInformation = Objects.requireNonNull(trapInformation);
+        trapInformation.validate(); // Before this was at ProcessQueueProcessor which does not exist anymore
     }
 
-    public MessageConsumer<U, V> getConsumer() {
-        return consumer;
-    }
-
-    public void setConsumer(MessageConsumer<U, V> consumer) {
-        this.consumer = consumer;
+    public TrapInformation getTrapInformation() {
+        return trapInformation;
     }
 }

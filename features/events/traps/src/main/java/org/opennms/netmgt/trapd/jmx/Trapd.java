@@ -29,7 +29,7 @@
 package org.opennms.netmgt.trapd.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
-import org.opennms.netmgt.trapd.TrapQueueProcessor;
+import org.opennms.netmgt.trapd.TrapSinkConsumer;
 
 /**
  * <p>Trapd class.</p>
@@ -93,6 +93,6 @@ public class Trapd extends AbstractSpringContextJmxServiceDaemon<org.opennms.net
     }
     
     private TrapdInstrumentation getTrapdInstrumentation() {
-        return TrapQueueProcessor.trapdInstrumentation;
+        return TrapSinkConsumer.trapdInstrumentation;
     }
 }

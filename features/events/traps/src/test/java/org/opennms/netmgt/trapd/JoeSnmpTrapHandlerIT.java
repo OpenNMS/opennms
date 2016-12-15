@@ -30,14 +30,12 @@ package org.opennms.netmgt.trapd;
 
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 
 /**
  * {@link TrapHandlerITCase} which uses the snmp strategy {@link org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy}.
  *
  * @author brozow
  */
-@Ignore
 public class JoeSnmpTrapHandlerIT extends TrapHandlerITCase {
 
     @BeforeClass

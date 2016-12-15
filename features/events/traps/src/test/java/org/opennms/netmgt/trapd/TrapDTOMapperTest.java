@@ -37,13 +37,8 @@ import java.util.Date;
 
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.DistPollerDaoMinion;
-import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
-import org.opennms.netmgt.trapd.mapper.TrapDto2TrapInformationMapper;
-import org.opennms.netmgt.trapd.mapper.TrapInformation2TrapDtoMapper;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
 import org.snmp4j.mp.SnmpConstants;
@@ -94,35 +89,23 @@ public class TrapDTOMapperTest {
 			snmp4JV2cTrapPdu
 		);
 
-		OnmsDistPoller distPoller = new OnmsDistPoller();
-		distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
-		distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
-		distPoller.setLocation("localhost");
-		DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
-
-		TrapInformation2TrapDtoMapper mapper = new TrapInformation2TrapDtoMapper(distPollerDao);
-
-		TrapDTO trapDto = mapper.object2dto(snmp4JV2cTrap);
+		TrapDTO trapDto = new TrapDTO(snmp4JV2cTrap);
 		System.out.println("trapDto is : " + trapDto);
-		System.out.println("trapDto.getBody() is : " + trapDto.getBody());
+		System.out.println("trapDto.getBody() is : " + trapDto.getRawMessage());
 		System.out.println("trapDto.getCommunity() is : " + trapDto.getCommunity());
 
-		TrapInformation snmp4JV2cTrap1 = TrapDto2TrapInformationMapper.dto2object(trapDto);
-
-		assertEquals(".1.3.6.1.2.1.1.3", snmp4JV2cTrap1.getTrapIdentity().getEnterpriseId());
-		assertEquals(6, snmp4JV2cTrap1.getTrapIdentity().getGeneric());
-		assertEquals(0, snmp4JV2cTrap1.getTrapIdentity().getSpecific());
-		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, snmp4JV2cTrap1.getAgentAddress());
-		assertEquals("public", snmp4JV2cTrap1.getCommunity());
-		assertEquals("localhost", snmp4JV2cTrap1.getLocation());
-		assertEquals(DistPollerDao.DEFAULT_DIST_POLLER_ID, snmp4JV2cTrap1.getSystemId());
-		assertEquals(5000, snmp4JV2cTrap1.getTimeStamp());
+		assertEquals(".1.3.6.1.2.1.1.3", trapDto.getTrapIdentity().getEnterpriseId());
+		assertEquals(6, trapDto.getTrapIdentity().getGeneric());
+		assertEquals(0, trapDto.getTrapIdentity().getSpecific());
+		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, trapDto.getAgentAddress());
+		assertEquals("public", trapDto.getCommunity());
+		assertEquals(5000, trapDto.getTimestamp());
 		// Trap and agent address are identical with SNMPv2
-		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, snmp4JV2cTrap1.getTrapAddress());
-		assertEquals("v2", snmp4JV2cTrap1.getVersion());
+		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, trapDto.getAgentAddress());
+		assertEquals("v2", trapDto.getVersion());
 
 		// Make sure that the message was created after the start of the test
-		assertTrue(snmp4JV2cTrap1.getCreationTime() >= testStartTime);
+		assertTrue(trapDto.getCreationTime() >= testStartTime);
 	}
 
 	@Test
@@ -145,34 +128,23 @@ public class TrapDTOMapperTest {
 		InetAddress inetAddress= InetAddress.getByName("127.0.0.1");;
 		TrapInformation snmp4JV1Trap = new Snmp4JTrapNotifier.Snmp4JV1TrapInformation(
 				inetAddress, "public", snmp4JV1TrapPdu);
-		
-		OnmsDistPoller distPoller = new OnmsDistPoller();
-		distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
-		distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
-		distPoller.setLocation("localhost");
-		DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
 
-		TrapInformation2TrapDtoMapper mapper = new TrapInformation2TrapDtoMapper(distPollerDao);
 
-		TrapDTO trapDto = mapper.object2dto(snmp4JV1Trap);
+		TrapDTO trapDto = new TrapDTO(snmp4JV1Trap);
 		System.out.println("trapDto is : " + trapDto);
-		System.out.println("trapDto.getBody() is : " + trapDto.getBody());
+		System.out.println("trapDto.getBody() is : " + trapDto.getRawMessage());
 		System.out.println("trapDto.getCommunity() is : " + trapDto.getCommunity());
 
-		TrapInformation snmp4JV1Trap1 = TrapDto2TrapInformationMapper.dto2object(trapDto);
-		assertEquals(".1.3.6.1.6.3.1.1.4.1.0", snmp4JV1Trap1.getTrapIdentity().getEnterpriseId());
-		assertEquals(10, snmp4JV1Trap1.getTrapIdentity().getGeneric());
-		assertEquals(0, snmp4JV1Trap1.getTrapIdentity().getSpecific());
-		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, snmp4JV1Trap1.getAgentAddress());
-		assertEquals("public", snmp4JV1Trap1.getCommunity());
-		assertEquals("localhost", snmp4JV1Trap1.getLocation());
-		assertEquals(DistPollerDao.DEFAULT_DIST_POLLER_ID, snmp4JV1Trap1.getSystemId());
-		assertEquals(5000, snmp4JV1Trap1.getTimeStamp());
+		assertEquals(".1.3.6.1.6.3.1.1.4.1.0", trapDto.getTrapIdentity().getEnterpriseId());
+		assertEquals(10, trapDto.getTrapIdentity().getGeneric());
+		assertEquals(0, trapDto.getTrapIdentity().getSpecific());
+		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, trapDto.getAgentAddress());
+		assertEquals("public", trapDto.getCommunity());
+		assertEquals(5000, trapDto.getTimestamp());
 		// This is the "default" value from SNMP4J that indicates that the trap has not been forwarded
-		assertEquals(InetAddressUtils.addr("0.0.0.0"), snmp4JV1Trap1.getTrapAddress());
-		assertEquals("v1", snmp4JV1Trap1.getVersion());
+		assertEquals("v1", trapDto.getVersion());
 
 		// Make sure that the message was created after the start of the test
-		assertTrue(snmp4JV1Trap1.getCreationTime() >= testStartTime);
+		assertTrue(trapDto.getCreationTime() >= testStartTime);
 	}
 }

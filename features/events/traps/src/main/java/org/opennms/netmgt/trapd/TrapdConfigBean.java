@@ -57,22 +57,29 @@ public class TrapdConfigBean implements TrapdConfig, Serializable {
 	private int snmpTrapPort;
 	private boolean newSuspectOnTrap;
 	private List<SnmpV3User> snmpV3Users= new ArrayList<>();
+	private boolean includeRawMessage;
+	private int batchIntervalInMs;
+	private int batchSize;
+	private int queueSize;
+	private int numThreads;
 
 	public TrapdConfigBean() {
 
 	}
 
 	public TrapdConfigBean(TrapdConfig configToClone) {
-		snmpTrapAddress = configToClone.getSnmpTrapAddress();
-		snmpTrapPort = configToClone.getSnmpTrapPort();
-		newSuspectOnTrap = configToClone.getNewSuspectOnTrap();
-		snmpV3Users = new ArrayList<>(configToClone.getSnmpV3Users());
+		update(configToClone);
 	}
 
 	public TrapdConfigBean(TrapdConfiguration trapdConfiguration) {
-		snmpTrapAddress = trapdConfiguration.getSnmpTrapAddress();
-		snmpTrapPort = trapdConfiguration.getSnmpTrapPort();
-		newSuspectOnTrap = trapdConfiguration.isNewSuspectOnTrap();
+		setSnmpTrapAddress(trapdConfiguration.getSnmpTrapAddress());
+		setSnmpTrapPort(trapdConfiguration.getSnmpTrapPort());
+		setNewSuspectOnTrap(trapdConfiguration.isNewSuspectOnTrap());
+		setIncludeRawMessage(trapdConfiguration.isIncludeRawMessage());
+		setBatchIntervalMs(trapdConfiguration.getBatchInterval());
+		setBatchSize(trapdConfiguration.getBatchSize());
+		setQueueSize(trapdConfiguration.getQueueSize());
+		setNumThreads(trapdConfiguration.getThreads());
 		if (trapdConfiguration.getSnmpv3UserCollection() != null) {
 			setSnmpV3Users(trapdConfiguration.getSnmpv3UserCollection().stream()
 						.map(TrapdConfigBean::toSnmpV3User)
@@ -119,6 +126,67 @@ public class TrapdConfigBean implements TrapdConfig, Serializable {
 	@Override
 	public List<SnmpV3User> getSnmpV3Users() {
 		return Collections.unmodifiableList(snmpV3Users);
+	}
+
+	@Override
+	public boolean isIncludeRawMessage() {
+		return includeRawMessage;
+	}
+
+	public void setIncludeRawMessage(boolean includeRawMessage) {
+		this.includeRawMessage = includeRawMessage;
+	}
+
+	@Override
+	public int getNumThreads() {
+		if (numThreads <= 0) {
+			return Runtime.getRuntime().availableProcessors() * 2;
+		}
+		return numThreads;
+	}
+
+	@Override
+	public int getQueueSize() {
+		return queueSize;
+	}
+
+	@Override
+	public int getBatchSize() {
+		return batchSize;
+	}
+
+	@Override
+	public int getBatchIntervalMs() {
+		return batchIntervalInMs;
+	}
+
+	@Override
+	public void update(TrapdConfig config) {
+		setSnmpTrapAddress(config.getSnmpTrapAddress());
+		setSnmpTrapPort(config.getSnmpTrapPort());
+		setNewSuspectOnTrap(config.getNewSuspectOnTrap());
+		setIncludeRawMessage(config.isIncludeRawMessage());
+		setBatchIntervalMs(config.getBatchIntervalMs());
+		setBatchSize(config.getBatchSize());
+		setQueueSize(config.getQueueSize());
+		setNumThreads(config.getNumThreads());
+		setSnmpV3Users(config.getSnmpV3Users());
+	}
+
+	public void setBatchIntervalMs(int batchIntervalInMs) {
+		this.batchIntervalInMs = batchIntervalInMs;
+	}
+
+	public void setBatchSize(int batchSize) {
+		this.batchSize = batchSize;
+	}
+
+	public void setQueueSize(int queueSize) {
+		this.queueSize = queueSize;
+	}
+
+	public void setNumThreads(int numThreads) {
+		this.numThreads = numThreads;
 	}
 
 	private static SnmpV3User toSnmpV3User(Snmpv3User snmpv3User) {

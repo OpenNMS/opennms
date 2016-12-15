@@ -96,7 +96,12 @@ public abstract class TrapInformation {
         return m_community;
     }
 
-    public void validate() {
+    /**
+     * Validate the trap.
+     *
+     * @throws IllegalArgumentException on validation error.
+     */
+    public void validate() throws IllegalArgumentException {
         // by default we do nothing
     }
 

@@ -28,52 +28,70 @@
 
 package org.opennms.netmgt.trapd;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import javax.jms.MessageProducer;
+
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.opennms.core.ipc.sink.api.MessageConsumerManager;
+import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
+import org.opennms.core.ipc.sink.mock.MockMessageConsumerManager;
+import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.minion.core.api.RestClient;
 import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Verifies that the {@link org.opennms.netmgt.config.TrapdConfig} is reloaded regularily from OpenNMS
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
+@ContextConfiguration(locations = {
+		"classpath:/META-INF/opennms/applicationContext-soa.xml",
+		"classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+})
+@JUnitConfigurationEnvironment
 public class TrapdConfigReloadIT extends CamelBlueprintTest {
 
-	private static final Logger LOG = LoggerFactory.getLogger(TrapdConfigReloadIT.class);
-
-	private final CountDownLatch latch = new CountDownLatch(1);
+	@Autowired
+	private DistPollerDao distPollerDao;
 
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		RestClient client = new RestClient() {
+		final RestClient client = new RestClient() {
 			@Override
 			public void ping() throws Exception {
 			}
 
 			@Override
 			public String getSnmpV3Users() throws Exception {
-				latch.countDown();
 				return "<?xml version='1.0'?>"
 						+ "<trapd-configuration xmlns='http://xmlns.opennms.org/xsd/config/trapd' snmp-trap-address='127.0.0.1' snmp-trap-port='10500' new-suspect-on-trap='true'>"
 						+ "		<snmpv3-user security-name='opennms' security-level='0' auth-protocol='MD5' auth-passphrase='0p3nNMSv3' privacy-protocol='DES' privacy-passphrase='0p3nNMSv3' />"
 						+ "</trapd-configuration>";
 			}
 		};
-
+		// add mocked services to osgi mocked container (Felix Connect)
 		services.put(RestClient.class.getName(), asService(client, null, null));
+		services.put(MessageConsumerManager.class.getName(), asService(new MockMessageConsumerManager(), null, null));
+		services.put(MessageDispatcherFactory.class.getName(), asService(new MockMessageDispatcherFactory<>(), null, null));
+		services.put(DistPollerDao.class.getName(), asService(distPollerDao, null, null));
 	}
 
 	// The location of our Blueprint XML files to be used for testing
@@ -84,15 +102,14 @@ public class TrapdConfigReloadIT extends CamelBlueprintTest {
 
 	@Test
 	public void verifyReload() throws Exception {
-		// Check that it has not yet been refresehd
-		TrapdConfig config = getOsgiService(TrapdConfig.class);
-		Assert.assertEquals(true, config.getSnmpV3Users().isEmpty());
+		// Check that it has not yet been refreshed
+		TrapReceiverService trapReceiver = getOsgiService(TrapReceiverService.class);
+		Assert.assertEquals(true, trapReceiver.getTrapReceiverConfig().getSnmpV3Users().isEmpty());
 
 		// The getSnmpV3Users method have been invoked
-		latch.await(120, TimeUnit.SECONDS);
-		Assert.assertEquals(0, latch.getCount());
+		Thread.sleep(20000);
 
 		// Verify
-		Assert.assertEquals(1, config.getSnmpV3Users().size());
+		Assert.assertEquals(1, trapReceiver.getTrapReceiverConfig().getSnmpV3Users().size());
 	}
 }

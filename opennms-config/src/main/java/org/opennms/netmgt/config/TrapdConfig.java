@@ -37,7 +37,49 @@ public interface TrapdConfig {
 	
     int getSnmpTrapPort();
 
+    /**
+     * Whether or not a newSuspect event should be generated with a trap from an
+     * unknown IP address
+     */
     boolean getNewSuspectOnTrap();
 
     List<SnmpV3User> getSnmpV3Users();
+
+    boolean isIncludeRawMessage();
+
+    /**
+     * Number of threads used for consuming/dispatching messages.
+     *
+     * @return number of threads
+     */
+    int getNumThreads();
+
+    /**
+     * Maximum number of messages to keep in memory while waiting
+     * to be dispatched.
+     *
+     * @return queue size
+     */
+    int getQueueSize();
+
+    /**
+     * Messages are aggregated in batches before being dispatched.
+     *
+     * When the batch reaches this size, it will be dispatched.
+     *
+     * @return batch size
+     */
+    int getBatchSize();
+
+    /**
+     * Messages are aggregated in batches before being dispatched.
+     *
+     * When the batch has been created for longer than this interval
+     * it will be dispatched, regardless of the size.
+     *
+     * @return interval in ms
+     */
+    int getBatchIntervalMs();
+
+    void update(TrapdConfig config);
 }

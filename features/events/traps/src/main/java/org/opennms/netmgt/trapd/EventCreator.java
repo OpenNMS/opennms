@@ -30,78 +30,70 @@ package org.opennms.netmgt.trapd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.Objects;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.snmp.SyntaxToEvent;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.SnmpVarBindDTO;
-import org.opennms.netmgt.snmp.TrapIdentity;
-import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
 
 class EventCreator {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(EventCreator.class);
 
-    private final InterfaceToNodeCache m_cache;
+    private final InterfaceToNodeCache cache;
+    private final EventConfDao eventConfDao;
 
-    public EventCreator(InterfaceToNodeCache cache) {
-        m_cache = Objects.requireNonNull(cache);
+    public EventCreator(InterfaceToNodeCache cache, EventConfDao eventConfDao) {
+        this.cache = Objects.requireNonNull(cache);
+        this.eventConfDao = Objects.requireNonNull(eventConfDao);
     }
 
-    public Event getEvent(TrapInformation trapInformation) {
-        // Validate trap before continuing
-        trapInformation.validate();
-
-        // TODO MVR make log message nice
-        LOG.debug("{} trap - trapInterface: ()", trapInformation.getVersion(), trapInformation.getTrapAddress());
+    public Event createEventFrom(final TrapDTO trapDTO, final String systemId, final String location, final InetAddress trapAddress) {
+        LOG.debug("{} trap - trapInterface: ()", trapDTO.getVersion(), trapDTO.getAgentAddress());
 
         // Set event data
         final EventBuilder eventBuilder = new EventBuilder(null, "trapd");
-        eventBuilder.setTime(new Date(trapInformation.getCreationTime()));
-        eventBuilder.setCommunity(trapInformation.getCommunity());
-        eventBuilder.setSnmpTimeStamp(trapInformation.getTimeStamp());
-        eventBuilder.setSnmpVersion(trapInformation.getVersion());
-        eventBuilder.setSnmpHost(str(trapInformation.getTrapAddress()));
-        eventBuilder.setInterface(trapInformation.getTrapAddress());
-        eventBuilder.setHost(InetAddressUtils.toIpAddrString(trapInformation.getAgentAddress()));
+        eventBuilder.setTime(new Date(trapDTO.getCreationTime()));
+        eventBuilder.setCommunity(trapDTO.getCommunity());
+        eventBuilder.setSnmpTimeStamp(trapDTO.getTimestamp());
+        eventBuilder.setSnmpVersion(trapDTO.getVersion());
+        eventBuilder.setSnmpHost(str(trapAddress));
+        eventBuilder.setInterface(trapAddress);
+        eventBuilder.setHost(InetAddressUtils.toIpAddrString(trapDTO.getAgentAddress()));
 
         // Handle trap identity
-        final TrapIdentity trapIdentity = trapInformation.getTrapIdentity();
+        final TrapIdentityDTO trapIdentity = trapDTO.getTrapIdentity();
         if (trapIdentity != null) {
-            // TODO MVR make Log message nice
-            LOG.debug("setTrapIdentity: SNMP trap {}", trapIdentity);
+            LOG.debug("Trap Identity {}", trapIdentity);
             eventBuilder.setGeneric(trapIdentity.getGeneric());
             eventBuilder.setSpecific(trapIdentity.getSpecific());
             eventBuilder.setEnterpriseId(trapIdentity.getEnterpriseId());
         }
 
         // Handle var bindings
-        for (int i = 0; i < trapInformation.getPduLength(); i++) {
-            final SnmpVarBindDTO varBind = trapInformation.getSnmpVarBindDTO(i);
-            if (varBind != null) {
-                final SnmpObjId name = varBind.getSnmpObjectId();
-                final SnmpValue value = varBind.getSnmpValue();
-                eventBuilder.addParam(SyntaxToEvent.processSyntax(name.toString(), value));
-                if (EventConstants.OID_SNMP_IFINDEX.isPrefixOf(name)) {
-                    eventBuilder.setIfIndex(value.toInt());
-                }
+        for (SnmpResult eachResult : trapDTO.getResults()) {
+            final SnmpObjId name = eachResult.getBase();
+            final SnmpValue value = eachResult.getValue();
+            eventBuilder.addParam(SyntaxToEvent.processSyntax(name.toString(), value));
+            if (EventConstants.OID_SNMP_IFINDEX.isPrefixOf(name)) {
+                eventBuilder.setIfIndex(value.toInt());
             }
         }
 
         // Resolve Node id and set, if known by OpenNMS
-        final long nodeId = resolveNodeId(trapInformation);
+        final long nodeId = resolveNodeId(location, trapAddress);
         if (nodeId != -1) {
             eventBuilder.setNodeid(nodeId);
         }
@@ -109,18 +101,27 @@ class EventCreator {
         // If there was no systemId in the trap message, assume that
         // it was generated by this system. Eventd will fill in the
         // systemId of the local system if it remains null here.
-        if (!Strings.isNullOrEmpty(trapInformation.getSystemId())) {
-            eventBuilder.setDistPoller(trapInformation.getSystemId());
+        if (systemId != null) {
+            eventBuilder.setDistPoller(systemId);
         }
-        return eventBuilder.getEvent();
+
+        // Get event template and set uei, if unknown
+        final Event event = eventBuilder.getEvent();
+        final org.opennms.netmgt.xml.eventconf.Event econf = eventConfDao.findByEvent(event);
+        if (econf == null || econf.getUei() == null) {
+            event.setUei("uei.opennms.org/default/trap");
+        } else {
+            event.setUei(econf.getUei());
+        }
+        return event;
     }
 
-    private long resolveNodeId(TrapInformation trapInformation) {
+    private long resolveNodeId(String location, InetAddress trapAddress) {
         // If there was no location in the trap message, assume that
         // it was generated in the default location
-        if (Strings.isNullOrEmpty(trapInformation.getLocation())) {
-            return  m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, trapInformation.getTrapAddress());
+        if (location == null) {
+            return cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, trapAddress);
         }
-        return m_cache.getNodeId(trapInformation.getLocation(), trapInformation.getTrapAddress());
+        return cache.getNodeId(location, trapAddress);
     }
 }

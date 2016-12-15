@@ -143,7 +143,7 @@ public class CamelMessageConsumerManager implements MessageConsumerManager {
                 .routeId(getRouteId());
         }
 
-        private static int determineNumberConsumerThreads(SinkModule<Message> module) {
+        private static int determineNumberConsumerThreads(SinkModule<?, ?> module) {
             Objects.requireNonNull(module);
             final int defaultValue = Runtime.getRuntime().availableProcessors() * 2;
             final int configured = module.getNumConsumerThreads();
