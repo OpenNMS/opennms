@@ -27,7 +27,7 @@ The configuration file is structured in the following parts:
 .Collectd overview for associated files and configuration
 image::performance-management/01_collectd-overview.png[]
 
-The global bevaior especially the size of the _Thread Pool_ for _Collectd_ is configured in the `collectd-configuration.xml`.
+The global behavior, especially the size of the _Thread Pool_ for _Collectd_, is configured in the `collectd-configuration.xml`.
 
 .Global configuration parameters for Collectd
 [source, xml]
