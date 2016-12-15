@@ -34,17 +34,28 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RpcResponse;
 
 @XmlRootElement(name="snmp-response")
 @XmlAccessorType(XmlAccessType.NONE)
 public class SnmpMultiResponseDTO implements RpcResponse {
 
+    @XmlAttribute(name="error")
+    private String error;
+
     @XmlElement(name="response")
     private List<SnmpResponseDTO> responses = new ArrayList<>(0);
+
+    public SnmpMultiResponseDTO() { }
+
+    public SnmpMultiResponseDTO(Throwable ex) {
+        this.error = RemoteExecutionException.toErrorMessage(ex);
+    }
 
     public void setResponses(List<SnmpResponseDTO> responses) {
         this.responses = responses;
@@ -56,7 +67,7 @@ public class SnmpMultiResponseDTO implements RpcResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(responses);
+        return Objects.hash(responses, error);
     }
 
     @Override
@@ -68,6 +79,12 @@ public class SnmpMultiResponseDTO implements RpcResponse {
         if (getClass() != obj.getClass())
             return false;
         final SnmpMultiResponseDTO other = (SnmpMultiResponseDTO) obj;
-        return Objects.equals(this.responses, other.responses);
+        return Objects.equals(this.responses, other.responses) &&
+                Objects.equals(this.error, other.error);
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return error;
     }
 }

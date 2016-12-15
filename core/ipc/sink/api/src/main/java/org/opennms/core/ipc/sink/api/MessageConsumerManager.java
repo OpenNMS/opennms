@@ -35,6 +35,8 @@ package org.opennms.core.ipc.sink.api;
  */
 public interface MessageConsumerManager {
 
+    static final String LOG_PREFIX = "ipc";
+
     <T extends Message> void dispatch(SinkModule<T> module, T message);
 
     <T extends Message> void registerConsumer(MessageConsumer<T> consumer) throws Exception;

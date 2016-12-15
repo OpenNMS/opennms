@@ -72,4 +72,9 @@ public class PingProxyRpcModule extends AbstractXmlRpcModule<PingRequestDTO, Pin
     public void setPingerFactory(PingerFactory pingerFactory) {
         this.pingerFactory = pingerFactory;
     }
+
+    @Override
+    public PingResponseDTO createResponseWithException(Throwable ex) {
+        return new PingResponseDTO(ex);
+    }
 }

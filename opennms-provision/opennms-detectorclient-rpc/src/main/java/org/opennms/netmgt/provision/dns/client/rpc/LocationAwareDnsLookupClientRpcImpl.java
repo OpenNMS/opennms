@@ -68,20 +68,12 @@ public class LocationAwareDnsLookupClientRpcImpl implements LocationAwareDnsLook
     }
 
     private CompletableFuture<String> lookupExecute(String request, String location, QueryType queryType) {
-
         final DnsLookupRequestDTO dto = new DnsLookupRequestDTO();
         dto.setHostRequest(request);
         dto.setLocation(location);
         dto.setQueryType(queryType);
         CompletableFuture<DnsLookupResponseDTO> future = getDelegate().execute(dto);
-        return future.thenApply(response -> {
-            if (response.didFailWithError()) {
-                throw new RuntimeException(response.getFailureMessage());
-            } else {
-                return response.getHostResponse();
-            }
-        });
-
+        return future.thenApply(response -> response.getHostResponse());
     }
 
 }

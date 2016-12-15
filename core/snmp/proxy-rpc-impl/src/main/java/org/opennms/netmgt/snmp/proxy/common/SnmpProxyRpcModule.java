@@ -156,6 +156,11 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
     }
 
     @Override
+    public SnmpMultiResponseDTO createResponseWithException(Throwable ex) {
+        return new SnmpMultiResponseDTO(ex);
+    }
+
+    @Override
     public String getId() {
         return RPC_MODULE_ID;
     }

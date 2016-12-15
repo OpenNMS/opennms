@@ -54,7 +54,11 @@ public class EchoRpcModule extends AbstractXmlRpcModule<EchoRequest, EchoRespons
                         return;
                     }
                 }
-                future.complete(new EchoResponse(request.getMessage()));
+                if (request.shouldThrow()) {
+                    future.completeExceptionally(new MyEchoException(request.getMessage()));
+                } else {
+                    future.complete(new EchoResponse(request.getMessage()));
+                }
             }
         }).start();
         return future;
@@ -63,5 +67,10 @@ public class EchoRpcModule extends AbstractXmlRpcModule<EchoRequest, EchoRespons
     @Override
     public String getId() {
         return RPC_MODULE_ID;
+    }
+
+    @Override
+    public EchoResponse createResponseWithException(Throwable ex) {
+        return new EchoResponse(ex);
     }
 }

@@ -91,4 +91,9 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
         this.executor = executor;
     }
 
+    @Override
+    public PollerResponseDTO createResponseWithException(Throwable ex) {
+        return new PollerResponseDTO(ex);
+    }
+
 }

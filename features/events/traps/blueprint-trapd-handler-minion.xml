@@ -28,7 +28,7 @@
 	</cm:property-placeholder>
 
 	<bean id="trapdNotificationHandlerCamel" class="org.opennms.netmgt.trapd.TrapNotificationHandlerCamelImpl">
-		<argument value="seda:handleMessage"/>
+		<argument value="seda:handleMessage?size=25000"/>
 	</bean>
 
 	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapdNotificationHandlerCamel"/>
@@ -52,7 +52,7 @@
 		<propertyPlaceholder id="properties" location="blueprint:trapHandlerMinionProperties" />
 
 		<route id="trapMarshal">
-			<from uri="seda:handleMessage?concurrentConsumers=4"/>
+			<from uri="seda:handleMessage?concurrentConsumers=8&amp;size=25000&amp;blockWhenFull=true"/>
 
 			<setHeader headerName="includeRawMessage">
 				<simple resultType="java.lang.Boolean">properties:includeRawMessage</simple>
@@ -62,11 +62,11 @@
 			<process ref="mapper"/>
 			<process ref="marshaller"/>
 
-			<to uri="seda:sendMessage"/>
+			<to uri="seda:sendMessage?size=25000"/>
 		</route>
 
 		<route id="trapSendJms">
-			<from uri="seda:sendMessage?concurrentConsumers=4"/>
+			<from uri="seda:sendMessage?concurrentConsumers=8&amp;size=25000&amp;blockWhenFull=true"/>
 
 			<!-- Broadcast the message over ActiveMQ -->
 			<!--

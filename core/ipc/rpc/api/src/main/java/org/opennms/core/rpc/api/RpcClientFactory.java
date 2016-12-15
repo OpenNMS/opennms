@@ -35,5 +35,7 @@ package org.opennms.core.rpc.api;
  */
 public interface RpcClientFactory {
 
+    static final String LOG_PREFIX = "ipc";
+
     <R extends RpcRequest, S extends RpcResponse> RpcClient<R, S> getClient(RpcModule<R, S> module);
 }

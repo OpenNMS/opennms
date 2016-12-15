@@ -6,7 +6,7 @@
 === Poller Packages
 
 To define more complex monitoring configuration it is possible to group _Service_ configurations into _Polling Packages_.
-They allow to define assign to _Nodes_ different _Service Configurations_.
+They allow to assign to _Nodes_ different _Service Configurations_.
 To assign a _Polling Package_ to nodes the link:http://www.opennms.org/wiki/Filters[Rules/Filters] syntax can be used.
 Each _Polling Package_ can have its own <<ga-service-assurance-downtime-model, Downtime Model>> configuration.
 

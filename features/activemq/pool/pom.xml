@@ -34,5 +34,9 @@
       <artifactId>activemq-pool</artifactId>
       <version>${activemqVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.logging</artifactId>
+    </dependency>
   </dependencies>
 </project>

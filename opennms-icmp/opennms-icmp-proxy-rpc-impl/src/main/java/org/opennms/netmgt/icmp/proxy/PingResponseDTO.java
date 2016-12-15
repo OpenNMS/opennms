@@ -32,17 +32,28 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RpcResponse;
 
 @XmlRootElement(name="ping-response")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PingResponseDTO implements RpcResponse {
 
+    @XmlAttribute(name="error")
+    private String error;
+
     @XmlElement(name="rtt") // milliseconds
     private double rtt;
+
+    public PingResponseDTO() { }
+
+    public PingResponseDTO(Throwable ex) {
+        error = RemoteExecutionException.toErrorMessage(ex);
+    }
 
     public double getRtt() {
         return rtt;
@@ -53,15 +64,21 @@ public class PingResponseDTO implements RpcResponse {
     }
 
     @Override
+    public String getErrorMessage() {
+        return error;
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final PingResponseDTO that = (PingResponseDTO) o;
-        return Objects.equals(rtt, that.rtt);
+        return Objects.equals(rtt, that.rtt) &&
+                Objects.equals(error, that.error);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(rtt);
+        return Objects.hash(rtt, error);
     }
 }

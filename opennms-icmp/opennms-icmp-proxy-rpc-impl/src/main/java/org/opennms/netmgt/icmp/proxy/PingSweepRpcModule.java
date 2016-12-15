@@ -172,6 +172,11 @@ public class PingSweepRpcModule extends AbstractXmlRpcModule<PingSweepRequestDTO
     }
 
     @Override
+    public PingSweepResponseDTO createResponseWithException(Throwable ex) {
+        return new PingSweepResponseDTO(ex);
+    }
+
+    @Override
     public String getId() {
         return RPC_MODULE_ID;
     }

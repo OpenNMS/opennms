@@ -45,18 +45,32 @@ public class SyslogConnectionHandlerDefaultImpl implements SyslogConnectionHandl
 	 * 
 	 * TODO: Make this configurable
 	 */
-	public static final int EVENT_PARSER_THREADS = Runtime.getRuntime().availableProcessors();
+	public static final int PARSER_THREADS = Runtime.getRuntime().availableProcessors();
 
 	/**
 	 * This is the number of threads that are used to broadcast the OpenNMS events.
 	 * 
 	 * TODO: Make this configurable
 	 */
-	public static final int EVENT_SENDER_THREADS = Runtime.getRuntime().availableProcessors();
+	public static final int SENDER_THREADS = Runtime.getRuntime().availableProcessors();
+
+	/**
+	 * Maximum size of the backlog queue for event processing.
+	 * 
+	 * TODO: Make this configurable
+	 */
+	public static final int PARSER_QUEUE_SIZE = 25000;
+
+	/**
+	 * Maximum size of the backlog queue for event sending.
+	 * 
+	 * TODO: Make this configurable
+	 */
+	public static final int SENDER_QUEUE_SIZE = 25000;
 
 	private final ExecutorFactory m_executorFactory = new ExecutorFactoryJavaImpl();
-	private final ExecutorService m_syslogConnectionExecutor = m_executorFactory.newExecutor(EVENT_PARSER_THREADS, Integer.MAX_VALUE, "OpenNMS.Syslogd", "syslogConnections");
-	private final ExecutorService m_syslogProcessorExecutor = m_executorFactory.newExecutor(EVENT_SENDER_THREADS, Integer.MAX_VALUE, "OpenNMS.Syslogd", "syslogProcessors");
+	private final ExecutorService m_syslogConnectionExecutor = m_executorFactory.newExecutor(PARSER_THREADS, PARSER_QUEUE_SIZE, "OpenNMS.Syslogd", "syslogConnections");
+	private final ExecutorService m_syslogProcessorExecutor = m_executorFactory.newExecutor(SENDER_THREADS, SENDER_QUEUE_SIZE, "OpenNMS.Syslogd", "syslogProcessors");
 
 	@Override
 	public void handleSyslogConnection(final SyslogConnection message) {

@@ -32,9 +32,11 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
@@ -43,11 +45,18 @@ import org.opennms.netmgt.poller.PollerResponse;
 @XmlAccessorType(XmlAccessType.NONE)
 public class PollerResponseDTO implements RpcResponse, PollerResponse {
 
+    @XmlAttribute(name="error")
+    private String error;
+
     @XmlElement(name = "poll-status")
     private PollStatus pollStatus;
 
     public PollerResponseDTO() {
         // no-arg constructor for JAXB
+    }
+
+    public PollerResponseDTO(Throwable ex) {
+        this.error = RemoteExecutionException.toErrorMessage(ex);
     }
 
     public PollerResponseDTO(PollStatus pollStatus) {
@@ -64,8 +73,13 @@ public class PollerResponseDTO implements RpcResponse, PollerResponse {
     }
 
     @Override
+    public String getErrorMessage() {
+        return error;
+    }
+
+    @Override
     public int hashCode() {
-        return Objects.hash(pollStatus);
+        return Objects.hash(pollStatus, error);
     }
 
     @Override
@@ -77,7 +91,8 @@ public class PollerResponseDTO implements RpcResponse, PollerResponse {
         if (getClass() != obj.getClass())
             return false;
         PollerResponseDTO other = (PollerResponseDTO) obj;
-        return Objects.equals(this.pollStatus, other.pollStatus);
+        return Objects.equals(this.pollStatus, other.pollStatus) &&
+                Objects.equals(this.error, other.error);
     }
 
 }

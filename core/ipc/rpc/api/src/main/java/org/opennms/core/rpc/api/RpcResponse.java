@@ -31,11 +31,15 @@ package org.opennms.core.rpc.api;
 /**
  * The response of an RPC call.
  *
- * We don't (yet) require any structure on the response objects,
- * but we use this interface for consistency.
- *
  * @author jwhite
  */
 public interface RpcResponse {
+
+    /**
+     * Returns an error message if an error occurred, or {@code null} otherwise.
+     *
+     * @return an error message if an error occurred, or {@code null} otherwise
+     */
+    String getErrorMessage();
 
 }

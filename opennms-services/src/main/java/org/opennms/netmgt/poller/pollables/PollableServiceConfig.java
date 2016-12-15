@@ -132,6 +132,10 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 .get().getPollStatus();
             LOG.debug("Finish polling {} using pkg {} result = {}", m_service, packageName, result);
             return result;
+        } catch (InterruptedException e) {
+            LOG.warn("Interrupted while invoking the poll for {}."
+                    + " Marking the service as UNKNOWN.", m_service);
+            return PollStatus.unknown("Interrupted while invoking the poll for"+m_service+". "+e);
         } catch (Throwable e) {
             final Throwable cause = e.getCause();
             if (cause != null && cause instanceof RequestTimedOutException) {

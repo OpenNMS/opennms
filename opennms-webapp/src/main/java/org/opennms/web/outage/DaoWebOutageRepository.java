@@ -141,6 +141,9 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
                 case ID:
                     criteria.addOrder(Order.desc("id"));
                     break;
+                case LOCATION:
+                    criteria.addOrder(Order.desc("node.location"));
+                    break;
                 case REVERSE_FOREIGNSOURCE:
                     criteria.addOrder(Order.asc("node.foreignSource"));
                     break;
@@ -161,6 +164,9 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
                     break;
                 case REVERSE_ID:
                     criteria.addOrder(Order.asc("id"));
+                    break;
+                case REVERSE_LOCATION:
+                    criteria.addOrder(Order.asc("node.location"));
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown SortStyle: " + sortStyle);
@@ -191,6 +197,7 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
             outage.serviceName = onmsOutage.getMonitoredService() != null ? onmsOutage.getMonitoredService().getServiceName() : "";
             outage.suppressedBy = onmsOutage.getSuppressedBy();
             outage.suppressTime = onmsOutage.getSuppressTime();
+            outage.location = onmsOutage.getNode() != null ? (onmsOutage.getNode().getLocation() != null ? onmsOutage.getNode().getLocation().getLocationName() : "") : "";
             
             return outage;
         }else{
@@ -235,8 +242,6 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
     @Transactional
     @Override
     public OutageSummary[] getMatchingOutageSummaries(final OutageCriteria criteria) {
-        
-        
         List<OnmsOutage> onmsOutages = m_outageDao.findMatching(getOnmsCriteria(criteria));
         
         return getOutageSummary(onmsOutages).toArray(new OutageSummary[0]);

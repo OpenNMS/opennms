@@ -1,0 +1,39 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-collectd-configuration]]
+=== Collectd Configuration
+
+.Configuration and log files related to Collectd
+[options="header, autowidth"]
+|===
+| File                                           | Description
+| `$OPENNMS_HOME/etc/collectd-configuration.xml` | Configuration file for global _Collectd_ daemon and _Collectors_ configuration
+| `$OPENNMS_HOME/logs/collectd.log`              | Log file for all _Collectors_ and the global _Collectd_ daemon
+| `$OPENNMS_HOME/etc/snmp-graph.properties`      | _RRD_ graph definitions to render performance data measurements in the _Web UI_
+| `$OPENNMS_HOME/etc/snmp-graph.properties.d`    | Directory with _RRD_ graph definitions for devices and applications to render performance data measurements in the _Web UI_
+| `$OPENNMS_HOME/etc/events/opennms.events.xml`  | Event definitions for _Collectd_, i.e. _dataCollectionSucceeded_, and _dataCollectionFailed_
+|===
+
+To change the behavior for performance data collection, the `collectd-configuration.xml` file can be modified.
+The configuration file is structured in the following parts:
+
+* _Global daemon config_: Define the size of the used _Thread Pool_ to run _Collectors_ in parallel.
+* _Collection packages_: Packages to allow the grouping of configuration parameters for _Collectors_.
+* _Collection service association_: Based on the name of the collection service, the implementation for application or network management protocols are assigned.
+
+[[ga-performance-management-collectd-overview]]
+.Collectd overview for associated files and configuration
+image::performance-management/01_collectd-overview.png[]
+
+The global behavior, especially the size of the _Thread Pool_ for _Collectd_, is configured in the `collectd-configuration.xml`.
+
+.Global configuration parameters for Collectd
+[source, xml]
+----
+<collectd-configuration
+        threads="50"> <1>
+----
+
+<1> Size of the _Thread Pool_ to run _Collectors_ in parallel
