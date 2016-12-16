@@ -82,7 +82,7 @@ public class CamelRpcServerRouteManager {
 
         @Override
         public void configure() throws Exception {
-            from(String.format("queuingservice:%s", queueNameFactory.getName()))
+            from(String.format("queuingservice:%s?asyncConsumer=true", queueNameFactory.getName()))
                 .setExchangePattern(ExchangePattern.InOut)
                 .process(new CamelRpcServerProcessor(module))
                 .routeId(getRouteId());
