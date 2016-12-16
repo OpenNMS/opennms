@@ -26,6 +26,9 @@ mkdir -p "$MINION_HOME/repositories/default"
 tar zxvf repository-*-repo.tar.gz -C "$MINION_HOME/repositories/default"
 popd
 
+# Enable Hawtio
+echo 'hawtio-offline' > "$MINION_HOME/etc/featuresBoot.d/hawtio.boot"
+
 # Start the container as root (currently required for ICMP)
 pushd "$MINION_HOME"
 sudo ./bin/karaf debug
