@@ -40,10 +40,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
 /**
  * Top-level element for the trapd-configuration.xml
  *  configuration file.
@@ -55,10 +51,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @SuppressWarnings("all") 
 public class TrapdConfiguration implements  Serializable {
 	private static final long serialVersionUID = -3548367130814097723L;
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
 
 	/**
      * The IP address on which trapd listens for connections.
@@ -72,7 +64,7 @@ public class TrapdConfiguration implements  Serializable {
      * The port on which trapd listens for SNMP traps. The
      *  standard port is 162.
      */
-	@XmlAttribute(name="snmp-trap-port")
+	@XmlAttribute(name="snmp-trap-port", required=true)
     private int _snmpTrapPort;
 
     /**
@@ -85,7 +77,7 @@ public class TrapdConfiguration implements  Serializable {
      * Whether traps from devices unknown to OpenNMS should
      *  generate newSuspect events.
      */
-	@XmlAttribute(name="new-suspect-on-trap")
+	@XmlAttribute(name="new-suspect-on-trap", required=true)
     private boolean _newSuspectOnTrap;
 
 	@XmlAttribute(name="include-raw-message", required=false)
@@ -96,7 +88,7 @@ public class TrapdConfiguration implements  Serializable {
      * Defaults to 2 x the number of available processors.
      */
 	@XmlAttribute(name="threads", required=false)
-    private int _threads;
+    private int _threads = 0;
 
     /**
      * Maximum number of messages to keep in memory while waiting
@@ -133,10 +125,6 @@ public class TrapdConfiguration implements  Serializable {
     private java.util.List<Snmpv3User> _snmpv3UserList;
 
 
-      //----------------/
-     //- Constructors -/
-    //----------------/
-
     public TrapdConfiguration() {
         super();
         setSnmpTrapAddress("*");
@@ -152,10 +140,6 @@ public class TrapdConfiguration implements  Serializable {
         this._snmpTrapPort = _snmpTrapPort;
         this._snmpv3UserList = new java.util.ArrayList<Snmpv3User>();
     }
-
-      //-----------/
-     //- Methods -/
-    //-----------/
 
     /**
      * 
