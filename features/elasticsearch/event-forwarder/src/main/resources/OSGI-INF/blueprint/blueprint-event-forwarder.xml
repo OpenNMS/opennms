@@ -26,6 +26,10 @@
         <cm:property name="logEventDescription" value="false"/>
         <cm:property name="cache_max_ttl" value="0"/> <!-- set to zero to disable TTL -->
         <cm:property name="cache_max_size" value="10000"/> <!-- set to zero to disable max size -->
+        <cm:property name="concurrentConsumers" value="4"/>
+        <cm:property name="queueSize" value="1000"/>
+        <cm:property name="queueTimeout" value="0"/> <!-- Disable timeout by default -->
+        <cm:property name="blockWhenFull" value="true"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -40,7 +44,7 @@
   </service>
 
   <bean id="alarmForwarder" class="org.opennms.features.elasticsearch.eventforwarder.internal.DefaultAlarmForwarder">
-    <argument value="seda:elasticsearchForwardAlarm"/>
+    <argument value="seda:elasticsearchForwardAlarm?size=${queueSize}&amp;timeout=${queueTimeout}&amp;blockWhenFull=${blockWhenFull}"/>
   </bean>
 
   <bean id="eventListener" class="org.opennms.features.elasticsearch.eventforwarder.ForwardingEventListener" init-method="init" destroy-method="destroy">
@@ -54,7 +58,7 @@
 
   <!-- Event listener that connects the EventIpcManager to this Camel context -->
   <bean id="eventForwarder" class="org.opennms.features.elasticsearch.eventforwarder.internal.DefaultEventForwarder">
-    <argument value="seda:elasticsearchForwardEvent"/>
+    <argument value="seda:elasticsearchForwardEvent?size=${queueSize}&amp;timeout=${queueTimeout}&amp;blockWhenFull=${blockWhenFull}"/>
   </bean>
 
     <bean id="nodeDataCache" class="org.opennms.features.elasticsearch.eventforwarder.internal.NodeCache"
@@ -107,23 +111,23 @@
     </route>
 
     <route id="eventsFromOpennms" autoStartup="true" startupOrder="2">
-        <from uri="seda:elasticsearchForwardEvent"/>
-        <to uri="seda:ES_PRE"/>
+        <from uri="seda:elasticsearchForwardEvent?concurrentConsumers={{concurrentConsumers}}&amp;size={{queueSize}}"/>
+        <to uri="seda:ES_PRE?size={{queueSize}}&amp;timeout={{queueTimeout}}&amp;blockWhenFull={{blockWhenFull}}"/>
     </route>
 
     <route id="alarmsFromOpennms" autoStartup="true" startupOrder="3">
-        <from uri="seda:elasticsearchForwardAlarm"/>
-        <to uri="seda:ES_PRE"/>
+        <from uri="seda:elasticsearchForwardAlarm?concurrentConsumers={{concurrentConsumers}}&amp;size={{queueSize}}"/>
+        <to uri="seda:ES_PRE?size={{queueSize}}&amp;timeout={{queueTimeout}}&amp;blockWhenFull={{blockWhenFull}}"/>
     </route>
 
     <route id="enrichAlarmsAndEvents" autoStartup="true" startupOrder="4">
-        <from uri="seda:ES_PRE"/>
+        <from uri="seda:ES_PRE?concurrentConsumers={{concurrentConsumers}}&amp;size={{queueSize}}"/>
         <bean ref="elasticsearchHeaders" method="process"/>
-        <to uri="seda:ES"/>
+        <to uri="seda:ES?size={{queueSize}}&amp;timeout={{queueTimeout}}&amp;blockWhenFull={{blockWhenFull}}"/>
     </route>
 
     <route id="toElasticsearch" autoStartup="true" startupOrder="5" errorHandlerRef="noErrorHandler">
-        <from uri="seda:ES"/>
+        <from uri="seda:ES?concurrentConsumers={{concurrentConsumers}}&amp;size={{queueSize}}"/>
         <log loggingLevel="DEBUG" message="ES: ${body.toString()}"/>
         <to uri="elasticsearch://{{elasticsearchCluster}}?operation=INDEX&amp;ip={{elasticsearchIp}}"/>
     </route>
