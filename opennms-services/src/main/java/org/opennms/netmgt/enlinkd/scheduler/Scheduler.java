@@ -529,117 +529,119 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * the runnable queues for ready objects and then enqueuing them into the
 	 * thread pool for execution.
 	 */
-        @Override
-	public void run() {
+    @Override
+    public void run() {
 
-		synchronized (this) {
-			m_status = RUNNING;
-		}
+        synchronized (this) {
+            m_status = RUNNING;
+        }
 
-		LOG.debug("run: scheduler running");
+        LOG.debug("run: scheduler running");
 
-		// Loop until a fatal exception occurs or until
-		// the thread is interrupted.
-		//
-		for (;;) {
-			// block if there is nothing in the queue(s)
-			// When something is added to the queue it
-			// signals us to wakeup
-			//
-			synchronized (this) {
-				if (m_status != RUNNING && m_status != PAUSED
-						&& m_status != PAUSE_PENDING
-						&& m_status != RESUME_PENDING) {
-				    LOG.debug("run: status = {}, time to exit", m_status);
-					break;
-				}
+        // Loop until a fatal exception occurs or until
+        // the thread is interrupted.
+        //
+        for (;;) {
+            // block if there is nothing in the queue(s)
+            // When something is added to the queue it
+            // signals us to wakeup
+            //
+            synchronized (this) {
+                if (m_status != RUNNING && m_status != PAUSED
+                        && m_status != PAUSE_PENDING
+                        && m_status != RESUME_PENDING) {
+                    LOG.debug("run: status = {}, time to exit", m_status);
+                    break;
+                }
 
-				if (m_scheduled == 0) {
-					try {
-					    LOG.debug("run: no interfaces scheduled, waiting...");
-						wait();
-					} catch (InterruptedException ex) {
-						break;
-					}
-				}
-			}
+                if (m_scheduled == 0) {
+                    try {
+                        LOG.debug("run: no interfaces scheduled, waiting...");
+                        wait();
+                    } catch (InterruptedException ex) {
+                        break;
+                    }
+                }
+            }
 
-			// cycle through the queues checking for
-			// what's ready to run. The queues are keyed
-			// by the interval, but the mapped elements
-			// are peekable fifo queues.
-			//
-			int runned = 0;
-			synchronized (m_queues) {
-				// get an iterator so that we can cycle
-				// through the queue elements.
-				//
-				Iterator<Long> iter = m_queues.keySet().iterator();
-				while (iter.hasNext()) {
-					// Peak for Runnable objects until
-					// there are no more ready runnables
-					//
-					// Also, only go through each queue once!
-					// if we didn't add a count then it would
-					// be possible to starve other queues.
-					//
-					Long key = iter.next();
-					PeekableFifoQueue<ReadyRunnable> in = m_queues.get(key);
-					if (in.isEmpty()) {
-						continue;
-					}
-					ReadyRunnable readyRun = null;
-					int maxLoops = in.size();
-					do {
-						try {
-							readyRun = in.peek();
-							if (readyRun != null)
-                                                            // Pop the interface/readyRunnable from the
-                                                            // queue for execution.
-                                                            //
-                                                            in.remove();
-							    
-							if (readyRun.isReady()) {
-							    LOG.debug("run: found ready runnable {}", readyRun.getInfo());
+            // cycle through the queues checking for
+            // what's ready to run. The queues are keyed
+            // by the interval, but the mapped elements
+            // are peekable fifo queues.
+            //
+            int runned = 0;
+            synchronized (m_queues) {
+                // get an iterator so that we can cycle
+                // through the queue elements.
+                //
+                Iterator<Long> iter = m_queues.keySet().iterator();
+                while (iter.hasNext()) {
+                    // Peak for Runnable objects until
+                    // there are no more ready runnables
+                    //
+                    // Also, only go through each queue once!
+                    // if we didn't add a count then it would
+                    // be possible to starve other queues.
+                    //
+                    Long key = iter.next();
+                    PeekableFifoQueue<ReadyRunnable> in = m_queues.get(key);
+                    if (in == null || in.isEmpty()) {
+                        continue;
+                    }
+                    ReadyRunnable readyRun = null;
+                    int maxLoops = in.size();
+                    do {
+                        try {
+                            readyRun = in.peek();
+                            if (readyRun != null) {
+                                // Pop the interface/readyRunnable from the
+                                // queue for execution.
+                                //
+                                in.remove();
 
+                                if (readyRun.isReady()) {
+                                    LOG.debug("run: found ready runnable {}",
+                                              readyRun.getInfo());
 
-								// Add runnable to the execution queue
-								m_runner.execute(readyRun);
-								++runned;
-							} else {
-                                                            LOG.debug("run: not ready ready runnable {}", readyRun.getInfo());
-							    in.add(readyRun);
-							}
-						} catch (InterruptedException ex) {
-							return; // jump all the way out
-						}
-					} while (readyRun != null && --maxLoops > 0);
-				}
-				
-			}
+                                    // Add runnable to the execution queue
+                                    m_runner.execute(readyRun);
+                                    ++runned;
+                                } else {
+                                    LOG.debug("run: not ready ready runnable {}",
+                                              readyRun.getInfo());
+                                    in.add(readyRun);
+                                }
+                            }
+                        } catch (InterruptedException ex) {
+                            return; // jump all the way out
+                        }
+                    } while (--maxLoops > 0);
+                }
 
-			// Wait for 1 second if there were no runnables
-			// executed during this loop, otherwise just
-			// start over.
-			//
-			synchronized (this) {
-				m_scheduled -= runned;
-				if (runned == 0) {
-					try {
-						wait(1000);
-					} catch (InterruptedException ex) {
-						break; // exit for loop
-					}
-				}
-			}
+            }
 
-		} // end for(;;)
+            // Wait for 1 second if there were no runnables
+            // executed during this loop, otherwise just
+            // start over.
+            //
+            synchronized (this) {
+                m_scheduled -= runned;
+                if (runned == 0) {
+                    try {
+                        wait(1000);
+                    } catch (InterruptedException ex) {
+                        break; // exit for loop
+                    }
+                }
+            }
 
-		LOG.debug("run: scheduler exiting, state = STOPPED");
-		synchronized (this) {
-			m_status = STOPPED;
-		}
+        } // end for(;;)
 
-	} // end run
-	
+        LOG.debug("run: scheduler exiting, state = STOPPED");
+        synchronized (this) {
+            m_status = STOPPED;
+        }
+
+    } // end run
+
 }
