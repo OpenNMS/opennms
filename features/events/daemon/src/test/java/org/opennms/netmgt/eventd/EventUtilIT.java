@@ -44,6 +44,7 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Tticket;
 import org.opennms.netmgt.xml.event.Value;
@@ -109,14 +110,13 @@ public class EventUtilIT {
 
     @Test
     public void testGetValueOfParm() {
-        ExpandableParameterResolverRegistry registry = new ExpandableParameterResolverRegistry();
         String testString = new ExpandableParameter(AbstractEventUtil.TAG_UEI, eventUtil).expand(m_svcLostEvent, Maps.newHashMap());
         assertEquals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, testString);
         
         m_svcLostEvent.setSeverity(OnmsSeverity.MINOR.getLabel());
         testString = new ExpandableParameter(AbstractEventUtil.TAG_SEVERITY, eventUtil).expand(m_svcLostEvent, Maps.newHashMap());
         assertEquals("Minor", testString);
-        
+
         Event event = MockEventUtil.createNodeLostServiceEvent("Test", m_svc, "noReasonAtAll");
         assertEquals("noReasonAtAll", eventUtil.getNamedParmValue("parm["+EventConstants.PARM_LOSTSERVICE_REASON+"]", event));
     }
@@ -290,4 +290,44 @@ public class EventUtilIT {
         assertEquals("777", newString);
     }
 
+    @Test
+    public void testNamedParameterExpansion() {
+        // Create an expandable string that references N
+        // distinct named parameters
+        final int N = 6;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < N; i++) {
+            sb.append("%parm[" + i + "]%");
+        }
+        String expandable = sb.toString();
+
+        // Now create an event with N parameters matching
+        // the names that are referenced above
+        EventBuilder eb = new EventBuilder("uei", "test");
+        for (int i = 0; i < N; i++) {
+            // The named parameters in the expandable should
+            // match the parameters name here even when we pad
+            // them with whitespace
+            eb.addParam(" \n\t" + i + "\n\t ", i);
+        }
+        Event e = eb.getEvent();
+
+        // Manually generate the expected string
+        sb = new StringBuilder();
+        for (int i = 0; i < N; i++) {
+            sb.append(i);
+        }
+        String expected = sb.toString();
+
+        // Expand!
+        assertEquals(expected, eventUtil.expandParms(expandable, e));
+
+        final int M = 1000;
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {
+            eventUtil.expandParms(expandable, e);
+        }
+        System.err.printf("Succesfully expanded %d events with %d parameters in %d ms\n",
+                M, N, System.currentTimeMillis() - start);
+    }
 }
