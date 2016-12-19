@@ -248,6 +248,11 @@ public abstract class AbstractEventUtil implements EventUtil {
 	protected static final String PARM_BEGIN = "parm[";
 
 	/**
+	 * Pattern used to match and parse 'parm' tokens.
+	 */
+	protected static final Pattern PARM_REGEX = Pattern.compile("^parm\\[(.*)\\]$");
+
+	/**
 	 * The length of PARM_BEGIN
 	 */
 	protected static final int PARM_BEGIN_LENGTH = 5;
@@ -670,26 +675,20 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 * @return A parameter's value as a String using the parameter's name..
 	 */
 	public String getNamedParmValue(String parm, Event event) {
-		String retParmVal = null;
-		int end = parm.indexOf(PARM_END_SUFFIX, PARM_BEGIN_LENGTH);
-		if (end != -1) {
-			// Get the value between the '[' and ']'
-			String eparmname = parm.substring(PARM_BEGIN_LENGTH, end);
+	    final Matcher matcher = PARM_REGEX.matcher(parm);
+	    if (!matcher.matches()) {
+	        return null;
+	    }
 
-			for (Parm evParm : event.getParmCollection()) {
-				String parmName = evParm.getParmName();
-				if (parmName != null
-					&& parmName.trim().equals(eparmname)) {
-					// get parm value
-					Value eparmval = evParm.getValue();
-					if (eparmval != null) {
-						retParmVal = EventConstants.getValueAsString(eparmval);
-						break;
-					}
-				}
-			}
-		}
-		return retParmVal;
+	    final String eparmname = matcher.group(1);
+	    final Parm evParm = event.getParmTrim(eparmname);
+	    if (evParm != null) {
+	        final Value eparmval = evParm.getValue();
+            if (eparmval != null) {
+                return EventConstants.getValueAsString(eparmval);
+            }
+	    }
+	    return null;
 	}
 
 	/**

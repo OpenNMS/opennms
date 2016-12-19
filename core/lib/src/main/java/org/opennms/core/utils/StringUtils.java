@@ -243,4 +243,65 @@ public abstract class StringUtils {
         }
         return zdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     }
+
+    /**
+     * This is an optimized version of:
+     *    return a != null && a.trim().equals(b)
+     *
+     * that avoids creating a trimmed substring of A before
+     * comparison.
+     *
+     * Instead A and B are compared in place.
+     *
+     * @param a string to trim before comparing
+     * @param b string to compare
+     * @return <code>true</code> if A equals B, after A is trimmed
+     */
+    public static boolean equalsTrimmed(String a, String b) {
+        if (a == null) {
+            return false;
+        }
+
+        int alen = a.length();
+        final int blen = b.length();
+
+        // Fail fast: If B is longer than A, B cannot be a substring of A
+        if (blen > alen) {
+            return false;
+        }
+
+        // Find the index of the first non-whitespace character in A
+        int i = 0;
+        while ((i < alen) && (a.charAt(i) <= ' ')) {
+            i++;
+        }
+
+        // Match the subsequent characters in A to those in B
+        int j = 0;
+        while ((i < alen && j < blen)) {
+            if (a.charAt(i) != b.charAt(j)) {
+                return false;
+            }
+            i++;
+            j++;
+        }
+
+        // If we've reached the end of A, then we have a match
+        if (i == alen) {
+            return true;
+        }
+
+        // "Trim" the whitespace characters off the end of A 
+        while ((i < alen) && (a.charAt(alen - 1) <= ' ')) {
+            alen--;
+        }
+
+        // If only whitespace characters remained on A, then we have a match
+        if (alen - i == 0) {
+            return true;
+        }
+
+        // There are extra characters at the tail of A, that don't show up in B
+        return false;
+    }
 }

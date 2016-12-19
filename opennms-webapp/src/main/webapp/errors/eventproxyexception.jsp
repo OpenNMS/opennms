@@ -33,29 +33,14 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
-	import="org.opennms.netmgt.events.api.EventProxyException"
+	import="org.opennms.netmgt.events.api.EventProxyException, org.opennms.web.utils.ExceptionUtils"
 %>
 
 
 <%
-
-    if (exception == null) {
-        exception = (Throwable)request.getAttribute("javax.servlet.error.exception");
-    }
-
-    EventProxyException e = null;
-
-    if( exception instanceof EventProxyException ) {
-        e = (EventProxyException)exception;
-    }
-    else if( exception instanceof ServletException ) {
-        e = (EventProxyException)((ServletException)exception).getRootCause();
-    }
-    else {
-        throw new ServletException( "This error page does not handle this exception type.", exception );
-    }    
-    
+    EventProxyException e = ExceptionUtils.getRootCause(exception, EventProxyException.class);
 %>
+
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
