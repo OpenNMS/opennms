@@ -33,21 +33,11 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
-	import="org.opennms.web.notification.*"
+	import="org.opennms.web.notification.*, org.opennms.web.utils.ExceptionUtils"
 %>
 
 <%
-    NoticeIdNotFoundException ninfe = null;
-    
-    if( exception instanceof NoticeIdNotFoundException ) {
-        ninfe = (NoticeIdNotFoundException)exception;
-    }
-    else if( exception instanceof ServletException ) {
-        ninfe = (NoticeIdNotFoundException)((ServletException)exception).getRootCause();
-    }
-    else {
-        throw new ServletException( "This error page does not handle this exception type.", exception );
-    }
+    NoticeIdNotFoundException ninfe = ExceptionUtils.getRootCause(exception, NoticeIdNotFoundException.class);
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
