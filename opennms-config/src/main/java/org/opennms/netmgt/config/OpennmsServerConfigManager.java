@@ -30,6 +30,7 @@ package org.opennms.netmgt.config;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.xml.JaxbUtils;
@@ -74,7 +75,7 @@ public class OpennmsServerConfigManager implements OpennmsServerConfig {
      *
      * @return the default critical path IP
      */
-    public String getDefaultCriticalPathIp() {
+    public InetAddress getDefaultCriticalPathIp() {
         return m_config.getDefaultCriticalPathIp();
     }
 
