@@ -40,6 +40,11 @@
   <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent" />
 
   <camelContext id="rpcClient" xmlns="http://camel.apache.org/schema/spring">
+    <!-- Exchanges contain credentials i.e. SNMP community details, so avoid logging them -->
+    <properties>
+      <property key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.camel.body.debug:-1}}"/>
+    </properties>
+
     <!-- Define a default thread profile with the same defaults as Camel
          (see http://camel.apache.org/threading-model.html), but allow
          the number of threads and max queue size to overwritten using
