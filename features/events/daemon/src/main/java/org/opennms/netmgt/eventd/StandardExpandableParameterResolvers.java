@@ -35,12 +35,16 @@ import java.net.InetAddress;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.eventd.processor.expandable.ExpandableParameterResolver;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Tticket;
+import org.opennms.netmgt.xml.event.Value;
 import org.slf4j.LoggerFactory;
 
 public enum StandardExpandableParameterResolvers implements ExpandableParameterResolver {
@@ -53,7 +57,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return event.getUei();
         }
     },
@@ -66,7 +70,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             if (event.hasDbid()) {
                 return Integer.toString(event.getDbid());
             } else {
@@ -82,7 +86,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return event.getSource();
         }
     },
@@ -95,7 +99,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return event.getDistPoller();
         }
     },
@@ -108,7 +112,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return event.getDescr();
         }
     },
@@ -121,7 +125,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return event.getLogmsg().getContent();
         }
     },
@@ -134,7 +138,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return Long.toString(event.getNodeid());
         }
     },
@@ -147,7 +151,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             Date eventTime = event.getTime(); // This will be in GMT
             if (eventTime != null) {
                 DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
@@ -165,7 +169,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             Date eventTime = event.getTime(); //This will be in GMT
             if (eventTime != null) {
                 DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
@@ -183,7 +187,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return event.getHost();
         }
     },
@@ -196,7 +200,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return event.getInterface();
         }
     },
@@ -209,7 +213,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             if (event.hasIfIndex()) {
                 return Integer.toString(event.getIfIndex());
             }
@@ -225,7 +229,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             InetAddress addr = event.getInterfaceAddress();
             if (addr != null) {
                 return addr.getHostName();
@@ -242,7 +246,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return event.getSnmphost();
         }
     },
@@ -255,7 +259,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return event.getService();
         }
     },
@@ -268,7 +272,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             Snmp info = event.getSnmp();
             if (info != null) {
                 StringBuffer snmpStr = new StringBuffer(info.getId());
@@ -312,7 +316,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             Snmp info = event.getSnmp();
             if (info != null) {
                 return info.getId();
@@ -329,7 +333,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             Snmp info = event.getSnmp();
             if (info != null && info.getIdtext() != null) {
                 return info.getIdtext();
@@ -346,7 +350,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             Snmp info = event.getSnmp();
             if (info != null) {
                 return info.getVersion();
@@ -363,7 +367,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             Snmp info = event.getSnmp();
             if (info != null && info.hasSpecific()) {
                 return Integer.toString(info.getSpecific());
@@ -380,7 +384,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             Snmp info = event.getSnmp();
             if (info != null && info.hasGeneric()) {
                 return Integer.toString(info.getGeneric());
@@ -397,7 +401,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             Snmp info = event.getSnmp();
             if (info != null && info.getCommunity() != null) {
                 return info.getCommunity();
@@ -414,7 +418,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return event.getSeverity();
         }
     },
@@ -427,7 +431,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return event.getOperinstruct();
         }
     },
@@ -440,7 +444,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return event.getMouseovertext();
         }
     },
@@ -453,7 +457,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             Tticket ticket = event.getTticket();
             return ticket == null ? "" : ticket.getContent();
         }
@@ -467,7 +471,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return AbstractEventUtil.getAllParmValues(event);
         }
     },
@@ -480,7 +484,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return AbstractEventUtil.getAllParmNames(event);
         }
     },
@@ -493,7 +497,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return AbstractEventUtil.getAllParamValues(event);
         }
     },
@@ -506,7 +510,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return String.valueOf(event.getParmCollection().size());
         }
     },
@@ -519,7 +523,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return AbstractEventUtil.getNumParmValue(parm, event);
         }
     },
@@ -532,7 +536,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             return AbstractEventUtil.getNumParmName(parm, event);
         }
     },
@@ -541,13 +545,27 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
 
         @Override
         public boolean matches(String parm) {
-            return parm.startsWith(AbstractEventUtil.PARM_BEGIN);
+            return AbstractEventUtil.PARM_REGEX.matcher(parm).matches();
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
-            if (parm.length() > AbstractEventUtil.PARM_BEGIN_LENGTH) {
-                return eventUtil.getNamedParmValue(parm, event);
+        public String parse(String parm) {
+            // Extract the name of the parameter from the 'parm[ZZZ]' string
+            final Matcher m = AbstractEventUtil.PARM_REGEX.matcher(parm);
+            if (!m.matches()) {
+                throw new IllegalStateException("parse() should not be called if matches() returned false");
+            }
+            return m.group(1);
+        }
+
+        @Override
+        public String getValue(String parm, String parmName, Event event, EventUtil eventUtil) {
+            final Parm evParm = event.getParmTrim(parmName);
+            if (evParm != null) {
+                final Value eParmVal = evParm.getValue();
+                if (eParmVal != null) {
+                    return EventConstants.getValueAsString(eParmVal);
+                }
             }
             return null;
         }
@@ -561,7 +579,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             if (event.getNodeid() != null) {
                 String hwFieldValue = eventUtil.getHardwareFieldValue(parm, event.getNodeid());
                 if (hwFieldValue != null) {
@@ -585,7 +603,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             if (event.getNodeid() != null) {
                 String assetFieldValue = eventUtil.getAssetFieldValue(parm, event.getNodeid());
                 if (assetFieldValue != null) {
@@ -609,7 +627,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             String nodeLabel = null;
             if (event.hasNodeid()) {
                 try {
@@ -640,7 +658,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             if (event.hasNodeid()) {
                 try {
                     String foreignSource = eventUtil.getForeignSource(event.getNodeid());
@@ -669,7 +687,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             if (event.hasNodeid()) {
                 try {
                     String foreignId = eventUtil.getForeignId(event.getNodeid());
@@ -698,8 +716,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
-            String ifAlias = null;
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             if (event.getNodeid() > 0 && event.getInterface() != null) {
                 try {
                     return eventUtil.getIfAlias(event.getNodeid(), event.getInterface());
@@ -707,9 +724,6 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
                     // do nothing
                     LoggerFactory.getLogger(getClass()).info("ifAlias Unavailable for {}:{}", event.getNodeid(), event.getInterface(), e);
                 }
-            }
-            if (ifAlias != null) {
-                return ifAlias;
             }
             return event.getInterface();
         }
@@ -720,6 +734,12 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         }
 
     };
+
+    // By default we don't perform any additional parsing
+    @Override
+    public String parse(String parm) {
+        return null;
+    }
 
     // By default we do not require a transaction
     @Override
