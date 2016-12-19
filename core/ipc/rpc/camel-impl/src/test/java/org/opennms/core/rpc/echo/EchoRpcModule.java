@@ -40,12 +40,15 @@ public class EchoRpcModule extends AbstractXmlRpcModule<EchoRequest, EchoRespons
         super(EchoRequest.class, EchoResponse.class);
     }
 
+    public void beforeRun() { }
+
     @Override
     public CompletableFuture<EchoResponse> execute(EchoRequest request) {
         final CompletableFuture<EchoResponse> future = new CompletableFuture<>();
         new Thread(new Runnable() {
             @Override
             public void run() {
+                beforeRun();
                 if (request.getDelay() != null) {
                     try {
                         Thread.sleep(request.getDelay());
@@ -54,7 +57,11 @@ public class EchoRpcModule extends AbstractXmlRpcModule<EchoRequest, EchoRespons
                         return;
                     }
                 }
-                future.complete(new EchoResponse(request.getMessage()));
+                if (request.shouldThrow()) {
+                    future.completeExceptionally(new MyEchoException(request.getMessage()));
+                } else {
+                    future.complete(new EchoResponse(request.getMessage()));
+                }
             }
         }).start();
         return future;
@@ -63,5 +70,10 @@ public class EchoRpcModule extends AbstractXmlRpcModule<EchoRequest, EchoRespons
     @Override
     public String getId() {
         return RPC_MODULE_ID;
+    }
+
+    @Override
+    public EchoResponse createResponseWithException(Throwable ex) {
+        return new EchoResponse(ex);
     }
 }

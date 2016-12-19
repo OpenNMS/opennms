@@ -275,7 +275,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      */
     @Override
     public SnmpAgentConfig getAgentConfig() {
-        return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
+        return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress(), getLocationName());
     }
 
     /* (non-Javadoc)

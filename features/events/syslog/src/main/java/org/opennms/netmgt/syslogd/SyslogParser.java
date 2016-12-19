@@ -42,6 +42,10 @@ import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
 
 public class SyslogParser {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogParser.class);
@@ -52,22 +56,28 @@ public class SyslogParser {
     private Boolean m_found = null;
     private Boolean m_matched = null;
     private boolean m_traceEnabled = false;
-    
-    public static SyslogParser getParserInstance(SyslogdConfig config, String text) throws MessageDiscardedException {
-        Class<? extends SyslogParser> m_parserClass = null;
-        try {
-            m_parserClass = Class.forName(config.getParser()).asSubclass(SyslogParser.class);
-        } catch (final Exception ex) {
-            LOG.debug("Unable to instantiate Syslog parser class specified in config: {}", config.getParser(), ex);
-            m_parserClass = CustomSyslogParser.class;
+    private static final LoadingCache<String,Class<? extends SyslogParser>> PARSER_CLASSES = CacheBuilder.newBuilder().build(
+        new CacheLoader<String,Class<? extends SyslogParser>>() {
+            public Class<? extends SyslogParser> load(String className) {
+                try {
+                    return Class.forName(className).asSubclass(SyslogParser.class);
+                } catch (final Exception e) {
+                    LOG.debug("Unable to instantiate Syslog parser class specified in config: {}", className, e);
+                    return CustomSyslogParser.class;
+                }
+            }
         }
+    );
+
+    public static SyslogParser getParserInstance(SyslogdConfig config, String text) throws MessageDiscardedException {
+        Class<? extends SyslogParser> parserClass = PARSER_CLASSES.getUnchecked(config.getParser());
 
         final SyslogParser retval;
         try {
-            Constructor<? extends SyslogParser> m = m_parserClass.getConstructor(SyslogdConfig.class, String.class);
+            Constructor<? extends SyslogParser> m = parserClass.getConstructor(SyslogdConfig.class, String.class);
             retval = (SyslogParser)m.newInstance(config, text);
         } catch (final Exception ex) {
-            LOG.debug("Unable to get parser for class '{}'", m_parserClass.getName(), ex);
+            LOG.debug("Unable to get parser for class '{}'", parserClass.getName(), ex);
             throw new MessageDiscardedException(ex);
         }
 

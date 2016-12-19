@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
@@ -91,6 +92,12 @@ import com.codahale.metrics.Timer.Context;
  */
 public class HibernateEventWriter implements EventWriter {
     private static final Logger LOG = LoggerFactory.getLogger(HibernateEventWriter.class);
+
+    public static final String LOG_MSG_DEST_DO_NOT_PERSIST = "donotpersist";
+    public static final String LOG_MSG_DEST_SUPRRESS = "suppress";
+    public static final String LOG_MSG_DEST_LOG_AND_DISPLAY = "logndisplay";
+    public static final String LOG_MSG_DEST_LOG_ONLY = "logonly";
+    public static final String LOG_MSG_DEST_DISPLAY_ONLY = "displayonly";
     
     @Autowired
     private TransactionOperations m_transactionManager;
@@ -136,8 +143,8 @@ public class HibernateEventWriter implements EventWriter {
          */
         Assert.notNull(event.getLogmsg(), "event does not have a logmsg");
         if (
-            "donotpersist".equalsIgnoreCase(event.getLogmsg().getDest()) || 
-            "suppress".equalsIgnoreCase(event.getLogmsg().getDest())
+            LOG_MSG_DEST_DO_NOT_PERSIST.equalsIgnoreCase(event.getLogmsg().getDest()) ||
+            LOG_MSG_DEST_SUPRRESS.equalsIgnoreCase(event.getLogmsg().getDest())
         ) {
             LOG.debug("{}: uei '{}' marked as '{}'; not processing event.", logPrefix, event.getUei(), event.getLogmsg().getDest());
             return false;
@@ -149,29 +156,42 @@ public class HibernateEventWriter implements EventWriter {
     @Override
     public void process(Log eventLog) throws EventProcessorException {
         if (eventLog != null && eventLog.getEvents() != null) {
-            final Event[] events = eventLog.getEvents().getEvent();
-            if (events != null && events.length > 0) {
+            final List<Event> eventsInLog = eventLog.getEvents().getEventCollection();
+            // This shouldn't happen, but just to be safe...
+            if (eventsInLog == null) {
+                return;
+            }
+
+            // Find the events in the log that need to be persisted
+            final List<Event> eventsToPersist = eventsInLog.stream()
+                .filter(e -> checkEventSanityAndDoWeProcess(e, "HibernateEventWriter"))
+                .collect(Collectors.toList());
+
+            // If there are no events to persist, avoid creating a database transaction
+            if (eventsToPersist.size() < 1) {
+                return;
+            }
+
+            // Time the transaction and insertions
+            try (Context context = writeTimer.time()) {
                 final AtomicReference<EventProcessorException> exception = new AtomicReference<>();
 
-                // Time the transaction and insertions
-                try (Context context = writeTimer.time()) {
-                    m_transactionManager.execute(new TransactionCallbackWithoutResult() {
-                        @Override
-                        protected void doInTransactionWithoutResult(TransactionStatus status) {
-                            for (Event eachEvent : events) {
-                                try {
-                                    process(eventLog.getHeader(), eachEvent);
-                                } catch (EventProcessorException e) {
-                                    exception.set(e);
-                                    return;
-                                }
+                m_transactionManager.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+                        for (Event eachEvent : eventsToPersist) {
+                            try {
+                                process(eventLog.getHeader(), eachEvent);
+                            } catch (EventProcessorException e) {
+                                exception.set(e);
+                                return;
                             }
                         }
-                    });
-
-                    if (exception.get() != null) {
-                        throw exception.get();
                     }
+                });
+
+                if (exception.get() != null) {
+                    throw exception.get();
                 }
             }
         }
@@ -183,10 +203,6 @@ public class HibernateEventWriter implements EventWriter {
      * The method that inserts the event into the database
      */
     private void process(final Header eventHeader, final Event event) throws EventProcessorException {
-        if (!checkEventSanityAndDoWeProcess(event, "HibernateEventWriter")) {
-            return;
-        }
-
         LOG.debug("HibernateEventWriter: processing {}, nodeid: {}, ipaddr: {}, serviceid: {}, time: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
 
         try {
@@ -293,19 +309,19 @@ public class HibernateEventWriter implements EventWriter {
             // set log message
             ovent.setEventLogMsg(EventDatabaseConstants.format(event.getLogmsg().getContent(), 0));
             String logdest = event.getLogmsg().getDest();
-            if ("logndisplay".equals(logdest)) {
+            if (LOG_MSG_DEST_LOG_AND_DISPLAY.equals(logdest)) {
                 // if 'logndisplay' set both log and display column to yes
                 ovent.setEventLog(String.valueOf(MSG_YES));
                 ovent.setEventDisplay(String.valueOf(MSG_YES));
-            } else if ("logonly".equals(logdest)) {
+            } else if (LOG_MSG_DEST_LOG_ONLY.equals(logdest)) {
                 // if 'logonly' set log column to true
                 ovent.setEventLog(String.valueOf(MSG_YES));
                 ovent.setEventDisplay(String.valueOf(MSG_NO));
-            } else if ("displayonly".equals(logdest)) {
+            } else if (LOG_MSG_DEST_DISPLAY_ONLY.equals(logdest)) {
                 // if 'displayonly' set display column to true
                 ovent.setEventLog(String.valueOf(MSG_NO));
                 ovent.setEventDisplay(String.valueOf(MSG_YES));
-            } else if ("suppress".equals(logdest)) {
+            } else if (LOG_MSG_DEST_SUPRRESS.equals(logdest)) {
                 // if 'suppress' set both log and display to false
                 ovent.setEventLog(String.valueOf(MSG_NO));
                 ovent.setEventDisplay(String.valueOf(MSG_NO));
@@ -379,5 +395,9 @@ public class HibernateEventWriter implements EventWriter {
             ovent.setEventAckTime(null);
         }
         return ovent;
+    }
+
+    public void setTransactionManager(TransactionOperations transactionManager) {
+        m_transactionManager = transactionManager;
     }
 }

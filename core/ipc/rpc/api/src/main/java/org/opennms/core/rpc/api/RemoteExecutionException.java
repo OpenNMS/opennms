@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.activemq;
+package org.opennms.core.rpc.api;
 
-import javax.jms.Connection;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
- * Used to create connection pools using our own ConnectionPool subclass.
- * See {@link org.opennms.features.activemq.ConnectionPool} for details.
+ * Thrown when an error occurred processing the request on the remote
+ * system.
  *
- * @author jwhite
+ * @author jesse
  */
-public class PooledConnectionFactory extends org.apache.activemq.pool.PooledConnectionFactory {
+public class RemoteExecutionException extends Exception {
 
-    @Override
-    protected ConnectionPool createConnectionPool(Connection connection) {
-        return new ConnectionPool(connection);
+    private static final long serialVersionUID = 2002562170814461170L;
+
+    public RemoteExecutionException(String message) {
+        super(message);
+    }
+
+    /**
+     * Utility function for converting a {@link Throwable} to a {@link String}.
+     *
+     * @param t the exception
+     * @return a string that contains the exception message and the stack trace
+     */
+    public static String toErrorMessage(Throwable t) {
+        if (t == null) {
+            return null;
+        }
+
+        final StringWriter strackTrace = new StringWriter();
+        final PrintWriter pw = new PrintWriter(strackTrace);
+        t.printStackTrace(pw);
+        return strackTrace.toString();
     }
 
 }

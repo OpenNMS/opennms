@@ -45,7 +45,7 @@ public class DnsLookupResponseDTOTest extends XmlTestNoCastor<DnsLookupResponseD
         return Arrays.asList(new Object[][] {
             {   getDnsLookupResponse(),
                 "<?xml version=\"1.0\"?>\n" +
-                "<dns-lookup-response host-response=\"127.0.0.1\" failure-message=\"UnknownHost\"/>"
+                "<dns-lookup-response host-response=\"127.0.0.1\"/>"
             }
         });
     }
@@ -53,7 +53,6 @@ public class DnsLookupResponseDTOTest extends XmlTestNoCastor<DnsLookupResponseD
     private static Object getDnsLookupResponse() {
         DnsLookupResponseDTO dto = new DnsLookupResponseDTO();
         dto.setHostResponse("127.0.0.1");
-        dto.setFailureMessage("UnknownHost");
         return dto;
     }
 

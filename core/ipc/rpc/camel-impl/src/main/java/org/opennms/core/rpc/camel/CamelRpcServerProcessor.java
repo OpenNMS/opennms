@@ -37,6 +37,8 @@ import org.apache.camel.Exchange;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Executes the {@link RpcRequest}, and asynchronously returns the {@link RpcResponse}.
@@ -44,6 +46,8 @@ import org.opennms.core.rpc.api.RpcResponse;
  * @author jwhite
  */
 public class CamelRpcServerProcessor implements AsyncProcessor {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CamelRpcServerProcessor.class);
 
     private final RpcModule<RpcRequest,RpcResponse> module;
 
@@ -63,16 +67,21 @@ public class CamelRpcServerProcessor implements AsyncProcessor {
         final CompletableFuture<RpcResponse> future = module.execute(request);
         future.whenComplete((res, ex) -> {
             try {
+                final RpcResponse response;
                 if (ex != null) {
-                    exchange.setException(ex);
-                    exchange.getOut().setFault(true);
+                    // An exception occurred, store the exception in a new response
+                    response = module.createResponseWithException(ex);
                 } else {
-                    try {
-                        exchange.getOut().setBody(module.marshalResponse(res), String.class);
-                    }  catch (Throwable t) {
-                        exchange.setException(t);
-                        exchange.getOut().setFault(true);
-                    }
+                    // No exception occurred, use the given response
+                    response = res;
+                }
+
+                try {
+                    exchange.getOut().setBody(module.marshalResponse(response), String.class);
+                }  catch (Throwable t) {
+                    LOG.error("Marshalling a response in RPC module {} failed.", module, t);
+                    exchange.setException(t);
+                    exchange.getOut().setFault(true);
                 }
             } finally {
                 callback.done(false);

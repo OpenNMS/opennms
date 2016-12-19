@@ -30,9 +30,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-pool</artifactId>
-      <version>${activemqVersion}</version>
+      <groupId>org.opennms.features.activemq</groupId>
+      <artifactId>org.opennms.features.activemq.pool</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>

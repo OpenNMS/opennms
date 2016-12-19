@@ -5,7 +5,7 @@
 [[gi-install-minion-configure-opennms]]
 === Configuring OpenNMS
 
-Minions communicate with {opennms-product-name} via _REST_, and over an _ActiveMQ_ broker.
+Minions communicate with {opennms-product-name} via _ReST_, and over an _ActiveMQ_ broker.
 Some configuration is required to setup and secure these communication channels.
 
 ==== Authentication and Authorization
@@ -16,7 +16,7 @@ This guide will assume you have created a user called `minion`, with a password 
 
 ==== Configure ActiveMQ
 
-_OpenNMS_ embeds an _ActiveMQ_ broker which, by default, cannot be accessed remotely via the network.
+_{opennms-product-name}_ embeds an _ActiveMQ_ broker which, by default, cannot be accessed remotely via the network.
 In order to make the _ActiveMQ_ broker accessible remotely, you must edit `$OPENNMS_HOME/etc/opennms-activemq.xml` and
 uncomment the `transportConnector` with the `tcp://0.0.0.0:61616` URI.
 
@@ -30,7 +30,7 @@ uncomment the `transportConnector` with the `tcp://0.0.0.0:61616` URI.
 <transportConnector name="openwire" uri="tcp://0.0.0.0:61616?useJmx=false&amp;maximumConnections=1000&amp;wireformat.maxFrameSize=104857600"/>
 ----
 
-If you wish to restrict ActiveMQ connections to only one particular external IP address, you can change `0.0.0.0` to that
+If you wish to restrict _ActiveMQ_ connections to only one particular external IP address, you can change `0.0.0.0` to that
 desired IP address.
 
 [[gi-install-minion-configure]]
@@ -38,11 +38,11 @@ desired IP address.
 
 This section describes how to configure _Minion_ once it has been installed and started.
 
-Once the _Minion_ service is started and the _Karaf_ shell is accessible, you can configure the _Minion_ to point it at your _OpenNMS_ instance.
+Once the _Minion_ service is started and the _Karaf_ shell is accessible, you can configure the _Minion_ to point it at your _{opennms-product-name}_ instance.
 
-NOTE: By default the _Minion_ is configured to communicate with _OpenNMS_ via `localhost`.
+NOTE: By default the _Minion_ is configured to communicate with _{opennms-product-name}_ via `localhost`.
 
-.Configure the _Minion's_ location and URLs for communication with _OpenNMS_
+.Configure the _Minion's_ location and communication endpoints to _{opennms-product-name}_
 [source]
 ----
 [root@localhost /root]# $ ssh -p 8201 admin@localhost
@@ -54,7 +54,7 @@ admin@minion()> config:property-set location RDU
 admin@minion()> config:update
 ----
 
-.Configure the credentials to use when communicating with _OpenNMS_
+.Configure the communication credentials for _{opennms-product-name}_
 [source]
 ----
 admin@minion()> scv:set opennms.http minion minion
@@ -72,9 +72,9 @@ NOTE: The credentials are configured separately since they are encrypted on disk
 [[gi-install-minion-configure-verify]]
 ==== Verifying Connectivity
 
-Once the URLs and credentials for communicating with the _OpenNMS_ instance are configured, you can verify connectivity using:
+Once the URLs and credentials for communicating with the _{opennms-product-name}_ instance are configured, you can verify connectivity using:
 
-.Verify connectivity with the _OpenNMS_ controller
+.Verify connectivity with the _{opennms-product-name}_ controller
 [source]
 ----
 admin@minion()> minion:ping
