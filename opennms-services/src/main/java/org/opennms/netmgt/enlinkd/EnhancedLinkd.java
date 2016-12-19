@@ -294,23 +294,28 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
 
     public boolean runSingleSnmpCollection(final int nodeId) {
+        boolean allready = true;
             final Node node = m_queryMgr.getSnmpNode(nodeId);
 
             for (final NodeDiscovery snmpColl : getSnmpCollections(node)) {
                 if (snmpColl instanceof NodeDiscoveryBridgeTopology)
                     continue;
+                if (!snmpColl.isReady()) {
+                    allready = false;
+                    continue;
+                }
                 snmpColl.setScheduler(m_scheduler);
                 snmpColl.run();
             }
 
-            return true;
+            return allready;
     }
 
     public boolean runTopologyDiscovery(final int nodeId) {
         final Node node = m_queryMgr.getSnmpNode(nodeId);
 
         for (final NodeDiscovery snmpColl : getSnmpCollections(node)) {
-            if (snmpColl instanceof NodeDiscoveryBridgeTopology) {
+            if (snmpColl instanceof NodeDiscoveryBridgeTopology && snmpColl.isReady()) {
                 snmpColl.setScheduler(m_scheduler);
                 snmpColl.run();
                 return true;
@@ -579,4 +584,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             return m_linkdConfig.getRescanInterval(); 
     }
 
+    public int getMaxbft() {
+        return m_linkdConfig.getMaxBft();
+    }
 }
