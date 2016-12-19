@@ -72,6 +72,8 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
 
         final RejectedExecutionHandler rejectedExecutionHandler;
         if (asyncPolicy.isBlockWhenFull()) {
+            // This queue ensures that calling thread is blocked when the queue is full
+            // See the implementation of OfferBlockingQueue for details
             queue = new OfferBlockingQueue<>(asyncPolicy.getQueueSize());
             rejectedExecutionHandler = new ThreadPoolExecutor.AbortPolicy();
         } else {
@@ -108,14 +110,23 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     }
 
     /**
-     * Blocks calls to {@link LinkedBlockingQueue#offer(Object)}, converting
-     * these to calls to {@link LinkedBlockingQueue#put(Object)}.
+     * When used in a ThreadPoolExecutor, this queue will block calls to
+     * {@link ThreadPoolExecutor#execute(Runnable)} when the queue is full.
+     * This is done by overriding calls to {@link LinkedBlockingQueue#offer(Object)}
+     * with calls to {@link LinkedBlockingQueue#put(Object)}, but comes with the caveat
+     * that executor must be built with <code>corePoolSize == maxPoolSize</code>.
+     * In the context of the {@link AsyncDispatcherImpl}, this is an acceptable caveat,
+     * since we enforce the matching pool sizes.
      *
-     * This is used to block the calling thread when trying to execute
-     * tasks when the queue is already full.
+     * There are alternative ways of solving this problem, for example we could use a
+     * {@link RejectedExecutionHandler} to achieve similar behavior, and allow
+     * for <code>corePoolSize < maxPoolSize</code>, but not for <code>corePoolSize==0</code>.
      *
-     * Make sure that corePoolSize == maximumPoolSize if using
-     * this in an ExecutorService.
+     * For further discussions on this topic see:
+     *   http://stackoverflow.com/a/3518588
+     *   http://stackoverflow.com/a/32123535
+     *
+     * If the implementation is changed, make sure that that executor is built accordingly.
      */
     private static class OfferBlockingQueue<E> extends LinkedBlockingQueue<E> {
         private static final long serialVersionUID = 1L;
