@@ -33,18 +33,11 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
+        import="org.opennms.web.utils.ExceptionUtils"
 %>
 
 <%
-    SecurityException e;
-
-    if( exception instanceof ServletException ) {
-        e = (SecurityException)((ServletException)exception).getRootCause();
-    }
-    else { 
-        e = (SecurityException)exception;
-    }
-
+    SecurityException e = ExceptionUtils.getRootCause(exception, SecurityException.class);
     if( !e.getMessage().equals( "sealing violation" )) {
         throw new ServletException( "security exception", e );
     }
