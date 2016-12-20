@@ -48,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class TrapReceiver implements TrapNotificationListener, TrapReceiverService {
+public class TrapReceiver implements TrapNotificationListener {
     private static final Logger LOG = LoggerFactory.getLogger(TrapReceiver.class);
 
     @Autowired
@@ -161,8 +161,8 @@ public class TrapReceiver implements TrapNotificationListener, TrapReceiverServi
         stop();
         LOG.info("TrapReceiver service has been stopped.");
 
-        // We set new config
-        m_config = newConfig;
+        // Update config, instead of set it, to apply the chnages to ALL config references
+        m_config.update(newConfig);
 
         // We start with new config
         LOG.info("Restarting the TrapReceiver service...");
@@ -207,10 +207,5 @@ public class TrapReceiver implements TrapNotificationListener, TrapReceiverServi
             return false;
         }
         return !newConfig.getSnmpV3Users().equals(m_config.getSnmpV3Users());
-    }
-
-    @Override
-    public TrapdConfig getTrapReceiverConfig() {
-        return new TrapdConfigBean(m_config);
     }
 }

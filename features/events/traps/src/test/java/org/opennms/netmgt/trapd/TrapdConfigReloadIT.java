@@ -103,13 +103,13 @@ public class TrapdConfigReloadIT extends CamelBlueprintTest {
 	@Test
 	public void verifyReload() throws Exception {
 		// Check that it has not yet been refreshed
-		TrapReceiverService trapReceiver = getOsgiService(TrapReceiverService.class);
-		Assert.assertEquals(true, trapReceiver.getTrapReceiverConfig().getSnmpV3Users().isEmpty());
+		TrapdConfig trapdConfig = getOsgiService(TrapdConfig.class);
+		Assert.assertEquals(true, trapdConfig.getSnmpV3Users().isEmpty());
 
-		// The getSnmpV3Users method have been invoked
+		// The setSnmpV3Users method must have been invoked
 		Thread.sleep(20000);
 
 		// Verify
-		Assert.assertEquals(1, trapReceiver.getTrapReceiverConfig().getSnmpV3Users().size());
+		Assert.assertEquals(1, trapdConfig.getSnmpV3Users().size());
 	}
 }

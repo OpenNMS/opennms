@@ -47,6 +47,7 @@
 		<property name="batchIntervalMs" value="${trapd.batch.interval}" />
 		<property name="includeRawMessage" value="${trapd.includeRawMessage}"/>
 	</bean>
+	<service ref="trapdConfig" interface="org.opennms.netmgt.config.TrapdConfig" />
 
 	<!-- The TrapdConfiguration is retreived via the OpenNMS ReST API every n ms and merged with the trapdConfiguration by invoking "trapdConfig.onUpdate"-->
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
@@ -69,5 +70,4 @@
 		<property name="messageDispatcherFactory" ref="messageDispatcherFactory"/>
 		<property name="distPollerDao" ref="distPollerDao"/>
 	</bean>
-	<service interface="org.opennms.netmgt.trapd.TrapReceiverService" ref="trapReceiver" />
 </blueprint>
