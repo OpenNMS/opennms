@@ -56,7 +56,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
-import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.CommandResponderEvent;
@@ -490,12 +489,12 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
     }
 
-        @Override
-    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort, List<SnmpV3User> snmpUsers) throws IOException {
+    @Override
+    public void registerForTraps(final TrapNotificationListener listener, InetAddress address, int snmpTrapPort, List<SnmpV3User> snmpUsers) throws IOException {
     	final RegistrationInfo info = new RegistrationInfo(listener, address, snmpTrapPort);
         
-    	final Snmp4JTrapNotifier m_trapHandler = new Snmp4JTrapNotifier(listener, processorFactory);
-        info.setHandler(m_trapHandler);
+    	final Snmp4JTrapNotifier trapNotifier = new Snmp4JTrapNotifier(listener);
+        info.setHandler(trapNotifier);
 
         final UdpAddress udpAddress;
         if (address == null) {
@@ -509,7 +508,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         final TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping(udpAddress, true);
         info.setTransportMapping(transport);
         Snmp snmp = new Snmp(transport);
-        snmp.addCommandResponder(m_trapHandler);
+        snmp.addCommandResponder(trapNotifier);
 
         if (snmpUsers != null) {
             for (SnmpV3User user : snmpUsers) {
@@ -546,29 +545,29 @@ public class Snmp4JStrategy implements SnmpStrategy {
         snmp.listen();
     }
     
-        @Override
-    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort) throws IOException {
-        registerForTraps(listener, processorFactory, address, snmpTrapPort, null);
+    @Override
+    public void registerForTraps(final TrapNotificationListener listener, InetAddress address, int snmpTrapPort) throws IOException {
+        registerForTraps(listener, address, snmpTrapPort, null);
     }
 
-        @Override
-    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final int snmpTrapPort) throws IOException {
-    	registerForTraps(listener, processorFactory, null, snmpTrapPort);
+    @Override
+    public void registerForTraps(final TrapNotificationListener listener, final int snmpTrapPort) throws IOException {
+    	registerForTraps(listener, null, snmpTrapPort);
     }
 
-        @Override
+    @Override
     public void unregisterForTraps(final TrapNotificationListener listener, InetAddress address, int snmpTrapPort) throws IOException {
         RegistrationInfo info = s_registrations.remove(listener);
         closeQuietly(info.getSession());
     }
 
-        @Override
+    @Override
     public void unregisterForTraps(final TrapNotificationListener listener, final int snmpTrapPort) throws IOException {
         RegistrationInfo info = s_registrations.remove(listener);
         closeQuietly(info.getSession());
     }
 
-        @Override
+    @Override
     public SnmpV1TrapBuilder getV1TrapBuilder() {
         return new Snmp4JV1TrapBuilder(this);
     }

@@ -39,11 +39,10 @@ import org.junit.Before;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.snmp.BasicTrapProcessorFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV3User;
-import org.opennms.netmgt.snmp.TrapNotification;
+import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.snmp4j.TrapUtils;
 import org.slf4j.Logger;
@@ -83,7 +82,7 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
 
         SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(TRAP_DESTINATION);
         SnmpV3User user = new SnmpV3User(config.getSecurityName(), config.getAuthProtocol(), config.getAuthPassPhrase(), config.getPrivProtocol(), config.getPrivPassPhrase());
-        SnmpUtils.registerForTraps(this, new BasicTrapProcessorFactory(), TRAP_DESTINATION, TRAP_PORT, Collections.singletonList(user));
+        SnmpUtils.registerForTraps(this, TRAP_DESTINATION, TRAP_PORT, Collections.singletonList(user));
         LOG.info("Registered Trap Listener for {} on port {}", TRAP_DESTINATION, TRAP_PORT);
     }
 
@@ -107,7 +106,7 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
      * @see org.opennms.netmgt.snmp.TrapNotificationListener#trapReceived(org.opennms.netmgt.snmp.TrapNotification)
      */
     @Override
-    public void trapReceived(TrapNotification trapNotification) {
+    public void trapReceived(TrapInformation trapNotification) {
         TrapData data = TrapUtils.getTrapData(trapNotification);
         if (data == null) {
             Assert.fail();

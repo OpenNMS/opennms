@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * <P>
  * An instance of this class is created by calling the constructor and passing a
- * list of SnmpVarBind objects from an SNMP PDU response. This class extends
+ * list of SnmpVarBindDTO objects from an SNMP PDU response. This class extends
  * java.util.TreeMap which is used to store each of the collected data points
  * indexed by object identifier.
  * </P>

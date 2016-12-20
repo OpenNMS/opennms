@@ -35,20 +35,11 @@
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-kafka</bundle>
     </feature>
 
-    <feature name="opennms-trapd-handler-minion" description="OpenNMS :: Trapd :: Handler :: Minion" version="${project.version}">
-      <feature>camel-blueprint</feature>
+    <feature name="opennms-trapd-listener" description="OpenNMS :: Trapd :: Listener" version="${project.version}">
       <feature>minion-core-api</feature>
       <feature>opennms-dao-minion</feature>
       <feature>opennms-trapd</feature>
-      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-minion</bundle>
-    </feature>
-
-    <feature name="opennms-trapd-handler-kafka" description="OpenNMS :: Trapd :: Handler :: Kafka" version="${project.version}">
-      <feature>camel-blueprint</feature>
-      <feature>minion-core-api</feature>
-      <feature>opennms-dao-minion</feature>
-      <feature>opennms-trapd</feature>
-      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-kafka</bundle>
+      <feature>opennms-core-ipc-sink</feature>
     </feature>
 
     <feature name="minion-heartbeat-producer" description="OpenNMS :: Minion :: Heartbeat Producer" version="${project.version}">

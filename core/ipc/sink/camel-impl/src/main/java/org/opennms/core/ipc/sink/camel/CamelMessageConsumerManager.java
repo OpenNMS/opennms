@@ -132,12 +132,26 @@ public class CamelMessageConsumerManager implements MessageConsumerManager {
 
         @Override
         public void configure() throws Exception {
+            // Verify that the module returns a valid number. If number of threads is < 0,
+            // creating the routes below does not work
+            final int numberConsumerThrads = determineNumberConsumerThreads(module);
             final JmsQueueNameFactory queueNameFactory = new JmsQueueNameFactory(
                     CamelSinkConstants.JMS_QUEUE_PREFIX, module.getId());
-            from(String.format("queuingservice:%s?concurrentConsumers=%d", queueNameFactory.getName(), module.getNumConsumerThreads()))
+            from(String.format("queuingservice:%s?concurrentConsumers=%d", queueNameFactory.getName(), numberConsumerThrads))
                 .setExchangePattern(ExchangePattern.InOnly)
                 .process(new CamelSinkServerProcessor(consumerManager, module))
                 .routeId(getRouteId());
+        }
+
+        private static int determineNumberConsumerThreads(SinkModule<?, ?> module) {
+            Objects.requireNonNull(module);
+            final int defaultValue = Runtime.getRuntime().availableProcessors() * 2;
+            final int configured = module.getNumConsumerThreads();
+            if (configured <= 0) {
+                LOG.warn("Number of consumer threads for module {} was {}. Value must be > 0. Falling back to {}", module.getId(), configured, defaultValue);
+                return defaultValue;
+            }
+            return configured;
         }
     }
 

@@ -26,38 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.mock;
+package org.opennms.netmgt.trapd;
 
-import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumer;
-import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
-import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import javax.annotation.PostConstruct;
+
+import org.opennms.netmgt.config.TrapdConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * A simple {@link MessageDispatcherFactory} that handles all messages with a single consumer.
+ * This bean manually overwrites the current {@link TrapdConfig} to use for tests.
  *
- * Used for testing.
- *
- * @author jwhite
+ * This should be done by simply overwrite the desired bean, but that cannot be done due to an issue in Spring,
+ * but was fixed in Spring 4.2. See https://jira.spring.io/browse/SPR-9567 for more details.
+ * As soon as we update to Spring 4.2. this should be migrated to a @Configuration and the init()
+ * method should be migrated to a @Bean("trapdConfig") instead.
  */
-public class MockMessageDispatcherFactory<U extends Message, V extends Message> extends AbstractMessageDispatcherFactory<Void> {
+public class TrapdConfigConfigUpdater {
 
-    private MessageConsumer<U,V> consumer;
+    @Autowired
+    private TrapdConfig m_config;
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
-        if (consumer != null) {
-            consumer.handleMessage((V)message);
-        }
-    }
-
-    public MessageConsumer<U, V> getConsumer() {
-        return consumer;
-    }
-
-    public void setConsumer(MessageConsumer<U, V> consumer) {
-        this.consumer = consumer;
+    // Hacky way of overwriting configuration settings for test execution.
+    @PostConstruct
+    public void init() {
+        TrapdConfigBean config = new TrapdConfigBean(m_config);
+        config.setSnmpTrapPort(10000); // default 162 is only available as root
+        config.setNewSuspectOnTrap(true); // default is false
+        config.setBatchSize(1);
+        config.setQueueSize(1);
+        config.setBatchIntervalMs(0);
+        m_config.update(config);
     }
 }
