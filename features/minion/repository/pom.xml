@@ -44,7 +44,7 @@
                                 <feature>opennms-syslogd-listener-nio</feature>
                                 <feature>opennms-syslogd-handler-minion</feature>
                                 <feature>opennms-syslogd-handler-kafka</feature>
-                                <feature>opennms-trapd-handler-minion</feature>
+                                <feature>opennms-trapd-listener</feature>
                                 <feature>minion-shell</feature>
                                 <feature>minion-heartbeat-producer</feature>
                                 <feature>minion-snmp-proxy</feature>

@@ -90,7 +90,7 @@ public class TrapdSinkPatternWiringIT extends CamelBlueprintTest {
     }
 
     // The CamelBlueprintTest should have started the bundle and therefore also started
-    // the TrapListener (see blueprint-trapd-handler-minion.xml), which listens to traps.
+    // the TrapListener (see blueprint-trapd-listener.xml), which listens to traps.
     @Test
     public void testWiring() throws Exception {
         // No traps received or processed
@@ -112,6 +112,6 @@ public class TrapdSinkPatternWiringIT extends CamelBlueprintTest {
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "OSGI-INF/blueprint/blueprint-trapd-handler-minion.xml";
+        return "OSGI-INF/blueprint/blueprint-trapd-listener.xml";
     }
 }

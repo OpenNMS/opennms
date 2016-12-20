@@ -97,7 +97,7 @@ public class TrapdConfigReloadIT extends CamelBlueprintTest {
 	// The location of our Blueprint XML files to be used for testing
 	@Override
 	protected String getBlueprintDescriptor() {
-		return "OSGI-INF/blueprint/blueprint-trapd-handler-minion.xml";
+		return "OSGI-INF/blueprint/blueprint-trapd-listener.xml";
 	}
 
 	@Test
