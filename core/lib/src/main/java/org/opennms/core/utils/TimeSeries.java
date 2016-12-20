@@ -14,14 +14,19 @@ public abstract class TimeSeries {
     private static final String EVALUETE_TIME_SERIES_STRATEGY_NAME = "evaluate";
 
     public static enum Strategy {
-        RRD(RRD_TIME_SERIES_STRATEGY_NAME),
-        NEWTS(NEWTS_TIME_SERIES_STRATEGY_NAME),
-        EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME);
+        RRD(RRD_TIME_SERIES_STRATEGY_NAME, "RRDTool or JRobin"),
+        NEWTS(NEWTS_TIME_SERIES_STRATEGY_NAME, "Newts"),
+        EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME, "Evaluate (Sizing mode, all data discarded)");
 
         private final String m_name;
+        private final String m_descr;
 
+        Strategy(String name, String descr) {
+        	m_name = name;
+        	m_descr = descr;
+        }
         Strategy(String name) {
-            m_name = name;
+            this(name, name);
         }
 
         public String getName() {
@@ -29,17 +34,7 @@ public abstract class TimeSeries {
         }
 
         public String getDescr() {
-            switch (m_name) {
-                case RRD_TIME_SERIES_STRATEGY_NAME:
-                    return "RRD (RRDTool or JRobin)";
-
-                case NEWTS_TIME_SERIES_STRATEGY_NAME:
-                    return "Newts";
-
-                case EVALUETE_TIME_SERIES_STRATEGY_NAME:
-                    return "Evaluate (Sizing mode, all data discarded)";
-            }
-	    return m_name;
+        	return m_descr;
         }
     }
 
