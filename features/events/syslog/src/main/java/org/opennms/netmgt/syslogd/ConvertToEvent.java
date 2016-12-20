@@ -33,10 +33,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -57,6 +54,10 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * This routine does the majority of Syslogd's work.
@@ -81,7 +82,18 @@ public class ConvertToEvent {
 
     private final Event m_event;
 
-    private static final Map<String,Pattern> CACHED_PATTERNS = Collections.synchronizedMap(new WeakHashMap<String,Pattern>());
+    private static final LoadingCache<String,Pattern> CACHED_PATTERNS = CacheBuilder.newBuilder().build(
+        new CacheLoader<String,Pattern>() {
+            public Pattern load(String expression) {
+                try {
+                    return Pattern.compile(expression, Pattern.MULTILINE);
+                } catch(final PatternSyntaxException e) {
+                    LOG.warn("Failed to compile regex pattern '{}'", expression, e);
+                    return null;
+                }
+            }
+        }
+    );
 
     /**
      * Constructs a new event encapsulation instance based upon the
@@ -359,17 +371,7 @@ public class ConvertToEvent {
     }
 
     private static Pattern getPattern(final String expression) {
-        final Pattern msgPat = CACHED_PATTERNS.get(expression);
-        if (msgPat == null) {
-            try {
-                final Pattern newPat = Pattern.compile(expression, Pattern.MULTILINE);
-                CACHED_PATTERNS.put(expression, newPat);
-                return newPat;
-            } catch(final PatternSyntaxException pse) {
-                LOG.warn("Failed to compile regex pattern '{}'", expression, pse);
-            }
-        }
-        return msgPat;
+        return CACHED_PATTERNS.getUnchecked(expression);
     }
 
     private static boolean matchSubstring(final String discardUei, final EventBuilder bldr, String message, final UeiMatch uei) throws MessageDiscardedException {

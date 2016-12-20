@@ -56,11 +56,13 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
                 return m;
             });
         }
-        CompletableFuture<Collection<SnmpResponseDTO>> future = walk(request, request.getWalkRequest());
-        combinedFuture = combinedFuture.thenCombine(future, (m,s) -> {
-            m.getResponses().addAll(s);
-            return m;
-        });
+        if (request.getWalkRequest().size() > 0) {
+            CompletableFuture<Collection<SnmpResponseDTO>> future = walk(request, request.getWalkRequest());
+            combinedFuture = combinedFuture.thenCombine(future, (m,s) -> {
+                m.getResponses().addAll(s);
+                return m;
+            });
+        }
         return combinedFuture;
     }
 
@@ -153,6 +155,11 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
             responseDTO.setResults(results);
             return responseDTO;
         });
+    }
+
+    @Override
+    public SnmpMultiResponseDTO createResponseWithException(Throwable ex) {
+        return new SnmpMultiResponseDTO(ex);
     }
 
     @Override

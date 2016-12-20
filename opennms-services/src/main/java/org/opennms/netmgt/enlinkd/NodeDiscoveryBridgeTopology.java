@@ -488,17 +488,10 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
     public NodeDiscoveryBridgeTopology(EnhancedLinkd linkd, Node node) {
         super(linkd, node);
-        setInitialSleepTime(linkd.getInitialSleepTime()+180000);
     }
 
     @Override
-    public void run() {
-        if (!m_linkd.getQueryManager().hasUpdatedBft(getNodeId())) {
-            LOG.info("run: node: {}, without updated bft. Rescheduling");
-            reschedule();
-            return;
-        }
-        
+    public void run() {        
         Date now = new Date();
                 
         Set<String> incomingSet = new HashSet<String>();
@@ -1079,6 +1072,16 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 return null;
             }
         return goUp(up, bridge,++level);
+    }
+    
+    @Override
+    public boolean isReady() {
+        if (!m_linkd.getQueryManager().hasUpdatedBft(getNodeId())) {
+            LOG.info("isReady: node: {}, without updated bft. Topology Discovery Not Ready", getNodeId());
+            return false;
+        }
+        return true;
+
     }
 }
 

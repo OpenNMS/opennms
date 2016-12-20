@@ -28,7 +28,7 @@
 	</cm:property-placeholder>
 
 	<bean id="syslogConnectionHandlerCamel" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerCamelImpl">
-		<argument value="seda:handleMessage"/>
+		<argument value="seda:handleMessage?size=25000"/>
 	</bean>
 
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
@@ -48,7 +48,7 @@
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerMinionProperties" />
 
 		<route id="syslogMarshal">
-			<from uri="seda:handleMessage?concurrentConsumers=4" />
+			<from uri="seda:handleMessage?concurrentConsumers=8&amp;size=25000&amp;blockWhenFull=true" />
 
 			<setHeader headerName="includeRawMessage">
 				<simple resultType="java.lang.Boolean">properties:includeRawMessage</simple>
@@ -58,12 +58,12 @@
 			<process ref="mapper"/>
 			<process ref="marshaller"/>
 
-			<to uri="seda:sendMessage"/>
+			<to uri="seda:sendMessage?size=25000"/>
 		</route>
 
 		<route id="syslogSendJms">
 			<!-- Concurrent consumers gives a performance boost here because we have pooled connections to the JMS broker -->
-			<from uri="seda:sendMessage?concurrentConsumers=4"/>
+			<from uri="seda:sendMessage?concurrentConsumers=8&amp;size=25000&amp;blockWhenFull=true"/>
 			<!-- Broadcast the message over ActiveMQ -->
 			<!--
 				Turn off persistent messages to avoid the latency penalty: 
