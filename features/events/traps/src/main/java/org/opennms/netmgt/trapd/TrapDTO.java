@@ -65,7 +65,7 @@ public class TrapDTO implements Message {
 	private int pduLength;
 	@XmlElement(name = "creation-time")
 	private long creationTime;
-	@XmlElement(name = "rawMessage")
+	@XmlElement(name = "raw-message")
 	private byte[] rawMessage;
 	@XmlElement(name = "trap-identity")
 	private TrapIdentityDTO trapIdentity;
