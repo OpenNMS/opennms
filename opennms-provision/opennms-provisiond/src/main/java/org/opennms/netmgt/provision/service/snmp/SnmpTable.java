@@ -38,6 +38,8 @@ import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.ErrorStatus;
+import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -118,6 +120,16 @@ public abstract class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
         LOG.warn("Error retrieving {} from {}. {}", msg, m_tableName, m_address);
     }
     
+    @Override
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        LOG.warn("Error retrieving {} from {}. {}", m_tableName, m_address, ex.getMessage(), ex);
+    }
+
+    @Override
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        LOG.info("Non-fatal error ({}) encountered retrieving {} from {}. {}", status, m_tableName, m_address, status.retry()? "Retrying." : "Giving up.");
+    }
+
     /**
      * <p>getEntry</p>
      *
