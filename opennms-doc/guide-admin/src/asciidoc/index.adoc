@@ -209,3 +209,7 @@ include::text/plugin-manager/internal-plugins-repository.adoc[]
 include::text/plugins/introduction.adoc[]
 include::text/plugins/alarm-change-notifier.adoc[]
 include::text/plugins/opennms-es-rest.adoc[]
+
+[[ga-special-cases-and-workarounds]]
+== Special Cases and Workarounds
+include::text/workarounds/snmp.adoc[]
