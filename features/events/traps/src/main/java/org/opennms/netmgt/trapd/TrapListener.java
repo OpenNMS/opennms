@@ -61,7 +61,7 @@ public class TrapListener implements TrapNotificationListener {
 
     private TrapdConfig m_config;
 
-    private AsyncDispatcher<TrapInformationWrapper> m_producer;
+    private AsyncDispatcher<TrapInformationWrapper> m_dispatcher;
 
     public TrapListener(final TrapdConfig config) throws SocketException {
         Objects.requireNonNull(config, "Config cannot be null");
@@ -118,16 +118,16 @@ public class TrapListener implements TrapNotificationListener {
             } else {
                 LOG.debug("stop: not attemping to closing SNMP trap session--it was never opened or already closed.");
             }
-            if (m_producer != null) {
-                m_producer.close();
-                m_producer = null;
+            if (m_dispatcher != null) {
+                m_dispatcher.close();
+                m_dispatcher = null;
             }
         } catch (final IOException e) {
             LOG.warn("stop: exception occurred closing session", e);
         } catch (final IllegalStateException e) {
             LOG.debug("stop: The SNMP session was already closed", e);
         } catch (final Exception e) {
-            LOG.warn("stop: exception occured closing m_producer", e);
+            LOG.warn("stop: exception occured closing m_dispatcher", e);
         }
     }
 
@@ -179,11 +179,11 @@ public class TrapListener implements TrapNotificationListener {
 
     // We only want to create the messageDispatcher once
     private AsyncDispatcher<TrapInformationWrapper> getMessageDispatcher() {
-        if (m_producer == null) {
+        if (m_dispatcher == null) {
             Objects.requireNonNull(m_messageDispatcherFactory);
-            m_producer = m_messageDispatcherFactory.createAsyncDispatcher(new TrapSinkModule(m_config, m_distPollerDao.whoami()));
+            m_dispatcher = m_messageDispatcherFactory.createAsyncDispatcher(new TrapSinkModule(m_config, m_distPollerDao.whoami()));
         }
-        return m_producer;
+        return m_dispatcher;
     }
 
     protected boolean hasConfigurationChanged(TrapdConfig newConfig) {
