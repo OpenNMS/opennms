@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,17 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.api;
+package org.opennms.core.ipc.sink.mock;
 
-/**
- * Used to send/dispatch messages.
- *
- * Instances of these should be created by the {@link MessageProducerFactory}.
- *
- * @author jwhite
- */
-public interface MessageProducer<T extends Message> {
+import org.opennms.core.ipc.sink.api.Message;
+import org.opennms.core.ipc.sink.api.MessageConsumer;
+import org.opennms.core.ipc.sink.api.MessageConsumerManager;
+import org.opennms.core.ipc.sink.api.SinkModule;
 
-    void send(T message);
+public class MockMessageConsumerManager implements MessageConsumerManager {
+
+    @Override
+    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message) {
+        // pass
+    }
+
+    @Override
+    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception {
+        // pass
+    }
+
+    @Override
+    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
+        // pass
+    }
 
 }

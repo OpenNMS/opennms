@@ -381,6 +381,11 @@
       <bundle>wrap:mvn:org.postgresql/postgresql/${postgresqlVersion}</bundle>
     </feature>
 
+    <feature name="rate-limited-logger" description="Rate Limited Logger" version="${rateLimitedLoggerVersion}">
+      <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
+      <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
+    </feature>
+
     <feature name="spring-security32" description="Spring :: Security" version="${springSecurityVersion}">
       <!-- spring-web is necessary for HTTP remoting -->
       <feature version="[4.0,4.1)">spring-web</feature>
@@ -587,7 +592,10 @@
       <feature>javax.mail</feature>
       <feature>opennms-core-camel</feature>
       <feature>camel-blueprint</feature>
+      <feature>rate-limited-logger</feature>
+      <feature>dropwizard-metrics</feature>
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.xml/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.camel-impl/${project.version}</bundle>
     </feature>

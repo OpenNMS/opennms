@@ -31,11 +31,16 @@ package org.opennms.core.ipc.sink.api;
 /**
  * Defines how the messages will be routed and marshaled/unmarshaled over the wire.
  *
+ * Messages can be aggregated by an optional {@link AggregationPolicy}.
+ * If aggregation is not used, the message type sent by the producers must match
+ * the message type received by the consumers.
+ *
  * @author jwhite
  *
- * @param <T> type of message
+ * @param <S> type of message that will be sent by the producers
+ * @param <T> type of message that will be received by the consumers
  */
-public interface SinkModule<T extends Message> {
+public interface SinkModule<S extends Message, T extends Message> {
 
     /**
      * Globally unique identifier.
@@ -43,6 +48,11 @@ public interface SinkModule<T extends Message> {
      * Used in the JMS queue name in the Camel implementation.
      */
     String getId();
+
+    /**
+     * The number of threads used to consume from the broker.
+     */
+    int getNumConsumerThreads();
 
     /**
      * Marshals the message to a string.
@@ -53,4 +63,23 @@ public interface SinkModule<T extends Message> {
      * Unmarshals the message from a string.
      */
     T unmarshal(String message);
+
+    /**
+     * Defines how messages should be combined, and when they
+     * should be "released".
+     *
+     * Modules that do not wish to use aggregation can return {@code null}.
+     *
+     * @return the {@link AggregationPolicy} used to combine messages, or {@code null}
+     * if the messages should not be combined.
+     */
+    AggregationPolicy<S,T> getAggregationPolicy();
+
+    /**
+     * Defines how messages should be asynchronously dispatched.
+     *
+     * @return the {@link AsyncPolicy} used when asynchronously dispatching
+     * messages for this module.
+     */
+    AsyncPolicy getAsyncPolicy();
 }

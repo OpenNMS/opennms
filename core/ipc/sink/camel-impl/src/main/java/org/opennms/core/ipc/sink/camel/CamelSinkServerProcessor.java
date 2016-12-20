@@ -30,39 +30,25 @@ package org.opennms.core.ipc.sink.camel;
 
 import java.util.Objects;
 
-import org.apache.camel.AsyncCallback;
-import org.apache.camel.AsyncProcessor;
 import org.apache.camel.Exchange;
-import org.opennms.core.ipc.sink.api.SinkModule;
+import org.apache.camel.Processor;
 import org.opennms.core.ipc.sink.api.Message;
+import org.opennms.core.ipc.sink.api.SinkModule;
 
-public class CamelSinkServerProcessor implements AsyncProcessor {
+public class CamelSinkServerProcessor implements Processor {
 
     private final CamelMessageConsumerManager consumerManager;
-    private final SinkModule<Message> module;
+    private final SinkModule<?, Message> module;
 
-    public CamelSinkServerProcessor(CamelMessageConsumerManager consumerManager, SinkModule<Message> module) {
+    public CamelSinkServerProcessor(CamelMessageConsumerManager consumerManager, SinkModule<?, Message> module) {
         this.consumerManager = Objects.requireNonNull(consumerManager);
         this.module = Objects.requireNonNull(module);
     }
 
     @Override
     public void process(Exchange exchange) {
-        // Ensure that only async. calls are made.
-        throw new UnsupportedOperationException("This processor must be invoked using the async interface.");
-    }
-
-    @Override
-    public boolean process(Exchange exchange, AsyncCallback callback) {
         final String messageAsString = exchange.getIn().getBody(String.class);
-        try {
-            final Message message = module.unmarshal(messageAsString);
-            consumerManager.dispatch(module, message);
-        } catch (final Throwable t) {
-            exchange.setException(t);
-        } finally {
-            callback.done(false);
-        }
-        return false;
+        final Message message = module.unmarshal(messageAsString);
+        consumerManager.dispatch(module, message);
     }
 }
