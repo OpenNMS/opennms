@@ -116,9 +116,9 @@ public abstract class TrapInformation implements TrapNotification {
             for (i = 0; i < getPduLength(); i++) {
                 processVarBindAt(i);
             } // end for loop
-        } catch (RuntimeException rte) {
-            LOG.error("Caught {} while processing varbind {} of trap; rethrowing. Trap info: {}", rte.getClass(), i+1, toString());
-            throw rte;
+        } catch (Throwable t) {
+            LOG.error("Caught {} while processing varbind {} of trap; rethrowing. Trap info: {}. Stack trace: {}", t.getClass(), i+1, toString(), t.getStackTrace());
+            throw t;
         }
     }
 
