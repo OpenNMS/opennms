@@ -68,7 +68,7 @@ public class LocationAwareSnmpClientRpcImpl implements LocationAwareSnmpClient, 
 
     @Override
     public void afterPropertiesSet() {
-        delegate = rpcClientFactory.getClient(new SnmpProxyRpcModule());
+        delegate = rpcClientFactory.getClient(SnmpProxyRpcModule.INSTANCE);
     }
 
     @Override
