@@ -68,7 +68,7 @@ public class TrapDTO implements Message {
 	@XmlElement(name = "rawMessage")
 	private byte[] rawMessage;
 	@XmlElement(name = "trap-identity")
-	private TrapIdentityDTO trapIdentity; // TODO MVR implement own object for equals() and hashCode()
+	private TrapIdentityDTO trapIdentity;
 	@XmlElementWrapper(name = "results")
 	@XmlElement(name = "result")
 	private List<SnmpResult> results = new ArrayList<>();
