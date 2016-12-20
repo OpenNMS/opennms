@@ -7,7 +7,7 @@
 * *Cassandra JMX Metrics*: The default value for the `friendly-name` attribute on the `JMX-Cassandra` collection service has changed from `cassandra21x` to `cassandra`.
 This changes the path in which the metrics are stored.
 If you have already been collecting these metrics and wish to preserve them, you can ignore this change when merging your configuration.
-* *Jetty 9.3.x Upgrade*: Jetty has been upgraded from `8.1.x` to the latest `9.3.x`.
+* *Jetty 9.4.x Upgrade*: Jetty has been upgraded from `8.1.x` to the latest `9.4.x`.
 If you have a custom `jetty.xml` in your `etc` folder, you will need to migrate your changes.
 Use `etc/examples/jetty.xml` as a starting point.
 * *Drools 6.4.0 Upgrade*: Drools has been upgraded from `6.0.1.Final` to `6.4.0.Final`.
