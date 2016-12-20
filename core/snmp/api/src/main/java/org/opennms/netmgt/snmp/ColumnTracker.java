@@ -123,10 +123,10 @@ public class ColumnTracker extends CollectionTracker {
                     return true;
                 } else if (status.isFatal()) {
                     final ErrorStatusException ex = new ErrorStatusException(status, "Unexpected error processing next oid after "+m_last+". Aborting!");
-                    LOG.debug("Fatal Error: {}", status, ex);
+                    reportFatalErr(ex);
                     throw ex;
                 } else if (status != ErrorStatus.NO_ERROR) {
-                    LOG.warn("Non-fatal error encountered: {}. {}", status, status.retry()? "Retrying." : "Giving up.");
+                    reportNonFatalErr(status);
                     return status.retry();
                 }
                 return false;
