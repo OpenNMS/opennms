@@ -101,7 +101,19 @@ public abstract class CollectionTracker implements Collectable, ProxiableTracker
             m_parent.reportNoSuchNameErr(msg);
         }
     }
-    
+
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        if (m_parent != null) {
+            m_parent.reportFatalErr(ex);
+        }
+    }
+
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        if (m_parent != null) {
+            m_parent.reportNonFatalErr(status);
+        }
+    }
+
     @Override
     public CollectionTracker getCollectionTracker() {
         return this;
