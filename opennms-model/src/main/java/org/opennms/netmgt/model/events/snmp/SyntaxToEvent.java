@@ -116,6 +116,7 @@ public class SyntaxToEvent {
                     displayable = value.isDisplayable();
                 } catch (ArrayIndexOutOfBoundsException aioobe) {
                     // Eat it
+                    // This should not be necessary when NMS-7547 is fixed
                 }
                 if (displayable) {
                     if (name.matches(".*[Mm][Aa][Cc].*")) {
