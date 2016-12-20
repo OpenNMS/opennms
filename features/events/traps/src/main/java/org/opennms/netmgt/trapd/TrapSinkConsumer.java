@@ -35,6 +35,7 @@ import javax.annotation.PostConstruct;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.api.EventConfDao;
@@ -97,18 +98,20 @@ public class TrapSinkConsumer implements MessageConsumer<TrapInformationWrapper,
 
 	@Override
 	public void handleMessage(TrapLogDTO messageLog) {
-		final Log eventLog = toLog(messageLog);
+		try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Trapd.LOG4J_CATEGORY)) {
+			final Log eventLog = toLog(messageLog);
 
-		eventForwarder.sendNowSync(eventLog);
+			eventForwarder.sendNowSync(eventLog);
 
-		// If configured, also send events for new suspects
-		if (config.getNewSuspectOnTrap()) {
-			eventLog.getEvents().getEventCollection().stream()
-					.filter(e -> !e.hasNodeid())
-					.forEach(e -> {
-						sendNewSuspectEvent(e.getInterface(), e.getDistPoller());
-						LOG.debug("Sent newSuspectEvent for interface {}", e.getInterface());
-					});
+			// If configured, also send events for new suspects
+			if (config.getNewSuspectOnTrap()) {
+				eventLog.getEvents().getEventCollection().stream()
+						.filter(e -> !e.hasNodeid())
+						.forEach(e -> {
+							sendNewSuspectEvent(e.getInterface(), e.getDistPoller());
+							LOG.debug("Sent newSuspectEvent for interface {}", e.getInterface());
+						});
+			}
 		}
 	}
 

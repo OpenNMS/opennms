@@ -61,7 +61,7 @@ class EventCreator {
     }
 
     public Event createEventFrom(final TrapDTO trapDTO, final String systemId, final String location, final InetAddress trapAddress) {
-        LOG.debug("{} trap - trapInterface: ()", trapDTO.getVersion(), trapDTO.getAgentAddress());
+        LOG.debug("{} trap - trapInterface: {}", trapDTO.getVersion(), trapDTO.getAgentAddress());
 
         // Set event data
         final EventBuilder eventBuilder = new EventBuilder(null, "trapd");
