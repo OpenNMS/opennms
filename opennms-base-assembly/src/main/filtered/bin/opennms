@@ -776,7 +776,9 @@ case "$COMMAND" in
 			ret=$?
 			if [ $ret -eq 0 ]; then
 				echo_success
-				touch /var/lock/subsys/${NAME}
+				if [ -w /var/lock/subsys ]; then
+					touch /var/lock/subsys/${NAME}
+				fi
 			else
 				echo_failure
 			fi
@@ -809,7 +811,9 @@ case "$COMMAND" in
 			else
 				echo_failure
 			fi
-			rm -f /var/lock/subsys/${NAME}
+			if [ -w /var/lock/subsys ]; then
+				rm -f /var/lock/subsys/${NAME}
+			fi
 			echo ""
 
 			doKill
