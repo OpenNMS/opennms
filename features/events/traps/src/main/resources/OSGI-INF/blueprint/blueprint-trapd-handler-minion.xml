@@ -13,8 +13,8 @@
 
 	<cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd.handler.minion" update-strategy="none">
 		<cm:default-properties>
-			<cm:property name="trapd.listen.interface" value="127.0.0.1" /> <!-- the interface the TrapReceiver listens for traps -->
-			<cm:property name="trapd.listen.port" value="1162" /> <!-- the port the TrapReceiver listens for traps -->
+			<cm:property name="trapd.listen.interface" value="127.0.0.1" /> <!-- the interface the TrapListener listens for traps -->
+			<cm:property name="trapd.listen.port" value="1162" /> <!-- the port the TrapListener listens for traps -->
 			<cm:property name="trapd.threads" value="0"/> <!-- the number of threads for the producer -->
 			<cm:property name="trapd.includeRawMessage" value="false" />
 			<cm:property name="trapd.queue.size" value="10000" />
@@ -57,15 +57,15 @@
 			<from uri="timer://restTrapConfigurationTimer?fixedRate=true&amp;period=60000"/>
 			<bean ref="restClient" method="getSnmpV3Users"/>
 			<bean ref="unmarshaller" />
-			<bean ref="trapReceiver" method="setSnmpV3Users" />
+			<bean ref="trapListener" method="setSnmpV3Users" />
 		</route>
 	</camelContext>
 
 	<!--
-		The TrapReceiver handles received traps (the ones we were listening for) and forwards
+		The TrapListener handles received traps (the ones we were listening for) and forwards
 	 	them via the MessageProducer (obtained by the MessageProducerFactory)
 	-->
-	<bean id="trapReceiver" class="org.opennms.netmgt.trapd.TrapReceiver" init-method="start" destroy-method="stop">
+	<bean id="trapListener" class="org.opennms.netmgt.trapd.TrapListener" init-method="start" destroy-method="stop">
 		<argument ref="trapdConfig"/>
 		<property name="messageDispatcherFactory" ref="messageDispatcherFactory"/>
 		<property name="distPollerDao" ref="distPollerDao"/>

@@ -48,8 +48,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class TrapReceiver implements TrapNotificationListener {
-    private static final Logger LOG = LoggerFactory.getLogger(TrapReceiver.class);
+public class TrapListener implements TrapNotificationListener {
+    private static final Logger LOG = LoggerFactory.getLogger(TrapListener.class);
 
     @Autowired
     private MessageDispatcherFactory m_messageDispatcherFactory;
@@ -63,7 +63,7 @@ public class TrapReceiver implements TrapNotificationListener {
 
     private AsyncDispatcher<TrapInformationWrapper> m_producer;
 
-    public TrapReceiver(final TrapdConfig config) throws SocketException {
+    public TrapListener(final TrapdConfig config) throws SocketException {
         Objects.requireNonNull(config, "Config cannot be null");
         m_config = config;
     }
@@ -157,17 +157,17 @@ public class TrapReceiver implements TrapNotificationListener {
 
     private void restartWithNewConfig(final TrapdConfigBean newConfig) {
         // We stop, still using old config
-        LOG.info("Stopping TrapReceiver service to reload configuration...");
+        LOG.info("Stopping TrapListener service to reload configuration...");
         stop();
-        LOG.info("TrapReceiver service has been stopped.");
+        LOG.info("TrapListener service has been stopped.");
 
         // Update config, instead of set it, to apply the chnages to ALL config references
         m_config.update(newConfig);
 
         // We start with new config
-        LOG.info("Restarting the TrapReceiver service...");
+        LOG.info("Restarting the TrapListener service...");
         start();
-        LOG.info("TrapReceiver service has been restarted.");
+        LOG.info("TrapListener service has been restarted.");
     }
 
     private InetAddress getInetAddress() {

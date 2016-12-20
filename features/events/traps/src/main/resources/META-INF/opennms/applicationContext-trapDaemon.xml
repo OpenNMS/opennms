@@ -23,7 +23,7 @@
 
   <bean id="trapSinkConsumer" class="org.opennms.netmgt.trapd.TrapSinkConsumer" />
 
-  <bean id="trapReceiver" class="org.opennms.netmgt.trapd.TrapReceiver">
+  <bean id="trapListener" class="org.opennms.netmgt.trapd.TrapListener">
     <constructor-arg ref="trapdConfig" />
   </bean>
 

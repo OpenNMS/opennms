@@ -73,7 +73,7 @@ public class Trapd extends AbstractServiceDaemon {
      * The class instance used to receive new events from for the system.
      */
     @Autowired
-    private TrapReceiver m_trapReceiver;
+    private TrapListener m_trapListener;
 
     /**
      * <P>
@@ -113,7 +113,7 @@ public class Trapd extends AbstractServiceDaemon {
 
         LOG.debug("start: Initializing the Trapd receiver");
 
-        m_trapReceiver.start();
+        m_trapListener.start();
 
         m_status = RUNNING;
 
@@ -132,7 +132,7 @@ public class Trapd extends AbstractServiceDaemon {
         m_status = PAUSE_PENDING;
 
         LOG.debug("pause: Calling pause on trap receiver");
-        m_trapReceiver.stop();
+        m_trapListener.stop();
 
         m_status = PAUSED;
 
@@ -151,7 +151,7 @@ public class Trapd extends AbstractServiceDaemon {
         m_status = RESUME_PENDING;
 
         LOG.debug("resume: Calling resume on trap receiver");
-        m_trapReceiver.start();
+        m_trapListener.start();
 
         m_status = RUNNING;
 
@@ -169,7 +169,7 @@ public class Trapd extends AbstractServiceDaemon {
         // shutdown and wait on the background processing thread to exit.
         LOG.debug("stop: Closing communication paths");
 
-        m_trapReceiver.stop();
+        m_trapListener.stop();
 
         m_status = STOPPED;
 

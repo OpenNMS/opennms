@@ -58,7 +58,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * Verify that the TrapReceiver is actually receiving traps and is using the Sink pattern to "dispatch" messages.
+ * Verify that the TrapListener is actually receiving traps and is using the Sink pattern to "dispatch" messages.
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -90,7 +90,7 @@ public class TrapdSinkPatternWiringIT extends CamelBlueprintTest {
     }
 
     // The CamelBlueprintTest should have started the bundle and therefore also started
-    // the TrapReceiver (see blueprint-trapd-handler-minion.xml), which listens to traps.
+    // the TrapListener (see blueprint-trapd-handler-minion.xml), which listens to traps.
     @Test
     public void testWiring() throws Exception {
         // No traps received or processed

@@ -34,10 +34,10 @@ import org.junit.Test;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 
-public class TrapReceiverTest {
+public class TrapListenerTest {
 
     private TrapdConfigBean initialConfig;
-    private TrapReceiver receiver;
+    private TrapListener receiver;
 
     @Before
     public void setUp() throws Exception {
@@ -46,7 +46,7 @@ public class TrapReceiverTest {
         initialConfig.setSnmpTrapAddress("localhost");
 
         // Overwrite start() and stop() to not listen for traps, as this is not required here
-        receiver = new TrapReceiver(initialConfig) {
+        receiver = new TrapListener(initialConfig) {
             @Override
             public void start() {
                 // dont register snmp trap listener
