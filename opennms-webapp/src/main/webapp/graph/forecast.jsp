@@ -255,8 +255,8 @@ pageContext.setAttribute("canForecast", canForecast);
         // Use the first div we find with the data-graph-report attribute
         $scope.graphElement = $("div[data-graph-report]").first();
 
-        // Holds a reference to the pristine graph model, once loaded
-        $scope.graphModel = null;
+        // Holds a reference to the pristine graph definition, once loaded
+        $scope.graphDef = null;
 
         // Holds a reference to the graph, once rendered
         $scope.graph = null;
@@ -309,7 +309,7 @@ pageContext.setAttribute("canForecast", canForecast);
 
         $scope.onForecastingTemplateChange = function() {
             // Deep clone the template's options when a template is selected
-            $scope.forecastingOptions = JSON.parse(JSON.stringify($scope.forecastingTemplate.options));
+            $scope.forecastingOptions = jQuery.extend(true, {}, $scope.forecastingTemplate.options);
         };
 
         function clearUserInput() {
@@ -327,20 +327,21 @@ pageContext.setAttribute("canForecast", canForecast);
                 dataType: 'json',
                 context: $(this)
             }).done(function (graphDef) {
+                // Save the pristine definition in the scope
+                $scope.graphDef = graphDef;
+                $scope.resource = resource;
+
                 // Convert the graph definition
                 var rrdGraphConverter = new Backshift.Utilities.RrdGraphConverter({
-                    graphDef: graphDef,
-                    resourceId: resource
+                    graphDef: $scope.graphDef,
+                    resourceId: $scope.resource
                 });
 
-                // Save the pristine model in the scope
-                $scope.graphModel = rrdGraphConverter.model;
-
                 // Render the graph using the pristine model
-                renderGraph($scope.graphModel);
+                renderGraph(rrdGraphConverter.model);
 
                 // Pull the list of named series from the model
-                $scope.series = _.filter($scope.graphModel.series, function(series){ return !_.isEmpty(series.name); });
+                $scope.series = _.filter(rrdGraphConverter.model.series, function(series){ return !_.isEmpty(series.name); });
                 $scope.$apply();
             }).fail(function() {
                 $scope.error = "Failed to retrieve the graph definition for the report named: " + report;
@@ -387,7 +388,11 @@ pageContext.setAttribute("canForecast", canForecast);
         $scope.reset = function() {
             clearUserInput();
             // Re-render the original graph model
-            renderGraph($scope.graphModel);
+            var rrdGraphConverter = new Backshift.Utilities.RrdGraphConverter({
+                graphDef: $scope.graphDef,
+                resourceId: $scope.resource
+            });
+            renderGraph(rrdGraphConverter.model);
         };
 
         $scope.canForecast = function() {
@@ -397,8 +402,11 @@ pageContext.setAttribute("canForecast", canForecast);
         };
 
         $scope.forecast = function() {
-            // Clone the original graph model
-            var graphModel = JSON.parse(JSON.stringify($scope.graphModel));
+            var rrdGraphConverter = new Backshift.Utilities.RrdGraphConverter({
+                graphDef: $scope.graphDef,
+                resourceId: $scope.resource
+            });
+            var graphModel = rrdGraphConverter.model;
 
             // Add series for the trend, forecast and bounds
             graphModel.series.push({
