@@ -28,24 +28,26 @@
 
 package org.opennms.core.ipc.sink.camel;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
-import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageProducer;
-import org.opennms.core.ipc.sink.api.MessageProducerFactory;
+import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+
+import com.codahale.metrics.JmxReporter;
 
 /**
- * Message producer that sends messages via JMS.
+ * Message dispatcher that sends messages via JMS.
  *
  * @author jwhite
  */
-public class CamelRemoteMessageProducerFactory implements MessageProducerFactory {
+public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Map<String, Object>> {
 
     @EndpointInject(uri = "direct:sendMessage", context = "sinkClient")
     private ProducerTemplate template;
@@ -53,17 +55,33 @@ public class CamelRemoteMessageProducerFactory implements MessageProducerFactory
     @EndpointInject(uri = "direct:sendMessage", context = "sinkClient")
     private Endpoint endpoint;
 
+    private JmxReporter reporter;
+
+    public <S extends Message, T extends Message> Map<String, Object> getModuleMetadata(SinkModule<S, T> module) {
+        // Pre-compute the JMS headers instead of recomputing them every dispatch
+        final JmsQueueNameFactory queueNameFactory = new JmsQueueNameFactory(
+                CamelSinkConstants.JMS_QUEUE_PREFIX, module.getId());
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(CamelSinkConstants.JMS_QUEUE_NAME_HEADER, queueNameFactory.getName());
+        return Collections.unmodifiableMap(headers);
+    }
+
     @Override
-    public <T extends Message> MessageProducer<T> getProducer(SinkModule<T> module) {
-        return new MessageProducer<T>() {
-            @Override
-            public void send(T message) {
-                final JmsQueueNameFactory queueNameFactory = new JmsQueueNameFactory(
-                        CamelSinkConstants.JMS_QUEUE_PREFIX, module.getId());
-                Map<String, Object> headers = new HashMap<>();
-                headers.put(CamelSinkConstants.JMS_QUEUE_NAME_HEADER, queueNameFactory.getName());
-                template.sendBodyAndHeaders(endpoint, module.marshal(message), headers);
-            }
-        };
+    public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Map<String, Object> headers, T message) {
+        template.sendBodyAndHeaders(endpoint, module.marshal((T)message), headers);
+    }
+
+    public void registerJmxReporter() {
+        reporter = JmxReporter.forRegistry(getMetrics())
+                .inDomain(CamelLocalMessageDispatcherFactory.class.getPackage().getName())
+                .build();
+        reporter.start();
+    }
+
+    public void unregisterJmxReporter() {
+        if (reporter != null) {
+            reporter.close();
+            reporter = null;
+        }
     }
 }

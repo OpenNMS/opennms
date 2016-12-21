@@ -35,6 +35,7 @@
 	import="org.opennms.web.api.Authentication,
 		org.opennms.core.db.DataSourceFactory,
 		org.opennms.core.resource.Vault,
+		org.opennms.core.utils.TimeSeries,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.core.utils.DBUtils,
 		java.sql.Connection
@@ -126,6 +127,10 @@
   <tr>
     <th>Database Version:</th>
     <td><%=dbVersion%></td>
+  </tr>
+  <tr>
+    <th>Time-Series Strategy:</th>
+    <td><%=TimeSeries.getTimeseriesStrategy().getDescr()%></td>
   </tr>
 </table>
 </div>

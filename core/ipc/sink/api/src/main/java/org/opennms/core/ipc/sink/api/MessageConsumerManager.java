@@ -37,10 +37,10 @@ public interface MessageConsumerManager {
 
     static final String LOG_PREFIX = "ipc";
 
-    <T extends Message> void dispatch(SinkModule<T> module, T message);
+    <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, T message);
 
-    <T extends Message> void registerConsumer(MessageConsumer<T> consumer) throws Exception;
+    <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception;
 
-    <T extends Message> void unregisterConsumer(MessageConsumer<T> consumer) throws Exception;
+    <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception;
 
 }

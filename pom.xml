@@ -1381,6 +1381,7 @@
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
     <owaspEncoderVersion>1.2</owaspEncoderVersion>
     <quartzVersion>1.6.5</quartzVersion>
+    <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.21</slf4jVersion>
     <snmp4jVersion>2.4.3</snmp4jVersion>
@@ -3877,6 +3878,11 @@
         <groupId>org.eclipse.jdt.core.compiler</groupId>
         <artifactId>ecj</artifactId>
         <version>${ecjVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.swrve</groupId>
+        <artifactId>rate-limited-logger</artifactId>
+        <version>${rateLimitedLoggerVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
