@@ -509,8 +509,10 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
     	Date now = new Date();
                 
         Set<String> incomingSet = new HashSet<String>();
-        for (BridgeMacLink link : links) {
-            incomingSet.add(link.getMacAddress());
+        synchronized (links) {
+            for (BridgeMacLink link : links) {
+                incomingSet.add(link.getMacAddress());
+            }            
         }
         LOG.debug("run: node: {}. macs found: {}", getNodeId(), incomingSet);
 
