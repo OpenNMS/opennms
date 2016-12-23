@@ -65,65 +65,95 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
         double getValue();
         void aggregate(final double v);
     }
-
-    private enum Aggregators implements Aggregator {
+    private interface EnumAggregator {
+        Aggregator getAggregator();
+    }
+    private enum EnumAggregators  implements EnumAggregator{
         AVERAGE() {
-            private int count = 0;
-            private double sum = 0;
-
             @Override
-            public double getValue() {
-                return this.count != 0
-                       ? this.sum / this.count
-                       : Double.NaN;
-            }
+            public Aggregator getAggregator() {
+                return new Aggregator(){
+                    private int count = 0;
+                    private double sum = 0;
 
-            @Override
-            public void aggregate(final double v) {
-                this.count++;
-                this.sum += v;
+                    @Override
+                    public double getValue() {
+                        return this.count != 0
+                               ? this.sum / this.count
+                               : Double.NaN;
+                    }
+
+                    @Override
+                    public void aggregate(final double v) {
+                        this.count++;
+                        this.sum += v;
+                    }
+                };
             }
+            
+            
+            
         },
 
         MIN() {
-            private double min = Double.POSITIVE_INFINITY;
 
             @Override
-            public double getValue() {
-                return this.min;
-            }
+            public Aggregator getAggregator() {
+                return new Aggregator(){
 
-            @Override
-            public void aggregate(final double v) {
-                this.min = Math.min(this.min, v);
+                    private double min = Double.POSITIVE_INFINITY;
+
+                    @Override
+                    public double getValue() {
+                        return this.min;
+                    }
+
+                    @Override
+                    public void aggregate(final double v) {
+                        this.min = Math.min(this.min, v);
+                    }
+                };
             }
         },
 
         MAX() {
-            private double max = Double.NEGATIVE_INFINITY;
-
             @Override
-            public double getValue() {
-                return this.max;
-            }
+            public Aggregator getAggregator() {
+                return new Aggregator(){
 
-            @Override
-            public void aggregate(final double v) {
-                this.max = Math.max(this.max, v);
+                    private double max = Double.NEGATIVE_INFINITY;
+
+                    @Override
+                    public double getValue() {
+                        return this.max;
+                    }
+
+                    @Override
+                    public void aggregate(final double v) {
+                        this.max = Math.max(this.max, v);
+                    } 
+                };
             }
         },
 
         LAST() {
-            private double v = Double.NaN;
 
             @Override
-            public double getValue() {
-                return this.v;
-            }
+            public Aggregator getAggregator() {
+                return new Aggregator () {
 
-            @Override
-            public void aggregate(final double v) {
-                this.v = v;
+                    private double v = Double.NaN;
+
+                    @Override
+                    public double getValue() {
+                        return this.v;
+                    }
+
+                    @Override
+                    public void aggregate(final double v) {
+                        this.v = v;
+                    }
+                };
             }
         }
     }
@@ -168,7 +198,7 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
             return;
         }
 
-        final Aggregator aggregator = Aggregators.valueOf(m_consolidationFunction.toUpperCase());
+        final Aggregator aggregator = EnumAggregators.valueOf(m_consolidationFunction.toUpperCase()).getAggregator();
 
         Arrays.stream(statistics)
                 .filter(v -> (! Double.isNaN(v)))
