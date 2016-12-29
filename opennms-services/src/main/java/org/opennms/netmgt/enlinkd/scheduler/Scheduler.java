@@ -31,13 +31,15 @@ package org.opennms.netmgt.enlinkd.scheduler;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.queue.FifoQueueImpl;
+import org.opennms.netmgt.scheduler.LegacyScheduler.PeekableFifoQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,59 +51,39 @@ import org.slf4j.LoggerFactory;
 public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
     private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
-	/**
-	 * The map of queue that contain {@link ReadyRunnable ready runnable}
-	 * instances. The queues are mapped according to the interval of scheduling.
-	 */
-	public Map<Long,PeekableFifoQueue<ReadyRunnable>> m_queues;
+    /**
+     * The map of queue that contain {@link ReadyRunnable ready runnable}
+     * instances. The queues are mapped according to the interval of scheduling.
+     */
+    private final Map<Long, PeekableFifoQueue<ReadyRunnable>> m_queues;
 
-	/**
-	 * The total number of elements currently scheduled. This should be the sum
-	 * of all the elements in the various queues.
-	 */
-	public int m_scheduled;
+    /**
+     * The total number of elements currently scheduled. This should be the sum
+     * of all the elements in the various queues.
+     */
+    private volatile int m_scheduled;
 
-	/**
-	 * The pool of threads that are used to executed the runnable instances
-	 * scheduled by the class' instance.
-	 */
-	public ExecutorService m_runner;
+    /**
+     * The pool of threads that are used to executed the runnable instances
+     * scheduled by the class' instance.
+     */
+    private final ExecutorService m_runner;
 
-	/**
-	 * The status for this fiber.
-	 */
-	public int m_status;
+    /**
+     * The status for this fiber.
+     */
+    private volatile int m_status;
 
-	/**
-	 * The worker thread that executes this instance.
-	 */
-	private Thread m_worker;
+    /**
+     * The worker thread that executes this instance.
+     */
+    private volatile Thread m_worker;
 
-	/**
-	 * This queue extends the standard FIFO queue instance so that it is
-	 * possible to peek at an instance without removing it from the queue.
-	 *  
-	 */
-	public static final class PeekableFifoQueue<T> extends FifoQueueImpl<T> {
-        /**
-         * This method allows the caller to peek at the next object that would
-         * be returned on a <code>remove</code> call. If the queue is
-         * currently empty then the caller is blocked until an object is put
-         * into the queue.
-         * 
-         * @return The object that would be returned on the next call to
-         *         <code>remove</code>.
-         * 
-         * @throws java.lang.InterruptedException
-         *             Thrown if the thread is interrupted.
-         * @throws org.opennms.core.queue.FifoQueueException
-         *             Thrown if an error occurs removing an item from the
-         *             queue.
-         */
-        public T peek() throws InterruptedException {
-            return m_delegate.peek();
-        }
-	}
+    /**
+     * Used to keep track of the number of tasks that have been executed.
+     */
+    private volatile long m_numTasksExecuted = 0;
+
 
 	/**
 	 * Constructs a new instance of the scheduler. The maximum number of
@@ -118,7 +100,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		m_status = START_PENDING;
 		m_runner = Executors.newFixedThreadPool(
 			maxSize,
-			new LogPreservingThreadFactory(getClass().getSimpleName(), maxSize)
+			new LogPreservingThreadFactory(parent, maxSize)
 		);
 		m_queues = new ConcurrentSkipListMap<Long,PeekableFifoQueue<ReadyRunnable>>();
 		m_scheduled = 0;
@@ -574,8 +556,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
                 // get an iterator so that we can cycle
                 // through the queue elements.
                 //
-                Iterator<Long> iter = m_queues.keySet().iterator();
-                while (iter.hasNext()) {
+                for (Entry<Long, PeekableFifoQueue<ReadyRunnable>> entry : m_queues.entrySet()) {
                     // Peak for Runnable objects until
                     // there are no more ready runnables
                     //
@@ -583,11 +564,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
                     // if we didn't add a count then it would
                     // be possible to starve other queues.
                     //
-                    Long key = iter.next();
-                    PeekableFifoQueue<ReadyRunnable> in = m_queues.get(key);
-                    if (in == null || in.isEmpty()) {
-                        continue;
-                    }
+                    PeekableFifoQueue<ReadyRunnable> in = entry.getValue();
                     ReadyRunnable readyRun = null;
                     int maxLoops = in.size();
                     do {
@@ -600,15 +577,25 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
                                 in.remove();
 
                                 if (readyRun.isReady()) {
-                                    LOG.debug("run: found ready runnable {}",
+                                    LOG.debug("run: runnable {}, executing",
                                               readyRun.getInfo());
 
                                     // Add runnable to the execution queue
                                     m_runner.execute(readyRun);
                                     ++runned;
+                                    
+                                    // Increment the execution counter
+                                    ++m_numTasksExecuted;
+
+                                    // Thread Pool Statistics
+                                    if (m_runner instanceof ThreadPoolExecutor) {
+                                        ThreadPoolExecutor e = (ThreadPoolExecutor) m_runner;
+                                        String ratio = String.format("%.3f", e.getTaskCount() > 0 ? new Double(e.getCompletedTaskCount())/new Double(e.getTaskCount()) : 0);
+                                        LOG.debug("thread pool statistics: activeCount={}, taskCount={}, completedTaskCount={}, completedRatio={}, poolSize={}",
+                                            e.getActiveCount(), e.getTaskCount(), e.getCompletedTaskCount(), ratio, e.getPoolSize());
+                                    }
+
                                 } else {
-                                    LOG.debug("run: not ready ready runnable {}",
-                                              readyRun.getInfo());
                                     in.add(readyRun);
                                 }
                             }
@@ -643,5 +630,10 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
         }
 
     } // end run
+    
+    public long getNumTasksExecuted() {
+        return m_numTasksExecuted;
+    }
+
 
 }
