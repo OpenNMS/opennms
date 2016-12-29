@@ -158,7 +158,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             printBridgeMacLink(link);
         }
 
-        assertTrue(!m_linkd.runTopologyDiscovery(stcasw01.getId()));
+        assertTrue(m_linkd.runTopologyDiscovery(stcasw01.getId()));
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -264,7 +264,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             printBridgeMacLink(link);
         }
 
-        assertTrue(!m_linkd.runTopologyDiscovery(samasw01.getId()));
+        assertTrue(m_linkd.runTopologyDiscovery(samasw01.getId()));
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -370,7 +370,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             printBridgeMacLink(link);
         }
 
-        assertTrue(!m_linkd.runTopologyDiscovery(asw01.getId()));
+        assertTrue(m_linkd.runTopologyDiscovery(asw01.getId()));
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
@@ -483,8 +483,8 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         
         assertTrue(m_linkd.runTopologyDiscovery(asw01.getId()));
-        assertTrue(!m_linkd.runTopologyDiscovery(samasw01.getId()));
-        assertTrue(!m_linkd.runTopologyDiscovery(stcasw01.getId()));
+        assertTrue(m_linkd.runTopologyDiscovery(samasw01.getId()));
+        assertTrue(m_linkd.runTopologyDiscovery(stcasw01.getId()));
         assertEquals(3,m_bridgeElementDao.countAll());
         assertEquals(0,m_bridgeStpLinkDao.countAll());
         assertEquals(2,m_bridgeBridgeLinkDao.countAll());
@@ -742,7 +742,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(1,m_bridgeBridgeLinkDao.countAll());
         assertEquals(67,m_bridgeMacLinkDao.countAll());
 
-        assertTrue(!m_linkd.runTopologyDiscovery(samasw01.getId()));
+        assertTrue(m_linkd.runTopologyDiscovery(samasw01.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(stcasw01.getId()));
         assertTrue(m_linkd.runTopologyDiscovery(stcasw01.getId()));
         assertEquals(3,m_bridgeElementDao.countAll());

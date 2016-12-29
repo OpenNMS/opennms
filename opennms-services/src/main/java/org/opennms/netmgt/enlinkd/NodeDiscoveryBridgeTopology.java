@@ -491,12 +491,28 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
     }
 
     @Override
-    public void run() {        
-        Date now = new Date();
+    public void run() {
+
+        if (!m_linkd.getQueryManager().hasUpdatedBft(getNodeId())) {
+            LOG.info("run: node: {}, no bft.Exiting Bridge Topology Discovery", getNodeId());
+            return;
+        }
+
+    	List<BridgeMacLink> links =  m_linkd.
+        		getQueryManager().
+        		getBridgeTopologyUpdateBFT(
+        				getNodeId());
+    	if (links == null || links.size() == 0) {
+            LOG.debug("run: node: {}. no updates macs found.", getNodeId());
+            return;
+    	}
+    	Date now = new Date();
                 
         Set<String> incomingSet = new HashSet<String>();
-        for (BridgeMacLink link : m_linkd.getQueryManager().getBridgeTopologyUpdateBFT(getNodeId())) {
-            incomingSet.add(link.getMacAddress());
+        synchronized (links) {
+            for (BridgeMacLink link : links) {
+                incomingSet.add(link.getMacAddress());
+            }            
         }
         LOG.debug("run: node: {}. macs found: {}", getNodeId(), incomingSet);
 
@@ -548,7 +564,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                                  domain,
                                  curNodeId, getInitialSleepTime());
                         schedule();
-                        m_domain.releaseLock(this);
                         return;
                     }
                     NodeDiscoveryBridgeTopology ndbt = new NodeDiscoveryBridgeTopology(m_linkd, m_linkd.getNode(curNodeId));
@@ -644,8 +659,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         m_domain.releaseLock(this);
         LOG.info("run: node: {}, releaseLock broadcast domain for nodes: {}.", getNodeId(),
                  m_domain.getBridgeNodesOnDomain());
-        m_runned = true;
-        reschedule();        
     }
             
     @Override
@@ -1072,16 +1085,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 return null;
             }
         return goUp(up, bridge,++level);
-    }
-    
-    @Override
-    public boolean isReady() {
-        if (!m_linkd.getQueryManager().hasUpdatedBft(getNodeId())) {
-            LOG.info("isReady: node: {}, without updated bft. Topology Discovery Not Ready", getNodeId());
-            return false;
-        }
-        return true;
-
-    }
+    }    
 }
 
