@@ -303,8 +303,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridgeId());
         topology.check(nodeAbd.getTopology());
-
-        assertTrue(m_linkd.scheduleNodeCollection(nodeC.getId()));
         
         m_linkd.deleteNode(nodeC.getId());
         assertEquals(1, m_bridgeTopologyDao.getAll().size());
@@ -503,6 +501,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         topology.check(nodeAbd.getTopology());
 
         assertTrue(m_linkd.scheduleNodeCollection(nodeA.getId()));
+        m_linkd.scheduleBridgeTopologyDiscovery(nodeA.getId());
         
         m_linkd.deleteNode(nodeA.getId());
         assertEquals(1, m_bridgeTopologyDao.getAll().size());

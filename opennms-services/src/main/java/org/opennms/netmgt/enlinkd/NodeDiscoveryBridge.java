@@ -73,7 +73,6 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
     }
 
     protected void runCollection() {
-
         LOG.info("run: start: node discovery operations for bridge: '{}'",
                  getNodeId());
         final Date now = new Date();
@@ -132,11 +131,16 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         LOG.debug("run: found on node: '{}' bridge ifindex map {}",
                   getNodeId(), bridgeifindex);
         bft = walkDot1qTpFdb(getPeer(),bridgeifindex, bft);
+        LOG.debug("run: bridge: '{}' bft size {}", getNodeId(), bft.size());
 
-        m_linkd.getQueryManager().store(getNodeId(), bft);
+        if (bft.size() > 0) {
+            LOG.debug("run: updating topology bridge: '{}'", getNodeId());
+        	m_linkd.getQueryManager().store(getNodeId(), bft);
+        	m_linkd.scheduleBridgeTopologyDiscovery(getNodeId());
+        }
         LOG.debug("run: reconciling bridge: '{}' time {}", getNodeId(), now);
+        m_linkd.collectedBft(getNodeId());
         m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
-        LOG.debug("run: updating topology bridge: '{}'", getNodeId());
         LOG.info("run: end: node discovery operations for bridge: '{}'",
                  getNodeId());
     }
@@ -490,7 +494,6 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
     @Override
     public boolean isReady() {
-        LOG.info("isReady: node: {}, maxBft {}, updateMapsixe {}.", getNodeId(),m_linkd.getMaxbft(),m_linkd.getQueryManager().getUpdateBftMap().size());
-        return m_linkd.getQueryManager().getUpdateBftMap().size() < m_linkd.getMaxbft();
+        return m_linkd.collectBft(getNodeId());
     }
 }
