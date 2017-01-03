@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
  * Date: 11:11 AM 6/24/15
  */
 public class ESHeaders {
-    Logger logger = LoggerFactory.getLogger(ESHeaders.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ESHeaders.class);
 
-    private boolean logEventDescription=false;
+    private boolean logEventDescription = false;
     private NodeCache cache;
 
     private IndexNameFunction idxName = new IndexNameFunction();
@@ -53,7 +53,9 @@ public class ESHeaders {
                 Object argument=((BeanInvocation)incoming).getArgs()[0];
 
                 if(argument instanceof Event) {
-                    logger.debug("Processing event");
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Processing event");
+                    }
 
                     indexType="events";
 
@@ -70,11 +72,13 @@ public class ESHeaders {
                             body.putAll(cache.getEntry(event.getNodeid()));
 
                         } catch (Exception e) {
-                            logger.error("error fetching nodeData categories: ", e);
+                            LOG.error("error fetching nodeData categories: ", e);
                         }
                     }
                 } else if(argument instanceof NorthboundAlarm) {
-                    logger.debug("Processing alarm");
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Processing alarm");
+                    }
 
                     indexType="alarms";
 
@@ -89,27 +93,33 @@ public class ESHeaders {
                             body.putAll(cache.getEntry((long) alarm.getNodeId()));
 
                         } catch (Exception e) {
-                            logger.error("error fetching nodeData categories: ", e);
+                            LOG.error("error fetching nodeData categories: ", e);
                         }
                     }
                 }
             } else if(incoming instanceof Map) {
-                logger.debug("Processing a generic map");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Processing a generic map");
+                }
 
                 body.putAll((Map) incoming);
             }
 
             if(body.containsKey("@timestamp")) {
-                logger.trace("Computing indexName from @timestamp: "+body.get("@timestamp"));
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("Computing indexName from @timestamp: "+body.get("@timestamp"));
+                }
                 indexName=idxName.apply(remainder, (Date) body.get("@timestamp"));
             } else {
                 indexName = idxName.apply(remainder);
             }
         } catch(Exception e) {
-            logger.error("Cannot compute index name, failing back to default: "+e.getMessage());
+            LOG.error("Cannot compute index name, failing back to default: "+e.getMessage());
             indexName = idxName.apply(remainder);
         }
-        logger.trace("Computing indexName from @timestamp: " + body.get("@timestamp") + " yelds " + indexName);
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Computing indexName from @timestamp: " + body.get("@timestamp") + " yields " + indexName);
+        }
         exchange.getOut().setHeader(ElasticsearchConfiguration.PARAM_INDEX_NAME, indexName);
         exchange.getOut().setHeader(ElasticsearchConfiguration.PARAM_INDEX_TYPE, indexType);
         exchange.getOut().setBody(body);
