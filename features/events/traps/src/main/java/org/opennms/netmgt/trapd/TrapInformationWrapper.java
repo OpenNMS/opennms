@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,14 +28,26 @@
 
 package org.opennms.netmgt.trapd;
 
-import org.apache.camel.InOnly;
-import org.opennms.netmgt.snmp.TrapNotification;
+import java.util.Objects;
+
+import org.opennms.core.ipc.sink.api.Message;
+import org.opennms.netmgt.snmp.TrapInformation;
 
 /**
- * This interface must be {@link InOnly} in order for trap handling to
- * be performed asynchronously.
+ * Wrapper to make the {@link TrapInformation} object Sink API compatible, without adding the dependency to the sink-api module.
+ *
+ * @author mvrueden
  */
-@InOnly
-public interface TrapNotificationHandler {
-	void handleTrapNotification(TrapNotification message);
+public class TrapInformationWrapper implements Message {
+
+    private final TrapInformation trapInformation;
+
+    public TrapInformationWrapper(TrapInformation trapInformation) throws IllegalArgumentException {
+        this.trapInformation = Objects.requireNonNull(trapInformation);
+        trapInformation.validate(); // Before this was at ProcessQueueProcessor which does not exist anymore
+    }
+
+    public TrapInformation getTrapInformation() {
+        return trapInformation;
+    }
 }

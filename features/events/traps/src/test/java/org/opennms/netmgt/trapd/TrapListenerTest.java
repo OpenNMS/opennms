@@ -28,111 +28,69 @@
 
 package org.opennms.netmgt.trapd;
 
-import java.util.List;
-
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
-import org.opennms.netmgt.snmp.SnmpV3User;
 
-import com.google.common.collect.Lists;
+public class TrapListenerTest {
 
-public class TrapReceiverImplTest {
-
-    private CustomTrapdConfig initialConfig;
-    private TrapReceiverImpl m_receiver;
-
-    private class CustomTrapdConfig implements TrapdConfig {
-
-        private List<SnmpV3User> snmpUsers = Lists.newArrayList();
-        private String snmpAddress;
-        private int snmpTrapPort;
-
-        @Override
-        public String getSnmpTrapAddress() {
-            return snmpAddress;
-        }
-
-        @Override
-        public int getSnmpTrapPort() {
-            return snmpTrapPort;
-        }
-
-        @Override
-        public boolean getNewSuspectOnTrap() {
-            return false;
-        }
-
-        @Override
-        public List<SnmpV3User> getSnmpV3Users() {
-            return snmpUsers;
-        }
-
-        @Override
-        public void onUpdate(TrapdConfiguration config) {
-
-        }
-
-        public void setSnmpAddress(String snmpAddress) {
-            this.snmpAddress = snmpAddress;
-        }
-
-        public void setSnmpTrapPort(int snmpTrapPort) {
-            this.snmpTrapPort = snmpTrapPort;
-        }
-    }
+    private TrapdConfigBean initialConfig;
+    private TrapListener receiver;
 
     @Before
     public void setUp() throws Exception {
-        initialConfig = new CustomTrapdConfig();
+        initialConfig = new TrapdConfigBean();
         initialConfig.setSnmpTrapPort(1162);
-        initialConfig.setSnmpAddress("localhost");
-        m_receiver = new TrapReceiverImpl(initialConfig);
-    }
+        initialConfig.setSnmpTrapAddress("localhost");
 
-    @After
-    public void tearDown() {
-        if (m_receiver != null) {
-            m_receiver.stop();
-        }
+        // Overwrite start() and stop() to not listen for traps, as this is not required here
+        receiver = new TrapListener(initialConfig) {
+            @Override
+            public void start() {
+                // dont register snmp trap listener
+            }
+
+            @Override
+            public void stop() {
+                // dont unregister snmp trap listener
+            }
+        };
     }
 
     @Test
     public void verifyCheckForTrapdConfigurationChange() throws Exception {
         // Empty config should be different
         TrapdConfiguration config = new TrapdConfiguration();
-        Assert.assertEquals(Boolean.TRUE, m_receiver.checkForTrapdConfigurationChange(config));
+        Assert.assertEquals(Boolean.TRUE, receiver.hasConfigurationChanged(new TrapdConfigBean(config)));
 
         // Equal config should not be different
         config.setSnmpTrapPort(initialConfig.getSnmpTrapPort());
         config.setSnmpTrapAddress(initialConfig.getSnmpTrapAddress());
-        Assert.assertEquals(Boolean.FALSE, m_receiver.checkForTrapdConfigurationChange(config));
+        Assert.assertEquals(Boolean.FALSE, receiver.hasConfigurationChanged(new TrapdConfigBean(config)));
 
         // Add a user, should result in a difference
         config.getSnmpv3UserCollection().add(createUser("MD5", "0p3nNMSv3", "some-engine-id", "DES", "0p3nNMSv3", "some-security-name"));
-        Assert.assertEquals(Boolean.TRUE, m_receiver.checkForTrapdConfigurationChange(config));
-        m_receiver.setTrapdConfig(config); // update and verify that it now is equal
-        Assert.assertEquals(Boolean.FALSE, m_receiver.checkForTrapdConfigurationChange(config));
+        Assert.assertEquals(Boolean.TRUE, receiver.hasConfigurationChanged(new TrapdConfigBean(config)));
+        receiver.setTrapdConfig(config); // update and verify that it now is equal
+        Assert.assertEquals(Boolean.FALSE, receiver.hasConfigurationChanged(new TrapdConfigBean(config)));
 
         // Adding another user should also result in a difference
         config.getSnmpv3UserCollection().add(createUser("MD5", "0p3nNMSv3", "some-engine-id", "DES", "0p3nNMSv3", "some-security-name-2"));
-        Assert.assertEquals(Boolean.TRUE, m_receiver.checkForTrapdConfigurationChange(config));
-        m_receiver.setTrapdConfig(config); // update and verify that it now is equal
-        Assert.assertEquals(Boolean.FALSE, m_receiver.checkForTrapdConfigurationChange(config));
+        Assert.assertEquals(Boolean.TRUE, receiver.hasConfigurationChanged(new TrapdConfigBean(config)));
+        receiver.setTrapdConfig(config); // update and verify that it now is equal
+        Assert.assertEquals(Boolean.FALSE, receiver.hasConfigurationChanged(new TrapdConfigBean(config)));
 
         // Adding another copy of an existing user will NOT trigger an update, the first entry found in the list will be used
         config.getSnmpv3UserCollection().add(createUser("MD5", "0p3nNMSv3", "some-engine-id", "DES", "0p3nNMSv3", "some-security-name"));
-        Assert.assertEquals(Boolean.FALSE, m_receiver.checkForTrapdConfigurationChange(config));
+        Assert.assertEquals(Boolean.FALSE, receiver.hasConfigurationChanged(new TrapdConfigBean(config)));
 
         // Editing a user should result in a difference
         config.getSnmpv3UserCollection().get(0).setPrivacyProtocol("AES");
-        Assert.assertEquals(Boolean.TRUE, m_receiver.checkForTrapdConfigurationChange(config));
-        m_receiver.setTrapdConfig(config); // update and verify that it now is equal
-        Assert.assertEquals(Boolean.FALSE, m_receiver.checkForTrapdConfigurationChange(config));
+        Assert.assertEquals(Boolean.TRUE, receiver.hasConfigurationChanged(new TrapdConfigBean(config)));
+        receiver.setTrapdConfig(config); // update and verify that it now is equal
+        Assert.assertEquals(Boolean.FALSE, receiver.hasConfigurationChanged(new TrapdConfigBean(config)));
     }
 
     @Test
@@ -140,17 +98,17 @@ public class TrapReceiverImplTest {
         TrapdConfiguration config = new TrapdConfiguration();
         config.setSnmpTrapPort(initialConfig.getSnmpTrapPort() + 1);
 
-        Assert.assertEquals(Boolean.FALSE, m_receiver.checkForSnmpV3ConfigurationChange(config));
+        Assert.assertEquals(Boolean.FALSE, receiver.hasSnmpV3UsersChanged(new TrapdConfigBean(config)));
 
         // Add a user, should result in a difference
         config.getSnmpv3UserCollection().add(createUser("MD5", "0p3nNMSv3", "some-engine-id", "DES", "0p3nNMSv3", "some-security-name"));
-        Assert.assertEquals(Boolean.TRUE, m_receiver.checkForSnmpV3ConfigurationChange(config));
-        m_receiver.setTrapdConfig(config); // update and verify that it now is equal
-        Assert.assertEquals(Boolean.FALSE, m_receiver.checkForSnmpV3ConfigurationChange(config));
+        Assert.assertEquals(Boolean.TRUE, receiver.hasSnmpV3UsersChanged(new TrapdConfigBean(config)));
+        receiver.setTrapdConfig(config); // update and verify that it now is equal
+        Assert.assertEquals(Boolean.FALSE, receiver.hasSnmpV3UsersChanged(new TrapdConfigBean(config)));
 
         // Changing the port should not result in a difference
         config.setSnmpTrapPort(config.getSnmpTrapPort() + 1);
-        Assert.assertEquals(Boolean.FALSE, m_receiver.checkForSnmpV3ConfigurationChange(config));
+        Assert.assertEquals(Boolean.FALSE, receiver.hasSnmpV3UsersChanged(new TrapdConfigBean(config)));
     }
 
     private static Snmpv3User createUser(String authProtocol,

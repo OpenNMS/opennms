@@ -1,7 +1,6 @@
 # Minion Default Features
 opennms-syslogd-listener-camel-netty
 opennms-trapd-listener
-opennms-trapd-handler-minion
 minion-shell
 minion-heartbeat-producer
 minion-snmp-proxy

@@ -28,15 +28,33 @@
 
 package org.opennms.netmgt.trapd;
 
-import java.util.Random;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.opennms.core.ipc.sink.api.Message;
+import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.model.OnmsDistPoller;
 
-import kafka.producer.Partitioner;
+public class TrapSinkModuleTest {
 
-public class TrapdKafkaPartitioner implements Partitioner{
+    @Test
+    public void testEqualsAndHashCode() throws Exception {
+        SinkModule<Message, Message> mockModule = Mockito.mock(SinkModule.class);
+        Mockito.when(mockModule.getId()).thenReturn("id");
 
-	@Override
-	public int partition(Object arg0, int a_numPartitions) {
-		return new Random().nextInt();
-	}
+        OnmsDistPoller distPollerMock = Mockito.mock(OnmsDistPoller.class);
 
+        TrapdConfig config = new TrapdConfigBean();
+        final TrapSinkModule module = new TrapSinkModule(config, distPollerMock);
+        Assert.assertEquals(module, module);
+        Assert.assertEquals(module.hashCode(), module.hashCode());
+
+        final TrapSinkModule other = new TrapSinkModule(config, distPollerMock);
+        Assert.assertEquals(module, other);
+        Assert.assertEquals(module.hashCode(), other.hashCode());
+
+        Assert.assertNotEquals(module, mockModule);
+        Assert.assertNotEquals(module.hashCode(), mockModule.hashCode());
+    }
 }

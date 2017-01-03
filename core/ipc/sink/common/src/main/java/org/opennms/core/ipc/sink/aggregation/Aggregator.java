@@ -97,7 +97,7 @@ public class Aggregator<S extends Message, T extends Message> implements AutoClo
         completionSize = aggregationPolicy.getCompletionSize();
         completionIntervalMs = aggregationPolicy.getCompletionIntervalMs();
 
-        if (aggregationPolicy.getCompletionIntervalMs() > 0) {
+        if (completionIntervalMs > 0) {
             // Periodically verify the buckets, and flush those that are older than completionIntervalMs
             flushTimer = new Timer(String.format("SinkAggregatorFlush-%s", module.getId()));
             flushTimer.scheduleAtFixedRate(new TimerTask() {
