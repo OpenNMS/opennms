@@ -35,13 +35,25 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 public class ByteBufferXmlAdapter extends XmlAdapter<byte[], ByteBuffer> {
 
     @Override
-    public ByteBuffer unmarshal(byte[] bytes) throws Exception {
+    public ByteBuffer unmarshal(byte[] bytes) {
         return ByteBuffer.wrap(bytes);
     }
 
     @Override
-    public byte[] marshal(ByteBuffer bb) throws Exception {
-        return bb.array();
+    public byte[] marshal(ByteBuffer bb) {
+        if (bb.hasArray()) {
+            // Use the backing array when available
+            return bb.array();
+        } else {
+            // Otherwise, create a new array, and copy the available
+            // bytes while preserving the original position
+            final int originalPosition = bb.position();
+            bb.rewind();
+            byte[] bytes = new byte[bb.remaining()];
+            bb.get(bytes);
+            bb.position(originalPosition);
+            return bytes;
+        }
     }
 
 }
