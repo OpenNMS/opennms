@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -111,7 +111,14 @@ public class SyntaxToEvent {
             if (m_syntaxToEvents[i].getTypeId() == -1 || m_syntaxToEvents[i].getTypeId() == value.getType()) {
                 val.setType(m_syntaxToEvents[i].getType());
                 String encoding = null;
-                if (value.isDisplayable()) {
+                boolean displayable = false;
+                try {
+                    displayable = value.isDisplayable();
+                } catch (ArrayIndexOutOfBoundsException aioobe) {
+                    // Eat it
+                    // This should not be necessary when NMS-7547 is fixed
+                }
+                if (displayable) {
                     if (name.matches(".*[Mm][Aa][Cc].*")) {
                         encoding = EventConstants.XML_ENCODING_MAC_ADDRESS;
                     } else {
