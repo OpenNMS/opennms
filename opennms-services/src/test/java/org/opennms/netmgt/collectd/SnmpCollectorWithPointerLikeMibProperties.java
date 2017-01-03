@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.collectd;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.junit.After;
@@ -56,9 +56,11 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -85,7 +87,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 })
 @JUnitConfigurationEnvironment(systemProperties = {
         "org.opennms.rrd.storeByGroup=false",
-        "db.adminPassword=postgres"
 })
 @JUnitTemporaryDatabase(reuseDatabase = false, useExistingDatabase = "testjfcopennms")
 // Relies on records created in @Before so we need a fresh database for each test
@@ -216,6 +217,10 @@ public class SnmpCollectorWithPointerLikeMibProperties implements InitializingBe
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
+    
+    
+    
+    
     /**
      * Test collection with MibObj and indirection mapping
      * indexEntry -mapsto--> IfIndex.
@@ -239,24 +244,37 @@ public class SnmpCollectorWithPointerLikeMibProperties implements InitializingBe
 
         // we expect the two interfaces to be persisted
 
-        Map<String, String> itf52 = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "GigabitEthernet1_0_52-b8af6729be61"));
-        assertEquals("GigabitEthernet1/0/52", itf52.get("ifDescr"));
-        Map<String, String> itf56 = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "Ten_GigabitEthernet1_1_1-b8af6729be62"));
-        assertEquals("Ten-GigabitEthernet1/1/1", itf56.get("ifDescr"));
+        ResourcePath rpath52 = ResourcePath.get("snmp", "1", "ifEntry","52");
+        assertNotNull(rpath52);
+        Map<String, String> itfReified52 = m_resourceStorageDao.getStringAttributes(rpath52);
+        assertEquals("GigabitEthernet1/0/52", itfReified52.get("ifDescr"));
+        ResourcePath rpath56 = ResourcePath.get("snmp", "1", "ifEntry","56");
+        
+        Map<String, String> itfReified56 = 
+        		m_resourceStorageDao.getStringAttributes(rpath56);
+
+        /*
+        Map<String, String> itf52 = 
+        		m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "GigabitEthernet1_0_52-b8af6729be61"));
+        */
+        assertEquals("GigabitEthernet1/0/52", itfReified52.get("ifDescr"));
+        assertEquals("Ten-GigabitEthernet1/1/1", itfReified56.get("ifDescr"));
         // each interface should have an ifIndex String Property
         // Not strictly necessary for ifIndex (we know this from the db) 
         // but we should be more generic to adapt to other use cases
-        assertEquals("52", itf52.get("ifIndex"));
-        assertEquals("56", itf56.get("ifIndex"));
+        assertEquals("52", itfReified52.get("ifIndex"));
+        assertEquals("56", itfReified56.get("ifIndex"));
 
         // we expect dot1dBasePort data  to be persisted
         // thanks to sibling storage strategy they are persisted under ifIndex
         // and not under dot1dBasePortIndex
-        Map<String, String> dot1dPort52 = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "dot1dBasePortIndex", "52"));
+        Map<String, String> dot1dPort52 = 
+        		m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "dot1dBasePortEntry", "52"));
         assertEquals("52", dot1dPort52.get("dot1dBasePortString"));
         assertEquals("52", dot1dPort52.get("dot1dBasePortIfIdx"));
 
-        Map<String, String> dot1dPort53 = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "dot1dBasePortIndex", "56"));
+        Map<String, String> dot1dPort53 = 
+        		m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "dot1dBasePortEntry", "56"));
         assertEquals("53", dot1dPort53.get("dot1dBasePortString"));
         assertEquals("56", dot1dPort53.get("dot1dBasePortIfIdx"));
 
@@ -269,12 +287,148 @@ public class SnmpCollectorWithPointerLikeMibProperties implements InitializingBe
         // So as we would like to  be able to use the *name* (or ifDescr)  
         // we have to relate this in the string.properties associated to each
         // dot1dbasePort
-        assertEquals("GigabitEthernet1/1/1", dot1dPort52.get("ifDescr"));
-        assertEquals("Ten-GigabitEthernet1/1/1", dot1dPort53.get("ifDescr"));
+        assertEquals("GigabitEthernet1/0/52", dot1dPort52.get("associatedIfDescr"));
+        assertEquals("Ten-GigabitEthernet1/1/1", dot1dPort53.get("associatedIfDescr"));
 
 
         // Remark : Do we have to take multivalued backereferences into account (e.g. many dot1dPorts associated to one ifIndex).
     }
+    
+    /**
+     * Test collection with MibObj and indirection mapping
+     * indexEntry -mapsto--> IfIndex.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    @JUnitCollector(datacollectionType = "snmp", datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config-NMS8969-sibling.xml")
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/dot1dBasePortTable.properties")
+    public void testCollectIndirectionSibling() throws Exception {
+        System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
+
+        m_collectionSpecification.initialize(m_collectionAgent);
+
+        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
+        assertEquals("collection status", ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
+
+        m_collectionSpecification.release(m_collectionAgent);
+        assertNotNull(m_resourceStorageDao);
+
+        // we expect the two interfaces to be persisted
+
+        ResourcePath rpath52 = ResourcePath.get("snmp", "1", "ifEntry","52");
+        assertNotNull(rpath52);
+        Map<String, String> itfReified52 = m_resourceStorageDao.getStringAttributes(rpath52);
+        assertEquals("GigabitEthernet1/0/52", itfReified52.get("ifDescr"));
+        ResourcePath rpath56 = ResourcePath.get("snmp", "1", "ifEntry","56");
+        
+        Map<String, String> itfReified56 = 
+        		m_resourceStorageDao.getStringAttributes(rpath56);
+
+        /*
+        Map<String, String> itf52 = 
+        		m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "GigabitEthernet1_0_52-b8af6729be61"));
+        */
+        assertEquals("GigabitEthernet1/0/52", itfReified52.get("ifDescr"));
+        assertEquals("Ten-GigabitEthernet1/1/1", itfReified56.get("ifDescr"));
+        // each interface should have an ifIndex String Property
+        // Not strictly necessary for ifIndex (we know this from the db) 
+        // but we should be more generic to adapt to other use cases
+        assertEquals("52", itfReified52.get("ifIndex"));
+        assertEquals("56", itfReified56.get("ifIndex"));
+
+        // we expect dot1dBasePort data  to be persisted
+        // thanks to sibling storage strategy they are persisted under ifIndex
+        // and not under dot1dBasePortIndex
+        Map<String, String> dot1dPort52 = 
+        		m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "dot1dBasePortEntry", "GigabitEthernet1-0-52"));
+        assertEquals("52", dot1dPort52.get("dot1dBasePortString"));
+        assertEquals("52", dot1dPort52.get("dot1dBasePortIfIdx"));
+
+        Map<String, String> dot1dPort53 = 
+        		m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "dot1dBasePortEntry", "Ten-GigabitEthernet1-1-1"));
+        assertEquals("53", dot1dPort53.get("dot1dBasePortString"));
+        assertEquals("56", dot1dPort53.get("dot1dBasePortIfIdx"));
+
+
+        // at this point we are able to display each ifIndex in the GUI (in resource graph)
+        // but it is hard to correlate them to other ifIndex data  as they are stored under the 
+        // name (ifDescr) of the interface...
+
+
+        // So as we would like to  be able to use the *name* (or ifDescr)  
+        // we have to relate this in the string.properties associated to each
+        // dot1dbasePort
+        assertEquals("GigabitEthernet1/0/52", dot1dPort52.get("associatedIfDescr"));
+        assertEquals("Ten-GigabitEthernet1/1/1", dot1dPort53.get("associatedIfDescr"));
+
+
+        // Remark : Do we have to take multivalued backereferences into account (e.g. many dot1dPorts associated to one ifIndex).
+    }
+    
+    
+    
+    @Test
+    @JUnitCollector(datacollectionType = "snmp", datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config-NMS8969IfIndex.xml")
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/dot1dBasePortTable.properties")
+    public void testCollectIndirectionIfIndex() throws Exception {
+        System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
+
+        m_collectionSpecification.initialize(m_collectionAgent);
+        m_resourceStorageDao.setRrdExtension(".jrb");
+
+        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
+        assertEquals("collection status", ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
+        m_collectionSpecification.release(m_collectionAgent);
+        assertNotNull(m_resourceStorageDao);
+
+        // we expect the two interfaces to be persisted
+
+        
+
+        Map<String, String> itf52 = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "GigabitEthernet1_0_52-b8af6729be61"));
+        assertEquals("GigabitEthernet1/0/52", itf52.get("ifDescr"));
+        Map<String, String> itf56 = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "Ten_GigabitEthernet1_1_1-b8af6729be62"));
+        assertEquals("Ten-GigabitEthernet1/1/1", itf56.get("ifDescr"));
+        // each interface should have an ifIndex String Property
+        // Not strictly necessary for ifIndex (we know this from the db) 
+        // but we should be more generic to adapt to other use cases
+        //assertEquals("52", itf52.get("ifIndex"));
+        //assertEquals("56", itf56.get("ifIndex"));
+
+        // we expect dot1dBasePort data  to be persisted
+        // thanks to sibling storage strategy they are persisted under ifIndex
+        // and not under dot1dBasePortIndex
+        Map<String, String> dot1dPort52 = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "dot1dBasePortEntry", "GigabitEthernet1_0_52-b8af6729be61"));
+        assertEquals("52", dot1dPort52.get("dot1dBasePortString"));
+        assertEquals("52", dot1dPort52.get("dot1dBasePortIfIdx"));
+        ResourcePath rpath53 = ResourcePath.get("snmp", "1", "dot1dBasePortEntry", "Ten_GigabitEthernet1_1_1-b8af6729be62");
+        assertNotNull(rpath53);
+        Map<String, String> dot1dPort53 = m_resourceStorageDao.getStringAttributes(rpath53);
+        assertEquals("53", dot1dPort53.get("dot1dBasePortString"));
+        assertEquals("56", dot1dPort53.get("dot1dBasePortIfIdx"));
+
+
+        // at this point we are able to display each ifIndex in the GUI (in resource graph)
+        // but it is hard to correlate them to other ifIndex data  as they are stored under the 
+        // name (ifDescr) of the interface...
+
+
+        // So as we would like to  be able to use the *name* (or ifDescr)  
+        // we have to relate this in the string.properties associated to each
+        // dot1dbasePort
+        assertEquals("GigabitEthernet1_0_52-b8af6729be61", dot1dPort52.get("associatedIfDescr"));
+        assertEquals("Ten_GigabitEthernet1_1_1-b8af6729be62", dot1dPort53.get("associatedIfDescr"));
+        //590096 182148
+        Set<OnmsAttribute> dot1dPort53Atts = m_resourceStorageDao.getAttributes(rpath53);
+        // Remark : Do we have to take multivalued backereferences into account (e.g. many dot1dPorts associated to one ifIndex).
+
+        
+    }
+    
+    
 
     /* (non-Javadoc)
      * @see org.opennms.core.test.TestContextAware#setTestContext(org.springframework.test.context.TestContext)
