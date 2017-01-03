@@ -88,7 +88,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @JUnitConfigurationEnvironment(systemProperties = {
         "org.opennms.rrd.storeByGroup=false",
 })
-@JUnitTemporaryDatabase(reuseDatabase = false, useExistingDatabase = "testjfcopennms")
+@JUnitTemporaryDatabase(reuseDatabase = false)
 // Relies on records created in @Before so we need a fresh database for each test
 public class SnmpCollectorWithPointerLikeMibProperties implements InitializingBean, TestContextAware {
 
