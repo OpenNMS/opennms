@@ -23,6 +23,7 @@
     <cm:default-properties>
         <cm:property name="elasticsearchCluster" value="opennms"/>
         <cm:property name="elasticsearchIp" value="127.0.0.1"/>
+        <cm:property name="logAllEvents" value="false"/>
         <cm:property name="logEventDescription" value="false"/>
         <cm:property name="cache_max_ttl" value="0"/> <!-- set to zero to disable TTL -->
         <cm:property name="cache_max_size" value="10000"/> <!-- set to zero to disable max size -->
@@ -46,6 +47,7 @@
   <bean id="eventListener" class="org.opennms.features.elasticsearch.eventforwarder.ForwardingEventListener" init-method="init" destroy-method="destroy">
     <property name="eventIpcManager" ref="eventIpcManager" />
     <property name="eventForwarder" ref="eventForwarder" />
+    <property name="logAllEvents" value="${logAllEvents}"/>
   </bean>
 
   <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>

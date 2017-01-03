@@ -1,13 +1,12 @@
 package org.opennms.features.elasticsearch.eventforwarder.internal;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Message;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import org.apache.camel.Exchange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This processor bean replaces the message body with the content of the elmapping.json file
@@ -22,7 +21,7 @@ import java.io.InputStreamReader;
  * Date: 7:03 PM 6/25/15
  */
 public class ElMappingLoader {
-    Logger logger = LoggerFactory.getLogger(ElMappingLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ElMappingLoader.class);
 
     public void process(Exchange exchange) {
         StringBuffer body=new StringBuffer();
@@ -34,7 +33,7 @@ public class ElMappingLoader {
                 body.append(l);
             }
         } catch (IOException e) {
-            logger.error("Cannot read elasticsearch mapping file", e);
+            LOG.error("Cannot read elasticsearch mapping file", e);
         }
 
         exchange.getOut().setBody(body.toString());
