@@ -33,8 +33,10 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
@@ -95,6 +97,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
+    private volatile Set<Integer> m_bridgecollectionsscheduled = new HashSet<Integer>();
     /**
      * <p>
      * Constructor for EnhancedLinkd.
@@ -180,11 +183,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         	LOG.info("getSnmpCollections: adding Bridge Discovery: {}",
                     node);
         	snmpcolls.add(new NodeDiscoveryBridge(this, node));
-        	
-                LOG.info("getSnmpCollections: adding Bridge Topology Discovery: {}",
-                         node);
-                 snmpcolls.add(new NodeDiscoveryBridgeTopology(this, node));
-
         }
 
         if (m_linkdConfig.useOspfDiscovery()) {
@@ -202,6 +200,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         return snmpcolls;
     }
 
+    public NodeDiscovery getNodeBridgeDiscoveryTopology(Node node) {
+        LOG.info("getBridgeDiscoveryTopology: adding Bridge Topology Discovery: {}",
+                node);
+        return new NodeDiscoveryBridgeTopology(this, node);
+    }
     /**
      * <p>
      * onStart
@@ -299,30 +302,41 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
 
     public boolean runSingleSnmpCollection(final int nodeId) {
+        boolean allready = true;
             final Node node = m_queryMgr.getSnmpNode(nodeId);
 
             for (final NodeDiscovery snmpColl : getSnmpCollections(node)) {
                 if (snmpColl instanceof NodeDiscoveryBridgeTopology)
                     continue;
+                if (!snmpColl.isReady()) {
+                    allready = false;
+                    continue;
+                }
                 snmpColl.setScheduler(m_scheduler);
                 snmpColl.run();
             }
 
-            return true;
+            return allready;
     }
 
     public boolean runTopologyDiscovery(final int nodeId) {
         final Node node = m_queryMgr.getSnmpNode(nodeId);
-
-        for (final NodeDiscovery snmpColl : getSnmpCollections(node)) {
-            if (snmpColl instanceof NodeDiscoveryBridgeTopology) {
-                snmpColl.setScheduler(m_scheduler);
-                snmpColl.run();
-                return true;
-            }
-        }
-        return false;
-}
+        final NodeDiscovery snmpColl = getNodeBridgeDiscoveryTopology(node);
+        snmpColl.setScheduler(m_scheduler);
+        snmpColl.run();
+        return true;
+    }
+    
+    public synchronized void scheduleBridgeTopologyDiscovery(final int nodeId) {
+        final Node node = m_queryMgr.getSnmpNode(nodeId);
+        if (node == null)
+        	return;
+        final NodeDiscovery snmpColl = getNodeBridgeDiscoveryTopology(node);
+        LOG.info("scheduleBridgeTopologyDiscovery: Scheduling {}",
+                    snmpColl.getInfo());
+        snmpColl.setScheduler(m_scheduler);
+        snmpColl.schedule();
+    }
 
     void wakeUpNodeCollection(int nodeid) {
 
@@ -360,6 +374,19 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         BroadcastDomain domain = m_queryMgr.getBridgeTopologyBroadcastDomain(nodeid);
         LOG.debug("deleteNode: {}, found broadcast domain: nodes {}, macs {}", nodeid, domain.getBridgeNodesOnDomain(), domain.getMacsOnDomain());
         // must be calculated the topology for nodeid...
+        NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(this,getNode(nodeid));
+        ndbt.setDomain(domain);
+        domain.getLock(this);
+        LOG.info("deleteNode: node: {}, start: merging topology for domain",nodeid);
+        ndbt.clearTopologyForBridge(domain.getBridge(nodeid));
+        LOG.info("deleteNode: node: {}, end: merging topology for domain",nodeid);
+        LOG.info("deleteNode: node: {}, start: save topology for domain",nodeid);
+        m_queryMgr.store(domain,now);
+        m_queryMgr.save(ndbt.getDomain().getRootBridgeId(),ndbt.getRootBridgeBFT());
+        LOG.info("deleteNode: node: {}, end: save topology for domain",nodeid);
+        domain.removeBridge(nodeid);
+        domain.releaseLock(this);
+        
         Node node = removeNode(nodeid);
 
         if (node == null) {
@@ -375,25 +402,18 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                     LOG.warn("deleteNode: found null ReadyRunnable");
                     continue;
                 } else {
-                    if (collection instanceof NodeDiscoveryBridgeTopology) {
-                        NodeDiscoveryBridgeTopology ndbt= (NodeDiscoveryBridgeTopology) collection;
-                        ndbt.setDomain(domain);
-                        domain.getLock(this);
-                        LOG.info("deleteNode: node: {}, start: merging topology for domain",nodeid);
-                        ndbt.clearTopologyForBridge(domain.getBridge(nodeid));
-                        LOG.info("deleteNode: node: {}, end: merging topology for domain",nodeid);
-                        LOG.info("deleteNode: node: {}, start: save topology for domain",nodeid);
-                        m_queryMgr.store(domain,now);
-                        m_queryMgr.save(ndbt.getDomain().getRootBridgeId(),ndbt.getRootBridgeBFT());
-                        LOG.info("deleteNode: node: {}, end: save topology for domain",nodeid);
-                        domain.removeBridge(nodeid);
-                        domain.releaseLock(this);
-                    }
                     rr.unschedule();
                 }
 
             }
+            NodeDiscovery topology = getNodeBridgeDiscoveryTopology(node);
+            ReadyRunnable rr = getReadyRunnable(topology);
 
+            if (rr == null) {
+                LOG.warn("deleteNode: found null ReadyRunnable");
+            } else {
+                rr.unschedule();
+            }
         }
         m_queryMgr.delete(nodeid);
         m_queryMgr.cleanBroadcastDomains();
@@ -587,4 +607,23 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         return m_locationAwareSnmpClient;
     }
     
+    public int getMaxbft() {
+    	return m_linkdConfig.getMaxBft();
+    }
+    
+    public boolean collectBft(int nodeid) {
+    	if (getQueryManager().getUpdateBftMap().size()+m_bridgecollectionsscheduled.size() >= m_linkdConfig.getMaxBft() )
+    		return false;
+    	synchronized (m_bridgecollectionsscheduled) {
+        	m_bridgecollectionsscheduled.add(nodeid);
+		}
+    	return true;
+    }
+    
+    public synchronized void collectedBft(int nodeid) {
+    	synchronized (m_bridgecollectionsscheduled) {
+        	m_bridgecollectionsscheduled.remove(nodeid);
+		}
+    }
+
 }

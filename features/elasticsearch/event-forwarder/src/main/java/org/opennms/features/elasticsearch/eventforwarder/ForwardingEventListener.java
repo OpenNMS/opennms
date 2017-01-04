@@ -51,6 +51,7 @@ public class ForwardingEventListener implements EventListener {
 	private volatile EventIpcManager eventIpcManager;
 	private volatile NodeDao nodeDao;
 	private volatile TransactionTemplate transactionTemplate;
+	private volatile boolean logAllEvents = false;
 
 	public CamelEventForwarder getEventForwarder() {
 		return eventForwarder;
@@ -82,6 +83,14 @@ public class ForwardingEventListener implements EventListener {
 
 	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
 		this.transactionTemplate = transactionTemplate;
+	}
+
+	public boolean isLogAllEvents() {
+		return logAllEvents;
+	}
+
+	public void setLogAllEvents(boolean logAllEvents) {
+		this.logAllEvents = logAllEvents;
 	}
 
 	/**
@@ -121,7 +130,7 @@ public class ForwardingEventListener implements EventListener {
 	@Override
 	public void onEvent(final Event event) {
 		// only process events persisted to database
-		if(event.getDbid()!=null && event.getDbid()!=0) {
+		if(logAllEvents || (event.getDbid() != null && event.getDbid() > 0)) {
 			// Send the event to the event forwarder
 			eventForwarder.sendNow(event);
 		}
