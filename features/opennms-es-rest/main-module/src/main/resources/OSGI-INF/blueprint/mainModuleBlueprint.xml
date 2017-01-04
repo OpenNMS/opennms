@@ -29,6 +29,7 @@
       <cm:property name="archiveOldAlarmValues" value="true" />
       <cm:property name="archiveNewAlarmValues" value="true" />
       <cm:property name="maxQueueLength" value="1000" />
+      <cm:property name="blockWhenFull" value="true" />
       <cm:property name="cache_max_ttl" value="0" /> <!-- set to zero to disable TTL -->
       <cm:property name="cache_max_size" value="10000" /> <!-- set to zero to disable max size -->
     </cm:default-properties>
@@ -52,6 +53,8 @@
     <property name="eventToIndex" ref="eventToIndex" />
     <!-- sets length of event queue for forwarding to ES -->
     <property name="maxQueueLength" value="${maxQueueLength}" />
+    <!-- specify whether the queue blocks or discards events when the queue is full -->
+    <property name="blockWhenFull" value="${blockWhenFull}" />
     <property name="elasticSearchInitialiser" ref="elasticSearchInitialiser" />
   </bean>
 
