@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -48,21 +49,22 @@ public class OspfIpAddrTableGetter extends SnmpGetter {
 	    super(peer, client, location);
 	}
 
-	public OspfElement get(OspfElement element) {
-		List<SnmpValue> val = get(element.getOspfRouterId());
-                if (val != null && val.size() == 2 ) {
-                    if (!val.get(0).isNull() && val.get(0).isNumeric() )
-				element.setOspfRouterIdIfindex(val.get(0).toInt());
-                    if (!val.get(1).isNull() && !val.get(1).isError()) {
-				try {
-					element.setOspfRouterIdNetmask(val.get(1).toInetAddress());
-				} catch (IllegalArgumentException e) {
-					
-				}
-			}
-		}
-		return element;
-	}
+    public OspfElement get(OspfElement element) {
+        element.setOspfRouterIdNetmask(InetAddressUtils.addr("255.255.255.255"));
+        List<SnmpValue> val = get(element.getOspfRouterId());
+        if (val != null && val.size() == 2) {
+            if (!val.get(0).isNull() && val.get(0).isNumeric())
+                element.setOspfRouterIdIfindex(val.get(0).toInt());
+            if (!val.get(1).isNull() && !val.get(1).isError()) {
+                try {
+                    element.setOspfRouterIdNetmask(val.get(1).toInetAddress());
+                } catch (IllegalArgumentException e) {
+
+                }
+            }
+        }
+        return element;
+    }
 	
 	public OspfLink get(OspfLink link) {
 		

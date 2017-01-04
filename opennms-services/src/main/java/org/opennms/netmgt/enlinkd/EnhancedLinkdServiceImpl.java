@@ -623,7 +623,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public Set<BroadcastDomain> getAllBroadcastDomains() {
+    public synchronized Set<BroadcastDomain> getAllBroadcastDomains() {
         return m_bridgeTopologyDao.getAll();
     }
     
