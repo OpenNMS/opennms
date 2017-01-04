@@ -41,9 +41,6 @@
                             <features>
                                 <feature>opennms-syslogd-listener-javanet</feature>
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
-                                <feature>opennms-syslogd-listener-nio</feature>
-                                <feature>opennms-syslogd-handler-minion</feature>
-                                <feature>opennms-syslogd-handler-kafka</feature>
                                 <feature>opennms-trapd-listener</feature>
                                 <feature>minion-shell</feature>
                                 <feature>minion-heartbeat-producer</feature>

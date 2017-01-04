@@ -16,26 +16,6 @@
   <context:annotation-config />
   <tx:annotation-driven/>
 
-  <bean id="executorFactoryJava" class="org.opennms.core.concurrent.ExecutorFactoryJavaImpl"/>
-
-  <bean id="executorFactoryCassandraSEP" class="org.opennms.core.concurrent.cassandra.ExecutorFactoryCassandraSEPImpl"/>
-
-  <bean id="syslogReceiverNio" class="org.opennms.netmgt.syslogd.SyslogReceiverNioThreadPoolImpl">
-    <constructor-arg ref="syslogdConfigFactory"/>
-    <property name="distPollerDao" ref="distPollerDao"/>
-  </bean>
-
-  <bean id="syslogReceiverNioDisruptor" class="org.opennms.netmgt.syslogd.SyslogReceiverNioDisruptorImpl">
-    <constructor-arg ref="syslogdConfigFactory"/>
-    <property name="distPollerDao" ref="distPollerDao"/>
-  </bean>
-
-  <bean id="syslogReceiverNioDisruptorSEP" class="org.opennms.netmgt.syslogd.SyslogReceiverNioDisruptorImpl">
-    <constructor-arg ref="syslogdConfigFactory"/>
-    <property name="distPollerDao" ref="distPollerDao"/>
-    <property name="executorFactory" ref="executorFactoryCassandraSEP"/>
-  </bean>
-
   <bean id="syslogReceiverJavaNet" class="org.opennms.netmgt.syslogd.SyslogReceiverJavaNetImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
     <property name="distPollerDao" ref="distPollerDao"/>

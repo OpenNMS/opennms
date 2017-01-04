@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.syslogd;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
@@ -35,48 +37,36 @@ import java.util.Properties;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.minion.core.api.MinionIdentity;
-import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
-public class SyslogdReceiverJavaNetIT extends CamelBlueprintTest {
+public class SyslogdReceiverCamelNettyBlueprintIT extends CamelBlueprintTest {
 
-	private static final String LOCATION = "RDU";
+    @SuppressWarnings("rawtypes")
+    @Override
+    protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
+        // Register any mock OSGi services here
+        final MessageDispatcherFactory messageProducerFactory = mock(MessageDispatcherFactory.class);
+        final MinionIdentity minionIdentity = mock(MinionIdentity.class);
+        services.put(MessageDispatcherFactory.class.getName(),
+                new KeyValueHolder<Object, Dictionary>(messageProducerFactory, new Properties()));
+        services.put(MinionIdentity.class.getName(),
+                new KeyValueHolder<Object, Dictionary>(minionIdentity, new Properties()));
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		// Register any mock OSGi services here
-		services.put(SyslogConnectionHandler.class.getName(), new KeyValueHolder<Object, Dictionary>(new SyslogConnectionHandler() {
-			@Override
-			public void handleSyslogConnection(SyslogConnection message) {
-			}
-		}, new Properties()));
+    // The location of our Blueprint XML files to be used for testing
+    @Override
+    protected String getBlueprintDescriptor() {
+        return "file:blueprint-syslog-listener-camel-netty.xml,blueprint-empty-camel-context.xml";
+    }
 
-		services.put( MinionIdentity.class.getName(), new KeyValueHolder<Object, Dictionary>( new MinionIdentity() {
-			@Override
-			public String getId() {
-				return DistPollerDao.DEFAULT_DIST_POLLER_ID;
-			}
-			@Override
-			public String getLocation() {
-				return LOCATION;
-			}
-		}, new Properties()));
-	}
-
-	// The location of our Blueprint XML files to be used for testing
-	@Override
-	protected String getBlueprintDescriptor() {
-		return "file:blueprint-syslog-listener-javanet.xml,blueprint-empty-camel-context.xml";
-	}
-
-	@Test
-	public void testSyslogd() throws Exception {
-		// TODO: Perform integration testing
-	}
+    @Test
+    public void testSyslogd() throws Exception {
+        // TODO: Perform integration testing
+    }
 }

@@ -98,7 +98,7 @@ public class SyslogClient {
         this(ident, logopt, facility, InetAddressUtils.getLocalHostAddress());
     }
 
-    public SyslogClient(final String ident, final int logopt, final int facility, final InetAddress address) throws UnknownHostException {
+    public SyslogClient(final String ident, final int logopt, final int facility, final InetAddress address) {
         if (ident == null) {
             this.ident = Thread.currentThread().getName();
         } else {
