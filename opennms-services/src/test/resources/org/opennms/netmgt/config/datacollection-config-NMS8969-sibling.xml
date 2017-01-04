@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <!--  
-	Test configuration for PointerLike indexes undirection
-	case 1: collect values through indirection
+	Test configuration for PointerLike indexes indirection
+	case 2: collect values through indirection and use the collected value
+	        as name sibling-column
 -->
 <datacollection-config rrdRepository="%rrdRepository%">
     <snmp-collection name="default" snmpStorageFlag="select">
@@ -21,7 +22,7 @@
                       resourceLabel="dot1 ${index} (itf ${dot1dBasePortIfIdx} / b: ${dot1dBasePortString})">
             <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
             <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-                <parameter key="sibling-column-name" value="dot1dBasePortIfIdx"/>
+                <parameter key="sibling-column-name" value="associatedIfDescr"/>
                 
             </storageStrategy>
         </resourceType>
