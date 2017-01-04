@@ -39,6 +39,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
+import java.util.Map.Entry;
+import java.util.concurrent.ThreadPoolExecutor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,27 +59,32 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 */
 	public Map<Long,BlockingQueue<ReadyRunnable>> m_queues;
 
-	/**
-	 * The total number of elements currently scheduled. This should be the sum
-	 * of all the elements in the various queues.
-	 */
-	public int m_scheduled;
+    /**
+     * The total number of elements currently scheduled. This should be the sum
+     * of all the elements in the various queues.
+     */
+    private volatile int m_scheduled;
 
-	/**
-	 * The pool of threads that are used to executed the runnable instances
-	 * scheduled by the class' instance.
-	 */
-	public ExecutorService m_runner;
+    /**
+     * The pool of threads that are used to executed the runnable instances
+     * scheduled by the class' instance.
+     */
+    private final ExecutorService m_runner;
 
-	/**
-	 * The status for this fiber.
-	 */
-	public int m_status;
+    /**
+     * The status for this fiber.
+     */
+    private volatile int m_status;
 
-	/**
-	 * The worker thread that executes this instance.
-	 */
-	private Thread m_worker;
+    /**
+     * The worker thread that executes this instance.
+     */
+    private volatile Thread m_worker;
+
+    /**
+     * Used to keep track of the number of tasks that have been executed.
+     */
+    private volatile long m_numTasksExecuted = 0;
 
 	/**
 	 * Constructs a new instance of the scheduler. The maximum number of
@@ -93,7 +101,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		m_status = START_PENDING;
 		m_runner = Executors.newFixedThreadPool(
 			maxSize,
-			new LogPreservingThreadFactory(getClass().getSimpleName(), maxSize)
+			new LogPreservingThreadFactory(parent, maxSize)
 		);
 		m_queues = new ConcurrentSkipListMap<Long,BlockingQueue<ReadyRunnable>>();
 		m_scheduled = 0;
@@ -549,8 +557,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
                 // get an iterator so that we can cycle
                 // through the queue elements.
                 //
-                Iterator<Long> iter = m_queues.keySet().iterator();
-                while (iter.hasNext()) {
+                for (Entry<Long, BlockingQueue<ReadyRunnable>> entry : m_queues.entrySet()) {
                     // Peak for Runnable objects until
                     // there are no more ready runnables
                     //
@@ -558,7 +565,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
                     // if we didn't add a count then it would
                     // be possible to starve other queues.
                     //
-                    Long key = iter.next();
+                    Long key = entry.getKey();
                     BlockingQueue<ReadyRunnable> in = m_queues.get(key);
                     if (in == null || in.isEmpty()) {
                         continue;
@@ -575,15 +582,25 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
                                 in.take();
 
                                 if (readyRun.isReady()) {
-                                    LOG.debug("run: found ready runnable {}",
+                                    LOG.debug("run: runnable {}, executing",
                                               readyRun.getInfo());
 
                                     // Add runnable to the execution queue
                                     m_runner.execute(readyRun);
                                     ++runned;
+                                    
+                                    // Increment the execution counter
+                                    ++m_numTasksExecuted;
+
+                                    // Thread Pool Statistics
+                                    if (m_runner instanceof ThreadPoolExecutor) {
+                                        ThreadPoolExecutor e = (ThreadPoolExecutor) m_runner;
+                                        String ratio = String.format("%.3f", e.getTaskCount() > 0 ? new Double(e.getCompletedTaskCount())/new Double(e.getTaskCount()) : 0);
+                                        LOG.debug("thread pool statistics: activeCount={}, taskCount={}, completedTaskCount={}, completedRatio={}, poolSize={}",
+                                            e.getActiveCount(), e.getTaskCount(), e.getCompletedTaskCount(), ratio, e.getPoolSize());
+                                    }
+
                                 } else {
-                                    LOG.debug("run: not ready ready runnable {}",
-                                              readyRun.getInfo());
                                     in.add(readyRun);
                                 }
                             }
@@ -618,5 +635,10 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
         }
 
     } // end run
+    
+    public long getNumTasksExecuted() {
+        return m_numTasksExecuted;
+    }
+
 
 }
