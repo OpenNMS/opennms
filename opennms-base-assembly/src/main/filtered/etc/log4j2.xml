@@ -99,6 +99,9 @@
     <logger name="org.apache.bsf" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
     </logger>
+    <logger name="org.apache.camel.component.jms" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
     <logger name="org.apache.commons" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>

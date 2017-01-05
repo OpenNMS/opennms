@@ -11,6 +11,10 @@
     <packaging>pom</packaging>
     <name>OpenNMS :: Features :: Minion :: Default Repository</name>
 
+    <properties>
+        <minionHawtioVersion>2.0.0</minionHawtioVersion>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -35,6 +39,8 @@
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
                                 <!-- Add Minion features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</descriptor>
+                                <!-- Additional tools -->
+                                <descriptor>mvn:io.hawt/hawtio-karaf/${minionHawtioVersion}/xml/features</descriptor>
                             </descriptors>
                             <!-- To ensure that all JAR files for a feature 
                                 are included in the repository tar.gz file, add the feature to this list. -->
@@ -53,6 +59,7 @@
                                 <feature>minion-provisiond-detectors</feature>
                                 <feature>minion-poller</feature>
                                 <feature>minion-icmp-proxy</feature>
+                                <feature>hawtio-offline</feature>
                             </features>
                             <repository>target/maven-repo</repository>
                         </configuration>

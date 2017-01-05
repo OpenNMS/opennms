@@ -80,8 +80,7 @@ public class SnmpProxyRpcModuleTest {
 
         // Now "execute" the request and verify that the resulting
         // future fails with an ExecutionException
-        SnmpProxyRpcModule rpc = new SnmpProxyRpcModule();
-        CompletableFuture<SnmpMultiResponseDTO> future = rpc.execute(request);
+        CompletableFuture<SnmpMultiResponseDTO> future = SnmpProxyRpcModule.INSTANCE.execute(request);
         try {
             future.get();
             fail("did not throw!");

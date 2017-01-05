@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.ipc.sink.api.Message;
 
-public abstract class AbstractXmlSinkModule<T extends Message> implements SinkModule<T> {
+public abstract class AbstractXmlSinkModule<S extends Message, T extends Message> implements SinkModule<S, T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractXmlSinkModule.class);
 
