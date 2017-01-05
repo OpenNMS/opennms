@@ -1,6 +1,46 @@
 [[release-18-changelog]]
 === Changelog
 
+[releasenotes-changelog-18.0.3]
+==== Release 18.0.3
+
+Release 18.0.3 is the latest stable release of OpenNMS.  It contains a few bug fixes and a enhancements, and a fix for a discovery/provisioning regression that can cause duplicate nodes.
+
+For a high-level overview of what's changed in OpenNMS 18, see <<whatsnew-18.adoc#releasenotes-18,What's New in OpenNMS 18>>.
+
+The codename for 18.0.3 is _link:https://en.wikipedia.org/wiki/Dugong[Dugong]_.
+
+===== Regression: Duplicate Nodes and Default Foreign Source
+
+Due to a bug in the new Discovery daemon introduced in 18.0.0 (https://issues.opennms.org/browse/NMS-8682[NMS-8682]), OpenNMS would create (identical) duplicate nodes when discovering using the default foreign source.
+
+You can get the list of duplicate nodes by running the following query in PostgreSQL (`psql -U opennms`):
+
+[source,sql]
+.find_duplicate_nodes.sql
+----
+SELECT "ID"
+  FROM (SELECT nodeid AS "ID",
+               ROW_NUMBER() OVER (PARTITION BY nodelabel ORDER BY nodeid) AS "row_num"
+          FROM node) AS foo
+WHERE foo."row_num" > 1);
+----
+
+If you are satisfied that the nodes are safe to delete, the next step is to actually delete them.  First, (https://wiki.opennms.org/wiki/Backup_and_Restore#Backing_Up_the_Database)[back up your database].  Then, run the following query in PostgreSQL:
+
+[source,sql]
+.delete_duplicate_nodes.sql
+----
+DELETE
+  FROM node
+ WHERE nodeid
+    IN (SELECT "ID"
+          FROM (SELECT nodeid AS "ID",
+                       ROW_NUMBER() OVER (PARTITION BY nodelabel ORDER BY nodeid) AS "row_num"
+                  FROM node) AS foo
+ WHERE foo."row_num" > 1);
+----
+
 [releasenotes-changelog-18.0.2]
 ==== Release 18.0.2
 
