@@ -21,6 +21,7 @@
 			<cm:property name="zookeeperport" value="2181"/>
 			<cm:property name="groupId" value="syslogconsumer"/>
 			<cm:property name="consumerstreams" value="1"/>
+			<cm:property name="timeOut" value="15" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -40,7 +41,7 @@
 
 		<!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
 	<bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
-		<property name="timeout" value="15"/>
+		<property name="timeout" value="${timeOut}"/>
     </bean>
 
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
