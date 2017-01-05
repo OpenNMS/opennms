@@ -107,6 +107,8 @@ public class EventToIndex {
 
 	private boolean logEventDescription=false;
 
+	private boolean logAllEvents=false;
+
 	private boolean archiveRawEvents=true;
 
 	private boolean archiveAlarms=true;
@@ -139,6 +141,14 @@ public class EventToIndex {
 
 	public void setLogEventDescription(boolean logEventDescription) {
 		this.logEventDescription = logEventDescription;
+	}
+
+	public boolean isLogAllEvents() {
+		return logAllEvents;
+	}
+
+	public void setLogAllEvents(boolean logAllEvents) {
+		this.logAllEvents = logAllEvents;
 	}
 
 	public NodeCache getNodeCache() {
@@ -379,7 +389,7 @@ public class EventToIndex {
 
 				if(archiveRawEvents){
 					// only send events to ES which are persisted to database
-					if(event.getDbid()!=null && event.getDbid()!=0) {
+					if(logAllEvents || (event.getDbid()!=null && event.getDbid()!=0)) {
 						if (LOG.isDebugEnabled()) LOG.debug("Sending Event to ES:"+event.toString());
 						// Send the event to the event forwarder
 						eventIndex = populateEventIndexBodyFromEvent(event, EVENT_INDEX_NAME, EVENT_INDEX_TYPE);

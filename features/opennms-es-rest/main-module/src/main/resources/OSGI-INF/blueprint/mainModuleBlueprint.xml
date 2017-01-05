@@ -23,6 +23,7 @@
       <cm:property name="esusername" value="" />
       <cm:property name="espassword" value="" />
       <cm:property name="logEventDescription" value="true" />
+      <cm:property name="logAllEvents" value="false" />
       <cm:property name="archiveRawEvents" value="true" />
       <cm:property name="archiveAlarms" value="true" />
       <cm:property name="archiveAlarmChangeEvents" value="true" />
@@ -78,6 +79,7 @@
     <property name="nodeCache" ref="nodeDataCache" />
     <property name="indexNameFunction" ref="indexNameFunction" />
     <property name="logEventDescription" value="${logEventDescription}" />
+    <property name="logAllEvents" value="${logAllEvents}" />
     <property name="archiveRawEvents" value="${archiveRawEvents}" />
     <property name="archiveAlarms" value="${archiveAlarms}" />
     <property name="archiveAlarmChangeEvents" value="${archiveAlarmChangeEvents}" />
