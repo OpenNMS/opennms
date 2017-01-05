@@ -133,6 +133,8 @@ public abstract class TrapInformation {
 
     public abstract TrapIdentity getTrapIdentity();
 
+    protected abstract Integer getRequestId();
+
     public abstract SnmpVarBindDTO getSnmpVarBindDTO(int i);
 
 }
