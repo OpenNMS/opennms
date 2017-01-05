@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -147,6 +147,8 @@ public abstract class TrapInformation implements TrapNotification {
 
     protected abstract TrapIdentity getTrapIdentity();
 
+    protected abstract Integer getRequestId();
+
     protected static TrapProcessor processTrap(TrapInformation trap, TrapProcessor trapProcessor) {
         
         trap.validate();
@@ -166,9 +168,15 @@ public abstract class TrapInformation implements TrapNotification {
     
         trapProcessor.setTrapIdentity(trap.getTrapIdentity());
         
-        for (int i = 0; i < trap.getPduLength(); i++) {
-            trap.processVarBindAt(i);
-        } // end for loop
+        int i = 0;
+        try {
+            for (i = 0; i < trap.getPduLength(); i++) {
+                trap.processVarBindAt(i);
+            } // end for loop
+        } catch (Throwable t) {
+            LOG.error("Caught {} while processing varbind {} of trap; rethrowing. Trap info: {}. Stack trace: {}", t.getClass(), i+1, trap.toString(), t.getStackTrace());
+            throw t;
+        }
     
         return trapProcessor;
     }
