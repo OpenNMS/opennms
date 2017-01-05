@@ -33,8 +33,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class AggregateTracker extends CollectionTracker {
-
-    private static class ChildTrackerPduBuilder extends PduBuilder {
+    private static final class ChildTrackerPduBuilder extends PduBuilder {
         private List<SnmpObjId> m_oids = new ArrayList<SnmpObjId>();
         private int m_nonRepeaters = 0;
         private int m_maxRepititions = 0;
@@ -141,18 +140,17 @@ public class AggregateTracker extends CollectionTracker {
         }
     }
 
-    private class ChildTrackerResponseProcessor implements ResponseProcessor {
+    private static class ChildTrackerResponseProcessor implements ResponseProcessor {
+        private final CollectionTracker m_tracker;
         private final int m_repeaters;
-    
         private final PduBuilder m_pduBuilder;
-    
         private final int m_nonRepeaters;
-    
         private final List<ChildTrackerPduBuilder> m_childPduBuilders;
         
         private int m_currResponseIndex = 0;
         
-        public ChildTrackerResponseProcessor(PduBuilder pduBuilder, List<ChildTrackerPduBuilder> builders, int nonRepeaters, int repeaters) {
+        public ChildTrackerResponseProcessor(final CollectionTracker tracker, final PduBuilder pduBuilder, final List<ChildTrackerPduBuilder> builders, final int nonRepeaters, final int repeaters) {
+            m_tracker = tracker;
             m_repeaters = repeaters;
             m_pduBuilder = pduBuilder;
             m_nonRepeaters = nonRepeaters;
@@ -197,23 +195,25 @@ public class AggregateTracker extends CollectionTracker {
     
         @Override
         public boolean processErrors(int errorStatus, int errorIndex) {
-            if (errorStatus == TOO_BIG_ERR) {
+            //LOG.trace("processErrors: errorStatus={}, errorIndex={}", errorStatus, errorIndex);;
+
+            final ErrorStatus status = ErrorStatus.fromStatus(errorStatus);
+
+            // handle special cases first
+            if (status == ErrorStatus.TOO_BIG) {
                 int maxVarsPerPdu = m_pduBuilder.getMaxVarsPerPdu();
                 if (maxVarsPerPdu <= 1) {
                     throw new IllegalArgumentException("Unable to handle tooBigError when maxVarsPerPdu = "+maxVarsPerPdu);
                 }
                 m_pduBuilder.setMaxVarsPerPdu(maxVarsPerPdu/2);
-                reportTooBigErr("Reducing maxVarsPerPdu for this request to "+m_pduBuilder.getMaxVarsPerPdu());
+                m_tracker.reportTooBigErr("Reducing maxVarsPerPDU for this request.");
                 return true;
-            } else if (errorStatus == GEN_ERR) {
-                return processChildError(errorStatus, errorIndex);
-            } else if (errorStatus == NO_SUCH_NAME_ERR) {
-                return processChildError(errorStatus, errorIndex);
-            } else if (errorStatus != NO_ERR){
-                throw new IllegalArgumentException("Unrecognized errorStatus "+errorStatus);
+            } else if (status.isFatal()) {
+                final ErrorStatusException ex = new ErrorStatusException(status);
+                m_tracker.reportFatalErr(ex);
+                throw ex;
             } else {
-                // Continue on.. no need to retry
-                return false;
+                return processChildError(errorStatus, errorIndex);
             }
         }
     }
@@ -317,6 +317,6 @@ public class AggregateTracker extends CollectionTracker {
         
         // construct a response processor that tracks the changes and informs the response processors
         // for the child trackers
-        return new ChildTrackerResponseProcessor(parentBuilder, builders, nonRepeaters, repeaters);
+        return new ChildTrackerResponseProcessor(this, parentBuilder, builders, nonRepeaters, repeaters);
     }
 }

@@ -52,7 +52,8 @@ public class ServiceBasedStrategyResolver implements StrategyResolver {
 	public void onBind(SnmpStrategy strategy, Map<String, String> props) {
 		String key = props.get("implementation");
 		if (key == null) {
-			LOG.error("SnmpStrategy class published as service with out 'implementation' key.  Ignoring.");
+			LOG.error("SnmpStrategy class '{}' published as service with out 'implementation' key.  Ignoring.", strategy.getClass());
+			return;
 		}
 		m_strategies.put(key, strategy);
 	}

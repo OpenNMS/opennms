@@ -31,6 +31,8 @@ package org.opennms.netmgt.enlinkd.snmp;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.ErrorStatus;
+import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
@@ -129,6 +131,16 @@ public final class IsisSysObjectGroupTracker extends AggregateTracker {
     @Override
     protected void reportNoSuchNameErr(String msg) {
         LOG.info("Error retrieving isisSysObject: {}", msg);
+    }
+
+    @Override
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        LOG.warn("Error retrieving isisSysObject: {}", ex.getMessage(), ex);
+    }
+
+    @Override
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        LOG.info("Non-fatal error ({}) retrieving isisSysObject: {}", status, status.retry()? "Retrying." : "Giving up.");
     }
 
     public IsIsElement getIsisElement() {
