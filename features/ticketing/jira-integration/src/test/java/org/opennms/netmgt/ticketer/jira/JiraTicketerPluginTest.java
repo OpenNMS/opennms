@@ -117,10 +117,8 @@ public class JiraTicketerPluginTest {
         //assertEquals(ticket.getDetails(), newTicket.getDetails());
     }
 
-    /**
-     * This test relies on issues.opennms.org being accessible.
-     */
     @Test
+    @Ignore("This test relies on issues.opennms.org being accessible.")
     public void testGet() {
 
         //This may need to be changed ;-)

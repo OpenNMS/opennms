@@ -74,7 +74,7 @@ public class JnaPingTest extends TestCase {
     }
 
     private boolean isRunTest() {
-        return Boolean.getBoolean(getRunTestProperty());
+        return Boolean.parseBoolean(System.getProperty(getRunTestProperty()));
     }
 
     private String getRunTestProperty() {
@@ -92,8 +92,10 @@ public class JnaPingTest extends TestCase {
         // 192.0.2.0/24 is reserved for documentation purposes
         m_badHost  = InetAddress.getByName("192.0.2.123");
         m_ipv6goodHost = InetAddress.getByName("::1");
-        // 2001:db8 prefix is reserved for documentation purposes suffix is 'BadAddr!' as ascii
-        m_ipv6badHost = InetAddress.getByName("2001:0db8::4261:6441:6464:7221");
+        // Originally we used the 2001:db8 prefix, which is reserved for documentation purposes
+        // (suffix is 'BadAddr!' as ascii), but some networks actually return "no route to host"
+        // rather than just timing out, which throws off these tests.
+        m_ipv6badHost = InetAddress.getByName("2600:5800:f2a2:ffff:ffff:ffff:dead:beef");
         assertEquals(16, m_ipv6badHost.getAddress().length);
         
     }

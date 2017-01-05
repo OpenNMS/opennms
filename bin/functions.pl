@@ -85,15 +85,23 @@ delete $ENV{'M2_HOME'};
 # maven options
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	if (defined $TESTS) {
-		$MAVEN_OPTS = "-Xmx2048m -XX:ReservedCodeCacheSize=512m";
-	} else {
-		$MAVEN_OPTS = "-Xmx1536m -XX:ReservedCodeCacheSize=512m";
-	}
+	$MAVEN_OPTS = "-Xmx2048m -XX:ReservedCodeCacheSize=512m";
 }
 
-if (not $MAVEN_OPTS =~ /PermSize/) {
-	$MAVEN_OPTS .= " -XX:PermSize=512m -XX:MaxPermSize=1g";
+if (not $MAVEN_OPTS =~ /\:PermSize/) {
+	$MAVEN_OPTS .= " -XX:PermSize=512m";
+}
+ 
+if (not $MAVEN_OPTS =~ /MaxPermSize/) {
+	$MAVEN_OPTS .= " -XX:MaxPermSize=1g";
+}
+ 
+if (not $MAVEN_OPTS =~ /-Xmx/) {
+	$MAVEN_OPTS .= "-Xmx2048m";
+}
+ 
+if (not $MAVEN_OPTS =~ /ReservedCodeCacheSize/) {
+	$MAVEN_OPTS .= " -XX:ReservedCodeCacheSize=512m";
 }
 
 if (not $MAVEN_OPTS =~ /TieredCompilation/) {
