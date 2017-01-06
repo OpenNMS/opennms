@@ -46,6 +46,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.rpc.api.RemoteExecutionException;
+import org.opennms.core.rpc.api.RequestRejectedException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.core.rpc.echo.EchoClient;
 import org.opennms.core.rpc.echo.EchoRequest;
@@ -92,6 +93,10 @@ public class EchoRpcIT {
 
     @Autowired
     private EchoClient echoClient;
+
+    @Autowired
+    @Qualifier("rpcClient")
+    private CamelContext rpcClientContext;
 
     @Test(timeout=60000)
     public void canExecuteRpcViaCurrentLocation() throws InterruptedException, ExecutionException {
@@ -171,6 +176,28 @@ public class EchoRpcIT {
 
         routeManager.unbind(echoRpcModule);
         context.stop();
+    }
+
+    /**
+     * Verifies that the future fails with a {@code RequestRejectedException} when
+     * when the client context is stopped.
+     */
+    @Test(timeout=60000)
+    public void futureFailsWithRequestRejectedExceptionWhenClientContextIsStopped() throws Exception {
+        assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
+
+        // Stop the client context, this will happen when OpenNMS is shutting down
+        rpcClientContext.stop();
+
+        // Now issue an RPC
+        EchoRequest request = new EchoRequest("Helló");
+        request.setLocation(REMOTE_LOCATION_NAME);
+        try {
+            echoClient.execute(request).get();
+            fail();
+        } catch (ExecutionException e) {
+            assertEquals(RequestRejectedException.class, e.getCause().getClass());
+        }
     }
 
     @Test(timeout=60000)
