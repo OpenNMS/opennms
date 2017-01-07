@@ -36,10 +36,12 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeTimedOutException;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.component.direct.DirectConsumerNotAvailableException;
 import org.apache.camel.spi.Synchronization;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
 import org.opennms.core.rpc.api.RemoteExecutionException;
+import org.opennms.core.rpc.api.RequestRejectedException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
@@ -97,10 +99,14 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                     @Override
                     public void onFailure(Exchange exchange) {
                         try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
-                            // Wrap timeout exceptions within a RequestTimedOutException
                             final ExchangeTimedOutException timeoutException = exchange.getException(ExchangeTimedOutException.class);
+                            final DirectConsumerNotAvailableException directConsumerNotAvailableException = exchange.getException(DirectConsumerNotAvailableException.class);
                             if (timeoutException != null) {
+                                // Wrap timeout exceptions within a RequestTimedOutException
                                 future.completeExceptionally(new RequestTimedOutException(exchange.getException()));
+                            } else if (directConsumerNotAvailableException != null) {
+                                // Wrap consumer not available exceptions with a RequestRejectedException
+                                future.completeExceptionally(new RequestRejectedException(exchange.getException()));
                             } else {
                                 future.completeExceptionally(exchange.getException());
                             }
