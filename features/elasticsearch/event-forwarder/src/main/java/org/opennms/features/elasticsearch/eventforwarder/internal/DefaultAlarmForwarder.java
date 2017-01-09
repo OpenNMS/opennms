@@ -6,7 +6,7 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultAlarmForwarder extends DefaultDispatcher {
+public class DefaultAlarmForwarder extends DefaultDispatcher implements CamelAlarmForwarder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultAlarmForwarder.class);
 
@@ -17,6 +17,7 @@ public class DefaultAlarmForwarder extends DefaultDispatcher {
 		super(endpointUri);
 	}
 
+	@Override
 	public void sendNow(NorthboundAlarm alarm) {
 		if(LOG.isTraceEnabled()) {
 			LOG.trace("forwarding alarm " + alarm);

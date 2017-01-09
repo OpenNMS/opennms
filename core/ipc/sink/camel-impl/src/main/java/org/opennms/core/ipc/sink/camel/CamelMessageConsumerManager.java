@@ -59,8 +59,8 @@ public class CamelMessageConsumerManager implements MessageConsumerManager {
 
     private final CamelContext context;
 
-    private final Multimap<SinkModule<Message>, MessageConsumer<Message>> consumersByModule = LinkedListMultimap.create();
-    private final Map<SinkModule<Message>, String> routeIdsByModule = new ConcurrentHashMap<>();
+    private final Multimap<SinkModule<?, Message>, MessageConsumer<?, Message>> consumersByModule = LinkedListMultimap.create();
+    private final Map<SinkModule<?, Message>, String> routeIdsByModule = new ConcurrentHashMap<>();
 
     public CamelMessageConsumerManager(CamelContext context) throws Exception {
         this.context = Objects.requireNonNull(context);
@@ -69,14 +69,14 @@ public class CamelMessageConsumerManager implements MessageConsumerManager {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Message> void dispatch(SinkModule<T> module, T message) {
-        consumersByModule.get((SinkModule<Message>)module)
+    public <S extends Message, T extends Message> void dispatch(SinkModule<S,T> module, T message) {
+        consumersByModule.get((SinkModule<?,Message>)module)
             .forEach(c -> c.handleMessage(message));
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Message> void registerConsumer(MessageConsumer<T> consumer)
+    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer)
             throws Exception {
         if (consumer == null) {
             return;
@@ -84,11 +84,11 @@ public class CamelMessageConsumerManager implements MessageConsumerManager {
 
         try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
             LOG.info("Registering consumer: {}", consumer);
-            final SinkModule<Message> module = (SinkModule<Message>)consumer.getModule();
-            consumersByModule.put(module, (MessageConsumer<Message>)consumer);
+            final SinkModule<?, Message> module = (SinkModule<?, Message>)consumer.getModule();
+            consumersByModule.put(module, (MessageConsumer<?, Message>)consumer);
             if (!routeIdsByModule.containsKey(module)) {
                 LOG.info("Creating route for module: {}", module);
-                final DynamicIpcRouteBuilder routeBuilder = new DynamicIpcRouteBuilder(context, this, (SinkModule<Message>)consumer.getModule());
+                final DynamicIpcRouteBuilder routeBuilder = new DynamicIpcRouteBuilder(context, this, (SinkModule<?, Message>)consumer.getModule());
                 context.addRoutes(routeBuilder);
                 routeIdsByModule.put(module, routeBuilder.getRouteId());
             }
@@ -97,7 +97,7 @@ public class CamelMessageConsumerManager implements MessageConsumerManager {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Message> void unregisterConsumer(MessageConsumer<T> consumer)
+    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer)
             throws Exception {
         if (consumer == null) {
             return;
@@ -105,8 +105,8 @@ public class CamelMessageConsumerManager implements MessageConsumerManager {
 
         try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
             LOG.info("Unregistering consumer: {}", consumer);
-            final SinkModule<Message> module = (SinkModule<Message>)consumer.getModule();
-            consumersByModule.remove(module, (MessageConsumer<Message>)consumer);
+            final SinkModule<?, Message> module = (SinkModule<?, Message>)consumer.getModule();
+            consumersByModule.remove(module, (MessageConsumer<?, Message>)consumer);
             if (consumersByModule.get(module).size() < 1 && routeIdsByModule.containsKey(module)) {
                 LOG.info("Destroying route for module: {}", module);
                 final String routeId = routeIdsByModule.get(module);
@@ -118,9 +118,9 @@ public class CamelMessageConsumerManager implements MessageConsumerManager {
 
     private static final class DynamicIpcRouteBuilder extends RouteBuilder {
         private final CamelMessageConsumerManager consumerManager;
-        private final SinkModule<Message> module;
+        private final SinkModule<?, Message> module;
 
-        private DynamicIpcRouteBuilder(CamelContext context, CamelMessageConsumerManager consumerManager, SinkModule<Message> module) {
+        private DynamicIpcRouteBuilder(CamelContext context, CamelMessageConsumerManager consumerManager, SinkModule<?, Message> module) {
             super(context);
             this.consumerManager = consumerManager;
             this.module = module;
@@ -134,7 +134,7 @@ public class CamelMessageConsumerManager implements MessageConsumerManager {
         public void configure() throws Exception {
             final JmsQueueNameFactory queueNameFactory = new JmsQueueNameFactory(
                     CamelSinkConstants.JMS_QUEUE_PREFIX, module.getId());
-            from(String.format("queuingservice:%s", queueNameFactory.getName()))
+            from(String.format("queuingservice:%s?concurrentConsumers=%d", queueNameFactory.getName(), module.getNumConsumerThreads()))
                 .setExchangePattern(ExchangePattern.InOnly)
                 .process(new CamelSinkServerProcessor(consumerManager, module))
                 .routeId(getRouteId());

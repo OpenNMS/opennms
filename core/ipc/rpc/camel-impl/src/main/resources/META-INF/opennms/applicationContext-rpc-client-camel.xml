@@ -32,7 +32,31 @@
 
   <bean id="camelRpcClientPreProcessor" class="org.opennms.core.rpc.camel.CamelRpcClientPreProcessor"/>
 
+   <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
+  <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+      <property name="timeout" value="15"/>
+  </bean>
+
+  <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent" />
+
   <camelContext id="rpcClient" xmlns="http://camel.apache.org/schema/spring">
+    <!-- Exchanges contain credentials i.e. SNMP community details, so avoid logging them -->
+    <properties>
+      <property key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.camel.body.debug:-1}}"/>
+    </properties>
+
+    <!-- Define a default thread profile with the same defaults as Camel
+         (see http://camel.apache.org/threading-model.html), but allow
+         the number of threads and max queue size to overwritten using
+         system properties.
+     -->
+    <threadPoolProfile id="rpcClientProfile"
+                       defaultProfile="true"
+                       poolSize="{{sys:org.opennms.ipc.rpc.threads:10}}"
+                       maxPoolSize="{{sys:org.opennms.ipc.rpc.threads.max:20}}"
+                       maxQueueSize="{{sys:org.opennms.ipc.rpc.queue.max:1000}}"
+                        />
+
     <route id="rpcClient">
       <from uri="direct:executeRpc" />
 	  <bean ref="camelRpcClientPreProcessor"/>

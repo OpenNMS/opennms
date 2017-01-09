@@ -121,7 +121,7 @@ public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
         Properties props = new Properties();
         props.setProperty("alias", "opennms.broker");
         services.put(Component.class.getName(), new KeyValueHolder<Object, Dictionary>(queuingservice, props));
-        services.put(RpcModule.class.getName(), new KeyValueHolder<Object, Dictionary>(new SnmpProxyRpcModule(), new Properties()));
+        services.put(RpcModule.class.getName(), new KeyValueHolder<Object, Dictionary>(SnmpProxyRpcModule.INSTANCE, new Properties()));
     }
 
     @Override

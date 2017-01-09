@@ -30,15 +30,22 @@
     <constructor-arg ref="sinkServer"/>
   </bean>
 
-  <bean id="camelLocalMessageProducerFactory" class="org.opennms.core.ipc.sink.camel.CamelLocalMessageProducerFactory" />
+  <bean id="camelLocalMessageDispatcherFactory" class="org.opennms.core.ipc.sink.camel.CamelLocalMessageDispatcherFactory" />
 
   <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
   <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
     <property name="timeout" value="15"/>
   </bean>
 
+  <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent" />
+
   <camelContext id="sinkServer" xmlns="http://camel.apache.org/schema/spring">
-      <!-- The routes are managed by the CamelMessageConsumerManager -->
+    <!-- Exchanges contain credentials i.e. SNMP community details, so avoid logging them -->
+    <properties>
+      <property key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.camel.body.debug:-1}}"/>
+    </properties>
+
+    <!-- The routes are managed by the CamelMessageConsumerManager -->
   </camelContext>
 
 </beans>

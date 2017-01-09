@@ -88,14 +88,14 @@ public class Snmp4JStrategy implements SnmpStrategy {
 
     private static final transient Logger LOG = LoggerFactory.getLogger(Snmp4JStrategy.class);
 
-    private static Map<TrapNotificationListener, RegistrationInfo> s_registrations = new HashMap<TrapNotificationListener, RegistrationInfo>();
-
-    private final ExecutorService reaperExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+    private static final ExecutorService REAPER_EXECUTOR = Executors.newSingleThreadExecutor(new ThreadFactory() {
         @Override
         public Thread newThread(Runnable r) {
             return new Thread(r, "SNMP4J-Session-Reaper");
         }
     });
+
+    private static Map<TrapNotificationListener, RegistrationInfo> s_registrations = new HashMap<>();
 
     private static boolean s_initialized = false;
 
@@ -320,7 +320,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
                                 // Close the tracker using a separate thread
                                 // This allows the SnmpWalker to clean up properly instead
                                 // of interrupting execution as it's executing the callback
-                                reaperExecutor.submit(new Runnable() {
+                                REAPER_EXECUTOR.submit(new Runnable() {
                                     @Override
                                     public void run() {
                                         closeQuietly(session);

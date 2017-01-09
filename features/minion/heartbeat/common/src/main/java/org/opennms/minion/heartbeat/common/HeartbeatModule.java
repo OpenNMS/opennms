@@ -28,9 +28,11 @@
 
 package org.opennms.minion.heartbeat.common;
 
+import org.opennms.core.ipc.sink.api.AggregationPolicy;
+import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
 
-public class HeartbeatModule extends AbstractXmlSinkModule<MinionIdentityDTO> {
+public class HeartbeatModule extends AbstractXmlSinkModule<MinionIdentityDTO, MinionIdentityDTO> {
 
     public static final String MODULE_ID = "Heartbeat";
 
@@ -41,6 +43,23 @@ public class HeartbeatModule extends AbstractXmlSinkModule<MinionIdentityDTO> {
     @Override
     public String getId() {
         return MODULE_ID;
+    }
+
+    @Override
+    public int getNumConsumerThreads() {
+        return 1;
+    }
+
+    @Override
+    public AggregationPolicy<MinionIdentityDTO, MinionIdentityDTO> getAggregationPolicy() {
+        // No aggregation
+        return null;
+    }
+
+    @Override
+    public AsyncPolicy getAsyncPolicy() {
+        // Only synchronous dispatching
+        return null;
     }
 
 }

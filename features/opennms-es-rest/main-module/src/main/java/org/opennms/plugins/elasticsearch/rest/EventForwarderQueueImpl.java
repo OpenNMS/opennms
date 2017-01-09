@@ -38,8 +38,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * queues events received from OpenNMS for forwarding to elastic search. drops
- * events if ES not keeping up and queue has become full.
+ * Queues events received from OpenNMS for forwarding to Elasticsearch. By default,
+ * it blocks when inserting into Elasticsearch. If you set {@link #setBlockWhenFull(boolean)}
+ * to false, the forwarder will drop events if ES not keeping up and queue has become full.
  * 
  * @author cgallen
  *
@@ -50,6 +51,7 @@ public class EventForwarderQueueImpl implements EventForwarder {
 			.getLogger(EventForwarderQueueImpl.class);
 
 	private Integer maxQueueLength = 1000;
+	private boolean blockWhenFull = true;
 
 	private LinkedBlockingQueue<Event> queue = null;
 	private AtomicBoolean clientRunning = new AtomicBoolean(false);
@@ -77,6 +79,14 @@ public class EventForwarderQueueImpl implements EventForwarder {
 		this.maxQueueLength = maxQueueLength;
 	}
 
+	public boolean isBlockWhenFull() {
+		return blockWhenFull;
+	}
+
+	public void setBlockWhenFull(boolean blockWhenFull) {
+		this.blockWhenFull = blockWhenFull;
+	}
+
 	@Override
 	public void sendNow(Event event) {
 
@@ -91,15 +101,26 @@ public class EventForwarderQueueImpl implements EventForwarder {
 						+ queue.remainingCapacity() + "\n   event:"
 						+ event.toString());
 			
-			if (!queue.offer(event)) {
-				LOG.warn("ElasticSearch interface discarding event dbid="
-						+ event.getDbid()
-						+ " Cannot queue any more events. Event queue full. size="
-						+ queue.size());
+			if (blockWhenFull) {
+				try {
+					queue.put(event);
+				} catch (InterruptedException e) {
+					LOG.warn("Elasticsearch interface discarding event dbid="
+							+ event.getDbid()
+							+ " Interrupted exception while trying to add event to queue, size="
+							+ queue.size());
+				}
+			} else {
+				if (!queue.offer(event)) {
+					LOG.warn("Elasticsearch interface discarding event dbid="
+							+ event.getDbid()
+							+ " Cannot queue any more events. Event queue full. size="
+							+ queue.size());
+				}
 			}
 		} else {
 			if (LOG.isDebugEnabled())
-				LOG.debug("Not sending event received elasticsearch not initialised"
+				LOG.debug("Not sending event received Elasticsearch not initialised"
 						+ "\n   event:" + event.toString());
 		}
 	}

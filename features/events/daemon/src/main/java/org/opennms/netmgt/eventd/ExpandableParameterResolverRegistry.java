@@ -40,7 +40,12 @@ public class ExpandableParameterResolverRegistry {
 
     private static ExpandableParameterResolver NULL_RESOLVER = new ExpandableParameterResolver() {
         @Override
-        public String getValue(String parm, Event event, EventUtil eventUtil) {
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
+            return null;
+        }
+
+        @Override
+        public String parse(String parm) {
             return null;
         }
 

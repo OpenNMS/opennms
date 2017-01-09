@@ -51,6 +51,7 @@ public class ExpandableParameter implements ExpandableToken {
     private static final Logger LOG = LoggerFactory.getLogger(ExpandableParameter.class);
 
     private final String token;
+    private final String parsedToken;
     private final ExpandableParameterResolver resolver;
     private final EventUtil eventUtil;
 
@@ -58,12 +59,13 @@ public class ExpandableParameter implements ExpandableToken {
     public ExpandableParameter(String token, EventUtil eventUtil) {
         this.token = Objects.requireNonNull(token);
         this.resolver = Objects.requireNonNull(eventUtil.getResolver(token));
+        this.parsedToken = resolver.parse(token);
         this.eventUtil = Objects.requireNonNull(eventUtil);
     }
 
     @Override
     public String expand(Event event, Map<String, Map<String, String>> decode) {
-        String value = resolver.getValue(token, event, eventUtil);
+        String value = resolver.getValue(token, parsedToken, event, eventUtil);
         LOG.debug("Value of token {}={}", token, value);
 
         if (value != null) {

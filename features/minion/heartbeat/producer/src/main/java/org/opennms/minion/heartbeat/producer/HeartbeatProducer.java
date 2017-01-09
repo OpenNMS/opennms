@@ -31,8 +31,8 @@ package org.opennms.minion.heartbeat.producer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.opennms.core.ipc.sink.api.MessageProducer;
-import org.opennms.core.ipc.sink.api.MessageProducerFactory;
+import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
+import org.opennms.core.ipc.sink.api.SyncDispatcher;
 import org.opennms.minion.core.api.MinionIdentity;
 import org.opennms.minion.heartbeat.common.HeartbeatModule;
 import org.opennms.minion.heartbeat.common.MinionIdentityDTO;
@@ -47,9 +47,9 @@ public class HeartbeatProducer {
 
     final Timer timer;
 
-    public HeartbeatProducer(MinionIdentity identity, MessageProducerFactory messageProducerFactory) {
+    public HeartbeatProducer(MinionIdentity identity, MessageDispatcherFactory messageDispatcherFactory) {
         final MinionIdentityDTO identityDTO = new MinionIdentityDTO(identity);
-        final MessageProducer<MinionIdentityDTO> delegate = messageProducerFactory.getProducer(new HeartbeatModule());
+        final SyncDispatcher<MinionIdentityDTO> dispatcher = messageDispatcherFactory.createSyncDispatcher(new HeartbeatModule());
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -57,7 +57,7 @@ public class HeartbeatProducer {
                 try {
                     LOG.info("Sending heartbeat to Minion with id: {} at location: {}",
                             identity.getId(), identity.getLocation());
-                    delegate.send(identityDTO);
+                    dispatcher.send(identityDTO);
                 } catch (Throwable t) {
                     LOG.error("An error occured while sending the heartbeat. Will try again in {} ms", PERIOD_MS, t);
                 }

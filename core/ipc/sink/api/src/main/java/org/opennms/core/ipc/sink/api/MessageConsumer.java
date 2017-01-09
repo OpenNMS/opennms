@@ -33,9 +33,9 @@ package org.opennms.core.ipc.sink.api;
  *
  * @author jwhite
  */
-public interface MessageConsumer<T extends Message> {
+public interface MessageConsumer<S extends Message, T extends Message> {
 
-    SinkModule<T> getModule();
+    SinkModule<S, T> getModule();
 
     void handleMessage(T message);
 
