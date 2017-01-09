@@ -42,7 +42,7 @@ public class LocationFilter extends EqualsFilter<String> {
 
     @Override
     public String getTextDescription() {
-        return (TYPE + "=" + m_location);
+        return ("Location is " + m_location);
     }
 
     @Override
