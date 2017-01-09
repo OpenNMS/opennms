@@ -45,8 +45,8 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.mutable.MutableInt;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.core.concurrent.OfferBlockingQueue;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.events.api.EventHandler;
 import org.opennms.netmgt.events.api.EventIpcBroadcaster;
@@ -73,9 +73,51 @@ import com.codahale.metrics.MetricRegistry;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroadcaster, InitializingBean {
-    
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(EventIpcManagerDefaultImpl.class);
+
+    /**
+     * <p>This queue changes the behavior of {@link #offer(Runnable)} so that it performs a
+     * blocking {@link #put(Runnable)} call instead unless the {@link #offer(Runnable)} is
+     * being invoked by an {@link EventListenerExecutor} thread. In that case, it will attempt
+     * an offer but if that fails because the queue is full, it will instead run the {@link Runnable}
+     * on the current thread. This will prevent deadlocks when {@link EventListener} calls in turn
+     * generate new events and the execution queue is full.</p>
+     * 
+     * <p>This queue is used to throttle the event processing back when the queue is full without 
+     * discarding events.</p>
+     */
+    private static class BlockUnlessInsideEventListenerQueue extends LinkedBlockingQueue<Runnable> {
+
+        private static final long serialVersionUID = 5613562498935257980L;
+
+        public BlockUnlessInsideEventListenerQueue(int capacity) {
+            super(capacity);
+        }
+
+        @Override
+        public boolean offer(Runnable event) {
+            // If we're inside an event listener...
+            if (EVENT_LISTENER_DEPTH.get().intValue() > 0) {
+                // Attempt to offer
+                if (!super.offer(event)) {
+                    // If the queue is full, run on current thread
+                    LOG.warn("Execution queue is full, executing Runnable on current thread");
+                    event.run();
+                }
+                return true;
+            } else {
+                try {
+                    // Otherwise, do a blocking put instead of offer
+                    super.put(event);
+                    return true;
+                } catch(InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+                return false;
+            }
+        }
+    }
 
     public static class DiscardTrapsAndSyslogEvents implements RejectedExecutionHandler {
         /**
@@ -130,13 +172,20 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
     private final MetricRegistry m_registry;
 
+    private static final ThreadLocal<MutableInt> EVENT_LISTENER_DEPTH = new ThreadLocal<MutableInt>() {
+        @Override
+        public MutableInt initialValue() {
+            return new MutableInt(0);
+        }
+    };
+
     /**
      * A thread dedicated to each listener. The events meant for each listener
      * is added to an execution queue when the 'sendNow()' is called. The
      * ListenerThread reads events off of this queue and sends them to the
      * appropriate listener.
      */
-    private static class EventListenerExecutor {
+    private static class EventListenerExecutor implements AutoCloseable {
         /**
          * Listener to which this thread is dedicated
          */
@@ -162,7 +211,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                 if (handlerBlockWhenFull) {
                     // If the size is set and blocking is enabled, use a queue
                     // that blocks on insertions when the queue is full
-                    queue = new OfferBlockingQueue<>(handlerQueueLength);
+                    queue = new BlockUnlessInsideEventListenerQueue(handlerQueueLength);
                 } else {
                     // Otherwise use a normal queue that will trigger rejected
                     // executions if it fills up
@@ -195,6 +244,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             m_delegateThread.execute(new Runnable() {
                 @Override
                 public void run() {
+                    // Increment the ThreadLocal to indicate that we are inside an EventListener
+                    EVENT_LISTENER_DEPTH.get().increment();
+
                     try {
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("run: calling onEvent on {} for event {} dbid {} with time {}", m_listener.getName(), event.getUei(), event.getDbid(), event.getTime());
@@ -209,6 +261,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                         }
                     } catch (Throwable t) {
                         LOG.warn("run: an unexpected error occured during ListenerThread {}", m_listener.getName(), t);
+                    } finally {
+                        EVENT_LISTENER_DEPTH.get().decrement();
                     }
                 }
             });
@@ -217,7 +271,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         /**
          * Stops the execution of this listener.
          */
-        public void stop() {
+        @Override
+        public void close() {
             m_delegateThread.shutdown();
         }
     }
@@ -484,7 +539,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
         // stop and remove the listener thread for this listener
         if (m_listenerThreads.containsKey(listener.getName())) {
-            m_listenerThreads.get(listener.getName()).stop();
+            m_listenerThreads.get(listener.getName()).close();
 
             m_listenerThreads.remove(listener.getName());
         }
@@ -560,7 +615,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             if (m_handlerBlockWhenFull) {
                 // If the size is set and blocking is enabled, use a queue
                 // that blocks on insertions when the queue is full
-                queue = new OfferBlockingQueue<>(m_handlerQueueLength);
+                queue = new BlockUnlessInsideEventListenerQueue(m_handlerQueueLength);
             } else {
                 // Otherwise use a normal queue that will trigger rejected
                 // executions if it fills up

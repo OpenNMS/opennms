@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.eventd;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotEquals;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -35,6 +38,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -58,7 +62,10 @@ import junit.framework.TestCase;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class EventIpcManagerDefaultImplTest extends TestCase {
+
     private static final Logger LOG = LoggerFactory.getLogger(EventIpcManagerDefaultImplTest.class);
+
+    private static final int SLOW_EVENT_OPERATION_DELAY = 200;
 
     private EasyMockUtils m_mocks = new EasyMockUtils();
     private EventIpcManagerDefaultImpl m_manager;
@@ -518,7 +525,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
                     @Override
                     public void run() {
                         try {
-                            Thread.sleep(500);
+                            Thread.sleep(SLOW_EVENT_OPERATION_DELAY);
                         } catch (InterruptedException e) {
                         }
                         counter.incrementAndGet();
@@ -545,13 +552,11 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
             manager.sendNow(e);
         }
 
-        Thread.sleep(5000);
-
-        assertEquals(6, counter.get());
+        await().pollInterval(1, TimeUnit.SECONDS).untilAtomic(counter, is(equalTo(6)));
     }
 
     public void testBlockWhenFullWithSlowEventHandler() throws InterruptedException {
-        AtomicInteger counter = new AtomicInteger();
+        CountDownLatch counter = new CountDownLatch(10);
 
         EventHandler handler = new EventHandler() {
             @Override
@@ -560,10 +565,10 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
                     @Override
                     public void run() {
                         try {
-                            Thread.sleep(500);
+                            Thread.sleep(SLOW_EVENT_OPERATION_DELAY);
                         } catch (InterruptedException e) {
                         }
-                        counter.incrementAndGet();
+                        counter.countDown();
                     }
                 };
             }
@@ -587,9 +592,61 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
             manager.sendNow(e);
         }
 
-        Thread.sleep(5000);
+        assertTrue(counter.await(10, TimeUnit.SECONDS));
+    }
 
-        assertEquals(10, counter.get());
+    public void testBlockWhenFullAndRecursiveEvents() throws InterruptedException {
+        CountDownLatch fooCounter = new CountDownLatch(10);
+        CountDownLatch barCounter = new CountDownLatch(10);
+
+        final EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
+        manager.setHandlerPoolSize(1);
+        manager.setHandlerQueueLength(5);
+        manager.setHandlerBlockWhenFull(true);
+        DefaultEventHandlerImpl handler = new DefaultEventHandlerImpl(m_registry);
+        manager.setEventHandler(handler);
+        manager.afterPropertiesSet();
+
+        EventListener slowListener = new EventListener() {
+            @Override
+            public String getName() {
+                return "testBlockWhenFullAndRecursiveEvents";
+            }
+
+            @Override
+            public void onEvent(Event event) {
+                if ("uei.opennms.org/bar".equals(event.getUei())) {
+                    try {
+                        Thread.sleep(SLOW_EVENT_OPERATION_DELAY);
+                    } catch (InterruptedException e) {
+                    }
+                    barCounter.countDown();
+                } else {
+                    EventBuilder bldr = new EventBuilder("uei.opennms.org/bar", "testBlockWhenFullAndRecursiveEvents");
+                    Event e = bldr.getEvent();
+                    manager.broadcastNow(e);
+                    fooCounter.countDown();
+                }
+            }
+        };
+
+        manager.addEventListener(slowListener);
+
+        // Send 10 "foo" events. The first one will be executed on the listener thread,
+        // the next 5 will be enqueued. The subsequent events will block as the "bar"
+        // events are generated and executed synchronously on the listener thread (since
+        // the queue will still be full). As those sync listener calls return, eventually
+        // there will be headroom in the queue and the final few "bar" messages will be handled
+        // async by the listener thread.
+        //
+        for (int i = 0; i < 10; i++) {
+            EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testBlockWhenFullAndRecursiveEvents");
+            Event e = bldr.getEvent();
+            manager.broadcastNow(e);
+        }
+
+        assertTrue(fooCounter.await(10, TimeUnit.SECONDS));
+        assertTrue(barCounter.await(10, TimeUnit.SECONDS));
     }
 
     public void testDoNotBlockWhenFullWithSlowEventListener() throws InterruptedException {
@@ -598,14 +655,14 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         EventListener slowListener = new EventListener() {
             @Override
             public String getName() {
-                return "testDiscardWhenFullWithSlowEventListener";
+                return "testDoNotBlockWhenFullWithSlowEventListener";
             }
 
             @Override
             public void onEvent(Event event) {
                 LOG.info("Hello, here is event: " + event.getUei());
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(SLOW_EVENT_OPERATION_DELAY);
                 } catch (InterruptedException e) {
                 }
                 counter.incrementAndGet();
@@ -628,33 +685,31 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         // have passed through the listener.
         //
         for (int i = 0; i < 10; i++) {
-            EventBuilder bldr = new EventBuilder("uei.opennms.org/foo/" + i, "testDiscardWhenFullWithSlowEventListener");
+            EventBuilder bldr = new EventBuilder("uei.opennms.org/foo/" + i, "testDoNotBlockWhenFullWithSlowEventListener");
             Event e = bldr.getEvent();
             manager.broadcastNow(e);
         }
 
-        Thread.sleep(5000);
-
-        assertEquals(6, counter.get());
+        await().pollInterval(1, TimeUnit.SECONDS).untilAtomic(counter, is(equalTo(6)));
     }
 
     public void testBlockWhenFullWithSlowEventListener() throws InterruptedException {
-        AtomicInteger counter = new AtomicInteger();
+        CountDownLatch counter = new CountDownLatch(10);
 
         EventListener slowListener = new EventListener() {
             @Override
             public String getName() {
-                return "testDiscardWhenFullWithSlowEventListener";
+                return "testBlockWhenFullWithSlowEventListener";
             }
 
             @Override
             public void onEvent(Event event) {
                 LOG.info("Hello, here is event: " + event.getUei());
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(SLOW_EVENT_OPERATION_DELAY);
                 } catch (InterruptedException e) {
                 }
-                counter.incrementAndGet();
+                counter.countDown();
             }
         };
 
@@ -674,14 +729,12 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         // processed.
         //
         for (int i = 0; i < 10; i++) {
-            EventBuilder bldr = new EventBuilder("uei.opennms.org/foo/" + i, "testDiscardWhenFullWithSlowEventListener");
+            EventBuilder bldr = new EventBuilder("uei.opennms.org/foo/" + i, "testBlockWhenFullWithSlowEventListener");
             Event e = bldr.getEvent();
             manager.broadcastNow(e);
         }
 
-        Thread.sleep(5000);
-
-        assertEquals(10, counter.get());
+        assertTrue(counter.await(10, TimeUnit.SECONDS));
     }
 
     public class MockEventListener implements EventListener {
