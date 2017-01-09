@@ -53,6 +53,7 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
+import org.opennms.netmgt.collection.support.builder.AttributeType;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResourceWithoutInstance;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
@@ -82,10 +83,10 @@ public class WSManCollectorTest {
     public void canProcessEnumerationResults() {
         Group group = new Group();
         group.setName("ComputerSystem");
-        addAttribute(group, "PrimaryStatus", "GaugeWithValue", "Gauge");
-        addAttribute(group, "!PrimaryStatus!", "GaugeWithoutValue", "Gauge");
-        addAttribute(group, "ElementName", "StringWithValue", "String");
-        addAttribute(group, "!ElementName!", "StringWithoutValue", "String");
+        addAttribute(group, "PrimaryStatus", "GaugeWithValue", AttributeType.GAUGE);
+        addAttribute(group, "!PrimaryStatus!", "GaugeWithoutValue", AttributeType.GAUGE);
+        addAttribute(group, "ElementName", "StringWithValue", AttributeType.STRING);
+        addAttribute(group, "!ElementName!", "StringWithoutValue", AttributeType.STRING);
 
         CollectionAgent agent = mock(CollectionAgent.class);
         when(agent.getStorageDir()).thenReturn(new java.io.File(""));
@@ -139,7 +140,7 @@ public class WSManCollectorTest {
         attr.setName("OtherIdentifyingInfo");
         attr.setAlias("ServiceTag");
         attr.setIndexOf("#IdentifyingDescriptions matches '.*ServiceTag'");
-        attr.setType("String");
+        attr.setType(AttributeType.STRING);
         group.addAttrib(attr);
 
         CollectionAgent agent = mock(CollectionAgent.class);
@@ -184,14 +185,14 @@ public class WSManCollectorTest {
         attr.setName("CurrentReading");
         attr.setAlias("sysBoardInletTemp");
         attr.setFilter("#ElementName == 'System Board Inlet Temp'");
-        attr.setType("Gauge");
+        attr.setType(AttributeType.GAUGE);
         group.addAttrib(attr);
 
         attr = new Attrib();
         attr.setName("CurrentReading");
         attr.setAlias("sysBoardExhaustTemp");
         attr.setFilter("#ElementName == 'System Board Exhaust Temp'");
-        attr.setType("Gauge");
+        attr.setType(AttributeType.GAUGE);
         group.addAttrib(attr);
 
         CollectionAgent agent = mock(CollectionAgent.class);
@@ -278,12 +279,12 @@ public class WSManCollectorTest {
         // Define our group
         Group group = new Group();
         group.setName("windows-os-wmi-processor");
-        addAttribute(group, "Name", "wmiOSCpuName", "string");
-        addAttribute(group, "InterruptsPersec", "wmiOSCpuIntsPerSec", "Gauge");
-        addAttribute(group, "PercentProcessorTime", "wmiOSCpuPctProcTime", "Gauge");
-        addAttribute(group, "PercentDPCTime", "wmiOSCpuPctDPCTime", "Gauge");
-        addAttribute(group, "PercentInterruptTime", "wmiOSCpuPctIntrTime", "Gauge");
-        addAttribute(group, "PercentUserTime", "wmiOSCpuPctUserTime", "Gauge");
+        addAttribute(group, "Name", "wmiOSCpuName", AttributeType.STRING);
+        addAttribute(group, "InterruptsPersec", "wmiOSCpuIntsPerSec", AttributeType.GAUGE);
+        addAttribute(group, "PercentProcessorTime", "wmiOSCpuPctProcTime", AttributeType.GAUGE);
+        addAttribute(group, "PercentDPCTime", "wmiOSCpuPctDPCTime", AttributeType.GAUGE);
+        addAttribute(group, "PercentInterruptTime", "wmiOSCpuPctIntrTime", AttributeType.GAUGE);
+        addAttribute(group, "PercentUserTime", "wmiOSCpuPctUserTime", AttributeType.GAUGE);
 
         // Mock the agent
         CollectionAgent agent = mock(CollectionAgent.class);
@@ -316,7 +317,7 @@ public class WSManCollectorTest {
                 flatten(builder.build()));
     }
 
-    private static void addAttribute(Group group, String name, String alias, String type) {
+    private static void addAttribute(Group group, String name, String alias, AttributeType type) {
         Attrib attr = new Attrib();
         attr.setName(name);
         attr.setAlias(alias);

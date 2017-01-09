@@ -50,7 +50,6 @@ import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
-import org.opennms.netmgt.collection.support.builder.AttributeType;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResourceWithoutInstance;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
@@ -204,13 +203,6 @@ public class WsManCollector implements ServiceCollector {
 
             // Associate the values with the configured attributes
             for (Attrib attrib : group.getAttrib()) {
-                AttributeType type = AttributeType.parse(attrib.getType());
-                if (type == null) {
-                    LOG.error("Unsupported attribute type: {} for attribute: {} in group: {}. Value will be skipped.",
-                            attrib.getType(), attrib.getName(), group.getName());
-                    continue;
-                }
-
                 if (attrib.getFilter() != null && !ResponseHandlingUtils.matchesFilter(attrib.getFilter(), elementValues)) {
                     continue;
                 }
@@ -235,19 +227,7 @@ public class WsManCollector implements ServiceCollector {
                     continue;
                 }
 
-                if (type.isNumeric()) {
-                    Double value;
-                    try {
-                        value = Double.parseDouble(valueAsString);
-                    } catch (NumberFormatException e) {
-                        LOG.warn("Value '{}' for attribute: {} in group: {} could not be parsed into a number. Value will be skipped.",
-                                valueAsString, attrib.getName(), group.getName());
-                        value = Double.NaN;
-                    }
-                    builder.withNumericAttribute(resource, group.getName(), attrib.getAlias(), value, type);
-                } else {
-                    builder.withStringAttribute(resource, group.getName(), attrib.getAlias(), valueAsString);
-                }
+                builder.withAttribute(resource, group.getName(), attrib.getAlias(), valueAsString, attrib.getType());
             }
         }
     }

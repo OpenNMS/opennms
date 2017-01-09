@@ -48,7 +48,6 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
 import org.opennms.netmgt.collection.support.NumericAttributeUtils;
-import org.opennms.netmgt.config.datacollection.AttributeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
