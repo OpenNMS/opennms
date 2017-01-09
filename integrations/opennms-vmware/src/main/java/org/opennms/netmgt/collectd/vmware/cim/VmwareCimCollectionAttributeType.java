@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collectd.vmware.cim;
 
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
@@ -47,10 +48,10 @@ public class VmwareCimCollectionAttributeType extends AbstractCollectionAttribut
      */
     @Override
     public void storeAttribute(final CollectionAttribute attribute, final Persister persister) {
-        if ("string".equalsIgnoreCase(m_attribute.getType())) {
-            persister.persistStringAttribute(attribute);
-        } else {
+        if (m_attribute.getType().isNumeric()) {
             persister.persistNumericAttribute(attribute);
+        } else {
+            persister.persistStringAttribute(attribute);
         }
     }
 
@@ -60,7 +61,7 @@ public class VmwareCimCollectionAttributeType extends AbstractCollectionAttribut
     }
 
     @Override
-    public String getType() {
+    public AttributeType getType() {
         return m_attribute.getType();
     }
 }

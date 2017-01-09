@@ -76,7 +76,7 @@ public class SiblingColumnStorageStrategyTest {
         strategy.setResourceTypeName("hrStorageIndex");
 
         // Create parameters for the strategy -- hrStorageTable
-        List<Parameter> params = new ArrayList<Parameter>();
+        List<org.opennms.netmgt.collection.api.Parameter> params = new ArrayList<>();
         params.add(createParameter("sibling-column-name", "hrStorageDescr"));
         params.add(createParameter("replace-first", "s/^-$/_root_fs/"));
         params.add(createParameter("replace-first", "s/^-//"));
@@ -107,7 +107,7 @@ public class SiblingColumnStorageStrategyTest {
         strategy.setResourceTypeName("hrStorageIndex");
 
         // Create parameters for the strategy -- hrStorageTable
-        List<Parameter> params = new ArrayList<Parameter>();
+        List<org.opennms.netmgt.collection.api.Parameter> params = new ArrayList<>();
         params.add(createParameter("sibling-column-oid", ".1.3.6.1.2.1.25.2.3.1.3"));
         params.add(createParameter("replace-first", "s/^-$/_root_fs/"));
         params.add(createParameter("replace-first", "s/^-//"));
@@ -122,7 +122,7 @@ public class SiblingColumnStorageStrategyTest {
     public void testMatchIndex() throws Exception {
         strategy.setResourceTypeName("macIndex");
 
-        List<Parameter> params = new ArrayList<Parameter>();
+        List<org.opennms.netmgt.collection.api.Parameter> params = new ArrayList<>();
         params.add(createParameter("sibling-column-name", "_index"));
         params.add(createParameter("replace-first", "s/^(([\\d]{1,3}\\.){8,8}).*$/$1/"));
         params.add(createParameter("replace-first", "s/\\.$//"));

@@ -30,21 +30,12 @@ package org.opennms.netmgt.rrd;
 
 public class RrdDataSource {
     private final String m_name;
-    private final String m_type;
+    private final RrdAttributeType m_type;
     private final int m_heartBeat;
     private final String m_min;
     private final String m_max;
-    
-    /**
-     * <p>Constructor for RrdDataSource.</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     * @param type a {@link java.lang.String} object.
-     * @param heartBeat a int.
-     * @param min a {@link java.lang.String} object.
-     * @param max a {@link java.lang.String} object.
-     */
-    public RrdDataSource(String name, String type, int heartBeat, String min, String max) {
+
+    public RrdDataSource(String name, RrdAttributeType type, int heartBeat, String min, String max) {
         m_name = name;
         m_type = type;
         m_heartBeat = heartBeat;
@@ -91,9 +82,9 @@ public class RrdDataSource {
     /**
      * <p>getType</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.rrd.RrdAttributeType} object.
      */
-    public String getType() {
+    public RrdAttributeType getType() {
         return m_type;
     }
 

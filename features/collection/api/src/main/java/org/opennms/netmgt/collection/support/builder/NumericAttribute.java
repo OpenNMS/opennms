@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
+import org.opennms.netmgt.collection.api.AttributeType;
+
 public class NumericAttribute extends Attribute<Number> {
     public NumericAttribute(Resource resource, String group, String name, Number value, AttributeType type, String identifier) {
         super(resource, group, name, value, type, identifier);

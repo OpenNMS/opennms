@@ -28,9 +28,7 @@
 package org.opennms.netmgt.collection.persistence.evaluate;
 
 import org.opennms.netmgt.collection.api.AbstractPersister;
-import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
-import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
 import org.opennms.netmgt.collection.api.PersistException;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.ResourcePath;
@@ -87,15 +85,5 @@ public abstract class AbstractEvaluatePersister extends AbstractPersister {
             sb.append('/').append(resource.getInterfaceLabel());
         }
         return sb.toString();
-    }
-
-    /**
-     * Checks if is numeric.
-     *
-     * @param attribute the attribute
-     * @return true, if is numeric
-     */
-    protected boolean isNumeric(CollectionAttribute attribute) {
-        return attribute.getAttributeType() instanceof NumericCollectionAttributeType || !attribute.getAttributeType().getType().equalsIgnoreCase("string");
     }
 }

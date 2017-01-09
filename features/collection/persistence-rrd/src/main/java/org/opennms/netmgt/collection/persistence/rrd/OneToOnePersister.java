@@ -29,15 +29,11 @@
 package org.opennms.netmgt.collection.persistence.rrd;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
-import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 

@@ -38,6 +38,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -155,8 +156,8 @@ public class CollectionSetBuilder {
                 final AttributeGroupType groupType = new AttributeGroupType(attribute.getGroup(), AttributeGroupType.IF_TYPE_ALL);
                 final AbstractCollectionAttributeType attributeType = new AbstractCollectionAttributeType(groupType) {
                     @Override
-                    public String getType() {
-                        return attribute.getType().getName();
+                    public AttributeType getType() {
+                        return attribute.getType();
                     }
 
                     @Override

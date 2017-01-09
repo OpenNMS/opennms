@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
+import org.opennms.netmgt.collection.api.ResourceType;
 import org.opennms.netmgt.collection.support.IndexStorageStrategy;
-import org.opennms.netmgt.config.datacollection.ResourceType;
 
 /**
  * Generic type resource that does not have a default instance value.

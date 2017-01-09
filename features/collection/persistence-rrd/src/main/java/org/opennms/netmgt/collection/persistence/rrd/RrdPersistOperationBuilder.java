@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.opennms.core.utils.StringUtils;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.ByNameComparator;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.collection.api.PersistOperationBuilder;
 import org.opennms.netmgt.collection.api.ResourceIdentifier;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
+import org.opennms.netmgt.rrd.RrdAttributeType;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -74,12 +76,6 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
     private final Map<String, String> m_metaData = new LinkedHashMap<String, String>();
     private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
 
-    /**
-     * RRDTool defined Data Source Types NOTE: "DERIVE" and "ABSOLUTE" not
-     * currently supported.
-     */
-    private static final String DST_GAUGE = "GAUGE";
-    private static final String DST_COUNTER = "COUNTER";
     /** Constant <code>MAX_DS_NAME_LENGTH=19</code> */
     public static final int MAX_DS_NAME_LENGTH = 19;
 
@@ -164,15 +160,13 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
      *            MIB object type to be mapped.
      * @return RRD type string or NULL object type is not supported.
      */
-    public static String mapType(String objectType) {
-        if (objectType.toLowerCase().startsWith("counter")) {
-            return RrdPersistOperationBuilder.DST_COUNTER;
-        } else if ("string".equalsIgnoreCase(objectType)) {
-            return null;
-        } else if ("octetstring".equalsIgnoreCase(objectType)) {
+    public static RrdAttributeType mapType(AttributeType type) {
+        if (AttributeType.COUNTER.equals(type)) {
+            return RrdAttributeType.COUNTER;
+        } else if (AttributeType.STRING.equals(type)) {
             return null;
         } else {
-            return RrdPersistOperationBuilder.DST_GAUGE;
+            return RrdAttributeType.GAUGE;
         }
     }
 
@@ -247,7 +241,7 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
                 minval = ((NumericCollectionAttributeType) attrDef).getMinval() != null ? ((NumericCollectionAttributeType) attrDef).getMinval() : "U";
                 maxval = ((NumericCollectionAttributeType) attrDef).getMaxval() != null ? ((NumericCollectionAttributeType) attrDef).getMaxval() : "U";
             }
-            String type = RrdPersistOperationBuilder.mapType(attrDef.getType());
+            final RrdAttributeType type = RrdPersistOperationBuilder.mapType(attrDef.getType());
             // If the type is supported by RRD...
             if (type != null) {
                 if (attrDef.getName().length() > MAX_DS_NAME_LENGTH) {

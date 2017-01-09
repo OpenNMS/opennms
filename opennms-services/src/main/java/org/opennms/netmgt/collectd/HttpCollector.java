@@ -73,6 +73,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
@@ -431,7 +432,7 @@ public class HttpCollector implements ServiceCollector {
             }
 
             for (final Attrib attribDef : attribDefs) {
-                final String type = attribDef.getType();
+                final AttributeType type = attribDef.getType();
                 String value = null;
                 try {
                     value = m.group(attribDef.getMatchGroup());
@@ -441,7 +442,7 @@ public class HttpCollector implements ServiceCollector {
                     continue;
                 }
 
-                if (! type.matches("^([Oo](ctet|CTET)[Ss](tring|TRING))|([Ss](tring|TRING))$")) {
+                if (type.isNumeric()) {
                     Number num = null;
                     for (final Locale locale : locales) {
                         try {
@@ -806,10 +807,10 @@ public class HttpCollector implements ServiceCollector {
 
         @Override
         public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-            if("string".equalsIgnoreCase(m_attribute.getType())) {
-                persister.persistStringAttribute(attribute);
-            } else {
+            if (m_attribute.getType().isNumeric()) {
                 persister.persistNumericAttribute(attribute);
+            } else {
+                persister.persistStringAttribute(attribute);
             }
         }
 
@@ -819,7 +820,7 @@ public class HttpCollector implements ServiceCollector {
         }
 
         @Override
-        public String getType() {
+        public AttributeType getType() {
             return m_attribute.getType();
         }
 

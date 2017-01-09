@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 
@@ -51,7 +52,7 @@ public class StringAttributeVisitor extends AbstractCollectionSetVisitor {
 
     @Override
     public void visitAttribute(CollectionAttribute attribute) {
-        if (attribute.getType().toLowerCase().startsWith("string") && attributeName.equals(attribute.getName()))
+        if (AttributeType.STRING.equals(attribute.getType()) && attributeName.equals(attribute.getName()))
             attributeValue = attribute.getStringValue();
     }
 }

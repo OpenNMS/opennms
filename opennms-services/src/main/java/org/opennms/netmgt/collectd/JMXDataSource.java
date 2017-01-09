@@ -28,10 +28,7 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.datacollection.MibObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.collection.api.AttributeType;
 
 /**
  * This class encapsulates an RRDTool data source. Data source information
@@ -47,51 +44,11 @@ import org.slf4j.LoggerFactory;
  * @version 1.1.1.1
  */
 public class JMXDataSource implements Cloneable {
-    private static final Logger LOG = LoggerFactory.getLogger(JMXDataSource.class);
-
-	/** Constant <code>RRD_ERROR="RRD_ERROR"</code> */
-	public static final String RRD_ERROR = "RRD_ERROR";
 
     /**
-     * Defines the list of supported (MIB) object types which may be mapped to
-     * one of the supported RRD data source types. Currently the only two
-     * supported RRD data source types are: COUNTER & GAUGE. A simple string
-     * comparison is performed against this list of supported types to determine
-     * if an object can be represented by an RRD data source. NOTE: String
-     * comparison uses String.startsWith() method so "counter32" & "counter64"
-     * values will match "counter" entry. Comparison is case sensitive.
+     * Data Source Type.
      */
-    private static final String[] supportedObjectTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring" };
-
-    /**
-     * Index of data type in supportedObjectTypes string array.
-     */
-    private static final int COUNTER_INDEX = 0;
-
-    private static final int GAUGE_INDEX = 1;
-
-    private static final int TIMETICKS_INDEX = 2;
-
-    private static final int INTEGER_INDEX = 3;
-
-    private static final int OCTETSTRING_INDEX = 4;
-
-    /**
-     * RRDTool defined Data Source Types NOTE: "DERIVE" and "ABSOLUTE" not
-     * currently supported.
-     */
-    private static final String DST_GAUGE = "GAUGE";
-
-    private static final String DST_COUNTER = "COUNTER";
-
-    // private static final String DST_DERIVE = "DERIVE";
-    // private static final String DST_ABSOLUTE = "ABSOLUTE";
-
-    /**
-     * Data Source Type. This must be one of the available RRDTool data source
-     * type values: GAUGE, COUNTER, DERIVE, or ABSOLUTE
-     */
-    private String m_type;
+    private AttributeType m_type;
 
     /**
      * Data Source Heartbeat. This is the maximum number of seconds that may
@@ -114,102 +71,17 @@ public class JMXDataSource implements Cloneable {
     private String m_oid;
     private String m_instance;
     private String m_name;
-    private String m_collectionName;
-
-         /**
-          * <p>handlesType</p>
-          *
-          * @param objectType MIB object type being inquired about
-          * @return true if RRDDataSource can  handle the given type, false if it can't
-          */
-         public static boolean handlesType(String objectType) {
-                 return (JMXDataSource.mapType(objectType)!=null);
-         }
-
-
-
-    /**
-     * Static method which takes a MIB object type (counter, counter32,
-     * octetstring, etc...) and returns the appropriate RRD data type. If the
-     * object type cannot be mapped to an RRD type, null is returned. RRD only
-     * supports integer data so MIB objects of type 'octetstring' are not
-     * supported.
-     *
-     * @param objectType -
-     *            MIB object type to be mapped.
-     * @return RRD type string or NULL object type is not supported.
-     */
-    public static String mapType(String objectType) {
-        String rrdType = null;
-
-        // For consistency lower case objecType parameter before comparison
-        objectType = objectType.toLowerCase();
-
-        int index;
-        for (index = 0; index < supportedObjectTypes.length; index++) {
-            if (objectType.startsWith(supportedObjectTypes[index]))
-                break;
-        }
-
-        switch (index) {
-        // counter maps to RRD data source type COUNTER.
-        case COUNTER_INDEX:
-            rrdType = DST_COUNTER;
-            break;
-        // gauge, timeticks, and integer types all map to RRD
-        // data source type GAUGE.
-        case OCTETSTRING_INDEX:
-        case TIMETICKS_INDEX:
-        case INTEGER_INDEX:
-        case GAUGE_INDEX:
-            rrdType = DST_GAUGE;
-            break;
-        // no match, object data type is NOT supported
-        default:
-            rrdType = null;
-            break;
-        }
-        return rrdType;
-    }
 
     /**
      * Constructor
      */
     public JMXDataSource() {
-	super();
+        super();
         m_type = null;
         m_heartbeat = 600; // 10 minutes
         m_min = "U";
         m_max = "U";
     }
-
-       /**
-        * <p>Constructor for JMXDataSource.</p>
-        *
-        * @param obj a {@link org.opennms.netmgt.config.datacollection.MibObject} object.
-        * @param collectionName a {@link java.lang.String} object.
-        */
-       public JMXDataSource(MibObject obj, String collectionName) {
-                
-                m_collectionName = collectionName;
-                
-
-                // Assign heartbeat using formula (2 * step) and hard code
-                // min & max values to "U" ("unknown").
-                this.setHeartbeat(
-                        2
-                                * DataCollectionConfigFactory.getInstance().getStep(
-                                        collectionName));
-
-                // Map MIB object data type to RRD data type
-                this.setType(JMXDataSource.mapType(obj.getType()));
-                this.m_min = "U";
-                this.m_max = "U";
-
-                // Assign the data source object identifier and instance
-                LOG.debug("buildDataSourceList: ds_name: {} ds_oid: {}.{} ds_max: {} ds_min: {}", this.getName(), this.getOid(), this.getInstance(), this.getMax(), this.getMin());
-        }
-
 
     /**
      * This method is used to assign the object's identifier.
@@ -293,7 +165,7 @@ public class JMXDataSource implements Cloneable {
      * @param type -
      *            object's data type
      */
-    public void setType(String type) {
+    public void setType(AttributeType type) {
         m_type = type;
     }
 
@@ -329,7 +201,7 @@ public class JMXDataSource implements Cloneable {
      *
      * @return The object's data type
      */
-    public String getType() {
+    public AttributeType getType() {
         return m_type;
     }
 

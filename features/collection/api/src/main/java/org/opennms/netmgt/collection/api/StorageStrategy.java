@@ -31,8 +31,6 @@ package org.opennms.netmgt.collection.api;
 import java.nio.file.Path;
 import java.util.List;
 
-import org.opennms.netmgt.config.datacollection.Parameter;
-
 /**
  * <p>StorageStrategy interface.</p>
  */

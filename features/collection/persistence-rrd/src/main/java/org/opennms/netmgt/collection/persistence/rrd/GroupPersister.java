@@ -68,7 +68,7 @@ public class GroupPersister extends BasePersister {
             
             Map<String, String> dsNamesToRrdNames = new LinkedHashMap<String , String>();
             for (CollectionAttribute a : group.getAttributes()) {
-                if (ResourceTypeUtils.isNumericType(a.getType())) {
+                if (a.getType().isNumeric()) {
                     dsNamesToRrdNames.put(a.getName(), group.getName());
                 }
             }

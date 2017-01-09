@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="parameter", namespace="http://xmlns.opennms.org/xsd/config/datacollection")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Parameter implements Serializable {
+public class Parameter implements org.opennms.netmgt.collection.api.Parameter, Serializable {
     private static final long serialVersionUID = 1202340599637121415L;
 
     /**

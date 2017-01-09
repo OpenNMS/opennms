@@ -35,7 +35,7 @@ import java.util.Collection;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 import org.opennms.core.wsman.WSManConstants;
-import org.opennms.netmgt.collection.support.builder.AttributeType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.config.wsman.Collection.IncludeAllSystemDefinitions;
 
 public class WsmanDatacollectionConfigTest extends XmlTestNoCastor<WsmanDatacollectionConfig> {
