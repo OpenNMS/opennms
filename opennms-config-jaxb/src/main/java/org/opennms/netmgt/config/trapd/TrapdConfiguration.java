@@ -29,21 +29,16 @@
 package org.opennms.netmgt.config.trapd;
 
 import java.io.Serializable;
+import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.opennms.netmgt.config.snmp.Configuration;
 
-
-
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
 
 /**
  * Top-level element for the trapd-configuration.xml
@@ -57,10 +52,6 @@ import org.opennms.netmgt.config.snmp.Configuration;
 public class TrapdConfiguration implements  Serializable {
 	private static final long serialVersionUID = -3548367130814097723L;
 
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
 	/**
      * The IP address on which trapd listens for connections.
      *  If "" is specified, trapd will bind to all addresses. The
@@ -73,7 +64,7 @@ public class TrapdConfiguration implements  Serializable {
      * The port on which trapd listens for SNMP traps. The
      *  standard port is 162.
      */
-	@XmlAttribute(name="snmp-trap-port")
+	@XmlAttribute(name="snmp-trap-port", required=true)
     private int _snmpTrapPort;
 
     /**
@@ -86,8 +77,40 @@ public class TrapdConfiguration implements  Serializable {
      * Whether traps from devices unknown to OpenNMS should
      *  generate newSuspect events.
      */
-	@XmlAttribute(name="new-suspect-on-trap")
+	@XmlAttribute(name="new-suspect-on-trap", required=true)
     private boolean _newSuspectOnTrap;
+
+	@XmlAttribute(name="include-raw-message", required=false)
+    private boolean _includeRawMessage;
+
+    /**
+     * Number of threads used for consuming/dispatching messages.
+     * Defaults to 2 x the number of available processors.
+     */
+	@XmlAttribute(name="threads", required=false)
+    private int _threads = 0;
+
+    /**
+     * Maximum number of messages to keep in memory while waiting
+     to be dispatched.
+     */
+	@XmlAttribute(name="queue-size", required=false)
+    private int _queueSize = 10000;
+
+    /**
+     * Messages are aggregated in batches before being dispatched.
+     * When the batch reaches this size, it will be dispatched.
+     */
+	@XmlAttribute(name="batch-size", required=false)
+    private int _batchSize = 1000;
+
+    /**
+     * Messages are aggregated in batches before being dispatched.
+     * When the batch has been created for longer than this interval (ms)
+     * it will be dispatched, regardless of the current size.
+     */
+	@XmlAttribute(name="batch-interval", required=false)
+    private int _batchInterval = 500;
 
     /**
      * keeps track of state for field: _newSuspectOnTrap
@@ -101,10 +124,6 @@ public class TrapdConfiguration implements  Serializable {
 	@XmlElement(name="snmpv3-user")
     private java.util.List<Snmpv3User> _snmpv3UserList;
 
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
 
     public TrapdConfiguration() {
         super();
@@ -121,10 +140,6 @@ public class TrapdConfiguration implements  Serializable {
         this._snmpTrapPort = _snmpTrapPort;
         this._snmpv3UserList = new java.util.ArrayList<Snmpv3User>();
     }
-
-      //-----------/
-     //- Methods -/
-    //-----------/
 
     /**
      * 
@@ -179,44 +194,29 @@ public class TrapdConfiguration implements  Serializable {
         return java.util.Collections.enumeration(this._snmpv3UserList);
     }
 
-    /**
-     * Overrides the java.lang.Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public int hashCode() {
+        return Objects.hash(_snmpTrapAddress, _snmpTrapPort, _has_snmpTrapPort, _newSuspectOnTrap, _snmpv3UserList,
+                _includeRawMessage, _threads, _queueSize, _batchSize, _batchInterval);
+    }
+
     @Override()
-    public boolean equals(
-            final java.lang.Object obj) {
-        if ( this == obj )
-            return true;
-        
+    public boolean equals(final java.lang.Object obj) {
+        if ( this == obj) return true;
+        if (obj == null) return false;
+
         if (obj instanceof TrapdConfiguration) {
-        
-            TrapdConfiguration temp = (TrapdConfiguration)obj;
-            if (this._snmpTrapAddress != null) {
-                if (temp._snmpTrapAddress == null) return false;
-                else if (!(this._snmpTrapAddress.equals(temp._snmpTrapAddress))) 
-                    return false;
-            }
-            else if (temp._snmpTrapAddress != null)
-                return false;
-            if (this._snmpTrapPort != temp._snmpTrapPort)
-                return false;
-            if (this._has_snmpTrapPort != temp._has_snmpTrapPort)
-                return false;
-            if (this._newSuspectOnTrap != temp._newSuspectOnTrap)
-                return false;
-            if (this._has_newSuspectOnTrap != temp._has_newSuspectOnTrap)
-                return false;
-            if (this._snmpv3UserList != null) {
-                if (temp._snmpv3UserList == null) return false;
-                else if (!(this._snmpv3UserList.equals(temp._snmpv3UserList))) 
-                    return false;
-            }
-            else if (temp._snmpv3UserList != null)
-                return false;
-            return true;
+            final TrapdConfiguration other = (TrapdConfiguration)obj;
+            final boolean equals = Objects.equals(_snmpTrapAddress, other._snmpTrapAddress)
+                    && Objects.equals(_snmpTrapPort, other._snmpTrapPort)
+                    && Objects.equals(_has_snmpTrapPort, other._has_snmpTrapPort)
+                    && Objects.equals(_newSuspectOnTrap, other._newSuspectOnTrap)
+                    && Objects.equals(_snmpv3UserList, other._snmpv3UserList)
+                    && Objects.equals(_includeRawMessage, other._includeRawMessage)
+                    && Objects.equals(_threads, other._threads)
+                    && Objects.equals(_queueSize, other._queueSize)
+                    && Objects.equals(_batchSize, other._batchSize)
+                    && Objects.equals(_batchInterval, other._batchInterval);
+            return equals;
         }
         return false;
     }
@@ -336,31 +336,6 @@ public class TrapdConfiguration implements  Serializable {
     public boolean hasSnmpTrapPort(
     ) {
         return this._has_snmpTrapPort;
-    }
-
-    /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    public int hashCode(
-    ) {
-        int result = 17;
-        
-        long tmp;
-        if (_snmpTrapAddress != null) {
-           result = 37 * result + _snmpTrapAddress.hashCode();
-        }
-        result = 37 * result + _snmpTrapPort;
-        result = 37 * result + (_newSuspectOnTrap?0:1);
-        if (_snmpv3UserList != null) {
-           result = 37 * result + _snmpv3UserList.hashCode();
-        }
-        
-        return result;
     }
 
     /**
@@ -521,6 +496,44 @@ public class TrapdConfiguration implements  Serializable {
             final java.util.List<Snmpv3User> snmpv3UserList) {
         this._snmpv3UserList = snmpv3UserList;
     }
-    
 
+    public boolean isIncludeRawMessage() {
+        return _includeRawMessage;
+    }
+
+    public void setIncludeRawMessage(boolean _includeRawMessage) {
+        this._includeRawMessage = _includeRawMessage;
+    }
+
+    public int getThreads() {
+        return _threads;
+    }
+
+    public void setThreads(int _threads) {
+        this._threads = _threads;
+    }
+
+    public int getQueueSize() {
+        return _queueSize;
+    }
+
+    public void setQueueSize(int _queueSize) {
+        this._queueSize = _queueSize;
+    }
+
+    public int getBatchSize() {
+        return _batchSize;
+    }
+
+    public void setBatchSize(int _batchSize) {
+        this._batchSize = _batchSize;
+    }
+
+    public int getBatchInterval() {
+        return _batchInterval;
+    }
+
+    public void setBatchInterval(int _batchInterval) {
+        this._batchInterval = _batchInterval;
+    }
 }

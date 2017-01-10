@@ -46,6 +46,10 @@ public final class SyslogConfigBean implements SyslogdConfig {
 	private String m_parser;
 	private String m_discardUei;
 	private boolean m_newSuspectOnMessage;
+	private int m_numThreads;
+	private int m_queueSize;
+	private int m_batchSize;
+	private int m_batchIntervalMs;
 
 	@Override
 	public int getSyslogPort() {
@@ -129,4 +133,42 @@ public final class SyslogConfigBean implements SyslogdConfig {
 		m_discardUei = discardUei;
 	}
 
+    @Override
+    public int getNumThreads() {
+        if (m_numThreads <= 0) {
+            return Runtime.getRuntime().availableProcessors() * 2;
+        }
+        return m_numThreads;
+    }
+
+    public void setNumThreads(int numThreads) {
+        m_numThreads = numThreads;
+    }
+
+    @Override
+    public int getQueueSize() {
+        return m_queueSize;
+    }
+
+    public void setQueueSize(int queueSize) {
+        m_queueSize = queueSize;
+    }
+
+    @Override
+    public int getBatchSize() {
+        return m_batchSize;
+    }
+
+    public void setBatchSize(int batchSize) {
+        m_batchSize = batchSize;
+    }
+
+    @Override
+    public int getBatchIntervalMs() {
+        return m_batchIntervalMs;
+    }
+
+    public void setBatchIntervalMs(int batchIntervalMs) {
+        m_batchIntervalMs = batchIntervalMs;
+    }
 }

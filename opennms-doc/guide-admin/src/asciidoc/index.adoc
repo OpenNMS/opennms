@@ -247,6 +247,10 @@ include::text/ticketing/tsrm.adoc[]
 == Enabling RMI
 include::text/rmi.adoc[]
 
+[[ga-minion]]
+== Minion
+include::text/minion/kafka.adoc[]
+
 [[ga-opennms-plugin-manager]]
 == Plugin Manager
 include::text/plugin-manager/introduction.adoc[]

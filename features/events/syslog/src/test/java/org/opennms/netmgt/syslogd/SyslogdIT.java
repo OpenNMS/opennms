@@ -46,6 +46,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -58,6 +59,8 @@ import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.syslogd.api.SyslogConnection;
+import org.opennms.netmgt.syslogd.api.SyslogMessageLogDTO;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -65,6 +68,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.codahale.metrics.MetricRegistry;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -77,6 +82,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/mockSinkConsumerManager.xml",
+        "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-syslogDaemon.xml"
 })
 @JUnitConfigurationEnvironment
@@ -94,6 +101,13 @@ public class SyslogdIT implements InitializingBean {
 
     @Autowired
     private DistPollerDao m_distPollerDao;
+
+    @Autowired
+    private MockMessageDispatcherFactory<SyslogConnection, SyslogMessageLogDTO> m_messageDispatcherFactory;
+
+    private SyslogSinkConsumer m_syslogSinkConsumer;
+
+    private SyslogSinkModule m_syslogSinkModule;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -131,9 +145,16 @@ public class SyslogdIT implements InitializingBean {
         assertTrue(foundBeer);
         assertTrue(foundMalt);
 
+        m_syslogSinkConsumer = new SyslogSinkConsumer(new MetricRegistry());
+        m_syslogSinkConsumer.setDistPollerDao(m_distPollerDao);
+        m_syslogSinkConsumer.setSyslogdConfig(m_config);
+        m_syslogSinkConsumer.setEventForwarder(m_eventIpcManager);
+        m_syslogSinkModule = m_syslogSinkConsumer.getModule();
+        m_messageDispatcherFactory.setConsumer(m_syslogSinkConsumer);
+
         SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(m_config);
         receiver.setDistPollerDao(m_distPollerDao);
-        receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
+        receiver.setMessageDispatcherFactory(m_messageDispatcherFactory);
         m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
@@ -168,7 +189,8 @@ public class SyslogdIT implements InitializingBean {
         
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, InetAddressUtils.ONE_TWENTY_SEVEN);
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation()));
+        SyslogMessageLogDTO messageLog = m_syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
+        m_syslogSinkConsumer.handleMessage(messageLog);
 
         m_eventIpcManager.getEventAnticipator().verifyAnticipated(5000,0,0,0,0);
         final Event receivedEvent = m_eventIpcManager.getEventAnticipator().getAnticipatedEventsReceived().get(0);

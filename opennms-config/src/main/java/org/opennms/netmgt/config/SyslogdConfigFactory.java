@@ -210,6 +210,30 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
         return m_config.getConfiguration().getDiscardUei();
     }
 
+    @Override
+    public int getNumThreads() {
+        if (m_config.getConfiguration().hasThreads()) {
+            return m_config.getConfiguration().getThreads();
+        } else {
+            return Runtime.getRuntime().availableProcessors() * 2;
+        }
+    }
+
+    @Override
+    public int getQueueSize() {
+        return m_config.getConfiguration().getQueueSize();
+    }
+
+    @Override
+    public int getBatchSize() {
+        return m_config.getConfiguration().getBatchSize();
+    }
+
+    @Override
+    public int getBatchIntervalMs() {
+        return m_config.getConfiguration().getBatchInterval();
+    }
+
     /**
      * Parse import-file tags and add all uei-matchs and hide-messages.
      * 
