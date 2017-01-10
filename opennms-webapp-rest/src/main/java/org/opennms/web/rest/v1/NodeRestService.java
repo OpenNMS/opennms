@@ -207,6 +207,12 @@ public class NodeRestService extends OnmsRestService {
                 LOG.debug("addNode: Assigning new node to default location: {}", location.getLocationName());
                 node.setLocation(location);
             }
+
+            // see NMS-8019
+            if (node.getType() == null) {
+                throw getException(Status.BAD_REQUEST, "Node type must be set.");
+            }
+
             LOG.debug("addNode: Adding node {}", node);
             m_nodeDao.save(node);
             sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId(), node.getLabel());
