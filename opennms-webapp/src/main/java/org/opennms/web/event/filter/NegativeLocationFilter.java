@@ -53,7 +53,7 @@ public class NegativeLocationFilter extends NotEqualOrNullFilter<String> {
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;
-        if (!(obj instanceof NegativeNodeLocationFilter)) return false;
+        if (!(obj instanceof NegativeLocationFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 }
