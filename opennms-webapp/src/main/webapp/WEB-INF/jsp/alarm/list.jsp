@@ -3,7 +3,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -383,6 +383,8 @@
               <%=this.makeSortLink(callback, parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node",      favorite )%>
               <c:if test="${param.display == 'long'}">
               <br />
+              <%=this.makeSortLink(callback, parms, SortStyle.NODE_LOCATION, SortStyle.REVERSE_NODE_LOCATION, "nodelocation", "Node Location", favorite )%>
+              <br />
               <%=this.makeSortLink(callback, parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface", favorite )%>
               <br />
               <%=this.makeSortLink(callback, parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service",   favorite )%>
@@ -396,6 +398,8 @@
               <c:if test="${param.display == 'long'}">
               <br />
               <%=this.makeSortLink(callback, parms, SortStyle.FIRSTEVENTTIME,  SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time", favorite  )%>
+              <br />
+              <%=this.makeSortLink(callback, parms, SortStyle.LOCATION,  SortStyle.REVERSE_LOCATION,  "location",  "Event Source Location", favorite  )%>
               <br />
               <% if ( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
               <%=this.makeSortLink(callback, parms, SortStyle.ACKUSER,  SortStyle.REVERSE_ACKUSER,  "ackuser",  "Acknowledged By", favorite  )%>
@@ -489,7 +493,19 @@
               &nbsp;
             <% } %>
           <c:if test="${param.display == 'long'}">
-		<br />
+            <br />
+            <% if (alarms[i].getNodeId() != null && alarms[i].getNode() != null && alarms[i].getNode().getLocation() != null) { %>
+              <% String location = alarms[i].getNode().getLocation().getLocationName(); %>
+              <% Filter locationFilter = new NodeLocationFilter(location); %>
+              <a href="element/node.jsp?node=<%=alarms[i].getNodeId()%>"><%= location %></a>
+              <% if( !parms.getFilters().contains(locationFilter) ) { %>
+                <nobr>
+                  <a href="<%=this.makeLink(callback, parms, locationFilter, true, favorite)%>" class="filterLink" title="Show only alarms for this node location">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, new NegativeNodeLocationFilter(location), true, favorite)%>" class="filterLink" title="Do not show alarms for this node location">${addNegativeFilter}</a>
+                </nobr>
+              <% } %>
+            <% } %>
+		    <br />
             <% if(alarms[i].getIpAddr() != null ) { %>
               <% Filter intfFilter = new InterfaceFilter(alarms[i].getIpAddr()); %>
               <% if( alarms[i].getNodeId() != null ) { %>
@@ -556,6 +572,20 @@
               <a href="<%=this.makeLink(callback, parms, new AfterFirstEventTimeFilter(alarms[i].getFirstEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
               <a href="<%=this.makeLink(callback, parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>
+          <br />
+            <% if (alarms[i].getDistPoller() != null && alarms[i].getLastEvent() != null) { %>
+              <% String location = alarms[i].getDistPoller().getLocation(); %>
+              <% Filter locationFilter = new LocationFilter(location); %>
+              <span title="Event source location <%= location %>"><a href="event/detail.htm?id=<%= alarms[i].getLastEvent().getId()%>">
+                <%= location %>
+              </a></span>
+              <% if( !parms.getFilters().contains(locationFilter) ) { %>
+                <nobr>
+                  <a href="<%=this.makeLink(callback, parms, locationFilter, true, favorite)%>" class="filterLink" title="Show only alarms for this event source location">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, new NegativeLocationFilter(location), true, favorite)%>" class="filterLink" title="Do not show alarms for this event source location">${addNegativeFilter}</a>
+                </nobr>
+              <% } %>
+            <% } %>
           <br />
               <% if ( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
 			<nobr><%=alarms[i].getAckUser()%></nobr>          
