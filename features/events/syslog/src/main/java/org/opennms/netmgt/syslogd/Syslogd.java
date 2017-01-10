@@ -31,7 +31,6 @@ package org.opennms.netmgt.syslogd;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

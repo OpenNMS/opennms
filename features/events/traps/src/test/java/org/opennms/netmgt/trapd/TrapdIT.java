@@ -30,8 +30,6 @@ package org.opennms.netmgt.trapd;
 
 import java.net.InetAddress;
 
-import javax.annotation.Resource;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +38,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.TrapdConfigFactory;
+import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -49,7 +47,6 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
-import org.opennms.netmgt.snmp.SnmpV2TrapBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,22 +66,20 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-trapDaemon.xml",
         // Overrides the port that Trapd binds to and sets newSuspectOnTrap to 'true'
-        "classpath:/org/opennms/netmgt/trapd/applicationContext-trapDaemonTest-snmpTrapPort.xml"
+        "classpath:/org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class TrapdIT implements InitializingBean {
-    @Resource(name="snmpTrapPort")
-    Integer m_snmpTrapPort;
+
+    @Autowired
+    private TrapdConfig m_trapdConfig;
 
     @Autowired
     Trapd m_trapd;
 
     @Autowired
     MockEventIpcManager m_mockEventIpcManager;
-
-    @Autowired
-    TrapdConfigFactory m_trapdConfigFactory;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -126,7 +121,7 @@ public class TrapdIT implements InitializingBean {
         newSuspectBuilder.setInterface(localAddr);
         m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
 
-        pdu.send(localhost, m_snmpTrapPort, "public");
+        pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
 
         // Allow time for Trapd and Eventd to do their magic
         Thread.sleep(5000);
@@ -153,7 +148,7 @@ public class TrapdIT implements InitializingBean {
         newSuspectBuilder.setInterface(localAddr);
         m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
 
-        pdu.send(localhost, m_snmpTrapPort, "public");
+        pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
 
         // Allow time for Trapd and Eventd to do their magic
         Thread.sleep(5000);

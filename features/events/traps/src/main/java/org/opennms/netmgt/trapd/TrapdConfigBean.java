@@ -32,11 +32,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.snmp.SnmpV3User;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a bean container that can be used as a {@link TrapdConfig}
@@ -46,66 +51,152 @@ import org.opennms.netmgt.snmp.SnmpV3User;
  */
 public class TrapdConfigBean implements TrapdConfig, Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -4406324301602556539L;
-	private String m_snmpTrapAddress;
-	private int m_snmpTrapPort;
-	private boolean m_newSuspectOnTrap;
-	private final List<SnmpV3User> m_snmpV3Users = Collections.synchronizedList(new ArrayList<>());
+
+	private String snmpTrapAddress;
+	private int snmpTrapPort;
+	private boolean newSuspectOnTrap;
+	private List<SnmpV3User> snmpV3Users= new ArrayList<>();
+	private boolean includeRawMessage;
+	private int batchIntervalInMs;
+	private int batchSize;
+	private int queueSize;
+	private int numThreads;
+
+	public TrapdConfigBean() {
+
+	}
+
+	public TrapdConfigBean(TrapdConfig configToClone) {
+		update(configToClone);
+	}
+
+	public TrapdConfigBean(TrapdConfiguration trapdConfiguration) {
+		setSnmpTrapAddress(trapdConfiguration.getSnmpTrapAddress());
+		setSnmpTrapPort(trapdConfiguration.getSnmpTrapPort());
+		setNewSuspectOnTrap(trapdConfiguration.isNewSuspectOnTrap());
+		setIncludeRawMessage(trapdConfiguration.isIncludeRawMessage());
+		setBatchIntervalMs(trapdConfiguration.getBatchInterval());
+		setBatchSize(trapdConfiguration.getBatchSize());
+		setQueueSize(trapdConfiguration.getQueueSize());
+		setNumThreads(trapdConfiguration.getThreads());
+		if (trapdConfiguration.getSnmpv3UserCollection() != null) {
+			setSnmpV3Users(trapdConfiguration.getSnmpv3UserCollection().stream()
+						.map(TrapdConfigBean::toSnmpV3User)
+						.collect(Collectors.toList()));
+		}
+	}
 
 	public void setSnmpTrapAddress(String snmpTrapAddress) {
-		this.m_snmpTrapAddress = snmpTrapAddress;
+		this.snmpTrapAddress = snmpTrapAddress;
 	}
 
 	public void setSnmpTrapPort(int snmpTrapPort) {
-		this.m_snmpTrapPort = snmpTrapPort;
+		this.snmpTrapPort = snmpTrapPort;
 	}
 
 	public void setNewSuspectOnTrap(boolean newSuspectOnTrap) {
-		this.m_newSuspectOnTrap = newSuspectOnTrap;
-	}
-
-	public void setSnmpV3Users(List<SnmpV3User> snmpV3Users) {
-		synchronized (m_snmpV3Users) {
-			m_snmpV3Users.clear();
-			m_snmpV3Users.addAll(snmpV3Users);
-		}
+		this.newSuspectOnTrap = newSuspectOnTrap;
 	}
 
 	@Override
 	public String getSnmpTrapAddress() {
-		return m_snmpTrapAddress;
+		return snmpTrapAddress;
 	}
 
 	@Override
 	public int getSnmpTrapPort() {
-		return m_snmpTrapPort;
+		return snmpTrapPort;
+	}
+
+	public void setSnmpV3Users(List<SnmpV3User> snmpV3Users) {
+		Objects.requireNonNull(snmpV3Users);
+		final Map<String, SnmpV3User> collect = snmpV3Users.stream().collect(Collectors.toMap(SnmpV3User::getSecurityName, Function.identity(), (a, b) -> {
+			LoggerFactory.getLogger(getClass()).warn("Multiple SNMPv3 user entries found for security name \"{}\", using entry {}", a.getSecurityName(), a);
+			return a;
+		}));
+		this.snmpV3Users = new ArrayList<>(collect.values());
 	}
 
 	@Override
 	public boolean getNewSuspectOnTrap() {
-		return m_newSuspectOnTrap;
+		return newSuspectOnTrap;
 	}
 
 	@Override
 	public List<SnmpV3User> getSnmpV3Users() {
-		synchronized (m_snmpV3Users) {
-			return Collections.unmodifiableList(m_snmpV3Users);
-		}
+		return Collections.unmodifiableList(snmpV3Users);
 	}
 
 	@Override
-	public void onUpdate(TrapdConfiguration config) {
-		this.m_snmpTrapAddress = config.getSnmpTrapAddress();
-		this.m_snmpTrapPort = config.getSnmpTrapPort();
-		synchronized (m_snmpV3Users) {
-			m_snmpV3Users.clear();
-			if (config.getSnmpv3UserCollection() != null) {
-				m_snmpV3Users.addAll(config.getSnmpv3UserCollection().stream().map(TrapReceiverImpl::toSnmpV3User).collect(Collectors.toList()));
-			}
-		}
+	public boolean isIncludeRawMessage() {
+		return includeRawMessage;
 	}
 
+	public void setIncludeRawMessage(boolean includeRawMessage) {
+		this.includeRawMessage = includeRawMessage;
+	}
+
+	@Override
+	public int getNumThreads() {
+		if (numThreads <= 0) {
+			return Runtime.getRuntime().availableProcessors() * 2;
+		}
+		return numThreads;
+	}
+
+	@Override
+	public int getQueueSize() {
+		return queueSize;
+	}
+
+	@Override
+	public int getBatchSize() {
+		return batchSize;
+	}
+
+	@Override
+	public int getBatchIntervalMs() {
+		return batchIntervalInMs;
+	}
+
+	@Override
+	public void update(TrapdConfig config) {
+		setSnmpTrapAddress(config.getSnmpTrapAddress());
+		setSnmpTrapPort(config.getSnmpTrapPort());
+		setNewSuspectOnTrap(config.getNewSuspectOnTrap());
+		setIncludeRawMessage(config.isIncludeRawMessage());
+		setBatchIntervalMs(config.getBatchIntervalMs());
+		setBatchSize(config.getBatchSize());
+		setQueueSize(config.getQueueSize());
+		setNumThreads(config.getNumThreads());
+		setSnmpV3Users(config.getSnmpV3Users());
+	}
+
+	public void setBatchIntervalMs(int batchIntervalInMs) {
+		this.batchIntervalInMs = batchIntervalInMs;
+	}
+
+	public void setBatchSize(int batchSize) {
+		this.batchSize = batchSize;
+	}
+
+	public void setQueueSize(int queueSize) {
+		this.queueSize = queueSize;
+	}
+
+	public void setNumThreads(int numThreads) {
+		this.numThreads = numThreads;
+	}
+
+	private static SnmpV3User toSnmpV3User(Snmpv3User snmpv3User) {
+		SnmpV3User snmpV3User = new SnmpV3User();
+		snmpV3User.setAuthPassPhrase(snmpv3User.getAuthPassphrase());
+		snmpV3User.setAuthProtocol(snmpv3User.getAuthProtocol());
+		snmpV3User.setEngineId(snmpv3User.getEngineId());
+		snmpV3User.setPrivPassPhrase(snmpv3User.getPrivacyPassphrase());
+		snmpV3User.setPrivProtocol(snmpv3User.getPrivacyProtocol());
+		snmpV3User.setSecurityName(snmpv3User.getSecurityName());
+		return snmpV3User;
+	}
 }

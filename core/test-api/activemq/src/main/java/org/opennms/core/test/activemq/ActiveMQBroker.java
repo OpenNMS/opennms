@@ -55,7 +55,7 @@ public class ActiveMQBroker extends ExternalResource {
         if (!m_broker.waitUntilStarted()) {
             throw new Exception("ActiveMQ broker was not started or stopped unexpectedly. Error: " + m_broker.getStartException());
         }
-    };
+    }
 
     @Override
     public void after() {
@@ -85,5 +85,5 @@ public class ActiveMQBroker extends ExternalResource {
         } catch (IOException e) {
             LOG.warn("An error occurred while deleting the temporary directory '{}'.", m_temporaryDirectory, e);
         }
-    };
+    }
 }

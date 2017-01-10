@@ -63,8 +63,6 @@ import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Verifies that syslog messages sent to the Minion generate
@@ -73,7 +71,6 @@ import org.slf4j.LoggerFactory;
  * @author jwhite
  */
 public class SyslogTest {
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogTest.class);
 
     private static TestEnvironment minionSystem;
 
@@ -90,7 +87,8 @@ public class SyslogTest {
                     .addFile(SyslogTest.class.getResource("/eventconf.xml"), "etc/eventconf.xml")
                     .addFile(SyslogTest.class.getResource("/events/Cisco.syslog.events.xml"), "etc/events/Cisco.syslog.events.xml")
                     .addFile(SyslogTest.class.getResource("/syslogd-configuration.xml"), "etc/syslogd-configuration.xml")
-                    .addFile(SyslogTest.class.getResource("/syslog/Cisco.syslog.xml"), "etc/syslog/Cisco.syslog.xml");
+                    .addFile(SyslogTest.class.getResource("/syslog/Cisco.syslog.xml"), "etc/syslog/Cisco.syslog.xml")
+                    .addFile(SyslogTest.class.getResource("/service-configuration.xml"), "etc/service-configuration.xml");
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
             minionSystem = builder.build();
             return minionSystem;

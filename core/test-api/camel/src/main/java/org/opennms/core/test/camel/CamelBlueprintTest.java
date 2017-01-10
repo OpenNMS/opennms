@@ -54,7 +54,7 @@ public class CamelBlueprintTest extends CamelBlueprintTestSupport {
                 ((PingerFactoryImpl) pingerFactory).reset();
             }
         } catch (final Exception e) {
-            LOG.warn("Failed to get PingerFactory", e);
+            LOG.warn("Failed to get PingerFactory. This may be intentional.");
         }
     }
 
