@@ -119,6 +119,9 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
                     case NODE:
                         criteria.addOrder(Order.desc("node.label"));
                         break;
+                    case LOCATION:
+                        criteria.addOrder(Order.desc("node.location.locationName"));
+                        break;
                     case INTERFACE:
                         criteria.addOrder(Order.desc("ipAddress"));
                         break;
@@ -142,6 +145,9 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
                         break;
                     case REVERSE_NODE:
                         criteria.addOrder(Order.asc("node.label"));
+                        break;
+                    case REVERSE_LOCATION:
+                        criteria.addOrder(Order.asc("node.location.locationName"));
                         break;
                     case REVERSE_INTERFACE:
                         criteria.addOrder(Order.asc("ipAddress"));

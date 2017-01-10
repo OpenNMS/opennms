@@ -45,6 +45,7 @@ public enum SortStyle {
     PAGETIME("pagetime"),
     RESPONDTIME("respondtime"),
     NODE("node"),
+    LOCATION("location"),
     INTERFACE("interface"),
     SERVICE("service"),
     ID("id"),
@@ -53,6 +54,7 @@ public enum SortStyle {
     REVERSE_PAGETIME("rev_pagetime"),
     REVERSE_RESPONDTIME("rev_respondtime"),
     REVERSE_NODE("rev_node"),
+    REVERSE_LOCATION("rev_location"),
     REVERSE_INTERFACE("rev_interface"),
     REVERSE_SERVICE("rev_service"),
     REVERSE_ID("rev_id"),
@@ -191,10 +193,18 @@ public enum SortStyle {
             clause = " ORDER BY EVENT.EVENTSEVERITY ASC";
             break;
 
+        case LOCATION:
+            clause = " ORDER BY NODE.LOCATION DESC";
+            break;
+
+        case REVERSE_LOCATION:
+            clause = " ORDER BY NODE.LOCATION ASC";
+            break;
+
         default:
             throw new IllegalArgumentException("Unknown SortStyle: " + getName());
         }
-        
+
         return clause;
     }
 
