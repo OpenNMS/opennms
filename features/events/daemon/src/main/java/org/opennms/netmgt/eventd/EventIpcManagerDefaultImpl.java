@@ -103,7 +103,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                 if (!super.offer(event)) {
                     // If the queue is full, run on current thread
                     LOG.warn("Execution queue is full, executing Runnable on current thread");
-                    event.run();
+                    Logging.withPrefix(Eventd.LOG4J_CATEGORY, event);
                 }
                 return true;
             } else {
@@ -255,7 +255,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                         // Make sure we restore our log4j logging prefix after onEvent is called
                         Map<String,String> mdc = Logging.getCopyOfContextMap();
                         try {
-                            m_listener.onEvent(event);
+                            // Synchronize on the listener because the onEvent() methods are not
+                            // always threadsafe
+                            synchronized(m_listener) {
+                                m_listener.onEvent(event);
+                            }
                         } finally {
                             Logging.setContextMap(mdc);
                         }
