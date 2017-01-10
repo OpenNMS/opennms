@@ -98,7 +98,7 @@ FROM
 			outages, service, events, ifservices
 		WHERE
 			(iflostservice, COALESCE(ifregainedservice,'$P!{END_TIME_STRING}'::TIMESTAMP)) OVERLAPS ('$P!{START_TIME_STRING}'::TIMESTAMP, '$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) AND
-			outages.serviceid = service.serviceid AND
+			outages.ifserviceid = service.serviceid AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND
 			events.eventuei = 'uei.opennms.org/nodes/nodeDown')
