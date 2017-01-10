@@ -36,6 +36,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -78,11 +79,16 @@ import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.minion.OnmsMinion;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
+import org.opennms.smoketest.utils.RestClient;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
@@ -90,6 +96,7 @@ import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.RateLimiter;
 
 /**
@@ -115,9 +122,11 @@ public class SyslogTest {
             return new NullTestEnvironment();
         }
         try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder().all();
-            // Also enable Kafka and Elasticsearch
-            builder.kafka().es1();
+            final TestEnvironmentBuilder builder = TestEnvironment.builder().all()
+                // Add another Minion in a different location
+                .minionWithOtherLocation()
+                // Also enable Kafka and Elasticsearch
+                .kafka().es1();
             builder.withOpenNMSEnvironment()
                     // Set logging to INFO level
                     .addFile(SyslogTest.class.getResource("/log4j2-info.xml"), "etc/log4j2.xml")
@@ -151,12 +160,86 @@ public class SyslogTest {
         this.daoFactory = new HibernateDaoFactory(pgsql);
     }
 
+    /**
+     * @see https://issues.opennms.org/browse/NMS-8798
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testAssociateSyslogsWithNodesWithOverlappingIpAddresses() throws Exception {
+        final Date startOfTest = new Date();
+        final String hostIpAddress = "1.2.3.4";
+
+        // Create requisition with two node in different locations but same IP
+        final RestClient client = new RestClient(minionSystem.getServiceAddress(ContainerAlias.OPENNMS, 8980));
+        final Requisition requisition = new Requisition("overlapping");
+        final RequisitionNode node1 = new RequisitionNode();
+        node1.setNodeLabel("node_1");
+        node1.setLocation("MINION");
+        final RequisitionInterface interface1 = new RequisitionInterface();
+        interface1.setIpAddr(hostIpAddress);
+        interface1.setManaged(true);
+        interface1.setSnmpPrimary(PrimaryType.PRIMARY);
+        node1.setInterfaces(ImmutableList.of(interface1));
+        node1.setForeignId("node_1");
+        requisition.insertNode(node1);
+        final RequisitionNode node2 = new RequisitionNode();
+        node2.setNodeLabel("node_2");
+        node2.setLocation("BANANA");
+        final RequisitionInterface interface2 = new RequisitionInterface();
+        interface2.setIpAddr(hostIpAddress);
+        interface2.setManaged(true);
+        interface2.setSnmpPrimary(PrimaryType.PRIMARY);
+        node2.setInterfaces(ImmutableList.of(interface2));
+        node2.setForeignId("node_2");
+        requisition.insertNode(node2);
+        client.addOrReplaceRequisition(requisition);
+        client.importRequisition("overlapping");
+
+        // Wait for the nodes to be provisioned
+        final OnmsNode onmsNode1 = await()
+                .atMost(1, MINUTES).pollInterval(5, SECONDS)
+                .until(DaoUtils.findMatchingCallable(this.daoFactory.getDao(NodeDaoHibernate.class),
+                                                     new CriteriaBuilder(OnmsNode.class)
+                                                             .eq("label", "node_1")
+                                                             .toCriteria()),
+                       notNullValue());
+        final OnmsNode onmsNode2 = await()
+                .atMost(1, MINUTES).pollInterval(5, SECONDS)
+                .until(DaoUtils.findMatchingCallable(this.daoFactory.getDao(NodeDaoHibernate.class),
+                                                     new CriteriaBuilder(OnmsNode.class)
+                                                             .eq("label", "node_2")
+                                                             .toCriteria()),
+                       notNullValue());
+
+        // Sending syslog messages to each node and expect it to appear on the node
+        sendMessage(ContainerAlias.MINION, hostIpAddress, 1);
+        await().atMost(1, MINUTES).pollInterval(5, SECONDS)
+               .until(DaoUtils.countMatchingCallable(this.daoFactory.getDao(EventDaoHibernate.class),
+                                                     new CriteriaBuilder(OnmsEvent.class)
+                                                             .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
+                                                             .ge("eventCreateTime", startOfTest)
+                                                             .eq("node", onmsNode1)
+                                                             .toCriteria()),
+                      is(1));
+
+        sendMessage(ContainerAlias.MINION_OTHER_LOCATION, hostIpAddress, 1);
+        await().atMost(1, MINUTES).pollInterval(5, SECONDS)
+               .until(DaoUtils.countMatchingCallable(this.daoFactory.getDao(EventDaoHibernate.class),
+                                                     new CriteriaBuilder(OnmsEvent.class)
+                                                             .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
+                                                             .ge("eventCreateTime", startOfTest)
+                                                             .eq("node", onmsNode2)
+                                                             .toCriteria()),
+                      is(1));
+    }
+
     @Test
     public void canReceiveSyslogMessages() throws Exception {
         final Date startOfTest = new Date();
 
         // Send a syslog packet to the Minion syslog listener
-        SyslogTest.sendMessage("myhost", 1);
+        SyslogTest.sendMessage(ContainerAlias.MINION, "myhost", 1);
 
         // Parsing the message correctly relies on the customized syslogd-configuration.xml that is part of the OpenNMS image
         final EventDao eventDao = this.daoFactory.getDao(EventDaoHibernate.class);
@@ -186,7 +269,7 @@ public class SyslogTest {
                       is(1));
 
         // Send the initial message
-        SyslogTest.sendMessage(sender, 1);
+        SyslogTest.sendMessage(ContainerAlias.MINION, sender, 1);
 
         // Wait for the syslog message
         await().atMost(1, MINUTES).pollInterval(5, SECONDS)
@@ -227,7 +310,7 @@ public class SyslogTest {
                       notNullValue());
 
         // Send the second message
-        SyslogTest.sendMessage(sender, 1);
+        SyslogTest.sendMessage(ContainerAlias.MINION, sender, 1);
 
         // Wait for the second message with the node assigned
         await().atMost(1, MINUTES).pollInterval(5, SECONDS)
@@ -289,7 +372,7 @@ public class SyslogTest {
         LOG.info("Warming up syslog routes by sending 1 packet");
 
         // Warm up the routes
-        SyslogTest.sendMessage(sender, 1);
+        SyslogTest.sendMessage(ContainerAlias.MINION, sender, 1);
 
         for (int i = 0; i < 10; i++) {
             LOG.info("Slept for " + i + " seconds");
@@ -299,7 +382,7 @@ public class SyslogTest {
         LOG.info("Warming up syslog routes by sending 100 packets");
 
         // Warm up the routes
-        SyslogTest.sendMessage(sender, 100);
+        SyslogTest.sendMessage(ContainerAlias.MINION, sender, 100);
 
         for (int i = 0; i < 10; i++) {
             LOG.info("Slept for " + i + " seconds");
@@ -325,7 +408,7 @@ public class SyslogTest {
         RateLimiter limiter = RateLimiter.create(packetsPerSecond);
         for (int i = 0; i < (numMessages / chunk); i++) {
             limiter.acquire(chunk);
-            SyslogTest.sendMessage(sender, chunk);
+            SyslogTest.sendMessage(ContainerAlias.MINION, sender, chunk);
             count += chunk;
             if (count % logEvery == 0) {
                 long mid = System.currentTimeMillis();
@@ -388,7 +471,7 @@ public class SyslogTest {
         LOG.info("Warming up syslog routes by sending 1 packet");
 
         // Warm up the routes
-        SyslogTest.sendMessage(sender, 1);
+        SyslogTest.sendMessage(ContainerAlias.MINION, sender, 1);
 
         for (int i = 0; i < 10; i++) {
             LOG.info("Slept for " + i + " seconds");
@@ -398,7 +481,7 @@ public class SyslogTest {
         LOG.info("Warming up syslog routes by sending 100 packets");
 
         // Warm up the routes
-        SyslogTest.sendMessage(sender, 100);
+        SyslogTest.sendMessage(ContainerAlias.MINION, sender, 100);
 
         for (int i = 0; i < 10; i++) {
             LOG.info("Slept for " + i + " seconds");
@@ -424,7 +507,7 @@ public class SyslogTest {
         RateLimiter limiter = RateLimiter.create(packetsPerSecond);
         for (int i = 0; i < (numMessages / chunk); i++) {
             limiter.acquire(chunk);
-            SyslogTest.sendMessage(sender, chunk);
+            SyslogTest.sendMessage(ContainerAlias.MINION, sender, chunk);
             count += chunk;
             if (count % logEvery == 0) {
                 long mid = System.currentTimeMillis();
@@ -568,8 +651,17 @@ public class SyslogTest {
             .put("cluster.name", "opennms").build();
         TransportClient esClient = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(esTransportAddr));
 
+        String indexName = new IndexNameFunction().apply("opennms", date);
+
         try {
-            esClient.admin().indices().prepareCreate(new IndexNameFunction().apply("opennms", date)).execute().actionGet();
+            // Delete the index if it already exists
+            boolean indexExists = esClient.admin().indices().prepareExists(indexName).execute().actionGet().isExists();
+            if (indexExists) {
+                esClient.admin().indices().prepareDelete(indexName).execute().actionGet();
+            }
+            esClient.admin().indices().prepareCreate(indexName).execute().actionGet();
+        } catch (Throwable e) {
+            LOG.warn("Error while trying to create index: " + indexName, e);
         } finally {
             esClient.close();
         }
@@ -602,7 +694,11 @@ public class SyslogTest {
 
                     LOG.debug("SEARCH RESPONSE: {}", response.toString());
 
-                    assertEquals("ES search hits was not equal to " + numMessages, numMessages, response.getHits().totalHits());
+                    // Sometimes, the first warm-up message is successful so treat both message counts as valid
+                    assertTrue("ES search hits was not equal to " + numMessages,
+                        (numMessages == response.getHits().totalHits()) || 
+                        ((numMessages + 1) == response.getHits().totalHits())
+                    );
                     assertEquals("Event UEI did not match", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic", response.getHits().getAt(0).getSource().get("eventuei"));
                     //assertEquals("Event IP address did not match", "4.2.2.2", response.getHits().getAt(0).getSource().get("ipaddr"));
                 } catch (Throwable e) {
@@ -623,8 +719,8 @@ public class SyslogTest {
      * @param eventCount Number of messages to send
      * @throws IOException
      */
-    private static void sendMessage(final String host, final int eventCount) throws IOException {
-        final InetSocketAddress syslogAddr = minionSystem.getServiceAddress(ContainerAlias.MINION, 1514, "udp");
+    private static void sendMessage(ContainerAlias alias, final String host, final int eventCount) throws IOException {
+        final InetSocketAddress syslogAddr = minionSystem.getServiceAddress(alias, 1514, "udp");
 
         List<Integer> randomNumbers = new ArrayList<Integer>();
 
