@@ -78,8 +78,8 @@ In addition a new entry in the file `$OPENNMS_HOME/etc/jasper-reports.xml` must 
 <2> The name of the template. The template must be located in `$OPENNMS_HOME/etc/report-templates`.
 <3> The engine to use. It is either `jdbc` or `null`.
 
-[[ga-database-reports-overview]]
-=== Use of Jaspersoft Studio
+[[ga-database-reports-usage-jaspersoft-studio]]
+=== Usage of Jaspersoft Studio
 
 When developing new reports it is recommended to use the _Jaspersoft Studio_ application.
 It can be downloaded link:http://community.jaspersoft.com/project/jaspersoft-studio[here].
