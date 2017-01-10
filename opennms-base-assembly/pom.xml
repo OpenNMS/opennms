@@ -93,6 +93,10 @@
           </execution>
         </executions>
       </plugin>
+      <!--
+        The reports are compiled for test purposes only, to ensure the reports do not contain any errors.
+        In the distribution only the *.jrxml files are included.
+       -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jasperreports-maven-plugin</artifactId>

@@ -28,10 +28,6 @@
       <outputDirectory>etc</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>${project.build.directory}/jasper</directory>
-      <outputDirectory>etc/report-templates</outputDirectory>
-    </fileSet>
-    <fileSet>
       <directory>${project.build.outputDirectory}/contrib</directory>
       <includes>
         <include>**/*.pl</include>
