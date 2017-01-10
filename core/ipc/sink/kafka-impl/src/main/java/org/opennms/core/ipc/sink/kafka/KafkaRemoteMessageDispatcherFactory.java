@@ -80,9 +80,9 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
                 // The call to dispatch() is synchronous, so we block until the message was sent
                 future.get();
             } catch (InterruptedException e) {
-                LOG.warn("Interrupted while sending message to topic {}.", e);
+                LOG.warn("Interrupted while sending message to topic {}.", topic, e);
             } catch (ExecutionException e) {
-                LOG.error("Error occured while sending message to topic {}.", e);
+                LOG.error("Error occured while sending message to topic {}.", topic, e);
             }
         }
     }
