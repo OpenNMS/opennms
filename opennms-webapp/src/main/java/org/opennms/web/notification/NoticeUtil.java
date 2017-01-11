@@ -41,7 +41,9 @@ import org.opennms.web.notification.filter.InterfaceFilter;
 import org.opennms.web.notification.filter.LocationFilter;
 import org.opennms.web.notification.filter.NegativeLocationFilter;
 import org.opennms.web.notification.filter.NegativeNodeFilter;
+import org.opennms.web.notification.filter.NegativeNodeLocationFilter;
 import org.opennms.web.notification.filter.NodeFilter;
+import org.opennms.web.notification.filter.NodeLocationFilter;
 import org.opennms.web.notification.filter.NotificationIdFilter;
 import org.opennms.web.notification.filter.ResponderFilter;
 import org.opennms.web.notification.filter.ServiceFilter;
@@ -98,6 +100,10 @@ public abstract class NoticeUtil extends Object {
             filter = new LocationFilter(WebSecurityUtils.sanitizeString(value));
         } else if (type.equals(NegativeLocationFilter.TYPE)) {
             filter = new NegativeLocationFilter(WebSecurityUtils.sanitizeString(value));
+        } else if (type.equals(NodeLocationFilter.TYPE)) {
+            filter = new NodeLocationFilter(WebSecurityUtils.sanitizeString(value));
+        } else if (type.equals(NegativeNodeLocationFilter.TYPE)) {
+            filter = new NegativeNodeLocationFilter(WebSecurityUtils.sanitizeString(value));
         }
 
         return filter;

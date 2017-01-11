@@ -373,40 +373,46 @@
 
 
 
-			<th width="1%">
+			<th width="2%">
               <%=this.makeSortLink(callback, parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" ,       favorite )%>
             </th>
             <th width="6%">
               <%=this.makeSortLink(callback, parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity",  favorite )%>
             </th>
-			<th width="19%">
+			<th>
               <%=this.makeSortLink(callback, parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node",      favorite )%>
               <c:if test="${param.display == 'long'}">
-              <br />
-              <%=this.makeSortLink(callback, parms, SortStyle.NODE_LOCATION, SortStyle.REVERSE_NODE_LOCATION, "nodelocation", "Node Location", favorite )%>
-              <br />
+              /
               <%=this.makeSortLink(callback, parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface", favorite )%>
-              <br />
+              </th>
+              <th>
               <%=this.makeSortLink(callback, parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service",   favorite )%>
+              </th>
+              <th>
+              <%=this.makeSortLink(callback, parms, SortStyle.NODE_LOCATION, SortStyle.REVERSE_NODE_LOCATION, "nodelocation", "Node Location", favorite )%>
               </c:if>
             </th>
 			<th width="3%">
               <%=this.makeSortLink(callback, parms, SortStyle.COUNT,  SortStyle.REVERSE_COUNT,  "count",  "Count", favorite  )%>
             </th>
-			<th width="13%">
-              <%=this.makeSortLink(callback, parms, SortStyle.LASTEVENTTIME,  SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time", favorite  )%>
+			<th <% if ("long".equals(request.getParameter("display"))) { %>width="13%"<% } %>>
+              <%=this.makeSortLink(callback, parms, SortStyle.LASTEVENTTIME,  SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last", favorite  )%>
               <c:if test="${param.display == 'long'}">
-              <br />
+              /
               <%=this.makeSortLink(callback, parms, SortStyle.FIRSTEVENTTIME,  SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time", favorite  )%>
-              <br />
+              </th>
+              <th>
               <%=this.makeSortLink(callback, parms, SortStyle.LOCATION,  SortStyle.REVERSE_LOCATION,  "location",  "Event Source Location", favorite  )%>
-              <br />
               <% if ( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
+              </th>
+              <th>
               <%=this.makeSortLink(callback, parms, SortStyle.ACKUSER,  SortStyle.REVERSE_ACKUSER,  "ackuser",  "Acknowledged By", favorite  )%>
               <% } %>
               </c:if>
             </th>
+            <c:if test="${param.display != 'long'}">
 			<th width="56%">Log Msg</th>
+			</c:if>
 		</tr>
 	</thead>
 
@@ -416,21 +422,21 @@
 
         <tr class="severity-<%=alarms[i].getSeverity().getLabel()%>">
           <% if( parms.getAckType().equals(AcknowledgeType.BOTH.toNormalizedAcknowledgeType()) ) { %>
-              <td class="divider" valign="middle" rowspan="1">
+              <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
                 <nobr>
                   <input type="checkbox" name="alarm" disabled="disabled" <%=alarms[i].isAcknowledged() ? "checked='true'" : ""%> /> 
                 </nobr>
           <% } else if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-              <td class="divider" valign="middle" rowspan="1">
+              <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
                 <nobr>
                   <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
                 </nobr>
           <% } else { %>
-            <td valign="middle" rowspan="1" class="divider">&nbsp;
+            <td valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>" class="divider">&nbsp;
           <% } %>
           </td>
 
-          <td class="divider" valign="middle" rowspan="1">
+          <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
 
             <a style="vertical-align:middle" href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
             <c:if test="<%= (alarms[i].getStickyMemo() != null && alarms[i].getStickyMemo().getId() != null) && (alarms[i].getReductionKeyMemo() != null && alarms[i].getReductionKeyMemo().getId() != null) %>">
@@ -446,16 +452,16 @@
           <c:if test="${param.display == 'long'}">
             <% if(alarms[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(alarms[i].getUei()); %>
-                <br />UEI
-              <% if( !parms.getFilters().contains( exactUEIFilter )) { %>
+                <br />
                 <nobr>
+                UEI
+              <% if( !parms.getFilters().contains( exactUEIFilter )) { %>
                   <a href="<%=this.makeLink(callback, parms, exactUEIFilter, true, favorite)%>" class="filterLink" title="Show only events with this UEI">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink(callback, parms, new NegativeExactUEIFilter(alarms[i].getUei()), true, favorite)%>" class="filterLink" title="Do not show events for this UEI">${addNegativeFilter}</a>
-                </nobr>
-              <% } %>
+                  <a href="<%=this.makeLink(callback, parms, new NegativeExactUEIFilter(alarms[i].getUei()), true, favorite)%>" class="filterLink" title="Do not show events for this UEI">${addNegativeFilter}</a>              <% } %>
             <% } else { %>
               &nbsp;
             <% } %>
+            </nobr>
             <% Filter severityFilter = new SeverityFilter(alarms[i].getSeverity()); %>
             <% if( !parms.getFilters().contains( severityFilter )) { %>
 		<br />Sev.
@@ -467,17 +473,17 @@
             <% } %>
           </c:if>
           </td>
-          <td class="divider bright" valign="middle" rowspan="1">
+          <td class="divider bright" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
+            <nobr>
             <strong><%= alarms[i].getSeverity().getLabel() %></strong>
             <% Filter severityFilter = new SeverityFilter(alarms[i].getSeverity()); %>
             <% if( !parms.getFilters().contains(severityFilter)) { %>
-            <nobr>
               <a href="<%=this.makeLink(callback, parms, severityFilter, true, favorite)%>" class="filterLink" title="Show only events with this severity">${addPositiveFilter}</a>
               <a href="<%=this.makeLink(callback, parms, new NegativeSeverityFilter(alarms[i].getSeverity()), true, favorite)%>" class="filterLink" title="Do not show events with this severity">${addNegativeFilter}</a>
-            </nobr>
             <% } %>
+            </nobr>
           </td>
-          <td class="divider">
+          <td>
 	    <% if(alarms[i].getNodeId() != null && alarms[i].getNodeLabel()!= null ) { %>
               <% Filter nodeFilter = new NodeFilter(alarms[i].getNodeId(), getServletContext()); %>             
               <% String[] labels = this.getNodeLabels( alarms[i].getNodeLabel() ); %>
@@ -493,18 +499,6 @@
               &nbsp;
             <% } %>
           <c:if test="${param.display == 'long'}">
-            <br />
-            <% if (alarms[i].getNodeId() != null && alarms[i].getNode() != null && alarms[i].getNode().getLocation() != null) { %>
-              <% String location = alarms[i].getNode().getLocation().getLocationName(); %>
-              <% Filter locationFilter = new NodeLocationFilter(location); %>
-              <a href="element/node.jsp?node=<%=alarms[i].getNodeId()%>"><%= location %></a>
-              <% if( !parms.getFilters().contains(locationFilter) ) { %>
-                <nobr>
-                  <a href="<%=this.makeLink(callback, parms, locationFilter, true, favorite)%>" class="filterLink" title="Show only alarms for this node location">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink(callback, parms, new NegativeNodeLocationFilter(location), true, favorite)%>" class="filterLink" title="Do not show alarms for this node location">${addNegativeFilter}</a>
-                </nobr>
-              <% } %>
-            <% } %>
 		    <br />
             <% if(alarms[i].getIpAddr() != null ) { %>
               <% Filter intfFilter = new InterfaceFilter(alarms[i].getIpAddr()); %>
@@ -526,7 +520,21 @@
             <% } else { %>
               &nbsp;
             <% } %>
-          <br />
+            </td>
+            <td>
+            <% if (alarms[i].getNodeId() != null && alarms[i].getNode() != null && alarms[i].getNode().getLocation() != null) { %>
+              <% String location = alarms[i].getNode().getLocation().getLocationName(); %>
+              <% Filter locationFilter = new NodeLocationFilter(location); %>
+              <a href="element/node.jsp?node=<%=alarms[i].getNodeId()%>"><%= location %></a>
+              <% if( !parms.getFilters().contains(locationFilter) ) { %>
+                <nobr>
+                  <a href="<%=this.makeLink(callback, parms, locationFilter, true, favorite)%>" class="filterLink" title="Show only alarms for this node location">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, new NegativeNodeLocationFilter(location), true, favorite)%>" class="filterLink" title="Do not show alarms for this node location">${addNegativeFilter}</a>
+                </nobr>
+              <% } %>
+            <% } %>
+            </td>
+            <td>
             <% if(alarms[i].getServiceType() != null && !"".equals(alarms[i].getServiceType().getName())) { %>
               <% Filter serviceFilter = new ServiceFilter(alarms[i].getServiceType().getId(), getServletContext()); %>
               <% if( alarms[i].getNodeId() != null && alarms[i].getIpAddr() != null ) { %>
@@ -548,7 +556,7 @@
             <% } %>
             </c:if>
           </td>          
-          <td class="divider" valign="middle" rowspan="1" >
+          <td valign="middle">
 	    <% if(alarms[i].getId() > 0 ) { %>           
                 <nobr>
                   <a href="event/list.htm?sortby=id&amp;acktype=unack&amp;filter=alarm%3d<%=alarms[i].getId()%>"><%=alarms[i].getCounter()%></a>
@@ -557,7 +565,7 @@
             <%=alarms[i].getCounter()%>
             <% } %>
           </td>
-          <td class="divider">
+          <td>
             <nobr>
               <% if(alarms[i].getLastEvent() != null) { %><span title="Event <%= alarms[i].getLastEvent().getId()%>"><a href="event/detail.htm?id=<%= alarms[i].getLastEvent().getId()%>"><% } %>
                 <fmt:formatDate value="${alarm.lastEventTime}" type="BOTH" />
@@ -572,7 +580,8 @@
               <a href="<%=this.makeLink(callback, parms, new AfterFirstEventTimeFilter(alarms[i].getFirstEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
               <a href="<%=this.makeLink(callback, parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>
-          <br />
+          </td>
+          <td>
             <% if (alarms[i].getDistPoller() != null && alarms[i].getLastEvent() != null) { %>
               <% String location = alarms[i].getDistPoller().getLocation(); %>
               <% Filter locationFilter = new LocationFilter(location); %>
@@ -586,8 +595,9 @@
                 </nobr>
               <% } %>
             <% } %>
-          <br />
               <% if ( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
+          </td>
+          <td>
 			<nobr><%=alarms[i].getAckUser()%></nobr>          
             <nobr>
               <a href="<%=this.makeLink(callback, parms, new AcknowledgedByFilter(alarms[i].getAckUser()), true, favorite)%>"  class="filterLink" title="Only show alarms ack by this user">${addPositiveFilter}</a>
@@ -596,8 +606,15 @@
 			<% }%>
           </c:if>
           </td>
+          <c:if test="${param.display != 'long'}">
           <td class="divider"><%=WebSecurityUtils.sanitizeString(alarms[i].getLogMsg(), true)%></td>
+          </c:if>
+        </tr>
+        <c:if test="${param.display == 'long'}">
+        <tr class="severity-<%=alarms[i].getSeverity().getLabel()%>">
+          <td colspan="7" class="divider" style="border-top: none"><%=WebSecurityUtils.sanitizeString(alarms[i].getLogMsg(), true)%></td>
         </tr> 
+        </c:if>
       <% } /*end for*/%>
 
       </table>

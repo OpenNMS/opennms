@@ -199,14 +199,15 @@
 			  <tr>
           <th nowrap><%=this.makeSortLink( parms, SortStyle.ID,SortStyle.REVERSE_ID,     "id",          "ID"           )%></th>
           <th nowrap>Event ID</th>
-          <th><%=this.makeSortLink( parms, SortStyle.SEVERITY,    SortStyle.REVERSE_SEVERITY,    "severity",    "Severity"      )%></th>
-          <th><%=this.makeSortLink( parms, SortStyle.PAGETIME,    SortStyle.REVERSE_PAGETIME,    "pagetime",    "Sent Time"     )%></th>
-          <th><%=this.makeSortLink( parms, SortStyle.RESPONDER,   SortStyle.REVERSE_RESPONDER,   "answeredby",  "Responder"     )%></th>
-          <th><%=this.makeSortLink( parms, SortStyle.RESPONDTIME, SortStyle.REVERSE_RESPONDTIME, "respondtime", "Respond Time"  )%></th>  
-          <th><%=this.makeSortLink( parms, SortStyle.NODE,        SortStyle.REVERSE_NODE,        "node",        "Node"          )%></th>
-          <th><%=this.makeSortLink( parms, SortStyle.LOCATION,    SortStyle.REVERSE_LOCATION,    "location",    "Node Location" )%></th>
-          <th><%=this.makeSortLink( parms, SortStyle.INTERFACE,   SortStyle.REVERSE_INTERFACE,   "interface",   "Interface"     )%></th>
-          <th><%=this.makeSortLink( parms, SortStyle.SERVICE,     SortStyle.REVERSE_SERVICE,     "service",     "Service"       )%></th>
+          <th><%=this.makeSortLink( parms, SortStyle.SEVERITY,      SortStyle.REVERSE_SEVERITY,      "severity",     "Severity"         )%></th>
+          <th><%=this.makeSortLink( parms, SortStyle.PAGETIME,      SortStyle.REVERSE_PAGETIME,      "pagetime",     "Sent&nbsp;Time"   )%></th>
+          <th><%=this.makeSortLink( parms, SortStyle.LOCATION,      SortStyle.REVERSE_LOCATION,      "location",     "Source&nbsp;Loc." )%></th>
+          <th><%=this.makeSortLink( parms, SortStyle.RESPONDER,     SortStyle.REVERSE_RESPONDER,     "answeredby",   "Responder"        )%></th>
+          <th><%=this.makeSortLink( parms, SortStyle.RESPONDTIME,   SortStyle.REVERSE_RESPONDTIME,   "respondtime",  "Respond&nbsp;Time")%></th>  
+          <th><%=this.makeSortLink( parms, SortStyle.NODE,          SortStyle.REVERSE_NODE,          "node",         "Node"             )%></th>
+          <th><%=this.makeSortLink( parms, SortStyle.NODE_LOCATION, SortStyle.REVERSE_NODE_LOCATION, "nodelocation", "Node&nbsp;Loc."   )%></th>
+          <th><%=this.makeSortLink( parms, SortStyle.INTERFACE,     SortStyle.REVERSE_INTERFACE,     "interface",    "Interface"        )%></th>
+          <th><%=this.makeSortLink( parms, SortStyle.SERVICE,       SortStyle.REVERSE_SERVICE,       "service",      "Service"          )%></th>
         </tr>
       </thead>
 
@@ -236,6 +237,18 @@
           <td class="bright divider" rowspan="2"><%=eventSeverity%></td>
           <td class="divider"><fmt:formatDate value="<%=notification.getTimeSent()%>" type="BOTH" /></td>
           <td class="divider">
+            <% if ( event != null ) { %>
+              <% Filter locationFilter = new LocationFilter(event.getLocation()); %>
+              <a href="event/detail.jsp?id=<%=notification.getEventId()%>"><%= event.getLocation() %></a>
+              <% if (parms.filters != null && !parms.filters.contains( locationFilter )) { %>
+                <nobr>
+                  <a href="<%=this.makeLink( parms, locationFilter, true)%>" class="filterLink" title="Show only notices from this event source location">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeLocationFilter(event.getLocation()), true)%>" class="filterLink" title="Do not show notices from this event source location">${addNegativeFilter}</a>
+                </nobr>
+              <% } %>
+            <% } %>
+          </td>
+          <td class="divider">
           <% final String responder = notification.getResponder(); %>
           <% if (responder != null) { %>
             <% Filter responderFilter = new ResponderFilter(responder); %>      
@@ -256,20 +269,23 @@
               <% String[] labels = nodeLabels.get(notification.getNodeId()); %>
               <a href="element/node.jsp?node=<%=notification.getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
               <% if( parms.filters != null && !parms.filters.contains(nodeFilter) ) { %>
-
-                <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only notices on this node">${addPositiveFilter}</a>
-                <a href="<%=this.makeLink( parms, new NegativeNodeFilter(notification.getNodeId(), getServletContext()), true)%>" class="filterLink" title="Do not show notices for this node">${addNegativeFilter}</a>
+                <nobr>
+                  <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only notices on this node">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeNodeFilter(notification.getNodeId(), getServletContext()), true)%>" class="filterLink" title="Do not show notices for this node">${addNegativeFilter}</a>
+                </nobr>
               <% } %>
             <% } %>
           </td>
           <td class="divider">
             <% if(notification.getNodeId() > 0 ) { %>
               <% String[] locations = nodeLocations.get(notification.getNodeId()); %>
-              <% Filter locationFilter = new LocationFilter(locations[1]); %>
+              <% Filter nodeLocationFilter = new NodeLocationFilter(locations[1]); %>
               <a href="element/node.jsp?node=<%=notification.getNodeId()%>" title="<%=locations[1]%>"><%=locations[0]%></a>
-              <% if( parms.filters != null && !parms.filters.contains(locationFilter) ) { %>
-                <a href="<%=this.makeLink( parms, locationFilter, true)%>" class="filterLink" title="Show only notices for this node location">${addPositiveFilter}</a>
-                <a href="<%=this.makeLink( parms, new NegativeLocationFilter(locations[1]), true)%>" class="filterLink" title="Do not show notices for this node location">${addNegativeFilter}</a>
+              <% if( parms.filters != null && !parms.filters.contains(nodeLocationFilter) ) { %>
+                <nobr>
+                  <a href="<%=this.makeLink( parms, nodeLocationFilter, true)%>" class="filterLink" title="Show only notices for this node location">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeNodeLocationFilter(locations[1]), true)%>" class="filterLink" title="Do not show notices for this node location">${addNegativeFilter}</a>
+                </nobr>
               <% } %>
             <% } %>
           </td>
@@ -310,7 +326,7 @@
           </td>
         </tr>
         <tr class="severity-<%=eventSeverity%>">
-          <td colspan="7"><%=WebSecurityUtils.sanitizeString(notification.getTextMessage())%></td> 
+          <td colspan="8"><%=WebSecurityUtils.sanitizeString(notification.getTextMessage())%></td> 
         </tr>
       <% } /*end for*/%>
       </table>

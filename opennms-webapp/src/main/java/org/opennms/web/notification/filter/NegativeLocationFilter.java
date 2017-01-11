@@ -39,7 +39,7 @@ public class NegativeLocationFilter extends NotEqualOrNullFilter<String> {
     private String m_location;
 
     public NegativeLocationFilter(final String location) {
-        super(TYPE, SQLType.STRING, "NODE.LOCATION", "node.location.locationName", location);
+        super(TYPE, SQLType.STRING, "MONITORINGSYSTEMS.LOCATION", "distPoller.location", location);
         m_location = location;
     }
 

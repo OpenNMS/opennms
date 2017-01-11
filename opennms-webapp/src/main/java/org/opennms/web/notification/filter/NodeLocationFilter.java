@@ -34,24 +34,24 @@ import org.opennms.web.filter.SQLType;
 /**
  * Encapsulates all node location filtering functionality.
  */
-public class LocationFilter extends EqualsFilter<String> {
-    public static final String TYPE = "location";
+public class NodeLocationFilter extends EqualsFilter<String> {
+    public static final String TYPE = "nodelocation";
     private String m_location;
 
-    public LocationFilter(final String location) {
-        super(TYPE, SQLType.STRING, "MONITORINGSYSTEMS.LOCATION", "distPoller.location", location);
+    public NodeLocationFilter(final String location) {
+        super(TYPE, SQLType.STRING, "NODE.LOCATION", "node.location.locationName", location);
         m_location = location;
     }
 
     @Override
     public String getTextDescription() {
-        return ("location is " + m_location);
+        return ("node location is " + m_location);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;
-        if (!(obj instanceof LocationFilter)) return false;
+        if (!(obj instanceof NodeLocationFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 }

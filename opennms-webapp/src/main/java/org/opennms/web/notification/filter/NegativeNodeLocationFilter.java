@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,30 +28,30 @@
 
 package org.opennms.web.notification.filter;
 
-import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.NotEqualOrNullFilter;
 import org.opennms.web.filter.SQLType;
 
 /**
  * Encapsulates all node location filtering functionality.
  */
-public class LocationFilter extends EqualsFilter<String> {
-    public static final String TYPE = "location";
+public class NegativeNodeLocationFilter extends NotEqualOrNullFilter<String> {
+    public static final String TYPE = "nodelocationnot";
     private String m_location;
 
-    public LocationFilter(final String location) {
-        super(TYPE, SQLType.STRING, "MONITORINGSYSTEMS.LOCATION", "distPoller.location", location);
+    public NegativeNodeLocationFilter(final String location) {
+        super(TYPE, SQLType.STRING, "NODE.LOCATION", "node.location.locationName", location);
         m_location = location;
     }
 
     @Override
     public String getTextDescription() {
-        return ("location is " + m_location);
+        return ("node location is not " + m_location);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;
-        if (!(obj instanceof LocationFilter)) return false;
+        if (!(obj instanceof NegativeNodeLocationFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 }
