@@ -74,6 +74,8 @@ public class Outage {
 
     protected String location;
 
+    protected String eventLocation;
+
     /**
      * <p>Constructor for Outage.</p>
      */
@@ -304,6 +306,14 @@ public class Outage {
         this.location = location;
     }
 
+    public String getEventLocation() {
+        return eventLocation;
+    }
+
+    public void setEventLocation(String eventLocation) {
+        this.eventLocation = eventLocation;
+    }
+
     /**
      * <p>toString</p>
      *
@@ -321,6 +331,7 @@ public class Outage {
             .append("Service Name", getServiceName())
             .append("Lost Service Time", getLostServiceTime())
             .append("Regained Service Time", getRegainedServiceTime())
+            .append("Event Location", getEventLocation())
             .append("Acknowledged By", getLostServiceNotificationAcknowledgedBy())
             .append("Suppress Time", getSuppressTime())
             .append("Suppressed By", getSuppressedBy())

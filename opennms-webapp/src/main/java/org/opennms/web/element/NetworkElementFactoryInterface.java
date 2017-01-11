@@ -40,6 +40,14 @@ public interface NetworkElementFactoryInterface {
 	String getNodeLabel(int nodeId);
 
 	/**
+	 * Get the location name associated with the node.
+	 *
+	 * @param nodeId the node's ID
+	 * @return the location as a string, or null if the node does not have a location
+	 */
+	String getNodeLocation(int nodeId);
+
+	/**
 	 * Find the IP address of the primary SNMP interface.
 	 *
 	 * @return An IPv4 or IPv6 address in string format or null if the node has no primary
