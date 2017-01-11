@@ -364,7 +364,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
             getViewManager().setBoundingBox(m_graphContainer.getGraph().getLayout().computeBoundingBox(vRefs));
 
-        }else {
+        } else {
             getViewManager().setBoundingBox(m_graphContainer.getGraph().getLayout().getBounds());
         }
     }

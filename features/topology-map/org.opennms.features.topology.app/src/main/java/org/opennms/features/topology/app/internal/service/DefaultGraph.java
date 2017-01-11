@@ -38,13 +38,13 @@ import java.util.TreeSet;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphVisitor;
 import org.opennms.features.topology.api.Layout;
-import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.DefaultLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,10 +59,10 @@ public class DefaultGraph implements Graph {
     private Layout m_layout;
     private Map<EdgeRef, Status> edgeStatus = Maps.newHashMap();
     private Map<VertexRef, Status> vertexStatus = Maps.newHashMap();
-    private LayoutAlgorithm layoutAlgorithm;
 
     public DefaultGraph(Collection<Vertex> displayVertices, Collection<Edge> displayEdges) {
         updateLayout(displayVertices, displayEdges);
+        setLayout(new DefaultLayout());
     }
 
     @Override
@@ -136,15 +136,6 @@ public class DefaultGraph implements Graph {
     @Override
     public Map<VertexRef, Status> getVertexStatus() {
         return vertexStatus;
-    }
-
-    public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
-        this.layoutAlgorithm = layoutAlgorithm;
-    }
-
-    @Override
-    public LayoutAlgorithm getLayoutAlgorithm() {
-        return layoutAlgorithm;
     }
 
     private void updateLayout(Collection<Vertex> displayVertices, Collection<Edge> displayEdges) {

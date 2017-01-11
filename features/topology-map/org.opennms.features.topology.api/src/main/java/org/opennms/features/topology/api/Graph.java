@@ -57,6 +57,4 @@ public interface Graph {
 	Map<EdgeRef, Status> getEdgeStatus();
 
 	void visit(GraphVisitor visitor) throws Exception;
-
-	LayoutAlgorithm getLayoutAlgorithm();
 }

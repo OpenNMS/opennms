@@ -171,13 +171,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private TopologyServiceClient m_topologyServiceClient;
 
     public VEProviderGraphContainer() {
-        // Create null-graph
-        DefaultGraph graph = new DefaultGraph(Lists.newArrayList(), Lists.newArrayList());
-        DefaultLayout layout = new DefaultLayout();
-        graph.setLayoutAlgorithm(new FRLayoutAlgorithm());
-        graph.setLayout(layout);
-        m_graph = graph;
-        m_layoutAlgorithm = m_graph.getLayoutAlgorithm();
+        m_graph = new DefaultGraph(Lists.newArrayList(), Lists.newArrayList());
+        m_layoutAlgorithm = new FRLayoutAlgorithm();
         setDirty(false);
         resetCriteriaDirty();
     }
@@ -236,7 +231,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
         if(m_layoutAlgorithm != layoutAlgorithm) {
             m_layoutAlgorithm = layoutAlgorithm;
-            redoLayout();
+            setDirty(true);
         }
     }
 
@@ -249,9 +244,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     public void redoLayout() {
         s_log.debug("redoLayout()");
         // Rebuild the graph vertices and edges if necessary
-        getGraph();
-        if(m_layoutAlgorithm != null) {
-            m_layoutAlgorithm.updateLayout(this);
+        if (isDirty() || isCriteriaDirty()) {
+            getGraph();
             fireGraphChanged();
         }
     }
@@ -346,6 +340,9 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
                 m_graph = m_topologyService.getGraph(getTopologyServiceClient().getMetaTopologyId(), getTopologyServiceClient().getNamespace(), getCriteria(), getSemanticZoomLevel());
                 unselectElementsWhichAreNotVisibleAnymore(m_graph, m_selectionManager);
                 removeVerticesWhichAreNotVisible(m_graph.getDisplayVertices());
+                if(m_layoutAlgorithm != null) {
+                    m_layoutAlgorithm.updateLayout(m_graph);
+                }
                 setDirty(false);
                 resetCriteriaDirty();
             }
@@ -440,9 +437,9 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public void selectTopologyProvider(GraphProvider graphProvider, Callback... callbacks) {
-        Graph graph = m_topologyService.getGraph(getTopologyServiceClient().getMetaTopologyId(), graphProvider.getNamespace(), getCriteria(), getSemanticZoomLevel());
+        // Do not get the graph here, as it is received when invoking the "redoLayout" method.
         setSelectedNamespace(graphProvider.getNamespace());
-        setLayoutAlgorithm(graph.getLayoutAlgorithm());
+        setLayoutAlgorithm(getTopologyServiceClient().getPreferredLayoutAlgorithm());
         if (callbacks != null) {
             for (Callback eachCallback : callbacks) {
                 eachCallback.callback(this, graphProvider);

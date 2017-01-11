@@ -66,6 +66,8 @@ public interface TopologyServiceClient extends SelectionAware {
 
     VertexProvider getDefaultGraphProvider();
 
+    LayoutAlgorithm getPreferredLayoutAlgorithm();
+
     BreadcrumbStrategy getBreadcrumbStrategy();
 
     void setMetaTopologyId(String metaTopologyId);

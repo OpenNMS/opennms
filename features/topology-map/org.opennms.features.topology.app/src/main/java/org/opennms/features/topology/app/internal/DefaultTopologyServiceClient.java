@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.TopologyService;
 import org.opennms.features.topology.api.TopologyServiceClient;
 import org.opennms.features.topology.api.browsers.ContentType;
@@ -129,6 +130,11 @@ public class DefaultTopologyServiceClient implements TopologyServiceClient {
     @Override
     public VertexProvider getDefaultGraphProvider() {
         return topologyService.getMetaTopologyProvider(metaTopologyId).getDefaultGraphProvider();
+    }
+
+    @Override
+    public LayoutAlgorithm getPreferredLayoutAlgorithm() {
+        return topologyService.getPreferredLayoutAlgorithm(metaTopologyId, namespace);
     }
 
     @Override

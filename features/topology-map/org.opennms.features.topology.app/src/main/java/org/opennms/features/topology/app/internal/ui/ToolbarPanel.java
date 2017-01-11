@@ -365,7 +365,8 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
         // Toggle save button for coordinates
         if (graphContainer.getLayoutAlgorithm() instanceof ManualLayoutAlgorithm) {
             // We only show the save button if we don't have a layout persisted, or the layout is not equal
-            boolean showSave = layoutManager.loadLayout(graphContainer) == null || !layoutManager.isPersistedLayoutEqualToCurrentLayout(graphContainer);
+            boolean showSave = layoutManager.loadLayout(graphContainer.getGraph()) == null
+                    || !layoutManager.isPersistedLayoutEqualToCurrentLayout(graphContainer.getGraph());
             layerSaveButton.setEnabled(showSave);
             if (showSave) {
                 layerSaveButton.setDescription("Save the current layout");

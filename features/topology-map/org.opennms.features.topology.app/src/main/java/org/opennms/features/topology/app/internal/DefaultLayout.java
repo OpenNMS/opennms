@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,16 +36,11 @@ import java.util.Map;
 import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
-import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-
-import com.google.common.collect.Lists;
 
 public class DefaultLayout implements Layout {
 	
 	private final Map<VertexRef, Point> m_locations = new HashMap<>();
-
-	private Collection<Vertex> displayVertices = Lists.newArrayList();
 
 	@Override
 	public Point getLocation(VertexRef v) {
@@ -58,10 +52,6 @@ public class DefaultLayout implements Layout {
 			return new Point(0, 0);
 		}
 		return p;
-	}
-
-	public void setDisplayVertices(Collection<Vertex> displayVertices) {
-		this.displayVertices = displayVertices;
 	}
 
 	@Override
@@ -87,12 +77,8 @@ public class DefaultLayout implements Layout {
 	
     @Override
     public BoundingBox getBounds() {
-        if(displayVertices.size() > 0) {
-            Collection<VertexRef> vRefs = new ArrayList<>();
-            for(Vertex v : displayVertices) {
-                vRefs.add(v);
-            }
-            return computeBoundingBox(vRefs);
+        if(m_locations.size() > 0) {
+            return computeBoundingBox(m_locations.keySet());
         } else {
             BoundingBox bBox = new BoundingBox();
             bBox.addPoint(new Point(0, 0));

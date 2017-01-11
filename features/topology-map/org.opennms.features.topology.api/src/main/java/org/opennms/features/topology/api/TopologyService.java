@@ -38,6 +38,9 @@ public interface TopologyService {
 
     GraphProvider getGraphProvider(String metaTopologyId, String namespace);
 
+    // Determines preferred/default layout
+    LayoutAlgorithm getPreferredLayoutAlgorithm(String metaTopologyId, String namespace);
+
     MetaTopologyProvider getMetaTopologyProvider(String metaTopologyId);
 
 }

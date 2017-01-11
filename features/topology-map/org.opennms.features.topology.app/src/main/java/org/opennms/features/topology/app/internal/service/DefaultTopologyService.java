@@ -25,7 +25,6 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.app.internal.DefaultLayout;
 import org.opennms.features.topology.app.internal.jung.D3TopoLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.operations.LayoutOperation;
 import org.osgi.framework.BundleContext;
@@ -128,7 +127,7 @@ public class DefaultTopologyService implements TopologyService {
             LOG.warn("Semantic Zoom Level was {}. Only values >= 0 are allowed, forcing it to be 1", semanticZoomLevel);
             semanticZoomLevel = 0;
         }
-        final GraphProvider graphProvider =  getGraphProvider(metaTopologyId, namespace);
+        final GraphProvider graphProvider = getGraphProvider(metaTopologyId, namespace);
 
         // Determine visible vertices and edges
         final List<Vertex> displayVertices = new ArrayList<>();
@@ -140,18 +139,8 @@ public class DefaultTopologyService implements TopologyService {
         }
         final Collection<Edge> displayEdges = graphProvider.getEdges(criteria);
 
-        // Determine default layout
-        final String preferredLayout = graphProvider.getDefaults().getPreferredLayout();
-        final LayoutAlgorithm preferredLayoutAlgorithm = bundleContext != null ? findLayoutAlgorithm(preferredLayout) : DEFAULT_LAYOUT_ALGORITHM;
-
-        // Create Layout object
-        DefaultLayout layout = new DefaultLayout();
-        layout.setDisplayVertices(displayVertices);
-
         // Create graph object
         final DefaultGraph graph = new DefaultGraph(displayVertices, displayEdges);
-        graph.setLayoutAlgorithm(preferredLayoutAlgorithm);
-        graph.setLayout(layout);
 
         // Calculate status
         final StatusProvider vertexStatusProvider = bundleContext != null ? findVertexStatusProvider(graphProvider) : null;
@@ -174,6 +163,19 @@ public class DefaultTopologyService implements TopologyService {
         } catch (ExecutionException e) {
             throw Throwables.propagate(e);
         }
+    }
+
+    // Determines default layout
+    @Override
+    public LayoutAlgorithm getPreferredLayoutAlgorithm(String metaTopologyId, String namespace) {
+        Objects.requireNonNull(metaTopologyId);
+        Objects.requireNonNull(namespace);
+
+        final GraphProvider graphProvider = getGraphProvider(metaTopologyId, namespace);
+        final String preferredLayout = graphProvider.getDefaults().getPreferredLayout();
+        final LayoutAlgorithm preferredLayoutAlgorithm = bundleContext != null ? findLayoutAlgorithm(preferredLayout) : DEFAULT_LAYOUT_ALGORITHM;
+
+        return preferredLayoutAlgorithm;
     }
 
     @Override
