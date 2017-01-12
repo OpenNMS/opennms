@@ -3,7 +3,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -366,14 +366,15 @@
 							<th width="1%">&nbsp;</th>
 						<% } %>
           <% } %>
-          <th width="01%"><%=this.makeSortLink(callback, parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID"        , favorite)%></th>
-          <th width="06%"><%=this.makeSortLink(callback, parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  , favorite)%></th>
-          <th width="10%"><%=this.makeSortLink(callback, parms, SortStyle.TIME,      SortStyle.REVERSE_TIME,      "time",      "Time"      , favorite)%></th>
-          <th width="05%"><%=this.makeSortLink(callback, parms, SortStyle.LOCATION,  SortStyle.REVERSE_LOCATION,  "location",  "Location"  , favorite)%></th>
-          <th width="19%"><%=this.makeSortLink(callback, parms, SortStyle.SYSTEMID,  SortStyle.REVERSE_SYSTEMID,  "systemid",  "System-ID" , favorite)%></th>
-          <th width="18%"><%=this.makeSortLink(callback, parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node"      , favorite)%></th>
-          <th width="14%"><%=this.makeSortLink(callback, parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface" , favorite)%></th>
-          <th width="13%"><%=this.makeSortLink(callback, parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service"   , favorite)%></th>
+          <th width="01%"><%=this.makeSortLink(callback, parms, SortStyle.ID,            SortStyle.REVERSE_ID,            "id",           "ID"                  , favorite)%></th>
+          <th width="06%"><%=this.makeSortLink(callback, parms, SortStyle.SEVERITY,      SortStyle.REVERSE_SEVERITY,      "severity",     "Severity"            , favorite)%></th>
+          <th width="10%"><%=this.makeSortLink(callback, parms, SortStyle.TIME,          SortStyle.REVERSE_TIME,          "time",         "Time"                , favorite)%></th>
+          <th width="05%"><%=this.makeSortLink(callback, parms, SortStyle.LOCATION,      SortStyle.REVERSE_LOCATION,      "location",     "Source&nbsp;Location", favorite)%></th>
+          <th width="19%"><%=this.makeSortLink(callback, parms, SortStyle.SYSTEMID,      SortStyle.REVERSE_SYSTEMID,      "systemid",     "System-ID"           , favorite)%></th>
+          <th width="18%"><%=this.makeSortLink(callback, parms, SortStyle.NODE,          SortStyle.REVERSE_NODE,          "node",         "Node"                , favorite)%></th>
+          <th width="05%"><%=this.makeSortLink(callback, parms, SortStyle.NODE_LOCATION, SortStyle.REVERSE_NODE_LOCATION, "nodelocation", "Node&nbsp;Location"  , favorite)%></th>
+          <th width="14%"><%=this.makeSortLink(callback, parms, SortStyle.INTERFACE,     SortStyle.REVERSE_INTERFACE,     "interface",    "Interface"           , favorite)%></th>
+          <th width="13%"><%=this.makeSortLink(callback, parms, SortStyle.SERVICE,       SortStyle.REVERSE_SERVICE,       "service",      "Service"             , favorite)%></th>
         </tr>
         </thead>     
       <% for( int i=0; i < events.length; i++ ) {
@@ -395,18 +396,18 @@
           <td valign="top" rowspan="3" class="divider"><a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a></td>
           
           <td valign="top" rowspan="3" class="divider bright"> 
+            <nobr>
             <strong><%= events[i].getSeverity().getLabel() %></strong>
             <% Filter severityFilter = new SeverityFilter(events[i].getSeverity()); %>      
             <% if( !parms.getFilters().contains(severityFilter)) { %>
-              <nobr>
                 <a href="<%=this.makeLink(callback, parms, severityFilter, true, favorite)%>" class="filterLink" title="Show only events with this severity">${addPositiveFilter}</a>
                 <a href="<%=this.makeLink(callback, parms, new NegativeSeverityFilter(events[i].getSeverity()), true, favorite)%>" class="filterLink" title="Do not show events with this severity">${addNegativeFilter}</a>
-              </nobr>
             <% } %>
+            </nobr>
           </td>
           <td class="divider">
-            <nobr><fmt:formatDate value="${event.time}" type="BOTH" /></nobr>
             <nobr>
+              <fmt:formatDate value="${event.time}" type="BOTH" />
               <a href="<%=this.makeLink(callback, parms, new AfterDateFilter(events[i].getTime()), true, favorite)%>"  class="filterLink" title="Only show events occurring after this one">${addAfterFilter}</a>
               <a href="<%=this.makeLink(callback, parms, new BeforeDateFilter(events[i].getTime()), true, favorite)%>" class="filterLink" title="Only show events occurring before this one">${addBeforeFilter}</a>
             </nobr>
@@ -458,6 +459,21 @@
             <% } %>
           </td>
           <td class="divider">
+              <% if(!Strings.isNullOrEmpty(events[i].getNodeLocation())) { %>
+              <% Filter nodeLocationFilter = new NodeLocationFilter(events[i].getNodeLocation()); %>
+              <%=events[i].getNodeLocation()%></a>
+
+              <% if( !parms.getFilters().contains(nodeLocationFilter) ) { %>
+              <nobr>
+                  <a href="<%=this.makeLink(callback, parms, nodeLocationFilter, true, favorite)%>" class="filterLink" title="Show only events for this node location">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, new NegativeNodeLocationFilter(events[i].getNodeLocation()), true, favorite)%>" class="filterLink" title="Do not show events for this node location">${addNegativeFilter}</a>
+              </nobr>
+              <% } %>
+              <% } else { %>
+              &nbsp;
+              <% } %>
+          </td>
+          <td class="divider">
             <% if(events[i].getIpAddress() != null ) { %>
               <% Filter intfFilter = new InterfaceFilter(events[i].getIpAddress()); %>
               <% if( events[i].getNodeId() != 0 ) { %>
@@ -506,7 +522,7 @@
         </tr>
         
         <tr valign="top" class="severity-<%= events[i].getSeverity().getLabel() %>">
-          <td colspan="6">
+          <td colspan="7">
             <% if(events[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(events[i].getUei()); %>
                 <%=events[i].getUei()%>

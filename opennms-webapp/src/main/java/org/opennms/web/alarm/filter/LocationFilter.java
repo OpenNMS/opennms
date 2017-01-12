@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,16 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.event.filter;
+package org.opennms.web.alarm.filter;
 
 import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
+/**
+ * Encapsulates filtering on exact unique event identifiers.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class LocationFilter extends EqualsFilter<String> {
     public static final String TYPE = "location";
-    private String m_location;
+    private final String m_location;
 
-    public LocationFilter(String location) {
+    public LocationFilter(final String location) {
         super(TYPE, SQLType.STRING, "MONITORINGSYSTEMS.LOCATION", "distPoller.location", location);
         m_location = location;
     }
@@ -47,9 +54,10 @@ public class LocationFilter extends EqualsFilter<String> {
 
     @Override
     public String toString() {
-        return ("<WebEventRepository.LocationFilter: " + getDescription() + ">");
+        return ("<AlarmFactory.LocationFilter: " + this.getDescription() + ">");
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;

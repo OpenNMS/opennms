@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.event.filter;
+package org.opennms.web.alarm.filter;
 
-import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.NotEqualsFilter;
 import org.opennms.web.filter.SQLType;
 
-public class LocationFilter extends EqualsFilter<String> {
-    public static final String TYPE = "location";
-    private String m_location;
+public class NegativeNodeLocationFilter extends NotEqualsFilter<String> {
+    public static final String TYPE = "nodelocationnot";
 
-    public LocationFilter(String location) {
-        super(TYPE, SQLType.STRING, "MONITORINGSYSTEMS.LOCATION", "distPoller.location", location);
-        m_location = location;
+    public NegativeNodeLocationFilter(final String location) {
+        super(TYPE, SQLType.STRING, "NODE.LOCATION", "node.location.locationName", location);
     }
 
     @Override
     public String getTextDescription() {
-        return ("Location is " + m_location);
+        return "Node location is not " + getValue();
     }
 
     @Override
     public String toString() {
-        return ("<WebEventRepository.LocationFilter: " + getDescription() + ">");
+        return ("<AlarmFactory.NegativeNodeLocationFilter: " + this.getDescription() + ">");
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;
-        if (!(obj instanceof LocationFilter)) return false;
+        if (!(obj instanceof NegativeNodeLocationFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 }
