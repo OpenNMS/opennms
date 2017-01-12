@@ -96,7 +96,7 @@ if (not $MAVEN_OPTS =~ /MaxPermSize/) {
 }
 
 if (not $MAVEN_OPTS =~ /-Xmx/) {
-	$MAVEN_OPTS .= "-Xmx2048m";
+	$MAVEN_OPTS .= " -Xmx2048m";
 }
 
 if (not $MAVEN_OPTS =~ /ReservedCodeCacheSize/) {
