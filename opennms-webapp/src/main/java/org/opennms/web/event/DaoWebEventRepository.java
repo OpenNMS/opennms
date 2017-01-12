@@ -40,7 +40,9 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventCriteria.EventCriteriaVisitor;
 import org.opennms.web.event.filter.EventDisplayFilter;
@@ -192,6 +194,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         LOG.debug("Found NodeLabel for mapped event:{}", event.getNodeLabel());
         event.nodeID = getNodeIdFromNode(onmsEvent);
         LOG.debug("Found NodeId for mapped event:{}", event.getNodeId());
+        event.nodeLocation = getNodeLocationFromNode(onmsEvent);
         event.notification = onmsEvent.getEventNotification();
         event.operatorAction = onmsEvent.getEventOperAction();
         event.operatorActionMenuText = onmsEvent.getEventOperActionMenuText();
@@ -231,6 +234,22 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         } 
     }
     
+    private String getNodeLocationFromNode(OnmsEvent onmsEvent) {
+        try {
+            final OnmsNode node = onmsEvent.getNode();
+            if (node != null) {
+                final OnmsMonitoringLocation location = node.getLocation();
+                if (location != null) {
+                    return location.getLocationName();
+                }
+            }
+            return "";
+        } catch (org.hibernate.ObjectNotFoundException e) {
+            LOG.debug("No node found in database for event with id: {}", onmsEvent.getId());
+            return "";
+        } 
+    }
+
     /**
      * <p>acknowledgeAll</p>
      *
