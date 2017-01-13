@@ -32,32 +32,6 @@
                 </comp-attrib>
             </mbean>
 
-            <!-- TODO: These metrics are specific to the topic names and should be moved into a separate configuration -->
-            <mbean name="Syslog Bytes In Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec,topic=syslog">
-                <attrib name="Count" alias="syslogInBps" type="gauge"/>
-            </mbean>
-
-            <mbean name="Syslog Bytes Out Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec,topic=syslog">
-                <attrib name="Count" alias="syslogOutBps" type="gauge"/>
-            </mbean>
-
-            <mbean name="Syslog Messages In Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec,topic=syslog">
-                <attrib name="Count" alias="syslogMps" type="gauge"/>
-            </mbean>
-
-            <mbean name="Trap Bytes In Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec,topic=trapd">
-                <attrib name="Count" alias="trapsInBps" type="gauge"/>
-            </mbean>
-
-            <mbean name="Trap Bytes Out Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec,topic=trapd">
-                <attrib name="Count" alias="trapsOutBps" type="gauge"/>
-            </mbean>
-
-            <mbean name="Trap Messages In Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec,topic=trapd">
-                <attrib name="Count" alias="trapsMps" type="gauge"/>
-            </mbean>
-
-
 
             <!-- ================== -->
             <!-- BrokerTopicMetrics -->
