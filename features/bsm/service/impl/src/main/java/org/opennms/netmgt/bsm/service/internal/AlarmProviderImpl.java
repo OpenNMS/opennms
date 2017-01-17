@@ -28,6 +28,13 @@
 
 package org.opennms.netmgt.bsm.service.internal;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.bsm.service.AlarmProvider;
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -40,12 +47,17 @@ public class AlarmProviderImpl implements AlarmProvider {
     private AlarmDao alarmDao;
 
     @Override
-    public AlarmWrapper lookup(String reductionKey) {
-        final OnmsAlarm alarm = alarmDao.findByReductionKey(reductionKey);
-        if (alarm == null) {
-            return null;
+    public Map<String, AlarmWrapper> lookup(Set<String> reductionKeys) {
+        if (reductionKeys == null || reductionKeys.isEmpty()) {
+            return new HashMap<>();
         }
-
-        return new AlarmWrapperImpl(alarm);
+        if (reductionKeys.size() <= 1000) {
+            List<OnmsAlarm> alarms = alarmDao.findMatching(new CriteriaBuilder(OnmsAlarm.class).in("reductionKey", reductionKeys).toCriteria());
+            return alarms.stream().collect(Collectors.toMap(alarm -> alarm.getReductionKey(), alarm -> new AlarmWrapperImpl(alarm)));
+        } else {
+            return alarmDao.findAll().stream()
+                    .filter(a -> reductionKeys.contains(a.getReductionKey()))
+                    .collect(Collectors.toMap(alarm -> alarm.getReductionKey(), alarm -> new AlarmWrapperImpl(alarm)));
+        }
     }
 }
