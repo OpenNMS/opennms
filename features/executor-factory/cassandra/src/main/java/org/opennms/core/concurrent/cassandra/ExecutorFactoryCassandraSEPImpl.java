@@ -29,6 +29,7 @@
 package org.opennms.core.concurrent.cassandra;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionHandler;
 
 import org.apache.cassandra.concurrent.JMXEnabledSharedExecutorPool;
 import org.apache.cassandra.concurrent.SharedExecutorPool;
@@ -67,5 +68,14 @@ public class ExecutorFactoryCassandraSEPImpl implements ExecutorFactory {
 	public ExecutorService newExecutor(int threads, int queueSize, String daemonName, String executorName) {
 		// Yes, the last two arguments are supposed to be reversed
 		return SHARED.newExecutor(threads, queueSize, executorName, daemonName);
+	}
+
+	/**
+	 * @deprecated Using a {@link RejectedExecutionHandler} with this executor is unsupported.
+	 */
+	@Deprecated
+	@Override
+	public ExecutorService newExecutor(int threads, int queueSize, String daemonName, String executorName, RejectedExecutionHandler handler) {
+		return newExecutor(threads, queueSize, executorName, daemonName);
 	}
 }

@@ -30,6 +30,7 @@ package org.opennms.core.concurrent;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -56,6 +57,19 @@ public class ExecutorFactoryJavaImpl implements ExecutorFactory {
 			TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<Runnable>(queueSize),
 			new LogPreservingThreadFactory(daemonName + "-" + executorName, Integer.MAX_VALUE)
+		);
+	}
+
+	@Override
+	public ExecutorService newExecutor(int threads, int queueSize, String daemonName, String executorName, RejectedExecutionHandler handler) {
+		return new ThreadPoolExecutor(
+			threads,
+			threads,
+			1000L,
+			TimeUnit.MILLISECONDS,
+			new LinkedBlockingQueue<Runnable>(queueSize),
+			new LogPreservingThreadFactory(daemonName + "-" + executorName, Integer.MAX_VALUE),
+			handler
 		);
 	}
 }

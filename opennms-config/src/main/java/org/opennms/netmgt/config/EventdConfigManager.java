@@ -171,6 +171,24 @@ public class EventdConfigManager implements EventdConfig {
     }
 
     /**
+     * Return whether we should block when the handler or
+     * listener queues are full (defaults to false). If false,
+     * events are discarded if the queue fills up. If true, enqueuing
+     * new events will block to throttle incoming event processing.
+     *
+     * @return Whether we should block when the Eventd
+     *         queues are full
+     */
+    public boolean getBlockWhenFull() {
+        getReadLock().lock();
+        try {
+            return m_config.hasBlockWhenFull() ? m_config.getBlockWhenFull() : Boolean.FALSE;
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    /**
      * Return string indicating if timeout is to be set on the socket.
      *
      * @return string indicating if timeout is to be set on the socket
