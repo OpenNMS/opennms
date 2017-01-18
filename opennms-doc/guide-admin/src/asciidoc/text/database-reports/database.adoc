@@ -36,8 +36,8 @@ For more details on how _JasperReports_ works, please have a look at the link:ht
 All default reports of _{opennms-product-name}_ are located in `$OPENNMS_HOME/etc/report-templates`.
 Each `.jrxml` file located there can be modified and the changes are applied the next time a report is created by _{opennms-product-name}_.
 
-When a subreport was modified, the compiled version of the report must be deleted.
-The compiled version of the report is represented by a `.jasper` file with the same name as the `.jrxml` file.
+When a subreport has been modified _{opennms-product-name}_ will detect a change based on the report's `lastModified` time and will recompile the report.
+A compiled version of the report is represented by a `.jasper` file with the same name as the `.jrxml` file.
 Subreports are located in `$OPENNMS_HOME/etc/report-templates/subreports`.
 
 TIP: If unsure, simply delete all `.jasper` files and _{opennms-product-name}_ will automatically compile the subreports if needed.

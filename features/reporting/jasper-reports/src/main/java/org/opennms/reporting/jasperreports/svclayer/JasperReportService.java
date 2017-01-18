@@ -642,7 +642,9 @@ public class JasperReportService implements ReportService {
                 final String compiledSubreportName = evaluateToString(report, subreport.getExpression());
                 final String sourceSubreportName = compiledSubreportName.replace(".jasper", ".jrxml");
                 final File compiledSubreportFile = new File(compiledSubreportName);
-                if (!compiledSubreportFile.exists()) {
+                final File sourceSubreportFile = new File(sourceSubreportName);
+                if(!compiledSubreportFile.exists() || compiledSubreportFile.lastModified() < sourceSubreportFile.lastModified()) {
+
                     LOG.debug("Compiling Subreport '{}' ...", compiledSubreportName);
                     try {
                         JasperDesign subreportDesign = JRXmlLoader.load(sourceSubreportName);
@@ -652,7 +654,7 @@ public class JasperReportService implements ReportService {
                     } catch (ReportException | JRException e) {
                         LOG.error("Could not compile Jasper Subreport. Expression: {}, Evaluated Expression: {}", subreport.getExpression(), compiledSubreportName, e);
                     }
-                    LOG.debug("Subreport '{}' compiled");
+                    LOG.debug("Subreport '{}' compiled", compiledSubreportName);
                 } else {
                     // The report is already compiled, compile containing sub reports if needed
                     try {
