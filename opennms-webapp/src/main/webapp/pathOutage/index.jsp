@@ -32,6 +32,8 @@
 <%@page language="java" contentType="text/html" session="true"
 	import="
 		java.util.List,
+		java.net.InetAddress,
+		org.opennms.core.utils.InetAddressUtils,
 		org.opennms.netmgt.config.OpennmsServerConfigFactory,
 		org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl"
 %>
@@ -47,11 +49,12 @@
 
 <%
         List<String[]> testPaths = PathOutageManagerDaoImpl.getInstance().getAllCriticalPaths();
-        String dcpip = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
-        String[] pthData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(dcpip, "ICMP");
+        InetAddress dcpip = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
+        String dcpipString = dcpip != null ? InetAddressUtils.toIpAddrString(dcpip) : null;
+        String[] pthData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(dcpipString, "ICMP");
 %>
-<% if (dcpip != null && !"".equals(dcpip)) { %>
-	<p>The default critical path is service ICMP on interface <%= dcpip %>.</p>
+<% if (dcpip != null) { %>
+	<p>The default critical path is service ICMP on interface <%= dcpipString %>.</p>
 <% } %>
 
 <div class="panel panel-default fix-subpixel">
