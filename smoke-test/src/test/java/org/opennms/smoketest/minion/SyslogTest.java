@@ -136,7 +136,12 @@ public class SyslogTest {
                     .addFile(SyslogTest.class.getResource("/service-configuration-disable-alarmd.xml"), "etc/service-configuration.xml")
                     .addFile(SyslogTest.class.getResource("/syslogd-configuration.xml"), "etc/syslogd-configuration.xml")
                     .addFile(SyslogTest.class.getResource("/syslog/Cisco.syslog.xml"), "etc/syslog/Cisco.syslog.xml")
-                    .addFile(SyslogTest.class.getResource("/service-configuration.xml"), "etc/service-configuration.xml");
+                    .addFile(SyslogTest.class.getResource("/service-configuration.xml"), "etc/service-configuration.xml")
+                    // Switch sink impl to Kafka using opennms-properties.d file
+                    .addFile(SyslogTest.class.getResource("/opennms.properties.d/kafka-sink.properties"), "etc/opennms.properties.d/kafka-sink.properties");
+            builder.withMinionEnvironment()
+                    // Switch sink impl to Kafka using features.boot file
+                    .addFile(SyslogTest.class.getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot");
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
             minionSystem = builder.build();
             return minionSystem;
@@ -369,16 +374,6 @@ public class SyslogTest {
         createElasticsearchIndex(esTransportAddr, startOfTest);
         createElasticsearchIndex(esTransportAddr, calendar.getTime());
 
-        LOG.info("Warming up syslog routes by sending 1 packet");
-
-        // Warm up the routes
-        SyslogTest.sendMessage(ContainerAlias.MINION, sender, 1);
-
-        for (int i = 0; i < 10; i++) {
-            LOG.info("Slept for " + i + " seconds");
-            Thread.sleep(1000);
-        }
-
         LOG.info("Warming up syslog routes by sending 100 packets");
 
         // Warm up the routes
@@ -532,14 +527,6 @@ public class SyslogTest {
     private static void installFeaturesOnMinion(InetSocketAddress minionSshAddr, InetSocketAddress kafkaAddress) throws Exception {
         try (final SshClient sshClient = new SshClient(minionSshAddr, "admin", "admin")) {
             PrintStream pipe = sshClient.openShell();
-            pipe.println("config:edit org.opennms.netmgt.syslog.handler.kafka");
-            // Set the IP address for Kafka to the address of the Docker host
-            pipe.println("config:property-set kafkaAddress " + InetAddress.getLocalHost().getHostAddress() + ":" + kafkaAddress.getPort());
-            pipe.println("config:update");
-            // Uninstall all of the syslog and trap features with ActiveMQ handlers
-            pipe.println("feature:uninstall -v opennms-syslogd-listener-camel-netty opennms-trapd-listener opennms-syslogd-handler-minion opennms-trapd-handler-minion");
-            // Reinstall all of the syslog and trap features with Kafka handlers
-            pipe.println("feature:install -v opennms-syslogd-listener-camel-netty opennms-trapd-listener opennms-syslogd-handler-kafka opennms-trapd-handler-kafka");
             pipe.println("feature:list -i");
             pipe.println("list");
             // Set the log level to INFO
@@ -573,17 +560,6 @@ public class SyslogTest {
                 pipe.println("features:install opennms-elasticsearch-event-forwarder");
             }
 
-
-            // Configure and install the  Kafka syslog and trap handlers on the OpenNMS system
-            pipe.println("config:edit org.opennms.netmgt.syslog.handler.kafka.default");
-            // Set the IP address for Kafka to the address of the Docker host
-            pipe.println("config:propset kafkaAddress " + InetAddress.getLocalHost().getHostAddress() + ":" + kafkaAddress.getPort());
-            // Set the IP address for Zookeeper to the address of the Docker host
-            pipe.println("config:propset zookeeperhost " + InetAddress.getLocalHost().getHostAddress());
-            pipe.println("config:propset zookeeperport " + zookeeperAddress.getPort());
-            pipe.println("config:propset consumerstreams " + 1);
-            pipe.println("config:update");
-            pipe.println("features:install opennms-syslogd-handler-kafka-default opennms-trapd-handler-kafka-default");
             pipe.println("features:list -i");
             // Set the log level to INFO
             pipe.println("log:set INFO");
@@ -601,14 +577,8 @@ public class SyslogTest {
         try (final SshClient sshClient = new SshClient(minionSshAddr, "admin", "admin")) {
             PrintStream pipe = sshClient.openShell();
 
-            // Syslog sender
+            // Syslog listener
             pipe.println("camel:route-reset-stats syslogListen");
-            pipe.println("camel:route-reset-stats syslogMarshal");
-            pipe.println("camel:route-reset-stats syslogSendKafka");
-
-            // Trap sender
-            pipe.println("camel:route-reset-stats trapMarshal");
-            pipe.println("camel:route-reset-stats trapSendKafka");
 
             pipe.println("logout");
             try {
@@ -628,14 +598,6 @@ public class SyslogTest {
             pipe.println("camel:route-reset-stats eventsFromOpennms");
             pipe.println("camel:route-reset-stats toElasticsearch");
             pipe.println("camel:route-reset-stats updateElastisearchTemplateMappingRunOnlyOnce");
-
-            // Syslog receiver
-            pipe.println("camel:route-reset-stats receiveSyslogConnectionViaKafka");
-            pipe.println("camel:route-reset-stats syslogHandler");
-
-            // Trap receiver
-            pipe.println("camel:route-reset-stats receiveTrapConnectionViaKafka");
-            pipe.println("camel:route-reset-stats trapHandler");
 
             pipe.println("logout");
             try {
@@ -696,8 +658,7 @@ public class SyslogTest {
 
                     // Sometimes, the first warm-up message is successful so treat both message counts as valid
                     assertTrue("ES search hits was not equal to " + numMessages,
-                        (numMessages == response.getHits().totalHits()) || 
-                        ((numMessages + 1) == response.getHits().totalHits())
+                        (numMessages == response.getHits().totalHits())
                     );
                     assertEquals("Event UEI did not match", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic", response.getHits().getAt(0).getSource().get("eventuei"));
                     //assertEquals("Event IP address did not match", "4.2.2.2", response.getHits().getAt(0).getSource().get("ipaddr"));
