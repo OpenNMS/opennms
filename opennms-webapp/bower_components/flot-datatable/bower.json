@@ -1,0 +1,14 @@
+{
+  "name": "flot-datatable",
+  "description": "Data table for Flot series",
+  "version": "1.0.6",
+  "homepage": "https://github.com/j-white/flot-datatable",
+  "main": [
+    "jquery.flot.datatable.min.js"
+  ],
+  "ignore": [],
+  "dependencies": {
+    "flot": "~0.8.3",
+    "d3": "~3.5.6"
+  }
+}

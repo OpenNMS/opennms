@@ -1,0 +1,27 @@
+{
+  "name": "flot-legend",
+  "version": "2.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OpenNMS/flot-legend.git"
+  },
+  "homepage": "https://github.com/OpenNMS/flot-legend",
+  "devDependencies": {
+    "bower": "~1.8.0",
+    "grunt": "~1.0.1",
+    "grunt-contrib-concat": "~1.0.1",
+    "grunt-contrib-uglify": "~2.0.0",
+    "jasmine-core": "~2.5.2",
+    "karma": "~1.3.0",
+    "karma-jasmine": "~1.0.2",
+    "karma-phantomjs-launcher": "~1.0.2",
+    "phantomjs-prebuilt": "^2.1.13"
+  },
+  "scripts": {
+    "postinstall": "bower install",
+    "prestart": "npm install",
+    "start": "http-server -a localhost -p 8000 -c-1",
+    "pretest": "grunt",
+    "test": "./node_modules/karma/bin/karma start --single-run --browsers PhantomJS"
+  }
+}

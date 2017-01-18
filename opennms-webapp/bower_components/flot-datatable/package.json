@@ -1,0 +1,28 @@
+{
+  "name": "flot-datatable",
+  "version": "1.0.6",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/j-white/flot-datatable.git"
+  },
+  "homepage": "https://github.com/j-white/flot-datatable",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-uglify": "~0.9.1",
+    "grunt-contrib-concat": "~0.5.1",
+    "karma": "~0.13.11",
+    "karma-jasmine": "~0.3.6",
+    "jasmine-core": "~2.3.4",
+    "phantomjs": "~1.9.18",
+    "karma-phantomjs-launcher": "~0.2.1",
+    "bower": "~1.6.3"
+  },
+  "scripts": {
+    "postinstall": "bower install",
+    "prestart": "npm install",
+    "start": "http-server -a localhost -p 8000 -c-1",
+    "pretest": "grunt",
+    "test": "./node_modules/karma/bin/karma start --single-run --browsers PhantomJS"
+  }
+}
+
