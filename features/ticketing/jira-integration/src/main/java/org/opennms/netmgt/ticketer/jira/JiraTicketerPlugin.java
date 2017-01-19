@@ -107,12 +107,17 @@ public class JiraTicketerPlugin implements Plugin {
                     }
                 });
         fieldInfoCache = new Cache<>(
-                () -> JiraClientUtils.getIssueMetaData(
-                    getConnection(),
-                    "projects.issuetypes.fields",
-                    getConfig().getIssueTypeId(),
-                    getConfig().getProjectKey()),
-                new TimeoutRefreshPolicy(cacheReloadTime, TimeUnit.NANOSECONDS));
+                () -> {
+                    try (JiraRestClient client = getConnection()) {
+                        return JiraClientUtils.getIssueMetaData(
+                                client,
+                                "projects.issuetypes.fields",
+                                getConfig().getIssueTypeId(),
+                                getConfig().getProjectKey());
+                    }
+                },
+                new TimeoutRefreshPolicy(cacheReloadTime, TimeUnit.NANOSECONDS)
+        );
     }
 
     protected JiraRestClient getConnection() throws PluginException {
@@ -128,8 +133,14 @@ public class JiraTicketerPlugin implements Plugin {
      */
     @Override
     public Ticket get(String ticketId) throws PluginException {
-        JiraRestClient jira = getConnection();
+        try (JiraRestClient client = getConnection()) {
+            return getInternal(ticketId, client);
+        } catch (IOException e) {
+            throw new PluginException(e);
+        }
+    }
 
+    private Ticket getInternal(String ticketId, JiraRestClient jira) throws PluginException {
         // w00t
         Issue issue;
         try {
@@ -218,8 +229,14 @@ public class JiraTicketerPlugin implements Plugin {
     */
     @Override
     public void saveOrUpdate(Ticket ticket) throws PluginException {
+        try (JiraRestClient client = getConnection()) {
+            saveOrUpdateInternal(ticket, client);
+        } catch (IOException e) {
+            throw new PluginException(e);
+        }
+    }
 
-        JiraRestClient jira = getConnection();
+    private void saveOrUpdateInternal(Ticket ticket, JiraRestClient jira) throws PluginException {
         Config config = getConfig();
         if (ticket.getId() == null || ticket.getId().equals("")) {
             // If we can't find a ticket with the specified ID then create one.
