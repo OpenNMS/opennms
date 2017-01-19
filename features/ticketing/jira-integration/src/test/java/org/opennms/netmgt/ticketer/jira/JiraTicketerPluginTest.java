@@ -56,6 +56,17 @@ public class JiraTicketerPluginTest {
     }
 
     @Test
+    @Ignore
+    public void verifyTooManyFiles() throws PluginException {
+        JiraTicketerPlugin plugin = new JiraTicketerPlugin();
+        for (int i=0; i<500; i++) {
+            System.out.print(i + ": ");
+            Ticket ticket = plugin.get("NMS-8947");
+            System.out.print(ticket.getSummary() + "\n");
+        }
+    }
+
+    @Test
     @Ignore("This rely on the JIRA system configured in src/test/resources/opennms-home/etc/jira.properties")
     public void canSaveGetAndUpdate() throws Exception {
         String ticketId = save();
