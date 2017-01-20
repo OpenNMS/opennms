@@ -33,7 +33,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,6 +55,7 @@ import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.bsm.test.LoggingStateChangeHandler;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 public class DefaultBusinessServiceStateMachineTest {
@@ -78,12 +82,14 @@ public class DefaultBusinessServiceStateMachineTest {
 
         stateMachine.setAlarmProvider(new AlarmProvider() {
             @Override
-            public AlarmWrapper lookup(String reductionKey) {
-                switch (reductionKey) {
-                case "a2":
-                    return new MockAlarmWrapper(reductionKey, Status.CRITICAL);
+            public Map<String, AlarmWrapper> lookup(Set<String> reductionKeys) {
+
+                if (reductionKeys.contains("a2")) {
+                    return ImmutableMap.<String, AlarmWrapper>builder()
+                            .put("a2", new MockAlarmWrapper("a2", Status.CRITICAL))
+                            .build();
                 }
-                return null;
+                return new HashMap<>();
             }
         });
 
