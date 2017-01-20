@@ -41,6 +41,64 @@ DELETE
  WHERE foo."row_num" > 1);
 ----
 
+===== Bug
+
+* Opsboard change title color to something neutral than red (Issue http://issues.opennms.org/browse/NMS-7911[NMS-7911])
+* Replace VDEF with {diffTime} on the resource templates to avoid conflicts with Backshift (Issue http://issues.opennms.org/browse/NMS-8490[NMS-8490])
+* Inconsistencies with the Measurements API when using Newts (Issue http://issues.opennms.org/browse/NMS-8498[NMS-8498])
+* Cannot validate remote-poller code certificate JRE 8u74 or newer (Issue http://issues.opennms.org/browse/NMS-8532[NMS-8532])
+* Restarting OMNS results in numerous SNMP outage alarms and notifications (Issue http://issues.opennms.org/browse/NMS-8620[NMS-8620])
+* Measurements API can fail with exception when operating in relaxed mode (Issue http://issues.opennms.org/browse/NMS-8665[NMS-8665])
+* Newts: When Cassandra Cluster is unavailable, OpenNMS gives up on trying to contact it again (Issue http://issues.opennms.org/browse/NMS-8670[NMS-8670])
+* Any SNMP error-status > 5 treated as unrecognized, aborts AggregateTracker (Issue http://issues.opennms.org/browse/NMS-8671[NMS-8671])
+* Trapd JMX trap counters don't count traps (Issue http://issues.opennms.org/browse/NMS-8744[NMS-8744])
+* Auto-Discover architecture/behavior has changed and broke its typical usage (Issue http://issues.opennms.org/browse/NMS-8767[NMS-8767])
+* Event advanced search does not work because of encoded &s (Issue http://issues.opennms.org/browse/NMS-8768[NMS-8768])
+* The Alarms Details widget on the OpsBoard shows the text on green instead of black (Issue http://issues.opennms.org/browse/NMS-8771[NMS-8771])
+* RRDtool 1.6 doesn't like vames called ds (Issue http://issues.opennms.org/browse/NMS-8775[NMS-8775])
+* Installer script doesn't work with PostgreSQL 9.6 (Issue http://issues.opennms.org/browse/NMS-8779[NMS-8779])
+* Bug in juniper graphs (Issue http://issues.opennms.org/browse/NMS-8786[NMS-8786])
+* SNMP web configurator does not allow zero retries (Issue http://issues.opennms.org/browse/NMS-8789[NMS-8789])
+* The search page for events is not working as expected (Issue http://issues.opennms.org/browse/NMS-8790[NMS-8790])
+* The "Recent Events" in the node page, shows HTML tags on the message (Issue http://issues.opennms.org/browse/NMS-8794[NMS-8794])
+* After installing opennms-jmx-config-generator, the jmx-config-generator cannot be executed (Issue http://issues.opennms.org/browse/NMS-8800[NMS-8800])
+* Blank content when clicking on "View Node Link Detailed Info" (Issue http://issues.opennms.org/browse/NMS-8808[NMS-8808])
+* InterruptedExceptions thrown when using SNMP (Issue http://issues.opennms.org/browse/NMS-8813[NMS-8813])
+* Outage ReST service forNode use case calculates dates incorrectly (Issue http://issues.opennms.org/browse/NMS-8823[NMS-8823])
+* event filter on exactuei yields unexpected results (Issue http://issues.opennms.org/browse/NMS-8828[NMS-8828])
+* Discovery duplicates nodes when foreign-source is set (Issue http://issues.opennms.org/browse/NMS-8835[NMS-8835])
+* Several ICMPv6 tests fail with NoRouteToHostException (Issue http://issues.opennms.org/browse/NMS-8840[NMS-8840])
+* user detection in `install` is busted on some Linux systems (Issue http://issues.opennms.org/browse/NMS-8843[NMS-8843])
+* Backshift shows the name of the string variables when the value is not available (Issue http://issues.opennms.org/browse/NMS-8847[NMS-8847])
+* NPE when starting bsmd (Issue http://issues.opennms.org/browse/NMS-8853[NMS-8853])
+* Wallboard / Ops board renders product logo strangely (Issue http://issues.opennms.org/browse/NMS-8855[NMS-8855])
+* NonUniqueResultException when retrieving CDP links (Issue http://issues.opennms.org/browse/NMS-8863[NMS-8863])
+* Updating assets/categories through ReST affects Forced Unmanaged services. (Issue http://issues.opennms.org/browse/NMS-8879[NMS-8879])
+* The label of unreachable auto-discovered nodes is set to the IP after a rescan. (Issue http://issues.opennms.org/browse/NMS-8880[NMS-8880])
+* checknsc script throws class not found exception for LoggerFactory (Issue http://issues.opennms.org/browse/NMS-8885[NMS-8885])
+* Memory Leak in enlinkd? (Issue http://issues.opennms.org/browse/NMS-8896[NMS-8896])
+* Spurious Trapd error logs: unknown SNMP protocol version 'v2' (Issue http://issues.opennms.org/browse/NMS-8900[NMS-8900])
+* JiraTicketerPlugin does not to work with https instances (Issue http://issues.opennms.org/browse/NMS-8906[NMS-8906])
+* Can't save cached requisition associated with HTTP when scheduling the import through provisiond-configuration.xml (Issue http://issues.opennms.org/browse/NMS-8912[NMS-8912])
+* The "Update Ticket" functionality on the alarm detail page is broken, when the original creation of the issue failed (Issue http://issues.opennms.org/browse/NMS-8914[NMS-8914])
+* ArrayIndexOutOfBoundsException while processing some trap varbinds (Issue http://issues.opennms.org/browse/NMS-8915[NMS-8915])
+* WS-Man collection fail with unknown reason code 2 (Issue http://issues.opennms.org/browse/NMS-8923[NMS-8923])
+* WS-Man collection with resource-type only store last resource (Issue http://issues.opennms.org/browse/NMS-8924[NMS-8924])
+* Backshift failing with legend errors for NRTG + Forecasts (Issue http://issues.opennms.org/browse/NMS-8939[NMS-8939])
+* WS_Man datacollection using WQL fails with 'unsupported element' (Issue http://issues.opennms.org/browse/NMS-8955[NMS-8955])
+* Enlinkd Not Performing Bridge Topology Discovery (Issue http://issues.opennms.org/browse/NMS-8964[NMS-8964])
+
+===== Enhancement
+
+* Missing image in provisioning doc (Issue http://issues.opennms.org/browse/NMS-8121[NMS-8121])
+* Create a more useful example content for opennms.conf (Issue http://issues.opennms.org/browse/NMS-8721[NMS-8721])
+* Allow filtering by severity in alarm list (Issue http://issues.opennms.org/browse/NMS-8851[NMS-8851])
+* Expose alarm-list "limit" parameter as a UI control (Issue http://issues.opennms.org/browse/NMS-8852[NMS-8852])
+* Make the ILR put the node label alongside the package/IPADDR/Service tuple (Issue http://issues.opennms.org/browse/NMS-8858[NMS-8858])
+* Avoid creating tickets for cleared alarms (Issue http://issues.opennms.org/browse/NMS-8866[NMS-8866])
+* Set additional fields in the JIRA ticketer (Issue http://issues.opennms.org/browse/NMS-8893[NMS-8893])
+* Better logging for SNMP traps with processing problems (Issue http://issues.opennms.org/browse/NMS-8903[NMS-8903])
+
 [releasenotes-changelog-18.0.2]
 ==== Release 18.0.2
 

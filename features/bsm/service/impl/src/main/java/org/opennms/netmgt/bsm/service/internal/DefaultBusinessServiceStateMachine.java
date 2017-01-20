@@ -117,10 +117,10 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                 // Query the status of the reductions keys that were added
                 // We do this so that we can immediately reflect the state of the new
                 // graph without having to wait for calls to handleNewOrUpdatedAlarm()
-                for (String reductionKey : reductionsKeysToLookup) {
-                    AlarmWrapper alarm = m_alarmProvider.lookup(reductionKey);
-                    if (alarm != null) {
-                        updateAndPropagateVertex(g, g.getVertexByReductionKey(reductionKey), alarm.getStatus());
+                if (reductionsKeysToLookup.size() > 0) {
+                    final Map<String, AlarmWrapper> lookup = m_alarmProvider.lookup(reductionsKeysToLookup);
+                    for (Entry<String, AlarmWrapper> eachEntry : lookup.entrySet()) {
+                        updateAndPropagateVertex(g, g.getVertexByReductionKey(eachEntry.getKey()), eachEntry.getValue().getStatus());
                     }
                 }
             }

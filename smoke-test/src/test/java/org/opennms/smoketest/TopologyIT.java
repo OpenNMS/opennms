@@ -45,6 +45,8 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
@@ -60,6 +62,8 @@ import com.google.common.collect.Lists;
  * @author jwhite
  */
 public class TopologyIT extends OpenNMSSeleniumTestCase {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TopologyIT.class);
 
     private TopologyUIPage topologyUiPage;
 
@@ -275,14 +279,17 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             resetMenu();
             Actions actions = new Actions(testCase.m_driver);
             for (String label : labels) {
-                WebElement menuElement = getMenubarElement(label);
-                actions.moveToElement(menuElement);
-                menuElement.click();
-                // we should wait, otherwise the menu has not yet updated
                 try {
+                    WebElement menuElement = getMenubarElement(label);
+                    actions.moveToElement(menuElement);
+                    menuElement.click();
+                    // we should wait, otherwise the menu has not yet updated
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     throw Throwables.propagate(e);
+                } catch (Throwable e) {
+                    LOG.error("Unexpected exception while clicking on menu item {}", label, e);
+                    throw e;
                 }
             }
             return this;
@@ -307,9 +314,13 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         public TopologyUIPage setAutomaticRefresh(boolean enabled) {
+            LOG.info("setAutomaticRefresh: {} refresh", enabled ? "enabling" : "disabling");
             boolean alreadyEnabled = isMenuItemChecked("Automatic Refresh", "View");
             if ((alreadyEnabled && !enabled) || (!alreadyEnabled && enabled)) {
+                LOG.info("setAutomaticRefresh: toggling setting to {} refresh", enabled ? "enable" : "disable");
                 clickOnMenuItemsWithLabels("View", "Automatic Refresh");
+            } else {
+                LOG.info("setAutomaticRefresh: refresh is already {}", enabled ? "enabled" : "disabled");
             }
             return this;
         }

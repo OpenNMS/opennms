@@ -51,11 +51,15 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BSMAdminIT extends OpenNMSSeleniumTestCase {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BSMAdminIT.class);
 
     /**
      * Class to control the inputs of the "Business Service Edit"-Window
@@ -880,6 +884,9 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
                     }
                 }
             });
+        } catch (Throwable e) {
+            LOG.error("Exception raised while clicking on element with selector {}", by.toString(), e);
+            throw e;
         } finally {
             testCase.setImplicitWait();
         }
