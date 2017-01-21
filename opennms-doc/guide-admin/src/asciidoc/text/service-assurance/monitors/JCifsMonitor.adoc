@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== JCifsMonitor
 This monitor allows to test a file sharing service based on the CIFS/SMB protocol.
 

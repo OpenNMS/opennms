@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== MemcachedMonitor
 
 This monitor allows to monitor link:http://memcached.org[Memcached], a distributed memory object caching system.

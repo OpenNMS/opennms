@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== HttpPostMonitor
 
 If it is required to _HTTP POST_ any arbitrary content to a remote _URI_, the HttpPostMonitor can be used.

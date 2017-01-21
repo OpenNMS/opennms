@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== JDBCQueryMonitor
 
 The _JDBCQueryMonitor_ runs an SQL query against a database and is able to verify the result of the query.

@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== DiskUsageMonitor
 
 The DiskUsageMonitor monitor can be used to test the amount of free space available on certain storages of a node.

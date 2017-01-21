@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 [[poller-ldap-monitor]]
 ==== LdapMonitor
 

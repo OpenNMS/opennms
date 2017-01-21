@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== SshMonitor
 
 The SSH monitor tests the availability of a SSH service.

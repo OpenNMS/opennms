@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== HostResourceSwRunMonitor
 
 This monitor test the running state of one or more processes.

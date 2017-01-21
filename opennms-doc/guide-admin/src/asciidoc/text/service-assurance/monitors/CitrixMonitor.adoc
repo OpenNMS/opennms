@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== CitrixMonitor
 
 This monitor is used to test if a Citrix(R) Server or XenApp Server(R) is providing the _Independent Computing Architecture_ (_ICA_) protocol on TCP 1494.

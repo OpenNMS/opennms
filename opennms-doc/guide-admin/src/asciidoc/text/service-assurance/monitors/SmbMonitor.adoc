@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== SmbMonitor
 
 This monitor is used to test the _NetBIOS over TCP/IP_ name resolution in Microsoft Windows environments.

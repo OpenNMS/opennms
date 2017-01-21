@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 [[poller-icmp-monitor]]
 ==== IcmpMonitor
 The ICMP monitor tests for ICMP service availability by sending _echo request_ ICMP messages.

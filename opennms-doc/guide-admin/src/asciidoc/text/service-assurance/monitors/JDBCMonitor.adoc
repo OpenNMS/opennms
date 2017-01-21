@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== JDBCMonitor
 
 The _JDBCMonitor_ checks that it is able to connect to a database and checks if it is able to get the database catalog from that database management system (DBMS).

@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== Win32ServiceMonitor
 
 The Win32ServiceMonitor enables {opennms-product-name} to monitor the running state of any Windows service.

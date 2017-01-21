@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== OpenManageChassisMonitor
 
 The OpenManageChassis monitor tests the status of a Dell chassis by querying its SNMP agent.

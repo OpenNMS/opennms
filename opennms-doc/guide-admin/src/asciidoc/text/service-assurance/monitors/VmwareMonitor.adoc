@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== VmwareMonitor
 
 This monitor is part of the VMware integration provided in _Provisiond_ and test the power state of a virtual machine (VM) or a host system (host).

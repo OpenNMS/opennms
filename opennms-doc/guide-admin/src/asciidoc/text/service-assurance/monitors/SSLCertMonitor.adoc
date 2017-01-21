@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== SSLCertMonitor
 
 This monitor is used to test if a SSL certificate presented by a remote network server are

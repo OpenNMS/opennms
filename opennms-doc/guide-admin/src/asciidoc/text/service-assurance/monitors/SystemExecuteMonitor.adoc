@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== SystemExecuteMonitor
 
 If it is required to execute a system call or run a script to determine a service status, the SystemExecuteMonitor can be used.

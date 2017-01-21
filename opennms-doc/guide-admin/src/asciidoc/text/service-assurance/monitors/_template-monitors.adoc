@@ -1,5 +1,8 @@
-
 // REMOVE ME!! Please keep first line an empty line to make sure, the ToC can be build correctly
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== Name of the Monitor. Normally the name of the class without .java
 
 A summary what the monitor is doing. When is the monitor up or down.

@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== NtpMonitor
 
 The NTP monitor tests for NTP service availability.

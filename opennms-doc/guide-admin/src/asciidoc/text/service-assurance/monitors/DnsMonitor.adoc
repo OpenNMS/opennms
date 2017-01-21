@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== DnsMonitor
 
 This monitor is build to test the availability of the _DNS service_ on remote IP interfaces.

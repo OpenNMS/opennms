@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== FtpMonitor
 
 The FtpMonitor is able to validate ftp connection dial-up processes.

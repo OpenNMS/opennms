@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== BSFMonitor
 
 This monitor runs a _Bean Scripting Framework_ http://commons.apache.org/proper/commons-bsf/[BSF] compatible script to determine the status of a service.

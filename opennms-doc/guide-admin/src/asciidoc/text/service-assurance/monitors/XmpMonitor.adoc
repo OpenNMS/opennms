@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== XmpMonitor
 
 The http://www.opennms.org/wiki/XMP[XMP] monitor tests for _XMP service/agent_ availability by establishing an _XMP_ session and querying the target agent's _sysObjectID_ variable contained in the _Core MIB_.

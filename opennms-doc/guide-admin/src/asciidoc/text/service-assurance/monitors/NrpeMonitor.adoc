@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== NrpeMonitor
 
 This monitor allows to test plugins and checks running on the link:http://exchange.nagios.org/directory/Addons/Monitoring-Agents/NRPE--2D-Nagios-Remote-Plugin-Executor/details[Nagios Remote Plugin Executor] (_NRPE_) framework.

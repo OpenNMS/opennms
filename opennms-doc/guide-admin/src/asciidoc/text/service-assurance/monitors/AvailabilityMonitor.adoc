@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== AvailabilityMonitor
 
 This monitor tests reachability of a node by using the _isReachable_ method of the _InetAddress_ java class.

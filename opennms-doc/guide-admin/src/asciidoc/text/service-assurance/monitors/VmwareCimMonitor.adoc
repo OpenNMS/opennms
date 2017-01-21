@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== VmwareCimMonitor
 
 This monitor is part of the VMware integration provided in _Provisiond_.

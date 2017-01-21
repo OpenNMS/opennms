@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== NetScalerGroupHealthMonitor
 
 This monitor is designed for _Citrix(R) NetScaler(R)_ loadbalancing checks.

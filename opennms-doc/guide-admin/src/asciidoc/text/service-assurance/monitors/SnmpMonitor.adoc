@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== SnmpMonitor
 
 The SNMP monitor gives a generic possibility to monitor states and results from SNMP agents.

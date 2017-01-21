@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== CiscoPingMibMonitor
 
 This poller monitor's purpose is to create conceptual rows (entries) in the _ciscoPingTable_ on _Cisco IOS_ devices that support the link:http://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?local=en&mibName=CISCO-PING-MIB[CISCO-PING-MIB].

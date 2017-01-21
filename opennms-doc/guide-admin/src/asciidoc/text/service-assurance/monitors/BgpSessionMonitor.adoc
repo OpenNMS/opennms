@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== BgpSessionMonitor
 
 This monitor checks if a BGP-Session to a peering partner (peer-ip) is functional.

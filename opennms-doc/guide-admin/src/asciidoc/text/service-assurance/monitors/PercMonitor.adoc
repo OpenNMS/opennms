@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== PercMonitor
 
 This monitor tests the status of a PERC RAID array.

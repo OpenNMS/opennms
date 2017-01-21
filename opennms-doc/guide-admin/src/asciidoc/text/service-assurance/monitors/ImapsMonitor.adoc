@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== ImapsMonitor
 
 The IMAPS monitor tests the response of an SSL-enabled IMAP server.

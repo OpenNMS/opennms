@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== JDBCStoredProcedureMonitor
 
 The _JDBCStoredProcedureMonitor_ checks the result of a stored procedure in a remote database.
