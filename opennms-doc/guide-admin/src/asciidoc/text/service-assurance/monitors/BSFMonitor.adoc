@@ -38,6 +38,8 @@ _BSFMonitor_ also grants access to a selection of _{opennms-product-name}_ inter
 | `file-extensions` | comma-separated list                                           | optional | `-`
 |===
 
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
 .Beans which can be used in the script
 [options="header, autowidth"]
 |===

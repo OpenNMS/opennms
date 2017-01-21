@@ -31,6 +31,8 @@ Also, don't forget to add an entry in _response-graph.properties_ so that respon
 | `object`      | Name of MIB object to query                            | optional | `sysObjectID`
 |===
 
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
 ===== Examples
 
 .Adding entry in collectd-configuration.xml

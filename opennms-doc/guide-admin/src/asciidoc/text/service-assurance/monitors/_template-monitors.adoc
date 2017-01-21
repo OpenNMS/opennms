@@ -26,7 +26,9 @@ A summary what the monitor is doing. When is the monitor up or down.
 | `my parameter 2` | This is a placeholder for the second optional monitor parameter description.                       | optional | `default value`
 |===
 
-This is optional just if you can use variables in the configuration
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+This is optional just if you can use variables in the configuration.
 
 .Variables which can be used in the configuration
 [options="header, autowidth"]

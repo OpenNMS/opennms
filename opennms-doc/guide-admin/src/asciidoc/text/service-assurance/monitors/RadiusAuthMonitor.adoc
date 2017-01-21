@@ -59,6 +59,8 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
                originating the _Access-Request_.                                                                       | optional | `opennms`
 |===
 
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
 ===== Examples
 Example configuration how to configure the monitor in the `poller-configuration.xml`.
 

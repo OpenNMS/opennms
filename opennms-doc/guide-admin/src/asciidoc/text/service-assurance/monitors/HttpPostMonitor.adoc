@@ -35,6 +35,8 @@ A use case is to HTTP POST to a SOAP endpoint.
 | `uri`          | The uri to use during the POST.                                       | optional | `/`
 |===
 
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
 ===== Examples
 
 The following example would create a POST that contains the payload _Word_.
