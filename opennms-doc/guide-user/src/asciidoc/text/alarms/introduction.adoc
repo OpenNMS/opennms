@@ -1,0 +1,29 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+In _OpenNMS_ an _Alarm_ is used to allow more complex workflows dealing with issues for monitoring.
+An _Alarm_ has his own life cycle and can be generated or cleared based on an _Event_.
+
+The main component responsible creating an _Alarm_ is _Alarmd_.
+It is a background process which is listening for _Events_ and evaluates the _Alarm definition_ and creates the _Alarm_.
+_Alarmd_ can create an _Alarm_ with any kind of _Severity_ as _Unacknowledged Alarm_.
+
+[[gu-alarms-acknowlege]]
+=== Acknowledge Alarms
+
+_Alarms_ support workflows to indicate someone is taking care about a specific problem shown as an _Alarm_.
+Every _Alarm_ can have _Sticky Notes_ to show what kind of problem happened and what was necessary to solve the issue.
+By default an _Alarm_ has to be acknowledged through the web application.
+
+.States and State Changes of an Alarm
+image::alarms/01_alarm-states.png[]
+
+if (alarm.getSeverity() == OnmsSeverity.CLEARED || (alarm.getSeverity().isGreaterThan(OnmsSeverity.NORMAL) && alarm.getSeverity().isLessThan(OnmsSeverity.CRITICAL))) {
+     showEscalate = true;
+
+if (alarm.getSeverity().isGreaterThanOrEqual(OnmsSeverity.NORMAL) && alarm.getSeverity().isLessThanOrEqual(OnmsSeverity.CRITICAL)) {
+     showClear = true;
+
+1 indeterminate
+0 cleared
