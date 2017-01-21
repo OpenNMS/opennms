@@ -28,26 +28,17 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
-import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionAttribute;
-import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.Persister;
-import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
-import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
-import org.opennms.netmgt.collection.support.AbstractCollectionResource;
-import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
+import org.opennms.netmgt.collection.dto.CollectionSetDTO;
 import org.opennms.netmgt.collection.support.NumericAttributeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,19 +76,19 @@ public class CollectionSetBuilder {
     }
 
     public CollectionSetBuilder withNumericAttribute(Resource resource, String group, String name, Number value, AttributeType type) {
-        return withAttribute(new NumericAttribute(resource, group, name, value, type, null));
+        return withAttribute(resource, new NumericAttribute(group, name, value, type, null));
     }
 
     public CollectionSetBuilder withStringAttribute(Resource resource, String group, String name, String value) {
-        return withAttribute(new StringAttribute(resource, group, name, value, null));
+        return withAttribute(resource, new StringAttribute(group, name, value, null));
     }
 
     public CollectionSetBuilder withIdentifiedNumericAttribute(Resource resource, String group, String name, Number value, AttributeType type, String metricId) {
-        return withAttribute(new NumericAttribute(resource, group, name, value, type, metricId));
+        return withAttribute(resource, new NumericAttribute(group, name, value, type, metricId));
     }
 
     public CollectionSetBuilder withIdentifiedStringAttribute(Resource resource, String group, String name, String value, String metricId) {
-        return withAttribute(new StringAttribute(resource, group, name, value, metricId));
+        return withAttribute(resource, new StringAttribute(group, name, value, metricId));
     }
 
     public CollectionSetBuilder withAttribute(Resource resource, String group, String name, String value, AttributeType type) {
@@ -111,99 +102,20 @@ public class CollectionSetBuilder {
         }
     }
 
-    private CollectionSetBuilder withAttribute(Attribute<?> attribute) {
-        if (m_attributesByResource.containsKey(attribute.getResource())) {
+    private CollectionSetBuilder withAttribute(Resource resource, Attribute<?> attribute) {
+        if (m_attributesByResource.containsKey(resource)) {
             // Insert
-            m_attributesByResource.get(attribute.getResource()).add(attribute);
+            m_attributesByResource.get(resource).add(attribute);
         } else {
             // Append
             List<Attribute<?>> attributes = new ArrayList<>();
             attributes.add(attribute);
-            m_attributesByResource.put(attribute.getResource(), attributes);
+            m_attributesByResource.put(resource, attributes);
         }
         return this;
     }
 
-    public CollectionSet build() {
-        MultiResourceCollectionSet<CollectionResource> collectionSet = new MultiResourceCollectionSet<CollectionResource>() {};
-        collectionSet.setCollectionTimestamp(m_timestamp);
-        collectionSet.setStatus(m_status.getCode());
-        for (final Entry<Resource, List<Attribute<?>>> entry : m_attributesByResource.entrySet()) {
-            final Resource resource = entry.getKey();
-            final AbstractCollectionResource collectionResource = new AbstractCollectionResource(m_agent) {
-                @Override
-                public String getResourceTypeName() {
-                    return "*";
-                }
-
-                @Override
-                public String getInstance() {
-                    return resource.getInstance();
-                }
-
-                @Override
-                public Path getPath() {
-                    return super.getPath().resolve(resource.getPath(this));
-                }
-
-                @Override
-                public String toString() {
-                    return String.format("Resource[%s]/Node[%d]", resource, m_agent.getNodeId());
-                }
-            };
-    
-            for (Attribute<?> attribute : entry.getValue()) {
-                final AttributeGroupType groupType = new AttributeGroupType(attribute.getGroup(), AttributeGroupType.IF_TYPE_ALL);
-                final AbstractCollectionAttributeType attributeType = new AbstractCollectionAttributeType(groupType) {
-                    @Override
-                    public AttributeType getType() {
-                        return attribute.getType();
-                    }
-
-                    @Override
-                    public String getName() {
-                        return attribute.getName();
-                    }
-
-                    @Override
-                    public void storeAttribute(CollectionAttribute collectionAttribute, Persister persister) {
-                        if (attribute.getType() == AttributeType.STRING) {
-                            persister.persistStringAttribute(collectionAttribute);
-                        } else {
-                            persister.persistNumericAttribute(collectionAttribute);
-                        }
-                    }
-
-                    @Override
-                    public String toString() {
-                        return String.format("AttributeType[%s]/type[%s]", getName(), getType());
-                    }
-                };
-
-                collectionResource.addAttribute(new AbstractCollectionAttribute(attributeType, collectionResource) {
-                    @Override
-                    public String getMetricIdentifier() {
-                        return attribute.getName();
-                    }
-
-                    @Override
-                    public Number getNumericValue() {
-                        return attribute.getNumericValue();
-                    }
-
-                    @Override
-                    public String getStringValue() {
-                        return attribute.getStringValue();
-                    }
-
-                    @Override
-                    public String toString() {
-                        return String.format("Attribute[%s:%s]", getMetricIdentifier(), attribute.getValue());
-                    }
-                });
-            }
-            collectionSet.getCollectionResources().add(collectionResource);
-        }
-        return collectionSet;
+    public CollectionSetDTO build() {
+        return new CollectionSetDTO(m_agent, m_status, m_timestamp, m_attributesByResource);
     }
 }

@@ -29,6 +29,8 @@ package org.opennms.netmgt.collection.persistence.evaluate;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.Collections;
+import java.util.Set;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
 
@@ -86,6 +88,11 @@ public class MockCollectionAgent implements CollectionAgent {
     @Override
     public InetAddress getAddress() {
         return ipAddress;
+    }
+
+    @Override
+    public Set<String> getAttributeNames() {
+        return Collections.emptySet();
     }
 
     /* (non-Javadoc)

@@ -28,19 +28,17 @@
 
 package org.opennms.netmgt.config.vmware.cim;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
 //---------------------------------/
 //- Imported classes and packages -/
 //---------------------------------/
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.opennms.netmgt.collection.api.AttributeType;
-import org.opennms.netmgt.collection.api.AttributeTypeAdapter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * An Attribute Object
@@ -65,7 +63,6 @@ public class Attrib implements java.io.Serializable {
     /**
      * Field _type.
      */
-    @XmlJavaTypeAdapter(AttributeTypeAdapter.class)
     @XmlAttribute(name = "type", required = true)
     private AttributeType _type;
 

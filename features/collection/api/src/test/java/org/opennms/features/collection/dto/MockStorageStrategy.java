@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,28 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.support.builder;
+package org.opennms.features.collection.dto;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.nio.file.Path;
+import java.util.List;
 
-import org.opennms.netmgt.collection.adapters.NumericAttributeAdapter;
-import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.Parameter;
+import org.opennms.netmgt.collection.api.StorageStrategy;
+import org.opennms.netmgt.collection.api.StorageStrategyService;
 
-@XmlJavaTypeAdapter(NumericAttributeAdapter.class)
-public class NumericAttribute extends Attribute<Number> {
-    public NumericAttribute(String group, String name, Number value, AttributeType type, String identifier) {
-        super(group, name, value, type, identifier);
-        if (!type.isNumeric()) {
-            throw new IllegalArgumentException("attribute type " + type  + " is not numeric.");
-        }
-    }
+public class MockStorageStrategy implements StorageStrategy {
 
-    public Number getNumericValue() {
-        return getValue();
+    @Override
+    public Path getRelativePathForAttribute(String resourceParent, String resource) {
+        return null;
     }
 
     @Override
-    public String getStringValue() {
+    public void setResourceTypeName(String name) {
+        // pass
+    }
+
+    @Override
+    public String getResourceNameFromIndex(CollectionResource resource) {
         return null;
     }
+
+    @Override
+    public void setStorageStrategyService(StorageStrategyService agent) {
+        // pass
+    }
+
+    @Override
+    public void setParameters(List<Parameter> parameterCollection) throws IllegalArgumentException {
+        // pass
+    }
+
 }

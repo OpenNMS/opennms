@@ -35,10 +35,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.netmgt.collection.api.AttributeType;
-import org.opennms.netmgt.collection.api.AttributeTypeAdapter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
@@ -49,7 +47,6 @@ public class Attrib {
     protected String name;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
-    @XmlJavaTypeAdapter(AttributeTypeAdapter.class)
     @XmlAttribute(name = "type", required = true)
     protected AttributeType type;
     @XmlAttribute(name = "index-of")

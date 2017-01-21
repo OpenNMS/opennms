@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -51,7 +52,7 @@ import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.GenericTypeResourceWithoutInstance;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.netmgt.config.api.ResourceTypesDao;
@@ -154,13 +155,22 @@ public class WsManCollector implements ServiceCollector {
     private void collectGroupUsing(Group group, CollectionAgent agent, WSManClient client, int retries, CollectionSetBuilder builder) throws CollectionException {
         // Determine the appropriate resource type
         final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
+        final AtomicInteger instanceId = new AtomicInteger();
         Supplier<Resource> resourceSupplier = () -> nodeResource;
         if (!"node".equalsIgnoreCase(group.getResourceType())) {
             final ResourceType resourceType = m_resourceTypesDao.getResourceTypeByName(group.getResourceType());
             if (resourceType == null) {
                 throw new CollectionException("No resource type found with name '" + group.getResourceType() + "'.");
             }
-            resourceSupplier = () -> new GenericTypeResourceWithoutInstance(nodeResource, resourceType);
+            resourceSupplier = () -> {
+                // Generate a unique instance for each node in each group to ensure
+                // that the attributes are grouped together properly.
+                // Since these instances have no real meaning, a storage strategy
+                // similar to the SiblingColumnStorageStrategy should be used instead
+                // of the IndexStorageStrategy.
+                final String instance = String.format("%s%d", group.getName(), instanceId.getAndIncrement());
+                return new GenericTypeResource(nodeResource, resourceType, instance);
+            };
         }
         if (LOG.isDebugEnabled()) {
             LOG.debug("Using resource {} for group named {}", resourceSupplier.get(), group.getName());

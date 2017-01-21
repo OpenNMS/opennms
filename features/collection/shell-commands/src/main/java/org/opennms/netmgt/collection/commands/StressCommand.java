@@ -34,6 +34,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -331,6 +332,11 @@ public class StressCommand extends OsgiCommandSupport {
         @Override
         public InetAddress getAddress() {
             return null;
+        }
+
+        @Override
+        public Set<String> getAttributeNames() {
+            return Collections.emptySet();
         }
 
         @Override

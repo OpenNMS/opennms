@@ -40,15 +40,13 @@ import org.opennms.netmgt.collection.api.AttributeType;
  * @author jwhite
  */
 public abstract class Attribute<T> {
-    private final Resource m_resource;
     private final String m_group;
     private final String m_name;
     private final T m_value;
     private final AttributeType m_type;
     private final String m_identifier;
 
-    public Attribute(Resource resource, String group, String name, T value, AttributeType type, String identifier) {
-        m_resource = Objects.requireNonNull(resource, "resource argument");
+    public Attribute(String group, String name, T value, AttributeType type, String identifier) {
         m_group = Objects.requireNonNull(group, "group argument");
         m_name = Objects.requireNonNull(name, "name argument");
         m_value = Objects.requireNonNull(value, "value argument");
@@ -59,10 +57,6 @@ public abstract class Attribute<T> {
     public abstract Number getNumericValue();
 
     public abstract String getStringValue();
-
-    public Resource getResource() {
-        return m_resource;
-    }
 
     public String getGroup() {
         return m_group;
@@ -82,5 +76,32 @@ public abstract class Attribute<T> {
 
     public String getIdentifier() {
         return m_identifier;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Attribute[group=%s, name=%s, value=%s, type=%s, identifier=%s]",
+                m_group, m_name, m_value, m_type, m_identifier);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_group, m_name, m_value, m_type, m_identifier);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj == null) {
+            return false;
+        } else if (!(obj instanceof Attribute)) {
+            return false;
+        }
+        Attribute<?> other = (Attribute<?>) obj;
+        return Objects.equals(this.m_group, other.m_group)
+               && Objects.equals(this.m_name, other.m_name)
+               && Objects.equals(this.m_type, other.m_type)
+               && Objects.equals(this.m_identifier, other.m_identifier);
     }
 }

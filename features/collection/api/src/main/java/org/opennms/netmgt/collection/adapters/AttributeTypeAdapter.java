@@ -26,9 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.api;
+package org.opennms.netmgt.collection.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+import org.opennms.netmgt.collection.api.AttributeType;
 
 public class AttributeTypeAdapter extends XmlAdapter<String,AttributeType> {
 

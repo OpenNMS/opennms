@@ -28,11 +28,16 @@
 
 package org.opennms.netmgt.collection.api;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.netmgt.collection.adapters.AttributeTypeAdapter;
+
 /**
  * Defines how a particular attribute should be persisted.
  *
  * @author jwhite
  */
+@XmlJavaTypeAdapter(AttributeTypeAdapter.class)
 public enum AttributeType {
     GAUGE("gauge", true, "gauge32", "integer32"),
     COUNTER("counter", true, "counter32"),
