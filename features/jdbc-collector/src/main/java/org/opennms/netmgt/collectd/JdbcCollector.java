@@ -61,6 +61,8 @@ import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
+
 public class JdbcCollector implements ServiceCollector {
     private static final Logger LOG = LoggerFactory.getLogger(JdbcCollector.class);
 
@@ -97,9 +99,11 @@ public class JdbcCollector implements ServiceCollector {
     @Override
     public void initialize(Map<String, String> parameters) {
         LOG.debug("initialize: Initializing JdbcCollector.");
-        // Retrieve the DAO for our configuration file.
-        m_jdbcCollectionDao = BeanUtils.getBean("daoContext", "jdbcDataCollectionConfigDao", JdbcDataCollectionConfigDao.class);
-        
+        if (m_jdbcCollectionDao == null) {
+            // Retrieve the DAO for our configuration file.
+            m_jdbcCollectionDao = BeanUtils.getBean("daoContext", "jdbcDataCollectionConfigDao", JdbcDataCollectionConfigDao.class);
+        }
+
         // Clear out the node list.
         m_scheduledNodes.clear();
         
@@ -331,5 +335,9 @@ public class JdbcCollector implements ServiceCollector {
     public RrdRepository getRrdRepository(String collectionName) {
         return m_jdbcCollectionDao.getConfig().buildRrdRepository(collectionName);
     }
-    
+
+    @VisibleForTesting
+    protected Map<Integer, JdbcAgentState> getScheduledNodes() {
+        return m_scheduledNodes;
+    }
 }
