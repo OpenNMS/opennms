@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,22 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.support.builder;
+package org.opennms.netmgt.collection.api;
 
-import org.opennms.netmgt.collection.api.AttributeType;
+public interface ResourceType {
 
-public class StringAttribute extends Attribute<String> {
-    public StringAttribute(Resource resource, String group, String name, String value, String identifier) {
-        super(resource, group, name, value, AttributeType.STRING, identifier);
-    }
+    /**
+     * resource type name
+     */
+    String getName();
 
-    @Override
-    public Number getNumericValue() {
-        return null;
-    }
+    /**
+     * resource type label (this is what users see in the webUI)
+     */
+    String getLabel();
 
-    @Override
-    public String getStringValue() {
-        return getValue();
-    }
+    /**
+     * resource label expression (this is what users see in the webUI for each
+     * resource of this type)
+     */
+    String getResourceLabel();
+
+    /**
+     * Selects a StorageStrategy that decides where data is stored.
+     */
+    StrategyDefinition getStorageStrategy();
+
+    /**
+     * Selects a PersistenceSelectorStrategy that decides which data is
+     * persisted and which is not.
+     */
+    StrategyDefinition getPersistenceSelectorStrategy();
+
 }

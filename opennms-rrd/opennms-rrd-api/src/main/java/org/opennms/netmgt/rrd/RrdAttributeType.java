@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,22 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.support.builder;
+package org.opennms.netmgt.rrd;
 
-import org.opennms.netmgt.collection.api.AttributeType;
+/**
+ * RRDTool defined Data Source Types
+ *
+ * NOTE: "DERIVE" and "ABSOLUTE" not currently supported.
+ */
+public enum RrdAttributeType {
+    GAUGE("GAUGE"),
+    COUNTER("COUNTER");
 
-public class StringAttribute extends Attribute<String> {
-    public StringAttribute(Resource resource, String group, String name, String value, String identifier) {
-        super(resource, group, name, value, AttributeType.STRING, identifier);
+    private final String m_name;
+
+    private RrdAttributeType(String name) {
+        m_name = name;
     }
 
-    @Override
-    public Number getNumericValue() {
-        return null;
-    }
-
-    @Override
-    public String getStringValue() {
-        return getValue();
+    public String getName() {
+        return m_name;
     }
 }

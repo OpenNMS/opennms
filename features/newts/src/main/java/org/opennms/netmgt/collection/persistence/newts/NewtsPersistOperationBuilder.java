@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.PersistException;
 import org.opennms.netmgt.collection.api.PersistOperationBuilder;
@@ -175,15 +176,16 @@ public class NewtsPersistOperationBuilder implements PersistOperationBuilder {
         return samples;
     }
 
-    public static MetricType mapType(String objectType) {
-        if (objectType.toLowerCase().startsWith("counter")) {
-            return MetricType.COUNTER;
-        } else if ("string".equalsIgnoreCase(objectType)) {
-            return null;
-        } else if ("octetstring".equalsIgnoreCase(objectType)) {
-            return null;
-        } else {
-            return MetricType.GAUGE;
+    public static MetricType mapType(AttributeType type) {
+        switch(type) {
+            case COUNTER:
+                return MetricType.COUNTER;
+            case GAUGE:
+                return MetricType.GAUGE;
+            case STRING:
+                return null;
+            default:
+                return MetricType.GAUGE;
         }
     }
 

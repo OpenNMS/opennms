@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.protocols.sftp.Sftp3gppUrlConnection;
@@ -131,7 +132,7 @@ public abstract class Sftp3gppUtils {
     public static void processXmlResource(XmlCollectionResource resource, AttributeGroupType attribGroupType) {
         Map<String,String> properties = get3gppProperties(get3gppFormat(resource.getResourceTypeName()), resource.getInstance());
         for (Entry<String,String> entry : properties.entrySet()) {
-            XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(new XmlObject(entry.getKey(), "string"), attribGroupType);
+            XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(new XmlObject(entry.getKey(), AttributeType.STRING), attribGroupType);
             resource.setAttributeValue(attribType, entry.getValue());
         }
     }

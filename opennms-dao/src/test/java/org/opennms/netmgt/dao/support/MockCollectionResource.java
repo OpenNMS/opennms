@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -109,7 +110,7 @@ public class MockCollectionResource implements CollectionResource {
                 @Override
                 public void visit(CollectionSetVisitor visitor) { }
                 @Override
-                public String getType() { return "string"; }
+                public AttributeType getType() { return AttributeType.STRING; }
                 @Override
                 public String getMetricIdentifier() { return "MOCK_"+getName(); }
             };

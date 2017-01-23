@@ -38,6 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.IfInfo;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
@@ -400,7 +401,7 @@ public class CollectionResourceWrapper {
         // Generating a unique ID for the node/resourceType/resource/metric combination.
         String id =  "node[" + m_nodeId + "].resourceType[" + m_resource.getResourceTypeName() + "].instance[" + m_resource.getInterfaceLabel() + "].metric[" + ds + "]";
         Double current = numValue.doubleValue();
-        if (m_attributes.get(ds).getType().toLowerCase().startsWith("counter") == false) {
+        if (!AttributeType.COUNTER.equals(m_attributes.get(ds).getType())) {
             LOG.debug("getAttributeValue: id={}, value= {}", id, current);
             return current;
         } else {

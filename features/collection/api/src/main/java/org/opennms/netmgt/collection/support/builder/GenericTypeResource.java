@@ -33,8 +33,8 @@ import java.util.Objects;
 
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
+import org.opennms.netmgt.collection.api.ResourceType;
 import org.opennms.netmgt.collection.api.StorageStrategy;
-import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class GenericTypeResource implements Resource {
@@ -51,7 +51,7 @@ public class GenericTypeResource implements Resource {
         m_resourceType = Objects.requireNonNull(resourceType, "resourceType argument");
         m_storageStrategy = instantiateStorageStrategy(m_resourceType.getStorageStrategy().getClazz());
         m_storageStrategy.setParameters(m_resourceType.getStorageStrategy().getParameters());
-        m_persistenceSelectorStrategy =  instantiatePersistenceSelector(m_resourceType.getPersistenceSelectorStrategy().getClazz());
+        m_persistenceSelectorStrategy = instantiatePersistenceSelector(m_resourceType.getPersistenceSelectorStrategy().getClazz());
         m_persistenceSelectorStrategy.setParameters(m_resourceType.getPersistenceSelectorStrategy().getParameters());
     }
 

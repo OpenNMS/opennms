@@ -51,6 +51,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.test.FileAnticipator;
 import org.xml.sax.SAXException;
 
@@ -112,17 +113,17 @@ public class XmlDataCollectionConfigTest {
 
         XmlObject cpu = new XmlObject();
         cpu.setName("cpuUtilization");
-        cpu.setDataType("GAUGE");
+        cpu.setDataType(AttributeType.GAUGE);
         cpu.setXpath("r[@p=1]");
 
         XmlObject mem = new XmlObject();
         mem.setName("memUtilization");
-        mem.setDataType("GAUGE");
+        mem.setDataType(AttributeType.GAUGE);
         mem.setXpath("r[@p=2]");
 
         XmlObject suspect = new XmlObject();
         suspect.setName("suspect");
-        suspect.setDataType("STRING");
+        suspect.setDataType(AttributeType.STRING);
         suspect.setXpath("suspect");
 
         XmlGroup group = new XmlGroup();

@@ -30,6 +30,7 @@ package org.opennms.netmgt.config.collectd.jmx;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.netmgt.collection.api.AttributeType;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -68,12 +69,12 @@ public class CompAttribTest extends XmlTestNoCastor<CompAttrib> {
         final CompMember m1 = new CompMember();
         m1.setName("used");
         m1.setAlias("EdenPeakUsageUsed");
-        m1.setType("gauge");
+        m1.setType(AttributeType.GAUGE);
         a.addCompMember(m1);
         final CompMember m2 = new CompMember();
         m2.setName("committed");
         m2.setAlias("EdenPeakUsgCmmttd");
-        m2.setType("gauge");
+        m2.setType(AttributeType.GAUGE);
         a.addCompMember(m2);
 
         return Arrays.asList(new Object[][] { {

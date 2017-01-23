@@ -29,8 +29,8 @@
 package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -64,6 +64,7 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.rrd.RrdAttributeType;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
@@ -325,7 +326,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
         RrdStrategy<RrdDef,RrdDb> m_rrdStrategy = new JRobinRrdStrategy();
 
-        RrdDataSource rrdDataSource = new RrdDataSource("testAttr", "GAUGE", stepSize*2, "U", "U");
+        RrdDataSource rrdDataSource = new RrdDataSource("testAttr", RrdAttributeType.GAUGE, stepSize*2, "U", "U");
         RrdDef def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
         m_rrdStrategy.createFile(def, attributeMappings);
 

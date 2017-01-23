@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collectd.jdbc;
 
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
@@ -44,20 +45,20 @@ public class JdbcCollectionAttributeType extends AbstractCollectionAttributeType
     
     @Override
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-        if ("string".equalsIgnoreCase(m_column.getDataType())) {
-            persister.persistStringAttribute(attribute);
-        } else {
+        if (m_column.getDataType().isNumeric()) {
             persister.persistNumericAttribute(attribute);
+        } else {
+            persister.persistStringAttribute(attribute);
         }
     }
-    
+
     @Override
     public String getName() {
         return m_column.getAlias();
     }
-    
+
     @Override
-    public String getType() {
+    public AttributeType getType() {
         return m_column.getDataType();
     }
 

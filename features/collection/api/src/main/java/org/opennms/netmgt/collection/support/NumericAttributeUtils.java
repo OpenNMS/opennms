@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,32 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.support.builder;
+package org.opennms.netmgt.collection.support;
 
-import org.opennms.netmgt.collection.api.ResourceType;
-import org.opennms.netmgt.collection.support.IndexStorageStrategy;
+public abstract class NumericAttributeUtils {
 
-/**
- * Generic type resource that does not have a default instance value.
- *
- * Resources of this type are not supported by the {@link IndexStorageStrategy}.
- * Instead an alternative strategy such as the {@link SiblingColumnStorageStrategy} should be used.
- *
- * @author jwhite
- */
-public class GenericTypeResourceWithoutInstance extends GenericTypeResource {
-
-    private static final String DEFAULT_INSTANCE_NAME = "0";
-
-    public GenericTypeResourceWithoutInstance(NodeLevelResource node, ResourceType resourceType) {
-        super(node, resourceType, DEFAULT_INSTANCE_NAME);
-        if (IndexStorageStrategy.class.getCanonicalName().equals(resourceType.getStorageStrategy())) {
-            throw new IllegalArgumentException(resourceType.getStorageStrategy() + " is not supported.");
+    public static Double parseNumericValue(String value) {
+        if (value == null) {
+            return Double.NaN;
         }
-    }
 
-    @Override
-    public String getInstance() {
-        return DEFAULT_INSTANCE_NAME;
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e1) {
+            try {
+                return Double.parseDouble(value.replaceAll("[^-\\d.]+", "")); // Removing Units to return only a numeric value.
+            } catch (NumberFormatException e2) {
+                return Double.NaN;
+            }
+        }
     }
 }

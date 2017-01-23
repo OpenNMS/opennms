@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,22 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.support.builder;
+package org.opennms.netmgt.collection.api;
 
-import org.opennms.netmgt.collection.api.AttributeType;
+/**
+ * A simple key/value pair.
+ *
+ * This is defined as interface in order to avoid depending
+ * on the model objects directly in the API package.
+ *
+ * @author jwhite
+ */
+public interface Parameter {
 
-public class StringAttribute extends Attribute<String> {
-    public StringAttribute(Resource resource, String group, String name, String value, String identifier) {
-        super(resource, group, name, value, AttributeType.STRING, identifier);
-    }
+    String getKey();
 
-    @Override
-    public Number getNumericValue() {
-        return null;
-    }
+    String getValue();
 
-    @Override
-    public String getStringValue() {
-        return getValue();
-    }
 }

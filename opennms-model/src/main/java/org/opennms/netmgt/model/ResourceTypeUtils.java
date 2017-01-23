@@ -59,24 +59,6 @@ public abstract class ResourceTypeUtils {
      */
     public static final String FOREIGN_SOURCE_DIRECTORY = "fs";
 
-    private static final String[] s_numericTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring" };
-
-    /**
-     * <p>isNumericType</p>
-     *
-     * @param rawType a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public static boolean isNumericType(String rawType) {
-        String type = rawType.toLowerCase();
-        for (int i = 0; i < s_numericTypes.length; i++) {
-            String supportedType = s_numericTypes[i];
-            if (type.startsWith(supportedType))
-                return true;
-        }
-        return false;
-    }
-
     /**
      * <p>isStoreByGroup</p>
      *

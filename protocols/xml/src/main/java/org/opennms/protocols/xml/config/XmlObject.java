@@ -34,9 +34,12 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.collection.api.AttributeTypeAdapter;
 
 /**
  * The Class XmlObject.
@@ -55,8 +58,9 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
     private String m_name;
 
     /** The data type. */
+    @XmlJavaTypeAdapter(AttributeTypeAdapter.class)
     @XmlAttribute(name="type", required=true)    
-    private String m_dataType;
+    private AttributeType m_dataType;
 
     /** The XPath. */
     @XmlAttribute(name="xpath", required=true)
@@ -75,7 +79,7 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
      * @param name the object name
      * @param dataType the data type
      */
-    public XmlObject(String name, String dataType) {
+    public XmlObject(String name, AttributeType dataType) {
         this();
         this.m_name = name;
         this.m_dataType = dataType;
@@ -104,7 +108,7 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
      *
      * @return the data type
      */
-    public String getDataType() {
+    public AttributeType getDataType() {
         return m_dataType;
     }
 
@@ -113,7 +117,7 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
      *
      * @param dataType the new data type
      */
-    public void setDataType(String dataType) {
+    public void setDataType(AttributeType dataType) {
         m_dataType = dataType;
     }
 

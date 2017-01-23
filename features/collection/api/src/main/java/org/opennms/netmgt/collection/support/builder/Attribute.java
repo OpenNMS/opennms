@@ -30,6 +30,8 @@ package org.opennms.netmgt.collection.support.builder;
 
 import java.util.Objects;
 
+import org.opennms.netmgt.collection.api.AttributeType;
+
 /**
  * Used to represent an abstract attribute that was collected from some agent.
  *
@@ -43,13 +45,15 @@ public abstract class Attribute<T> {
     private final String m_name;
     private final T m_value;
     private final AttributeType m_type;
+    private final String m_identifier;
 
-    public Attribute(Resource resource, String group, String name, T value, AttributeType type) {
+    public Attribute(Resource resource, String group, String name, T value, AttributeType type, String identifier) {
         m_resource = Objects.requireNonNull(resource, "resource argument");
         m_group = Objects.requireNonNull(group, "group argument");
         m_name = Objects.requireNonNull(name, "name argument");
         m_value = Objects.requireNonNull(value, "value argument");
         m_type = Objects.requireNonNull(type, "type argument");
+        m_identifier = identifier;
     }
 
     public abstract Number getNumericValue();
@@ -74,5 +78,9 @@ public abstract class Attribute<T> {
 
     public AttributeType getType() {
         return m_type;
+    }
+
+    public String getIdentifier() {
+        return m_identifier;
     }
 }

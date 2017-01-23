@@ -38,6 +38,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -47,6 +48,9 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
+import org.opennms.netmgt.collection.support.NumericAttributeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A fluent API for building a {@link CollectionSet}.
@@ -58,6 +62,8 @@ import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
  * @author jwhite
  */
 public class CollectionSetBuilder {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CollectionSetBuilder.class);
 
     private final CollectionAgent m_agent;
     private CollectionStatus m_status = CollectionStatus.SUCCEEDED;
@@ -79,11 +85,30 @@ public class CollectionSetBuilder {
     }
 
     public CollectionSetBuilder withNumericAttribute(Resource resource, String group, String name, Number value, AttributeType type) {
-        return withAttribute(new NumericAttribute(resource, group, name, value, type));
+        return withAttribute(new NumericAttribute(resource, group, name, value, type, null));
     }
 
     public CollectionSetBuilder withStringAttribute(Resource resource, String group, String name, String value) {
-        return withAttribute(new StringAttribute(resource, group, name, value));
+        return withAttribute(new StringAttribute(resource, group, name, value, null));
+    }
+
+    public CollectionSetBuilder withIdentifiedNumericAttribute(Resource resource, String group, String name, Number value, AttributeType type, String metricId) {
+        return withAttribute(new NumericAttribute(resource, group, name, value, type, metricId));
+    }
+
+    public CollectionSetBuilder withIdentifiedStringAttribute(Resource resource, String group, String name, String value, String metricId) {
+        return withAttribute(new StringAttribute(resource, group, name, value, metricId));
+    }
+
+    public CollectionSetBuilder withAttribute(Resource resource, String group, String name, String value, AttributeType type) {
+        if (value == null) {
+            LOG.info("Ignoring null value for attribute '{}' in group '{}' on resource '{}'", name, group, resource);
+            return this;
+        } else if (type.isNumeric()) {
+            return withNumericAttribute(resource, group, name, NumericAttributeUtils.parseNumericValue(value), type);
+        } else {
+            return withStringAttribute(resource, group, name, value);
+        }
     }
 
     private CollectionSetBuilder withAttribute(Attribute<?> attribute) {
@@ -131,8 +156,8 @@ public class CollectionSetBuilder {
                 final AttributeGroupType groupType = new AttributeGroupType(attribute.getGroup(), AttributeGroupType.IF_TYPE_ALL);
                 final AbstractCollectionAttributeType attributeType = new AbstractCollectionAttributeType(groupType) {
                     @Override
-                    public String getType() {
-                        return attribute.getType().getName();
+                    public AttributeType getType() {
+                        return attribute.getType();
                     }
 
                     @Override

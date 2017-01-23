@@ -45,6 +45,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.rrd.RrdAttributeType;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition;
 import org.opennms.test.FileAnticipator;
@@ -232,7 +233,7 @@ public class TcpRrdStrategyTest {
         // RrdConfig.getInstance().setProperties(properties);
 
         List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>();
-        dataSources.add(new RrdDataSource("bar", "GAUGE", 3000, "U", "U"));
+        dataSources.add(new RrdDataSource("bar", RrdAttributeType.GAUGE, 3000, "U", "U"));
         List<String> rraList = new ArrayList<String>();
         rraList.add("RRA:AVERAGE:0.5:1:2016");
         File tempDir = m_fileAnticipator.getTempDir(); 
