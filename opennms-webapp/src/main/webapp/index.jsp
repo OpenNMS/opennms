@@ -33,6 +33,8 @@
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Web Console" />
+	<jsp:param name="usegeomap" value="true" />
+	<jsp:param name="norequirejs" value="true" />
 </jsp:include>
 
 <div class="row">
@@ -40,14 +42,14 @@
 	<div class="col-md-3" id="index-contentleft">
 		<!-- Problems box -->
 		<% String showNodesWithProblems = System.getProperty("opennms.nodesWithProblems.show", "true");
-           if (Boolean.parseBoolean(showNodesWithProblems)) { %>
+			if (Boolean.parseBoolean(showNodesWithProblems)) { %>
 		<jsp:include page="/alarm/summary-box.htm" flush="false" />
-        <% } %>
+		<% } %>
 		<!-- Services down box -->
 		<% String showNodesWithOutages = System.getProperty("opennms.nodesWithOutages.show", "true");
-           if (Boolean.parseBoolean(showNodesWithOutages)) { %>
+			if (Boolean.parseBoolean(showNodesWithOutages)) { %>
 		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
-        <% } %>
+		<% } %>
 		<!-- Business Services box -->
 		<% String showBusinessServicesProblems = System.getProperty("opennms.businessServicesWithProblems.show", "true");
 			if (Boolean.parseBoolean(showBusinessServicesProblems)) { %>
@@ -63,11 +65,11 @@
 	<!-- Middle Column -->
 	<div class="col-md-6" id="index-contentmiddle">
 		<%
-			String centerUrl = System.getProperty("org.opennms.web.console.centerUrl", "/includes/categories-box.jsp");
+			String centerUrl = System.getProperty("org.opennms.web.console.centerUrl", "/includes/categories-box.jsp,/geolocation/map-box.jsp");
 			String[] centerUrlArr = centerUrl.split(",");
 			for(String centerUrlItem : centerUrlArr) {
 		%>
-			<jsp:include page="<%=centerUrlItem%>" flush="false" />
+		<jsp:include page="<%=centerUrlItem%>" flush="false" />
 		<%
 			}
 		%>
@@ -75,7 +77,7 @@
 
 	<!-- Right Column -->
 	<div class="col-md-3" id="index-contentright">
-		<!-- notification box -->    
+		<!-- notification box -->
 		<jsp:include page="/includes/notification-box.jsp" flush="false" />
 
 		<!-- Search box -->

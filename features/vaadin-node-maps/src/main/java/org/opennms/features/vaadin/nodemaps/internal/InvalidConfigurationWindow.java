@@ -43,7 +43,7 @@ import com.vaadin.ui.Window;
 
 public class InvalidConfigurationWindow extends Window {
 
-    public InvalidConfigurationWindow() {
+    public InvalidConfigurationWindow(NodeMapConfiguration nodeMapConfiguration) {
         setModal(true);
         setResizable(false);
         setWidth(500, Unit.PIXELS);
@@ -56,7 +56,7 @@ public class InvalidConfigurationWindow extends Window {
                 close();
             }
         });
-        final String errorMessage = getErrorLabel();
+        final String errorMessage = getErrorLabel(nodeMapConfiguration);
         final Label label = new Label(errorMessage, ContentMode.HTML);
 
         VerticalLayout rootLayout = new VerticalLayout();
@@ -75,14 +75,14 @@ public class InvalidConfigurationWindow extends Window {
         UI.getCurrent().addWindow(this);
     }
 
-    private String getErrorLabel() {
+    private String getErrorLabel(NodeMapConfiguration nodeMapConfiguration) {
         try {
             String errorTemplate = IOUtils.toString(getClass().getResourceAsStream("/error-configuration.txt"), "UTF-8");
             String problems = "";
-            if (Strings.isNullOrEmpty(NodeMapConfiguration.getTileServerUrl())) {
+            if (Strings.isNullOrEmpty(nodeMapConfiguration.getTileServerUrl())) {
                 problems = "<li>No <i>gwt.openlayers.url</i> property defined</li>";
             }
-            if (Strings.isNullOrEmpty(NodeMapConfiguration.getTileLayerAttribution())) {
+            if (Strings.isNullOrEmpty(nodeMapConfiguration.getTileLayerAttribution())) {
                 problems += "<li>No <i>gwt.openlayers.options.attribution</i> property defined</li>";
             }
             String errorMessage = errorTemplate.replace("{problems}", problems);

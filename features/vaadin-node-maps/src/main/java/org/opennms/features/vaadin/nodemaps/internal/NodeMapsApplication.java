@@ -137,6 +137,7 @@ public class NodeMapsApplication extends UI {
     private VaadinRequest m_request;
     private AlarmTable m_alarmTable;
     private NodeTable m_nodeTable;
+    private NodeMapConfiguration configuration;
 
     private final ScheduledExecutorService m_executor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
         @Override public Thread newThread(final Runnable runnable) {
@@ -291,8 +292,8 @@ public class NodeMapsApplication extends UI {
         addRefresher();
 
         // Notify the user if no tileserver url or options are set
-        if (!NodeMapConfiguration.isValid()) {
-            new InvalidConfigurationWindow().open();
+        if (!configuration.isValid()) {
+            new InvalidConfigurationWindow(configuration).open();
         }
 
         // Schedule refresh of node data
@@ -306,6 +307,10 @@ public class NodeMapsApplication extends UI {
                 m_executor.shutdown();
             }
         });
+    }
+
+    public void setConfiguration(NodeMapConfiguration configuration) {
+        this.configuration = configuration;
     }
 
     private void createMapPanel(final String searchString, final int maxClusterRadius) {

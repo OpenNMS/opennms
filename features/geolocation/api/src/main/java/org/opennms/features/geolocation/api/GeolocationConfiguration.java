@@ -26,27 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.geo;
+package org.opennms.features.geolocation.api;
 
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import com.google.gwt.thirdparty.guava.common.base.Preconditions;
-import com.google.gwt.thirdparty.guava.common.base.Strings;
+// Default (client) configuration
+// TODO MVR
+public interface GeolocationConfiguration {
 
-
-public class GeocoderConfig {
-
-    private static final String URL_KEY = "gwt.openlayers.url";
-
-    public static final String OPTIONS_KEY_PREFIX = "gwt.openlayers.options.";
-
-    public static String getTileServerUrl() {
-        final String url = System.getProperty(URL_KEY);
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "System Property 'gwt.openlayers.url' is not defined");
-        return sanitizeForVaadin(url);
-    }
+    String getTileServerUrl();
 
     /**
      * Returns the layer options for the tile layer defined in opennms.properties.
@@ -54,18 +42,14 @@ public class GeocoderConfig {
      *
      * @return the layer options for the tile layer defined in opennms.properties.
      */
-    public static Map<String, String> getOptions() {
-        return System.getProperties().keySet().stream()
-                .filter(key -> ((String) key).startsWith(OPTIONS_KEY_PREFIX))
-                .map(key -> ((String) key).substring(OPTIONS_KEY_PREFIX.length()))
-                .collect(Collectors.toMap(Function.identity(), key -> sanitizeForVaadin(System.getProperty(OPTIONS_KEY_PREFIX + key))));
-    }
+    Map<String, String> getOptions();
 
-    private static String sanitizeForVaadin(String input) {
-        if (Strings.isNullOrEmpty(input)) {
-            return input;
-        }
-        // The input may contain ${variable} statements, which must be converted to {variable} in order to work properly
-        return input.replaceAll("\\$\\{", "{");
-    }
+    /**
+     * Returns the 'attribution' tile layer option.
+     * See http://leafletjs.com/reference.html#tilelayer-options for more details.
+     *
+     * @return the 'attribution' tile layer option.
+     */
+    String getTileLayerAttribution();
+
 }

@@ -480,6 +480,11 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.FilterFavoriteDao" ref="filterFavoriteDao" />
 
+  <bean id="genericHibernateAccessor" class="org.opennms.netmgt.dao.hibernate.GenericHibernateAccessor">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" ref="genericHibernateAccessor" />
+
   <bean id="topologyDao" class="org.opennms.netmgt.dao.hibernate.TopologyDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>

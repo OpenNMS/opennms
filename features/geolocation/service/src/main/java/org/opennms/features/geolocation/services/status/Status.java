@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,12 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.geo;
+package org.opennms.features.geolocation.services.status;
 
-import java.util.Collection;
+import java.util.Map;
 
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.model.OnmsSeverity;
 
-public interface GeoAssetProvider {
-    public Collection<VertexRef> getNodesWithCoordinates();
+import com.google.common.collect.Maps;
+
+public class Status {
+
+    final Map<Integer, OnmsSeverity> severityMap = Maps.newHashMap();
+
+    final Map<Integer, Long> alarmCountMap = Maps.newHashMap();
+
+    final Map<Integer, Long> unacknowledgedCountMap = Maps.newHashMap();
+
+    public void add(int nodeId, OnmsSeverity severity, long alarmCount, long unacknowledgedCount) {
+        severityMap.put(nodeId, severity);
+        alarmCountMap.put(nodeId, alarmCount);
+        unacknowledgedCountMap.put(nodeId, unacknowledgedCount);
+    }
+
+
+    public OnmsSeverity getSeverity(int nodeId) {
+        return severityMap.get(nodeId);
+    }
+
+    public int getUnacknowledgedAlarmCount(int nodeId) {
+        final Long value = unacknowledgedCountMap.get(nodeId);
+        if (value != null) {
+            return value.intValue();
+        }
+        return 0;
+    }
 }

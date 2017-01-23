@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,30 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.ui.geographical;
+package org.opennms.features.geolocation.api;
 
-public class Coordinates {
-    private float longitude;
-    private float latitude;
-
-    public Coordinates(float longitude, float latitude) {
-        this.longitude = longitude;
-        this.latitude = latitude;
-    }
-
-    public float getLatitude() {
-        return latitude;
-    }
-
-    public float getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(float longitude) {
-        this.longitude = longitude;
-    }
-
-    public void setLatitude(float latitude) {
-        this.latitude = latitude;
-    }
+/**
+ * The strategy, determining how the status of the nodes with geolocations are calculated.
+ *
+ * @author mvrueden
+ */
+public enum StatusCalculationStrategy {
+    /**
+     * Do not calculate the status.
+     */
+    None,
+    /**
+     * Calculate the status based on alarms.
+     */
+    Alarms,
+    /**
+     * Calculate the status based on outages.
+     */
+    Outages
 }
