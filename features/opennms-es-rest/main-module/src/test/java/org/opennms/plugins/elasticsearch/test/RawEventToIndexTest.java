@@ -31,6 +31,7 @@ package org.opennms.plugins.elasticsearch.test;
 import static org.junit.Assert.assertEquals;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -161,12 +162,12 @@ public class RawEventToIndexTest {
 			LOG.debug("ecreated node lost service event:"+event.toString());
 
 			// forward event to elastic search
-			eventToIndex.forwardEvent(event);
-			
+			eventToIndex.forwardEvents(Collections.singletonList(event));
+
 			// waiting 5 seconds for index 
-            try {
-            	TimeUnit.SECONDS.sleep(5);
-            } catch (InterruptedException e) { }
+			try {
+				TimeUnit.SECONDS.sleep(5);
+			} catch (InterruptedException e) { }
 
 			// send query to check that event has been created
 			jestClient = restClientFactory.getJestClient();

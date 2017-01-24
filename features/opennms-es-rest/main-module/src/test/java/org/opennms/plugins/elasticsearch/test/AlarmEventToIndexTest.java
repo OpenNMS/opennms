@@ -30,6 +30,7 @@ package org.opennms.plugins.elasticsearch.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONArray;
@@ -148,12 +149,12 @@ public class AlarmEventToIndexTest {
 			event.setNodeid((long) 34);
 
 			// forward event to elastic search
-			eventToIndex.forwardEvent(event);
-			
+			eventToIndex.forwardEvents(Collections.singletonList(event));
+
 			// waiting 5 seconds for index 
-            try {
-            	TimeUnit.SECONDS.sleep(5);
-            } catch (InterruptedException e) { }
+			try {
+				TimeUnit.SECONDS.sleep(5);
+			} catch (InterruptedException e) { }
 
 			// send query to check that alarm has been created
 			jestClient = restClientFactory.getJestClient();

@@ -29,12 +29,14 @@
 package org.opennms.plugins.elasticsearch.rest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -48,12 +50,12 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.searchbox.action.BulkableAction;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Index;
 import io.searchbox.core.Update;
-import io.searchbox.core.Bulk.Builder;
 import io.searchbox.indices.CreateIndex;
 
 public class EventToIndex implements AutoCloseable {
@@ -233,11 +235,11 @@ public class EventToIndex implements AutoCloseable {
 	 * @return
 	 */
 	private JestClient getJestClient(){
-		if (jestClient==null) {
+		if (jestClient == null) {
 			synchronized(this){
-				if (jestClient==null){
-					if (restClientFactory==null) throw new RuntimeException("JestClientFactory must be set");
-					jestClient= restClientFactory.getJestClient();
+				if (jestClient == null){
+					if (restClientFactory == null) throw new RuntimeException("JestClientFactory must be set");
+					jestClient = restClientFactory.getJestClient();
 				}
 			}
 		}
@@ -246,40 +248,133 @@ public class EventToIndex implements AutoCloseable {
 
 	@Override
 	public void close(){
-		if (jestClient!=null)
-			try{
-				jestClient.shutdownClient();
-			}catch (Exception e){}
-		jestClient=null;
+		if (jestClient != null) {
+			synchronized(this){
+				try{
+					jestClient.shutdownClient();
+				} catch (Throwable e) {
+					LOG.warn("Unexpected exception while shutting down REST client", e);
+				}
+				jestClient = null;
+			}
+		}
 	}
 
 	/**
-	 * TODO: HZN-998: IMPLEMENT ME
-	 * 
 	 * @param events
 	 */
-	public void forwardEvents(List<Event> events) {
-		/*
-		BulkResult bulk = getJestClient().execute(new Bulk.Builder().build());
-		List<BulkResultItem> items = bulk.getFailedItems();
-		for (BulkResultItem item : items) {
-			item.status == 404;
+	public void forwardEvents(final List<Event> events) {
+		final List<BulkableAction<DocumentResult>> actions = convertEventsToEsActions(events);
+		if (actions != null && actions.size() > 0) {
+			// Split the actions up by index
+			for (Map.Entry<String,List<BulkableAction<DocumentResult>>> entry : actions.stream().collect(Collectors.groupingBy(BulkableAction::getIndex)).entrySet()) {
+
+				try {
+					final List<BulkableAction<DocumentResult>> actionList = entry.getValue();
+
+					if (entry.getValue().size() == 1) {
+						// Not bulk
+						final BulkableAction<DocumentResult> action = actionList.get(0);
+						DocumentResult result = getJestClient().execute(action);
+
+						if(result.getResponseCode() == 404){
+							// index doesn't exist for upsert command so create new index and try again
+
+							if(LOG.isDebugEnabled()) {
+								LOG.debug("error while performing " + action.getRestMethodName() + " on index " + action.getIndex()
+								+ "\n   received result: "+result.getJsonString()
+								+ "\n   response code:" +result.getResponseCode() 
+								+ "\n   error message: "+result.getErrorMessage());
+								LOG.debug("index name "+entry.getKey() + " doesn't exist, creating new index");
+							}
+
+							createIndex(entry.getKey(), action.getType());
+
+							result = getJestClient().execute(action);
+						}
+
+						if(result.getResponseCode()!=200){
+							LOG.error("Problem while performing " + action.getRestMethodName() + " on es index:" +entry.getKey()+ " type:"+ action.getType()
+							+ "\n   received search result: "+result.getJsonString()
+							+ "\n   response code:" +result.getResponseCode() 
+							+ "\n   error message: "+result.getErrorMessage());
+						} else if(LOG.isDebugEnabled()) {
+							LOG.debug("Performed " + action.getRestMethodName() + " on es index:" +entry.getKey()+ " type:"+ action.getType()
+							+ "\n   received search result: "+result.getJsonString()
+							+ "\n   response code:" +result.getResponseCode() 
+							+ "\n   error message: "+result.getErrorMessage());
+						}
+					} else {
+						// Bulk
+						for (BulkableAction<DocumentResult> action : entry.getValue()) {
+							// TODO: Use Bulk API
+							/*
+							BulkResult bulk = getJestClient().execute(new Bulk.Builder().build());
+							List<BulkResultItem> items = bulk.getFailedItems();
+							for (BulkResultItem item : items) {
+							}
+							 */
+
+							DocumentResult result = getJestClient().execute(action);
+
+							if(result.getResponseCode() == 404){
+								// index doesn't exist for upsert command so create new index and try again
+
+								if(LOG.isDebugEnabled()) {
+									LOG.debug("error while performing " + action.getRestMethodName() + " on index " + action.getIndex()
+									+ "\n   received result: "+result.getJsonString()
+									+ "\n   response code:" +result.getResponseCode() 
+									+ "\n   error message: "+result.getErrorMessage());
+									LOG.debug("index name "+entry.getKey() + " doesn't exist, creating new index");
+								}
+
+								createIndex(entry.getKey(), action.getType());
+
+								result = getJestClient().execute(action);
+							}
+
+							if(result.getResponseCode()!=200){
+								LOG.error("Problem while performing " + action.getRestMethodName() + " on es index:" +entry.getKey()+ " type:"+ action.getType()
+								+ "\n   received search result: "+result.getJsonString()
+								+ "\n   response code:" +result.getResponseCode() 
+								+ "\n   error message: "+result.getErrorMessage());
+							} else if(LOG.isDebugEnabled()) {
+								LOG.debug("Performed " + action.getRestMethodName() + " on es index:" +entry.getKey()+ " type:"+ action.getType()
+								+ "\n   received search result: "+result.getJsonString()
+								+ "\n   response code:" +result.getResponseCode() 
+								+ "\n   error message: "+result.getErrorMessage());
+							}
+						}
+					}
+				} catch (Throwable ex){
+					LOG.error("Unexpected problem sending event to Elasticsearch",ex);
+					// Shutdown the ES client, it will be recreated as needed
+					close();
+				}
+			}
 		}
-		*/
 	}
 
 	/** 
-	 * this handles the incoming event and deals with it as an alarm change event or a normal event
+	 * <p>This method converts events into a sequence of Elasticsearch index/update commands.
+	 * Three types of actions are possible:</p>
+	 * <ul>
+	 * <li>Updating an alarm document based on an {@link #ALARM_NOTIFICATION_UEI_STEM} event</li>
+	 * <li>Indexing the {@link #ALARM_NOTIFICATION_UEI_STEM} events</li>
+	 * <li>Indexing all other events</li>
+	 * </ul>
+	 * 
 	 * @param event
 	 */
-	public void forwardEvent(Event event){
+	private List<BulkableAction<DocumentResult>> convertEventsToEsActions(List<Event> events) {
 
-		try{
+		final List<BulkableAction<DocumentResult>> retval = new ArrayList<>();
+
+		for (Event event : events) {
+
 			maybeRefreshCache(event);
 
-			// handling uei definitions of alarm change events
-
-			String uei = event.getUei();
+			final String uei = event.getUei();
 
 			// if alarm change notification then handle change
 			// change alarm index and add event to alarm change event index
@@ -320,123 +415,31 @@ public class EventToIndex implements AutoCloseable {
 					if(archiveAlarms){
 						// if an alarm change event, use the alarm change fields to update the alarm index
 						Update alarmUpdate = populateAlarmIndexBodyFromAlarmChangeEvent(event, INDEX_NAMES.get(Indices.ALARMS), INDEX_TYPES.get(Indices.ALARMS));
-						String alarmindexname=alarmUpdate.getIndex();
-
-						DocumentResult alarmIndexresult = getJestClient().execute(alarmUpdate);
-
-						if(alarmIndexresult.getResponseCode() == 404){
-							// index doesn't exist for upsert command so create new index and try again
-
-							if(LOG.isDebugEnabled()) {
-								LOG.debug("trying to update alarm"
-										+ "\n   received search result: "+alarmIndexresult.getJsonString()
-										+ "\n   response code:" +alarmIndexresult.getResponseCode() 
-										+ "\n   error message: "+alarmIndexresult.getErrorMessage());
-								LOG.debug("index name "+alarmindexname + " doesnt exist creating new index");
-							}
-
-							createIndex(alarmindexname, INDEX_TYPES.get(Indices.ALARMS));
-
-							alarmIndexresult = getJestClient().execute(alarmUpdate);
-						}
-
-						if(alarmIndexresult.getResponseCode()!=200){
-							LOG.error("Problem sending alarm to es index:" +alarmindexname+ " type:"+ INDEX_TYPES.get(Indices.ALARMS)
-									+ "\n   received search result: "+alarmIndexresult.getJsonString()
-									+ "\n   response code:" +alarmIndexresult.getResponseCode() 
-									+ "\n   error message: "+alarmIndexresult.getErrorMessage());
-						} else if(LOG.isDebugEnabled()) {
-							LOG.debug("Alarm sent to es index:" +alarmindexname+ " type:"+ INDEX_TYPES.get(Indices.ALARMS)
-									+ "\n   received search result: "+alarmIndexresult.getJsonString()
-									+ "\n   response code:" +alarmIndexresult.getResponseCode() 
-									+ "\n   error message: "+alarmIndexresult.getErrorMessage());
-
-						}
+						retval.add(alarmUpdate);
 					}
 				}
 
 				// save all Alarm Change Events including memo change events
 				if(archiveAlarmChangeEvents){
 					Index eventIndex = populateEventIndexBodyFromEvent(event, INDEX_NAMES.get(Indices.ALARM_EVENTS), INDEX_TYPES.get(Indices.ALARM_EVENTS));
-					String alarmeventindexname=eventIndex.getIndex();
-					DocumentResult eventIndexresult = getJestClient().execute(eventIndex);
-
-					if(eventIndexresult.getResponseCode()==404){
-						// index doesn't exist for upsert command so create new index first
-
-						if(LOG.isDebugEnabled()) {
-							LOG.debug("trying to update alarm event index"
-									+ "\n   received search result: "+eventIndexresult.getJsonString()
-									+ "\n   response code:" +eventIndexresult.getResponseCode() 
-									+ "\n   error message: "+eventIndexresult.getErrorMessage());
-							LOG.debug("index name "+alarmeventindexname + " doesnt exist creating new index");
-						}
-
-						createIndex(alarmeventindexname, INDEX_TYPES.get(Indices.ALARM_EVENTS));
-
-						eventIndexresult = getJestClient().execute(eventIndex);
-					}
-
-
-					if(eventIndexresult.getResponseCode()!=200){
-						LOG.error("Problem sending Alarm Event to es index:" +alarmeventindexname+ " type:"+ INDEX_TYPES.get(Indices.ALARM_EVENTS)
-								+ "\n   received search result: "+eventIndexresult.getJsonString()
-								+ "\n   response code:" +eventIndexresult.getResponseCode() 
-								+ "\n   error message: "+eventIndexresult.getErrorMessage());
-					} else if(LOG.isDebugEnabled()) {
-						LOG.debug("Alarm Event sent to es index:"+alarmeventindexname+" type:"+ INDEX_TYPES.get(Indices.ALARM_EVENTS)
-								+ "\n   received search result: "+eventIndexresult.getJsonString()
-								+ "\n   response code:" +eventIndexresult.getResponseCode() 
-								+ "\n   error message: "+eventIndexresult.getErrorMessage());
-
-					}
+					retval.add(eventIndex);
 				}
 
 			} else {
-				// else handle all other event types
-
+				// Handle all other event types
 				if(archiveRawEvents){
 					// only send events to ES if they are persisted to database or logAllEvents is set to true
 					if(logAllEvents || (event.getDbid()!=null && event.getDbid()!=0)) {
-						if (LOG.isDebugEnabled()) LOG.debug("Sending Event to ES:"+event.toString());
-						// Send the event to the event forwarder
 						Index eventIndex = populateEventIndexBodyFromEvent(event, INDEX_NAMES.get(Indices.EVENTS), INDEX_TYPES.get(Indices.EVENTS));
-						String eventindexname=eventIndex.getIndex();
-						DocumentResult eventIndexresult = getJestClient().execute(eventIndex);
-
-						if(eventIndexresult.getResponseCode()==404){
-							// index doesn't exist for upsert command so create new index first
-
-							if(LOG.isDebugEnabled()) {
-								LOG.debug("trying to update event index"
-										+ "\n   received search result: "+eventIndexresult.getJsonString()
-										+ "\n   response code:" +eventIndexresult.getResponseCode() 
-										+ "\n   error message: "+eventIndexresult.getErrorMessage());
-								LOG.debug("index name "+eventindexname + " doesnt exist creating new index");
-							}
-
-							createIndex(eventindexname, INDEX_TYPES.get(Indices.EVENTS));
-
-							eventIndexresult = getJestClient().execute(eventIndex);
-						}
-
-						if(LOG.isDebugEnabled()) {
-							LOG.debug("Event sent to es index:"+eventindexname+" type:"+ INDEX_TYPES.get(Indices.EVENTS)
-									+ "\n   received search result: "+eventIndexresult.getJsonString()
-									+ "\n   response code:" +eventIndexresult.getResponseCode() 
-									+ "\n   error message: "+eventIndexresult.getErrorMessage());
-						}
+						retval.add(eventIndex);
+					} else {
+						if (LOG.isDebugEnabled()) LOG.debug("Not Sending Event to ES: null event.getDbid()="+event.getDbid()+ " Event="+event.toString());
 					}
-
-				} else {
-					if (LOG.isDebugEnabled()) LOG.debug("Not Sending Event to ES: null event.getDbid()="+event.getDbid()+ " Event="+event.toString());
 				}
 			}
-
-		} catch (Throwable ex){
-			LOG.error("Unexpected problem sending event to Elasticsearch",ex);
 		}
 
+		return retval;
 	}
 
 	/**

@@ -171,20 +171,15 @@ public class EventForwarderQueueImpl implements EventForwarder, AutoCloseable {
 			);
 		}
 
+		/**
+		 * Send events to the index processor.
+		 */
 		@Override
 		public void dispatch(List<Event> events) {
-			// TODO: HZN-998: Use batch index command to insert all events at once
-			for (Event event : events) {
-				if (LOG.isDebugEnabled()) {
-					LOG.debug("Event dispatched to producer:\n event: {}", event.toString());
-				}
-
-				// send event to index processor
-				if (eventToIndex != null) {
-					eventToIndex.forwardEvent(event);
-				} else {
-					LOG.error("cannot send event, eventToIndex is null");
-				}
+			if (eventToIndex != null) {
+				eventToIndex.forwardEvents(events);
+			} else {
+				LOG.error("cannot send event, eventToIndex is null");
 			}
 		}
 	}
