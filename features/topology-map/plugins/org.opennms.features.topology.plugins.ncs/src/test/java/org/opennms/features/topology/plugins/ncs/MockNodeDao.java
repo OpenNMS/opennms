@@ -154,6 +154,12 @@ public class MockNodeDao implements NodeDao {
     }
 
     @Override
+    public String getLocationForId(Integer id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public List<OnmsNode> findByLabel(String label) {
         // TODO Auto-generated method stub
         return null;

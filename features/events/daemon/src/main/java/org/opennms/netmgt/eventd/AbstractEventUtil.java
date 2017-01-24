@@ -119,6 +119,11 @@ public abstract class AbstractEventUtil implements EventUtil {
 	protected static final String TAG_NODELABEL = "nodelabel";
 
 	/**
+	 * The event nodelocation xml tag
+	 */
+	protected static final String TAG_NODELOCATION = "nodelocation";
+
+	/**
 	 * The event host xml tag
 	 */
 	protected static final String TAG_HOST = "host";

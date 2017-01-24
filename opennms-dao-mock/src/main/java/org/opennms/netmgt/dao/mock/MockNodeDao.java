@@ -48,6 +48,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SurveillanceStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,6 +159,17 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     public String getLabelForId(final Integer id) {
         final OnmsNode node = get(id);
         return node == null ? null : node.getLabel();
+    }
+
+    @Override
+    public String getLocationForId(final Integer id) {
+        final OnmsNode node = get(id);
+        if (node == null) {
+            return null;
+        } else {
+            OnmsMonitoringLocation onmsMonitoringLocation = node.getLocation();
+            return onmsMonitoringLocation == null ? null : onmsMonitoringLocation.getLocationName();
+        }
     }
 
     @Override
