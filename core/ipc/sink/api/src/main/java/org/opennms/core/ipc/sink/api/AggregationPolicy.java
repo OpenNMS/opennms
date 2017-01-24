@@ -46,7 +46,7 @@ package org.opennms.core.ipc.sink.api;
  * @param <S> type of message that will be sent by the producers
  * @param <T> type of message (bucket) that will be received by the consumers
  */
-public interface AggregationPolicy<S, T extends Message> {
+public interface AggregationPolicy<S, T> {
 
     /**
      * Maximum number of messages to be added to a bucket before dispatching.

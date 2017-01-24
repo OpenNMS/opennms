@@ -28,37 +28,23 @@
 
 package org.opennms.core.ipc.sink.aggregation;
 
-import org.opennms.core.ipc.sink.api.AggregationPolicy;
-import org.opennms.core.ipc.sink.api.MessageDispatcher;
+import java.util.Objects;
+
+import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 
 /**
- * A {@link MessageDispatcher} that applies the {@link SinkModule}'s {@link AggregationPolicy}
- * using the {@link Aggregator}.
+ * This is a specific aggregator where the messsages implement
+ * the {@link Message} marker interface.
  *
  * @author jwhite
+ *
+ * @param <S> individual message
+ * @param <T> aggregated message (i.e. bucket)
  */
-public abstract class AggregatingMessageProducer<S, T> implements MessageDispatcher<S> {
+public class SinkAggregator<S extends Message, T extends Message> extends Aggregator<S,T> {
 
-    private final Aggregator<S,T> aggregator;
-
-    public AggregatingMessageProducer(String id, AggregationPolicy<S,T> policy) {
-        aggregator = new Aggregator<S,T>(id, policy, this);
-    }
-
-    @Override
-    public void send(S message) {
-        final T bucket = aggregator.aggregate(message);
-        if (bucket != null) {
-            // This bucket is ready to be dispatched
-            dispatch(bucket);
-        }
-    }
-
-    public abstract void dispatch(T message);
-
-    @Override
-    public void close() throws Exception {
-        aggregator.close();
+    public SinkAggregator(SinkModule<S, T> module, AggregatingSinkMessageProducer<S,T> messageProducer) {
+        super(Objects.requireNonNull(module).getId(), module.getAggregationPolicy(), messageProducer);
     }
 }
