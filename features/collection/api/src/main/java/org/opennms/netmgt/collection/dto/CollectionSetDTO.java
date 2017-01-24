@@ -51,6 +51,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
@@ -75,10 +76,14 @@ public class CollectionSetDTO implements CollectionSet {
     @XmlElement(name="collection-resource")
     private List<CollectionResourceDTO> collectionResources;
 
+    @XmlAttribute(name="disable-counter-persistence")
+    private Boolean disableCounterPersistence;
+
     public CollectionSetDTO() { }
 
     public CollectionSetDTO(CollectionAgent agent, CollectionStatus status,
-            Date timestamp, Map<Resource, List<Attribute<?>>> attributesByResource) {
+            Date timestamp, Map<Resource, List<Attribute<?>>> attributesByResource,
+            boolean disableCounterPersistence) {
         this.agent = new CollectionAgentDTO(agent);
         this.status = status;
         this.timestamp = timestamp;
@@ -86,17 +91,20 @@ public class CollectionSetDTO implements CollectionSet {
         for (Entry<Resource, List<Attribute<?>>> entry : attributesByResource.entrySet()) {
             collectionResources.add(new CollectionResourceDTO(entry.getKey(), entry.getValue()));
         }
+        if (disableCounterPersistence) {
+            this.disableCounterPersistence = disableCounterPersistence;
+        }
     }
 
     @Override
     public String toString() {
-        return String.format("CollectionSetDTO[agent=%s, collectionResources=%s, status=%s, timestamp=%s]",
-                agent, collectionResources, status, timestamp);
+        return String.format("CollectionSetDTO[agent=%s, collectionResources=%s, status=%s, timestamp=%s, disableCounterPersistence=%s]",
+                agent, collectionResources, status, timestamp, disableCounterPersistence);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(agent, collectionResources, status, timestamp);
+        return Objects.hash(agent, collectionResources, status, timestamp, disableCounterPersistence);
     }
 
     @Override
@@ -112,7 +120,8 @@ public class CollectionSetDTO implements CollectionSet {
         return Objects.equals(this.agent, other.agent)
                && Objects.equals(this.collectionResources, other.collectionResources)
                && Objects.equals(this.status, other.status)
-               && Objects.equals(this.timestamp, other.timestamp);
+               && Objects.equals(this.timestamp, other.timestamp)
+               && Objects.equals(this.disableCounterPersistence, other.disableCounterPersistence);
     }
 
     @Override
@@ -177,6 +186,11 @@ public class CollectionSetDTO implements CollectionSet {
                     @Override
                     public String getStringValue() {
                         return attribute.getStringValue();
+                    }
+
+                    @Override
+                    public boolean shouldPersist(ServiceParameters params) {
+                        return !(Boolean.FALSE.equals(disableCounterPersistence) && AttributeType.COUNTER.equals(attribute.getType()));
                     }
 
                     @Override

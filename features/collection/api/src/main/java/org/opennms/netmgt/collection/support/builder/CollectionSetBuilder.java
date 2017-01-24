@@ -64,6 +64,7 @@ public class CollectionSetBuilder {
     private CollectionStatus m_status = CollectionStatus.SUCCEEDED;
     private Date m_timestamp = new Date();
     private Map<Resource, List<Attribute<?>>> m_attributesByResource = new LinkedHashMap<>();
+    private boolean m_disableCounterPersistence = false;
 
     public CollectionSetBuilder(CollectionAgent agent) {
         m_agent = Objects.requireNonNull(agent, "agent cannot be null");
@@ -119,8 +120,13 @@ public class CollectionSetBuilder {
         return this;
     }
 
+    public CollectionSetBuilder disableCounterPersistence(boolean disableCounterPersistence) {
+        m_disableCounterPersistence = disableCounterPersistence;
+        return this;
+    }
+
     public CollectionSetDTO build() {
-        return new CollectionSetDTO(m_agent, m_status, m_timestamp, m_attributesByResource);
+        return new CollectionSetDTO(m_agent, m_status, m_timestamp, m_attributesByResource, m_disableCounterPersistence);
     }
 
     public static AbstractCollectionResource toCollectionResource(Resource resource, CollectionAgent agent) {
