@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 public class EventForwarderImpl implements EventForwarder {
 
-
 	private static final Logger LOG = LoggerFactory.getLogger(EventForwarderImpl.class);
 
 	private EventToIndex eventToIndex=null;
@@ -50,25 +49,28 @@ public class EventForwarderImpl implements EventForwarder {
 	}
 	
 	@Override
-	public void sendNow(Event event) {		
+	public void sendNow(Event event) {
 		LOG.debug("Event to send received: " + event.toString());
 		if (eventToIndex!=null) eventToIndex.forwardEvent(event);
 	}
 
 	@Override
-	public void sendNow(Log arg0) {
-		// TODO Auto-generated method stub
-
+	public void sendNow(Log eventLog) {
+		if (eventLog != null && eventLog.getEvents() != null) {
+			for (Event event : eventLog.getEvents().getEvent()) {
+				sendNow(event);
+			}
+		}
 	}
 
-    @Override
-    public void sendNowSync(Event event) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void sendNowSync(Event event) {
+		sendNow(event);
+	}
 
-    @Override
-    public void sendNowSync(Log eventLog) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void sendNowSync(Log eventLog) {
+		sendNow(eventLog);
+	}
 
 }

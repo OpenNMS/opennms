@@ -28,8 +28,6 @@
 
 package org.opennms.plugins.elasticsearch.rest.archive.manual;
 
-import static org.junit.Assert.*;
-
 import java.util.List;
 
 import org.junit.Test;
