@@ -33,6 +33,7 @@ import java.net.InetAddress;
 import java.util.Set;
 
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
@@ -78,12 +79,7 @@ public interface CollectionAgentService {
      */
     public abstract String getLocationName();
 
-    /**
-     * <p>getStorageDir</p>
-     *
-     * @return a {@link java.io.File} object.
-    */
-    public abstract File getStorageDir();
+    public abstract ResourcePath getStorageResourcePath();
 
 
     /**

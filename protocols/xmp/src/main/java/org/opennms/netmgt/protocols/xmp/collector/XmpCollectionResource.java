@@ -60,6 +60,7 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,9 +126,9 @@ public class XmpCollectionResource extends AbstractCollectionResource
     // get the location where we are supposed to write our data to
     /** {@inheritDoc} */
     @Override
-    public Path getPath()
+    public ResourcePath getPath()
     {
-        Path nodeDir = m_agent.getStorageDir().toPath();
+        ResourcePath nodeDir = m_agent.getStorageResourcePath();
 
         // if we are a collection resource for scalars,
         // return what our super class would return
@@ -148,10 +149,10 @@ public class XmpCollectionResource extends AbstractCollectionResource
 
         // if we have a resourceType, put instances under it
         if (m_resourceType != null) {
-            return nodeDir.resolve(m_resourceType).resolve(m_instance);
+            return nodeDir.get(m_resourceType).get(m_instance);
         }
         else {
-            return nodeDir.resolve(m_instance);
+            return nodeDir.get(m_instance);
         }
     }
 

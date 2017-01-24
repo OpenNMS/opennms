@@ -28,14 +28,13 @@
 
 package org.opennms.netmgt.collectd.tca;
 
-import java.nio.file.Path;
-
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
 import org.opennms.netmgt.collection.support.IndexStorageStrategy;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * The Class TcaCollectionResource.
@@ -113,7 +112,7 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	}
 
     @Override
-    public Path getPath() {
+    public ResourcePath getPath() {
         return m_strategy.getRelativePathForAttribute(getParent(), getInterfaceLabel());
     }
 

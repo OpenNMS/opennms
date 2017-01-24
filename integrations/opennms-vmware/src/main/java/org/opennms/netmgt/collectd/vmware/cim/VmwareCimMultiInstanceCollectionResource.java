@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.collectd.vmware.cim;
 
-import java.nio.file.Path;
-
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.model.ResourcePath;
 
 public class VmwareCimMultiInstanceCollectionResource extends VmwareCimCollectionResource {
 
@@ -44,10 +43,10 @@ public class VmwareCimMultiInstanceCollectionResource extends VmwareCimCollectio
     }
 
     @Override
-    public Path getPath() {
-        return m_agent.getStorageDir().toPath()
-                    .resolve(m_name)
-                    .resolve(m_inst.replaceAll("/", "_").replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_"));
+    public ResourcePath getPath() {
+        return ResourcePath.get(m_agent.getStorageResourcePath(),
+                                m_name,
+                                m_inst.replaceAll("/", "_").replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_"));
     }
 
     @Override

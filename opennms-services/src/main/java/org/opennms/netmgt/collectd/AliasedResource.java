@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Iterator;
@@ -38,6 +37,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.utils.NodeLabelJDBCImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,8 +108,8 @@ public class AliasedResource extends SnmpCollectionResource {
     }
 
     @Override
-    public Path getPath() {
-        return Paths.get(getDomain(), getAliasDir());
+    public ResourcePath getPath() {
+        return ResourcePath.get(getDomain(), getAliasDir());
     }
 
     /**
@@ -207,7 +207,7 @@ public class AliasedResource extends SnmpCollectionResource {
     }
 
     @Override
-    public String getParent() {
+    public ResourcePath getParent() {
         return null; //For node and interface type resources, use the default parent
     }
 

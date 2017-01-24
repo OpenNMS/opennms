@@ -29,10 +29,10 @@
 package org.opennms.netmgt.collectd.wmi;
 
 import java.io.File;
-import java.nio.file.Path;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.model.ResourcePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,13 +69,10 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
 
     /** {@inheritDoc} */
     @Override
-    public Path getPath() {
-        String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel()).toString();
+    public ResourcePath getPath() {
         //WMI instances can have special characters in them. See NMS-6924.
-        resourcePath = resourcePath.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_");
-        File resourceDir = new File(resourcePath);
-        LOG.debug("getResourceDir: {}", resourceDir);
-        return resourceDir.toPath();
+        return m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(),
+                                                                               getInterfaceLabel().replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_"));
     }
 
     /**

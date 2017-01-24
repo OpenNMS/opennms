@@ -71,6 +71,7 @@ import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.ResourcePath;
 import org.w3c.dom.Node;
 
 import com.google.common.collect.Maps;
@@ -89,7 +90,7 @@ public class WSManCollectorTest {
         addAttribute(group, "!ElementName!", "StringWithoutValue", AttributeType.STRING);
 
         CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getStorageDir()).thenReturn(new java.io.File(""));
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         Supplier<Resource> resourceSupplier = () -> mock(NodeLevelResource.class);
 
@@ -144,7 +145,7 @@ public class WSManCollectorTest {
         group.addAttrib(attr);
 
         CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getStorageDir()).thenReturn(new java.io.File(""));
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         Supplier<Resource> resourceSupplier = () -> mock(NodeLevelResource.class);
 
@@ -196,7 +197,7 @@ public class WSManCollectorTest {
         group.addAttrib(attr);
 
         CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getStorageDir()).thenReturn(new java.io.File(""));
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         Supplier<Resource> resourceSupplier = () -> mock(NodeLevelResource.class);
 
@@ -242,7 +243,7 @@ public class WSManCollectorTest {
         collector.setNodeDao(nodeDao);
 
         CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getStorageDir()).thenReturn(new java.io.File(""));
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
         collector.initialize(agent, Maps.newHashMap());
 
         Map<String, Object> collectionParams = Maps.newHashMap();
@@ -288,7 +289,7 @@ public class WSManCollectorTest {
 
         // Mock the agent
         CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getStorageDir()).thenReturn(new java.io.File(""));
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
 
         // Sample data

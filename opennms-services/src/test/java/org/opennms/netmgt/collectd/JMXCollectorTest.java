@@ -59,6 +59,7 @@ import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.dao.jmx.JmxConfigDaoJaxb;
 import org.opennms.netmgt.jmx.connection.JmxConnectors;
+import org.opennms.netmgt.model.ResourcePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,8 +113,8 @@ public class JMXCollectorTest {
         }
 
         @Override
-        public java.io.File getStorageDir() {
-            return new java.io.File("");
+        public ResourcePath getStorageResourcePath() {
+            return ResourcePath.get();
         }
 
         @Override

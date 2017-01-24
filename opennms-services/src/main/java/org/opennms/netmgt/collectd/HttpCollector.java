@@ -36,7 +36,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -94,6 +93,7 @@ import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
 import org.opennms.netmgt.config.httpdatacollection.Parameter;
 import org.opennms.netmgt.config.httpdatacollection.Uri;
 import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -760,8 +760,8 @@ public class HttpCollector implements ServiceCollector {
         }
 
         @Override
-        public Path getPath() {
-            return m_agent.getStorageDir().toPath();
+        public ResourcePath getPath() {
+            return m_agent.getStorageResourcePath();
         }
 
         @Override
@@ -787,8 +787,8 @@ public class HttpCollector implements ServiceCollector {
         }
 
         @Override
-        public String getParent() {
-            return m_agent.getStorageDir().toString();
+        public ResourcePath getParent() {
+            return m_agent.getStorageResourcePath();
         }
 
         @Override

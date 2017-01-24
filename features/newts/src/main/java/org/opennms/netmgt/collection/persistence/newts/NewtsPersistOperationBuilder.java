@@ -128,7 +128,7 @@ public class NewtsPersistOperationBuilder implements PersistOperationBuilder {
 
     public List<Sample> getSamplesToInsert() {
         final List<Sample> samples = Lists.newLinkedList();
-        ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(m_repository, m_resource.getPath().resolve(m_name));
+        ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(m_repository, ResourcePath.get(m_resource.getPath(), m_name));
 
         // Add extra attributes that can be used to walk the resource tree.
         NewtsUtils.addIndicesToAttributes(path, m_metaData);

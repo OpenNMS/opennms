@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collection.support;
 
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +39,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.model.ResourcePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,8 +78,8 @@ public abstract class AbstractCollectionResource implements CollectionResource {
 
     /** {@inheritDoc} */
     @Override
-    public Path getPath() {
-        return m_agent.getStorageDir().toPath();
+    public ResourcePath getPath() {
+        return m_agent.getStorageResourcePath();
     }
 
     /**
@@ -119,8 +119,8 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     }
 
     @Override
-    public final String getParent() {
-        return m_agent.getStorageDir().toString();
+    public final ResourcePath getParent() {
+        return m_agent.getStorageResourcePath();
     }
 
     /**

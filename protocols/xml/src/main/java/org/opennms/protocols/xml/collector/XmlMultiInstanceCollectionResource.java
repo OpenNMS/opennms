@@ -28,10 +28,9 @@
 
 package org.opennms.protocols.xml.collector;
 
-import java.nio.file.Path;
-
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * The Class XmlMultiInstanceCollectionResource.
@@ -71,7 +70,7 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
     }
 
     @Override
-    public Path getPath() {
+    public ResourcePath getPath() {
         return m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel());
     }
 

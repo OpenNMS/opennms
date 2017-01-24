@@ -32,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.model.ResourcePath;
 
 public class InterfaceLevelResource implements Resource {
 
@@ -58,8 +59,8 @@ public class InterfaceLevelResource implements Resource {
     }
 
     @Override
-    public Path getPath(CollectionResource resource) {
-        return Paths.get(getIfName());
+    public ResourcePath getPath(CollectionResource resource) {
+        return ResourcePath.get(getIfName());
     }
 
     @Override

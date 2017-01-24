@@ -57,6 +57,7 @@ import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 
@@ -384,15 +385,20 @@ public class StressCommand extends OsgiCommandSupport {
         }
 
         @Override
-        public File getStorageDir() {
+        public ResourcePath getStorageResourcePath() {
             // Copied from org.opennms.netmgt.collectd.org.opennms.netmgt.collectd#getStorageDir
-            File dir = new File(Integer.toString(getNodeId()));
             final String foreignSource = getForeignSource();
             final String foreignId = getForeignId();
+
+            final ResourcePath dir;
             if(isStoreByForeignSource() && foreignSource != null && foreignId != null) {
-                File fsDir = new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, foreignSource);
-                dir = new File(fsDir, foreignId);
+                dir = ResourcePath.get(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY,
+                                       foreignSource,
+                                       foreignId);
+            } else {
+                dir = ResourcePath.get(String.valueOf(getNodeId()));
             }
+
             return dir;
         }
 

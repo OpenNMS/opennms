@@ -28,13 +28,12 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
-import java.nio.file.Path;
 import java.util.Objects;
-
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
 import org.opennms.netmgt.collection.api.ResourceType;
 import org.opennms.netmgt.collection.api.StorageStrategy;
+import org.opennms.netmgt.model.ResourcePath;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class GenericTypeResource implements Resource {
@@ -66,8 +65,8 @@ public class GenericTypeResource implements Resource {
     }
 
     @Override
-    public Path getPath(CollectionResource resource) {
-        return getStorageStrategy().getRelativePathForAttribute("", getStorageStrategy().getResourceNameFromIndex(resource));
+    public ResourcePath getPath(CollectionResource resource) {
+        return getStorageStrategy().getRelativePathForAttribute(new ResourcePath(), getStorageStrategy().getResourceNameFromIndex(resource));
     }
 
     public StorageStrategy getStorageStrategy() {

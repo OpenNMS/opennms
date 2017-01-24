@@ -55,7 +55,7 @@ public class BasePersister extends AbstractPersister {
     protected static final Logger LOG = LoggerFactory.getLogger(BasePersister.class);
 
     private final RrdStrategy<?, ?> m_rrdStrategy;
-    private final ResourceStorageDao m_resourceStorageDao;
+    protected final ResourceStorageDao m_resourceStorageDao;
     private boolean m_dontReorderAttributes = false;
 
     /**

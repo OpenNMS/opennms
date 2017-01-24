@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -51,6 +50,7 @@ import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
 import org.opennms.netmgt.collection.support.NumericAttributeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * A fluent API for building a {@link CollectionSet}.
@@ -142,8 +142,8 @@ public class CollectionSetBuilder {
                 }
 
                 @Override
-                public Path getPath() {
-                    return super.getPath().resolve(resource.getPath(this));
+                public ResourcePath getPath() {
+                    return ResourcePath.get(super.getPath(), resource.getPath(this));
                 }
 
                 @Override

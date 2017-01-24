@@ -65,7 +65,7 @@ public class EvaluateGroupPersister extends AbstractEvaluatePersister {
             final String resourceId = getResourceId(group.getResource());
             final String groupId = resourceId + '/' + group.getName();
             LOG.debug("visitGroup: {} = {}", groupId, group.getAttributes().size());
-            stats.checkNode(group.getResource().getParent());
+            stats.checkNode(group.getResource().getParent().getName());
             stats.checkGroup(groupId);
             stats.checkResource(resourceId);
             group.getAttributes().forEach(a -> {

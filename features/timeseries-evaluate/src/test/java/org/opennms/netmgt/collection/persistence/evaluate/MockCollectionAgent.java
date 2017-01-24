@@ -31,6 +31,7 @@ import java.io.File;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * The Class MockCollectionAgent.
@@ -171,13 +172,13 @@ public class MockCollectionAgent implements CollectionAgent {
      * @see org.opennms.netmgt.collection.api.CollectionAgent#getStorageDir()
      */
     @Override
-    public File getStorageDir() {
-        return new File("fs" + File.separator + foreignSource + File.separator + foreignId);
+    public ResourcePath getStorageResourcePath() {
+        return ResourcePath.get("fs" + File.separator + foreignSource + File.separator + foreignId);
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.collection.api.CollectionAgent#getSysObjectId()
-     */
+         * @see org.opennms.netmgt.collection.api.CollectionAgent#getSysObjectId()
+         */
     @Override
     public String getSysObjectId() {
         return null;

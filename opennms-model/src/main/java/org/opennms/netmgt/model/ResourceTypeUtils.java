@@ -135,9 +135,9 @@ public abstract class ResourceTypeUtils {
     /**
      * Retrieves the ResourcePath relative to rrd.base.dir.
      */
-    public static ResourcePath getResourcePathWithRepository(RrdRepository repository, Path resource) {
+    public static ResourcePath getResourcePathWithRepository(RrdRepository repository, ResourcePath resource) {
         // Here we just assume that the repository dir is of the form ${rrd.base.dir}/snmp or ${rrd.base.dir}/response
         // since all of operations in the ResourceDao assume that the resources are stored in these paths
-        return ResourcePath.get(repository.getRrdBaseDir().getName(), resource);
+        return ResourcePath.get(ResourcePath.get(repository.getRrdBaseDir().getName()), resource);
     }
 }
