@@ -47,7 +47,6 @@ Geomap = function() {
                 url: restEndpoint + "/config",
                 contentType: 'application/json',
                 dataType: 'json',
-                async: false,
                 success: function(config) {
                     initMap(config);
                     loadGeolocations(query, function() { centerOnMap(); });
@@ -64,7 +63,6 @@ Geomap = function() {
                 url: restEndpoint,
                 contentType: 'application/json',
                 dataType: 'json',
-                async: false,
                 data: JSON.stringify(query),
                 success: function (data) {
                     if (data != undefined) {
@@ -105,6 +103,7 @@ Geomap = function() {
                     markersData.push(markerData);
                 }
             }
+            // Invoke Callback function if defined
             if (fn) {
                 fn();
             }
