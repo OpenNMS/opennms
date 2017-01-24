@@ -39,6 +39,7 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -57,13 +58,18 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultTicketerServiceLayer.class);
 
+    protected static final String COMMS_ERROR_UEI = "uei.opennms.org/troubleTicket/communicationError";
+    public static final String SKIP_CREATE_WHEN_CLEARED_SYS_PROP = "opennms.ticketer.skipCreateWhenCleared";
+    public static final String SKIP_CLOSE_WHEN_NOT_CLEARED_SYS_PROP = "opennms.ticketer.skipCloseWhenNotCleared";
+
+    private final boolean SKIP_CREATE_WHEN_CLEARED = Boolean.getBoolean(SKIP_CREATE_WHEN_CLEARED_SYS_PROP);
+    private final boolean SKIP_CLOSE_WHEN_NOT_CLEARED = Boolean.getBoolean(SKIP_CLOSE_WHEN_NOT_CLEARED_SYS_PROP);
+
     @Autowired
     private AlarmDao m_alarmDao;
 
     private Plugin m_ticketerPlugin;
     private EventIpcManager m_eventIpcManager;
-
-    static final String COMMS_ERROR_UEI = "uei.opennms.org/troubleTicket/communicationError";
 
     public DefaultTicketerServiceLayer() {
         m_eventIpcManager = EventIpcManagerFactory.getIpcManager();
@@ -141,6 +147,14 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
             return;
         }
 
+        if (SKIP_CLOSE_WHEN_NOT_CLEARED) {
+            final OnmsSeverity currentSeverity = alarm.getSeverity();
+            if (currentSeverity != null && !currentSeverity.equals(OnmsSeverity.CLEARED)) {
+                LOG.info("Alarm with id {} is not currently cleared. Ticket with id '{}' will not be closed.", alarmId, ticketId);
+                return;
+            }
+        }
+
         try {
             setTicketState(ticketId, State.CLOSED);
             alarm.setTTicketState(TroubleTicketState.CLOSED);
@@ -165,6 +179,14 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
         if (alarm == null) {
             LOG.error("No alarm with id {} was found. No ticket will be created.", alarmId);
             return;
+        }
+
+        if (SKIP_CREATE_WHEN_CLEARED) {
+            final OnmsSeverity currentSeverity = alarm.getSeverity();
+            if (currentSeverity != null && currentSeverity.equals(OnmsSeverity.CLEARED)) {
+                LOG.info("Alarm with id {} is currently cleared. No ticket will be created.", alarmId);
+                return;
+            }
         }
 
         Ticket ticket = createTicketFromAlarm(alarm, attributes);

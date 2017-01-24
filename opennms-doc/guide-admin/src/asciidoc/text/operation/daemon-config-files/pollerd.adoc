@@ -1,0 +1,22 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-opennms-operation-daemon-config-files-pollerd]]
+==== Pollerd
+
+[options="header, autowidth"]
+|===
+| Internal Daemon Name | Reload Event
+| _Pollerd_            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Pollerd'`
+|===
+
+.Pollerd configuration file overview
+[options="header, autowidth"]
+|===
+| File                        | Restart Required | Reload Event | Description
+| `poller-configuration.xml`  | yes              | yes          | Restart is required in case new monitors are created or removed.
+                                                                  Reload Event loads changed configuration parameters of existing monitors.
+| `response-graph.properties` | no               | no           | Graph definition for response time graphs from monitors
+| `poll-outages.xml`          | no               | yes          | Can be reloaded with `uei.opennms.org/internal/schedOutagesChanged`
+|===

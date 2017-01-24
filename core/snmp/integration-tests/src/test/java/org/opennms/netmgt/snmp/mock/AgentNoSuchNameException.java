@@ -28,11 +28,13 @@
 
 package org.opennms.netmgt.snmp.mock;
 
+import org.opennms.netmgt.snmp.ErrorStatus;
+
 public class AgentNoSuchNameException extends AgentIndexException {
 	private static final long serialVersionUID = -7868872214755378790L;
 
 	public AgentNoSuchNameException(int errorIndex) {
-        super(ResponsePdu.NO_SUCH_NAME_ERR, errorIndex);
+        super(ErrorStatus.NO_SUCH_NAME.ordinal(), errorIndex);
     }
     
 

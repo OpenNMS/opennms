@@ -30,12 +30,6 @@ package org.opennms.netmgt.snmp;
 
 
 public abstract class CollectionTracker implements Collectable {
-    
-    public static final int NO_ERR = 0;
-    public static final int TOO_BIG_ERR = 1;
-    public static final int NO_SUCH_NAME_ERR = 2;
-    public static final int GEN_ERR = 5;
-
     private CollectionTracker m_parent;
     private boolean m_failed = false;
     private boolean m_timedOut = false;
@@ -105,7 +99,19 @@ public abstract class CollectionTracker implements Collectable {
             m_parent.reportNoSuchNameErr(msg);
         }
     }
-    
+
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        if (m_parent != null) {
+            m_parent.reportFatalErr(ex);
+        }
+    }
+
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        if (m_parent != null) {
+            m_parent.reportNonFatalErr(status);
+        }
+    }
+
     @Override
     public CollectionTracker getCollectionTracker() {
         return this;

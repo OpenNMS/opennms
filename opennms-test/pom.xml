@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>18.0.2</version>
+    <version>18.0.3</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-test</artifactId>
@@ -69,6 +69,27 @@
         <exclusion>
           <groupId>org.xerial.snappy</groupId>
           <artifactId>snappy-java</artifactId>
+        </exclusion>
+        <!-- these asm artficats conflict with the asm version used in Blueprint related tests -->
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-commons</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-analysis</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-tree</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-util</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

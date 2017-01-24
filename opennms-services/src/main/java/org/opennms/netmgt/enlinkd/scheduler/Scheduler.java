@@ -31,13 +31,15 @@ package org.opennms.netmgt.enlinkd.scheduler;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.queue.FifoQueueImpl;
+import org.opennms.netmgt.scheduler.LegacyScheduler.PeekableFifoQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,59 +51,39 @@ import org.slf4j.LoggerFactory;
 public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
     private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
-	/**
-	 * The map of queue that contain {@link ReadyRunnable ready runnable}
-	 * instances. The queues are mapped according to the interval of scheduling.
-	 */
-	public Map<Long,PeekableFifoQueue<ReadyRunnable>> m_queues;
+    /**
+     * The map of queue that contain {@link ReadyRunnable ready runnable}
+     * instances. The queues are mapped according to the interval of scheduling.
+     */
+    private final Map<Long, PeekableFifoQueue<ReadyRunnable>> m_queues;
 
-	/**
-	 * The total number of elements currently scheduled. This should be the sum
-	 * of all the elements in the various queues.
-	 */
-	public int m_scheduled;
+    /**
+     * The total number of elements currently scheduled. This should be the sum
+     * of all the elements in the various queues.
+     */
+    private volatile int m_scheduled;
 
-	/**
-	 * The pool of threads that are used to executed the runnable instances
-	 * scheduled by the class' instance.
-	 */
-	public ExecutorService m_runner;
+    /**
+     * The pool of threads that are used to executed the runnable instances
+     * scheduled by the class' instance.
+     */
+    private final ExecutorService m_runner;
 
-	/**
-	 * The status for this fiber.
-	 */
-	public int m_status;
+    /**
+     * The status for this fiber.
+     */
+    private volatile int m_status;
 
-	/**
-	 * The worker thread that executes this instance.
-	 */
-	private Thread m_worker;
+    /**
+     * The worker thread that executes this instance.
+     */
+    private volatile Thread m_worker;
 
-	/**
-	 * This queue extends the standard FIFO queue instance so that it is
-	 * possible to peek at an instance without removing it from the queue.
-	 *  
-	 */
-	public static final class PeekableFifoQueue<T> extends FifoQueueImpl<T> {
-        /**
-         * This method allows the caller to peek at the next object that would
-         * be returned on a <code>remove</code> call. If the queue is
-         * currently empty then the caller is blocked until an object is put
-         * into the queue.
-         * 
-         * @return The object that would be returned on the next call to
-         *         <code>remove</code>.
-         * 
-         * @throws java.lang.InterruptedException
-         *             Thrown if the thread is interrupted.
-         * @throws org.opennms.core.queue.FifoQueueException
-         *             Thrown if an error occurs removing an item from the
-         *             queue.
-         */
-        public T peek() throws InterruptedException {
-            return m_delegate.peek();
-        }
-	}
+    /**
+     * Used to keep track of the number of tasks that have been executed.
+     */
+    private volatile long m_numTasksExecuted = 0;
+
 
 	/**
 	 * Constructs a new instance of the scheduler. The maximum number of
@@ -118,7 +100,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		m_status = START_PENDING;
 		m_runner = Executors.newFixedThreadPool(
 			maxSize,
-			new LogPreservingThreadFactory(getClass().getSimpleName(), maxSize)
+			new LogPreservingThreadFactory(parent, maxSize)
 		);
 		m_queues = new ConcurrentSkipListMap<Long,PeekableFifoQueue<ReadyRunnable>>();
 		m_scheduled = 0;
@@ -260,7 +242,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 
 	/**
 	 * This method is used to unschedule a ready runnable in the system.
-	 * The runnuble is removed from all queue interval where is found.
+	 * The runnable is removed from all queue interval where is found.
 	 *
 	 * @param runnable
 	 *            The element to remove from queue intervals.
@@ -268,10 +250,9 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	public synchronized void unschedule(ReadyRunnable runnable) {
 	    LOG.debug("unschedule: Removing all {}", runnable.getInfo());
 		
-		boolean done = false;
 		synchronized(m_queues) {
 		  Iterator<Long> iter = m_queues.keySet().iterator();
-		  while (iter.hasNext() && !done) {
+		  while (iter.hasNext()) {
 		
 			Long key = iter.next();
 			unschedule(runnable, key.longValue());
@@ -530,114 +511,129 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * the runnable queues for ready objects and then enqueuing them into the
 	 * thread pool for execution.
 	 */
-        @Override
-	public void run() {
+    @Override
+    public void run() {
 
-		synchronized (this) {
-			m_status = RUNNING;
-		}
+        synchronized (this) {
+            m_status = RUNNING;
+        }
 
-		LOG.debug("run: scheduler running");
+        LOG.debug("run: scheduler running");
 
-		// Loop until a fatal exception occurs or until
-		// the thread is interrupted.
-		//
-		for (;;) {
-			// block if there is nothing in the queue(s)
-			// When something is added to the queue it
-			// signals us to wakeup
-			//
-			synchronized (this) {
-				if (m_status != RUNNING && m_status != PAUSED
-						&& m_status != PAUSE_PENDING
-						&& m_status != RESUME_PENDING) {
-				    LOG.debug("run: status = {}, time to exit", m_status);
-					break;
-				}
+        // Loop until a fatal exception occurs or until
+        // the thread is interrupted.
+        //
+        for (;;) {
+            // block if there is nothing in the queue(s)
+            // When something is added to the queue it
+            // signals us to wakeup
+            //
+            synchronized (this) {
+                if (m_status != RUNNING && m_status != PAUSED
+                        && m_status != PAUSE_PENDING
+                        && m_status != RESUME_PENDING) {
+                    LOG.debug("run: status = {}, time to exit", m_status);
+                    break;
+                }
 
-				if (m_scheduled == 0) {
-					try {
-					    LOG.debug("run: no interfaces scheduled, waiting...");
-						wait();
-					} catch (InterruptedException ex) {
-						break;
-					}
-				}
-			}
+                if (m_scheduled == 0) {
+                    try {
+                        LOG.debug("run: no interfaces scheduled, waiting...");
+                        wait();
+                    } catch (InterruptedException ex) {
+                        break;
+                    }
+                }
+            }
 
-			// cycle through the queues checking for
-			// what's ready to run. The queues are keyed
-			// by the interval, but the mapped elements
-			// are peekable fifo queues.
-			//
-			int runned = 0;
-			synchronized (m_queues) {
-				// get an iterator so that we can cycle
-				// through the queue elements.
-				//
-				Iterator<Long> iter = m_queues.keySet().iterator();
-				while (iter.hasNext()) {
-					// Peak for Runnable objects until
-					// there are no more ready runnables
-					//
-					// Also, only go through each queue once!
-					// if we didn't add a count then it would
-					// be possible to starve other queues.
-					//
-					Long key = iter.next();
-					PeekableFifoQueue<ReadyRunnable> in = m_queues.get(key);
-					if (in.isEmpty()) {
-						continue;
-					}
-					ReadyRunnable readyRun = null;
-					int maxLoops = in.size();
-					do {
-						try {
-							readyRun = in.peek();
-							if (readyRun != null && readyRun.isReady()) {
-							    LOG.debug("run: found ready runnable {}", readyRun.getInfo());
+            // cycle through the queues checking for
+            // what's ready to run. The queues are keyed
+            // by the interval, but the mapped elements
+            // are peekable fifo queues.
+            //
+            int runned = 0;
+            synchronized (m_queues) {
+                // get an iterator so that we can cycle
+                // through the queue elements.
+                //
+                for (Entry<Long, PeekableFifoQueue<ReadyRunnable>> entry : m_queues.entrySet()) {
+                    // Peak for Runnable objects until
+                    // there are no more ready runnables
+                    //
+                    // Also, only go through each queue once!
+                    // if we didn't add a count then it would
+                    // be possible to starve other queues.
+                    //
+                    PeekableFifoQueue<ReadyRunnable> in = entry.getValue();
+                    ReadyRunnable readyRun = null;
+                    int maxLoops = in.size();
+                    do {
+                        try {
+                            readyRun = in.peek();
+                            if (readyRun != null) {
+                                // Pop the interface/readyRunnable from the
+                                // queue for execution.
+                                //
+                                in.remove();
 
-								// Pop the interface/readyRunnable from the
-								// queue for execution.
-								//
-								in.remove();
+                                if (readyRun.isReady()) {
+                                    LOG.debug("run: runnable {}, executing",
+                                              readyRun.getInfo());
 
-								// Add runnable to the execution queue
-								m_runner.execute(readyRun);
-								++runned;
-							}
-						} catch (InterruptedException ex) {
-							return; // jump all the way out
-						}
-					} while (readyRun != null && readyRun.isReady()
-							&& --maxLoops > 0);
+                                    // Add runnable to the execution queue
+                                    m_runner.execute(readyRun);
+                                    ++runned;
+                                    
+                                    // Increment the execution counter
+                                    ++m_numTasksExecuted;
 
-				}
-				
-			}
+                                    // Thread Pool Statistics
+                                    if (m_runner instanceof ThreadPoolExecutor) {
+                                        ThreadPoolExecutor e = (ThreadPoolExecutor) m_runner;
+                                        String ratio = String.format("%.3f", e.getTaskCount() > 0 ? new Double(e.getCompletedTaskCount())/new Double(e.getTaskCount()) : 0);
+                                        LOG.debug("thread pool statistics: activeCount={}, taskCount={}, completedTaskCount={}, completedRatio={}, poolSize={}",
+                                            e.getActiveCount(), e.getTaskCount(), e.getCompletedTaskCount(), ratio, e.getPoolSize());
+                                    }
 
-			// Wait for 1 second if there were no runnables
-			// executed during this loop, otherwise just
-			// start over.
-			//
-			synchronized (this) {
-				m_scheduled -= runned;
-				if (runned == 0) {
-					try {
-						wait(1000);
-					} catch (InterruptedException ex) {
-						break; // exit for loop
-					}
-				}
-			}
+                                } else {
+                                    in.add(readyRun);
+                                }
+                            }
+                        } catch (InterruptedException ex) {
+                            return; // jump all the way out
+                        }
+                    } while (--maxLoops > 0);
+                }
 
-		} // end for(;;)
+            }
 
-		LOG.debug("run: scheduler exiting, state = STOPPED");
-		synchronized (this) {
-			m_status = STOPPED;
-		}
+            // Wait for 1 second if there were no runnables
+            // executed during this loop, otherwise just
+            // start over.
+            //
+            synchronized (this) {
+                m_scheduled -= runned;
+                if (runned == 0) {
+                    try {
+                        wait(1000);
+                    } catch (InterruptedException ex) {
+                        break; // exit for loop
+                    }
+                }
+            }
 
-	} // end run
-	
+        } // end for(;;)
+
+        LOG.debug("run: scheduler exiting, state = STOPPED");
+        synchronized (this) {
+            m_status = STOPPED;
+        }
+
+    } // end run
+    
+    public long getNumTasksExecuted() {
+        return m_numTasksExecuted;
+    }
+
+
 }

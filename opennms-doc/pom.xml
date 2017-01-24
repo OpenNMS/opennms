@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>opennms</artifactId>
-        <version>18.0.2</version>
+        <version>18.0.3</version>
     </parent>
     <groupId>org.opennms.doc</groupId>
     <artifactId>parent</artifactId>
@@ -96,6 +96,7 @@
                             <goal>process-asciidoc</goal>
                         </goals>
                         <configuration>
+                            <skip>${skipPdfGeneration}</skip>
                             <backend>pdf</backend>
                             <doctype>book</doctype>
                             <!-- WARNING callout bullets don't yet work with CodeRay -->

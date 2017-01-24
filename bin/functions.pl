@@ -94,6 +94,14 @@ if (not $MAVEN_OPTS =~ /TieredCompilation/) {
 	$MAVEN_OPTS .= " -XX:+TieredCompilation -XX:TieredStopAtLevel=1";
 }
 
+if (not $MAVEN_OPTS =~ /-Xmx/) {
+	$MAVEN_OPTS .= "-Xmx2048m";
+}
+
+if (not $MAVEN_OPTS =~ /ReservedCodeCacheSize/) {
+	$MAVEN_OPTS .= " -XX:ReservedCodeCacheSize=512m";
+}
+
 if (not $MAVEN_OPTS =~ /UseGCOverheadLimit/) {
 	# The concurrent collector will throw an OutOfMemoryError if too much time is being spent in garbage collection: if
 	# more than 98% of the total time is spent in garbage collection and less than 2% of the heap is recovered, an

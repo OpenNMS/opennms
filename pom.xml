@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>18.0.2</version>
+  <version>18.0.3</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -742,6 +742,19 @@
                   <ignore></ignore>
                 </action>
               </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>exec-maven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>java</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                    <execute></execute>
+                </action>
+              </pluginExecution>
             </pluginExecutions>
           </lifecycleMappingMetadata>
         </configuration>
@@ -1197,7 +1210,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>18.0.2</opennms.osgi.version>
+    <opennms.osgi.version>18.0.3</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1298,6 +1311,7 @@
     <hikaricpVersion>2.4.6</hikaricpVersion>
     <httpcoreVersion>4.3.3</httpcoreVersion>
     <httpclientVersion>4.3.6</httpclientVersion>
+    <httpasyncclientVersion>4.0.2</httpasyncclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>6.1.1</jasperreportsVersion>
     <jettyVersion>8.1.10.v20130312</jettyVersion>
@@ -1315,10 +1329,10 @@
     <log4j2Version>2.5</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <minionKarafVersion>4.0.4</minionKarafVersion>
-    <newtsVersion>1.4.1</newtsVersion>
+    <newtsVersion>1.4.2</newtsVersion>
     <paxExamVersion>4.8.0</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
-    <postgresqlVersion>9.4.1208</postgresqlVersion>
+    <postgresqlVersion>9.4.1211</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>5.0.0</osgiVersion>
@@ -1352,10 +1366,17 @@
     <vaadinAddonContextMenuVersion>4.2.1</vaadinAddonContextMenuVersion>
     <vaadinAddonRefresherVersion>1.2.3.7</vaadinAddonRefresherVersion>
     <vaadinAddonConfirmDialogVersion>2.0.4</vaadinAddonConfirmDialogVersion>
+    
+    <skipPdfGeneration>true</skipPdfGeneration>
+    <skipSignJar>true</skipSignJar>
+
+    <!-- moved here from opennms-pluginmanger -->
+    <pluginmanagerVersion>1.0.1</pluginmanagerVersion>
+    <licencemanagerVersion>1.0.1</licencemanagerVersion>
+    <featuremanagerVersion>1.0.1</featuremanagerVersion>
   </properties>
 
   <profiles>
-
     <profile>
       <id>enable.snapshots</id>
       <activation>
@@ -1371,55 +1392,28 @@
         </repository>
       </repositories>
     </profile>
-
-    <profile>
-      <id>build.all</id>
-      <activation>
-        <property><name>build</name><value>all</value></property>
-      </activation>
-      <modules>
-        <module>extensions</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>build.extensions</id>
-      <activation>
-        <property><name>build</name><value>extensions</value></property>
-      </activation>
-      <modules>
-        <module>extensions</module>
-      </modules>
-    </profile>
-
     <profile>
       <id>opt-local-rrdtool</id>
-      
       <activation>
         <file>
           <exists>/opt/local/bin/rrdtool</exists>
         </file>
       </activation>
-  
       <properties>
         <install.rrdtool.bin>/opt/local/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>fink-rrdtool</id>
-
       <activation>
         <file>
           <exists>/sw/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/sw/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>usr-bin-rrdtool</id>
       <activation>
@@ -1427,12 +1421,10 @@
           <exists>/usr/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>usr-local-bin-rrdtool</id>
       <activation>
@@ -1440,12 +1432,10 @@
           <exists>/usr/local/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/usr/local/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>usr-local-rrdtool-bin-rrdtool</id>
       <activation>
@@ -1453,12 +1443,10 @@
           <exists>/usr/local/rrdtool/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/usr/local/rrdtool/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <!--
          This is for the rrdtool package from Blastwave.org.
          See this for more information:
@@ -1472,32 +1460,23 @@
         <exists>/opt/csw/bin/rrdtool</exists>
       </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/opt/csw/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
-    <profile>
-      <id>build-tools</id>
-      <activation>
-        <property>
-          <name>tagging</name>
-        </property>
-      </activation>
-      <modules>
-        <module>extensions</module>
-        <module>opennms-tools</module>
-      </modules>
-    </profile>
-
     <profile>
       <id>build-bamboo</id>
       <modules>
         <module>opennms-full-assembly</module>
       </modules>
     </profile>
-
+    <profile>
+      <id>run-expensive-tasks</id>
+      <properties>
+        <skipPdfGeneration>false</skipPdfGeneration>
+        <skipSignJar>false</skipSignJar>
+      </properties>
+    </profile>
     <profile>
       <id>smoke</id>
       <activation>
@@ -1512,7 +1491,6 @@
         <module>smoke-test</module>
       </modules>
     </profile>
-
     <profile>
       <id>jdk7+</id>
       <activation>
@@ -1538,7 +1516,6 @@
       </build>
     </profile>
   </profiles>
-
   <dependencyManagement>
     <dependencies>
       <!--  opennms dependencies that are outside of the opennms/trunk project -->
@@ -2949,6 +2926,17 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpasyncclient-osgi</artifactId>
+        <version>${httpasyncclientVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+     </dependency>
+     <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>${commonsIoVersion}</version>
