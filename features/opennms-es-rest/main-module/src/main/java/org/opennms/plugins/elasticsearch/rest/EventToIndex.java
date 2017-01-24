@@ -53,6 +53,9 @@ import org.slf4j.LoggerFactory;
 import io.searchbox.action.BulkableAction;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
+import io.searchbox.core.Bulk;
+import io.searchbox.core.BulkResult;
+import io.searchbox.core.BulkResult.BulkResultItem;
 import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Index;
 import io.searchbox.core.Update;
@@ -264,7 +267,9 @@ public class EventToIndex implements AutoCloseable {
 	 * @param events
 	 */
 	public void forwardEvents(final List<Event> events) {
+
 		final List<BulkableAction<DocumentResult>> actions = convertEventsToEsActions(events);
+
 		if (actions != null && actions.size() > 0) {
 			// Split the actions up by index
 			for (Map.Entry<String,List<BulkableAction<DocumentResult>>> entry : actions.stream().collect(Collectors.groupingBy(BulkableAction::getIndex)).entrySet()) {
@@ -275,83 +280,133 @@ public class EventToIndex implements AutoCloseable {
 					if (entry.getValue().size() == 1) {
 						// Not bulk
 						final BulkableAction<DocumentResult> action = actionList.get(0);
-						DocumentResult result = getJestClient().execute(action);
+						executeSingleAction(getJestClient(), action);
+					} else {
+						// The type will be identical for all events in the same index
+						final String type = actionList.get(0).getType();
 
-						if(result.getResponseCode() == 404){
+						final Bulk.Builder builder = new Bulk.Builder()
+								.defaultIndex(entry.getKey())
+								.defaultType(type);
+
+						// Add all actions to the bulk operation
+						builder.addAction(actionList);
+
+						final Bulk bulk = builder.build();
+
+						BulkResult result = getJestClient().execute(bulk);
+
+						// If the bulk command fails completely...
+						if (result.getResponseCode() != 200) {
+							logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+
+							// Try and issue the bulk actions individually as a fallback
+							for (BulkableAction<DocumentResult> action : entry.getValue()) {
+								executeSingleAction(getJestClient(), action);
+							}
+
+							continue;
+						}
+
+						// Check the return codes of the results
+						List<BulkResultItem> items = result.getItems();
+						boolean all404s = true;
+						for (BulkResultItem item : items) {
+							if (item.status != 404) {
+								all404s = false;
+								break;
+							}
+						}
+
+						if(all404s){
 							// index doesn't exist for upsert command so create new index and try again
 
 							if(LOG.isDebugEnabled()) {
-								LOG.debug("error while performing " + action.getRestMethodName() + " on index " + action.getIndex()
-								+ "\n   received result: "+result.getJsonString()
-								+ "\n   response code:" +result.getResponseCode() 
-								+ "\n   error message: "+result.getErrorMessage());
 								LOG.debug("index name "+entry.getKey() + " doesn't exist, creating new index");
 							}
 
-							createIndex(entry.getKey(), action.getType());
+							createIndex(getJestClient(), entry.getKey(), type);
 
-							result = getJestClient().execute(action);
+							result = getJestClient().execute(bulk);
 						}
 
-						if(result.getResponseCode()!=200){
-							LOG.error("Problem while performing " + action.getRestMethodName() + " on es index:" +entry.getKey()+ " type:"+ action.getType()
-							+ "\n   received search result: "+result.getJsonString()
-							+ "\n   response code:" +result.getResponseCode() 
-							+ "\n   error message: "+result.getErrorMessage());
-						} else if(LOG.isDebugEnabled()) {
-							LOG.debug("Performed " + action.getRestMethodName() + " on es index:" +entry.getKey()+ " type:"+ action.getType()
-							+ "\n   received search result: "+result.getJsonString()
-							+ "\n   response code:" +result.getResponseCode() 
-							+ "\n   error message: "+result.getErrorMessage());
+						// If the bulk command fails completely...
+						if (result.getResponseCode() != 200) {
+							logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+
+							// Try and issue the bulk actions individually as a fallback
+							for (BulkableAction<DocumentResult> action : entry.getValue()) {
+								executeSingleAction(getJestClient(), action);
+							}
+
+							continue;
 						}
-					} else {
-						// Bulk
-						for (BulkableAction<DocumentResult> action : entry.getValue()) {
-							// TODO: Use Bulk API
-							/*
-							BulkResult bulk = getJestClient().execute(new Bulk.Builder().build());
-							List<BulkResultItem> items = bulk.getFailedItems();
-							for (BulkResultItem item : items) {
-							}
-							 */
 
-							DocumentResult result = getJestClient().execute(action);
-
-							if(result.getResponseCode() == 404){
-								// index doesn't exist for upsert command so create new index and try again
-
-								if(LOG.isDebugEnabled()) {
-									LOG.debug("error while performing " + action.getRestMethodName() + " on index " + action.getIndex()
-									+ "\n   received result: "+result.getJsonString()
-									+ "\n   response code:" +result.getResponseCode() 
-									+ "\n   error message: "+result.getErrorMessage());
-									LOG.debug("index name "+entry.getKey() + " doesn't exist, creating new index");
-								}
-
-								createIndex(entry.getKey(), action.getType());
-
-								result = getJestClient().execute(action);
-							}
-
-							if(result.getResponseCode()!=200){
-								LOG.error("Problem while performing " + action.getRestMethodName() + " on es index:" +entry.getKey()+ " type:"+ action.getType()
-								+ "\n   received search result: "+result.getJsonString()
-								+ "\n   response code:" +result.getResponseCode() 
-								+ "\n   error message: "+result.getErrorMessage());
+						// Log any unsuccessful completions as errors
+						for (BulkResultItem item : result.getItems()) {
+							if(item.status != 200){
+								logEsError(item.operation, entry.getKey(), item.type, "none", item.status, item.error);
 							} else if(LOG.isDebugEnabled()) {
-								LOG.debug("Performed " + action.getRestMethodName() + " on es index:" +entry.getKey()+ " type:"+ action.getType()
-								+ "\n   received search result: "+result.getJsonString()
-								+ "\n   response code:" +result.getResponseCode() 
-								+ "\n   error message: "+result.getErrorMessage());
+								// If debug is enabled, log all completions
+								logEsDebug(item.operation, entry.getKey(), item.type, "none", item.status, item.error);
 							}
 						}
 					}
 				} catch (Throwable ex){
-					LOG.error("Unexpected problem sending event to Elasticsearch",ex);
+					LOG.error("Unexpected problem sending event to Elasticsearch", ex);
 					// Shutdown the ES client, it will be recreated as needed
 					close();
 				}
 			}
+		}
+	}
+
+	private static final void logEsError(String operation, String index, String type, String result, int responseCode, String errorMessage) {
+		LOG.error("Error while performing {} on Elasticsearch index: {}, type: {}\n" +
+				"   received result: {}\n" + 
+				"   response code: {}\n" + 
+				"   error message: {}",
+				operation, index, type, result, responseCode, errorMessage
+		);
+	}
+
+	private static final void logEsDebug(String operation, String index, String type, String result, int responseCode, String errorMessage) {
+		LOG.debug("Performed {} on Elasticsearch index: {}, type: {}\n" +
+				"   received result: {}\n" + 
+				"   response code: {}\n" + 
+				"   error message: {}",
+				operation, index, type, result, responseCode, errorMessage
+		);
+	}
+
+	/**
+	 * This executes single Elasticsearch actions, creating indices as needed.
+	 * 
+	 * @param client
+	 * @param action
+	 * @throws IOException
+	 */
+	private static void executeSingleAction(JestClient client, BulkableAction<DocumentResult> action) throws IOException {
+
+		DocumentResult result = client.execute(action);
+
+		if(result.getResponseCode() == 404){
+			// index doesn't exist for upsert command so create new index and try again
+
+			if(LOG.isDebugEnabled()) {
+				logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+				LOG.debug("index name "+action.getIndex() + " doesn't exist, creating new index");
+			}
+
+			createIndex(client, action.getIndex(), action.getType());
+
+			result = client.execute(action);
+		}
+
+		if(result.getResponseCode() != 200){
+			logEsError(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+		} else if(LOG.isDebugEnabled()) {
+			logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
 		}
 	}
 
@@ -785,10 +840,10 @@ public class EventToIndex implements AutoCloseable {
 		}
 	}
 
-	public void createIndex(String name, String type) throws IOException {
+	private static void createIndex(JestClient client, String name, String type) throws IOException {
 		// create new index
 		CreateIndex createIndex = new CreateIndex.Builder(name).build();
-		JestResult result = getJestClient().execute(createIndex);
+		JestResult result = client.execute(createIndex);
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("created new alarm index: {} type: {}" +
 					"\n   received search result: {}" +
