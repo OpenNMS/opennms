@@ -50,18 +50,15 @@ Geomap = function() {
                 async: false,
                 success: function(config) {
                     initMap(config);
-                    loadGeolocations();
+                    loadGeolocations(query, function() { centerOnMap(); });
                 },
                 error: function(xhr, status, error) {
                     console.error("Error receiving configuration from rest endpoint. Status: " + status + " Error: " + error);
                 }
             })
-        }
+        };
 
-        var loadGeolocations = function (strategy) {
-            if (strategy != undefined) {
-                query.strategy = strategy;
-            }
+        var loadGeolocations = function(query, fn) {
             $.ajax({
                 method: "POST",
                 url: restEndpoint,
@@ -71,9 +68,9 @@ Geomap = function() {
                 data: JSON.stringify(query),
                 success: function (data) {
                     if (data != undefined) {
-                        resetMap(data);
+                        resetMap(data, fn);
                     } else {
-                        resetMap([]);
+                        resetMap([], fn);
                     }
                 },
                 error: function (xhr, status, error) {
@@ -82,7 +79,7 @@ Geomap = function() {
             });
         };
 
-        var resetMap = function (theMarkers) {
+        var resetMap = function(theMarkers, fn) {
             markersGroup.clearLayers();
             markersData = [];
             var icons = getIcons();
@@ -108,8 +105,8 @@ Geomap = function() {
                     markersData.push(markerData);
                 }
             }
-            if (markersGroup.getBounds().isValid()) {
-                theMap.fitBounds(markersGroup.getBounds(), [100, 100]);
+            if (fn) {
+                fn();
             }
         };
 
@@ -133,7 +130,7 @@ Geomap = function() {
                 return "";
             }
             return input;
-        }
+        };
 
         var createSvgElement = function (dataArray, classArray, total) {
             var cx = 20;
@@ -190,8 +187,11 @@ Geomap = function() {
         var centerOnMap = function() {
             if (markersGroup.getBounds().isValid()) {
                 theMap.fitBounds(markersGroup.getBounds(), [100, 100]);
-            };
-        }
+            } else {
+                theMap.setZoom(1);
+                theMap.setView([34.5133, -94.1629]); // center of earth
+            }
+        };
 
         var CenterOnMarkersControl = L.Control.extend({
             options: {
@@ -206,7 +206,7 @@ Geomap = function() {
                 // create the control container with a particular class name
                 var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
                 var refresh = this.createButton("Refresh", "fa fa-refresh", container, function() {
-                    loadGeolocations(query.strategy);
+                    loadGeolocations(query);
                 });
                 var center = this.createButton("Center on marker", "fa fa-location-arrow", container, function() {
                     centerOnMap();
@@ -220,7 +220,7 @@ Geomap = function() {
                     } else {
                         L.DomUtil.addClass(includeAcknowledgedAlarmsButton, "fa-square-o");
                     }
-                    loadGeolocations(query.strategy);
+                    loadGeolocations(query);
                 });
                 controls.push(container);
                 return container;
@@ -262,7 +262,7 @@ Geomap = function() {
                 severityList.onmousedown = L.DomEvent.stopPropagation;
                 severityList.onchange = function (event) {
                     query.severityFilter = event.target.value;
-                    loadGeolocations(query.strategy);
+                    loadGeolocations(query);
                 };
 
                 for (var i = 0; i < severities.length; i++) {
@@ -300,7 +300,7 @@ Geomap = function() {
                 strategyList.onmousedown = L.DomEvent.stopPropagation;
                 strategyList.onchange = function (event) {
                     query.strategy = event.target.value;
-                    loadGeolocations(query.strategy);
+                    loadGeolocations(query);
                 };
 
                 var alarmOption = L.DomUtil.create('option', '', strategyList);
@@ -345,7 +345,7 @@ Geomap = function() {
             for (var i = 0; i < controls.length; i++) {
                 controls[i].style.display = visible ? "block" : "none";
             }
-        }
+        };
 
         var initMap = function(config) {
             // create map
@@ -354,7 +354,6 @@ Geomap = function() {
                 maxZoom: 15,
                 zoomControl: false
             });
-            theMap.setView([34.5133, -94.1629]); // center of earth
 
             // add tile layer
             L.tileLayer(config.tileServerUrl, config.options).addTo(theMap);
@@ -451,7 +450,7 @@ Geomap = function() {
                 });
                 setControlVisibility(false);
             }
-        }
+        };
         loadConfig();
     };
 
