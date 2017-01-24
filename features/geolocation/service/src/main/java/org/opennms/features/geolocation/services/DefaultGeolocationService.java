@@ -47,6 +47,7 @@ import org.opennms.features.geolocation.api.GeolocationResolver;
 import org.opennms.features.geolocation.api.GeolocationService;
 import org.opennms.features.geolocation.api.NodeInfo;
 import org.opennms.features.geolocation.api.SeverityInfo;
+import org.opennms.features.geolocation.api.StatusCalculationStrategy;
 import org.opennms.features.geolocation.services.status.AlarmStatusCalculator;
 import org.opennms.features.geolocation.services.status.OutageStatusCalculator;
 import org.opennms.features.geolocation.services.status.Status;
@@ -55,11 +56,16 @@ import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
 public class DefaultGeolocationService implements GeolocationService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultGeolocationService.class);
+
+    protected static final StatusCalculator NULL_STATUS_CALCULATOR = (theQuery, theNodeIds) -> new Status();
 
     private GenericPersistenceAccessor genericPersistenceAccessor;
     private GeolocationResolver resolver;
@@ -109,7 +115,7 @@ public class DefaultGeolocationService implements GeolocationService {
         applyStatus(query, nodesWithCoordinates);
 
         if (query.getSeverity() != null) {
-            OnmsSeverity severity = OnmsSeverity.get(query.getSeverity());
+            OnmsSeverity severity = OnmsSeverity.get(query.getSeverity().getId());
             return nodesWithCoordinates.stream()
                     .filter(n -> severity.getId() <= n.getSeverityInfo().getId())
                     .collect(Collectors.toList());
@@ -171,29 +177,36 @@ public class DefaultGeolocationService implements GeolocationService {
 
     private void applyStatus(GeolocationQuery query, List<GeolocationInfo> locations) {
         if (query.getStatusCalculationStrategy() != null) {
-            final Set<Integer> nodeIds = locations.stream().map(l -> (int) l.getNodeInfo().getNodeId()).collect(Collectors.toSet());
-            final StatusCalculator calculator = getStatusCalculator(query);
-            final Status status = calculator.calculateStatus(query, nodeIds);
+            final Set<Integer> nodeIds = locations.stream().map(l -> l.getNodeInfo().getNodeId()).collect(Collectors.toSet());
+            if (!nodeIds.isEmpty()) {
+                final StatusCalculator calculator = getStatusCalculator(query.getStatusCalculationStrategy());
+                final Status status = calculator.calculateStatus(query, nodeIds);
 
-            for(GeolocationInfo info : locations) {
-                OnmsSeverity severity = status.getSeverity(info.getNodeInfo().getNodeId());
-                if (severity == null) {
-                    severity = OnmsSeverity.NORMAL;
+                // Appliing the calculated status to each location
+                for(GeolocationInfo info : locations) {
+                    OnmsSeverity severity = status.getSeverity(info.getNodeInfo().getNodeId());
+                    // After the status was calculated, it is not guaranteed that status.size() == locations.size()
+                    // Therefore for all locations with no status must be set to "NORMAL" in the result
+                    if (severity == null) {
+                        severity = OnmsSeverity.NORMAL;
+                    }
+                    info.setSeverityInfo(new SeverityInfo(severity.getId(), severity.getLabel()));
+                    info.setAlarmUnackedCount(status.getUnacknowledgedAlarmCount(info.getNodeInfo().getNodeId()));
                 }
-                info.setSeverityInfo(new SeverityInfo(severity.getId(), severity.getLabel()));
-                info.setAlarmUnackedCount(status.getUnacknowledgedAlarmCount(info.getNodeInfo().getNodeId()));
             }
         }
     }
 
-    private StatusCalculator getStatusCalculator(GeolocationQuery query) {
-        switch(query.getStatusCalculationStrategy()) {
-            case Alarms:
-                return new AlarmStatusCalculator(genericPersistenceAccessor);
-            case Outages:
-                return new OutageStatusCalculator(genericPersistenceAccessor);
+    protected StatusCalculator getStatusCalculator(StatusCalculationStrategy strategy) {
+        if (strategy == null) {
+            LOG.warn("No strategy defined. Falling back to strategy:{}", StatusCalculationStrategy.None);
+            strategy = StatusCalculationStrategy.None;
         }
-        return (theQuery, theNodeIds) -> new Status();
+        switch(strategy) {
+            case Alarms: return new AlarmStatusCalculator(genericPersistenceAccessor);
+            case Outages: return new OutageStatusCalculator(genericPersistenceAccessor);
+        }
+        return NULL_STATUS_CALCULATOR;
     }
 
     private static OnmsGeolocation geoLocation(OnmsNode node) {

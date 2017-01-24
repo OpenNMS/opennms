@@ -30,26 +30,29 @@ package org.opennms.features.geolocation.api;
 
 import java.util.Map;
 
-// Default (client) configuration
-// TODO MVR
+/**
+ * Interface for the configuration of the map component.
+ *
+ */
 public interface GeolocationConfiguration {
 
+    /**
+     * Returns the tile server url.
+     *
+     * See http://leafletjs.com/reference.html#tilelayer for more details.
+     *
+     * @return the tile server url
+     */
     String getTileServerUrl();
 
     /**
-     * Returns the layer options for the tile layer defined in opennms.properties.
+     * Returns the layer options for the tile layer.
+     * The options should contain a 'attribution' tile layer option to honor the contributors appropriate.
+     *
      * See http://leafletjs.com/reference.html#tilelayer-options for more details.
      *
-     * @return the layer options for the tile layer defined in opennms.properties.
+     * @return the layer options for the tile layer
      */
     Map<String, String> getOptions();
-
-    /**
-     * Returns the 'attribution' tile layer option.
-     * See http://leafletjs.com/reference.html#tilelayer-options for more details.
-     *
-     * @return the 'attribution' tile layer option.
-     */
-    String getTileLayerAttribution();
 
 }

@@ -50,7 +50,7 @@ public class NodeMapConfiguration {
 
     public boolean isValid() {
         return !Strings.isNullOrEmpty(geolocationConfiguration.getTileServerUrl())
-                && !Strings.isNullOrEmpty(geolocationConfiguration.getTileLayerAttribution());
+                && !Strings.isNullOrEmpty(geolocationConfiguration.getOptions().get("attribution"));
     }
 
     public List<Option> getOptions() {
@@ -64,6 +64,6 @@ public class NodeMapConfiguration {
     }
 
     public String getTileLayerAttribution() {
-        return geolocationConfiguration.getTileLayerAttribution();
+        return geolocationConfiguration.getOptions().get("attribution");
     }
 }

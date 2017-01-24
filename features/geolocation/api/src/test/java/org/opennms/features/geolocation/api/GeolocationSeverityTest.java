@@ -28,21 +28,17 @@
 
 package org.opennms.features.geolocation.api;
 
-import java.util.List;
+import org.junit.Assert;
+import org.junit.Test;
 
-/**
- * Service interface to allow queriing nodes which have coordiantes (or an address, which may need to be resolved).
- *
- * @author mvrueden
- */
-public interface GeolocationService {
+public class GeolocationSeverityTest {
 
-    /**
-     * Returns a list of {@link GeolocationInfo} based on the {@link GeolocationQuery}.
-     *
-     * @param query the query to perform
-     * @return All nodes which have coordinates (may be resolved) with a status and additional information.
-     */
-    List<GeolocationInfo> getLocations(GeolocationQuery query);
-
+    @Test
+    public void testId() {
+        Assert.assertEquals(3, GeolocationSeverity.Normal.getId());
+        Assert.assertEquals(4, GeolocationSeverity.Warning.getId());
+        Assert.assertEquals(5, GeolocationSeverity.Minor.getId());
+        Assert.assertEquals(6, GeolocationSeverity.Major.getId());
+        Assert.assertEquals(7, GeolocationSeverity.Critical.getId());
+    }
 }

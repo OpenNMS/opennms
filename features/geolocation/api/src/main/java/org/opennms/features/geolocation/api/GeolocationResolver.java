@@ -31,10 +31,26 @@ package org.opennms.features.geolocation.api;
 import java.util.Collection;
 import java.util.Map;
 
-// TODO MVR document
+/**
+ * Interface to resolve the address string of nodes.
+ *
+ * @author mvrueden
+ */
 public interface GeolocationResolver {
 
+    /**
+     * Resolve the address string to coordinates for all nodes in nodeIds.
+     *
+     * @param nodeIds The ids to resolve the address string to coordinates.
+     * @return A Map (nodeId -> Coordinate) for all nodes in nodeIds which have a address defined.
+     */
     Map<Integer, Coordinates> resolve(Collection<Integer> nodeIds);
 
+    /**
+     * Resolves each entry's address to its coordinate.
+     *
+     * @param nodeIdAddressMap Key: nodeId, Value: Address
+     * @return A Map (nodeId -> Coordinates) for all nodes which id matches the keys of the map and have an address defined and
+     */
     Map<Integer, Coordinates> resolve(Map<Integer, String> nodeIdAddressMap);
 }

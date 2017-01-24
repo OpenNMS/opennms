@@ -26,41 +26,49 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.geolocation.services.status;
+package org.opennms.web.rest.v2;
 
-import java.util.Map;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.model.OnmsSeverity;
+@XmlRootElement
+public class GeolocationQueryDTO {
+    private String strategy;
 
-import com.google.common.collect.Maps;
+    private String severityFilter;
 
-public class Status {
+    private boolean includeAcknowledgedAlarms;
 
-    final Map<Integer, OnmsSeverity> severityMap = Maps.newHashMap();
+    private boolean resolveMissingCoordinatesFromAddressString;
 
-    final Map<Integer, Long> alarmCountMap = Maps.newHashMap();
-
-    final Map<Integer, Long> unacknowledgedCountMap = Maps.newHashMap();
-
-    public void add(int nodeId, OnmsSeverity severity, long alarmCount, long unacknowledgedCount) {
-        severityMap.put(nodeId, severity);
-        alarmCountMap.put(nodeId, alarmCount);
-        unacknowledgedCountMap.put(nodeId, unacknowledgedCount);
+    public String getStrategy() {
+        return strategy;
     }
 
-    public OnmsSeverity getSeverity(int nodeId) {
-        return severityMap.get(nodeId);
+    public void setStrategy(String strategy) {
+        this.strategy = strategy;
     }
 
-    public int getUnacknowledgedAlarmCount(int nodeId) {
-        final Long value = unacknowledgedCountMap.get(nodeId);
-        if (value != null) {
-            return value.intValue();
-        }
-        return 0;
+    public String getSeverityFilter() {
+        return severityFilter;
     }
 
-    public int size() {
-        return severityMap.size();
+    public void setSeverityFilter(String severityFilter) {
+        this.severityFilter = severityFilter;
+    }
+
+    public boolean isIncludeAcknowledgedAlarms() {
+        return includeAcknowledgedAlarms;
+    }
+
+    public void setIncludeAcknowledgedAlarms(boolean includeAcknowledgedAlarms) {
+        this.includeAcknowledgedAlarms = includeAcknowledgedAlarms;
+    }
+
+    public boolean isResolveMissingCoordinatesFromAddressString() {
+        return resolveMissingCoordinatesFromAddressString;
+    }
+
+    public void setResolveMissingCoordinatesFromAddressString(boolean resolveMissingCoordinatesFromAddressString) {
+        this.resolveMissingCoordinatesFromAddressString = resolveMissingCoordinatesFromAddressString;
     }
 }

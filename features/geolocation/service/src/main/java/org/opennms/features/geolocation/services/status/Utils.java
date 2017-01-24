@@ -26,23 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.geolocation.api;
+package org.opennms.features.geolocation.services.status;
 
-import java.util.List;
+import org.opennms.features.geolocation.api.GeolocationQuery;
+import org.opennms.netmgt.model.OnmsSeverity;
 
-/**
- * Service interface to allow queriing nodes which have coordiantes (or an address, which may need to be resolved).
- *
- * @author mvrueden
- */
-public interface GeolocationService {
+class Utils {
 
-    /**
-     * Returns a list of {@link GeolocationInfo} based on the {@link GeolocationQuery}.
-     *
-     * @param query the query to perform
-     * @return All nodes which have coordinates (may be resolved) with a status and additional information.
-     */
-    List<GeolocationInfo> getLocations(GeolocationQuery query);
-
+    static OnmsSeverity getSeverity(GeolocationQuery query) {
+        OnmsSeverity severity = OnmsSeverity.NORMAL;
+        if (query.getSeverity() != null && OnmsSeverity.get(query.getSeverity().getId()).isGreaterThanOrEqual(severity)) {
+            severity = OnmsSeverity.get(query.getSeverity().getId());
+        }
+        return severity;
+    }
 }

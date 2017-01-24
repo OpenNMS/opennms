@@ -35,6 +35,8 @@ import org.opennms.features.geolocation.api.GeolocationQuery;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.model.OnmsSeverity;
 
+import com.google.common.collect.Lists;
+
 public class OutageStatusCalculator implements StatusCalculator {
 
     private final GenericPersistenceAccessor genericPersistenceAccessor;
@@ -45,6 +47,9 @@ public class OutageStatusCalculator implements StatusCalculator {
 
     @Override
     public Status calculateStatus(GeolocationQuery query, Set<Integer> nodeIds) {
+        final List<String> parameterNames = Lists.newArrayList("nodeIds", "severity");
+        final List<Object> parameterValues = Lists.newArrayList(nodeIds, Utils.getSeverity(query).getId());
+
         final StringBuilder hql = new StringBuilder();
         hql.append("SELECT node.id, max(event.eventSeverity) ");
         hql.append("FROM OnmsOutage as outage ");
@@ -55,16 +60,18 @@ public class OutageStatusCalculator implements StatusCalculator {
         hql.append("WHERE node.id in (:nodeIds) ");
         hql.append("AND outage.serviceRegainedEvent is null ");
         hql.append("AND event.eventSeverity >= :severity ");
+
+        if (query.getLocation() != null) {
+            hql.append("AND node.location.locationName = :locationName ");
+            parameterNames.add("locationName");
+            parameterValues.add(query.getLocation());
+        }
         hql.append("GROUP BY node.id");
 
-        OnmsSeverity severity = OnmsSeverity.NORMAL;
-        if (query.getSeverity() != null
-                && OnmsSeverity.get(query.getSeverity()).isGreaterThan(severity)) {
-            severity = OnmsSeverity.get(query.getSeverity());
-        }
-
         final List<Object[]> rows = genericPersistenceAccessor.findUsingNamedParameters(
-                hql.toString(), new String[]{"nodeIds", "severity"}, new Object[]{nodeIds, severity.getId()});
+                hql.toString(),
+                parameterNames.toArray(new String[parameterNames.size()]),
+                parameterValues.toArray());
         final Status status = new Status();
         for (Object[] eachRow : rows) {
             status.add((int) eachRow[0], OnmsSeverity.get((int) eachRow[1]), 0, 0);

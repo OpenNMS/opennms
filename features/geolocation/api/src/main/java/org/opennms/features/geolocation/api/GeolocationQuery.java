@@ -60,7 +60,7 @@ public class GeolocationQuery {
      * If defined only nodes which have a severity >= the given severity are included in the result.
      * Note: If {@link #statusCalculationStrategy} is {@link StatusCalculationStrategy#None} this property is ignored.
      */
-    private String severity;
+    private GeolocationSeverity severity;
 
     /**
      * Limit the selection to the nodes with the following ids
@@ -96,11 +96,11 @@ public class GeolocationQuery {
         this.includeAcknowledgedAlarms = includeAcknowledgedAlarms;
     }
 
-    public String getSeverity() {
+    public GeolocationSeverity getSeverity() {
         return severity;
     }
 
-    public void setSeverity(String severity) {
+    public void setSeverity(GeolocationSeverity severity) {
         this.severity = severity;
     }
 

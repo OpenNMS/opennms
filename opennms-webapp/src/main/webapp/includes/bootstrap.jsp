@@ -142,7 +142,7 @@
   </c:if>
 
   <c:if test="${param.usegeomap == 'true'}">
-    <script type="text/javascript" src="<%= baseHref %>lib/leaflet/dist/leaflet-src.js" ></script>,
+    <script type="text/javascript" src="<%= baseHref %>lib/leaflet/dist/leaflet-src.js" ></script>
     <script type="text/javascript" src="<%= baseHref %>lib/leaflet.markercluster/dist/leaflet.markercluster-src.js" ></script>
     <script type="text/javascript" src="<%= baseHref %>geolocation/js/geolocation.js"></script>
     <link rel="stylesheet" href="<%= baseHref %>css/geolocation.css" />

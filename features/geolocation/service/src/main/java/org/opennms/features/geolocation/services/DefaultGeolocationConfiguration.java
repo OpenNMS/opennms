@@ -37,15 +37,30 @@ import org.opennms.features.geolocation.api.GeolocationConfiguration;
 import com.google.gwt.thirdparty.guava.common.base.Preconditions;
 import com.google.gwt.thirdparty.guava.common.base.Strings;
 
+/**
+ * The default configuration is stored in opennms.properties.
+ *
+ */
 public class DefaultGeolocationConfiguration implements GeolocationConfiguration {
+
+    /**
+     * The key under which the tile server url is stored in opennms.properties.
+     */
     private static final String URL_KEY = "gwt.openlayers.url";
 
+    /**
+     * The key prefix under which all options are stored in opennms.properties.
+     */
     public static final String OPTIONS_KEY_PREFIX = "gwt.openlayers.options.";
+
+    public DefaultGeolocationConfiguration() {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(getTileServerUrl()), "System Property 'gwt.openlayers.url' is not defined");
+    }
 
     @Override
     public String getTileServerUrl() {
         final String url = System.getProperty(URL_KEY);
-        return sanitizeForVaadin(url);
+        return sanitize(url);
     }
 
     @Override
@@ -53,22 +68,10 @@ public class DefaultGeolocationConfiguration implements GeolocationConfiguration
         return System.getProperties().keySet().stream()
                 .filter(key -> ((String) key).startsWith(OPTIONS_KEY_PREFIX))
                 .map(key -> ((String) key).substring(OPTIONS_KEY_PREFIX.length()))
-                .collect(Collectors.toMap(Function.identity(), key ->sanitizeForVaadin(System.getProperty(OPTIONS_KEY_PREFIX + key))));
+                .collect(Collectors.toMap(Function.identity(), key -> sanitize(System.getProperty(OPTIONS_KEY_PREFIX + key))));
     }
 
-    @Override
-    public String getTileLayerAttribution() {
-        return System.getProperty(OPTIONS_KEY_PREFIX + "attribution");
-    }
-
-    // TODO MVR invoke...
-    public void validate() {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(getTileServerUrl()), "System Property 'gwt.openlayers.url' is not defined");
-
-    }
-
-    // TODO MVR do we still need this?! or should we move it to nodemapsconfiguration
-    private static String sanitizeForVaadin(String input) {
+    private static String sanitize(String input) {
         if (Strings.isNullOrEmpty(input)) {
             return input;
         }

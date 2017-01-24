@@ -11,9 +11,9 @@ Geomap = function() {
         var hideControlsOnStartup = isUndefinedOrNull(options.hideControlsOnStartup) ? false : options.hideControlsOnStartup;
         var mapId = isUndefinedOrNull(options.mapId) ? "map" : options.mapId;
         var query = {
-            resolveCoordinatesFromAddressString: isUndefinedOrNull(options.resolveCoordinatesFromAddressString) ? false : options.resolveCoordinatesFromAddressString,
-            statusCalculationStrategy: isUndefinedOrNull(options.strategy) ? "Alarms" : options.strategy,
-            severity: isUndefinedOrNull(options.severity) ?  "Normal" : options.severity,
+            resolveMissingCoordinatesFromAddressString: isUndefinedOrNull(options.resolveCoordinatesFromAddressString) ? false : options.resolveCoordinatesFromAddressString,
+            strategy: isUndefinedOrNull(options.strategy) ? "Alarms" : options.strategy,
+            severityFilter: isUndefinedOrNull(options.severity) ?  "Normal" : options.severity,
             includeAcknowledgedAlarms: isUndefinedOrNull(options.includeAcknowledgedAlarms) ? false : options.includeAcknowledgedAlarms
         };
 
@@ -41,14 +41,30 @@ Geomap = function() {
             return icons;
         };
 
-        var load = function (strategy) {
-            var url = restEndpoint;
+        var loadConfig = function() {
+            $.ajax({
+                method: "GET",
+                url: restEndpoint + "/config",
+                contentType: 'application/json',
+                dataType: 'json',
+                async: false,
+                success: function(config) {
+                    initMap(config);
+                    loadGeolocations();
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error receiving configuration from rest endpoint. Status: " + status + " Error: " + error);
+                }
+            })
+        }
+
+        var loadGeolocations = function (strategy) {
             if (strategy != undefined) {
-                query.statusCalculationStrategy = strategy;
+                query.strategy = strategy;
             }
             $.ajax({
                 method: "POST",
-                url: url,
+                url: restEndpoint,
                 contentType: 'application/json',
                 dataType: 'json',
                 async: false,
@@ -61,7 +77,7 @@ Geomap = function() {
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.error("Error talking to geolocation endpoint. Status: " + status + " Error: " + error);
+                    console.error("Error talking to rest endpoint. Status: " + status + " Error: " + error);
                 }
             });
         };
@@ -171,6 +187,12 @@ Geomap = function() {
             return svg;
         };
 
+        var centerOnMap = function() {
+            if (markersGroup.getBounds().isValid()) {
+                theMap.fitBounds(markersGroup.getBounds(), [100, 100]);
+            };
+        }
+
         var CenterOnMarkersControl = L.Control.extend({
             options: {
                 position: 'topright'
@@ -183,35 +205,13 @@ Geomap = function() {
             onAdd: function (map) {
                 // create the control container with a particular class name
                 var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-
-                var refresh = L.DomUtil.create("a", "fa fa-refresh", container);
-                // TODO MVR apply this to all buttons
-                refresh.onclick = refresh.ondblclick = refresh.onmousedown = L.DomEvent.stopPropagation;
-                refresh.title = "Refresh";
-                refresh.style.fontSize = "120%";
-                refresh.role = "button";
-                refresh.href = "#";
-                refresh.onclick = function () {
-                    load(query.statusCalculationStrategy);
-                };
-
-                var center = L.DomUtil.create("a", "fa fa-location-arrow", container);
-                center.title = "Center on marker";
-                center.style.fontSize = "120%";
-                center.role = "button";
-                center.href = "#";
-                center.onclick = function () {
-                    if (markersGroup.getBounds().isValid()) {
-                        theMap.fitBounds(markersGroup.getBounds(), [100, 100]);
-                    }
-                };
-
-                var includeAcknowledgedAlarmsButton = L.DomUtil.create("a", "fa fa-square-o", container);
-                includeAcknowledgedAlarmsButton.title = "Include acknowledged alarms in status calculation";
-                includeAcknowledgedAlarmsButton.style.fontSize = "120%";
-                includeAcknowledgedAlarmsButton.role = "button";
-                includeAcknowledgedAlarmsButton.href = "#";
-                includeAcknowledgedAlarmsButton.onclick = function () {
+                var refresh = this.createButton("Refresh", "fa fa-refresh", container, function() {
+                    loadGeolocations(query.strategy);
+                });
+                var center = this.createButton("Center on marker", "fa fa-location-arrow", container, function() {
+                    centerOnMap();
+                });
+                var includeAcknowledgedAlarmsButton = this.createButton("Include acknowledged alarms in status calculation", "fa fa-square-o", container, function() {
                     query.includeAcknowledgedAlarms = !query.includeAcknowledgedAlarms;
                     L.DomUtil.removeClass(includeAcknowledgedAlarmsButton, "fa-check-square-o");
                     L.DomUtil.removeClass(includeAcknowledgedAlarmsButton, "fa-square-o");
@@ -220,10 +220,24 @@ Geomap = function() {
                     } else {
                         L.DomUtil.addClass(includeAcknowledgedAlarmsButton, "fa-square-o");
                     }
-                    load(query.statusCalculationStrategy);
-                };
+                    loadGeolocations(query.strategy);
+                });
                 controls.push(container);
                 return container;
+            },
+
+            createButton: function (title, className, container, fn) {
+                var link = L.DomUtil.create('a', className, container);
+                link.href = '#';
+                link.title = title;
+                link.style.fontSize = "120%";
+
+                L.DomEvent
+                    .on(link, 'mousedown dblclick', L.DomEvent.stopPropagation)
+                    .on(link, 'click', L.DomEvent.stop)
+                    .on(link, 'click', fn, this)
+
+                return link;
             }
         });
 
@@ -247,16 +261,15 @@ Geomap = function() {
                 severityList.title = "Show markers with severity >=";
                 severityList.onmousedown = L.DomEvent.stopPropagation;
                 severityList.onchange = function (event) {
-                    query.severity = event.target.value;
-                    load(query.strategy);
+                    query.severityFilter = event.target.value;
+                    loadGeolocations(query.strategy);
                 };
 
-                // TODO MVR automatically pre select the option from query.severity
                 for (var i = 0; i < severities.length; i++) {
                     var option = L.DomUtil.create('option', '', severityList);
                     option.innerHTML = severities[i];
                     option.value = severities[i];
-                    if (option.value == query.severity) {
+                    if (option.value == query.severityFilter) {
                         option.selected = "selected";
                     }
                 }
@@ -286,21 +299,21 @@ Geomap = function() {
                 strategyList.title = "Calculate status by";
                 strategyList.onmousedown = L.DomEvent.stopPropagation;
                 strategyList.onchange = function (event) {
-                    query.statusCalculationStrategy = event.target.value;
-                    load(query.strategy);
+                    query.strategy = event.target.value;
+                    loadGeolocations(query.strategy);
                 };
 
                 var alarmOption = L.DomUtil.create('option', '', strategyList);
                 alarmOption.innerHTML = "Alarms";
                 alarmOption.value = "Alarms";
-                if (alarmOption.value == query.statusCalculationStrategy) {
+                if (alarmOption.value == query.strategy) {
                     alarmOption.selected = "selected";
                 }
 
                 var outageOption = L.DomUtil.create('option', '', strategyList);
                 outageOption.innerHTML = "Outages";
                 outageOption.value = "Outages";
-                if (outageOption.value == query.statusCalculationStrategy) {
+                if (outageOption.value == query.strategy) {
                     outageOption.selected = "selected";
                 }
 
@@ -334,115 +347,112 @@ Geomap = function() {
             }
         }
 
-        // create map
-        theMap = L.map(mapId, {
-            zoom: 1,
-            maxZoom: 15,
-            zoomControl: false
-        });
-        theMap.setView([34.5133, -94.1629]); // center of earth
+        var initMap = function(config) {
+            // create map
+            theMap = L.map(mapId, {
+                zoom: 1,
+                maxZoom: 15,
+                zoomControl: false
+            });
+            theMap.setView([34.5133, -94.1629]); // center of earth
 
-        // TODO MVR load dynamically from server
-        // add tile layer
-        L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data &copy; <a tabindex="-1" target="_blank" href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors under <a tabindex="-1" target="_blank" href="http://opendatacommons.org/licenses/odbl/">ODbL</a>, <a tabindex="-1" target="_blank" href="http://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>',
-            // TODO MVR add dynamic
-        }).addTo(theMap);
+            // add tile layer
+            L.tileLayer(config.tileServerUrl, config.options).addTo(theMap);
 
-        // add marker layer
-        markersGroup = L.markerClusterGroup({
-                zoomToBoundsOnClick: false,
-                iconCreateFunction: function (cluster) {
-                    var severity = 0;
-                    var severityLabel = "Normal";
-                    var severityArray = [0, 0, 0, 0, 0, 0, 0];
-                    var classArray = severities;
+            // add marker layer
+            markersGroup = L.markerClusterGroup({
+                    zoomToBoundsOnClick: false,
+                    iconCreateFunction: function (cluster) {
+                        var severity = 0;
+                        var severityLabel = "Normal";
+                        var severityArray = [0, 0, 0, 0, 0, 0, 0];
+                        var classArray = severities;
 
-                    for (var i = 0; i < markersData.length; i++) {
-                        severityArray[markersData[i].severityInfo.id - 1]++;
-                        if (severity < markersData[i].severityInfo.id) {
-                            severity = markersData[i].severityInfo.id;
-                            severityLabel = markersData[i].severityInfo.label
+                        for (var i = 0; i < markersData.length; i++) {
+                            severityArray[markersData[i].severityInfo.id - 1]++;
+                            if (severity < markersData[i].severityInfo.id) {
+                                severity = markersData[i].severityInfo.id;
+                                severityLabel = markersData[i].severityInfo.label
+                            }
                         }
+
+                        var svg = createSvgElement(severityArray.slice(2, severityArray.length), classArray, markersData.length);
+                        return L.divIcon({
+                            iconSize: L.point(40, 40),
+                            className: "marker-cluster marker-cluster-" + severityLabel,
+                            html: svg + "<div><span>" + cluster.getChildCount() + "</span></div>"
+                        })
+
+                    }
+                }
+            );
+            markersGroup.addTo(theMap);
+            markersGroup.on("clusterclick", function (event) {
+                if (theMap.getZoom() != theMap.getMaxZoom()) {
+                    var markers = event.layer.getAllChildMarkers();
+                    var tableContent = "";
+                    var nodeIds = [];
+                    var unacknowledgedAlarms = 0;
+                    // Build table content
+                    for (var i = 0; i < markers.length; i++) {
+                        var markerData = markers[i].data;
+                        unacknowledgedAlarms += markerData.alarmUnackedCount;
+                        nodeIds.push(markerData.nodeInfo.nodeId);
+                        var rowTemplate = L.DomUtil.get("multi-popup-table-row")
+                            .cloneNode(true)
+                            .children[0].children[0]
+                            .innerHTML;
+
+                        tableContent += L.Util.template(rowTemplate, {
+                            "NODE_ID": emptyStringIfNull(markerData.nodeInfo.nodeId),
+                            "NODE_LABEL": emptyStringIfNull(markerData.nodeInfo.nodeLabel),
+                            "SEVERITY_LABEL": markerData.severityInfo.label,
+                            "IP_ADDRESS": emptyStringIfNull(markerData.nodeInfo.ipAddress),
+                        });
                     }
 
-                    var svg = createSvgElement(severityArray.slice(2, severityArray.length), classArray, markersData.length);
-                    return L.divIcon({
-                        iconSize: L.point(40, 40),
-                        className: "marker-cluster marker-cluster-" + severityLabel,
-                        html: svg + "<div><span>" + cluster.getChildCount() + "</span></div>"
-                    })
-
-                }
-            }
-        );
-        markersGroup.addTo(theMap);
-        markersGroup.on("clusterclick", function (event) {
-            if (theMap.getZoom() != theMap.getMaxZoom()) {
-                var markers = event.layer.getAllChildMarkers();
-                var tableContent = "";
-                var nodeIds = [];
-                var unacknowledgedAlarms = 0;
-                // Build table content
-                for (var i = 0; i < markers.length; i++) {
-                    var markerData = markers[i].data;
-                    unacknowledgedAlarms += markerData.alarmUnackedCount;
-                    nodeIds.push(markerData.nodeInfo.nodeId);
-                    var rowTemplate = L.DomUtil.get("multi-popup-table-row")
-                        .cloneNode(true)
-                        .children[0].children[0]
-                        .innerHTML;
-
-                    tableContent += L.Util.template(rowTemplate, {
-                        "NODE_ID": emptyStringIfNull(markerData.nodeInfo.nodeId),
-                        "NODE_LABEL": emptyStringIfNull(markerData.nodeInfo.nodeLabel),
-                        "SEVERITY_LABEL": markerData.severityInfo.label,
-                        "IP_ADDRESS": emptyStringIfNull(markerData.nodeInfo.ipAddress),
+                    var template = L.DomUtil.get("multi-popup");
+                    var popup = template.cloneNode(true);
+                    var popupContent = L.Util.template(popup.innerHTML, {
+                        "NUMBER_NODES": markers.length,
+                        "NUMBER_UNACKED": unacknowledgedAlarms,
+                        "NODE_IDS": nodeIds.join(","),
+                        "TABLE_CONTENT": '<table class="node-marker-list">' + tableContent + '</table>'
                     });
+
+                    var popup = L.popup({
+                        'minWidth': 500,
+                        'maxWidth': 500,
+                        'maxHeight': 300,
+                        'className': "node-marker-popup"
+                    });
+                    popup.setContent(popupContent);
+                    popup.setLatLng(event.layer.getLatLng());
+
+                    popup.openOn(theMap);
                 }
-
-                var template = L.DomUtil.get("multi-popup");
-                var popup = template.cloneNode(true);
-                var popupContent = L.Util.template(popup.innerHTML, {
-                    "NUMBER_NODES": markers.length,
-                    "NUMBER_UNACKED": unacknowledgedAlarms,
-                    "NODE_IDS": nodeIds.join(","),
-                    "TABLE_CONTENT": '<table class="node-marker-list">' + tableContent + '</table>'
-                });
-
-                var popup = L.popup({
-                    'minWidth': 500,
-                    'maxWidth': 500,
-                    'maxHeight': 300,
-                    'className': "node-marker-popup"
-                });
-                popup.setContent(popupContent);
-                popup.setLatLng(event.layer.getLatLng());
-
-                popup.openOn(theMap);
-            }
-        });
-
-        // zoom control
-        new SeverityFilterControl().addTo(theMap);
-        new StatusCalculatorControl().addTo(theMap);
-        var zoomControl = L.control.zoom({position: 'topright'});
-        zoomControl.addTo(theMap);
-        controls.push(zoomControl.getContainer());
-        new CenterOnMarkersControl().addTo(theMap);
-        new SeverityLegendControl().addTo(theMap);
-
-        if (hideControlsOnStartup) {
-            theMap.on("mouseover", function (event) {
-                setControlVisibility(true);
             });
-            theMap.on("mouseout", function (event) {
+
+            // zoom control
+            new SeverityFilterControl().addTo(theMap);
+            new StatusCalculatorControl().addTo(theMap);
+            var zoomControl = L.control.zoom({position: 'topright'});
+            zoomControl.addTo(theMap);
+            controls.push(zoomControl.getContainer());
+            new CenterOnMarkersControl().addTo(theMap);
+            new SeverityLegendControl().addTo(theMap);
+
+            if (hideControlsOnStartup) {
+                theMap.on("mouseover", function (event) {
+                    setControlVisibility(true);
+                });
+                theMap.on("mouseout", function (event) {
+                    setControlVisibility(false);
+                });
                 setControlVisibility(false);
-            });
-            setControlVisibility(false);
+            }
         }
-
-        load();
+        loadConfig();
     };
 
     return {

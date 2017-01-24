@@ -28,21 +28,14 @@
 
 package org.opennms.features.geolocation.api;
 
-import java.util.List;
+public enum GeolocationSeverity {
+    Normal,
+    Warning,
+    Minor,
+    Major,
+    Critical;
 
-/**
- * Service interface to allow queriing nodes which have coordiantes (or an address, which may need to be resolved).
- *
- * @author mvrueden
- */
-public interface GeolocationService {
-
-    /**
-     * Returns a list of {@link GeolocationInfo} based on the {@link GeolocationQuery}.
-     *
-     * @param query the query to perform
-     * @return All nodes which have coordinates (may be resolved) with a status and additional information.
-     */
-    List<GeolocationInfo> getLocations(GeolocationQuery query);
-
+    public int getId() {
+        return ordinal() + 3;
+    }
 }

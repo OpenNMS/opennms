@@ -35,6 +35,8 @@ import org.opennms.features.geolocation.api.GeolocationQuery;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.model.OnmsSeverity;
 
+import com.google.common.collect.Lists;
+
 public class AlarmStatusCalculator implements StatusCalculator {
 
     private final GenericPersistenceAccessor genericPersistenceAccessor;
@@ -45,6 +47,9 @@ public class AlarmStatusCalculator implements StatusCalculator {
 
     @Override
     public Status calculateStatus(GeolocationQuery query, Set<Integer> nodeIds) {
+        final List<String> parameterNames = Lists.newArrayList("nodeIds", "severity");
+        final List<Object> parameterValues = Lists.newArrayList(nodeIds, Utils.getSeverity(query));
+
         final StringBuilder hql = new StringBuilder();
         hql.append("SELECT node.id, max(alarm.severity), count(alarm.id), count(alarm.alarmAckTime) ");
         hql.append("FROM OnmsAlarm AS alarm ");
@@ -54,14 +59,17 @@ public class AlarmStatusCalculator implements StatusCalculator {
         if (!query.isIncludeAcknowledgedAlarms()) {
             hql.append("AND alarm.alarmAckTime is null ");
         }
+        if(query.getLocation() != null) {
+            hql.append("AND node.location.locationName = :nodeLocation ");
+            parameterNames.add("nodeLocation");
+            parameterValues.add(query.getLocation());
+        }
         hql.append("GROUP BY node.id");
 
-        OnmsSeverity severity = OnmsSeverity.NORMAL;
-        if (query.getSeverity() != null && OnmsSeverity.get(query.getSeverity()).isGreaterThan(severity)) {
-            severity = OnmsSeverity.get(query.getSeverity());
-        }
         final List<Object[]> rows = genericPersistenceAccessor.findUsingNamedParameters(
-                hql.toString(), new String[]{"nodeIds", "severity"}, new Object[]{nodeIds, severity});
+                hql.toString(),
+                parameterNames.toArray(new String[parameterNames.size()]),
+                parameterValues.toArray());
         final Status status = new Status();
         for(Object[] row : rows) {
             status.add((int) row[0], (OnmsSeverity) row[1], (long) row[2], (long) row[3]);

@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.v2;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,6 +46,9 @@ import org.opennms.features.geolocation.api.GeolocationConfiguration;
 import org.opennms.features.geolocation.api.GeolocationInfo;
 import org.opennms.features.geolocation.api.GeolocationQuery;
 import org.opennms.features.geolocation.api.GeolocationService;
+import org.opennms.features.geolocation.api.GeolocationSeverity;
+import org.opennms.features.geolocation.api.StatusCalculationStrategy;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,20 +59,29 @@ import org.springframework.transaction.annotation.Transactional;
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
 public class GeolocationRestService {
 
+    /**
+     * Is required to get access to services within the osgi container.
+     */
     private ServiceRegistry serviceRegistry;
 
     @POST
     @Path("/")
-    public Response getLocations(GeolocationQuery query) {
+    public Response getLocations(GeolocationQueryDTO queryDTO) {
         final GeolocationService service = getServiceRegistry().findProvider(GeolocationService.class);
         if (service == null) {
             return temporarilyNotAvailable();
         }
-        final List<GeolocationInfo> locations = service.getLocations(query);
-        if (locations.isEmpty()) {
-            return Response.noContent().build();
+        try {
+            validate(queryDTO);
+            GeolocationQuery query = toQuery(queryDTO);
+            final List<GeolocationInfo> locations = service.getLocations(query);
+            if (locations.isEmpty()) {
+                return Response.noContent().build();
+            }
+            return Response.ok(locations).build();
+        } catch (InvalidQueryException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
-        return Response.ok(locations).build();
     }
 
     @GET
@@ -87,6 +100,58 @@ public class GeolocationRestService {
             Objects.requireNonNull(serviceRegistry);
         }
         return serviceRegistry;
+    }
+
+    private static GeolocationQuery toQuery(GeolocationQueryDTO queryDTO) {
+        if (queryDTO != null) {
+            GeolocationQuery query = new GeolocationQuery();
+            if (queryDTO.getSeverityFilter() != null) {
+                query.setSeverity(getEnum(queryDTO.getSeverityFilter(), GeolocationSeverity.values()));
+            }
+            if (queryDTO.getStrategy() != null) {
+                query.setStatusCalculationStrategy(getEnum(queryDTO.getStrategy(), StatusCalculationStrategy.values()));
+            }
+            query.setIncludeAcknowledgedAlarms(queryDTO.isIncludeAcknowledgedAlarms());
+            query.setResolveCoordinatesFromAddressString(queryDTO.isResolveMissingCoordinatesFromAddressString());
+            return query;
+        }
+        return null;
+    }
+
+    private static <T> T getEnum(String input, Enum[] values) {
+        for (Enum eachEnum : values) {
+            if (input.equalsIgnoreCase(eachEnum.name())) {
+                return (T) eachEnum;
+            }
+        }
+        throw new IllegalArgumentException("No enum with value '" + input + "' found in " + Arrays.toString(values));
+    }
+
+    private static void validate(GeolocationQueryDTO query) throws InvalidQueryException {
+        // Validate Strategy
+        if (query.getStrategy() != null) {
+            boolean valid = isValid(query.getStrategy(), StatusCalculationStrategy.values());
+            if (!valid) {
+                throw new InvalidQueryException("Strategy '" + query.getStrategy() + "' is not supported");
+            }
+        }
+
+        // Validate Severity
+        if (query.getSeverityFilter() != null) {
+            boolean valid = isValid(query.getSeverityFilter(), OnmsSeverity.values());
+            if (!valid) {
+                throw new InvalidQueryException("Severity ' " + query.getSeverityFilter() + "' is not valid. Supported values are: " + Arrays.toString(OnmsSeverity.values()));
+            }
+        }
+    }
+
+    private static boolean isValid(String input, Enum[] enumValues) {
+        for (Enum eachEnum : enumValues) {
+            if (input.equalsIgnoreCase(eachEnum.name())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static Response temporarilyNotAvailable() {

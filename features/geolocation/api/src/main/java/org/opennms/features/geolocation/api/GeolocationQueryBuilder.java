@@ -52,7 +52,7 @@ public class GeolocationQueryBuilder {
         return this;
     }
 
-    public GeolocationQueryBuilder withSeverity(String severity) {
+    public GeolocationQueryBuilder withSeverity(GeolocationSeverity severity) {
         query.setSeverity(severity);
         return this;
     }

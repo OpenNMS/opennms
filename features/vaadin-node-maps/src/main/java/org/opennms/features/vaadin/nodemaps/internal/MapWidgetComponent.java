@@ -112,8 +112,6 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
 
     public MapWidgetComponent() {
         m_aclsEnabled = Boolean.valueOf(System.getProperty("org.opennms.web.aclsEnabled", "false"));
-        getState().tileServerUrl = configuration.getTileServerUrl();
-        getState().tileLayerOptions = configuration.getOptions();
     }
 
     @Override
@@ -306,5 +304,7 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
 
     public void setConfiguration(NodeMapConfiguration configuration) {
         this.configuration = configuration;
+        getState().tileServerUrl = configuration.getTileServerUrl();
+        getState().tileLayerOptions = configuration.getOptions();
     }
 }

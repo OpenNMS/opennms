@@ -63,23 +63,24 @@ public class DefaultGeolocationResolver implements GeolocationResolver {
 
     @Override
     public Map<Integer, Coordinates> resolve(Collection<Integer> nodeIds) {
-        if (nodeIds.isEmpty()) {
-            return new HashMap<>();
+        if (nodeIds == null || nodeIds.isEmpty()) {
+            return new HashMap<>(); // nothing to do
         }
 
+        // Lookup all nodes and gather the address string
         final Criteria criteria = new CriteriaBuilder(OnmsNode.class).in("id", nodeIds).toCriteria();
         final Map<Integer, String> nodeIdAddressMap = nodeDao.findMatching(criteria).stream()
-                .filter(n -> geoLocation(n) != null)
-                .filter(n -> geoLocation(n).getLatitude() == null && geoLocation(n).getLongitude() == null)
-                .filter(n -> !Strings.isNullOrEmpty(geoLocation(n).asAddressString()))
+                .filter(n -> getGeoLocation(n) != null)
+                .filter(n -> getGeoLocation(n).getLatitude() == null && getGeoLocation(n).getLongitude() == null)
+                .filter(n -> !Strings.isNullOrEmpty(getGeoLocation(n).asAddressString()))
                 .collect(Collectors.toMap(n -> n.getId(), n -> n.getAssetRecord().getGeolocation().asAddressString()));
         return resolve(nodeIdAddressMap);
     }
 
     @Override
     public Map<Integer, Coordinates> resolve(Map<Integer, String> nodeIdAddressMap) {
-        if (nodeIdAddressMap.isEmpty()) {
-            return new HashMap<>();
+        if (nodeIdAddressMap == null || nodeIdAddressMap.isEmpty()) {
+            return new HashMap<>(); // nothing to do
         }
 
         // 1st filter out invalid values
@@ -104,7 +105,7 @@ public class DefaultGeolocationResolver implements GeolocationResolver {
         return resultMap;
     }
 
-    private static OnmsGeolocation geoLocation(OnmsNode node) {
+    private static OnmsGeolocation getGeoLocation(OnmsNode node) {
         if (node != null && node.getAssetRecord() != null && node.getAssetRecord().getGeolocation() != null) {
             return node.getAssetRecord().getGeolocation();
         }
