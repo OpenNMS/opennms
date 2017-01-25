@@ -175,7 +175,7 @@ Geomap = function() {
             var cx = 20;
             var cy = 20;
             var r = 20;
-            var innerR = 12;
+            var innerR = 13;
 
             var startangle = 0;
             var svg = "<svg class=\"svg\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"40px\" height=\"40px\">";
