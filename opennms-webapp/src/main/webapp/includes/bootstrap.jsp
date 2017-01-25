@@ -149,6 +149,7 @@
     <link rel="stylesheet" href="<%= baseHref %>lib/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="<%= baseHref %>lib/leaflet.markercluster/dist/MarkerCluster.css"/>
     <link rel="stylesheet" href="<%= baseHref %>lib/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
+    <link rel="stylesheet" href="<%= baseHref %>lib/ionicons/css/ionicons.css"/>
   </c:if>
 
   <c:forEach var="script" items="${paramValues.script}">

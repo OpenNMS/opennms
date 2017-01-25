@@ -33,6 +33,13 @@ Geomap = function() {
         // Define other variables
         var restEndpoint = baseHref + "api/v2/geolocation";
         var severities = ["Normal", "Warning", "Minor", "Major", "Critical"];
+        var severityIcons = {
+            "Normal": "ion ion-ios-medical",
+            "Warning": "ion ion-alert-circled",
+            "Minor": "ion ion-flash",
+            "Major": "ion ion-flame",
+            "Critical": "ion ion-nuclear",
+        };
         var theMap = undefined;
         var markersGroup = undefined;
         var markersData = [];
@@ -226,6 +233,20 @@ Geomap = function() {
             }
         };
 
+        var createButton = function(title, className, container, fn) {
+            var link = L.DomUtil.create('a', className, container);
+            link.href = '#';
+            link.title = title;
+            link.style.fontSize = "120%";
+
+            L.DomEvent
+                .on(link, 'mousedown dblclick', L.DomEvent.stopPropagation)
+                .on(link, 'click', L.DomEvent.stop)
+                .on(link, 'click', fn, this);
+
+            return link;
+        };
+
         var CenterOnMarkersControl = L.Control.extend({
             options: {
                 position: 'topright'
@@ -238,13 +259,13 @@ Geomap = function() {
             onAdd: function (map) {
                 // create the control container with a particular class name
                 var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-                var refresh = this.createButton("Refresh", "fa fa-refresh", container, function() {
+                var refresh = createButton("Refresh", "fa fa-refresh", container, function() {
                     loadGeolocations(query);
                 });
-                var center = this.createButton("Center on marker", "fa fa-location-arrow", container, function() {
+                var center = createButton("Center on marker", "fa fa-location-arrow", container, function() {
                     centerOnMap();
                 });
-                var includeAcknowledgedAlarmsButton = this.createButton("Include acknowledged alarms in status calculation", "fa fa-square-o", container, function() {
+                var includeAcknowledgedAlarmsButton = createButton("Include acknowledged alarms in status calculation", "fa fa-square-o", container, function() {
                     query.includeAcknowledgedAlarms = !query.includeAcknowledgedAlarms;
                     L.DomUtil.removeClass(includeAcknowledgedAlarmsButton, "fa-check-square-o");
                     L.DomUtil.removeClass(includeAcknowledgedAlarmsButton, "fa-square-o");
@@ -258,111 +279,95 @@ Geomap = function() {
                 controls.push(container);
                 return container;
             },
-
-            createButton: function (title, className, container, fn) {
-                var link = L.DomUtil.create('a', className, container);
-                link.href = '#';
-                link.title = title;
-                link.style.fontSize = "120%";
-
-                L.DomEvent
-                    .on(link, 'mousedown dblclick', L.DomEvent.stopPropagation)
-                    .on(link, 'click', L.DomEvent.stop)
-                    .on(link, 'click', fn, this);
-
-                return link;
-            }
         });
 
         var SeverityFilterControl = L.Control.extend({
-            options: {
-                position: 'topright'
-            },
-
-            initialize: function (options) {
-                L.Util.setOptions(this, options);
-            },
-
             onAdd: function (map) {
-                // create the control container with a particular class name
-                var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-dropdown');
-                container.style = "z-index: 1000;";
-
-                // Selection
-                var severityList = L.DomUtil.create("select", '', container);
-                severityList.id = 'severityControl';
-                severityList.title = "Show markers with severity >=";
-                severityList.onmousedown = L.DomEvent.stopPropagation;
-                severityList.onchange = function (event) {
-                    query.severityFilter = event.target.value;
-                    loadGeolocations(query);
+                var setSeverityLabel = function(severity) {
+                    filterLabel.title = "Show markers with severity >= " + severity;
+                    filterLabel.className = severityIcons[severity] + " " + severity;
                 };
 
-                for (var i = 0; i < severities.length; i++) {
-                    var option = L.DomUtil.create('option', '', severityList);
-                    option.innerHTML = severities[i];
-                    option.value = severities[i];
-                    if (option.value == query.severityFilter) {
-                        option.selected = "selected";
+                // Applies the severity
+                var applySeverity = function(severity) {
+                    if (query.severityFilter != severity) {
+                        query.severityFilter = severity;
+                        loadGeolocations(query)
+                        setSeverityLabel(query.severityFilter);
                     }
                 }
+
+                // create the control container with a particular class name
+                var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+                // Increase Severity button
+                createButton("Increase severity filter", "fa fa-angle-up", container, function() {
+                    var index = severities.indexOf(query.severityFilter);
+                    if (index < severities.length - 1) {
+                        index++;
+                    }
+                    applySeverity(severities[index]);
+                });
+
+                var filterLabel = createButton("", "", container, function() {});
+
+                // Decrase severity button
+                createButton("Decrease severity filter", "fa fa-angle-down", container, function() {
+                    var index = severities.indexOf(query.severityFilter);
+                    if (index > 0) {
+                        index--;
+                    }
+                    applySeverity(severities[index]);
+                });
+
+                // Apply default selection
+                setSeverityLabel(query.severityFilter);
 
                 controls.push(container);
                 return container;
             }
         });
 
-        var StatusCalculatorControl = L.Control.extend({
-            options: {
-                position: 'topright'
-            },
-
-            initialize: function (options) {
-                L.Util.setOptions(this, options);
-            },
-
+        var StatusCalculatorStrategyControl = L.Control.extend({
             onAdd: function (map) {
                 // create the control container with a particular class name
-                var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-dropdown');
-                container.style = "z-index: 1000;";
+                var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
 
-                // Selection
-                var strategyList = L.DomUtil.create("select", '', container);
-                strategyList.id = 'statusStrategyControl';
-                strategyList.title = "Calculate status by";
-                strategyList.onmousedown = L.DomEvent.stopPropagation;
-                strategyList.onchange = function (event) {
-                    query.strategy = event.target.value;
+                var alarmButton = createButton("Calculate status based on alarms", "fa fa-exclamation-triangle", container, function(e) {
+                    buttonClick(e.target, "Alarms");
+                });
+
+                var outageButton = createButton("Calculate status base on outages", "fa fa-flash", container, function(e) {
+                    buttonClick(e.target, "Outages");
+                });
+
+                var setSelected = function(strategy) {
+                    if (strategy === "Alarms") {
+                        L.DomUtil.addClass(alarmButton, "selected");
+                        L.DomUtil.removeClass(outageButton, "selected");
+                    }
+                    if (strategy === "Outages") {
+                        L.DomUtil.removeClass(alarmButton, "selected");
+                        L.DomUtil.addClass(outageButton, "selected");
+                    }
+                }
+
+                var buttonClick = function(button, strategy) {
+                    query.strategy = strategy;
                     loadGeolocations(query);
+                    setSelected(strategy);
                 };
 
-                var alarmOption = L.DomUtil.create('option', '', strategyList);
-                alarmOption.innerHTML = "Alarms";
-                alarmOption.value = "Alarms";
-                if (alarmOption.value == query.strategy) {
-                    alarmOption.selected = "selected";
-                }
-
-                var outageOption = L.DomUtil.create('option', '', strategyList);
-                outageOption.innerHTML = "Outages";
-                outageOption.value = "Outages";
-                if (outageOption.value == query.strategy) {
-                    outageOption.selected = "selected";
-                }
+                // Apply default
+                setSelected(query.strategy);
 
                 controls.push(container);
                 return container;
-            }
-
+            },
         });
 
         var SeverityLegendControl = L.Control.extend({
             options: {
                 position: 'bottomleft'
-            },
-
-            initialize: function (options) {
-                L.Util.setOptions(this, options);
             },
 
             onAdd: function (map) {
@@ -465,12 +470,13 @@ Geomap = function() {
             });
 
             // zoom control
-            new SeverityFilterControl().addTo(theMap);
-            new StatusCalculatorControl().addTo(theMap);
             var zoomControl = L.control.zoom({position: 'topright'});
             zoomControl.addTo(theMap);
             controls.push(zoomControl.getContainer());
+
+            new SeverityFilterControl().addTo(theMap);
             new CenterOnMarkersControl().addTo(theMap);
+            new StatusCalculatorStrategyControl().addTo(theMap);
             new SeverityLegendControl().addTo(theMap);
 
             if (hideControlsOnStartup) {
