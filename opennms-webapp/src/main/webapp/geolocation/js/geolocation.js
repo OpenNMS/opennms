@@ -330,7 +330,7 @@ Geomap = function() {
                 // create the control container with a particular class name
                 var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
 
-                var alarmButton = createButton("Calculate status based on alarms", "fa fa-exclamation-triangle", container, function(e) {
+                var alarmButton = createButton("Calculate status based on alarms", "fa fa-exclamation", container, function(e) {
                     buttonClick(e.target, "Alarms");
                 });
 
