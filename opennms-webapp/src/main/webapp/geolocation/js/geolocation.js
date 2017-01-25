@@ -43,7 +43,6 @@ Geomap = function() {
         var theMap = undefined;
         var markersGroup = undefined;
         var markersData = [];
-        var controls = [];
 
         var triggerRetry = function(fn) {
             if (timer != undefined) {
@@ -51,7 +50,7 @@ Geomap = function() {
                 retryCount = 0;
             }
             var delay = determineRetryDelay();
-            console.error("Retry in ", delay, " seconds");
+            console.error("Retry in", delay, "seconds");
             timer = setTimeout(function () {
                 console.log("retriing...");
                 timer = undefined;
@@ -103,9 +102,13 @@ Geomap = function() {
                 success: function (data) {
                     retryCount = 0;
                     if (data != undefined) {
-                        resetMap(data, fn);
+                        resetMap(data);
                     } else {
-                        resetMap([], fn);
+                        resetMap([]);
+                    }
+                    // Invoke Callback function if defined
+                    if (fn) {
+                        fn();
                     }
                 },
                 error: function (xhr, status, error) {
@@ -118,7 +121,7 @@ Geomap = function() {
             });
         };
 
-        var resetMap = function(theMarkers, fn) {
+        var resetMap = function(theMarkers) {
             markersGroup.clearLayers();
             markersData = [];
             var icons = getIcons();
@@ -143,10 +146,6 @@ Geomap = function() {
                     markersGroup.addLayer(marker);
                     markersData.push(markerData);
                 }
-            }
-            // Invoke Callback function if defined
-            if (fn) {
-                fn();
             }
         };
 
@@ -276,7 +275,6 @@ Geomap = function() {
                     }
                     loadGeolocations(query);
                 });
-                controls.push(container);
                 return container;
             },
         });
@@ -295,7 +293,7 @@ Geomap = function() {
                         loadGeolocations(query)
                         setSeverityLabel(query.severityFilter);
                     }
-                }
+                };
 
                 // create the control container with a particular class name
                 var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
@@ -322,7 +320,6 @@ Geomap = function() {
                 // Apply default selection
                 setSeverityLabel(query.severityFilter);
 
-                controls.push(container);
                 return container;
             }
         });
@@ -359,8 +356,6 @@ Geomap = function() {
 
                 // Apply default
                 setSelected(query.strategy);
-
-                controls.push(container);
                 return container;
             },
         });
@@ -381,12 +376,6 @@ Geomap = function() {
                 return container;
             }
         });
-
-        var setControlVisibility = function (visible) {
-            for (var i = 0; i < controls.length; i++) {
-                controls[i].style.display = visible ? "block" : "none";
-            }
-        };
 
         var initMap = function(config) {
             // create map
@@ -477,17 +466,17 @@ Geomap = function() {
                 }
             });
 
-            // zoom control
-            var zoomControl = L.control.zoom({position: 'topright'});
-            zoomControl.addTo(theMap);
-            controls.push(zoomControl.getContainer());
-
+            // Toolbar Controls
+            L.control.zoom({position: 'topright'}).addTo(theMap);
             new SeverityFilterControl().addTo(theMap);
             new CenterOnMarkersControl().addTo(theMap);
             new StatusCalculatorStrategyControl().addTo(theMap);
             new SeverityLegendControl().addTo(theMap);
 
             if (hideControlsOnStartup) {
+                var setControlVisibility = function (visible) {
+                    $(".leaflet-right.leaflet-top")[0].style.display =  visible ? "block" : "none";
+                };
                 theMap.on("mouseover", function () {
                     setControlVisibility(true);
                 });
