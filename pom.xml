@@ -1323,6 +1323,7 @@
     <xalanVersion>2.7.2</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
+    <wsmanVersion>1.2.2</wsmanVersion>
 
     <springVersion>4.0.5.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
