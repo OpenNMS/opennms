@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.smoketest.BSMAdminIT;
@@ -53,6 +54,7 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
+@Ignore
 public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
 
     private BsmAdminPage bsmAdminPage;
