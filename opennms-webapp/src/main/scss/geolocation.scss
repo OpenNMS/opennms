@@ -1,198 +1,141 @@
-.geolocation {
+@import "severity-definition.scss";
 
+/* General Styles */
+.geolocation {
   width: 100px;
-  height:400px;
+  height: 400px;
   min-height: 100%;
   min-width: 100%;
   display: block;
+}
 
-  .marker-cluster-Critical {
-    background-color: rgba(204, 0, 0, 1);
-    color: rgb(204, 0, 0);
-  }
-  .marker-cluster-Critical div {
-    background-color: rgba(204, 0, 0, 1);
-    color: rgb(204, 0, 0);
-  }
-  .marker-cluster-Major {
-    background-color: rgba(255, 51, 0, 1);
-    color: rgb(255, 51, 0);
-  }
-  .marker-cluster-Major div {
-    background-color: rgba(255, 51, 0, 1);
-    color: rgb(255, 51, 0);
-  }
-  .marker-cluster-Minor {
-    background-color: rgba(255, 153, 0, 1);
-    color: rgb(255, 153, 0);
-  }
-  .marker-cluster-Minor div {
-    background-color: rgba(255, 153, 0, 1);
-    color: rgb(255, 153, 0);
-  }
-  .marker-cluster-Warning {
-    background-color: rgba(255, 204, 0, 1);
-    color: rgb(255, 204, 0);
-  }
-  .marker-cluster-Warning div {
-    background-color: rgba(255, 204, 0, 1);
-    color: rgb(255, 204, 0);
-  }
-  .marker-cluster-Normal {
-    background-color: rgba(51, 102, 0, 1);
-    color: rgb(51, 102, 0);
-  }
-  .marker-cluster-Normal div {
-    background-color: rgba(51, 102, 0, 1);
-  }
-  .marker-cluster div {
-    position: absolute;
-    top: 0;
-    color: white;
-    text-shadow: 1px 1px 2px #000;
-  }
+/* Cluster styles (Plugin leaflet.markercluster) */
+.geolocation .marker-cluster-Critical {
+  background-color: $severity-alarm-critical-border;
+}
+.geolocation .marker-cluster-Major {
+  background-color: $severity-alarm-major-border;
+}
+.geolocation .marker-cluster-Minor {
+  background-color: $severity-alarm-minor-border;
+}
+.geolocation .marker-cluster-Warning {
+  background-color: $severity-alarm-warning-border;
+}
+.geolocation .marker-cluster-Normal {
+  background-color: $severity-alarm-normal-border;
+}
+.geolocation .marker-cluster div {
+  position: absolute;
+  top: 0;
+  color: white;
+}
 
-  .Cleared {
-    fill: #999;
-    stroke: #999;
-    opacity: 0.6;
-    stroke-opacity: 0.6;
-  }
+/* Styles for SVG elements */
+.geolocation .svg .Cleared {
+  fill: $severity-alarm-cleared-border;
+  stroke: $severity-alarm-cleared-border;
+}
+.geolocation .svg .Normal {
+  fill: $severity-alarm-normal-border;
+  stroke: $severity-alarm-normal-border;
+}
+.geolocation .svg .Minor {
+  fill: $severity-alarm-minor-border;
+  stroke: $severity-alarm-minor-border;
+}
+.geolocation .svg .Major {
+  fill: $severity-alarm-major-border;
+  stroke: $severity-alarm-major-border;
+}
+.geolocation .svg .Warning {
+  fill: $severity-alarm-warning-border;
+  stroke: $severity-alarm-warning-border;
+}
+.geolocation .svg .Critical {
+  fill: $severity-alarm-critical-border;
+  stroke: $severity-alarm-critical-border;
+}
 
-  .Normal {
-    fill: #336600;
-    stroke: #336600;
-    opacity: 0.6;
-    stroke-opacity: 0.6;
-  }
+/* General Popup styles */
+.geolocation .leaflet-popup-content .node {
+  word-wrap: break-word;
+}
+.geolocation .leaflet-popup-scrolled {
+  border-bottom: 0;
+  border-top: 0;
+}
 
-  .Minor {
-    fill: #FF9900;
-    stroke: #FF9900;
-    opacity: 0.6;
-    stroke-opacity: 0.6;
-  }
+.geolocation .node-marker-popup .leaflet-popup-content ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+.geolocation table.node-marker-list {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
 
-  .Major {
-    fill: #FF3300;
-    stroke: #FF3300;
-    opacity: 0.6;
-    stroke-opacity: 0.6;
-  }
+/* Styles for severties in popup */
+.geolocation .severity {
+  text-align: center;
+  padding: 4px;
+}
+.geolocation .severity a {
+  text-decoration: none;
+  color: white;
+}
 
-  .Warning {
-    fill: #FFCC00;
-    stroke: #FFCC00;
-    opacity: 0.6;
-    stroke-opacity: 0.6;
-  }
+.geolocation .severity.Normal {
+  background-color: $severity-alarm-normal-border;
+  opacity: 0.6;
+}
+.geolocation .severity.Normal:hover {
+  background-color: $severity-alarm-normal-border;
+  opacity: 1.0;
+}
 
-  .Indeterminate {
-    fill: #999000;
-    stroke: #999000;
-    opacity: 0.6;
-    stroke-opacity: 0.6;
-  }
+.geolocation .severity.Warning {
+  background-color: $severity-alarm-warning-border;
+  opacity: 0.6;
+}
+.geolocation .severity.Warning:hover {
+  background-color: $severity-alarm-warning-border;
+  opacity: 1.0;
+}
 
-  .Critical {
-    fill: #CC0000;
-    stroke: #CC0000;
-    opacity: 0.6;
-    stroke-opacity: 0.6;
-  }
+.geolocation .severity.Minor {
+  background-color: $severity-alarm-minor-border;
+  opacity: 0.6;
+}
 
-  .Cleared:hover {
-    fill: #999;
-    opacity: 1.0;
-    stroke-opacity: 1.0;
-  }
+.geolocation .severity.Minor:hover {
+  background-color: $severity-alarm-minor-border;
+  opacity: 1.0;
+}
 
-  .Normal:hover {
-    fill: #336600;
-    opacity: 1.0;
-    stroke-opacity: 1.0;
-  }
+.geolocation .severity.Major {
+  background-color: $severity-alarm-major-border;
+  opacity: 0.6;
+}
 
-  .Minor:hover {
-    fill: #FF9900;
-    opacity: 1.0;
-    stroke-opacity: 1.0;
-  }
+.geolocation .severity.Major:hover {
+  background-color: $severity-alarm-major-border;
+  opacity: 1.0;
+}
+.geolocation .severity.Critical {
+  background-color: $severity-alarm-critical-border;
+  opacity: 0.6;
+}
 
-  .Major:hover {
-    fill: #FF3300;
-    opacity: 1.0;
-    stroke-opacity: 1.0;
-  }
+.geolocation .severity.Critical:hover {
+  background-color: $severity-alarm-critical-border;
+  opacity: 1.0;
+}
 
-  .Warning:hover {
-    fill: #FFCC00;
-    opacity: 1.0;
-    stroke-opacity: 1.0;
-  }
-
-  .Indeterminate:hover {
-    fill: #999000;
-    opacity: 1.0;
-    stroke-opacity: 1.0;
-  }
-
-  .Critical:hover {
-    fill: #CC0000;
-    opacity: 1.0;
-    stroke-opacity: 1.0;
-  }
-
-  .node-marker-popup .leaflet-popup-content ul {
-    list-style-type: none;
-    padding-left: 0;
-  }
-
-  table.node-marker-list {
-    border-collapse: collapse;
-    border-spacing: 0;
-    font-size: 10pt;
-  }
-  table.node-marker-list td {
-    padding: 2px;
-  }
-  td.severity {
-    text-align: center;
-  }
-  td.severity a {
-    color: white;
-    text-decoration: none;
-  }
-  td.severity.Critical {
-    background-color: rgba(204, 0, 0, 1);
-  }
-  td.severity.Major {
-    background-color: rgba(255, 51, 0, 1);
-  }
-  td.severity.Minor {
-    background-color: rgba(255, 153, 0, 1);
-  }
-  td.severity.Warning {
-    background-color: rgba(255, 204, 0, 1);
-  }
-  td.severity.Normal {
-    background-color: rgba(51, 102, 0, 1);
-  }
-
-  .leaflet-container .leaflet-control-zoom {
-    margin-top: 20px;
-  }
-
-  .leaflet-popup-content .node {
-    word-wrap: break-word;
-  }
-
-  .leaflet-popup-scrolled {
-    border-bottom: 0;
-    border-top: 0;
-  }
-
-  .leaflet-container .leaflet-control .selected {
-    background-color: lightgray;
-  }
+/* Toolbar Control styles */
+.geolocation .leaflet-container .leaflet-control-zoom {
+  margin-top: 20px;
+}
+.geolocation .leaflet-container .leaflet-control .selected {
+  background-color: lightgray;
 }

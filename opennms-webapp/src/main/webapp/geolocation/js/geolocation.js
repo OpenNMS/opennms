@@ -175,11 +175,11 @@ Geomap = function() {
         var createSvgElement = function (dataArray, classArray, total) {
             var cx = 20;
             var cy = 20;
-            var r = 18;
+            var r = 20;
             var innerR = 12;
 
             var startangle = 0;
-            var svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"40px\" height=\"40px\">";
+            var svg = "<svg class=\"svg\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"40px\" height=\"40px\">";
 
             for (var i = 0; i < dataArray.length; i++) {
                 // Only consider severity if actually available
@@ -285,7 +285,7 @@ Geomap = function() {
             onAdd: function (map) {
                 var setSeverityLabel = function(severity) {
                     filterLabel.title = "Show markers with severity >= " + severity;
-                    filterLabel.className = severityIcons[severity] + " " + severity;
+                    filterLabel.className = severityIcons[severity];
                 };
 
                 // Applies the severity
@@ -373,7 +373,10 @@ Geomap = function() {
             onAdd: function (map) {
                 var container = L.DomUtil.create("div", "leaflet-control-attribution leaflet-control");
                 for (var i = 0; i < severities.length; i++) {
-                    container.innerHTML += "<span class=\"fa fa-square marker-cluster-" + severities[i] + "\"> </span> <span>" + severities[i] + " </span> "
+                    container.innerHTML +=
+                        "<div style=\"float:left;\">" +
+                        "<div style=\"float:left; margin-top: 3px; display:inline-block; height:10px; width: 10px;\" class=\"marker-cluster-" + severities[i] + "\" ></div><div style='float: left; margin-right: 4pt; margin-left: 2pt;'>" + severities[i] + " </div>" +
+                        "</div>";
                 }
                 return container;
             }
@@ -430,6 +433,11 @@ Geomap = function() {
                     var tableContent = "";
                     var nodeIds = [];
                     var unacknowledgedAlarms = 0;
+
+                    // Sort the markers based on the severity, starting with the worst
+                    markers.sort(function(a, b) {
+                        return -1 * (a.data.severityInfo.id - b.data.severityInfo.id);
+                    });
                     // Build table content
                     for (var i = 0; i < markers.length; i++) {
                         var markerData = markers[i].data;
