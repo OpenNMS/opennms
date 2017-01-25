@@ -275,6 +275,7 @@ Geomap = function() {
                     }
                     loadGeolocations(query);
                 });
+                includeAcknowledgedAlarmsButton.id = "toolbarIncludeAcknowledgedAlarmsButton";
                 return container;
             },
         });
@@ -341,10 +342,12 @@ Geomap = function() {
                     if (strategy === "Alarms") {
                         L.DomUtil.addClass(alarmButton, "selected");
                         L.DomUtil.removeClass(outageButton, "selected");
+                        $("#toolbarIncludeAcknowledgedAlarmsButton").show();
                     }
                     if (strategy === "Outages") {
                         L.DomUtil.removeClass(alarmButton, "selected");
                         L.DomUtil.addClass(outageButton, "selected");
+                        $("#toolbarIncludeAcknowledgedAlarmsButton").hide();
                     }
                 }
 
