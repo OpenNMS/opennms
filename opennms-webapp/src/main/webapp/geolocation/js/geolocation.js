@@ -1,8 +1,21 @@
 Geomap = function() {
     "use strict";
 
+    var retries = 3; // the number of retries for each delay
+    var retryCount = 0;
+    var retryDelay = [5, 10, 30, 60, 300]; // seconds
+    var timer = undefined;
+
     var isUndefinedOrNull = function(input) {
         return input == undefined || "null" === input || null === input;
+    };
+
+    var determineRetryDelay = function() {
+        var index = parseInt(retryCount / retries);
+        if (index >= retryDelay.length) {
+            index = retryDelay.length - 1;
+        }
+        return retryDelay[index]
     };
 
     var render = function(options) {
@@ -25,18 +38,31 @@ Geomap = function() {
         var markersData = [];
         var controls = [];
 
+        var triggerRetry = function(fn) {
+            if (timer != undefined) {
+                clearTimeout(timer);
+                retryCount = 0;
+            }
+            var delay = determineRetryDelay();
+            console.error("Retry in ", delay, " seconds");
+            timer = setTimeout(function () {
+                console.log("retriing...");
+                timer = undefined;
+                fn();
+            }, delay * 1000);
+        };
+
         var getIcons = function () {
             var icons = {};
             for (var i = 0; i < severities.length; i++) {
-                var icon = L.icon({
+                icons[severities[i]] = L.icon({
                     iconUrl: baseHref + 'geolocation/images/' + severities[i] + '.png',
                     iconRetinaUrl: baseHref + 'geolocation/images/' + severities[i] + '@2x.png',
                     iconSize: [25, 41],
                     iconAnchor: [12, 41],
                     popupAnchor: [1, -34],
-                    shadowSize: [41, 41],
+                    shadowSize: [41, 41]
                 });
-                icons[severities[i]] = icon;
             }
             return icons;
         };
@@ -48,11 +74,14 @@ Geomap = function() {
                 contentType: 'application/json',
                 dataType: 'json',
                 success: function(config) {
+                    retryCount = 0;
                     initMap(config);
-                    loadGeolocations(query, function() { centerOnMap(); });
+                    loadGeolocations(query, centerOnMap);
                 },
                 error: function(xhr, status, error) {
                     console.error("Error receiving configuration from rest endpoint. Status: " + status + " Error: " + error);
+                    triggerRetry(loadConfig);
+                    retryCount++;
                 }
             })
         };
@@ -65,6 +94,7 @@ Geomap = function() {
                 dataType: 'json',
                 data: JSON.stringify(query),
                 success: function (data) {
+                    retryCount = 0;
                     if (data != undefined) {
                         resetMap(data, fn);
                     } else {
@@ -73,6 +103,10 @@ Geomap = function() {
                 },
                 error: function (xhr, status, error) {
                     console.error("Error talking to rest endpoint. Status: " + status + " Error: " + error);
+                    triggerRetry(function() {
+                        loadGeolocations(query);
+                    });
+                    retryCount++;
                 }
             });
         };
@@ -234,7 +268,7 @@ Geomap = function() {
                 L.DomEvent
                     .on(link, 'mousedown dblclick', L.DomEvent.stopPropagation)
                     .on(link, 'click', L.DomEvent.stop)
-                    .on(link, 'click', fn, this)
+                    .on(link, 'click', fn, this);
 
                 return link;
             }
@@ -410,8 +444,7 @@ Geomap = function() {
                     }
 
                     var template = L.DomUtil.get("multi-popup");
-                    var popup = template.cloneNode(true);
-                    var popupContent = L.Util.template(popup.innerHTML, {
+                    var popupContent = L.Util.template(template.cloneNode(true).innerHTML, {
                         "NUMBER_NODES": markers.length,
                         "NUMBER_UNACKED": unacknowledgedAlarms,
                         "NODE_IDS": nodeIds.join(","),
@@ -441,10 +474,10 @@ Geomap = function() {
             new SeverityLegendControl().addTo(theMap);
 
             if (hideControlsOnStartup) {
-                theMap.on("mouseover", function (event) {
+                theMap.on("mouseover", function () {
                     setControlVisibility(true);
                 });
-                theMap.on("mouseout", function (event) {
+                theMap.on("mouseout", function () {
                     setControlVisibility(false);
                 });
                 setControlVisibility(false);
