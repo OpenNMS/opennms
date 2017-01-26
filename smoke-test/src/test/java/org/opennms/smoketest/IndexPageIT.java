@@ -28,9 +28,14 @@
 
 package org.opennms.smoketest;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Test Class for the Index Page.
@@ -38,6 +43,8 @@ import org.openqa.selenium.WebElement;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class IndexPageIT extends OpenNMSSeleniumTestCase {
+
+    private static final Logger LOG = LoggerFactory.getLogger(IndexPageIT.class);
 
     /**
      * Can render search boxes.
@@ -52,6 +59,46 @@ public class IndexPageIT extends OpenNMSSeleniumTestCase {
         Assert.assertNotNull(asyncKsc);
         WebElement asyncNode = findElementByXpath("//input[@ng-model='asyncNode']");
         Assert.assertNotNull(asyncNode);
+    }
+
+    @Test
+    public void verifyStatusMap() {
+        // In order to have anything show up, we have to create a node with long/lat information first
+        // A interface and service which does not exist is used, in order to provoke an alarm beeing sent by opennms
+        // to have a status >= Warning
+        // INITIALIZE
+        LOG.info("Initializing foreign source with no detectors");
+        String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
+                "<scan-interval>1d</scan-interval>\n" +
+                "<detectors/>\n" +
+                "<policies/>\n" +
+                "</foreign-source>";
+        createForeignSource(REQUISITION_NAME, foreignSourceXML);
+        LOG.info("Initializing node with  source with no detectors");
+        String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
+                "   <node foreign-id=\"tests\" node-label=\"127.0.0.2\">" +
+                "       <interface ip-addr=\"127.0.0.2\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "       <asset name=\"longitude\" value=\"-0.075949\"/>" +
+                "       <asset name=\"latitude\" value=\"51.508112\"/>" +
+                "   </node>" +
+                "</model-import>";
+        createRequisition(REQUISITION_NAME, requisitionXML, 1);
+
+        // wait some time until the service on 127.0.0.2 has been detected as "down"
+        LOG.info("Waiting for provision to mark service as \"down\"");
+        sleep(10000);
+        
+        // refresh page
+        m_driver.get(getBaseUrl() + "opennms/index.jsp");
+
+        // Verify
+        LOG.info("Verify status map");
+        WebElement mapElement = findElementById("map");
+        Assert.assertNotNull(mapElement);
+        List<WebElement> markerElements = mapElement.findElements(By.xpath("//*[contains(@class, 'leaflet-marker-icon')]"));
+        Assert.assertTrue("No markers found.", !markerElements.isEmpty());
     }
 
 }
