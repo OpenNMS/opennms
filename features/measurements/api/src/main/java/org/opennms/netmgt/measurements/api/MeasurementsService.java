@@ -28,9 +28,10 @@
 
 package org.opennms.netmgt.measurements.api;
 
-import java.util.Map;
-
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.RowSortedTable;
 
 import org.opennms.netmgt.measurements.api.exceptions.FetchException;
@@ -90,12 +91,26 @@ public class MeasurementsService {
             results = new FetchResults(table, results.getStep(), results.getConstants());
         }
 
-        // Remove any transient values belonging to sources
-        final Map<String, double[]> columns = results.getColumns();
-        for (final Source source : request.getSources()) {
-            if (source.getTransient()) {
-                columns.remove(source.getLabel());
-            }
+        // Build the list of column names ordered as defined by sources but skipping transient sources
+        final String[] labels = FluentIterable.from(request.getSources())
+                                              .filter(new Predicate<Source>() {
+                                                  @Override
+                                                  public boolean apply(final Source source) {
+                                                      return !source.getTransient();
+                                                  }
+                                              })
+                                              .transform(new Function<Source, String>() {
+                                                  @Override
+                                                  public String apply(final Source source) {
+                                                      return source.getLabel();
+                                                  }
+                                              })
+                                              .toArray(String.class);
+
+        // Build the list of columns ordered as defined by the labels
+        final QueryResponse.WrappedPrimitive[] columns = new QueryResponse.WrappedPrimitive[labels.length];
+        for (int i = 0; i < labels.length; i++) {
+            columns[i] = new QueryResponse.WrappedPrimitive(results.getColumns().get(labels[i]));
         }
 
         // Build the response
@@ -104,7 +119,8 @@ public class MeasurementsService {
         response.setEnd(request.getEnd());
         response.setStep(results.getStep());
         response.setTimestamps(results.getTimestamps());
-        response.setColumns(results.getColumns());
+        response.setLabels(labels);
+        response.setColumns(columns);
         response.setConstants(results.getConstants());
         return response;
     }
