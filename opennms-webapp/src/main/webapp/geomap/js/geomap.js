@@ -334,7 +334,7 @@ Geomap = function() {
                     buttonClick(e.target, "Alarms");
                 });
 
-                var outageButton = createButton("Calculate status base on outages", "fa fa-flash", container, function(e) {
+                var outageButton = createButton("Calculate status based on outages", "fa fa-flash", container, function(e) {
                     buttonClick(e.target, "Outages");
                 });
 
