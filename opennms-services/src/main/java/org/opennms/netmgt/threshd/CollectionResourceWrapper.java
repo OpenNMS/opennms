@@ -379,6 +379,7 @@ public class CollectionResourceWrapper {
      */
     public Double getAttributeValue(String ds) {
         if (isAnInterfaceResource() && ("snmpifspeed".equalsIgnoreCase(ds) || "snmpiftype".equalsIgnoreCase(ds))) { // Get Value from ifInfo only for Interface Resource
+            LOG.debug("getAttributeValue: Interface resource detected, getting attribute {}'s value from ifInfo}", ds);
             String value = getIfInfoValue(ds);
             if (value != null) {
                 try {
@@ -474,11 +475,12 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.String} object.
      */
     public String getFieldValue(String ds) {
+
+        LOG.debug("getFieldValue: Getting Value for {}::{}", m_resource.getResourceTypeName(), ds);
+
         if (ds == null || "".equals(ds)) {
             return null;
-        }
-        LOG.debug("getLabelValue: Getting Value for {}::{}", m_resource.getResourceTypeName(), ds);
-        if ("nodeid".equalsIgnoreCase(ds)) {
+        } else if ("nodeid".equalsIgnoreCase(ds)) {
             return Integer.toString(m_nodeId);
         } else if ("ipaddress".equalsIgnoreCase(ds)) {
             return m_hostAddress;
