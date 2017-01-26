@@ -112,7 +112,9 @@ public class DefaultGeolocationService implements GeolocationService {
             }
         }
 
-        applyStatus(query, nodesWithCoordinates);
+        if (query.getStatusCalculationStrategy() != null) {
+            applyStatus(query, nodesWithCoordinates);
+        }
 
         if (query.getSeverity() != null) {
             OnmsSeverity severity = OnmsSeverity.get(query.getSeverity().getId());
@@ -176,23 +178,21 @@ public class DefaultGeolocationService implements GeolocationService {
     }
 
     private void applyStatus(GeolocationQuery query, List<GeolocationInfo> locations) {
-        if (query.getStatusCalculationStrategy() != null) {
-            final Set<Integer> nodeIds = locations.stream().map(l -> l.getNodeInfo().getNodeId()).collect(Collectors.toSet());
-            if (!nodeIds.isEmpty()) {
-                final StatusCalculator calculator = getStatusCalculator(query.getStatusCalculationStrategy());
-                final Status status = calculator.calculateStatus(query, nodeIds);
+        final Set<Integer> nodeIds = locations.stream().map(l -> l.getNodeInfo().getNodeId()).collect(Collectors.toSet());
+        if (!nodeIds.isEmpty()) {
+            final StatusCalculator calculator = getStatusCalculator(query.getStatusCalculationStrategy());
+            final Status status = calculator.calculateStatus(query, nodeIds);
 
-                // Appliing the calculated status to each location
-                for(GeolocationInfo info : locations) {
-                    OnmsSeverity severity = status.getSeverity(info.getNodeInfo().getNodeId());
-                    // After the status was calculated, it is not guaranteed that status.size() == locations.size()
-                    // Therefore for all locations with no status must be set to "NORMAL" in the result
-                    if (severity == null) {
-                        severity = OnmsSeverity.NORMAL;
-                    }
-                    info.setSeverityInfo(new SeverityInfo(severity.getId(), severity.getLabel()));
-                    info.setAlarmUnackedCount(status.getUnacknowledgedAlarmCount(info.getNodeInfo().getNodeId()));
+            // Appliing the calculated status to each location
+            for(GeolocationInfo info : locations) {
+                OnmsSeverity severity = status.getSeverity(info.getNodeInfo().getNodeId());
+                // After the status was calculated, it is not guaranteed that status.size() == locations.size()
+                // Therefore for all locations with no status must be set to "NORMAL" in the result
+                if (severity == null) {
+                    severity = OnmsSeverity.NORMAL;
                 }
+                info.setSeverityInfo(new SeverityInfo(severity.getId(), severity.getLabel()));
+                info.setAlarmUnackedCount(status.getUnacknowledgedAlarmCount(info.getNodeInfo().getNodeId()));
             }
         }
     }
