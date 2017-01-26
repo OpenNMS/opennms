@@ -63,10 +63,10 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.camel.IndexNameFunction;
 import org.opennms.core.criteria.Criteria;
@@ -99,6 +99,12 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.RateLimiter;
 
+import io.searchbox.client.JestClient;
+import io.searchbox.client.JestClientFactory;
+import io.searchbox.client.config.HttpClientConfig;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
+
 /**
  * Verifies that syslog messages sent to the Minion generate
  * events in OpenNMS.
@@ -126,7 +132,7 @@ public class SyslogTest {
                 // Add another Minion in a different location
                 .minionWithOtherLocation()
                 // Also enable Kafka and Elasticsearch
-                .kafka().es1();
+                .kafka().es2();
             builder.withOpenNMSEnvironment()
                     // Set logging to INFO level
                     .addFile(SyslogTest.class.getResource("/log4j2-info.xml"), "etc/log4j2.xml")
@@ -333,13 +339,14 @@ public class SyslogTest {
      * 
      * Minion -> Kafka -> OpenNMS Eventd -> Elasticsearch Forwarder -> Elasticsearch
      */
-    @Test(timeout=600000)
+    @Test(timeout=1200000)
     public void testMinionSyslogsOverKafkaToEsForwarder() throws Exception {
         Date startOfTest = new Date();
-        int numMessages = 20000;
+        int numMessages = 10000;
         int packetsPerSecond = 500;
 
         InetSocketAddress minionSshAddr = minionSystem.getServiceAddress(ContainerAlias.MINION, 8201);
+        InetSocketAddress esRestAddr = new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), 9200);
         InetSocketAddress esTransportAddr = new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), 9300);
         InetSocketAddress opennmsSshAddr = minionSystem.getServiceAddress(ContainerAlias.OPENNMS, 8101);
         InetSocketAddress kafkaAddress = minionSystem.getServiceAddress(ContainerAlias.KAFKA, 9092);
@@ -394,6 +401,7 @@ public class SyslogTest {
 
         // Make sure that this evenly divides into the numMessages
         final int chunk = 500;
+        // Make sure that this is an even multiple of chunk
         final int logEvery = 1000;
 
         int count = 0;
@@ -413,7 +421,7 @@ public class SyslogTest {
         }
 
         // 100 warm-up messages plus ${numMessages} messages
-        pollForElasticsearchEvents(esTransportAddr, 100 + numMessages);
+        pollForElasticsearchEventsUsingJest(esRestAddr, 100 + numMessages);
     }
 
     /**
@@ -422,14 +430,13 @@ public class SyslogTest {
      * Minion -> Kafka -> OpenNMS Eventd -> Elasticsearch REST -> Elasticsearch
      */
     @Test(timeout=600000)
-    @Ignore("This doesn't work yet because we need to use the Jest client to query for ES events")
     public void testMinionSyslogsOverKafkaToEsRest() throws Exception {
         Date startOfTest = new Date();
-        int numMessages = 500;
-        int packetsPerSecond = 100;
+        int numMessages = 10000;
+        int packetsPerSecond = 500;
 
         InetSocketAddress minionSshAddr = minionSystem.getServiceAddress(ContainerAlias.MINION, 8201);
-        InetSocketAddress esTransportAddr = minionSystem.getServiceAddress(ContainerAlias.ELASTICSEARCH_1, 9300);
+        InetSocketAddress esRestAddr = minionSystem.getServiceAddress(ContainerAlias.ELASTICSEARCH_2, 9200);
         InetSocketAddress opennmsSshAddr = minionSystem.getServiceAddress(ContainerAlias.OPENNMS, 8101);
         InetSocketAddress kafkaAddress = minionSystem.getServiceAddress(ContainerAlias.KAFKA, 9092);
         InetSocketAddress zookeeperAddress = minionSystem.getServiceAddress(ContainerAlias.KAFKA, 2181);
@@ -454,25 +461,6 @@ public class SyslogTest {
                  is(1)
              );
 
-        // Create the indices manually. If we don't do this, some versions of 
-        // ES will drop messages while the index is being auto-created.
-        Calendar calendar = new GregorianCalendar();
-        calendar.setTime(startOfTest);
-        calendar.set(Calendar.MONTH, Calendar.MARCH);
-
-        createElasticsearchIndex(esTransportAddr, startOfTest);
-        createElasticsearchIndex(esTransportAddr, calendar.getTime());
-
-        LOG.info("Warming up syslog routes by sending 1 packet");
-
-        // Warm up the routes
-        SyslogTest.sendMessage(ContainerAlias.MINION, sender, 1);
-
-        for (int i = 0; i < 10; i++) {
-            LOG.info("Slept for " + i + " seconds");
-            Thread.sleep(1000);
-        }
-
         LOG.info("Warming up syslog routes by sending 100 packets");
 
         // Warm up the routes
@@ -493,7 +481,8 @@ public class SyslogTest {
 
         // Make sure that this evenly divides into the numMessages
         final int chunk = 500;
-        final int logEvery = 50;
+        // Make sure that this is an even multiple of chunk
+        final int logEvery = 1000;
 
         int count = 0;
         long start = System.currentTimeMillis();
@@ -511,10 +500,8 @@ public class SyslogTest {
             }
         }
 
-        // TODO: Use Jest API to perform this query
-
         // 100 warm-up messages plus ${numMessages} messages
-        pollForElasticsearchEvents(esTransportAddr, 100 + numMessages);
+        pollForElasticsearchEventsUsingJest(esRestAddr, 100 + numMessages);
     }
 
     /**
@@ -548,6 +535,8 @@ public class SyslogTest {
                 // Configure and install the Elasticsearch REST event forwarder
                 pipe.println("config:edit org.opennms.plugin.elasticsearch.rest.forwarder");
                 pipe.println("config:propset logAllEvents true");
+                pipe.println("config:propset batchSize 500");
+                pipe.println("config:propset batchInterval 500");
                 pipe.println("config:update");
                 pipe.println("features:install opennms-es-rest");
             } else {
@@ -634,33 +623,32 @@ public class SyslogTest {
         try { Thread.sleep(1000); } catch (InterruptedException e) {}
     }
 
-    private static void pollForElasticsearchEvents(InetSocketAddress esTransportAddr, int numMessages) {
-        Settings settings = ImmutableSettings.settingsBuilder()
-            .put("cluster.name", "opennms").build();
-        TransportClient esClient = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(esTransportAddr));
+    private static void pollForElasticsearchEventsUsingJest(InetSocketAddress esTransportAddr, int numMessages) {
+        JestClientFactory factory = new JestClientFactory();
+        factory.setHttpClientConfig(new HttpClientConfig.Builder(String.format("http://%s:%d", esTransportAddr.getHostString(), esTransportAddr.getPort()))
+            .multiThreaded(true)
+            .build());
+        JestClient client = factory.getObject();
 
         try {
             with().pollInterval(15, SECONDS).await().atMost(5, MINUTES).until(() -> {
                 try {
-                    // Refresh all of the OpenNMS indices
-                    RefreshResponse refresh = esClient.admin().indices().prepareRefresh("opennms*").execute().actionGet();
-                    LOG.debug("REFRESH RESPONSE: {}", refresh.toString());
-
-                    // Search for all entries in the index
-                    SearchResponse response = esClient
-                        // Search the index that the event above created
-                        .prepareSearch("opennms*")
-                        .setQuery(QueryBuilders.matchQuery("eventuei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic"))
-                        .execute()
-                        .actionGet();
+                    SearchResult response = client.execute(
+                        new Search.Builder(new SearchSourceBuilder()
+                            .query(QueryBuilders.matchQuery("eventuei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic"))
+                            .toString()
+                        )
+                            .addIndex("opennms*")
+                            .build()
+                    );
 
                     LOG.debug("SEARCH RESPONSE: {}", response.toString());
 
                     // Sometimes, the first warm-up message is successful so treat both message counts as valid
-                    assertTrue("ES search hits was not equal to " + numMessages,
-                        (numMessages == response.getHits().totalHits())
+                    assertTrue("ES search hits was not equal to " + numMessages + ": " + response.getTotal(),
+                        (numMessages == response.getTotal())
                     );
-                    assertEquals("Event UEI did not match", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic", response.getHits().getAt(0).getSource().get("eventuei"));
+                    //assertEquals("Event UEI did not match", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic", response.getHits().getAt(0).getSource().get("eventuei"));
                     //assertEquals("Event IP address did not match", "4.2.2.2", response.getHits().getAt(0).getSource().get("ipaddr"));
                 } catch (Throwable e) {
                     LOG.warn(e.getMessage(), e);
@@ -669,7 +657,7 @@ public class SyslogTest {
                 return true;
             });
         } finally {
-            esClient.close();
+            client.shutdownClient();
         }
     }
 
