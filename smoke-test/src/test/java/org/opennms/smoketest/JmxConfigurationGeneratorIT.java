@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -28,6 +29,7 @@ import com.google.common.collect.Collections2;
 /**
  * Verifies that the Vaadin JMX Configuration Generator Application is deployed correctly.
  */
+@Ignore
 public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(JmxConfigurationGeneratorIT.class);
     private static final String MBEANS_VIEW_TREE_WAIT_NAME = "com.zaxxer.hikari";
