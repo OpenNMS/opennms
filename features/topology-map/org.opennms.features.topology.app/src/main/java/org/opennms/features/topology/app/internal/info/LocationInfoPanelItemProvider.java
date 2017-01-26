@@ -86,7 +86,7 @@ public class LocationInfoPanelItemProvider implements InfoPanelItemProvider {
                 .filter(locationInfo -> locationInfo.getCoordinates() != null)
                 .map(locationInfo -> {
                     final Vertex vertex = vertices.stream()
-                            .filter(v -> locationInfo.getNodeInfo().getNodeId() == v.getNodeID())
+                            .filter(v -> v.getNodeID() != null && locationInfo.getNodeInfo().getNodeId() == v.getNodeID())
                             .findFirst()
                             .get();
                     return new Marker(
