@@ -121,5 +121,19 @@ public interface EventUtil {
 	 */
 	String getNodeLabel(long nodeId) throws SQLException;
 
+	/**
+	 * Retrieve nodeLocation from the node table of the database given a particular
+	 * nodeId.
+	 *
+	 * @param nodeId
+	 *            Node identifier
+	 *
+	 * @return nodeLocation Retrieved nodeLocation
+	 *
+	 * @throws SQLException
+	 *             if database error encountered
+	 */
+	String getNodeLocation(long nodeId) throws SQLException;
+
 	ExpandableParameterResolver getResolver(String token);
 }
