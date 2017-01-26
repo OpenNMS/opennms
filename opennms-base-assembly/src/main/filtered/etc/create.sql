@@ -2069,7 +2069,8 @@ create table bridgeStpLink (
 --# End enlinkd table
 
 --# Begin Quartz persistence tables
---# See https://github.com/quartz-scheduler, file tables_postgres.sql
+--# See https://github.com/quartz-scheduler/quartz, file tables_postgres.sql
+--# See http://www.quartz-scheduler.org/documentation/quartz-2.x/migration-guide.html
 
 CREATE TABLE qrtz_job_details
   (
