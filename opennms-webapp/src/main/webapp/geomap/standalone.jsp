@@ -35,19 +35,40 @@
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
     <jsp:param name="title" value="Geographcial Map" />
-    <jsp:param name="quiet" value="true" />
     <jsp:param name="nobreadcrumbs" value="true" />
     <jsp:param name="norequirejs" value="true"/>
     <jsp:param name="usegeomap" value="true" />
 </jsp:include>
 
-<div>
+<div id="map-container">
+    <style>
+        /* overwrite styles to make it fullscreen */
+        #footer {
+            margin-right: 0;
+        }
+        .container-fluid {
+            padding: 0;
+        }
+    </style>
     <jsp:include page="includes/map.jsp" flush="false" >
-        <jsp:param name="height" value="800px"/>
+        <jsp:param name="height" value="100%" />
         <jsp:param name="mapId" value="map" />
     </jsp:include>
 </div>
 
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false">
-    <jsp:param name="quiet" value="true" />
-</jsp:include>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
+
+<script type="text/javascript">
+    /* apply maximal height in px */
+    function refresh() {
+        var height = $(window).height() - $("#footer").outerHeight() - $("#header").outerHeight();
+        $("#map-container").height(height);
+    }
+
+    $(window).resize(function() {
+        refresh();
+    });
+    $(document).ready(function() {
+        refresh();
+    });
+</script>
