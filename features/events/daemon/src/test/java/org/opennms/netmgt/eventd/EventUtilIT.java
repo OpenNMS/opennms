@@ -130,7 +130,6 @@ public class EventUtilIT {
         
         String newString = eventUtil.expandParms(testString, m_svcLostEvent);
         assertEquals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI + "::1:192.168.1.1:SMTP", newString);
-
     }
     
     /**

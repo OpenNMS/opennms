@@ -95,6 +95,11 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
     }
 
     @Override
+    public String getNodeLocation(long nodeId) {
+        return nodeDao.getLocationForId(Integer.valueOf((int)nodeId));
+    }
+
+    @Override
     public String getForeignSource(long nodeId) {
         OnmsNode node = nodeDao.get((int)nodeId);
         if (node != null) {
