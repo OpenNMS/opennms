@@ -8,7 +8,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.geolocation</groupId>
-    <artifactId>org.opennms.features.geolocation.feature</artifactId>
+    <artifactId>geolocation</artifactId>
     <name>OpenNMS :: Features :: Geolocation :: Feature</name>
     <packaging>pom</packaging>
     <build>

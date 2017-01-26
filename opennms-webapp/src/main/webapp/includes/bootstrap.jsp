@@ -144,8 +144,8 @@
   <c:if test="${param.usegeomap == 'true'}">
     <script type="text/javascript" src="<%= baseHref %>lib/leaflet/dist/leaflet-src.js" ></script>
     <script type="text/javascript" src="<%= baseHref %>lib/leaflet.markercluster/dist/leaflet.markercluster-src.js" ></script>
-    <script type="text/javascript" src="<%= baseHref %>geolocation/js/geolocation.js"></script>
-    <link rel="stylesheet" href="<%= baseHref %>css/geolocation.css" />
+    <script type="text/javascript" src="<%= baseHref %>geomap/js/geomap.js"></script>
+    <link rel="stylesheet" href="<%= baseHref %>css/geomap.css" />
     <link rel="stylesheet" href="<%= baseHref %>lib/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="<%= baseHref %>lib/leaflet.markercluster/dist/MarkerCluster.css"/>
     <link rel="stylesheet" href="<%= baseHref %>lib/leaflet.markercluster/dist/MarkerCluster.Default.css"/>

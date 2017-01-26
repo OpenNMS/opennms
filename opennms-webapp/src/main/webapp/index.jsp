@@ -65,7 +65,7 @@
 	<!-- Middle Column -->
 	<div class="col-md-6" id="index-contentmiddle">
 		<%
-			String centerUrl = System.getProperty("org.opennms.web.console.centerUrl", "/includes/categories-box.jsp,/geolocation/map-box.jsp");
+			String centerUrl = System.getProperty("org.opennms.web.console.centerUrl", "/includes/categories-box.jsp,/geomap/map-box.jsp");
 			String[] centerUrlArr = centerUrl.split(",");
 			for(String centerUrlItem : centerUrlArr) {
 		%>

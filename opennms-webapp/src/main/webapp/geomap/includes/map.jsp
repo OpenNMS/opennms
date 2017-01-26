@@ -52,7 +52,7 @@
   final String mapId = getParameter(request, "mapId", "map");
 %>
 
-<div class="geolocation" style="height: <%= getParameter(request, "height", "400px")%>">
+<div class="geomap" style="height: <%= getParameter(request, "height", "400px")%>">
   <div style="width: 100%; height:100%" id="<%= mapId %>"></div>
 
   <!-- Template to build the popup for each single marker -->

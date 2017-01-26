@@ -31,7 +31,7 @@
             <feature>opennms-core</feature>
             <feature>opennms-topology-api</feature>
              <!-- for info panel item -->
-            <feature>org.opennms.features.geolocation.feature</feature>
+            <feature>geolocation</feature>
           </features>
         </configuration>
       </plugin>
@@ -47,10 +47,9 @@
       <type>xml</type>
       <scope>provided</scope>
     </dependency>
-    <!-- TODO MVR naming ... -->
     <dependency>
       <groupId>org.opennms.features.geolocation</groupId>
-      <artifactId>org.opennms.features.geolocation.feature</artifactId>
+      <artifactId>geolocation</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>

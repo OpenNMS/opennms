@@ -64,7 +64,7 @@
             <repository>mvn:org.opennms.features.bsm/vaadin-adminpage/${project.version}/xml/features</repository>
 
             <!-- Geolocation features -->
-            <repository>mvn:org.opennms.features.geolocation/org.opennms.features.geolocation.feature/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features.geolocation/geolocation/${project.version}/xml/features</repository>
 
             <!-- MIB Parser and Event/Collection features -->
             <repository>mvn:org.opennms.features/vaadin-snmp-events-and-metrics/${project.version}/xml/features</repository>
@@ -451,7 +451,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.geolocation</groupId>
-      <artifactId>org.opennms.features.geolocation.feature</artifactId>
+      <artifactId>geolocation</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

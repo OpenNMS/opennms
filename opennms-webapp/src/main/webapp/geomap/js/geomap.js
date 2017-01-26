@@ -62,8 +62,8 @@ Geomap = function() {
             var icons = {};
             for (var i = 0; i < severities.length; i++) {
                 icons[severities[i]] = L.icon({
-                    iconUrl: baseHref + 'geolocation/images/' + severities[i] + '.png',
-                    iconRetinaUrl: baseHref + 'geolocation/images/' + severities[i] + '@2x.png',
+                    iconUrl: baseHref + 'geomap/images/' + severities[i] + '.png',
+                    iconRetinaUrl: baseHref + 'geomap/images/' + severities[i] + '@2x.png',
                     iconSize: [25, 41],
                     iconAnchor: [12, 41],
                     popupAnchor: [1, -34],

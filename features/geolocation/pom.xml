@@ -16,7 +16,6 @@
         <module>service</module>
         <module>feature</module>
     </modules>
-    <!-- TODO MVR ggf. auf compiled-bundle-settings verweisen? -->
     <build>
         <plugins>
             <plugin>
