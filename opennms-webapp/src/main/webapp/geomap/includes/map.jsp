@@ -1,4 +1,4 @@
-<%@ page import="org.opennms.web.api.Util" %><%--
+<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -28,7 +28,7 @@
  *******************************************************************************/
 
 --%>
-
+<%@page import="org.opennms.web.api.Util" %>
 <%@page language="java" contentType="text/html" session="true" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>

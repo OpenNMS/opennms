@@ -33,7 +33,8 @@ import java.util.Collection;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 // 2017-01-13, mvrueden: This was originally located in topology.api module.
-// However it was only used here. It was moved here but should not be used anywhere else.
+// There is only one implementation and it is only used in the nodemaps.
+// Therefore it was moved here and should not be used anywhere else.
 @Deprecated
 public interface GeoAssetProvider {
     Collection<VertexRef> getNodesWithCoordinates();
