@@ -42,9 +42,9 @@
 --%>
 
 <%@page language="java"
-        contentType="text/html"
-        session="true"
-        import="
+	contentType="text/html"
+	session="true"
+	import="
 		org.opennms.core.utils.TimeSeries,
 		org.opennms.web.api.Util,
 		org.opennms.netmgt.config.NotifdConfigFactory
@@ -54,7 +54,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%
-  final String baseHref = Util.calculateUrlBase( request );
+	final String baseHref = Util.calculateUrlBase( request );
 %>
 <!DOCTYPE html>
 <%-- The <html> tag is unmatched in this file (its matching tag is in the
@@ -100,46 +100,46 @@
     <script type="text/javascript" src="<%= baseHref %>lib/requirejs/require.js"></script>
   </c:if>
 
-  <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/jquery/dist/jquery.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
+    <script type="text/javascript" src="<%= baseHref %>lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="<%= baseHref %>lib/bootstrap/dist/js/bootstrap.js"></script>
 
-  <c:if test="${param.storageAdmin == 'true'}">
-    <script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
-  </c:if>
+    <c:if test="${param.storageAdmin == 'true'}">
+      <script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
+    </c:if>
 
-  <c:if test="${param.enableSpringDojo == 'true'}">
-    <script type="text/javascript" src='<%= baseHref %>resources/dojo/dojo.js'></script>
-    <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
-    <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
-  </c:if>
+    <c:if test="${param.enableSpringDojo == 'true'}">
+      <script type="text/javascript" src='<%= baseHref %>resources/dojo/dojo.js'></script>
+      <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
+      <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
+    </c:if>
 
-  <c:if test="${param.renderGraphs == 'true'}">
-    <!-- Graphing -->
-    <script type="text/javascript">
+    <c:if test="${param.renderGraphs == 'true'}">
+      <!-- Graphing -->
+      <script type="text/javascript">
         // Global scope
         window.onmsGraphContainers = {
-            'engine': '<%= TimeSeries.getGraphEngine() %>',
-            'baseHref': '<%= baseHref %>'
+          'engine': '<%= TimeSeries.getGraphEngine() %>',
+          'baseHref': '<%= baseHref %>'
         };
-    </script>
-    <script type="text/javascript" src="<%= baseHref %>js/graph.js"></script>
-  </c:if>
+      </script>
+      <script type="text/javascript" src="<%= baseHref %>js/graph.js"></script>
+    </c:if>
 
-  <c:if test="${param.usebackshift == 'true'}">
-    <%-- This allows pages to explicitely use Backshift instead of relying on graph.js (which may not use Backshift) --%>
-    <script type="text/javascript" src="<%= baseHref %>lib/d3/d3.js"></script>
-    <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.js"></script>
-    <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.time.js"></script>
-    <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.canvas.js"></script>
-    <script type="text/javascript" src="<%= baseHref %>lib/flot-legend/jquery.flot.legend.min.js"></script>
-    <script type="text/javascript" src="<%= baseHref %>lib/flot-axislabels/jquery.flot.axislabels.js"></script>
-    <script type="text/javascript" src="<%= baseHref %>lib/flot.tooltip/js/jquery.flot.tooltip.js"></script>
-    <script type="text/javascript" src="<%= baseHref %>lib/flot-saveas/jquery.flot.saveas.js"></script>
-    <script type="text/javascript" src="<%= baseHref %>lib/flot-navigate/jquery.flot.navigate.js"></script>
-    <script type="text/javascript" src="<%= baseHref %>lib/flot-datatable/jquery.flot.datatable.min.js"></script>
-    <script type="text/javascript" src="<%= baseHref %>js/backshift.onms.min.js"></script>
-  </c:if>
+<c:if test="${param.usebackshift == 'true'}">
+  <%-- This allows pages to explicitely use Backshift instead of relying on graph.js (which may not use Backshift) --%>
+  <script type="text/javascript" src="<%= baseHref %>lib/d3/d3.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.time.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.canvas.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-legend/jquery.flot.legend.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-axislabels/jquery.flot.axislabels.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot.tooltip/js/jquery.flot.tooltip.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-saveas/jquery.flot.saveas.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-navigate/jquery.flot.navigate.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-datatable/jquery.flot.datatable.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>js/backshift.onms.min.js"></script>
+</c:if>
 
   <c:if test="${param.usegeomap == 'true'}">
     <script type="text/javascript" src="<%= baseHref %>lib/leaflet/dist/leaflet-src.js" ></script>
@@ -152,21 +152,21 @@
     <link rel="stylesheet" href="<%= baseHref %>lib/ionicons/css/ionicons.css"/>
   </c:if>
 
-  <c:forEach var="script" items="${paramValues.script}">
+<c:forEach var="script" items="${paramValues.script}">
     <c:out value="${script}" escapeXml="false" />
   </c:forEach>
 
-  <c:forEach var="extras" items="${paramValues.extras}">
-    <c:out value="${extras}" escapeXml="false" />
-  </c:forEach>
+<c:forEach var="extras" items="${paramValues.extras}">
+  <c:out value="${extras}" escapeXml="false" />
+</c:forEach>
 
-  <c:if test="${param.vaadinEmbeddedStyles == 'true'}">
-    <!-- embedded Vaadin app, fix container to leave room for headers -->
-    <style type="text/css">
-      div#footer { position:absolute; bottom:0; width:100%; }
-      div#content { position:absolute; top:50px; left:0px; right:0px; bottom:90px; }
-    </style>
-  </c:if>
+<c:if test="${param.vaadinEmbeddedStyles == 'true'}">
+  <!-- embedded Vaadin app, fix container to leave room for headers -->
+  <style type="text/css">
+    div#footer { position:absolute; bottom:0; width:100%; }
+    div#content { position:absolute; top:50px; left:0px; right:0px; bottom:90px; }
+  </style>
+</c:if>
 
 </head>
 

@@ -42,14 +42,14 @@
 	<div class="col-md-3" id="index-contentleft">
 		<!-- Problems box -->
 		<% String showNodesWithProblems = System.getProperty("opennms.nodesWithProblems.show", "true");
-			if (Boolean.parseBoolean(showNodesWithProblems)) { %>
+           if (Boolean.parseBoolean(showNodesWithProblems)) { %>
 		<jsp:include page="/alarm/summary-box.htm" flush="false" />
-		<% } %>
+        <% } %>
 		<!-- Services down box -->
 		<% String showNodesWithOutages = System.getProperty("opennms.nodesWithOutages.show", "true");
-			if (Boolean.parseBoolean(showNodesWithOutages)) { %>
+           if (Boolean.parseBoolean(showNodesWithOutages)) { %>
 		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
-		<% } %>
+        <% } %>
 		<!-- Business Services box -->
 		<% String showBusinessServicesProblems = System.getProperty("opennms.businessServicesWithProblems.show", "true");
 			if (Boolean.parseBoolean(showBusinessServicesProblems)) { %>
@@ -69,7 +69,7 @@
 			String[] centerUrlArr = centerUrl.split(",");
 			for(String centerUrlItem : centerUrlArr) {
 		%>
-		<jsp:include page="<%=centerUrlItem%>" flush="false" />
+			<jsp:include page="<%=centerUrlItem%>" flush="false" />
 		<%
 			}
 		%>
