@@ -199,7 +199,7 @@ public class SyslogTest {
     }
 
     private void sendMessage(final String host) throws IOException {
-        final InetSocketAddress syslogAddr = minionSystem.getServiceAddress(ContainerAlias.MINION, 1514, "udp");
+        final InetSocketAddress syslogAddr = minionSystem.getServiceAddress(ContainerAlias.MINION1, 1514, "udp");
         byte[] message = ("<190>Mar 11 08:35:17 " + host + " 30128311: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet\n").getBytes();
         DatagramPacket packet = new DatagramPacket(message, message.length, syslogAddr.getAddress(), syslogAddr.getPort());
         DatagramSocket dsocket = new DatagramSocket();
