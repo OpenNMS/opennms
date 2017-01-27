@@ -33,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -163,7 +164,12 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         public void select() {
-            getElement().findElement(By.xpath("//*[@class='svgIconOverlay']")).click();
+            testCase.waitUntil(null, null, new Callable<Boolean>() {
+                @Override public Boolean call() throws Exception {
+                    getElement().findElement(By.xpath("//*[@class='svgIconOverlay']")).click();
+                    return true;
+                }
+            });
         }
 
         private WebElement getElement() {
