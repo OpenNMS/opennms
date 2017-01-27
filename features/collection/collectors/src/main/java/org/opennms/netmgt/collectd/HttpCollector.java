@@ -135,6 +135,7 @@ public class HttpCollector implements ServiceCollector {
             m_collectionSetBuilder = collectionSetBuilder;
         }
 
+        @SuppressWarnings("deprecation")
         public void collect() {
             String collectionName=ParameterMap.getKeyedString(m_parameters, ParameterName.COLLECTION.toString(), null);
             if(collectionName==null) {

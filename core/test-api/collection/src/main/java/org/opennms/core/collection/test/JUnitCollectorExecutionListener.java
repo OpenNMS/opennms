@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.core.collection.test;
 
 import java.io.File;
 import java.io.InputStream;

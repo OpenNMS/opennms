@@ -28,17 +28,13 @@
 
 package org.opennms.netmgt.collectd.jmxhelper;
 
-import javax.management.openmbean.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.management.openmbean.CompositeData;
 
 /**
  *
  * @author Markus Neumann <Markus@OpenNMS.org>
  */
 public class JmxTest implements JmxTestMBean {
-
-    private static Logger logger = LoggerFactory.getLogger(JmxTest.class);
 
     String name = "Jmx Test";
 
