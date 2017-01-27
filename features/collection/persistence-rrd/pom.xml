@@ -31,10 +31,6 @@
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.api</artifactId>
     </dependency>
-    <!--<dependency>-->
-      <!--<groupId>org.opennms</groupId>-->
-      <!--<artifactId>opennms-dao</artifactId>-->
-    <!--</dependency>-->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-api</artifactId>
