@@ -30,9 +30,14 @@ package org.opennms.netmgt.collection.support.builder;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.netmgt.collection.adapters.InterfaceLevelResourceAdapter;
 import org.opennms.netmgt.collection.api.CollectionResource;
 
+@XmlJavaTypeAdapter(InterfaceLevelResourceAdapter.class)
 public class InterfaceLevelResource implements Resource {
 
     private NodeLevelResource m_node;
@@ -65,5 +70,24 @@ public class InterfaceLevelResource implements Resource {
     @Override
     public String toString() {
         return String.format("InterfaceLevelResource[node=%s, ifName=%s]", m_node, m_ifName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_node, m_ifName);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj == null) {
+            return false;
+        } else if (!(obj instanceof InterfaceLevelResource)) {
+            return false;
+        }
+        InterfaceLevelResource other = (InterfaceLevelResource) obj;
+        return Objects.equals(this.m_node, other.m_node)
+                && Objects.equals(this.m_ifName, other.m_ifName);
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,53 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.support.builder;
+package org.opennms.netmgt.collection.dto;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.collection.adapters.NodeLevelResourceAdapter;
-import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 
-@XmlJavaTypeAdapter(NodeLevelResourceAdapter.class)
-public class NodeLevelResource implements Resource {
+@XmlRootElement(name = "node-level-resource")
+@XmlAccessorType(XmlAccessType.NONE)
+public class NodeLevelResourceDTO {
 
-    private final int m_nodeId;
+    @XmlAttribute(name = "node-id")
+    private int nodeId;
 
-    public NodeLevelResource(int nodeId) {
-        m_nodeId = nodeId;
-    }
+    public NodeLevelResourceDTO() { }
 
-    public int getNodeId() {
-        return m_nodeId;
-    }
-
-    @Override
-    public Resource getParent() {
-        return null;
-    }
-
-    @Override
-    public String getInstance() {
-        return String.valueOf(m_nodeId);
-    }
-
-    @Override
-    public Path getPath(CollectionResource resource) {
-        return Paths.get("");
+    public NodeLevelResourceDTO(NodeLevelResource resource) {
+        nodeId = resource.getNodeId();
     }
 
     @Override
     public String toString() {
-        return String.format("NodeLevelResource[nodeId=%d]", m_nodeId);
+        return String.format("NodeLevelResourceDTO[nodeId=%d]", nodeId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_nodeId);
+        return Objects.hash(nodeId);
     }
 
     @Override
@@ -81,10 +66,14 @@ public class NodeLevelResource implements Resource {
             return true;
         } else if (obj == null) {
             return false;
-        } else if (!(obj instanceof NodeLevelResource)) {
+        } else if (!(obj instanceof NodeLevelResourceDTO)) {
             return false;
         }
-        NodeLevelResource other = (NodeLevelResource) obj;
-        return Objects.equals(this.m_nodeId, other.m_nodeId);
+        NodeLevelResourceDTO other = (NodeLevelResourceDTO) obj;
+        return Objects.equals(this.nodeId, other.nodeId);
+    }
+
+    public NodeLevelResource toResource() {
+        return new NodeLevelResource(nodeId);
     }
 }

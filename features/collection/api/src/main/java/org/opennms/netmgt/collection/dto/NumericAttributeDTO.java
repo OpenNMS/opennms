@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,28 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.support.builder;
+package org.opennms.netmgt.collection.dto;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.collection.adapters.NumericAttributeAdapter;
-import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.collection.support.builder.NumericAttribute;
 
-@XmlJavaTypeAdapter(NumericAttributeAdapter.class)
-public class NumericAttribute extends Attribute<Number> {
-    public NumericAttribute(String group, String name, Number value, AttributeType type, String identifier) {
-        super(group, name, value, type, identifier);
-        if (!type.isNumeric()) {
-            throw new IllegalArgumentException("attribute type " + type  + " is not numeric.");
-        }
+@XmlRootElement(name = "numeric-attribute")
+@XmlAccessorType(XmlAccessType.NONE)
+public class NumericAttributeDTO extends AttributeDTO {
+
+    @XmlAttribute(name="value")
+    private Number value;
+
+    public NumericAttributeDTO() { }
+
+    public NumericAttributeDTO(NumericAttribute attribute) {
+        super(attribute);
+        this.value = attribute.getNumericValue();
     }
 
-    public Number getNumericValue() {
-        return getValue();
+    public NumericAttribute toAttribute() {
+        return new NumericAttribute(getGroup(), getName(), value, getType(), getIdentifier());
     }
 
-    @Override
-    public String getStringValue() {
-        return null;
-    }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,28 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.support.builder;
+package org.opennms.netmgt.collection.adapters;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.opennms.netmgt.collection.adapters.NumericAttributeAdapter;
-import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.collection.dto.NodeLevelResourceDTO;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 
-@XmlJavaTypeAdapter(NumericAttributeAdapter.class)
-public class NumericAttribute extends Attribute<Number> {
-    public NumericAttribute(String group, String name, Number value, AttributeType type, String identifier) {
-        super(group, name, value, type, identifier);
-        if (!type.isNumeric()) {
-            throw new IllegalArgumentException("attribute type " + type  + " is not numeric.");
-        }
-    }
-
-    public Number getNumericValue() {
-        return getValue();
-    }
-
+public class NodeLevelResourceAdapter extends XmlAdapter<NodeLevelResourceDTO, NodeLevelResource> {
+ 
     @Override
-    public String getStringValue() {
-        return null;
+    public NodeLevelResource unmarshal(NodeLevelResourceDTO dto) throws Exception {
+        return dto.toResource();
     }
+ 
+    @Override
+    public NodeLevelResourceDTO marshal(NodeLevelResource resource) throws Exception {
+        return new NodeLevelResourceDTO(resource);
+    }
+
 }
