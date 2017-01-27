@@ -34,6 +34,8 @@
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Monitoring Locations" />
 	<jsp:param name="headTitle" value="Monitoring Locations" />
+	<jsp:param name="breadcrumb"
+			   value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="Monitoring Locations" />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
