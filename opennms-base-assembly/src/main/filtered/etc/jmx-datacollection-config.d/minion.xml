@@ -32,7 +32,7 @@
             </mbean>
 
 
-            <!-- Route/seda stats for syslogListen -->
+            <!-- Route stats for syslogListen -->
             <mbean name="Syslog Listener" objectname="org.apache.camel:context=syslogdListenerCamelNettyContext,type=routes,name=&quot;syslogListen&quot;">
                 <attrib name="ExchangesCompleted" alias="SlogListComplete" type="counter"/>
                 <attrib name="ExchangesFailed" alias="SlogListFailed" type="counter"/>
@@ -58,13 +58,56 @@
             </mbean>
 
 
-            <!-- TODO: Collect route stats for RPC.Server.Discover (when available) -->
+            <!-- Route stats for RPC.Server.DNS -->
+            <mbean name="DNS RPC Server" objectname="org.apache.camel:context=org.opennms.core.ipc.rpc.camel-impl,type=routes,name=&quot;RPC.Server.DNS&quot;">
+                <attrib name="ExchangesCompleted" alias="DnsComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="DnsFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="DnsTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="DnsMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="DnsMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="DnsMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="DnsLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="DnsTotProc" type="counter"/>
+            </mbean>
 
 
-            <!-- TODO: Collect route stats for RPC.Server.DNS (when available) -->
+            <!-- Route stats for RPC.Server.PING -->
+            <mbean name="Ping RPC Server" objectname="org.apache.camel:context=org.opennms.core.ipc.rpc.camel-impl,type=routes,name=&quot;RPC.Server.PING&quot;">
+                <attrib name="ExchangesCompleted" alias="PingComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="PingFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="PingTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="PingMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="PingMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="PingMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="PingLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="PingTotProc" type="counter"/>
+            </mbean>
 
 
-            <!-- TODO: Collect route stats for RPC.Server.Poll (when available) -->
+            <!-- Route stats for RPC.Server.PING-SWEEP -->
+            <mbean name="Ping Sweep RPC Server" objectname="org.apache.camel:context=org.opennms.core.ipc.rpc.camel-impl,type=routes,name=&quot;RPC.Server.PING-SWEEP&quot;">
+                <attrib name="ExchangesCompleted" alias="SweepComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="SweepFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="SweepTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="SweepMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="SweepMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="SweepMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="SweepLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="SweepTotProc" type="counter"/>
+            </mbean>
+
+
+            <!-- Route stats for RPC.Server.Poller -->
+            <mbean name="Poller RPC Server" objectname="org.apache.camel:context=org.opennms.core.ipc.rpc.camel-impl,type=routes,name=&quot;RPC.Server.Poller&quot;">
+                <attrib name="ExchangesCompleted" alias="PollComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="PollFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="PollTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="PollMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="PollMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="PollMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="PollLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="PollTotProc" type="counter"/>
+            </mbean>
 
 
             <!-- Route stats for RPC.Server.SNMP -->

@@ -28,37 +28,51 @@
 
 package org.opennms.core.ipc.sink.aggregation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
-import org.opennms.core.ipc.sink.api.MessageDispatcher;
-import org.opennms.core.ipc.sink.api.SinkModule;
 
 /**
- * A {@link MessageDispatcher} that applies the {@link SinkModule}'s {@link AggregationPolicy}
- * using the {@link Aggregator}.
+ * An aggregation policy that creates {@link ArrayList} aggregates.
  *
- * @author jwhite
+ * @author Seth
  */
-public abstract class AggregatingMessageProducer<S, T> implements MessageDispatcher<S> {
+public class ArrayListAggregationPolicy<S> implements AggregationPolicy<S, List<S>> {
 
-    private final Aggregator<S,T> aggregator;
+    private final int m_completionSize;
+    private final int m_completionInterval;
+    private final Function<S,Object> m_keyMapper;
 
-    public AggregatingMessageProducer(String id, AggregationPolicy<S,T> policy) {
-        aggregator = new Aggregator<S,T>(id, policy, this);
+    public ArrayListAggregationPolicy(final int completionSize, final int completionInterval, final Function<S,Object> keyMapper) {
+        m_completionSize = completionSize;
+        m_completionInterval = completionInterval;
+        m_keyMapper = keyMapper;
     }
 
     @Override
-    public void send(S message) {
-        final T bucket = aggregator.aggregate(message);
-        if (bucket != null) {
-            // This bucket is ready to be dispatched
-            dispatch(bucket);
+    public Object key(S message) {
+        return m_keyMapper.apply(message);
+    }
+
+    @Override
+    public List<S> aggregate(List<S> oldBucket, S newMessage) {
+        if (oldBucket == null) {
+            oldBucket = new ArrayList<S>(m_completionSize);
         }
+        oldBucket.add(newMessage);
+        return oldBucket;
     }
-
-    public abstract void dispatch(T message);
 
     @Override
-    public void close() throws Exception {
-        aggregator.close();
+    public int getCompletionSize() {
+        return m_completionSize;
     }
+
+    @Override
+    public int getCompletionIntervalMs() {
+        return m_completionInterval;
+    }
+
 }
