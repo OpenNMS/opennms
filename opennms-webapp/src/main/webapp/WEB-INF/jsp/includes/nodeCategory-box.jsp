@@ -44,18 +44,20 @@
             </c:if>
         </h3>
     </div>
-    <table class="table table-condensed">
-        <c:if test="${empty categories}">
-            <tr>
-                <td>This node is not a member of any categories.</td>
-            </tr>
-        </c:if>
+    <div style="max-height: 15em; overflow-x: auto">
+        <table class="table table-condensed" style="margin-bottom: 0px">
+            <c:if test="${empty categories}">
+                <tr>
+                    <td>This node is not a member of any categories.</td>
+                </tr>
+            </c:if>
 
 
-        <c:forEach items="${categories}" var="category">
-            <tr>
-                <td>${category.name}</td>
-            </tr>
-        </c:forEach>
-    </table>
+            <c:forEach items="${categories}" var="category">
+                <tr>
+                    <td>${category.name}</td>
+                </tr>
+            </c:forEach>
+        </table>
+    </div>
 </div>
