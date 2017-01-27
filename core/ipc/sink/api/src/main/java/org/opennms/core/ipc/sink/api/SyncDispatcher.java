@@ -35,8 +35,5 @@ package org.opennms.core.ipc.sink.api;
  *
  * @author jwhite
  */
-public interface SyncDispatcher<S extends Message> extends AutoCloseable {
-
-    void send(S message);
-
+public interface SyncDispatcher<S extends Message> extends MessageDispatcher<S> {
 }

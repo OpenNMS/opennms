@@ -26,39 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.aggregation;
-
-import org.opennms.core.ipc.sink.api.AggregationPolicy;
-import org.opennms.core.ipc.sink.api.MessageDispatcher;
-import org.opennms.core.ipc.sink.api.SinkModule;
+package org.opennms.core.ipc.sink.api;
 
 /**
- * A {@link MessageDispatcher} that applies the {@link SinkModule}'s {@link AggregationPolicy}
- * using the {@link Aggregator}.
+ * Used to synchronously dispatch messages.
+ *
+ * Instances of these should be created by the {@link MessageDispatcherFactory}.
  *
  * @author jwhite
  */
-public abstract class AggregatingMessageProducer<S, T> implements MessageDispatcher<S> {
+public interface MessageDispatcher<S> extends AutoCloseable {
 
-    private final Aggregator<S,T> aggregator;
+    void send(S message);
 
-    public AggregatingMessageProducer(String id, AggregationPolicy<S,T> policy) {
-        aggregator = new Aggregator<S,T>(id, policy, this);
-    }
-
-    @Override
-    public void send(S message) {
-        final T bucket = aggregator.aggregate(message);
-        if (bucket != null) {
-            // This bucket is ready to be dispatched
-            dispatch(bucket);
-        }
-    }
-
-    public abstract void dispatch(T message);
-
-    @Override
-    public void close() throws Exception {
-        aggregator.close();
-    }
 }

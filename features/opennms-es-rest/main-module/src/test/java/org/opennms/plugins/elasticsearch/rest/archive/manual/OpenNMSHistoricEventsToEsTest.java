@@ -28,8 +28,6 @@
 
 package org.opennms.plugins.elasticsearch.rest.archive.manual;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 import org.opennms.plugins.elasticsearch.rest.EventForwarderImpl;
 import org.opennms.plugins.elasticsearch.rest.archive.OpenNMSHistoricEventsToEs;

@@ -221,6 +221,13 @@
     </dependency>
 
     <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.common</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
       <scope>provided</scope>
