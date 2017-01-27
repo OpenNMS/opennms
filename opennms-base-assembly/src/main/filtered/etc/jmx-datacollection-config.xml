@@ -299,6 +299,23 @@
                 <attrib name="999thPercentile" alias="CasCluster1Req999" type="gauge"/>
                 <attrib name="Count" alias="CasCluster1ReqCnt" type="counter"/>
             </mbean>
+            <mbean name="org.apache.activemq" objectname="org.apache.activemq:type=Broker,brokerName=localhost">
+                <attrib name="TotalConnectionsCount" alias="TtlConCnt" type="gauge"/>
+                <attrib name="TotalEnqueueCount" alias="TtlEnqCnt" type="gauge"/>
+                <attrib name="TotalDequeueCount" alias="TtlDeqCnt" type="gauge"/>
+                <attrib name="TotalConsumerCount" alias="TtlConsumerCnt" type="gauge"/>
+                <attrib name="TotalProducerCount" alias="TtlProdCnt" type="gauge"/>
+                <attrib name="TotalMessageCount" alias="TtlMsgCnt" type="gauge"/>
+                <attrib name="AverageMessageSize" alias="AvgMsgSize" type="gauge"/>
+                <attrib name="MaxMessageSize" alias="MaxMsgSize" type="gauge"/>
+                <attrib name="MinMessageSize" alias="MinMsgSize" type="gauge"/>
+                <attrib name="MemoryLimit" alias="MemLimit" type="gauge"/>
+                <attrib name="MemoryPercentUsage" alias="MemPctUsage" type="gauge"/>
+                <attrib name="StoreLimit" alias="StoreLimit" type="gauge"/>
+                <attrib name="StorePercentUsage" alias="StorePctUsage" type="gauge"/>
+                <attrib name="TempLimit" alias="TempLimit" type="gauge"/>
+                <attrib name="TempPercentUsage" alias="TempPctUsage" type="gauge"/>
+            </mbean>
         </mbeans>
     </jmx-collection>
 </jmx-datacollection-config>
