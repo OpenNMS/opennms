@@ -118,7 +118,22 @@
     <div id="treemap"></div>
 
     <script type="text/javascript">
-        window.onload = function() {
+
+        function addOnLoadEvent(funcToAdd) {
+            var oldOnLoadFunction = window.onload;
+            if (typeof window.onload != 'function') {
+                window.onload = funcToAdd;
+            } else {
+                window.onload = function() {
+                    if (oldOnLoadFunction) {
+                        oldOnLoadFunction();
+                    }
+                    funcToAdd();
+                }
+            }
+        }
+
+        addOnLoadEvent(function() {
             require(['jquery', 'jquery-ui/jquery-ui', '../js/jquery.ui.treemap'], function( $ ) {
                 var mouseclickHandler = function (e, data) {
                     var nodes = data.nodes;
@@ -193,7 +208,7 @@
                     });
                 });
             });
-        }
+        });
     </script>
     <div class="panel-footer">
         <div class="row">
