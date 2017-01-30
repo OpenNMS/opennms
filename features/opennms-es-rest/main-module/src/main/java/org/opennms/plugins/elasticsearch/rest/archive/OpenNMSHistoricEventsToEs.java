@@ -28,12 +28,10 @@
 
 package org.opennms.plugins.elasticsearch.rest.archive;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.plugins.elasticsearch.rest.archive.OnmsRestEventsClient;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;

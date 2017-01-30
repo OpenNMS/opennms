@@ -26,39 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.aggregation;
+package org.opennms.netmgt.dao.api;
 
-import org.opennms.core.ipc.sink.api.AggregationPolicy;
-import org.opennms.core.ipc.sink.api.MessageDispatcher;
-import org.opennms.core.ipc.sink.api.SinkModule;
+import java.net.InetAddress;
 
-/**
- * A {@link MessageDispatcher} that applies the {@link SinkModule}'s {@link AggregationPolicy}
- * using the {@link Aggregator}.
- *
- * @author jwhite
- */
-public abstract class AggregatingMessageProducer<S, T> implements MessageDispatcher<S> {
+import org.opennms.core.utils.InetAddressUtils;
 
-    private final Aggregator<S,T> aggregator;
+public class CriticalPath {
 
-    public AggregatingMessageProducer(String id, AggregationPolicy<S,T> policy) {
-        aggregator = new Aggregator<S,T>(id, policy, this);
+    private final String locationName;
+    private final InetAddress ipAddress;
+    private final String serviceName;
+
+    public CriticalPath(String locationName, InetAddress ipAddress, String serviceName) {
+        this.locationName = locationName;
+        this.ipAddress = ipAddress;
+        this.serviceName = serviceName;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public InetAddress getIpAddress() {
+        return ipAddress;
+    }
+
+    public String getServiceName() {
+        return serviceName;
     }
 
     @Override
-    public void send(S message) {
-        final T bucket = aggregator.aggregate(message);
-        if (bucket != null) {
-            // This bucket is ready to be dispatched
-            dispatch(bucket);
-        }
-    }
-
-    public abstract void dispatch(T message);
-
-    @Override
-    public void close() throws Exception {
-        aggregator.close();
+    public String toString() {
+        return String.format("CriticalPath[locationName=%s, ipAddress=%s, serviceName=%s]",
+                locationName, InetAddressUtils.str(ipAddress), serviceName);
     }
 }

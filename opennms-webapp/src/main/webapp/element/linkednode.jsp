@@ -112,11 +112,11 @@
 	   if (nodelinks.isEmpty()) {
 %>
 	<div class="panel-heading">
-		<h3 class="panel-title">No Bridge Forwarding Table Links found on ${nodeLabel}%> by Enhanced Linkd</h3>
+		<h3 class="panel-title">No Bridge Forwarding Table Links found on ${nodeLabel} by Enhanced Linkd</h3>
 	</div>
 	<% } else { %>
-  <div class="panel-heading">
-    <h3 class="panel-title">{nodeLabel}%> Shared Segments found by Enhanced Linkd using Bridge Forwarding Table</h3>
+    <div class="panel-heading">
+        <h3 class="panel-title">${nodeLabel} Shared Segments found by Enhanced Linkd using Bridge Forwarding Table</h3>
 	</div>
 		<!-- Link box -->
 		<table class="table table-condensed">
