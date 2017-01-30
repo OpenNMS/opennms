@@ -118,7 +118,7 @@
     <div id="treemap"></div>
 
     <script type="text/javascript">
-        function initialize() {
+        window.onload = function() {
             require(['jquery', 'jquery-ui/jquery-ui', '../js/jquery.ui.treemap'], function( $ ) {
                 var mouseclickHandler = function (e, data) {
                     var nodes = data.nodes;
@@ -194,8 +194,6 @@
                 });
             });
         }
-
-        setTimeout(initialize, 250);
     </script>
     <div class="panel-footer">
         <div class="row">
