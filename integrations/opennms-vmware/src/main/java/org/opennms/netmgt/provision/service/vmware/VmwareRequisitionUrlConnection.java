@@ -130,10 +130,21 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
 
         m_hostname = url.getHost();
 
-        m_username = getUsername();
-        m_password = getPassword();
+        logger.debug("Initializing URL Connection for host {}", m_hostname);
 
         m_args = getQueryArgs();
+
+        // Old or new user credentials handling scheme
+	if (url.getUserInfo() != null && !url.getUserInfo().isEmpty()) {
+            logger.warn("Old user credentials handling scheme detected. I'm gonna use it but you'd better adapt your URL to the new query parameter scheme 'vmware://<vcenter_server_fqdn>?username=<username>;password=<password>;....'");
+            m_username = getUsername();
+            m_password = getPassword();
+        } else {
+            m_username = m_args.get("username");
+            m_password = m_args.get("password");
+        }
+
+        logger.debug("Found username parameter {}", (m_username == null) ? "NULL" : m_username );
 
         boolean importVMOnly = queryParameter("importVMOnly", false);
         boolean importHostOnly = queryParameter("importHostOnly", false);
@@ -201,7 +212,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                 m_foreignSource = pathElements[0];
             }
         } else {
-            throw new MalformedURLException("Error processing path element of URL (vmware://username:password@host[/foreign-source]?keyA=valueA;keyB=valueB;...)");
+            throw new MalformedURLException("Error processing path element of URL (vmware://host[/foreign-source]?keyA=valueA;keyB=valueB;...)");
         }
     }
 
@@ -552,6 +563,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
 
         logger.debug("Creating new VIJava access object for host {} ...", m_hostname);
         if ((m_username == null || "".equals(m_username)) || (m_password == null || "".equals(m_password))) {
+            logger.info("No credentials found for connecting to host {}, trying anonymously...", m_hostname);
             try {
                 vmwareViJavaAccess = new VmwareViJavaAccess(m_hostname);
             } catch (MarshalException e) {
@@ -795,7 +807,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
      * <p>The new implementation allows the user to use a regular expression for the value:</p>
      * <ul><li>key=location&value=~North.*</li></ul>
      * <p>As an alternative, now it is possible to specify several parameters on the query.
-     * The rule is to add an underscore character ('_') before the patameter's name and use similar rules for the value:</p>
+     * The rule is to add an underscore character ('_') before the parameter's name and use similar rules for the value:</p>
      * <ul><li>_location=~North.*</li></ul>
      * <p>With the new parameter specification, it is possible to pass several attributes. The managed entity must match
      * all of them to be accepted.</p>
@@ -808,7 +820,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
      * @throws RemoteException
      */
     private boolean checkForAttribute(ManagedEntity managedEntity) throws RemoteException {
-        logger.debug("Getting custom attributes from VMware management server {} : ManagedEntity {} (ID: {})", m_hostname, managedEntity.getName(), managedEntity.getMOR().getVal());
+        logger.debug("Getting Managed entity custom attributes from VMware management server {} : ManagedEntity {} (ID: {})", m_hostname, managedEntity.getName(), managedEntity.getMOR().getVal());
         Map<String,String> attribMap = getCustomAttributes(managedEntity);
 
         Set<String> keySet = new TreeSet<String>();
@@ -818,11 +830,15 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             }
         }
 
+	// Using new parameter specification
         if (!keySet.isEmpty()) {
+       	    logger.debug("_[customAttributeName] provisioning attributes specified. Making sure Managed Entity {} has the requested custom attributes", managedEntity.getName());
             boolean ok = true;
             for (String keyName : keySet) {
+       	        logger.debug("Looking up for custom attribute {} with value {}", keyName, m_args.get(keyName));
                 String attribValue = attribMap.get(StringUtils.removeStart(keyName, "_"));
                 if (attribValue == null) {
+       	            logger.debug("No custom attribute named {} found for Managed Entity {}", keyName, managedEntity.getName());
                     ok = false;
                 } else {
                     String keyValue = m_args.get(keyName);
@@ -836,20 +852,17 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             return ok;
         }
 
+        // Using old parameter specification
         String key = m_args.get("key");
         String value = m_args.get("value");
-
-        // if key/value is not set, return true
         if (key == null && value == null) {
+      	    logger.debug("No custom attributes required for provisioning Managed Entity {}.", managedEntity.getName());
             return true;
         }
-
-        // if only key or value is set, return false
         if (key == null || value == null) {
+      	    logger.error("Not provisioning Manged Entiry {}: Using old key/value parameters, but either 'key' or 'value' parameter isn't set.", managedEntity.getName());
             return false;
         }
-
-        // now search for the correct key/value pair
         String attribValue = attribMap.get(key);
         if (attribValue != null) {
             if (value.startsWith("~")) {
@@ -859,6 +872,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             }
         }
 
+    	logger.debug("No custom attributes named {} found for Managed Entity {}", key, managedEntity.getName());
         return false;
     }
 
