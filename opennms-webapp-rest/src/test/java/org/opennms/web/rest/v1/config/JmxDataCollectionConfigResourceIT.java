@@ -87,11 +87,11 @@ public class JmxDataCollectionConfigResourceIT extends AbstractSpringJerseyRestT
 
         assertEquals("jsr160", config.getJmxCollection("jsr160").getName());
         assertEquals(300, config.getJmxCollection("jsr160").getRrd().getStep());
-        assertEquals(37, config.getJmxCollection("jsr160").getMbeanCount());
+        assertEquals(38, config.getJmxCollection("jsr160").getMbeanCount());
 
         assertEquals("jmx-minion", config.getJmxCollection("jmx-minion").getName());
         assertEquals(300, config.getJmxCollection("jmx-minion").getRrd().getStep());
-        assertEquals(12, config.getJmxCollection("jmx-minion").getMbeanCount());
+        assertEquals(10, config.getJmxCollection("jmx-minion").getMbeanCount());
 
         assertEquals("jmx-cassandra30x", config.getJmxCollection("jmx-cassandra30x").getName());
         assertEquals(300, config.getJmxCollection("jmx-cassandra30x").getRrd().getStep());

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -171,6 +171,22 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         } else {
             return null;
         }
+    }
+
+    @Override
+    public String getNodeLocation(int nodeId) {
+        final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+        cb.eq("id", nodeId);
+        final List<OnmsNode> nodes = m_nodeDao.findMatching(cb.toCriteria());
+
+        if(nodes.size() > 0) {
+            final OnmsNode node = nodes.get(0);
+            if (node.getLocation() != null) {
+                return node.getLocation().getLocationName();
+            }
+        }
+
+        return null;
     }
 
     /* (non-Javadoc)

@@ -44,6 +44,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.filter.Filter;
@@ -85,6 +87,7 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
     
     private OnmsCriteria getOnmsCriteria(final OutageCriteria outageCriteria) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsOutage.class);
+        criteria.createAlias("serviceLostEvent.distPoller", "distPoller");
         criteria.createAlias("monitoredService", "monitoredService");
         criteria.createAlias("monitoredService.ipInterface", "ipInterface");
         criteria.createAlias("monitoredService.ipInterface.node", "node");
@@ -186,18 +189,37 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
             outage.outageId = onmsOutage.getId();
             outage.ipAddress = outageAddress;
             outage.hostname = outageAddress;
-            outage.lostServiceEventId = onmsOutage.getServiceLostEvent() != null ? onmsOutage.getServiceLostEvent().getId() : 0;
-            //outage.lostServiceNotificationAcknowledgedBy = 
             outage.lostServiceTime = onmsOutage.getIfLostService();
-            outage.nodeId = onmsOutage.getNodeId();
-            outage.nodeLabel = m_nodeDao.get(onmsOutage.getNodeId()).getLabel();
-            outage.regainedServiceEventId = onmsOutage.getServiceRegainedEvent() != null ? onmsOutage.getServiceRegainedEvent().getId() : 0;
             outage.regainedServiceTime = onmsOutage.getIfRegainedService();
             outage.serviceId = onmsOutage.getServiceId();
             outage.serviceName = onmsOutage.getMonitoredService() != null ? onmsOutage.getMonitoredService().getServiceName() : "";
             outage.suppressedBy = onmsOutage.getSuppressedBy();
             outage.suppressTime = onmsOutage.getSuppressTime();
-            outage.location = onmsOutage.getNode() != null ? (onmsOutage.getNode().getLocation() != null ? onmsOutage.getNode().getLocation().getLocationName() : "") : "";
+
+            // Node-related fields
+            outage.nodeId = onmsOutage.getNodeId();
+            outage.location = "";
+            final OnmsNode node = onmsOutage.getNode();
+            if (node != null) {
+                outage.nodeLabel = node.getLabel();
+                if (node.getLocation() != null) {
+                    outage.location = node.getLocation().getLocationName();
+                }
+            }
+
+            // Event-related fields
+            final OnmsEvent event = onmsOutage.getServiceLostEvent();
+            outage.lostServiceEventId = 0;
+            outage.regainedServiceEventId = 0;
+            if (event != null) {
+                outage.lostServiceEventId = onmsOutage.getServiceLostEvent().getId();
+                if (event.getDistPoller() != null) {
+                    outage.eventLocation = event.getDistPoller().getLocation();
+                }
+            }
+            if (onmsOutage.getServiceRegainedEvent() != null) {
+                outage.regainedServiceEventId = onmsOutage.getServiceRegainedEvent().getId();
+            }
             
             return outage;
         }else{

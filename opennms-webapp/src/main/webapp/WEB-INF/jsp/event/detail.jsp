@@ -2,7 +2,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -128,10 +128,10 @@
           </c:if>
         </tr>
           <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
-              <th class="col-md-1">Location</th>
-              <td class="col-md-3"><%=event.getLocation()%></td>
-              <th class="col-md-1">System-ID</th>
-              <td class="col-md-3"><%=event.getSystemId()%></td>
+              <th class="col-md-1">Event Source Location</th>
+              <td class="col-md-3"><%=event.getLocation()%> (<%= event.getSystemId() %>)</td>
+              <th class="col-md-1">Node Location</th>
+              <td class="col-md-3"><%= event.getNodeLocation() %></td>
           </tr>
           <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
           <th class="col-md-1">Time</th>

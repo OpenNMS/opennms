@@ -85,7 +85,7 @@ public class PingRequestBuilderImpl implements PingRequestBuilder {
 
     @Override
     public PingRequestBuilder withLocation(String location) {
-        this.location = Objects.requireNonNull(location);
+        this.location = location;
         return this;
     }
 

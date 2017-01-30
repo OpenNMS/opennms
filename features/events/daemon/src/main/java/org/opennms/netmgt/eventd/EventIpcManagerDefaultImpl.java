@@ -289,9 +289,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /** {@inheritDoc} */
     @Override
     public void broadcastNow(Event event) {
-        LOG.debug("Event ID {} to be broadcasted: {}", event.getDbid(), event.getUei());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Event ID {} to be broadcasted: {}", event.getDbid(), event.getUei());
+        }
 
-        if (m_listeners.isEmpty()) {
+        if (LOG.isDebugEnabled() && m_listeners.isEmpty()) {
             LOG.debug("No listeners interested in all events");
         }
 
@@ -301,7 +303,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
 
         if (event.getUei() == null) {
-            LOG.debug("Event ID {} does not have a UEI, so skipping UEI matching", event.getDbid());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Event ID {} does not have a UEI, so skipping UEI matching", event.getDbid());
+            }
             return;
         }
 
@@ -332,7 +336,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
         
         if (sentToListeners.isEmpty()) {
-            LOG.debug("No listener interested in event ID {}: {}", event.getDbid(), event.getUei());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("No listener interested in event ID {}: {}", event.getDbid(), event.getUei());
+            }
         }
     }
 
@@ -375,7 +381,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             return;
         }
 
-        LOG.debug("Adding event listener {} for UEIs: {}", listener.getName(), StringUtils.collectionToCommaDelimitedString(ueis));
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Adding event listener {} for UEIs: {}", listener.getName(), StringUtils.collectionToCommaDelimitedString(ueis));
+        }
 
         createListenerThread(listener);
 

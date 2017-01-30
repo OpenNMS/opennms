@@ -30,7 +30,7 @@ package org.opennms.core.ipc.sink.common;
 
 import java.util.Objects;
 
-import org.opennms.core.ipc.sink.aggregation.AggregatingMessageProducer;
+import org.opennms.core.ipc.sink.aggregation.AggregatingSinkMessageProducer;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
@@ -101,7 +101,7 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
         final SinkModule<S,T> module = state.getModule();
         if (module.getAggregationPolicy() != null) {
             // Aggregate the message before dispatching them
-            return new AggregatingMessageProducer<S,T>(module) {
+            return new AggregatingSinkMessageProducer<S,T>(module) {
                 @Override
                 public void dispatch(T message) {
                     AbstractMessageDispatcherFactory.this.timedDispatch(state, message);

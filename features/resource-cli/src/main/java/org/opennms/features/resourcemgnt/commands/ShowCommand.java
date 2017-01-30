@@ -1,11 +1,11 @@
 package org.opennms.features.resourcemgnt.commands;
 
+import java.util.Map;
+
 import org.kohsuke.args4j.Argument;
 import org.opennms.features.resourcemgnt.ResourceCli;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.resource.ResourceDTO;
-
-import java.util.Map;
 
 public class ShowCommand extends AbstractCommand {
 
@@ -42,7 +42,7 @@ public class ShowCommand extends AbstractCommand {
             System.out.println("    " + e.getKey() + " = '" + e.getValue() + "'");
         }
 
-        System.out.println("  Graphs:");
+        System.out.println("  Metrics:");
         for (final Map.Entry<String, RrdGraphAttribute> e : resource.getRrdGraphAttributes().entrySet()) {
             System.out.println(
                     "    " + e.getKey() + " = '" + e.getValue().getRrdFile() + "'");

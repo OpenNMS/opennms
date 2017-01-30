@@ -644,6 +644,39 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
             }
         }
 
+
+        @Override
+        public boolean requiresTransaction() {
+            return true;
+        }
+    },
+
+    NODE_LOCATION {
+
+        @Override
+        public boolean matches(String parm) {
+            return AbstractEventUtil.TAG_NODELOCATION.equals(parm);
+        }
+
+        @Override
+        public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
+            String nodeLocation = null;
+            if (event.hasNodeid()) {
+                try {
+                    nodeLocation = eventUtil.getNodeLocation(event.getNodeid());
+                } catch (SQLException e) {
+                    // do nothing
+                    LoggerFactory.getLogger(getClass()).info("Node Location unavailable for node with id: {}", event.getNodeid(), e);
+                }
+            }
+            if (nodeLocation != null) {
+                return WebSecurityUtils.sanitizeString(nodeLocation);
+            } else {
+                return "Unknown";
+            }
+        }
+
+
         @Override
         public boolean requiresTransaction() {
             return true;

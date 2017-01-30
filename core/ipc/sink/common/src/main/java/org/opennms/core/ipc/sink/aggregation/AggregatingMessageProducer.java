@@ -28,22 +28,22 @@
 
 package org.opennms.core.ipc.sink.aggregation;
 
-import org.opennms.core.ipc.sink.api.Message;
+import org.opennms.core.ipc.sink.api.AggregationPolicy;
+import org.opennms.core.ipc.sink.api.MessageDispatcher;
 import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.core.ipc.sink.api.SyncDispatcher;
 
 /**
- * A {@link MessageProducer} that applies the {@link SinkModule}'s {@link AggregationPolicy}
+ * A {@link MessageDispatcher} that applies the {@link SinkModule}'s {@link AggregationPolicy}
  * using the {@link Aggregator}.
  *
  * @author jwhite
  */
-public abstract class AggregatingMessageProducer<S extends Message, T extends Message> implements SyncDispatcher<S> {
+public abstract class AggregatingMessageProducer<S, T> implements MessageDispatcher<S> {
 
     private final Aggregator<S,T> aggregator;
 
-    public AggregatingMessageProducer(SinkModule<S, T> module) {
-        aggregator = new Aggregator<>(module, this);
+    public AggregatingMessageProducer(String id, AggregationPolicy<S,T> policy) {
+        aggregator = new Aggregator<S,T>(id, policy, this);
     }
 
     @Override

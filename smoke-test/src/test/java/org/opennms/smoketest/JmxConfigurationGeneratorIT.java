@@ -38,12 +38,12 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
 
         // give the Vaadin webapp time to settle down
         Thread.sleep(2000);
-        switchToVaadinFrame();
+        selectVaadinFrame();
     }
 
     @After
     public void after() {
-        switchToDefaultFrame();
+        selectDefaultFrame();
     }
 
     @Test
@@ -195,14 +195,8 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
     }
 
     // switches to the embedded vaadin iframe
-    private void switchToVaadinFrame() {
-        // switchTo() by xpath is much faster than by ID
+    protected void selectVaadinFrame() {
         m_driver.switchTo().frame(0);
-    }
-
-    // go back to the content "frame"
-    private void switchToDefaultFrame() {
-        m_driver.switchTo().defaultContent();
     }
 
     private void selectNodeByName(final String name, boolean select) throws InterruptedException {

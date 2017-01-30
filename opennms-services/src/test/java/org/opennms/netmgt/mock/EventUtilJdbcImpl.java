@@ -118,6 +118,63 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
 		return nodeLabel;
 	}
 
+    /**
+     * Retrieve nodeLocation from the node table of the database given a particular
+     * nodeId.
+     *
+     * @deprecated Replace with standard DAO calls instead of using JDBC
+     * @param nodeId
+     *            Node identifier
+     *
+     * @return nodeLocation Retrieved nodeLocation
+     *
+     * @throws SQLException
+     *             if database error encountered
+     */
+    @Override
+    public String getNodeLocation(long nodeId) throws SQLException {
+
+        String nodeLocation = null;
+        java.sql.Connection dbConn = null;
+        try {
+            Statement stmt = null;
+            try {
+                // Get datbase connection from the factory
+                dbConn = DataSourceFactory.getInstance().getConnection();
+
+                // Issue query and extract nodeLocation from result set
+                stmt = dbConn.createStatement();
+                ResultSet rs = stmt
+                        .executeQuery("SELECT location FROM node WHERE nodeid="
+                                + String.valueOf(nodeId));
+                if (rs.next()) {
+                    nodeLocation = rs.getString("location");
+                }
+            } finally {
+                // Close the statement
+                if (stmt != null) {
+                    try {
+                        stmt.close();
+                    } catch (Throwable e) {
+                        // do nothing
+                    }
+                }
+            }
+        } finally {
+
+            // Close the database connection
+            if (dbConn != null) {
+                try {
+                    dbConn.close();
+                } catch (Throwable t) {
+                    // do nothing
+                }
+            }
+        }
+
+        return nodeLocation;
+    }
+
 	@Override
     public String getIfAlias(long nodeId, String ipaddr) throws SQLException {
 		
