@@ -100,15 +100,6 @@
          Imports only host systems and ignores VMs.
          Default: false
 
-       key -
-         Use this key to lookup a user defined attributes for entities being imported, only virtual machines
-         and host systems with a matching key=value pair will be imported. Can only be in conjunction with the 'value'
-         parameter.
-
-       value -
-         This value must match the user defined attribute with the name defined by the parameter 'key' on the VMware
-         management server for an entity to be imported, can only be used in conjunction with the 'key' parameter.
-
        virtualMachineServices -
          Bound this services to imported virtual machines, values should be seperated by ','.
          Default: VMware-ManagedEntity,VMware-VirtualMachine
@@ -117,10 +108,28 @@
          Bound this services to imported host systems, values should be seperated by ','.
          Default: VMware-ManagedEntity,VMware-HostSystem,VMwareCim-HostSystem
 
+       username -
+         The username to use to authenticate against the VMware vCenter server. 
+
+       password - 
+         The password to use to authenticate against the VMware vCenter server       
+ 
+       key -
+         Use this key to lookup a user defined attributes for entities being imported, only virtual machines
+         and host systems with a matching key=value pair will be imported. Can only be in conjunction with the 'value'
+         parameter, and can only be specified once. 
+         If you need to specify several attributes, use the _[customAttributeName] method described below.
+
+       value -
+         This value must match the user defined attribute with the name defined by the parameter 'key' on the VMware
+         management server for an entity to be imported, can only be used in conjunction with the 'key' parameter, 
+         and can only be specified once.  If you need to specify several attributes, use the _[customAttributeName] 
+         method described below.
+
        _[customAttributeName] = [customAttributeValue]
 
-       Filtering the requisition with the key/value pair parameters allows to filter only by one user defined attribute.
-       This use case is for those situations on which it is required to match more than one parameter.
+       Filtering the requisition with the key/value pair parameters as described above allows to filter only by one user
+       defined attribute. This use case is for those situations on which it is required to match more than one parameter.
        If the content of customAttributeValue starts with '~', the rest of it will be treated as a regular expresion. In
        this case, the real value must match the provided expression.
 
@@ -133,6 +142,7 @@
        vmware://vcenter.mydomain.org?importHostPoweredOff=true
        vmware://172.16.123.100/vCenterImport?key=shouldImport;value=1
        vmware://172.16.123.100/vCenterImport?_shouldImport=1
+       vmware://172.16.123.100/vCenterImport?_shouldImport=1;username=opennms;password=secret
        vmware://[2001:db8:0:8d3:0:8a2e:70:7344]?virtualMachineServices=VM-SERVICE1,VM-SERVICE2
 
   <requisition-def import-name="the-import-name-to-use" import-url-resource="vmware://ip-address-or-hostname/foreignSource-Name?parameters">
