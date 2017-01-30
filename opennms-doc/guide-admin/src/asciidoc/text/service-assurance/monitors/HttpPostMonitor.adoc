@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== HttpPostMonitor
 
 If it is required to _HTTP POST_ any arbitrary content to a remote _URI_, the HttpPostMonitor can be used.
@@ -31,6 +34,8 @@ A use case is to HTTP POST to a SOAP endpoint.
 | `usesslfilter` | Enables or disables the SSL ceritificate validation. `true - false`   | optional | `false`
 | `uri`          | The uri to use during the POST.                                       | optional | `/`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

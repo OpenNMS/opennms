@@ -1,12 +1,15 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== Pop3Monitor
 
-The POP3 monitor tests for POP3 service availability on a node.
-The monitor first tries to establish a TCP connection on the specified port.
+The _POP3_ monitor tests for _POP3_ service availability on a node.
+The monitor first tries to establish a _TCP_ connection on the specified port.
 If a connection is established, a service banner should have been received.
-The monitor makes sure the service banner is a valid POP3 banner (ie: starts with "+OK").
-If the banner is valid, the monitor sends a _QUIT_ POP3 command and makes sure the service answers with a valid response (ie: a response that starts with "+OK").
-The service is considered available if the service's answer to the _QUIT_ command is valid.
+The monitor makes sure the service banner is a valid _POP3_ banner (ie: starts with `+OK`).
+If the banner is valid, the monitor sends a `QUIT` _POP3_ command and makes sure the service answers with a valid response (ie: a response that starts with `+OK`).
+The service is considered available if the service's answer to the `QUIT` command is valid.
 
 The behaviour can be simulated with `telnet`:
 
@@ -32,14 +35,14 @@ The behaviour can be simulated with `telnet`:
 .Monitor specific parameters for the Pop3Monitor
 [options="header, autowidth"]
 |===
-| Parameter            | Description                                                                                | Required | Default value
-| `port`               | TCP port to connect to.                                                                    | optional | `110`
-| `retry`              | Number of attempts to find the service available.                                          | optional | `0`
-| `strict-timeout`     | Boolean
-                         If set to `true`, makes sure that at least `timeout` milliseconds are elapsed between
-                         attempts.                                                                                  | optional | `false`
-| `timeout`            | Timeout in milliseconds for the underlying socket's _connect_ and _read_ operations.       | optional | `3000`
+| Parameter            | Description                                                                           | Required | Default value
+| `port`               | TCP port to connect to.                                                               | optional | `110`
+| `retry`              | Number of attempts to find the service available.                                     | optional | `0`
+| `strict-timeout`     | If set to `true`, makes sure that at least `timeout` milliseconds are elapsed between
+                         attempts.                                                                             | optional | `false`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 
