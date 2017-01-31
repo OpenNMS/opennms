@@ -82,7 +82,7 @@ public class ListFieldsCommand extends AbstractJiraCommand {
 
         // We found fields, so show them
         final String ISSUE_ROW_FORMAT = "%s fields for issue type %s (id: %s)";
-        final String FIELD_ROW_FORMAT = "%-30s %-20s %-10s %s";
+        final String FIELD_ROW_FORMAT = "%-30s %-20s %-10s %-10s %s";
         while (iterator.hasNext()) {
             CimProject project = iterator.next();
             System.out.println("Project " + project.getName() + " (" + project.getKey() + ")");
@@ -110,12 +110,13 @@ public class ListFieldsCommand extends AbstractJiraCommand {
 
                 // Sort by name
                 final List<CimFieldInfo> fields = fieldsMap.values().stream().sorted(Comparator.comparing(CimFieldInfo::getName)).collect(Collectors.toList());
-                System.out.println(String.format(FIELD_ROW_FORMAT, "Name", "Id", "Custom", "Type"));
+                System.out.println(String.format(FIELD_ROW_FORMAT, "Name", "Id", "Required", "Custom", "Type"));
                 for (CimFieldInfo eachField : fields) {
                     System.out.println(
                             String.format(FIELD_ROW_FORMAT,
                                 eachField.getName(),
                                 eachField.getId(),
+                                eachField.isRequired(),
                                 isCustom(eachField),
                                 eachField.getSchema().getType()));
                 }
