@@ -29,13 +29,20 @@
 package org.opennms.smoketest;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Predicate;
 
 /**
  * The Test Class for the Index Page.
@@ -86,19 +93,23 @@ public class IndexPageIT extends OpenNMSSeleniumTestCase {
                 "</model-import>";
         createRequisition(REQUISITION_NAME, requisitionXML, 1);
 
-        // wait some time until the service on 127.0.0.2 has been detected as "down"
-        LOG.info("Waiting for provision to mark service as \"down\"");
-        sleep(10000);
-        
-        // refresh page
-        m_driver.get(getBaseUrl() + "opennms/index.jsp");
+        // try every 5 seconds, for 120 seconds, until the service on 127.0.0.2 has been detected as "down", or fail afterwards
+        try {
+            setImplicitWait(5, TimeUnit.SECONDS);
+            new WebDriverWait(m_driver, 120).until(new Predicate<WebDriver>() {
+                @Override
+                public boolean apply(@Nullable WebDriver input) {
+                    // refresh page
+                    input.get(getBaseUrl() + "opennms/index.jsp");
 
-        // Verify
-        LOG.info("Verify status map");
-        WebElement mapElement = findElementById("map");
-        Assert.assertNotNull(mapElement);
-        List<WebElement> markerElements = mapElement.findElements(By.xpath("//*[contains(@class, 'leaflet-marker-icon')]"));
-        Assert.assertTrue("No markers found.", !markerElements.isEmpty());
+                    // Wait until we have markers
+                    List<WebElement> markerElements = input.findElements(By.xpath("//*[contains(@class, 'leaflet-marker-icon')]"));
+                    return !markerElements.isEmpty();
+                }
+            });
+        } finally {
+            setImplicitWait();
+        }
     }
 
 }
