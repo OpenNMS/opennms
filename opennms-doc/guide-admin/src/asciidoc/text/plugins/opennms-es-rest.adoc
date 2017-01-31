@@ -25,19 +25,19 @@ With the following properties (defaults shown will be used if file is not presen
 
 [options="header, autowidth"]
 |===
-| Parameter | Default | Description
-|`elasticsearchUrl` | http://localhost:9200 | URL of _Elasticsearch_ ReST interface
-|`esusername` | | Username to access _Elasticsearch_
-|`espassword` | | Username to access _Elasticsearch_
-|`logEventDescription` | true | Whether to forward the event description field to _Elasticsearch_. It can be disabled because it contains a long text field that can be redundant with the rest of the metadata included in the event.
-|`archiveRawEvents` | true | Archive events.
-|`archiveAlarms` | true | Archive alarms.
-|`archiveAlarmChangeEvents` | true | Archive alarm change events.
-|`archiveOldAlarmValues` | true | For alarm change events, we can choose to archive the detailed alarm values but this is expensive. Set false in production.
-|`archiveNewAlarmValues` | true | 
-|`logAllEvents` | false | If changed to true, then archive all events even if they have not been persisted in the OpenNMS database.
-|`batchSize` | 1 | Increase this value to enable batch inserts into Elasticsearch. This is the maximum size of a batch of events that is sent to Elasticsearch in a single connection.
-|`batchInterval` | 0 | This value specifies the maximum time interval between batch events (recommended: 500ms).
+| Parameter                 | Default               | Description
+|`elasticsearchUrl`         | http://localhost:9200 | URL of _Elasticsearch_ ReST interface
+|`esusername`               |                       | Username to access _Elasticsearch_
+|`espassword`               |                       | Username to access _Elasticsearch_
+|`logEventDescription`      | true                  | Whether to forward the event description field to _Elasticsearch_. It can be disabled because it contains a long text field that can be redundant with the rest of the metadata included in the event.
+|`archiveRawEvents`         | true                  | Archive events.
+|`archiveAlarms`            | true                  | Archive alarms.
+|`archiveAlarmChangeEvents` | true                  | Archive alarm change events.
+|`archiveOldAlarmValues`    | true                  | For alarm change events, we can choose to archive the detailed alarm values but this is expensive. Set false in production.
+|`archiveNewAlarmValues`    | true                  | 
+|`logAllEvents`             | false                 | If changed to true, then archive all events even if they have not been persisted in the OpenNMS database.
+|`batchSize`                | 1                     | Increase this value to enable batch inserts into Elasticsearch. This is the maximum size of a batch of events that is sent to Elasticsearch in a single connection.
+|`batchInterval`            | 0                     | This value specifies the maximum time interval between batch events (recommended: 500ms).
 |===
 
 Once you are sure everything is correctly configured, you can activate the _Elasticsearch_ forwarder by logging into the _OSGi_ console and installing the feature.
@@ -146,7 +146,6 @@ karaf> elastic-search:send-historic-events limit offset [ onms-username onms-pas
 The _mandatory_ parameters are
 
 - limit  - Limit of number of events to send 
-        
 - offset - Offset for starting list of events
 
 (note that the limit parameter works in multiples of 10 and may send more than the limit to round to 10 events)
@@ -154,11 +153,8 @@ The _mandatory_ parameters are
 The following parameters are _optional_ and will use defaults if not set
 
 - onms-username -  ReST password for opennms (default: admin)
-	
 - onms-password - ReST username for opennms (default: admin)
-
 - onms-url - URL of OpenNMS ReST interface to retrieve events to send  (default: http://localhost:8980)
-
 - use-node-label - If false local node cache will get nodelabel for nodeid. If true will use remote nodelabel (default: false)
 
 If you are uploading events from the local machine on which you are running this command, you should use
