@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 /** 
  * takes events from OpenNMS historic events through the OpennMS
- * rest interface and sends them to elastic search using the same queue
+ * rest interface and sends them to Elasticsearch using the same queue
  * as live incoming events use.
  * @author admin
  *
@@ -125,7 +125,7 @@ public class OpenNMSHistoricEventsToEs {
 	}
 
 	/**
-	 * sends events to elastic search returns true if successful
+	 * sends events to Elasticsearch returns true if successful
 	 * @return
 	 */
 	public String sendEventsToEs(){
@@ -174,7 +174,7 @@ public class OpenNMSHistoricEventsToEs {
 		}
 
 		return "Sent "+eventsSent
-				+ " events to Elastic Search. First event "
+				+ " events to Elasticsearch. First event "
 				+ "id="+((firstEvent!=null) ? firstEvent.getDbid() : "firstEvent null")
 				+ " last event id="+((lastEvent!=null) ? lastEvent.getDbid() : "lastEvent null");
 	}

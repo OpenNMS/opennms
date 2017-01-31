@@ -191,7 +191,7 @@ public class MemosChangeNotificationClient implements NotificationClient {
 	}
 
 	/**
-	 * converts postgres json time format to normalised time format for matching to Elastic Search 
+	 * converts postgres json time format to normalised time format for matching to Elasticsearch 
 	 * date_optional_time or strict_date_optional_time
 	 * (A generic ISO datetime parser where the date is mandatory and the time is optional
 	 * see https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#strict-date-time) 

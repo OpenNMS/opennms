@@ -161,7 +161,7 @@ public class RawEventToIndexTest {
 
 			LOG.debug("ecreated node lost service event:"+event.toString());
 
-			// forward event to elastic search
+			// forward event to Elasticsearch
 			eventToIndex.forwardEvents(Collections.singletonList(event));
 
 			// waiting 5 seconds for index 

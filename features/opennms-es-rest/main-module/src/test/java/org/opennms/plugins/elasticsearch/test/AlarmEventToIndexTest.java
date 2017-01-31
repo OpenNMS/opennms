@@ -148,7 +148,7 @@ public class AlarmEventToIndexTest {
 			event.setDbid(100);
 			event.setNodeid((long) 34);
 
-			// forward event to elastic search
+			// forward event to Elasticsearch
 			eventToIndex.forwardEvents(Collections.singletonList(event));
 
 			// waiting 5 seconds for index 
