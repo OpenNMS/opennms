@@ -1,6 +1,8 @@
 package org.opennms.netmgt.model;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -157,5 +159,24 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
             return null;
         }
         return SANITIZE_PATH_PATTERN.matcher(path).replaceAll(SANITIZE_PATH_PLACEHOLDER);
+    }
+
+    /**
+     * Converts the given resource path to a relative path on filesystem.
+     * @param path the resource path to resolve
+     * @return the relative path of the resource on disk
+     */
+    public static Path resourceToFilesystemPath(ResourcePath path) {
+        // Replace colons on windows machines (see #NMS-8085)
+        Path result = Paths.get("");
+        for (String e : path) {
+            if (File.separatorChar == '\\') {
+                e = e.replace(':', '_');
+            }
+
+            result = result.resolve(e);
+        }
+
+        return result;
     }
 }

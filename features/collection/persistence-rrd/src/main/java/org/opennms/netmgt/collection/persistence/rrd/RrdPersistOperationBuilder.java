@@ -112,7 +112,7 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
     }
 
     private String getResourceDir(ResourceIdentifier resource) throws FileNotFoundException {
-        return m_repository.getRrdBaseDir().toPath().resolve(resourceToFilesystemPath(resource.getPath())).toAbsolutePath().toString();
+        return m_repository.getRrdBaseDir().toPath().resolve(ResourcePath.resourceToFilesystemPath(resource.getPath())).toAbsolutePath().toString();
     }
 
     /**
@@ -356,25 +356,5 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
      */
     public void setTimeKeeper(TimeKeeper timeKeeper) {
         m_timeKeeper = timeKeeper;
-    }
-
-    /**
-     * Converts the given resource path to a relative path on filesystem.
-     * @param path the resource path to resolve
-     * @return the relative path of the resource on disk
-     */
-
-    public static Path resourceToFilesystemPath(ResourcePath path) {
-        // Replace colons on windows machines (see #NMS-8085)
-        Path result = Paths.get("");
-        for (String e : path) {
-            if (File.separatorChar == '\\') {
-                e = e.replace(':', '_');
-            }
-
-            result = result.resolve(e);
-        }
-
-        return result;
     }
 }

@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -43,7 +42,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.collection.persistence.rrd.RrdPersistOperationBuilder;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
@@ -114,7 +112,7 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao, Initial
 
     @Override
     public Set<OnmsAttribute> getAttributes(ResourcePath path) {
-        return RrdResourceAttributeUtils.getAttributesAtRelativePath(m_rrdDirectory, RrdPersistOperationBuilder.resourceToFilesystemPath(path).toString(), RRD_EXTENSION);
+        return RrdResourceAttributeUtils.getAttributesAtRelativePath(m_rrdDirectory, ResourcePath.resourceToFilesystemPath(path).toString(), RRD_EXTENSION);
     }
 
     @Override
@@ -133,7 +131,7 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao, Initial
 
     @Override
     public Map<String, String> getStringAttributes(ResourcePath path) {
-        Properties props = RrdResourceAttributeUtils.getStringProperties(m_rrdDirectory, RrdPersistOperationBuilder.resourceToFilesystemPath(path).toString());
+        Properties props = RrdResourceAttributeUtils.getStringProperties(m_rrdDirectory, ResourcePath.resourceToFilesystemPath(path).toString());
         return Maps.fromProperties(props);
     }
 
@@ -144,7 +142,7 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao, Initial
 
     @Override
     public Map<String, String> getMetaData(ResourcePath path) {
-        return RrdMetaDataUtils.readMetaDataFile(getRrdDirectory(), RrdPersistOperationBuilder.resourceToFilesystemPath(path).toString());
+        return RrdMetaDataUtils.readMetaDataFile(getRrdDirectory(), ResourcePath.resourceToFilesystemPath(path).toString());
     }
 
     @Override
@@ -183,7 +181,7 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao, Initial
     }
 
     private Path toPath(final ResourcePath path) {
-        return m_rrdDirectory.getAbsoluteFile().toPath().resolve(RrdPersistOperationBuilder.resourceToFilesystemPath(path));
+        return m_rrdDirectory.getAbsoluteFile().toPath().resolve(ResourcePath.resourceToFilesystemPath(path));
     }
 
     public void setRrdDirectory(File rrdDirectory) {
