@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 [[poller-dns-resolution-monitor]]
 ==== DNSResolutionMonitor
 
@@ -22,17 +25,17 @@ The response from the A record lookup can be any address, it is not verified wit
 .Monitor specific parameters for the DNSResolutionMonitor
 [options="header, autowidth"]
 |===
-| Parameter | Description                                               | Required | Default value
+| Parameter         | Description                                       | Required | Default value
 | `resolution-type` | Type of record for the node label test. +
                       Allowed values +
                       `v4` for _A records_, +
                       `v6` for _AAAA record_, +
                       `both` _A_ and _AAAA record_ must be available, +
-                      `either` _A_ or _AAAA record_ must be available.   | optional | `either`
-| `nameserver`      | The DNS server to query for the records. | optional | Use the servers defined by the system running {opennms-product-name}
-| `retry`           | Amount of attempts to resolve the node label before the service goes down | required | `-`
-| `timeout`         | Time to wait for a _A_ and/or _AAAA record_ from the system configured _DNS server_ before trying a next attempt. | required | `-`
+                      `either` _A_ or _AAAA record_ must be available.  | optional | `either`
+| `nameserver`      | The DNS server to query for the records.          | optional | Use name server from host system running _{opennms-product-name}_
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

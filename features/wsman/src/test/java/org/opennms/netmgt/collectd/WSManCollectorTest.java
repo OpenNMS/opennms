@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -55,7 +56,7 @@ import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.GenericTypeResourceWithoutInstance;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.netmgt.config.datacollection.Parameter;
@@ -275,7 +276,10 @@ public class WSManCollectorTest {
         PersistenceSelectorStrategy pstrategy = new PersistenceSelectorStrategy();
         pstrategy.setClazz(PersistAllSelectorStrategy.class.getCanonicalName());
         rt.setPersistenceSelectorStrategy(pstrategy);
-        Supplier<Resource> resourceSupplier = () -> new GenericTypeResourceWithoutInstance(node, rt);
+        final AtomicInteger instanceId = new AtomicInteger();
+        Supplier<Resource> resourceSupplier = () -> {
+            return new GenericTypeResource(node, rt, Integer.toString(instanceId.getAndIncrement()));
+        };
 
         // Define our group
         Group group = new Group();

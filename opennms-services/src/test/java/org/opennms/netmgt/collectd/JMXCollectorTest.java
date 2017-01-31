@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -144,6 +145,11 @@ public class JMXCollectorTest {
             } catch (UnknownHostException e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        @Override
+        public Set<String> getAttributeNames() {
+            return attributes.keySet();
         }
 
         @Override

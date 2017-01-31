@@ -28,17 +28,15 @@
 
 package org.opennms.netmgt.config.wmi;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.netmgt.collection.api.AttributeType;
-import org.opennms.netmgt.collection.api.AttributeTypeAdapter;
-
-import java.util.Objects;
 
 
 /**
@@ -80,7 +78,6 @@ public class Attrib {
     protected String alias;
     @XmlAttribute(name = "wmiObject", required = true)
     protected String wmiObject;
-    @XmlJavaTypeAdapter(AttributeTypeAdapter.class)
     @XmlAttribute(name = "type", required = true)
     protected AttributeType type;
     @XmlAttribute(name = "maxval")

@@ -28,11 +28,15 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.netmgt.collection.adapters.NumericAttributeAdapter;
 import org.opennms.netmgt.collection.api.AttributeType;
 
+@XmlJavaTypeAdapter(NumericAttributeAdapter.class)
 public class NumericAttribute extends Attribute<Number> {
-    public NumericAttribute(Resource resource, String group, String name, Number value, AttributeType type, String identifier) {
-        super(resource, group, name, value, type, identifier);
+    public NumericAttribute(String group, String name, Number value, AttributeType type, String identifier) {
+        super(group, name, value, type, identifier);
         if (!type.isNumeric()) {
             throw new IllegalArgumentException("attribute type " + type  + " is not numeric.");
         }

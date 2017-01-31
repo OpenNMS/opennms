@@ -44,7 +44,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.netmgt.collection.api.AttributeType;
-import org.opennms.netmgt.collection.api.AttributeTypeAdapter;
 
 @XmlRootElement(name = "comp-member")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -57,7 +56,6 @@ public class CompMember implements java.io.Serializable {
     @XmlAttribute(name = "alias")
     private String _alias;
 
-    @XmlJavaTypeAdapter(AttributeTypeAdapter.class)
     @XmlAttribute(name = "type", required = true)
     private AttributeType _type;
 

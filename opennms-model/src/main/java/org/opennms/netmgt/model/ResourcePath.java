@@ -120,7 +120,7 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
 
     @Override
     public String toString() {
-        return m_elements.stream().collect(Collectors.joining(File.separator));
+        return ResourcePath.toString(this);
     }
 
     @Override
@@ -178,5 +178,13 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
         }
 
         return result;
+    }
+
+    public static ResourcePath fromString(final String s) {
+        return ResourcePath.get(s.split("/"));
+    }
+
+    public static String toString(final ResourcePath path) {
+        return path.m_elements.stream().collect(Collectors.joining(File.separator));
     }
 }

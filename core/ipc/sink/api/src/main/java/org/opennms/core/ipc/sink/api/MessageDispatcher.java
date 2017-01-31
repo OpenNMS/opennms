@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,32 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.support.builder;
-
-import org.opennms.netmgt.collection.api.ResourceType;
-import org.opennms.netmgt.collection.support.IndexStorageStrategy;
+package org.opennms.core.ipc.sink.api;
 
 /**
- * Generic type resource that does not have a default instance value.
+ * Used to synchronously dispatch messages.
  *
- * Resources of this type are not supported by the {@link IndexStorageStrategy}.
- * Instead an alternative strategy such as the {@link SiblingColumnStorageStrategy} should be used.
+ * Instances of these should be created by the {@link MessageDispatcherFactory}.
  *
  * @author jwhite
  */
-public class GenericTypeResourceWithoutInstance extends GenericTypeResource {
+public interface MessageDispatcher<S> extends AutoCloseable {
 
-    private static final String DEFAULT_INSTANCE_NAME = "0";
+    void send(S message);
 
-    public GenericTypeResourceWithoutInstance(NodeLevelResource node, ResourceType resourceType) {
-        super(node, resourceType, DEFAULT_INSTANCE_NAME);
-        if (IndexStorageStrategy.class.getCanonicalName().equals(resourceType.getStorageStrategy())) {
-            throw new IllegalArgumentException(resourceType.getStorageStrategy() + " is not supported.");
-        }
-    }
-
-    @Override
-    public String getInstance() {
-        return DEFAULT_INSTANCE_NAME;
-    }
 }

@@ -28,7 +28,12 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
+import java.nio.file.Path;
 import java.util.Objects;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.netmgt.collection.adapters.GenericTypeResourceAdapter;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
 import org.opennms.netmgt.collection.api.ResourceType;
@@ -36,6 +41,7 @@ import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.model.ResourcePath;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
+@XmlJavaTypeAdapter(GenericTypeResourceAdapter.class)
 public class GenericTypeResource implements Resource {
 
     private final NodeLevelResource m_node;
@@ -64,9 +70,13 @@ public class GenericTypeResource implements Resource {
         return m_instance;
     }
 
+    public ResourceType getResourceType() {
+        return m_resourceType;
+    }
+
     @Override
     public ResourcePath getPath(CollectionResource resource) {
-        return getStorageStrategy().getRelativePathForAttribute(new ResourcePath(), getStorageStrategy().getResourceNameFromIndex(resource));
+        return getStorageStrategy().getRelativePathForAttribute(ResourcePath.get(), getStorageStrategy().getResourceNameFromIndex(resource));
     }
 
     public StorageStrategy getStorageStrategy() {
@@ -113,8 +123,28 @@ public class GenericTypeResource implements Resource {
 
     @Override
     public String toString() {
-        return String.format("GenericTypeResource[node=%s, resourceType=%s,"
+        return String.format("GenericTypeResource[node=%s, instance=%s, resourceType=%s,"
                 + "storageStrategy=%s, persistenceSelectorStrategy=%s",
-                m_node, m_resourceType, m_storageStrategy, m_persistenceSelectorStrategy);
+                m_node, m_instance, m_resourceType, m_storageStrategy, m_persistenceSelectorStrategy);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_node, m_instance, m_resourceType);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj == null) {
+            return false;
+        } else if (!(obj instanceof GenericTypeResource)) {
+            return false;
+        }
+        GenericTypeResource other = (GenericTypeResource) obj;
+        return Objects.equals(this.m_node, other.m_node)
+                && Objects.equals(this.m_instance, other.m_instance)
+                && Objects.equals(this.m_resourceType, other.m_resourceType);
     }
 }

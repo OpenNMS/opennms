@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -29,7 +28,6 @@ import com.google.common.collect.Collections2;
 /**
  * Verifies that the Vaadin JMX Configuration Generator Application is deployed correctly.
  */
-@Ignore
 public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(JmxConfigurationGeneratorIT.class);
     private static final String MBEANS_VIEW_TREE_WAIT_NAME = "com.zaxxer.hikari";
@@ -40,12 +38,12 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
 
         // give the Vaadin webapp time to settle down
         Thread.sleep(2000);
-        switchToVaadinFrame();
+        selectVaadinFrame();
     }
 
     @After
     public void after() {
-        switchToDefaultFrame();
+        selectDefaultFrame();
     }
 
     @Test
@@ -197,14 +195,8 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
     }
 
     // switches to the embedded vaadin iframe
-    private void switchToVaadinFrame() {
-        // switchTo() by xpath is much faster than by ID
+    protected void selectVaadinFrame() {
         m_driver.switchTo().frame(0);
-    }
-
-    // go back to the content "frame"
-    private void switchToDefaultFrame() {
-        m_driver.switchTo().defaultContent();
     }
 
     private void selectNodeByName(final String name, boolean select) throws InterruptedException {

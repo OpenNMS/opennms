@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== HttpsMonitor
 
 The HTTPS monitor tests the response of an SSL-enabled HTTP server.
