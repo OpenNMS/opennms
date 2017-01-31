@@ -29,7 +29,7 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true"  %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.springframework.security.AclUtils"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Modify Asset" />
@@ -50,6 +50,30 @@
 	
 </jsp:include>
 
-<div id="opennms-assetNodePage"></div>
+<%
+	AclUtils.NodeAccessChecker accessChecker = AclUtils.getNodeAccessChecker(getServletContext());
+
+	Integer nodeId = null;
+
+	try {
+	    nodeId = Integer.valueOf(request.getParameter("node"));
+	} catch (NumberFormatException e) {
+%>
+		<h2>Error parsing node parameter.</h2>
+<%
+	}
+
+	if (nodeId != null) {
+		if (accessChecker.isNodeAccessible(nodeId)) {
+%>
+			<div id="opennms-assetNodePage"></div>
+<%
+		} else {
+%>
+			<h2>Access denied.</h2>
+<%
+		}
+	}
+%>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
