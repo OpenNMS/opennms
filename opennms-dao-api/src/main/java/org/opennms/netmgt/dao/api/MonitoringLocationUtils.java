@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,18 +28,30 @@
 
 package org.opennms.netmgt.dao.api;
 
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.model.OnmsNode;
 
-/**
- * <p>MonitoringLocationDao interface.</p>
- *
- * @author Seth
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- */
-public interface MonitoringLocationDao extends OnmsDao<OnmsMonitoringLocation, String> {
+public class MonitoringLocationUtils {
 
-	String DEFAULT_MONITORING_LOCATION_ID = "Default";
+    /**
+     * Returns <b>true</b> if the given location name is <b>null</b> or the system default.
+     *
+     * @param locationName
+     * @return
+     */
+    public static boolean isDefaultLocationName(String locationName) {
+        return locationName == null || MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID.equals(locationName);
+    }
 
-	OnmsMonitoringLocation getDefaultLocation();
+    /**
+     * Returns the name to which the given node is associated, or null if the if node
+     * is associated to either the default location, or no location.
+     *
+     * @param node
+     * @return
+     */
+    public static String getLocationNameOrNullIfDefault(OnmsNode node) {
+        final String locationName = node.getLocation() != null ? node.getLocation().getLocationName() : null;
+        return isDefaultLocationName(locationName) ? null : locationName;
+    }
+
 }
