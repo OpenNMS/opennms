@@ -30,13 +30,11 @@
 --%>
 
 <%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="org.opennms.web.asset.*,
-		org.opennms.web.servlet.MissingParameterException 
-	"
-%>
-
+        contentType="text/html"
+        session="true"
+        import="org.opennms.web.asset.*,
+		    org.opennms.web.servlet.MissingParameterException,
+            org.opennms.web.springframework.security.AclUtils"%>
 <%
     final String ALL_NON_EMPTY = "_allNonEmpty";
     String column = request.getParameter("column");
@@ -52,6 +50,8 @@
     }
 
     AssetModel.MatchingAsset[] assets = column.equals(ALL_NON_EMPTY) ? AssetModel.searchNodesWithAssets() : AssetModel.searchAssets(column, search);
+
+    AclUtils.NodeAccessChecker accessChecker = AclUtils.getNodeAccessChecker(getServletContext());
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -80,7 +80,11 @@
             <th>Node Link</td>
           </tr>
 
-        <% for( int i=0; i < assets.length; i++ ) { %>
+        <% for( int i=0; i < assets.length; i++ ) {
+            if (!accessChecker.isNodeAccessible(assets[i].nodeId)) {
+                continue;
+            }
+        %>
           <tr>
             <td><%=assets[i].matchingValue%></td>
             <td><a href="asset/modify.jsp?node=<%=assets[i].nodeId%>"><%=assets[i].nodeLabel%></a></td>
