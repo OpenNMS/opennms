@@ -193,6 +193,30 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 testCase.setImplicitWait();
             }
         }
+
+        public PingWindow ping() {
+            return new PingWindow(testCase, contextMenu()).open();
+        }
+    }
+
+    public static class PingWindow {
+        private final OpenNMSSeleniumTestCase testCase;
+        private final ContextMenu contextMenu;
+
+        private PingWindow(OpenNMSSeleniumTestCase testCase, ContextMenu contextMenu) {
+            this.testCase = Objects.requireNonNull(testCase);
+            this.contextMenu = Objects.requireNonNull(contextMenu);
+        }
+
+        private PingWindow open() {
+            contextMenu.click("Ping");
+            testCase.findElementByXpath("//div[@class='popupContent']//div[@class='v-window-header' and contains(text(), 'Ping')]");
+            return this;
+        }
+
+        public void close() {
+            testCase.findElementByXpath("//div[@class='v-window-closebox']").click();
+        }
     }
 
     /**
@@ -328,6 +352,12 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             } else {
                 LOG.info("setAutomaticRefresh: refresh is already {}", enabled ? "enabled" : "disabled");
             }
+            return this;
+        }
+
+        public TopologyUIPage refreshNow() {
+            testCase.findElementById("refreshNow").click();
+            waitForTransition();
             return this;
         }
 
@@ -616,6 +646,34 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             .setAutomaticRefresh(true)
             .setAutomaticRefresh(false)
             .setAutomaticRefresh(true);
+    }
+
+    // Verifies that the ping operation is available. See NMS-9019
+    @Test
+    public void verifyPingOperation() {
+        // Create Dummy Node
+        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
+                "<scan-interval>1d</scan-interval>\n" +
+                "<detectors/>\n" +
+                "<policies/>\n" +
+                "</foreign-source>";
+        createForeignSource(REQUISITION_NAME, foreignSourceXML);
+        final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
+                "   <node foreign-id=\"tests\" node-label=\"Dummy Node\">" +
+                "       <interface ip-addr=\"127.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "</model-import>";
+        createRequisition(REQUISITION_NAME, requisitionXML, 1);
+
+        // Find Node and try select ping from context menu
+        topologyUiPage.selectTopologyProvider(TopologyProvider.ENLINKD);
+        topologyUiPage.clearFocus();
+        topologyUiPage.refreshNow();
+        topologyUiPage.search("Dummy Node").selectItemThatContains("Dummy Node");
+        PingWindow pingWindow = topologyUiPage.findVertex("Dummy Node").ping();
+        pingWindow.close();
     }
 
     /**
