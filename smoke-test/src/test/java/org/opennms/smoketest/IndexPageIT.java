@@ -93,10 +93,10 @@ public class IndexPageIT extends OpenNMSSeleniumTestCase {
                 "</model-import>";
         createRequisition(REQUISITION_NAME, requisitionXML, 1);
 
-        // try every 5 seconds, for 120 seconds, until the service on 127.0.0.2 has been detected as "down", or fail afterwards
+        // try every 5 seconds, for 300 seconds, until the service on 127.0.0.2 has been detected as "down", or fail afterwards
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
-            new WebDriverWait(m_driver, 120).until(new Predicate<WebDriver>() {
+            new WebDriverWait(m_driver, 300).until(new Predicate<WebDriver>() {
                 @Override
                 public boolean apply(@Nullable WebDriver input) {
                     // refresh page
