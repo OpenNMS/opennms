@@ -109,7 +109,7 @@
   <!-- command line commands -->
   <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
 
-    <!-- send events to elastic search -->
+    <!-- send events to Elasticsearch -->
     <command name="elastic-search/send-historic-events">
       <action class="org.opennms.plugins.elasticsearch.rest.archive.cmd.SendEventsToEsCommand">
         <property name="openNMSHistoricEventsToEs" ref="openNMSHistoricEventsToEs" />

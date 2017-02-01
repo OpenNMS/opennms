@@ -808,7 +808,7 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-    <!-- dependency for ReST Elastic Search integration -->
+    <!-- dependency for ReST Elasticsearch integration -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpasyncclient-osgi</artifactId>
