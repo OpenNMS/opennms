@@ -111,6 +111,7 @@
 
     <!-- Other projects -->
     <module>geocoder</module>
+    <module>geolocation</module>
     <module>instrumentationLogReader</module>
     <module>name-cutter</module>
     <module>ncs</module>

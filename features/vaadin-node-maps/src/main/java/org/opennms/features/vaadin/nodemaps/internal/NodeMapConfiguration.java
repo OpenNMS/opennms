@@ -28,10 +28,11 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
+
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.opennms.features.topology.api.geo.GeocoderConfig;
+import org.opennms.features.geolocation.api.GeolocationConfiguration;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Option;
 
 import com.google.common.base.Strings;
@@ -41,28 +42,28 @@ import com.google.common.base.Strings;
  */
 public class NodeMapConfiguration {
 
-    public static boolean isValid() {
-        return !Strings.isNullOrEmpty(getTileServerUrl()) && !Strings.isNullOrEmpty(getTileLayerAttribution());
+    private final GeolocationConfiguration geolocationConfiguration;
+
+    public NodeMapConfiguration(GeolocationConfiguration geolocationConfiguration) {
+        this.geolocationConfiguration = geolocationConfiguration;
     }
 
-    /**
-     * Returns the 'attribution' tile layer option.
-     * See http://leafletjs.com/reference.html#tilelayer-options for more details.
-     *
-     * @return the 'attribution' tile layer option.
-     */
-    static String getTileLayerAttribution() {
-        return System.getProperty(GeocoderConfig.OPTIONS_KEY_PREFIX + "attribution");
+    public boolean isValid() {
+        return !Strings.isNullOrEmpty(geolocationConfiguration.getTileServerUrl())
+                && !Strings.isNullOrEmpty(geolocationConfiguration.getOptions().get("attribution"));
     }
 
-
-    public static String getTileServerUrl() {
-        return GeocoderConfig.getTileServerUrl();
+    public List<Option> getOptions() {
+        return geolocationConfiguration.getOptions().entrySet().stream()
+            .map(e -> new Option(e.getKey(), e.getValue()))
+            .collect(Collectors.toList());
     }
 
-    public static List<Option> getTileLayerOptions() {
-        return GeocoderConfig.getOptions().entrySet()
-                .stream().map(e -> new Option(e.getKey(), e.getValue()))
-                .collect(Collectors.toList());
+    public String getTileServerUrl() {
+        return geolocationConfiguration.getTileServerUrl();
+    }
+
+    public String getTileLayerAttribution() {
+        return geolocationConfiguration.getOptions().get("attribution");
     }
 }
