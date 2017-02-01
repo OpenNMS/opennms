@@ -83,8 +83,8 @@ public class IndexPageIT extends OpenNMSSeleniumTestCase {
         createForeignSource(REQUISITION_NAME, foreignSourceXML);
         LOG.info("Initializing node with  source with no detectors");
         String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
-                "   <node foreign-id=\"tests\" node-label=\"127.0.0.2\">" +
-                "       <interface ip-addr=\"127.0.0.2\" status=\"1\" snmp-primary=\"N\">" +
+                "   <node foreign-id=\"tests\" node-label=\"192.0.2.1\">" +
+                "       <interface ip-addr=\"192.0.2.1\" status=\"1\" snmp-primary=\"N\">" +
                 "           <monitored-service service-name=\"ICMP\"/>" +
                 "       </interface>" +
                 "       <asset name=\"longitude\" value=\"-0.075949\"/>" +
