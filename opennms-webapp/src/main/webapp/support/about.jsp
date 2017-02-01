@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -136,11 +136,12 @@
   </div>
   <div class="panel-body">
   <p>
-    The <a href="http://www.opennms.org/">OpenNMS&reg;</a> software, as
-    distributed here, is copyright &copy; 2002-2016
-    <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>.
     <a href="http://www.opennms.org/">OpenNMS&reg;</a> is a registered
-    trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
+    trademark, and Horizon&trade;, Meridian&trade;, and Compass&trade; are
+    trademarks, of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
+    Horizon&trade; software by OpenNMS&reg; and Meridian&trade; software by OpenNMS&reg;, as
+    distributed here, are copyright &copy; 2002-2017
+    <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
   </p>
   <p>
     OpenNMS is a derivative work, containing both original code, included
@@ -148,7 +149,7 @@
     License. Please see the source for detailed copyright notices.
   </p>
   <p>
-    The source for this release can be downloaded
+    The source code for this release can be downloaded
     <a href="source/opennms-<%=Vault.getProperty("version.display")%>-source.tar.gz">here</a>.
   </p>
   <p>
