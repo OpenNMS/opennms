@@ -57,6 +57,9 @@
 		<parameter name="ds_IPv4_interface" class="java.lang.String">
 			<defaultValueExpression><![CDATA["127.0.0.1"]]></defaultValueExpression>
 		</parameter>
+		<parameter name="escapedInterface" class="java.lang.String">
+			<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil.escapeColons($P{ds_IPv4_interface})]]></defaultValueExpression>
+		</parameter>
 		<parameter name="ds_startDate" class="java.util.Date" isForPrompting="false"/>
 		<parameter name="ds_endDate" class="java.util.Date" isForPrompting="false"/>
 		<parameter name="ds_rrdDir" class="java.lang.String">
@@ -70,7 +73,7 @@
 		</parameter>
 		<queryString language="jrobin">
 			<![CDATA[--start $P{ds_startDate} --end $P{ds_endDate}
-		DEF:xx=$P{ds_rrdDir}/response/$P{ds_IPv4_interface}/icmp.jrb:icmp:AVERAGE
+		DEF:xx=$P{ds_rrdDir}/response/$P{escapedInterface}/icmp.jrb:icmp:AVERAGE
 		XPORT:xx:IcmpLatency]]>
 		</queryString>
 		<field name="Timestamp" class="java.util.Date">
