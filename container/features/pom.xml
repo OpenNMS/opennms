@@ -106,7 +106,7 @@
             <!-- Alarm Change Notifier -->
             <repository>mvn:org.opennms.plugins/alarm-change-notifier/${project.version}/xml/features</repository> 
     
-            <!-- ReST Elastic Search Integration -->
+            <!-- ReST Elasticsearch Integration -->
             <repository>mvn:org.opennms.plugins/opennms-es-rest/${project.version}/xml/features</repository>
             
             <!-- Internal Plugins Descriptor -->

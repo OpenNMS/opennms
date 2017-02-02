@@ -89,6 +89,10 @@
       <artifactId>org.opennms.features.reporting.jasper-reports-compiler</artifactId>
       <version>${project.version}</version>
     </dependency>
+      <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-jexl</artifactId>
+      </dependency>
   </dependencies>
 
   <repositories>
