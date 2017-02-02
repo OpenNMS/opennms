@@ -28,12 +28,10 @@
 
 package org.opennms.protocols.xml.config;
 
-import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
-import org.opennms.protocols.xml.collector.XmlResourceType;
 import org.opennms.protocols.xml.collector.XmlStorageStrategy;
 
 /**
@@ -41,13 +39,7 @@ import org.opennms.protocols.xml.collector.XmlStorageStrategy;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class XmlResourceUtils {
-
-
-    /**
-     * Instantiates a new XML resource Utils.
-     */
-    private XmlResourceUtils() {}
+public abstract class XmlResourceUtils {
 
     /**
      * Gets the XML resource type.
@@ -56,15 +48,14 @@ public class XmlResourceUtils {
      * @param resourceType the resource type
      * @return the XML resource type
      */
-    public static XmlResourceType getXmlResourceType(CollectionAgent agent, String resourceType) {
-        ResourceType  rt = new ResourceType();
+    public static ResourceType getResourceType(String resourceType) {
+        ResourceType rt = new ResourceType();
         rt.setName(resourceType);
         rt.setStorageStrategy(new StorageStrategy());
         rt.getStorageStrategy().setClazz(XmlStorageStrategy.class.getName());
         rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
         rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
-        XmlResourceType type = new XmlResourceType(agent, rt);
-        return type;
+        return rt;
     }
 }
 

@@ -35,20 +35,16 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceCollector;
-import org.opennms.netmgt.collection.support.AbstractCollectionSet;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -80,6 +76,8 @@ import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+
+import junit.framework.TestCase;
 
 /**
  * CollectdIntegrationTest
@@ -276,26 +274,7 @@ public class CollectdIntegrationTest extends TestCase {
         @Override
         public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
             m_collectCount++;
-            CollectionSet collectionSetResult=new AbstractCollectionSet() {
-                private Date m_timestamp = new Date();
-
-                @Override
-                public int getStatus() {
-                    return ServiceCollector.COLLECTION_SUCCEEDED;
-                }
-
-                @Override
-                public void visit(CollectionSetVisitor visitor) {
-                    visitor.visitCollectionSet(this);   
-                    visitor.completeCollectionSet(this);
-                }
-
-                @Override
-                public Date getCollectionTimestamp() {
-                    return m_timestamp;
-                }
-            }; 
-            return collectionSetResult;
+            return new CollectionSetBuilder(agent).build();
         }
 
         public Object getCollectCount() {

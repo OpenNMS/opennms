@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collection.support.builder;
 
 import java.nio.file.Path;
+import java.util.Date;
 
 import org.opennms.netmgt.collection.api.CollectionResource;
 
@@ -51,5 +52,12 @@ public interface Resource {
      * @return relative path
      */
     public Path getPath(CollectionResource resource);
+
+    /**
+     * Returns the {@link Date} to use for attributes associated with this resource.
+     *
+     * @return a {@link Date} or null if the current time should be used.
+     */
+    public Date getTimestamp();
 
 }

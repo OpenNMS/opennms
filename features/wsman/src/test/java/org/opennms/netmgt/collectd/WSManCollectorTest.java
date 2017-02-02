@@ -34,7 +34,6 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -43,17 +42,15 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
+import org.opennms.core.collection.test.CollectionSetUtils;
 import org.opennms.core.wsman.WSManClientFactory;
-import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
-import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
-import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
@@ -114,7 +111,7 @@ public class WSManCollectorTest {
         WsManCollector.processEnumerationResults(group, builder, resourceSupplier, nodes);
 
         // Verify
-        Map<String, CollectionAttribute> attributesByName = getAttributes(builder.build());
+        Map<String, CollectionAttribute> attributesByName = CollectionSetUtils.getAttributesByName(builder.build());
         assertFalse("The CollectionSet should not contain attributes for missing values.", attributesByName.containsKey("GaugeWithoutValue"));
         assertFalse("The CollectionSet should not contain attributes for missing values.", attributesByName.containsKey("StringWithoutValue"));
         assertEquals(42.1, attributesByName.get("GaugeWithValue").getNumericValue().doubleValue(), 2);
@@ -173,7 +170,7 @@ public class WSManCollectorTest {
         WsManCollector.processEnumerationResults(group, builder, resourceSupplier, nodes);
 
         // Verify
-        Map<String, CollectionAttribute> attributesByName = getAttributes(builder.build());
+        Map<String, CollectionAttribute> attributesByName = CollectionSetUtils.getAttributesByName(builder.build());
         assertEquals("C7BBBP1", attributesByName.get("ServiceTag").getStringValue());
     }
 
@@ -217,7 +214,7 @@ public class WSManCollectorTest {
         WsManCollector.processEnumerationResults(group, builder, resourceSupplier, nodes);
 
         // Verify
-        Map<String, CollectionAttribute> attributesByName = getAttributes(builder.build());
+        Map<String, CollectionAttribute> attributesByName = CollectionSetUtils.getAttributesByName(builder.build());
         assertEquals(Double.valueOf(260), attributesByName.get("sysBoardInletTemp").getNumericValue());
         assertEquals(Double.valueOf(370), attributesByName.get("sysBoardExhaustTemp").getNumericValue());
     }
@@ -252,7 +249,7 @@ public class WSManCollectorTest {
         CollectionSet collectionSet = collector.collect(agent, null, collectionParams);
 
         assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
-        assertEquals(0, getAttributes(collectionSet).size());
+        assertEquals(0, CollectionSetUtils.getAttributesByName(collectionSet).size());
     }
 
 
@@ -318,7 +315,7 @@ public class WSManCollectorTest {
                 "wsProcIndex/c0/windows-os-wmi-processor/wmiOSCpuIntsPerSec[null,95.0]",
                 "wsProcIndex/c1/windows-os-wmi-processor/wmiOSCpuName[c1,null]",
                 "wsProcIndex/c1/windows-os-wmi-processor/wmiOSCpuIntsPerSec[null,100.0]"),
-                flatten(builder.build()));
+                CollectionSetUtils.flatten(builder.build()));
     }
 
     private static void addAttribute(Group group, String name, String alias, AttributeType type) {
@@ -327,39 +324,5 @@ public class WSManCollectorTest {
         attr.setAlias(alias);
         attr.setType(type);
         group.addAttrib(attr);
-    }
-
-    private static List<String> flatten(CollectionSet collectionSet) {
-        final List<String> strings = new ArrayList<>();
-        collectionSet.visit(new AbstractCollectionSetVisitor() {
-            CollectionResource resource;
-            AttributeGroup group;
-
-            @Override
-            public void visitResource(CollectionResource resource) {
-                this.resource = resource;
-            }
-            @Override
-            public void visitGroup(AttributeGroup group) {
-                this.group = group;
-            }
-            @Override
-            public void visitAttribute(CollectionAttribute attribute) {
-                strings.add(String.format("%s/%s/%s[%s,%s]", resource.getPath(), group.getName(),
-                        attribute.getName(),attribute.getStringValue(),attribute.getNumericValue()));
-            }
-        });
-        return strings;
-    }
-
-    private static Map<String, CollectionAttribute> getAttributes(CollectionSet collectionSet) {
-        final Map<String, CollectionAttribute> attributesByName = Maps.newHashMap();
-        collectionSet.visit(new AbstractCollectionSetVisitor() {
-            @Override
-            public void visitAttribute(CollectionAttribute attribute) {
-                attributesByName.put(attribute.getName(), attribute);
-            }
-        });
-        return attributesByName;
     }
 }
