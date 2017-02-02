@@ -53,6 +53,7 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
@@ -1350,7 +1351,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource, final String locationString) {
         final String effectiveForeignSource = foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource;
-        final String effectiveLocationName = MonitoringLocationDao.isDefaultLocationName(locationString) ? null : locationString;
+        final String effectiveLocationName = MonitoringLocationUtils.isDefaultLocationName(locationString) ? null : locationString;
 
         final OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
 
@@ -1359,7 +1360,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 // Find all of the nodes in the target requisition with the given IP address
                 return m_nodeDao.findByForeignSourceAndIpAddress(effectiveForeignSource, ipAddress).stream().filter(n -> {
                     // Now filter the nodes by location
-                    final String existingLocationName = MonitoringLocationDao.getLocationNameOrNullIfDefault(n);
+                    final String existingLocationName = MonitoringLocationUtils.getLocationNameOrNullIfDefault(n);
                     return Objects.equals(existingLocationName, effectiveLocationName);
                 }).findFirst().orElse(null);
             }

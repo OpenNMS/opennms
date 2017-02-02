@@ -46,6 +46,7 @@ import org.opennms.netmgt.config.api.OpennmsServerConfig;
 import org.opennms.netmgt.dao.api.CriticalPath;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
@@ -128,7 +129,7 @@ public class PathOutageManagerDaoImpl implements PathOutageManager {
 
         final OnmsNode node = nodeDao.get(nodeId);
         if (node != null) {
-            location = MonitoringLocationDao.getLocationNameOrNullIfDefault(node);
+            location = MonitoringLocationUtils.getLocationNameOrNullIfDefault(node);
         }
 
         final OnmsPathOutage out = pathOutageDao.get(nodeId);
