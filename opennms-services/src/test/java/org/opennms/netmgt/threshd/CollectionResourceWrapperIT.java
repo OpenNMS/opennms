@@ -500,7 +500,7 @@ public class CollectionResourceWrapperIT {
         String attributeId = "node[1].resourceType[node].instance[null].metric[" + attributeName + "]";
         Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
         BigInteger initialValue = new BigInteger("300");
-        SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", initialValue);
+        SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", initialValue);
         attributes.put(attribute.getName(), attribute);
 
         // Get counter value - first time
@@ -512,7 +512,7 @@ public class CollectionResourceWrapperIT {
         Assert.assertTrue(wrapper.getAttributeValue(attributeName).isNaN());
 
         // Increase counter
-        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", new BigInteger("600"));
+        attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", new BigInteger("600"));
         attributes.put(attribute.getName(), attribute);
         wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime() + 300000));
         Assert.assertFalse(CollectionResourceWrapper.s_cache.get(attributeId).getValue().isNaN());
@@ -520,7 +520,7 @@ public class CollectionResourceWrapperIT {
         Assert.assertEquals(Double.valueOf(1.0), wrapper.getAttributeValue(attributeName)); // 600 - 300 / 300 = 1.0
 
         // Increase counter again
-        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", new BigInteger("900"));
+        attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", new BigInteger("900"));
         attributes.put(attribute.getName(), attribute);
         wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime() + 600000));
         Assert.assertFalse(CollectionResourceWrapper.s_cache.get(attributeId).getValue().isNaN());
@@ -528,14 +528,14 @@ public class CollectionResourceWrapperIT {
         Assert.assertEquals(Double.valueOf(1.0), wrapper.getAttributeValue(attributeName)); // 900 - 600 / 300 = 1.0
 
         // Emulate a sysUpTime restart
-        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", new BigInteger("60"));
+        attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", new BigInteger("60"));
         attributes.put(attribute.getName(), attribute);
         wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime() + 900000));
         wrapper.setCounterReset(true);
         Assert.assertTrue(wrapper.getAttributeValue(attributeName).isNaN());
 
         // Increase counter again
-        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", new BigInteger("120"));
+        attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", new BigInteger("120"));
         attributes.put(attribute.getName(), attribute);
         wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime() + 1200000));
         Assert.assertEquals(Double.valueOf(0.2), wrapper.getAttributeValue(attributeName)); // 120 - 60 / 300 = 0.2
