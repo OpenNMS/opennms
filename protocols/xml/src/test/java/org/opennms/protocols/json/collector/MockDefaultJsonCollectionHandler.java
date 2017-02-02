@@ -31,7 +31,7 @@ package org.opennms.protocols.json.collector;
 import net.sf.json.JSONObject;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.protocols.xml.collector.XmlResourceType;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlResourceUtils;
 
@@ -60,12 +60,9 @@ public class MockDefaultJsonCollectionHandler extends DefaultJsonCollectionHandl
         return unformattedUrl.replace("{ipaddr}", "127.0.0.1");
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#getXmlResourceType(org.opennms.netmgt.collectd.CollectionAgent, java.lang.String)
-     */
     @Override
-    protected XmlResourceType getXmlResourceType(CollectionAgent agent, String resourceType) {
-        return XmlResourceUtils.getXmlResourceType(agent, resourceType);
+    protected ResourceType getResourceType(String resourceType) {
+        return XmlResourceUtils.getResourceType(resourceType);
     }
 }
 

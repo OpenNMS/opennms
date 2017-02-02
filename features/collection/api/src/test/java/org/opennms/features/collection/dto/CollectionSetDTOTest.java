@@ -71,6 +71,7 @@ public class CollectionSetDTOTest extends XmlTestNoCastor<CollectionSetDTO> {
         when(rt.getPersistenceSelectorStrategy().getClazz()).thenReturn(MockPersistenceSelectorStrategy.class.getCanonicalName());
 
         GenericTypeResource genericTypeResource = new GenericTypeResource(nodeLevelResource, rt, "idx");
+        genericTypeResource.setTimestamp(new Date(0));
         ResourceTypeMapper.getInstance().setResourceTypeMapper((name) -> rt);
 
         // For complete coverage make sure that there is at least one attribute
@@ -101,7 +102,7 @@ public class CollectionSetDTOTest extends XmlTestNoCastor<CollectionSetDTO> {
                 "      <string-attribute group=\"mib2-X-interfaces\" name=\"ifDescr\" type=\"string\" value=\"LAN\"/>\n" +
                 "   </collection-resource>\n" +
                 "   <collection-resource>\n" +
-                "      <generic-type-resource name=\"Charles\" instance=\"idx\">\n" +
+                "      <generic-type-resource name=\"Charles\" instance=\"idx\" timestamp=\"" + StringUtils.iso8601OffsetString(new Date(0), ZoneId.systemDefault(), ChronoUnit.SECONDS) + "\">\n" +
                 "         <node-level-resource node-id=\"1\"/>\n" +
                 "      </generic-type-resource>\n" +
                 "      <numeric-attribute group=\"net-snmp-disk\" name=\"ns-dskTotal\" type=\"gauge\" identifier=\"some-oid\" value=\"1024\"/>\n" +

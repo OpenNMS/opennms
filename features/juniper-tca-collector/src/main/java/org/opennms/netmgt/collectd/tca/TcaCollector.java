@@ -31,7 +31,6 @@ package org.opennms.netmgt.collectd.tca;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Date;
 import java.util.Map;
 
 import org.opennms.core.spring.BeanUtils;
@@ -44,6 +43,7 @@ import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -64,6 +64,8 @@ public class TcaCollector implements ServiceCollector {
 	private TcaDataCollectionConfigDao m_configDao;
 
 	private ResourceStorageDao m_resourceStorageDao;
+
+    private ResourceTypesDao m_resourceTypesDao;
 
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.ServiceCollector#initialize(java.util.Map)
@@ -87,6 +89,10 @@ public class TcaCollector implements ServiceCollector {
 
 		if (m_resourceStorageDao == null) {
 		    m_resourceStorageDao = BeanUtils.getBean("daoContext", "resourceStorageDao", ResourceStorageDao.class);
+		}
+
+		if (m_resourceTypesDao == null) {
+		    m_resourceTypesDao = BeanUtils.getBean("daoContext", "resourceTypesDao", ResourceTypesDao.class);
 		}
 
 		// If the RRD file repository directory does NOT already exist, create it.
@@ -120,7 +126,7 @@ public class TcaCollector implements ServiceCollector {
 	 */
 	@Override
 	public void release(CollectionAgent agent) {
-		LOG.debug("release: realeasing TCA collection for agent {}", agent);
+		LOG.debug("release: releasing TCA collection for agent {}", agent);
 	}
 
 	/* (non-Javadoc)
@@ -136,11 +142,10 @@ public class TcaCollector implements ServiceCollector {
 			if (collectionName == null) {
 				throw new CollectionException("Parameter collection is required for the TCA Collector!");
 			}
-			TcaCollectionSet collectionSet = new TcaCollectionSet((SnmpCollectionAgent)agent, getRrdRepository(collectionName), m_resourceStorageDao);
-			collectionSet.setCollectionTimestamp(new Date());
-			collectionSet.collect();
-			return collectionSet;
+			TcaCollectionHandler collectionHandler = new TcaCollectionHandler((SnmpCollectionAgent)agent, getRrdRepository(collectionName), m_resourceStorageDao, m_resourceTypesDao);
+			return collectionHandler.collect();
 		} catch (Throwable t) {
+		    LOG.error("Unexpected error during node TCA collection for: {}", agent.getHostAddress(), t);
 			throw new CollectionException("Unexpected error during node TCA collection for: " + agent.getHostAddress() + ": " + t, t);
 		}
 	}
@@ -178,5 +183,9 @@ public class TcaCollector implements ServiceCollector {
 
     public void setResourceStorageDao(ResourceStorageDao resourceStorageDao) {
         m_resourceStorageDao = resourceStorageDao;
+    }
+
+    public void setResourceTypesDao(ResourceTypesDao resourceTypesDao) {
+        m_resourceTypesDao = resourceTypesDao;
     }
 }

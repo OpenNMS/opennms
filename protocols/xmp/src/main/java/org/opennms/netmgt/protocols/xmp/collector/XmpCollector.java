@@ -63,7 +63,6 @@ package org.opennms.netmgt.protocols.xmp.collector;
 
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -73,13 +72,22 @@ import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpMessage;
 import org.krupczak.xmp.XmpSession;
 import org.krupczak.xmp.XmpVar;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
-
-import org.opennms.netmgt.collection.api.AttributeGroup;
-import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.CollectionStatus;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
+import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.collection.support.builder.Resource;
+import org.opennms.netmgt.config.api.ResourceTypesDao;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.config.xmpDataCollection.Group;
 import org.opennms.netmgt.config.xmpDataCollection.MibObj;
@@ -106,6 +114,8 @@ public class XmpCollector implements ServiceCollector {
     Set<CollectionAgent> setOfNodes;
     SocketOpts sockopts;
     String authenUser;
+
+    private ResourceTypesDao m_resourceTypesDao;
 
     /* constructors  ************************************* */
     /**
@@ -136,31 +146,25 @@ public class XmpCollector implements ServiceCollector {
     // and indicate if data should be persisted 
 
     private boolean handleScalarQuery(String groupName,
-            XmpCollectionSet collectionSet,
+            CollectionAgent agent,
+            CollectionSetBuilder collectionSetBuilder,
             long oldUptime,
             XmpSession session, 
-            XmpCollectionResource scalarResource, 
+            NodeLevelResource nodeLevelResource,
             XmpVar[] queryVars)
     {
         XmpMessage reply;
-        AttributeGroupType agt;
-        AttributeGroup ag;
         long newUptime;
         int i;
         XmpVar[] vars;
-        XmpCollectionAttribute aVar;
-        XmpCollectionAttributeType attribType;
 
         //log().debug("sending scalar query");
         reply = session.queryVars(queryVars);
 
         if (reply == null) {
-            LOG.warn("collect: query to {} failed, {}", collectionSet.getCollectionAgent(), Xmp.errorStatusToString(session.getErrorStatus()));
+            LOG.warn("collect: query to {} failed, {}", agent, Xmp.errorStatusToString(session.getErrorStatus()));
             return false;
         }
-
-        agt = new AttributeGroupType(groupName, AttributeGroupType.IF_TYPE_IGNORE);
-        ag = new AttributeGroup(scalarResource,agt);
 
         // for each variable in reply, store it in collectionSet
         // hack alert: somewhere in some query, we asked for
@@ -181,24 +185,18 @@ public class XmpCollector implements ServiceCollector {
 
             // put in collectionSet via this attribute group
 
-            attribType = new XmpCollectionAttributeType(vars[i],agt);
-            aVar = new XmpCollectionAttribute(scalarResource,
-                                              attribType,
-                                              vars[i]);
-
-            ag.addAttribute(aVar);
+            final XmpVar xmpVar = vars[i];
+            collectionSetBuilder.withAttribute(nodeLevelResource, groupName, xmpVar.getObjName(), xmpVar.getValue(), getType(xmpVar));
         }
 
         if (newUptime > oldUptime) { 
-            collectionSet.ignorePersistFalse();
+            collectionSetBuilder.disableCounterPersistence(false);
         }
 
         if (newUptime > 0) {
             // save the agent's sysUpTime in the CollectionAgent
-            collectionSet.getCollectionAgent().setSavedSysUpTime(newUptime);
+            agent.setSavedSysUpTime(newUptime);
         }
-
-        scalarResource.addAttributeGroup(ag);
 
         return true;
 
@@ -208,10 +206,12 @@ public class XmpCollector implements ServiceCollector {
     // collection resource
     private boolean handleTableQuery(String groupName, 
             String resourceType,
-            XmpCollectionSet collectionSet,
+            CollectionAgent agent,
+            CollectionSetBuilder collectionSetBuilder,
             String[] tableInfo,
-            XmpSession session, 
-            XmpVar[] queryVars)
+            XmpSession session,
+            NodeLevelResource nodeLevelResource,
+            XmpVar[] queryVars) throws CollectionException
     {
         int numColumns,numRows;
         XmpMessage reply;
@@ -240,7 +240,7 @@ public class XmpCollector implements ServiceCollector {
         reply = session.queryTableVars(tableInfo,0,queryVars);
 
         if (reply == null) {
-            LOG.warn("collect: query to {} failed, {}", collectionSet.getCollectionAgent(), Xmp.errorStatusToString(session.getErrorStatus()));
+            LOG.warn("collect: query to {} failed, {}", agent, Xmp.errorStatusToString(session.getErrorStatus()));
             return false;
         }
 
@@ -259,10 +259,6 @@ public class XmpCollector implements ServiceCollector {
         LOG.info("query returned valid table data for {} numRows={} numColumns={}", groupName, numRows, numColumns);
 
         for (i=0; i<numRows; i++) {
-
-            XmpCollectionResource rowResource;
-            AttributeGroup ag;
-            AttributeGroupType agt;
             String rowInstance;
 
             // determine instance for this row
@@ -278,33 +274,26 @@ public class XmpCollector implements ServiceCollector {
             // instead of using '*' for the nodeTypeName, use the
             // table name so that the proper rrd file is spec'd
 
-            if (targetInstance != null)
-                rowResource = new XmpCollectionResource(collectionSet.getCollectionAgent(),resourceType, tableInfo[1],targetInstance);
-            else 
-                rowResource = new XmpCollectionResource(collectionSet.getCollectionAgent(),resourceType, tableInfo[1],rowInstance);
+            final String instanceName;
+            if (targetInstance != null) {
+                instanceName = targetInstance;
+            } else {
+                instanceName = rowInstance;
+            }
 
-            agt = new AttributeGroupType(groupName, AttributeGroupType.IF_TYPE_ALL);
-            ag = new AttributeGroup(rowResource,agt);
+            // node type can be "node" for scalars or
+            // "if" for network interface resources and
+            // "*" for all other resource types
+            final String nodeTypeName = tableInfo[1];
+
+            final Resource resource = getResource(nodeLevelResource, nodeTypeName, resourceType, instanceName);
 
             LOG.debug("queryTable instance={}", rowInstance);
 
             for (j=0; j<numColumns; j++) {
-
-                XmpCollectionAttributeType attribType = new XmpCollectionAttributeType(vars[i*numColumns+j],agt);
-
-                XmpCollectionAttribute aVar = 
-                    new XmpCollectionAttribute(rowResource,
-                                               attribType,
-                                               vars[i*numColumns+j]);
-
-                ag.addAttribute(aVar);
-
+                final XmpVar var = vars[i*numColumns+j];
+                collectionSetBuilder.withAttribute(resource, groupName, var.getObjName(), var.getValue(), getType(var));
             } /* for each column */
-
-            rowResource.addAttributeGroup(ag);
-            collectionSet.addResource(rowResource);
-            LOG.info("query table data adding row resource {}", rowResource);
-
         } /* for each row returned */
 
         return true;
@@ -352,6 +341,10 @@ public class XmpCollector implements ServiceCollector {
         } catch (Throwable e) {
             LOG.error("initialize: config factory failed to initialize");
             throw new UndeclaredThrowableException(e);
+        }
+
+        if (m_resourceTypesDao == null) {
+            m_resourceTypesDao = BeanUtils.getBean("daoContext", "resourceTypesDao", ResourceTypesDao.class);
         }
 
         // initialize an RRD repository with various parameters 
@@ -460,17 +453,17 @@ public class XmpCollector implements ServiceCollector {
      *       collection succeeds.  Collect is called once per agent per
      *       collection cycle.  Parameters are a map of String Key/String
      *       Value passed in.  Keys come from collectd config
+     * @throws CollectionException
      */
     @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, 
-            Map<String, Object> parameters)
+            Map<String, Object> parameters) throws CollectionException
     {
-        XmpCollectionSet collectionSet;
+        CollectionSetBuilder collectionSetBuilder;
         XmpSession session;
         long oldUptime;
         int i;
         XmpCollection collection;
-        XmpCollectionResource scalarResource;
 
         LOG.debug("collect agent {}",agent);
 
@@ -517,14 +510,12 @@ public class XmpCollector implements ServiceCollector {
         LOG.debug("XmpCollector: collect {} from {}", collectionName, agent);
 
         // get/create our collections set
-        collectionSet = new XmpCollectionSet(agent);
-        collectionSet.setCollectionTimestamp(new Date());
-        collectionSet.setStatusFailed(); // default
-        collectionSet.ignorePersistTrue(); // default not to persist
+        collectionSetBuilder = new CollectionSetBuilder(agent)
+                .withStatus(CollectionStatus.FAILED) // default to failed
+                .disableCounterPersistence(true); // don't persist counters by default
 
         // default collection resource for putting scalars in
-        scalarResource = new XmpCollectionResource(agent,null,"node",null);
-        collectionSet.addResource(scalarResource);
+        final NodeLevelResource nodeLevelResource = new NodeLevelResource(agent.getNodeId());
 
         // get the collection, again, from the data config file factory
         // because it could have changed; its not necessarily re-parsed,
@@ -534,7 +525,7 @@ public class XmpCollector implements ServiceCollector {
         collection = XmpCollectionFactory.getInstance().getXmpCollection(collectionName);
         if (collection == null) {
             LOG.warn("collect found no matching collection for {}", agent);
-            return collectionSet;
+            return collectionSetBuilder.build();
         }
 
         oldUptime = agent.getSavedSysUpTime();
@@ -550,7 +541,7 @@ public class XmpCollector implements ServiceCollector {
 
         if (session.isClosed()) {
             LOG.warn("collect unable to open XMP session with {}", agent);
-            return collectionSet;
+            return collectionSetBuilder.build();
         }
 
         LOG.debug("collect: successfully opened XMP session with{}", agent);
@@ -589,24 +580,27 @@ public class XmpCollector implements ServiceCollector {
                 // tabular query               
                 if (handleTableQuery(group.getName(),
                                      group.getResourceType(),
-                                     collectionSet,
+                                     agent,
+                                     collectionSetBuilder,
                                      tableInfo,
                                      session,
+                                     nodeLevelResource,
                                      vars) == false) {
                     session.closeSession();
-                    return collectionSet;
+                    return collectionSetBuilder.build();
                 }
             }
             else {
                 // scalar query
                 if (handleScalarQuery(group.getName(),
-                                      collectionSet,
+                                      agent,
+                                      collectionSetBuilder,
                                       oldUptime,
                                       session,
-                                      scalarResource,
+                                      nodeLevelResource,
                                       vars) == false) {
                     session.closeSession();
-                    return collectionSet;
+                    return collectionSetBuilder.build();
                 }
             }
 
@@ -623,11 +617,11 @@ public class XmpCollector implements ServiceCollector {
         // WARNING, EACH COLLECTION SHOULD HAVE A SCALAR QUERY THAT
         // INCLUDES Core.sysUpTime 
 
-        collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
+        collectionSetBuilder.withStatus(CollectionStatus.SUCCEEDED);
 
         LOG.debug("XMP collect finished for {}, uptime for {} is {}", collectionName, agent, agent.getSavedSysUpTime());
 
-        return collectionSet;
+        return collectionSetBuilder.build();
     }
 
     /** {@inheritDoc} */
@@ -644,4 +638,80 @@ public class XmpCollector implements ServiceCollector {
         return XmpCollectionFactory.getInstance().getRrdRepository(collectionName);
     }
 
+    private static AttributeType getType(XmpVar var) {
+        switch (var.getSyntax()) {
+        case Xmp.SYNTAX_COUNTER:
+            return AttributeType.COUNTER;
+        case Xmp.SYNTAX_GAUGE:
+        case Xmp.SYNTAX_INTEGER:
+        case Xmp.SYNTAX_UNSIGNEDINTEGER:
+        case Xmp.SYNTAX_FLOATINGPOINT:
+            return AttributeType.GAUGE;
+        case Xmp.SYNTAX_IPV4ADDRESS:
+        case Xmp.SYNTAX_IPV6ADDRESS:
+        case Xmp.SYNTAX_DATETIME:
+        case Xmp.SYNTAX_BOOLEAN:
+        case Xmp.SYNTAX_MACADDRESS:
+        case Xmp.SYNTAX_PHYSADDRESS:
+        case Xmp.SYNTAX_DISPLAYSTRING:
+        case Xmp.SYNTAX_BINARYSTRING:
+        case Xmp.SYNTAX_EXTENDEDBOOLEAN:
+        case Xmp.SYNTAX_UNSUPPORTEDVAR:
+            return AttributeType.STRING;
+            // should not ever see these
+        case Xmp.SYNTAX_NULLSYNTAX:
+        case Xmp.SYNTAX_TABLE:
+        default:
+            return AttributeType.STRING;
+        } /* Xmp syntax/type */
+    }
+
+    protected static String sanitizeInstance(String instance) {
+        // filter the instance so it does not have slashes (/) nor colons
+        // in it as they can munge our rrd file layout
+
+        // filter so there are not spaces either just so that
+        // it makes directory structures less annoying to deal with
+        // rdk - 9/11/2009
+
+        String instanceValue = instance.replace('/','_');
+        instanceValue = instanceValue.replace('\\','_');
+        instanceValue = instanceValue.replace(':','_');
+        instanceValue = instanceValue.replace(' ','_');
+        return instanceValue;
+    }
+
+    protected Resource getResource(NodeLevelResource nodeLevelResource, String nodeTypeName, String resourceType, String instance) throws CollectionException {
+        if (CollectionResource.RESOURCE_TYPE_NODE.equalsIgnoreCase(nodeTypeName)) {
+            return nodeLevelResource;
+        }
+
+        final String effectiveResourceType;
+        if ((resourceType == null) || (resourceType.length() == 0)) {
+            effectiveResourceType = null;
+        } else {
+            effectiveResourceType = resourceType;
+        }
+
+        final String effectiveInstance;
+        if (instance != null) {
+            effectiveInstance = XmpCollector.sanitizeInstance(instance);
+        } else {
+            effectiveInstance = null;
+        }
+
+        if (effectiveResourceType != null) {
+            final ResourceType resourceTypeDef = m_resourceTypesDao.getResourceTypeByName(effectiveResourceType);
+            if (resourceType == null) {
+                throw new CollectionException("No resource type found with name '" + effectiveResourceType + "'.");
+            }
+            return new GenericTypeResource(nodeLevelResource, resourceTypeDef, effectiveInstance);
+        } else {
+            return new InterfaceLevelResource(nodeLevelResource, effectiveInstance);
+        }
+    }
+
+    public void setResourceTypesDao(ResourceTypesDao resourceTypesDao) {
+        m_resourceTypesDao = resourceTypesDao;
+    }
 } /* class XmpCollector */

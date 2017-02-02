@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collection.dto;
 
+import java.util.Date;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -44,10 +45,14 @@ public class NodeLevelResourceDTO {
     @XmlAttribute(name = "node-id")
     private int nodeId;
 
+    @XmlAttribute(name = "timestamp")
+    private Date timestamp;
+
     public NodeLevelResourceDTO() { }
 
     public NodeLevelResourceDTO(NodeLevelResource resource) {
         nodeId = resource.getNodeId();
+        timestamp = resource.getTimestamp();
     }
 
     @Override
@@ -57,7 +62,7 @@ public class NodeLevelResourceDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(nodeId);
+        return Objects.hash(nodeId, timestamp);
     }
 
     @Override
@@ -70,10 +75,13 @@ public class NodeLevelResourceDTO {
             return false;
         }
         NodeLevelResourceDTO other = (NodeLevelResourceDTO) obj;
-        return Objects.equals(this.nodeId, other.nodeId);
+        return Objects.equals(this.nodeId, other.nodeId)
+                && Objects.equals(this.timestamp, other.timestamp);
     }
 
     public NodeLevelResource toResource() {
-        return new NodeLevelResource(nodeId);
+        final NodeLevelResource resource = new NodeLevelResource(nodeId);
+        resource.setTimestamp(timestamp);
+        return resource;
     }
 }

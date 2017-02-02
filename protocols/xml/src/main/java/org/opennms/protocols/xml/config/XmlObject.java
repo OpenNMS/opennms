@@ -56,7 +56,7 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
     private String m_name;
 
     /** The data type. */
-    @XmlAttribute(name="type", required=true)    
+    @XmlAttribute(name="type", required=true)
     private AttributeType m_dataType;
 
     /** The XPath. */
@@ -117,7 +117,6 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
     public void setDataType(AttributeType dataType) {
         m_dataType = dataType;
     }
-
 
     /**
      * Gets the XPath.
