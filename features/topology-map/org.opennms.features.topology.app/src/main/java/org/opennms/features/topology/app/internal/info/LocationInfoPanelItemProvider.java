@@ -32,36 +32,38 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.opennms.features.topology.api.geo.GeocoderConfig;
-import org.opennms.features.geocoder.GeocoderService;
+import org.opennms.features.geolocation.api.AddressInfo;
+import org.opennms.features.geolocation.api.GeolocationConfiguration;
+import org.opennms.features.geolocation.api.GeolocationInfo;
+import org.opennms.features.geolocation.api.GeolocationQueryBuilder;
+import org.opennms.features.geolocation.api.GeolocationService;
+import org.opennms.features.geolocation.api.StatusCalculationStrategy;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.info.InfoPanelItemProvider;
 import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
 import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.app.internal.ui.geographical.Coordinates;
 import org.opennms.features.topology.app.internal.ui.geographical.LocationComponent;
 import org.opennms.features.topology.app.internal.ui.geographical.LocationConfiguration;
 import org.opennms.features.topology.app.internal.ui.geographical.Marker;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsGeolocation;
 
 import com.google.common.base.Strings;
 import com.vaadin.server.Sizeable;
 
 public class LocationInfoPanelItemProvider implements InfoPanelItemProvider {
 
-    private final GeocoderService geocoderService;
-    private final NodeDao nodeDao;
+    private final GeolocationService geolocationService;
+
+    private final GeolocationConfiguration geolocationConfiguration;
+
     private final boolean resolveCoordinatesFromAddressString;
 
-    public LocationInfoPanelItemProvider(NodeDao nodeDao, GeocoderService geocoderService, boolean resolveCoordinatesFromAddressString) {
-        this.nodeDao = Objects.requireNonNull(nodeDao);
-        this.geocoderService = Objects.requireNonNull(geocoderService);
+    public LocationInfoPanelItemProvider(GeolocationService geolocationService, GeolocationConfiguration geolocationConfiguration, boolean resolveCoordinatesFromAddressString) {
+        this.geolocationService = geolocationService;
+        this.geolocationConfiguration = geolocationConfiguration;
         this.resolveCoordinatesFromAddressString = resolveCoordinatesFromAddressString;
     }
 
@@ -75,24 +77,30 @@ public class LocationInfoPanelItemProvider implements InfoPanelItemProvider {
         if (nodeIds.isEmpty()) {
             return Collections.emptyList();
         }
-        final CoordinateResolver.Result result = new CoordinateResolver(geocoderService, nodeDao, resolveCoordinatesFromAddressString).resolve(nodeIds);
-        final List<Marker> markers = vertices.stream()
-                .filter(v -> result.getCoordinates(v.getNodeID()) != null)
-                .map(v -> {
-                    Coordinates coordinates = result.getCoordinates(v.getNodeID());
-                    OnmsGeolocation geolocation = result.getGeoLocation(v.getNodeID());
+        final List<GeolocationInfo> locations = geolocationService.getLocations(new GeolocationQueryBuilder()
+                .withResolveMissingCoordinatesFromAddressString(resolveCoordinatesFromAddressString)
+                .withNodeIds(nodeIds)
+                .withStatusCalculationStrategy(StatusCalculationStrategy.None)
+                .build());
+        final List<Marker> markers = locations.stream()
+                .filter(locationInfo -> locationInfo.getCoordinates() != null)
+                .map(locationInfo -> {
+                    final Vertex vertex = vertices.stream()
+                            .filter(v -> v.getNodeID() != null && locationInfo.getNodeInfo().getNodeId() == v.getNodeID())
+                            .findFirst()
+                            .get();
                     return new Marker(
-                            coordinates,
-                            createTooltip(v, coordinates, geolocation),
-                            container.getSelectionManager().isVertexRefSelected(v));
+                            locationInfo.getCoordinates(),
+                            createTooltip(vertex, locationInfo.getAddressInfo()),
+                            container.getSelectionManager().isVertexRefSelected(vertex));
                 }).collect(Collectors.toList());
 
         if (!markers.isEmpty()) {
             final LocationConfiguration config = new LocationConfiguration()
-                    .withTileLayer(GeocoderConfig.getTileServerUrl())
+                    .withTileLayer(geolocationConfiguration.getTileServerUrl())
                     .withMarker(markers)
                     .withInitialZoom(10)
-                    .withLayerOptions(GeocoderConfig.getOptions());
+                    .withLayerOptions(geolocationConfiguration.getOptions());
 
             final LocationComponent locationComponent = new LocationComponent(config, "mapId-" + getClass().getSimpleName().toLowerCase());
             locationComponent.setWidth(300, Sizeable.Unit.PIXELS);
@@ -107,18 +115,17 @@ public class LocationInfoPanelItemProvider implements InfoPanelItemProvider {
         return Collections.emptyList();
     }
 
-    private String createTooltip(Vertex vertex, Coordinates coordinates, OnmsGeolocation geolocation) {
+    private String createTooltip(Vertex vertex, AddressInfo addressInfo) {
         StringBuilder tooltip = new StringBuilder();
         tooltip.append(String.format("<b>%s</b>", vertex.getLabel()));
 
-        if (geolocation != null) {
-            append(tooltip, "City", geolocation.getCity());
-            append(tooltip, "Zip", geolocation.getZip());
-            append(tooltip, "Address", geolocation.getAddress1());
-            append(tooltip, "", geolocation.getAddress2());
-            append(tooltip, "State", geolocation.getState());
-            append(tooltip, "Country", geolocation.getCountry());
-
+        if (addressInfo != null) {
+            append(tooltip, "City", addressInfo.getCity());
+            append(tooltip, "Zip", addressInfo.getZip());
+            append(tooltip, "Address", addressInfo.getAddress1());
+            append(tooltip, "", addressInfo.getAddress2());
+            append(tooltip, "State", addressInfo.getState());
+            append(tooltip, "Country", addressInfo.getCountry());
         }
         return tooltip.toString();
     }

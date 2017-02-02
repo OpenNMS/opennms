@@ -16,7 +16,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </cm:property-placeholder>
 
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
-    <reference id="geocoderService" interface="org.opennms.features.geocoder.GeocoderService" availability="mandatory" />
+    <reference id="geolocationService" interface="org.opennms.features.geolocation.api.GeolocationService" availability="mandatory" />
+    <reference id="geolocationConfiguration" interface="org.opennms.features.geolocation.api.GeolocationConfiguration" availability="mandatory" />
     <reference id="layoutDao" interface="org.opennms.netmgt.topology.persistence.api.LayoutDao" availability="mandatory" />
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
@@ -456,9 +457,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </service>
     <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
         <bean class="org.opennms.features.topology.app.internal.info.LocationInfoPanelItemProvider">
-            <argument ref="nodeDao" />
-            <argument ref="geocoderService" />
-            <argument value="${resolveCoordinatesFromAddressString}"/>
+            <argument ref="geolocationService" />
+            <argument ref="geolocationConfiguration" />
+            <argument value="${resolveCoordinatesFromAddressString}" />
         </bean>
     </service>
 </blueprint>

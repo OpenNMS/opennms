@@ -40,7 +40,6 @@ import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.geocoder.TemporaryGeocoderException;
-import org.opennms.features.topology.api.geo.GeoAssetProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -71,6 +70,7 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
     private GeocoderService m_geocoderService;
     private TransactionOperations m_transaction;
     private Boolean m_aclsEnabled = false;
+    private NodeMapConfiguration configuration;
 
     private Map<Integer,NodeEntry> m_activeNodes = new HashMap<>();
 
@@ -300,5 +300,11 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
 
     public void setMaxClusterRadius(final Integer radius) {
         getState().maxClusterRadius = radius;
+    }
+
+    public void setConfiguration(NodeMapConfiguration configuration) {
+        this.configuration = configuration;
+        getState().tileServerUrl = configuration.getTileServerUrl();
+        getState().tileLayerOptions = configuration.getOptions();
     }
 }

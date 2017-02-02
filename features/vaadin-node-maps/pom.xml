@@ -106,6 +106,7 @@
 						<bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
 						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.google/${project.version}</bundle>
 						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>
+						<bundle>mvn:org.opennms.features.geolocation/org.opennms.features.geolocation.api/${project.version}</bundle>
 					</bundles>
 					<features>
 						<feature>opennms-core-web</feature>
@@ -194,6 +195,11 @@
 		<dependency>
 			<groupId>org.opennms.features.geocoder</groupId>
 			<artifactId>org.opennms.features.geocoder.api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms.features.geolocation</groupId>
+			<artifactId>org.opennms.features.geolocation.api</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.discotools.gwt.leaflet</groupId>

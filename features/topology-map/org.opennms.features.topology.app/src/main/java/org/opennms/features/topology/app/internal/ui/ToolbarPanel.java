@@ -243,6 +243,7 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
 
         // Refresh Button
         Button refreshButton = new Button();
+        refreshButton.setId("refreshNow");
         refreshButton.setIcon(FontAwesome.REFRESH);
         refreshButton.setDescription("Refresh Now");
         refreshButton.addClickListener((event) -> controller.refreshUI());
