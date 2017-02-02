@@ -761,7 +761,7 @@ public class EventToIndex implements AutoCloseable {
 
 
 		if (alarmValues.get("alarmid")==null){
-			LOG.error("No alarmid param - cannot create alarm elastic search record from event content:"+ event.toString());
+			LOG.error("No alarmid param - cannot create alarm Elasticsearch record from event content:"+ event.toString());
 		} else{
 			String id = alarmValues.get("alarmid").toString();
 

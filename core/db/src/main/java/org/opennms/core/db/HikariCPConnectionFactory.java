@@ -205,7 +205,19 @@ public class HikariCPConnectionFactory extends BaseConnectionFactory {
      */
     @Override
     public void setIdleTimeout(final int idleTimeout) {
-        m_pool.setIdleTimeout(idleTimeout);
+        m_pool.setIdleTimeout(idleTimeout * 1000L);
+    }
+
+    /**
+     * Set the maximum lifetime of the connections in the pool (in milliseconds)
+     * which forces occasional connection recycling. This will probably only be 
+     * used inside tests although it might be a good idea to do it in production
+     * as well to reset server-side query caches and metrics.
+     * 
+     * @param maxLifetimeMs
+     */
+    public void setMaxLifetime(final int maxLifetimeMs) {
+        m_pool.setMaxLifetime(maxLifetimeMs);
     }
 
     /* (non-Javadoc)

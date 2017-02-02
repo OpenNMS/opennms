@@ -138,7 +138,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
       <includes>
-        <!-- adds httpasyncclient-osgi to /lib class path - only used by Elastic Search OSGi plugin -->
+        <!-- adds httpasyncclient-osgi to /lib class path - only used by Elasticsearch OSGi plugin -->
         <include>org.apache.httpcomponents:httpasyncclient-osgi:jar:${httpasyncclientVersion}</include>
       </includes>
     </dependencySet>
