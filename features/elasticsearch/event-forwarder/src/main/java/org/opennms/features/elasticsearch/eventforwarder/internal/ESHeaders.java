@@ -9,6 +9,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.component.bean.BeanInvocation;
 import org.apache.camel.component.elasticsearch.ElasticsearchConfiguration;
+import org.opennms.core.camel.IndexNameFunction;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;

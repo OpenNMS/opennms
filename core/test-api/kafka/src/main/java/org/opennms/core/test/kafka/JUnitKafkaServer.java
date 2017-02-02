@@ -63,6 +63,12 @@ import scala.Option;
 import scala.collection.JavaConversions;
 import scala.collection.mutable.Buffer;
 
+/**
+ * This class starts up an embedded Kafka server for use in integration
+ * tests.
+ * 
+ * @author Seth
+ */
 public class JUnitKafkaServer extends ExternalResource {
     private static final Logger LOG = LoggerFactory.getLogger(JUnitKafkaServer.class);
 
