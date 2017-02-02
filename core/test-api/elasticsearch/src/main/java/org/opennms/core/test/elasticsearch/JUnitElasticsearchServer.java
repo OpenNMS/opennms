@@ -41,7 +41,7 @@ import org.elasticsearch.node.NodeBuilder;
 import org.junit.rules.ExternalResource;
 
 /**
- * This class starts up an embedded Elasticsearch node for use in unit
+ * This class starts up an embedded Elasticsearch node for use in integration
  * tests.
  * 
  * @author Seth
