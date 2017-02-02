@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collection.support;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.collection.api.AttributeGroup;
@@ -55,7 +55,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCollectionResource.class);
 
     protected final CollectionAgent m_agent;
-    private final Map<AttributeGroupType, AttributeGroup> m_attributeGroups = new HashMap<AttributeGroupType, AttributeGroup>();
+    private final Map<AttributeGroupType, AttributeGroup> m_attributeGroups = new LinkedHashMap<AttributeGroupType, AttributeGroup>();
     
     /**
      * <p>Constructor for AbstractCollectionResource.</p>

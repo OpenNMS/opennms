@@ -64,7 +64,7 @@ public class CollectionAgentDTOTest extends XmlTestNoCastor<CollectionAgentDTO> 
             {
                 collectionAgentDTO,
                 "<agent type=\"42\" address=\"192.168.1.1\" store-by-fs=\"true\" node-id=\"99\" node-label=\"switch\" foreign-source=\"fs\" foreign-id=\"fid\" location=\"HQ\" storage-resource-path=\"tmp/foo\" sys-object-id=\".1.3.6\" sys-up-time=\"149\">\n" +
-                "   <attribute key=\"k1\" value=\"v1\"/>\n" + 
+                "   <attribute key=\"k1\"><![CDATA[v1]]></attribute>\n" +
                 "</agent>"
             }
         });

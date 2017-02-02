@@ -50,7 +50,7 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
@@ -249,7 +249,7 @@ public class WSManCollectorTest {
 
         CollectionSet collectionSet = collector.collect(agent, null, collectionParams);
 
-        assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
         assertEquals(0, CollectionSetUtils.getAttributesByName(collectionSet).size());
     }
 

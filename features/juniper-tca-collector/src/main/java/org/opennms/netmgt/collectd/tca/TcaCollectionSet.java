@@ -40,7 +40,7 @@ import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.support.AbstractCollectionSet;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.ResourcePath;
@@ -79,7 +79,7 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 	public static final String TIMESYNC_STATUS = "timesyncStatus";
 
 	/** The Collection Status. */
-	private int m_status;
+	private CollectionStatus m_status;
 
 	/** The list of SNMP collection resources. */
 	private List<TcaCollectionResource> m_collectionResources;
@@ -101,7 +101,7 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 	 * @param repository the repository
 	 */
 	public TcaCollectionSet(SnmpCollectionAgent agent, RrdRepository repository, ResourceStorageDao resourceStorageDao) {
-		m_status = ServiceCollector.COLLECTION_FAILED;
+		m_status = CollectionStatus.FAILED;
 		m_collectionResources = new ArrayList<TcaCollectionResource>();
 		m_agent = agent;
 		m_repository = repository;
@@ -112,7 +112,7 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 	 * @see org.opennms.netmgt.config.collector.CollectionSet#getStatus()
 	 */
 	@Override
-	public int getStatus() {
+	public CollectionStatus getStatus() {
 		return m_status;
 	}
 
@@ -164,7 +164,7 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 			}
 			process(tracker);
 
-			m_status = ServiceCollector.COLLECTION_SUCCEEDED;
+			m_status = CollectionStatus.SUCCEEDED;
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new CollectionWarning("Collection of node TCA data for interface " + m_agent.getHostAddress() + " interrupted: " + e, e);

@@ -11,6 +11,7 @@
     <name>OpenNMS :: Features :: Minion :: Shell</name>
 
     <modules>
+        <module>collection</module>
         <module>provision</module>
         <module>poller</module>
     </modules>

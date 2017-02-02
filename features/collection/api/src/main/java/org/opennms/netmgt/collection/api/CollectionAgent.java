@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collection.api;
 
-import java.io.File;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.model.ResourcePath;
@@ -50,8 +49,6 @@ public interface CollectionAgent extends NetworkInterface<InetAddress> {
     Boolean isStoreByForeignSource();
     
     /**
-     * JW: FIXME: TODO: What's the difference between getAddress() and getHostAddress()?
-     * 
      * <p>getHostAddress</p>
      *
      * @return a {@link java.lang.String} object.

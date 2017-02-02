@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
-import java.nio.file.Path;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -42,32 +41,23 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 @XmlJavaTypeAdapter(GenericTypeResourceAdapter.class)
-public class GenericTypeResource implements Resource {
+public class GenericTypeResource extends DeferredGenericTypeResource {
 
-    private final NodeLevelResource m_node;
-    private final String m_instance;
     private final ResourceType m_resourceType;
     private final StorageStrategy m_storageStrategy;
     private final PersistenceSelectorStrategy m_persistenceSelectorStrategy;
 
     public GenericTypeResource(NodeLevelResource node, ResourceType resourceType, String instance) {
-        m_node = Objects.requireNonNull(node, "node argument");
-        m_instance = Objects.requireNonNull(instance, "instance argument");
+        super(node, Objects.requireNonNull(resourceType, "resourceType argument").getName(), instance);
         m_resourceType = Objects.requireNonNull(resourceType, "resourceType argument");
-        m_storageStrategy = instantiateStorageStrategy(m_resourceType.getStorageStrategy().getClazz());
-        m_storageStrategy.setParameters(m_resourceType.getStorageStrategy().getParameters());
-        m_persistenceSelectorStrategy = instantiatePersistenceSelector(m_resourceType.getPersistenceSelectorStrategy().getClazz());
-        m_persistenceSelectorStrategy.setParameters(m_resourceType.getPersistenceSelectorStrategy().getParameters());
+        m_storageStrategy = instantiateStorageStrategy(resourceType.getStorageStrategy().getClazz(), resourceType.getName());
+        m_storageStrategy.setParameters(resourceType.getStorageStrategy().getParameters());
+        m_persistenceSelectorStrategy =  instantiatePersistenceSelector(resourceType.getPersistenceSelectorStrategy().getClazz());
+        m_persistenceSelectorStrategy.setParameters(resourceType.getPersistenceSelectorStrategy().getParameters());
     }
 
-    @Override
-    public NodeLevelResource getParent() {
-        return m_node;
-    }
-
-    @Override
-    public String getInstance() {
-        return m_instance;
+    protected static String sanitizeInstance(String instance) {
+        return instance.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_");
     }
 
     public ResourceType getResourceType() {
@@ -79,6 +69,11 @@ public class GenericTypeResource implements Resource {
         return getStorageStrategy().getRelativePathForAttribute(ResourcePath.get(), getStorageStrategy().getResourceNameFromIndex(resource));
     }
 
+    @Override
+    public Resource resolve() {
+        return this;
+    }
+
     public StorageStrategy getStorageStrategy() {
         return m_storageStrategy;
     }
@@ -87,7 +82,7 @@ public class GenericTypeResource implements Resource {
         return m_persistenceSelectorStrategy;
     }
 
-    private StorageStrategy instantiateStorageStrategy(String className) {
+    private StorageStrategy instantiateStorageStrategy(String className, String resourceTypeName) {
         Class<?> cinst;
         try {
             cinst = Class.forName(className);
@@ -96,7 +91,7 @@ public class GenericTypeResource implements Resource {
         }
         try {
             StorageStrategy storageStrategy = (StorageStrategy) cinst.newInstance();
-            storageStrategy.setResourceTypeName(m_resourceType.getName());
+            storageStrategy.setResourceTypeName(resourceTypeName);
             return storageStrategy;
         } catch (InstantiationException e) {
             throw new ObjectRetrievalFailureException(StorageStrategy.class, className, "Could not instantiate", e);
@@ -124,13 +119,13 @@ public class GenericTypeResource implements Resource {
     @Override
     public String toString() {
         return String.format("GenericTypeResource[node=%s, instance=%s, resourceType=%s,"
-                + "storageStrategy=%s, persistenceSelectorStrategy=%s",
-                m_node, m_instance, m_resourceType, m_storageStrategy, m_persistenceSelectorStrategy);
+                + "storageStrategy=%s, persistenceSelectorStrategy=%s]",
+                getParent(), getInstance(), m_resourceType, m_storageStrategy, m_persistenceSelectorStrategy);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_node, m_instance, m_resourceType);
+        return Objects.hash(getParent(), getInstance(), m_resourceType, getTimestamp());
     }
 
     @Override
@@ -143,8 +138,7 @@ public class GenericTypeResource implements Resource {
             return false;
         }
         GenericTypeResource other = (GenericTypeResource) obj;
-        return Objects.equals(this.m_node, other.m_node)
-                && Objects.equals(this.m_instance, other.m_instance)
+        return super.equals(other)
                 && Objects.equals(this.m_resourceType, other.m_resourceType);
     }
 }

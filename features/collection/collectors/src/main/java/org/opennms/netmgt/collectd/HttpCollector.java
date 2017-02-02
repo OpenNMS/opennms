@@ -70,6 +70,7 @@ import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.AttributeType;
@@ -79,8 +80,8 @@ import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.Persister;
-import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.ServiceParameters.ParameterName;
 import org.opennms.netmgt.collection.api.TimeKeeper;
@@ -104,7 +105,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-public class HttpCollector implements ServiceCollector {
+public class HttpCollector extends AbstractLegacyServiceCollector {
 
     private static final Logger LOG = LoggerFactory.getLogger(HttpCollector.class);
 
@@ -144,7 +145,7 @@ public class HttpCollector implements ServiceCollector {
         private final CollectionAgent m_agent;
         private final Map<String, Object> m_parameters;
         private Uri m_uriDef;
-        private int m_status;
+        private CollectionStatus m_status;
         private List<HttpCollectionResource> m_collectionResourceList;
         private Date m_timestamp;
 
@@ -155,7 +156,7 @@ public class HttpCollector implements ServiceCollector {
         public HttpCollectionSet(CollectionAgent agent, Map<String, Object> parameters) {
             m_agent = agent;
             m_parameters = parameters;
-            m_status=ServiceCollector.COLLECTION_SUCCEEDED;
+            m_status=CollectionStatus.SUCCEEDED;
         }
 
         @SuppressWarnings("deprecation")
@@ -167,7 +168,7 @@ public class HttpCollector implements ServiceCollector {
             }
             if (collectionName==null) {
                 LOG.debug("no collection name found in parameters");
-                m_status=ServiceCollector.COLLECTION_FAILED;
+                m_status=CollectionStatus.FAILED;
                 return;
             }
             HttpCollection collection = HttpCollectionConfigFactory.getInstance().getHttpCollection(collectionName);
@@ -187,7 +188,7 @@ public class HttpCollector implements ServiceCollector {
                      * collection-centric.  Should probably let the exception
                      * pass through.
                      */
-                    m_status=ServiceCollector.COLLECTION_FAILED;
+                    m_status=CollectionStatus.FAILED;
                 }
             }
         }
@@ -201,7 +202,7 @@ public class HttpCollector implements ServiceCollector {
         }
 
         @Override
-        public int getStatus() {
+        public CollectionStatus getStatus() {
             return m_status;
         }
 

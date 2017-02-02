@@ -49,4 +49,5 @@ public class JBossCollector extends JMXCollector {
     protected JmxConnectors getConnectionName() {
         return JmxConnectors.jboss;
     }
+
 }

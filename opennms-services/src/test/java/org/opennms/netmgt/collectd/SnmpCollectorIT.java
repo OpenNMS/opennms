@@ -56,7 +56,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -217,13 +217,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
     public void testCollect() throws Exception {
         System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
 
-        // don't forget to initialize the agent
-        m_collectionSpecification.initialize(m_collectionAgent);
-
         // now do the actual collection
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     CollectionStatus.SUCCEEDED,
                      collectionSet.getStatus());
         CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
 
@@ -234,13 +231,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
         // try collecting again
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     CollectionStatus.SUCCEEDED,
                      m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
         System.err.println("SECOND COLLECTION FINISHED");
-
-        // release the agent
-        m_collectionSpecification.release(m_collectionAgent);
     }
 
     @Test
@@ -275,9 +269,6 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         int stepSizeInMillis = stepSizeInSecs*1000;
         final int rangeSizeInMillis = stepSizeInMillis + 20000;
 
-        // don't forget to initialize the agent
-        m_collectionSpecification.initialize(m_collectionAgent);
-
         CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // This is the value from snmpTestData1.properties
@@ -297,9 +288,6 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         // by now the values should be the new values
         assertEquals(Double.valueOf(456.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
         assertEquals(Double.valueOf(7654321.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
-
-        // release the agent
-        m_collectionSpecification.release(m_collectionAgent);
     }
 
     @Test
@@ -386,12 +374,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
             )
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
     public void testBrocadeCollect() throws Exception {
-        m_collectionSpecification.initialize(m_collectionAgent);
-
         // now do the actual collection
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     CollectionStatus.SUCCEEDED,
                      collectionSet.getStatus());
 
         CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
@@ -403,13 +389,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
         // try collecting again
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     CollectionStatus.SUCCEEDED,
                      m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
         System.err.println("SECOND COLLECTION FINISHED");
-
-        // release the agent
-        m_collectionSpecification.release(m_collectionAgent);
     }
 
     @Test
@@ -458,13 +441,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
             )
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
     public void testBug2447_GenericIndexedOnlyCollect() throws Exception {
-        // don't forget to initialize the agent
-        m_collectionSpecification.initialize(m_collectionAgent);
-
         // now do the actual collection
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     CollectionStatus.SUCCEEDED,
                      collectionSet.getStatus());
 
         CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
@@ -476,13 +456,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
         // try collecting again
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     CollectionStatus.SUCCEEDED,
                      m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
         System.err.println("SECOND COLLECTION FINISHED");
-
-        // release the agent
-        m_collectionSpecification.release(m_collectionAgent);
     }
 
     @Test
@@ -531,13 +508,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
             )
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
     public void verifyPersistedStringProperties() throws Exception {
-        // Initialize the agent
-        m_collectionSpecification.initialize(m_collectionAgent);
-
         // Perform the collection
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
-                ServiceCollector.COLLECTION_SUCCEEDED,
+                CollectionStatus.SUCCEEDED,
                 collectionSet.getStatus());
 
         // Persist

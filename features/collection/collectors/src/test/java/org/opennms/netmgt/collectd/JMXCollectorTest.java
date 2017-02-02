@@ -54,6 +54,7 @@ import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
@@ -293,7 +294,7 @@ public class JMXCollectorTest {
 
         jmxNodeInfo.setDsMap(dataSourceMap);
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, new HashMap<String, Object>());
-        assertEquals("Collection of one Jvm default value failed", 1, collectionSet.getStatus());
+        assertEquals("Collection of one Jvm default value failed", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
     }
 
     private Map<String, JMXDataSource> generateDataSourceMap(final String collectionName, final Map<String, List<Attrib>> attributeMap) {
@@ -310,7 +311,7 @@ public class JMXCollectorTest {
         final SingleResourceCollectionSet jmxCollectionSet = (SingleResourceCollectionSet) collectionSet;
         final JMXCollectionResource jmxCollectionResource = (JMXCollectionResource)jmxCollectionSet.getCollectionResource();
 
-        assertEquals("Collection: " + collectionName + " failed", 1, collectionSet.getStatus());
+        assertEquals("Collection: " + collectionName + " failed", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
 
         final CollectionResult collectionResult = new CollectionResult(jmxCollectionSet, jmxCollectionResource);
         return collectionResult;

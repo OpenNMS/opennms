@@ -74,12 +74,12 @@ import org.krupczak.xmp.XmpMessage;
 import org.krupczak.xmp.XmpSession;
 import org.krupczak.xmp.XmpVar;
 import org.opennms.core.utils.ParameterMap;
-
+import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.config.xmpDataCollection.Group;
 import org.opennms.netmgt.config.xmpDataCollection.MibObj;
@@ -91,7 +91,7 @@ import org.opennms.netmgt.protocols.xmp.config.XmpPeerFactory;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-public class XmpCollector implements ServiceCollector {
+public class XmpCollector extends AbstractLegacyServiceCollector {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(XmpCollector.class);
 
@@ -623,7 +623,7 @@ public class XmpCollector implements ServiceCollector {
         // WARNING, EACH COLLECTION SHOULD HAVE A SCALAR QUERY THAT
         // INCLUDES Core.sysUpTime 
 
-        collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
+        collectionSet.setStatus(CollectionStatus.SUCCEEDED);
 
         LOG.debug("XMP collect finished for {}, uptime for {} is {}", collectionName, agent, agent.getSavedSysUpTime());
 

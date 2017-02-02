@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.support.builder;
+package org.opennms.netmgt.collection.adapters;
 
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-/**
- * Supported collection statuses.
- *
- * @author jwhite
- */
-public enum CollectionStatus {
-    UNKNOWN(ServiceCollector.COLLECTION_UNKNOWN),
-    SUCCEEDED(ServiceCollector.COLLECTION_SUCCEEDED),
-    FAILED(ServiceCollector.COLLECTION_FAILED);
-    
-    private final int m_code;
+import org.opennms.netmgt.collection.dto.GenericTypeResourceDTO;
+import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 
-    private CollectionStatus(int code) {
-        m_code = code;
+public class DeferredGenericTypeResourceAdapter extends XmlAdapter<GenericTypeResourceDTO, DeferredGenericTypeResource> {
+ 
+    @Override
+    public GenericTypeResource unmarshal(GenericTypeResourceDTO dto) throws Exception {
+        return dto.toResource();
+    }
+ 
+    @Override
+    public GenericTypeResourceDTO marshal(DeferredGenericTypeResource resource) throws Exception {
+        return new GenericTypeResourceDTO(resource);
     }
 
-    public int getCode() {
-        return m_code;
-    }
 }

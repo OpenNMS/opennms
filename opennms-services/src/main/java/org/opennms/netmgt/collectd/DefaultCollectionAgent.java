@@ -29,7 +29,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -73,6 +72,10 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
         return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao, transMgr));
     }
 
+    public static SnmpCollectionAgent create(final Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr, final String location) {
+        return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao, transMgr), location);
+    }
+
     // miscellaneous junk?
     private int m_ifCount = -1;
     private long m_sysUpTime = -1;
@@ -93,10 +96,15 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
     private Set<SnmpIfData> m_snmpIfData;
 
     private DefaultCollectionAgent(final CollectionAgentService agentService) {
+        this(agentService, null);
+    }
+
+    private DefaultCollectionAgent(final CollectionAgentService agentService, final String location) {
         super(null);
         m_agentService = agentService;
         m_storageResourcePath = agentService.getStorageResourcePath();
-        
+        m_locationName = location;
+
         if (Boolean.getBoolean("org.opennms.netmgt.collectd.DefaultCollectionAgent.loadSnmpDataOnInit")) {
             getSnmpInterfaceData();
         }
