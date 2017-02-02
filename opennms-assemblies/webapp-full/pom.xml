@@ -11,6 +11,9 @@
   <packaging>war</packaging>
   <name>OpenNMS Web Application (Full)</name>
   <url>http://maven.apache.org</url>
+  <properties>
+    <build.skip.tarball>false</build.skip.tarball>
+  </properties>
   <build>
     <plugins>
       <plugin>
@@ -50,29 +53,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals><goal>copy</goal></goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms</artifactId>
-                  <version>${project.version}</version>
-                  <type>tar.gz</type>
-                  <classifier>source</classifier>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${project.build.directory}/warmerge-temp/source</outputDirectory>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>true</overWriteSnapshots>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>opennms-warmerge-plugin</artifactId>
         <version>0.4</version>
@@ -90,6 +70,44 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>enable.tarball</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals><goal>copy</goal></goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.opennms</groupId>
+                      <artifactId>opennms</artifactId>
+                      <version>${project.version}</version>
+                      <type>tar.gz</type>
+                      <classifier>source</classifier>
+                    </artifactItem>
+                  </artifactItems>
+                  <outputDirectory>${project.build.directory}/warmerge-temp/source</outputDirectory>
+                  <overWriteReleases>false</overWriteReleases>
+                  <overWriteSnapshots>true</overWriteSnapshots>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
