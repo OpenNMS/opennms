@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutionException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.snmp.IfTable;
@@ -152,7 +153,7 @@ public class ScanManager {
             m_ipAddressTable = IpAddressTable.createTable(m_address, ipAddresses);
 
             AggregateTracker tracker = new AggregateTracker(Lists.newArrayList(m_systemGroup, m_ipAddrTable, m_ipAddressTable));
-            final SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_address, MonitoringLocationDao.getLocationNameOrNullIfDefault(node));
+            final SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_address, MonitoringLocationUtils.getLocationNameOrNullIfDefault(node));
             try {
                 m_locationAwareSnmpClient.walk(agentConfig, tracker)
                     .withDescription("system/ipAddrTable/ipAddressTable")
