@@ -181,6 +181,10 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
     }
 
     public static ResourcePath fromString(final String s) {
+        if (s.isEmpty()) {
+            return ResourcePath.get();
+        }
+
         return ResourcePath.get(s.split("/"));
     }
 
