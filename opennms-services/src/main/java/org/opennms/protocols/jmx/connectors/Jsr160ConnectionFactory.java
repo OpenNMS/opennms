@@ -28,6 +28,7 @@
 
 package org.opennms.protocols.jmx.connectors;
 
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.util.*;
@@ -66,7 +67,7 @@ public abstract class Jsr160ConnectionFactory {
         String protocol = ParameterMap.getKeyedString( propertiesMap, "protocol", "rmi");
         String urlPath =  ParameterMap.getKeyedString( propertiesMap, "urlPath",  "/jmxrmi");
         
-        LOG.debug("JMX: {} - service:{}//{}:{}{}", factory, protocol, InetAddressUtils.str(address), port, urlPath);
+        LOG.debug("JMX: {} - service:{}//{}:{}{}", factory, protocol, toUrlIpAddress(address), port, urlPath);
 
         if (factory == null || factory.equals("STANDARD")) {
             try {
@@ -141,7 +142,7 @@ public abstract class Jsr160ConnectionFactory {
                 // Create an RMI connector client and
                 // connect it to the RMI connector server
                 //
-                JMXServiceURL url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+                JMXServiceURL url = new JMXServiceURL(protocol, toUrlIpAddress(address), port, urlPath);
                 
                 // Connect a JSR 160 JMXConnector to the server side
                 JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
@@ -185,7 +186,7 @@ public abstract class Jsr160ConnectionFactory {
                 // Create an RMI connector client and
                 // connect it to the RMI connector server
                 //
-                JMXServiceURL url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+                JMXServiceURL url = new JMXServiceURL(protocol, toUrlIpAddress(address), port, urlPath);
                 
                 // Connect a JSR 160 JMXConnector to the server side
                 JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
@@ -222,11 +223,23 @@ public abstract class Jsr160ConnectionFactory {
             // Create an JMXMP connector client and
             // connect it to the JMXMP connector server
             //
-            url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+            url = new JMXServiceURL(protocol, toUrlIpAddress(address), port, urlPath);
         } else {
             // Fallback, building a URL for RMI
-            url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(address) + ":" + port + urlPath);
+            url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + toUrlIpAddress(address) + ":" + port + urlPath);
         }
         return url;
-    }    
+    }
+
+    /**
+     * Method that wraps IPv6 addresses in square brackets so that they are parsed
+     * correctly by the {@link JMXServiceURL} class.
+     */
+    private static String toUrlIpAddress(InetAddress addr) {
+        if (addr instanceof Inet6Address) {
+            return String.format("[%s]", InetAddressUtils.str(addr));
+        } else {
+            return InetAddressUtils.str(addr);
+        }
+    }
 }
