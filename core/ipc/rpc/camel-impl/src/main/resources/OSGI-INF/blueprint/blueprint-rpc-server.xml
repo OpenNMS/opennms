@@ -32,7 +32,7 @@
     <camelContext id="rpcServer" xmlns="http://camel.apache.org/schema/blueprint">
         <!-- Exchanges contain credentials i.e. SNMP community details, so avoid logging them -->
         <properties>
-            <property key="CamelLogDebugBodyMaxChars" value="${body.debug}"/>
+            <property key="CamelLogDebugBodyMaxChars" value="{{body.debug}}"/>
         </properties>
 
         <!-- The routes are managed by the CamelRpcServerRouteManager  -->
