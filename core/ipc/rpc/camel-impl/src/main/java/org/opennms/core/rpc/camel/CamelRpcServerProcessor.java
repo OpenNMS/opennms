@@ -70,6 +70,7 @@ public class CamelRpcServerProcessor implements AsyncProcessor {
                 final RpcResponse response;
                 if (ex != null) {
                     // An exception occurred, store the exception in a new response
+                    LOG.warn("An error occured while executing a call in {}.", module.getId(), ex);
                     response = module.createResponseWithException(ex);
                 } else {
                     // No exception occurred, use the given response

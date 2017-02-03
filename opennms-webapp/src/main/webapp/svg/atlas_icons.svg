@@ -41,6 +41,101 @@
       <path d="M66.34,7.44a17.71,17.71,0,0,1,.73,18.29" transform="translate(0 0)" fill="#fff" stroke="#505154" stroke-miterlimit="10" stroke-width="1.5"/>
     </g>
   </g>
+  <g id="microwave_backhaul_2_icon">
+    <g id="microwave_backhaul_2_active">
+      <rect y="0" fill="#FFFFFF" width="100" height="100"/>
+      <g>
+        <g>
+          <g>
+            <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="24.4,85.5 50,8.7 75.6,85.5"/>
+            <line fill="none" stroke="#09A8D3" stroke-width="2" stroke-miterlimit="10" x1="50" y1="9" x2="50" y2="95"/>
+            <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="26.2,79 50,87.7 73.8,79"/>
+            <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="31,65.2 50,72 68.5,64.5"/>
+            <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="35.7,50.5 50,56.2 64.7,50.7"/>
+            <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="40.1,36 50,40.4 59.6,36"/>
+          </g>
+          <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="40.8,36 49.9,33 58.1,36"/>
+          <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="36.1,50.9 50.1,46.8 63.4,51.4"/>
+          <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="31.5,64.7 50.1,62.5 67.9,63.4"/>
+          <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="26.8,78.8 50.1,79.6 72.7,78.5"/>
+        </g>
+        <g>
+          <path fill="#FFFFFF" stroke="#09A8D3" stroke-width="1.9833" stroke-miterlimit="10" d="M37,43.9l3.8,0.6c2.5,0.4,4,3.9,3.4,7.9c-0.6,4-3.1,6.9-5.6,6.6l-3.8-0.6"/>
+          <path fill="#FFFFFF" stroke="#09A8D3" stroke-width="1.9833" stroke-miterlimit="10" d="M39.8,51.7c-0.6,4-3.1,6.9-5.6,6.6c-2.5-0.4-4-3.9-3.4-7.9c0.6-4,3.1-6.9,5.6-6.6C38.9,44.1,40.4,47.7,39.8,51.7z"/>
+        </g>
+        <g>
+          <path fill="#FFFFFF" stroke="#09A8D3" stroke-width="1.9833" stroke-miterlimit="10" d="M67.2,56.8l-3.8,0.6c-2.5,0.4-4,3.9-3.4,7.9c0.6,4,3.1,6.9,5.6,6.6l3.8-0.6"/>
+          <path fill="#FFFFFF" stroke="#09A8D3" stroke-width="1.9833" stroke-miterlimit="10" d="M64.4,64.6c0.6,4,3.1,6.9,5.6,6.6c2.5-0.4,4-3.9,3.4-7.9c-0.6-4-3.1-6.9-5.6-6.6C65.3,57.1,63.8,60.6,64.4,64.6z"/>
+        </g>
+        <g>
+          <path fill="#FFFFFF" stroke="#09A8D3" stroke-width="1.9833" stroke-miterlimit="10" d="M59.2,30.1l-3.8,0.6c-2.5,0.4-4,3.9-3.4,7.9c0.6,4,3.1,6.9,5.6,6.6l3.8-0.6"/>
+          <path fill="#FFFFFF" stroke="#09A8D3" stroke-width="1.9833" stroke-miterlimit="10" d="M56.4,37.9c0.6,4,3.1,6.9,5.6,6.6c2.5-0.4,4-3.9,3.4-7.9c-0.6-4-3.1-6.9-5.6-6.6C57.3,30.3,55.8,33.9,56.4,37.9z"/>
+        </g>
+      </g>
+    </g>
+    <g id="microwave_backhaul_2_rollover">
+      <rect y="0" fill="#FFFFFF" width="100" height="100"/>
+      <g>
+        <g>
+          <g>
+            <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="24.4,85.5 50,8.7 75.6,85.5"/>
+            <line fill="none" stroke="#09A8D3" stroke-width="2" stroke-miterlimit="10" x1="50" y1="9" x2="50" y2="95"/>
+            <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="26.2,79 50,87.7 73.8,79"/>
+            <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="31,65.2 50,72 68.5,64.5"/>
+            <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="35.7,50.5 50,56.2 64.7,50.7"/>
+            <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="40.1,36 50,40.4 59.6,36"/>
+          </g>
+          <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="40.8,36 49.9,33 58.1,36"/>
+          <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="36.1,50.9 50.1,46.8 63.4,51.4"/>
+          <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="31.5,64.7 50.1,62.5 67.9,63.4"/>
+          <polyline fill="none" stroke="#09A8D3" stroke-width="2.6443" stroke-miterlimit="10" points="26.8,78.8 50.1,79.6 72.7,78.5"/>
+        </g>
+        <g>
+          <path fill="#FFFFFF" stroke="#09A8D3" stroke-width="1.9833" stroke-miterlimit="10" d="M37,43.9l3.8,0.6c2.5,0.4,4,3.9,3.4,7.9c-0.6,4-3.1,6.9-5.6,6.6l-3.8-0.6"/>
+          <path fill="#FFFFFF" stroke="#09A8D3" stroke-width="1.9833" stroke-miterlimit="10" d="M39.8,51.7c-0.6,4-3.1,6.9-5.6,6.6c-2.5-0.4-4-3.9-3.4-7.9c0.6-4,3.1-6.9,5.6-6.6C38.9,44.1,40.4,47.7,39.8,51.7z"/>
+        </g>
+        <g>
+          <path fill="#FFFFFF" stroke="#09A8D3" stroke-width="1.9833" stroke-miterlimit="10" d="M67.2,56.8l-3.8,0.6c-2.5,0.4-4,3.9-3.4,7.9c0.6,4,3.1,6.9,5.6,6.6l3.8-0.6"/>
+          <path fill="#FFFFFF" stroke="#09A8D3" stroke-width="1.9833" stroke-miterlimit="10" d="M64.4,64.6c0.6,4,3.1,6.9,5.6,6.6c2.5-0.4,4-3.9,3.4-7.9c-0.6-4-3.1-6.9-5.6-6.6C65.3,57.1,63.8,60.6,64.4,64.6z"/>
+        </g>
+        <g>
+          <path fill="#FFFFFF" stroke="#09A8D3" stroke-width="1.9833" stroke-miterlimit="10" d="M59.2,30.1l-3.8,0.6c-2.5,0.4-4,3.9-3.4,7.9c0.6,4,3.1,6.9,5.6,6.6l3.8-0.6"/>
+          <path fill="#FFFFFF" stroke="#09A8D3" stroke-width="1.9833" stroke-miterlimit="10" d="M56.4,37.9c0.6,4,3.1,6.9,5.6,6.6c2.5-0.4,4-3.9,3.4-7.9c-0.6-4-3.1-6.9-5.6-6.6C57.3,30.3,55.8,33.9,56.4,37.9z"/>
+        </g>
+      </g>
+    </g>
+    <g id="microwave_backhaul_2">
+      <rect y="0" fill="#FFFFFF" width="100" height="100"/>
+      <g>
+        <g>
+          <g>
+            <polyline fill="none" stroke="#505154" stroke-width="2.6443" stroke-miterlimit="10" points="24.4,85.5 50,8.7 75.6,85.5"/>
+            <line fill="none" stroke="#505154" stroke-width="2" stroke-miterlimit="10" x1="50" y1="9" x2="50" y2="95"/>
+            <polyline fill="none" stroke="#505154" stroke-width="2.6443" stroke-miterlimit="10" points="26.2,79 50,87.7 73.8,79"/>
+            <polyline fill="none" stroke="#505154" stroke-width="2.6443" stroke-miterlimit="10" points="31,65.2 50,72 68.5,64.5"/>
+            <polyline fill="none" stroke="#505154" stroke-width="2.6443" stroke-miterlimit="10" points="35.7,50.5 50,56.2 64.7,50.7"/>
+            <polyline fill="none" stroke="#505154" stroke-width="2.6443" stroke-miterlimit="10" points="40.1,36 50,40.4 59.6,36"/>
+          </g>
+          <polyline fill="none" stroke="#505154" stroke-width="2.6443" stroke-miterlimit="10" points="40.8,36 49.9,33 58.1,36"/>
+          <polyline fill="none" stroke="#505154" stroke-width="2.6443" stroke-miterlimit="10" points="36.1,50.9 50.1,46.8 63.4,51.4"/>
+          <polyline fill="none" stroke="#505154" stroke-width="2.6443" stroke-miterlimit="10" points="31.5,64.7 50.1,62.5 67.9,63.4"/>
+          <polyline fill="none" stroke="#505154" stroke-width="2.6443" stroke-miterlimit="10" points="26.8,78.8 50.1,79.6 72.7,78.5"/>
+        </g>
+        <g>
+          <path fill="#FFFFFF" stroke="#505154" stroke-width="1.9833" stroke-miterlimit="10" d="M37,43.9l3.8,0.6c2.5,0.4,4,3.9,3.4,7.9c-0.6,4-3.1,6.9-5.6,6.6l-3.8-0.6"/>
+          <path fill="#FFFFFF" stroke="#505154" stroke-width="1.9833" stroke-miterlimit="10" d="M39.8,51.7c-0.6,4-3.1,6.9-5.6,6.6c-2.5-0.4-4-3.9-3.4-7.9c0.6-4,3.1-6.9,5.6-6.6C38.9,44.1,40.4,47.7,39.8,51.7z"/>
+        </g>
+        <g>
+          <path fill="#FFFFFF" stroke="#505154" stroke-width="1.9833" stroke-miterlimit="10" d="M67.2,56.8l-3.8,0.6c-2.5,0.4-4,3.9-3.4,7.9c0.6,4,3.1,6.9,5.6,6.6l3.8-0.6"/>
+          <path fill="#FFFFFF" stroke="#505154" stroke-width="1.9833" stroke-miterlimit="10" d="M64.4,64.6c0.6,4,3.1,6.9,5.6,6.6c2.5-0.4,4-3.9,3.4-7.9c-0.6-4-3.1-6.9-5.6-6.6C65.3,57.1,63.8,60.6,64.4,64.6z"/>
+        </g>
+        <g>
+          <path fill="#FFFFFF" stroke="#505154" stroke-width="1.9833" stroke-miterlimit="10" d="M59.2,30.1l-3.8,0.6c-2.5,0.4-4,3.9-3.4,7.9c0.6,4,3.1,6.9,5.6,6.6l3.8-0.6"/>
+          <path fill="#FFFFFF" stroke="#505154" stroke-width="1.9833" stroke-miterlimit="10" d="M56.4,37.9c0.6,4,3.1,6.9,5.6,6.6c2.5-0.4,4-3.9,3.4-7.9c-0.6-4-3.1-6.9-5.6-6.6C57.3,30.3,55.8,33.9,56.4,37.9z"/>
+        </g>
+      </g>
+    </g>
+  </g>
   <g id="region_1_icon" data-name="region_1 icon">
     <g id="region_1_active" data-name="region_1 active">
       <rect width="100" height="100" fill="#fff"/>
