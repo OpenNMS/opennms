@@ -1,12 +1,13 @@
 package org.opennms.netmgt.model;
 
+import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * An abstract path used to represent a resource or its parent.
@@ -30,7 +31,7 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
         }
     }
 
-    public ResourcePath(Collection<String> pathElements) {
+    public ResourcePath(Iterable<String> pathElements) {
         for (String el : pathElements) {
             m_elements.add(el);
         }
@@ -60,7 +61,7 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
     /**
      * Convenience method.
      */
-    public static ResourcePath get(Collection<String> pathElements) {
+    public static ResourcePath get(Iterable<String> pathElements) {
         return new ResourcePath(pathElements);
     }
 
@@ -76,29 +77,6 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
      */
     public static ResourcePath get(ResourcePath parent, Iterable<String> path) {
         return new ResourcePath(parent, path);
-    }
-
-    /**
-     * Convenience method.
-     */
-    public static ResourcePath get(Path path) {
-        List<String> elements = new LinkedList<String>();
-        for (Path element : path) {
-            elements.add(element.toString());
-        }
-        return new ResourcePath(elements.toArray(new String[elements.size()]));
-    }
-
-    /**
-     * Convenience method.
-     */
-    public static ResourcePath get(String prefix, Path path) {
-        List<String> elements = new LinkedList<String>();
-        elements.add(prefix);
-        for (Path element : path) {
-            elements.add(element.toString());
-        }
-        return new ResourcePath(elements.toArray(new String[elements.size()]));
     }
 
     public String getName() {
@@ -142,7 +120,7 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
 
     @Override
     public String toString() {
-        return m_elements.toString();
+        return ResourcePath.toString(this);
     }
 
     @Override
@@ -181,5 +159,36 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
             return null;
         }
         return SANITIZE_PATH_PATTERN.matcher(path).replaceAll(SANITIZE_PATH_PLACEHOLDER);
+    }
+
+    /**
+     * Converts the given resource path to a relative path on filesystem.
+     * @param path the resource path to resolve
+     * @return the relative path of the resource on disk
+     */
+    public static Path resourceToFilesystemPath(ResourcePath path) {
+        // Replace colons on windows machines (see #NMS-8085)
+        Path result = Paths.get("");
+        for (String e : path) {
+            if (File.separatorChar == '\\') {
+                e = e.replace(':', '_');
+            }
+
+            result = result.resolve(e);
+        }
+
+        return result;
+    }
+
+    public static ResourcePath fromString(final String s) {
+        if (s.isEmpty()) {
+            return ResourcePath.get();
+        }
+
+        return ResourcePath.get(s.split("/"));
+    }
+
+    public static String toString(final ResourcePath path) {
+        return path.m_elements.stream().collect(Collectors.joining(File.separator));
     }
 }

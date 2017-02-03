@@ -41,10 +41,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 
 @XmlRootElement(name = "agent")
@@ -79,8 +81,8 @@ public class CollectionAgentDTO implements CollectionAgent {
     @XmlAttribute(name = "location")
     private String location;
 
-    @XmlAttribute(name = "storage-dir")
-    private String storageDir;
+    @XmlAttribute(name = "storage-resource-path")
+    private String storageResourcePath;
 
     @XmlAttribute(name = "sys-object-id")
     private String sysObjectId;
@@ -103,7 +105,7 @@ public class CollectionAgentDTO implements CollectionAgent {
         foreignSource = agent.getForeignSource();
         foreignId = agent.getForeignId();
         location = agent.getLocationName();
-        setStorageDir(agent.getStorageDir());
+        setStorageResourcePath(agent.getStorageResourcePath());
         sysObjectId = agent.getSysObjectId();
         sysUpTime = agent.getSavedSysUpTime();
     }
@@ -225,12 +227,12 @@ public class CollectionAgentDTO implements CollectionAgent {
     }
 
     @Override
-    public File getStorageDir() {
-        return storageDir != null ? new File(storageDir) : null;
+    public ResourcePath getStorageResourcePath() {
+        return storageResourcePath != null ? ResourcePath.fromString(storageResourcePath) : null;
     }
 
-    public void setStorageDir(File storageDir) {
-        this.storageDir = storageDir != null ? storageDir.getPath() : null;
+    public void setStorageResourcePath(ResourcePath storageResourcePath) {
+        this.storageResourcePath = storageResourcePath != null ? ResourcePath.toString(storageResourcePath) : null;
     }
 
     @Override
@@ -258,14 +260,14 @@ public class CollectionAgentDTO implements CollectionAgent {
                 + "nodeId=%d, nodeLabel=%s, foreignSource=%s, foreignId=%s, location=%s, storageDir=%s, "
                 + "sysObjectId=%s, sysUpTime=%d]",
                 type, attributes, address != null ? InetAddrUtils.str(address) : null, storeByForeignSource,
-                nodeId, nodeLabel, foreignSource, foreignId, location, storageDir, sysObjectId, sysUpTime);
+                nodeId, nodeLabel, foreignSource, foreignId, location, storageResourcePath, sysObjectId, sysUpTime);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(type, attributes, address, storeByForeignSource,
                 nodeId, nodeLabel, foreignSource, foreignId, location,
-                storageDir, sysObjectId, sysUpTime);
+                storageResourcePath, sysObjectId, sysUpTime);
     }
 
     @Override
@@ -287,7 +289,7 @@ public class CollectionAgentDTO implements CollectionAgent {
                 Objects.equals(this.foreignSource, other.foreignSource) &&
                 Objects.equals(this.foreignId, other.foreignId) &&
                 Objects.equals(this.location, other.location) &&
-                Objects.equals(this.storageDir, other.storageDir) &&
+                Objects.equals(this.storageResourcePath, other.storageResourcePath) &&
                 Objects.equals(this.sysObjectId, other.sysObjectId) &&
                 Objects.equals(this.sysUpTime, other.sysUpTime);
     }

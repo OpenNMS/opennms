@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
-
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;

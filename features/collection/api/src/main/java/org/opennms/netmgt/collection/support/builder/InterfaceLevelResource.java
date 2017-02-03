@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.netmgt.collection.adapters.InterfaceLevelResourceAdapter;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.model.ResourcePath;
 
 @XmlJavaTypeAdapter(InterfaceLevelResourceAdapter.class)
 public class InterfaceLevelResource implements Resource {
@@ -63,8 +64,8 @@ public class InterfaceLevelResource implements Resource {
     }
 
     @Override
-    public Path getPath(CollectionResource resource) {
-        return Paths.get(getIfName());
+    public ResourcePath getPath(CollectionResource resource) {
+        return ResourcePath.get(getIfName());
     }
 
     @Override

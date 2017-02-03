@@ -38,6 +38,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
 import org.opennms.netmgt.collection.api.ResourceType;
 import org.opennms.netmgt.collection.api.StorageStrategy;
+import org.opennms.netmgt.model.ResourcePath;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 @XmlJavaTypeAdapter(GenericTypeResourceAdapter.class)
@@ -74,8 +75,8 @@ public class GenericTypeResource implements Resource {
     }
 
     @Override
-    public Path getPath(CollectionResource resource) {
-        return getStorageStrategy().getRelativePathForAttribute("", getStorageStrategy().getResourceNameFromIndex(resource));
+    public ResourcePath getPath(CollectionResource resource) {
+        return getStorageStrategy().getRelativePathForAttribute(ResourcePath.get(), getStorageStrategy().getResourceNameFromIndex(resource));
     }
 
     public StorageStrategy getStorageStrategy() {

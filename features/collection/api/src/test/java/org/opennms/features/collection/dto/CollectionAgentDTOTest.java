@@ -28,7 +28,6 @@
 
 package org.opennms.features.collection.dto;
 
-import java.io.File;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,6 +36,7 @@ import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
+import org.opennms.netmgt.model.ResourcePath;
 
 public class CollectionAgentDTOTest extends XmlTestNoCastor<CollectionAgentDTO> {
 
@@ -56,14 +56,14 @@ public class CollectionAgentDTOTest extends XmlTestNoCastor<CollectionAgentDTO> 
         collectionAgentDTO.setForeignSource("fs");
         collectionAgentDTO.setForeignId("fid");
         collectionAgentDTO.setLocationName("HQ");
-        collectionAgentDTO.setStorageDir(new File("/tmp"));
+        collectionAgentDTO.setStorageResourcePath(ResourcePath.get("tmp", "foo"));
         collectionAgentDTO.setSysObjectId(".1.3.6");
         collectionAgentDTO.setSavedSysUpTime(149);
 
         return Arrays.asList(new Object[][] {
             {
                 collectionAgentDTO,
-                "<agent type=\"42\" address=\"192.168.1.1\" store-by-fs=\"true\" node-id=\"99\" node-label=\"switch\" foreign-source=\"fs\" foreign-id=\"fid\" location=\"HQ\" storage-dir=\"/tmp\" sys-object-id=\".1.3.6\" sys-up-time=\"149\">\n" + 
+                "<agent type=\"42\" address=\"192.168.1.1\" store-by-fs=\"true\" node-id=\"99\" node-label=\"switch\" foreign-source=\"fs\" foreign-id=\"fid\" location=\"HQ\" storage-resource-path=\"tmp/foo\" sys-object-id=\".1.3.6\" sys-up-time=\"149\">\n" +
                 "   <attribute key=\"k1\" value=\"v1\"/>\n" + 
                 "</agent>"
             }

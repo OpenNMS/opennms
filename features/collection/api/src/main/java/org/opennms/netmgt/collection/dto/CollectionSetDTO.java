@@ -58,6 +58,7 @@ import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.builder.Attribute;
 import org.opennms.netmgt.collection.support.builder.CollectionStatus;
 import org.opennms.netmgt.collection.support.builder.Resource;
+import org.opennms.netmgt.model.ResourcePath;
 
 @XmlRootElement(name = "collection-set")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -146,8 +147,8 @@ public class CollectionSetDTO implements CollectionSet {
                 }
 
                 @Override
-                public Path getPath() {
-                    return super.getPath().resolve(resource.getPath(this));
+                public ResourcePath getPath() {
+                    return ResourcePath.get(super.getPath(), resource.getPath(this));
                 }
 
                 @Override

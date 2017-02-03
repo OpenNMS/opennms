@@ -28,18 +28,18 @@
 
 package org.opennms.features.collection.dto;
 
-import java.nio.file.Path;
 import java.util.List;
 
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.Parameter;
 import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.collection.api.StorageStrategyService;
+import org.opennms.netmgt.model.ResourcePath;
 
 public class MockStorageStrategy implements StorageStrategy {
 
     @Override
-    public Path getRelativePathForAttribute(String resourceParent, String resource) {
+    public ResourcePath getRelativePathForAttribute(ResourcePath resourceParent, String resource) {
         return null;
     }
 

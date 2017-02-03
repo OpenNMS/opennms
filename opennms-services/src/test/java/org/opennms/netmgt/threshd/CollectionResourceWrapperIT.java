@@ -76,6 +76,7 @@ import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -567,7 +568,7 @@ public class CollectionResourceWrapperIT {
         EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType)EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();
         EasyMock.expect(agent.getForeignSource()).andReturn("JUnit").anyTimes();
         EasyMock.expect(agent.getForeignId()).andReturn("T001").anyTimes();
-        EasyMock.expect(agent.getStorageDir()).andReturn(new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY + File.separator + "JUnit" + File.separator + "T001")).anyTimes();
+        EasyMock.expect(agent.getStorageResourcePath()).andReturn(ResourcePath.get(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, "JUnit", "T001")).anyTimes();
         EasyMock.replay(agent);
         return agent;
     }

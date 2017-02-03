@@ -31,6 +31,8 @@ package org.opennms.netmgt.collection.persistence.rrd;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -51,6 +53,7 @@ import org.opennms.netmgt.collection.api.ResourceIdentifier;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
 import org.opennms.netmgt.rrd.RrdAttributeType;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -79,15 +82,11 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
     /** Constant <code>MAX_DS_NAME_LENGTH=19</code> */
     public static final int MAX_DS_NAME_LENGTH = 19;
 
-    /**
-     * <p>Constructor for PersistOperationBuilder.</p>
-     *
-     * @param rrdStrategy a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
-     * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
-     * @param resource a {@link org.opennms.netmgt.collection.api.ResourceIdentifier} object.
-     * @param rrdName a {@link java.lang.String} object.
-     */
-    public RrdPersistOperationBuilder(RrdStrategy<?, ?> rrdStrategy, RrdRepository repository, ResourceIdentifier resource, String rrdName, boolean dontReorderAttributes) {
+    public RrdPersistOperationBuilder(RrdStrategy<?, ?> rrdStrategy,
+                                      RrdRepository repository,
+                                      ResourceIdentifier resource,
+                                      String rrdName,
+                                      boolean dontReorderAttributes) {
         m_rrdStrategy = rrdStrategy;
         m_repository = repository;
         m_resource = resource;
@@ -112,10 +111,8 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
         return m_repository;
     }
 
-    private File getResourceDir(ResourceIdentifier resource) throws FileNotFoundException {
-        return getRepository().getRrdBaseDir().toPath()
-                .resolve(resource.getPath())
-                .toFile();
+    private String getResourceDir(ResourceIdentifier resource) throws FileNotFoundException {
+        return m_repository.getRrdBaseDir().toPath().resolve(ResourcePath.resourceToFilesystemPath(resource.getPath())).toAbsolutePath().toString();
     }
 
     /**
@@ -201,7 +198,7 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
 
         try {
             final String ownerName = m_resource.getOwnerName();
-            final String absolutePath = getResourceDir(m_resource).getAbsolutePath();
+            final String absolutePath = getResourceDir(m_resource);
             List<RrdDataSource> dataSources = getDataSources();
             if (dataSources != null && dataSources.size() > 0) {
                 createRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, getRepository().getStep(), dataSources, getRepository().getRraList(), m_metaData);
@@ -360,5 +357,4 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
     public void setTimeKeeper(TimeKeeper timeKeeper) {
         m_timeKeeper = timeKeeper;
     }
-
 }

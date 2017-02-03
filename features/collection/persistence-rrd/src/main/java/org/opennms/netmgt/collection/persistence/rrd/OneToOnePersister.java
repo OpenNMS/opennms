@@ -29,7 +29,6 @@
 package org.opennms.netmgt.collection.persistence.rrd;
 
 import java.util.Collections;
-
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.ServiceParameters;

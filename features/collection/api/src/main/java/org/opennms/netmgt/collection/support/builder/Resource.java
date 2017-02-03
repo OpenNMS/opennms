@@ -31,6 +31,7 @@ package org.opennms.netmgt.collection.support.builder;
 import java.nio.file.Path;
 
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.model.ResourcePath;
 
 public interface Resource {
 
@@ -50,6 +51,6 @@ public interface Resource {
      * @param resource Used by the {@link GenericTypeResource} in order to determine the instance name.
      * @return relative path
      */
-    public Path getPath(CollectionResource resource);
+    public ResourcePath getPath(CollectionResource resource);
 
 }
