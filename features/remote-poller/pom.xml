@@ -252,6 +252,10 @@ groovy.compiler.output.path=target/classes
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-jni6</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-best</artifactId>
+    </dependency>
     <!-- Logging implementation dependencies -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>

@@ -72,7 +72,7 @@
     <!-- OpenNMS dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-icmp-jni</artifactId>
+      <artifactId>opennms-icmp-best</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

@@ -44,7 +44,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
-import org.opennms.netmgt.icmp.PingerFactoryImpl;
+import org.opennms.netmgt.icmp.best.BestMatchPingerFactory;
 
 /**
  * <P>
@@ -106,7 +106,7 @@ final public class CLIPinger {
         
         try {
             host = InetAddress.getByName(s_arguments.get(0));
-            final PingerFactory pf = new PingerFactoryImpl();
+            final PingerFactory pf = new BestMatchPingerFactory();
             final Pinger p = pf.getInstance(Integer.decode(s_dscp), s_allowFragmentation);
             for (int i = 0; i < s_count; i++) {
                 Number rtt = p.ping(host, s_timeout, s_retries);

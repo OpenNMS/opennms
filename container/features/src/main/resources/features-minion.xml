@@ -47,7 +47,7 @@
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.rpc-impl/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-icmp-proxy" description="OpenNMS :: Minion :: Icmp Proxy" version="${project.version}">
+    <feature name="minion-icmp-proxy" description="OpenNMS :: Minion :: ICMP Proxy" version="${project.version}">
         <feature>minion-rpc-server</feature>
         <feature>opennms-model</feature>
 
