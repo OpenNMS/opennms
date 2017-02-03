@@ -41,6 +41,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.collection.test.JUnitCollector;
+import org.opennms.core.collection.test.JUnitCollectorExecutionListener;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -78,8 +80,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({
-    TestContextAwareExecutionListener.class,
-    JUnitCollectorExecutionListener.class
+    TestContextAwareExecutionListener.class
 })
 @ContextConfiguration(locations={
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",

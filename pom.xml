@@ -1759,6 +1759,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.collection</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.db</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>

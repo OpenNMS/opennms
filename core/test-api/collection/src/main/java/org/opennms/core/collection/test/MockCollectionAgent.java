@@ -25,12 +25,15 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.collection.persistence.evaluate;
+
+package org.opennms.core.collection.test;
 
 import java.io.File;
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.model.ResourcePath;
@@ -57,6 +60,8 @@ public class MockCollectionAgent implements CollectionAgent {
     /** The ip address. */
     private InetAddress ipAddress;
 
+    private Map<String, Object> attributes = new HashMap<>();
+
     /**
      * Instantiates a new mock collection agent.
      *
@@ -67,7 +72,6 @@ public class MockCollectionAgent implements CollectionAgent {
      * @param ipAddress the ip address
      */
     public MockCollectionAgent(int nodeId, String nodeLabel, String foreignSource, String foreignId, InetAddress ipAddress) {
-        super();
         this.nodeId = nodeId;
         this.nodeLabel = nodeLabel;
         this.foreignSource = foreignSource;
@@ -100,8 +104,9 @@ public class MockCollectionAgent implements CollectionAgent {
      * @see org.opennms.netmgt.poller.NetworkInterface#getAttribute(java.lang.String)
      */
     @Override
+    @SuppressWarnings("unchecked")
     public <V> V getAttribute(String property) {
-        return null;
+        return (V) attributes.get(property);
     }
 
     /* (non-Javadoc)
@@ -109,7 +114,8 @@ public class MockCollectionAgent implements CollectionAgent {
      */
     @Override
     public Object setAttribute(String property, Object value) {
-        return null;
+        attributes.put(property, value);
+        return value;
     }
 
     /* (non-Javadoc)
@@ -207,3 +213,4 @@ public class MockCollectionAgent implements CollectionAgent {
     }
 
 }
+

@@ -12,6 +12,7 @@
   <name>OpenNMS :: Features :: Collection</name>
   <modules>
     <module>api</module>
+    <module>collectors</module>
     <module>persistence-rrd</module>
     <module>shell-commands</module>
   </modules>

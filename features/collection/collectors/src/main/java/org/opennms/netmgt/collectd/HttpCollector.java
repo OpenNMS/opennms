@@ -158,6 +158,7 @@ public class HttpCollector implements ServiceCollector {
             m_status=ServiceCollector.COLLECTION_SUCCEEDED;
         }
 
+        @SuppressWarnings("deprecation")
         public void collect() {
             String collectionName=ParameterMap.getKeyedString(m_parameters, ParameterName.COLLECTION.toString(), null);
             if(collectionName==null) {
