@@ -47,16 +47,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.security.auth.Subject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.felix.service.command.CommandProcessor;
-import org.apache.felix.service.command.CommandSession;
 import org.apache.karaf.features.FeaturesService;
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
+import org.apache.karaf.shell.api.console.Session;
+import org.apache.karaf.shell.api.console.SessionFactory;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.ProbeBuilder;
@@ -87,12 +92,12 @@ public abstract class KarafTestCase {
     public static final String MAX_SSH_PORT = "8888";
 
     private static String getKarafVersion() {
-        final String karafVersion = System.getProperty("karafVersion", "2.4.3");
+        final String karafVersion = System.getProperty("karafVersion", "4.0.8");
         Objects.requireNonNull(karafVersion, "Please define a system property 'karafVersion'.");
         return karafVersion;
     }
 
-    protected File findPom(final File root) {
+    protected static File findPom(final File root) {
         final File absoluteRoot = root.getAbsoluteFile();
         LOG.error("findPom: {}", absoluteRoot);
         final File pomFile = new File(absoluteRoot, "pom.xml");
@@ -105,7 +110,7 @@ public abstract class KarafTestCase {
         }
     }
 
-    protected String getOpenNMSVersion() {
+    protected static String getOpenNMSVersion() {
         final File pomFile = findPom(new File("."));
         LOG.error("getOpenNMSVersion pom file: {}", pomFile);
         Objects.requireNonNull(pomFile, "Unable to find pom.xml!  This should not happen...");
@@ -129,6 +134,9 @@ public abstract class KarafTestCase {
 
     @Inject
     protected FeaturesService featuresService;
+
+    @Inject
+    protected SessionFactory sessionFactory;
 
     /**
      * This {@link ProbeBuilder} can be used to add OSGi metadata to the test
@@ -291,6 +299,15 @@ public abstract class KarafTestCase {
         }
     }
 
+    protected void installFeature(String featureName, String version) {
+        try {
+            LOG.info("Installing feature {}/{}", featureName, version);
+            featuresService.installFeature(featureName, version);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Executes a shell command and returns output as a String.
      * Commands have a default timeout of 10 seconds.
@@ -302,19 +319,41 @@ public abstract class KarafTestCase {
         try (
             final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             final PrintStream printStream = new PrintStream(byteArrayOutputStream);
+            final PrintStream errStream = new PrintStream(byteArrayOutputStream);
         ) {
+            final ExecutorService executor = Executors.newCachedThreadPool();
+
             Subject subject = new Subject();
             subject.getPrincipals().add(new RolePrincipal("admin"));
             return Subject.doAs(subject, new PrivilegedExceptionAction<String>() {
                 @Override
                 public String run() throws Exception {
-                    final CommandProcessor commandProcessor = getOsgiService(CommandProcessor.class);
-                    final CommandSession commandSession = commandProcessor.createSession(System.in, printStream, System.err);
-                    LOG.info("{}", command);
-                    Object response = commandSession.execute(command);
-                    LOG.info("Response: {}", response);
-                    printStream.flush();
-                    return byteArrayOutputStream.toString();
+                    final Session session = sessionFactory.create(System.in, printStream, errStream);
+
+                    LOG.info("Command: {}", command);
+
+                    FutureTask<String> commandFuture = new FutureTask<String>(new Callable<String>() {
+                        public String call() {
+                            try {
+                                session.execute(command);
+                            } catch (Exception e) {
+                                e.printStackTrace(System.err);
+                            }
+                            printStream.flush();
+                            errStream.flush();
+                            return byteArrayOutputStream.toString();
+                        }
+                    });
+
+                    try {
+                        executor.submit(commandFuture);
+                        String response = commandFuture.get(10, TimeUnit.SECONDS);
+                        LOG.info("Response: {}", response);
+                        return response;
+                    } catch (Exception e) {
+                        e.printStackTrace(System.err);
+                        return "SHELL COMMAND TIMED OUT: " + command;
+                    }
                 }
             });
         } catch (Exception e) {

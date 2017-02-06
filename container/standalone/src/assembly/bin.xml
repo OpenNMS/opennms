@@ -87,18 +87,6 @@
             <lineEnding>unix</lineEnding>
         </file>
         <file>
-            <source>${project.build.directory}/classes/features.xml</source>
-            <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
-            <destName>${project.artifactId}-${project.version}-features.xml</destName>
-            <lineEnding>unix</lineEnding>
-        </file>
-        <file>
-            <source>${project.build.directory}/classes/features.xml.sha1</source>
-            <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
-            <destName>${project.artifactId}-${project.version}-features.xml.sha1</destName>
-            <lineEnding>unix</lineEnding>
-        </file>
-        <file>
             <source>${project.build.directory}/dependencies/opennms-branding.jar</source>
             <outputDirectory>lib</outputDirectory>
             <destName>opennms-branding.jar</destName>

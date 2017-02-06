@@ -59,16 +59,16 @@
       <!-- used to generate available plugins / kar descriptor -->
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>features-maven-plugin</artifactId>
+        <artifactId>karaf-maven-plugin</artifactId>
         <version>${karafVersion}</version>
         <executions>
 
           <!-- generates repo which we can traverse to find product descriptor files -->
           <execution>
-            <id>add-features-to-repo</id>
+            <id>features-add-to-repository</id>
             <phase>generate-resources</phase>
             <goals>
-              <goal>add-features-to-repo</goal>
+              <goal>features-add-to-repository</goal>
             </goals>
             <configuration>
               <!-- this unknown karaf version prevents copying any karaf descriptors into kar - which we do not want -->
