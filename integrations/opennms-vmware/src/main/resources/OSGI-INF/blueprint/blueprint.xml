@@ -23,4 +23,12 @@
         </service-properties>
     </service>
 
+    <!-- The 'vmware' provider -->
+    <bean id="vmwareRequisitionProvider" class="org.opennms.netmgt.provision.service.vmware.VmwareRequisitionProvider" />
+    <service ref="vmwareRequisitionProvider" interface="org.opennms.netmgt.provision.persist.RequisitionProvider">
+      <service-properties>
+        <entry key="type" value="vmware" />
+      </service-properties>
+    </service>
+
 </blueprint>
