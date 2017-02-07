@@ -222,7 +222,7 @@ Geomap = function() {
 
         var centerOnMap = function() {
             if (markersGroup.getBounds().isValid()) {
-                theMap.fitBounds(markersGroup.getBounds(), [100, 100]);
+                theMap.fitBounds(markersGroup.getBounds(), {padding: [15, 15]});
             } else {
                 theMap.setZoom(1);
                 theMap.setView([34.5133, -94.1629]); // center of earth
