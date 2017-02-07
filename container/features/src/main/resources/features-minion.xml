@@ -47,7 +47,7 @@
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.rpc-impl/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-icmp-proxy" description="OpenNMS :: Minion :: Icmp Proxy" version="${project.version}">
+    <feature name="minion-icmp-proxy" description="OpenNMS :: Minion :: ICMP Proxy" version="${project.version}">
         <feature>minion-rpc-server</feature>
         <feature>opennms-model</feature>
 
@@ -58,7 +58,7 @@
     <feature name="minion-provisiond-detectors" description="Minion :: Provisond :: Detectors" version="${project.version}">
       <feature>opennms-config</feature>
       <feature>opennms-dao-api</feature>
-      <feature>opennms-icmp-jna</feature>
+      <feature>opennms-icmp-best</feature>
       <feature>opennms-provisioning-detectors</feature>
       <feature>minion-rpc-server</feature>
       <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>

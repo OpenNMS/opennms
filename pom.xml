@@ -2445,6 +2445,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-icmp-best</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.icmp-jna</artifactId>
         <version>${project.version}</version>
