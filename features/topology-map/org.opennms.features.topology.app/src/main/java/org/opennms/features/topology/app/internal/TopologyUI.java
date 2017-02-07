@@ -34,6 +34,7 @@ import static org.opennms.features.topology.app.internal.operations.TopologySele
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -71,7 +72,6 @@ import org.opennms.features.topology.api.topo.DefaultMetaInfo;
 import org.opennms.features.topology.api.topo.MetaInfo;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.operations.RedoLayoutOperation;
@@ -93,6 +93,7 @@ import org.opennms.osgi.locator.OnmsServiceManagerLocator;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -273,7 +274,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
 
         private boolean executeOperationWithLabel(String operationLabel) {
-            final CheckedOperation operation = m_commandManager.findOperationByLabel(CheckedOperation.class, operationLabel);
+            final CheckedOperation operation = m_commandManager.findOperationByLabel(operationLabel);
             if (operation != null) {
                 final DefaultOperationContext operationContext = new DefaultOperationContext(TopologyUI.this, m_graphContainer, DisplayLocation.MENUBAR);
                 final List<VertexRef> targets = Collections.<VertexRef>emptyList();
@@ -519,7 +520,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private final GraphContainer m_graphContainer;
     private SelectionManager m_selectionManager;
     private final CommandManager m_commandManager;
-    private MenuBar m_menuBar;
+    private TopologyMenuBar m_menuBar;
     private TopoContextMenu m_contextMenu;
     private VerticalLayout m_layout;
     private VerticalLayout m_rootLayout;
@@ -640,7 +641,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_selectionManager.addSelectionListener(this);
         m_graphContainer.addChangeListener(this);
         m_graphContainer.getMapViewManager().addListener(this);
-        m_commandManager.addMenuItemUpdateListener(this);
+        m_menuBar.addMenuItemUpdateListener(this);
         m_commandManager.addCommandUpdateListener(this);
 
         m_graphContainer.addChangeListener(m_searchBox);
@@ -652,7 +653,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // Register the Info Panel to listen for certain events
         final InfoPanelItemProvider infoPanelItemProvider = new InfoPanelItemProvider();
         m_selectionManager.addSelectionListener(infoPanelItemProvider);
-        m_commandManager.addMenuItemUpdateListener(infoPanelItemProvider);
+        m_menuBar.addMenuItemUpdateListener(infoPanelItemProvider);
         m_graphContainer.addChangeListener(infoPanelItemProvider);
     }
 
@@ -703,7 +704,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private void setupAutoRefresher() {
         if (m_graphContainer.hasAutoRefreshSupport()) {
             Refresher refresher = new Refresher();
-            refresher.setRefreshInterval((int)m_graphContainer.getAutoRefreshSupport().getInterval() * 1000); // ask every 1 seconds for changes
+            refresher.setRefreshInterval((int)m_graphContainer.getAutoRefreshSupport().getInterval() * 1000); // ask every <interval> seconds for changes
             refresher.addListener(new DynamicUpdateRefresher());
             addExtension(refresher);
         }
@@ -742,7 +743,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_treeMapSplitPanel.addComponent(createMapLayout(), "top: 0px; left: 0px; right: 0px; bottom: 0px;");
         m_treeMapSplitPanel.setSizeFull();
 
-        menuBarUpdated(m_commandManager);
+        m_menuBar = new TopologyMenuBar();
+        updateMenuBar();
         if(m_widgetManager.widgetCount() != 0) {
             updateWidgetView(m_widgetManager);
         }else {
@@ -918,7 +920,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
-        m_searchBox = new SearchBox(m_serviceManager, new CommandManager.DefaultOperationContext(this, m_graphContainer, OperationContext.DisplayLocation.SEARCH));
+        m_searchBox = new SearchBox(m_serviceManager, new DefaultOperationContext(this, m_graphContainer, OperationContext.DisplayLocation.SEARCH));
 
         //History Button Layout
         HorizontalLayout historyButtonLayout = new HorizontalLayout();
@@ -1143,21 +1145,17 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
 	@Override
 	public void updateMenuItems() {
-		updateMenuItems(m_menuBar.getItems());
-	}
-
-	private void updateMenuItems(List<MenuItem> menuItems) {
-		for(MenuItem menuItem : menuItems) {
-			if(menuItem.hasChildren()) {
-				updateMenuItems(menuItem.getChildren());
-			}else {
-				m_commandManager.updateMenuItem(menuItem, m_graphContainer, this);
-			}
-		}
+        if (m_menuBar != null) {
+            m_menuBar.updateMenuItems(m_graphContainer, this);
+        }
 	}
 
 	@Override
 	public void menuBarUpdated(CommandManager commandManager) {
+        updateMenuBar();
+    }
+
+    private void updateMenuBar() {
 		if(m_menuBar != null) {
 			m_rootLayout.removeComponent(m_menuBar);
 		}
@@ -1166,8 +1164,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 			m_contextMenu.detach();
 		}
 
-		m_menuBar = commandManager.getMenuBar(m_graphContainer, this);
-		m_menuBar.setWidth(100, Unit.PERCENTAGE);
+		m_menuBar.buildMenu(m_graphContainer, this, m_commandManager);
+
 		// Set expand ratio so that extra space is not allocated to this vertical component
         if (m_showHeader) {
             m_rootLayout.addComponent(m_menuBar, 1);
@@ -1175,10 +1173,10 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             m_rootLayout.addComponent(m_menuBar, 0);
         }
 
-		m_contextMenu = commandManager.getContextMenu(new DefaultOperationContext(this, m_graphContainer, DisplayLocation.CONTEXTMENU));
-		m_contextMenu.setAsContextMenuOf(this);
+		m_contextMenu = createContextMenu(m_commandManager, this);
 
         // Add Menu Item to share the View with others
+
         m_menuBar.addItem("Share", FontAwesome.SHARE, new MenuBar.Command() {
             @Override
             public void menuSelected(MenuItem selectedItem) {
@@ -1360,7 +1358,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
      * Parameter is a String because config has String values
      * @param boolVal
      */
-    //@Override
     public void setShowHeader(String boolVal) {
         m_showHeader = Boolean.valueOf(boolVal);
     }
@@ -1384,7 +1381,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     @Override
     public void detach() {
         m_commandManager.removeCommandUpdateListener(this);
-        m_commandManager.removeMenuItemUpdateListener(this);
         super.detach();    //To change body of overridden methods use File | Settings | File Templates.
     }
 
@@ -1405,5 +1401,22 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         if(!selectedVertexRefs.equals(vertexRefs) && !event.allVerticesSelected()) {
             m_selectionManager.setSelectedVertexRefs(vertexRefs);
         }
+    }
+
+    /**
+     * Creates the ContextMenu add-on for the app based on OSGi Operations
+     * @return
+     */
+    private static TopoContextMenu createContextMenu(CommandManager commandManager, TopologyUI mainWindow) {
+        ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
+        for (Command command : commandManager.getCommandList()) {
+            if (command.isAction()) {
+                String contextPosition = command.getContextMenuPosition();
+                contextMenuBuilder.addMenuCommand(command, contextPosition);
+            }
+        }
+        TopoContextMenu contextMenu = contextMenuBuilder.get();
+        contextMenu.setAsContextMenuOf(mainWindow);
+        return contextMenu;
     }
 }
