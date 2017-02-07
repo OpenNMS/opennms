@@ -35,12 +35,12 @@ import org.opennms.netmgt.collection.api.ResourceType;
 /**
  * Singleton used to lookup {@link ResourceType}s by name.
  *
- * This class is used when unmarshaling generic resource
- * types (which currently only occurs in test code).
+ * This class is used when resolving {@link org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource}
+ * resource types.
  *
- * This class will be removed once all of the {@link org.opennms.netmgt.collection.api.ServiceCollector}
+ * This class could be removed once all of the {@link org.opennms.netmgt.collection.api.ServiceCollector}
  * implementations have been migrated to use the {@link org.opennms.netmgt.collection.support.builder.CollectionSetBuilder}.
- * At which point we'll be able to move the resource lookup and persistence logic outside the collectors and into collectd.
+ * At which point we could move the resource lookup and persistence logic outside the collectors and into collectd.
  *
  * @author jwhite
  */

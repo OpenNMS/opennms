@@ -55,11 +55,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 public class XmpCollectionSet implements CollectionSet {
@@ -69,7 +68,7 @@ public class XmpCollectionSet implements CollectionSet {
 
 
     /* instance variables ******************************** */
-    int status;
+    CollectionStatus status;
     boolean ignorePersistVar;
     CollectionAgent agent;
     XmpCollectionResource collectionResource;
@@ -80,7 +79,7 @@ public class XmpCollectionSet implements CollectionSet {
     XmpCollectionSet(CollectionAgent agent) 
     {  
         // default status
-        status = ServiceCollector.COLLECTION_SUCCEEDED;
+        status = CollectionStatus.SUCCEEDED;
         ignorePersistVar = false;
         this.agent = agent;
 
@@ -134,25 +133,25 @@ public class XmpCollectionSet implements CollectionSet {
     /**
      * <p>Getter for the field <code>status</code>.</p>
      *
-     * @return a int.
+     * @return a CollectionStatus.
      */
     @Override
-    public int getStatus() { return status; }
+    public CollectionStatus getStatus() { return status; }
     /**
      * <p>Setter for the field <code>status</code>.</p>
      *
-     * @param status a int.
+     * @param status a CollectionStatus.
      */
-    public void setStatus(int status) { this.status = status; }
+    public void setStatus(CollectionStatus status) { this.status = status; }
 
     /**
      * <p>setStatusSuccess</p>
      */
-    public void setStatusSuccess() { this.status = ServiceCollector.COLLECTION_SUCCEEDED; }
+    public void setStatusSuccess() { this.status = CollectionStatus.SUCCEEDED; }
     /**
      * <p>setStatusFailed</p>
      */
-    public void setStatusFailed() { this.status = ServiceCollector.COLLECTION_FAILED; }
+    public void setStatusFailed() { this.status = CollectionStatus.FAILED; }
 
     // ignorePersist returns true if system has been restarted
     // that is, if sysUpTime has gone backwards, return true

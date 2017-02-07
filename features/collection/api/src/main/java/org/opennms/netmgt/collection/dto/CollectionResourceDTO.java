@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.collection.support.builder.Attribute;
+import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
@@ -68,6 +69,9 @@ public class CollectionResourceDTO {
     private final InterfaceLevelResource workaround_ilr = null;
 
     @XmlElement
+    private final DeferredGenericTypeResource workaround_dgtr = null;
+
+    @XmlElement
     private final GenericTypeResource workaround_gtr = null;
 
     @XmlElement
@@ -79,7 +83,8 @@ public class CollectionResourceDTO {
     @XmlElements({ 
         @XmlElement(name = "node-level-resource", type = NodeLevelResource.class),
         @XmlElement(name = "interface-level-resource", type = InterfaceLevelResource.class),
-        @XmlElement(name = "generic-type-resource", type = GenericTypeResource.class)
+        @XmlElement(name = "generic-type-resource", type = GenericTypeResource.class),
+        @XmlElement(name = "generic-type-resource", type = DeferredGenericTypeResource.class)
     })
     private Resource resource;
 
@@ -97,6 +102,11 @@ public class CollectionResourceDTO {
     }
 
     public Resource getResource() {
+        // Resolve the resource and store the result.
+        // For DeferredGenericTypeResource resources, this is used
+        // to lookup the resource definition and construct
+        // the appropriate GenericTypeResource
+        this.resource = resource != null ? resource.resolve() : null;
         return resource;
     }
 

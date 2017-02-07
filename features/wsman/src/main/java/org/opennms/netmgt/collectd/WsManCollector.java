@@ -46,11 +46,11 @@ import org.opennms.core.wsman.exceptions.InvalidResourceURI;
 import org.opennms.core.wsman.exceptions.WSManException;
 import org.opennms.core.wsman.utils.ResponseHandlingUtils;
 import org.opennms.core.wsman.utils.RetryNTimesLoop;
+import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
@@ -81,7 +81,7 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
-public class WsManCollector implements ServiceCollector {
+public class WsManCollector extends AbstractLegacyServiceCollector {
     private static final Logger LOG = LoggerFactory.getLogger(WsManCollector.class);
 
     private WSManClientFactory m_factory = new CXFWSManClientFactory();

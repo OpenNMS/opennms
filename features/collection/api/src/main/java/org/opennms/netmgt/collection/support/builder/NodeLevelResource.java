@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -39,7 +37,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.model.ResourcePath;
 
 @XmlJavaTypeAdapter(NodeLevelResourceAdapter.class)
-public class NodeLevelResource implements Resource {
+public class NodeLevelResource extends AbstractResource {
 
     private final int m_nodeId;
 
@@ -73,7 +71,7 @@ public class NodeLevelResource implements Resource {
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_nodeId);
+        return Objects.hash(m_nodeId, getTimestamp());
     }
 
     @Override
@@ -86,6 +84,7 @@ public class NodeLevelResource implements Resource {
             return false;
         }
         NodeLevelResource other = (NodeLevelResource) obj;
-        return Objects.equals(this.m_nodeId, other.m_nodeId);
+        return Objects.equals(this.m_nodeId, other.m_nodeId)
+                && Objects.equals(this.getTimestamp(), other.getTimestamp());
     }
 }

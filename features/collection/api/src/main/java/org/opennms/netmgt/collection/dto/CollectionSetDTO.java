@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collection.dto;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -51,14 +50,15 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.builder.Attribute;
-import org.opennms.netmgt.collection.support.builder.CollectionStatus;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.Resource;
-import org.opennms.netmgt.model.ResourcePath;
 
 @XmlRootElement(name = "collection-set")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -68,18 +68,22 @@ public class CollectionSetDTO implements CollectionSet {
     private CollectionAgentDTO agent;
 
     @XmlAttribute(name="status")
-    private CollectionStatus status;
+    private CollectionStatus status = CollectionStatus.SUCCEEDED;
 
     @XmlAttribute(name="timestamp")
     private Date timestamp;
 
     @XmlElement(name="collection-resource")
-    private List<CollectionResourceDTO> collectionResources;
+    private List<CollectionResourceDTO> collectionResources = new ArrayList<>(0);
+
+    @XmlAttribute(name="disable-counter-persistence")
+    private Boolean disableCounterPersistence;
 
     public CollectionSetDTO() { }
 
     public CollectionSetDTO(CollectionAgent agent, CollectionStatus status,
-            Date timestamp, Map<Resource, List<Attribute<?>>> attributesByResource) {
+            Date timestamp, Map<Resource, List<Attribute<?>>> attributesByResource,
+            boolean disableCounterPersistence) {
         this.agent = new CollectionAgentDTO(agent);
         this.status = status;
         this.timestamp = timestamp;
@@ -87,17 +91,20 @@ public class CollectionSetDTO implements CollectionSet {
         for (Entry<Resource, List<Attribute<?>>> entry : attributesByResource.entrySet()) {
             collectionResources.add(new CollectionResourceDTO(entry.getKey(), entry.getValue()));
         }
+        if (disableCounterPersistence) {
+            this.disableCounterPersistence = disableCounterPersistence;
+        }
     }
 
     @Override
     public String toString() {
-        return String.format("CollectionSetDTO[agent=%s, collectionResources=%s, status=%s, timestamp=%s]",
-                agent, collectionResources, status, timestamp);
+        return String.format("CollectionSetDTO[agent=%s, collectionResources=%s, status=%s, timestamp=%s, disableCounterPersistence=%s]",
+                agent, collectionResources, status, timestamp, disableCounterPersistence);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(agent, collectionResources, status, timestamp);
+        return Objects.hash(agent, collectionResources, status, timestamp, disableCounterPersistence);
     }
 
     @Override
@@ -113,12 +120,13 @@ public class CollectionSetDTO implements CollectionSet {
         return Objects.equals(this.agent, other.agent)
                && Objects.equals(this.collectionResources, other.collectionResources)
                && Objects.equals(this.status, other.status)
-               && Objects.equals(this.timestamp, other.timestamp);
+               && Objects.equals(this.timestamp, other.timestamp)
+               && Objects.equals(this.disableCounterPersistence, other.disableCounterPersistence);
     }
 
     @Override
-    public int getStatus() {
-        return status.getCode();
+    public CollectionStatus getStatus() {
+        return status;
     }
 
     @Override
@@ -135,28 +143,7 @@ public class CollectionSetDTO implements CollectionSet {
         final Set<CollectionResource> collectionResources = new LinkedHashSet<>();
         for (CollectionResourceDTO entry : this.collectionResources) {
             final Resource resource = entry.getResource();
-            final AbstractCollectionResource collectionResource = new AbstractCollectionResource(agent) {
-                @Override
-                public String getResourceTypeName() {
-                    return "*";
-                }
-
-                @Override
-                public String getInstance() {
-                    return resource.getInstance();
-                }
-
-                @Override
-                public ResourcePath getPath() {
-                    return ResourcePath.get(super.getPath(), resource.getPath(this));
-                }
-
-                @Override
-                public String toString() {
-                    return String.format("Resource[%s]/Node[%d]", resource, m_agent.getNodeId());
-                }
-            };
-
+            final AbstractCollectionResource collectionResource = CollectionSetBuilder.toCollectionResource(resource, agent);
             for (Attribute<?> attribute : entry.getAttributes()) {
                 final AttributeGroupType groupType = new AttributeGroupType(attribute.getGroup(), AttributeGroupType.IF_TYPE_ALL);
                 final AbstractCollectionAttributeType attributeType = new AbstractCollectionAttributeType(groupType) {
@@ -181,7 +168,7 @@ public class CollectionSetDTO implements CollectionSet {
 
                     @Override
                     public String toString() {
-                        return String.format("AttributeType[%s]/type[%s]", getName(), getType());
+                        return attribute.toString();
                     }
                 };
 
@@ -199,6 +186,11 @@ public class CollectionSetDTO implements CollectionSet {
                     @Override
                     public String getStringValue() {
                         return attribute.getStringValue();
+                    }
+
+                    @Override
+                    public boolean shouldPersist(ServiceParameters params) {
+                        return !(Boolean.FALSE.equals(disableCounterPersistence) && AttributeType.COUNTER.equals(attribute.getType()));
                     }
 
                     @Override

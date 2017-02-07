@@ -34,21 +34,21 @@ import java.util.Set;
 
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 
 /**
  */
 public abstract class MultiResourceCollectionSet<T extends CollectionResource> extends AbstractCollectionSet {
-	private int m_status = ServiceCollector.COLLECTION_FAILED;
+	private CollectionStatus m_status = CollectionStatus.FAILED;
 	private final Set<T> m_collectionResources = new LinkedHashSet<T>();
 	private Date m_timestamp;
 
 	@Override
-	public final int getStatus() {
+	public final CollectionStatus getStatus() {
 		return m_status;
 	}
 
-	public final void setStatus(int status) {
+	public final void setStatus(CollectionStatus status) {
 		m_status = status;
 	}
 

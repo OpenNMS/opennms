@@ -38,8 +38,13 @@ import java.util.Objects;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.dto.CollectionSetDTO;
+import org.opennms.netmgt.collection.support.AbstractCollectionResource;
+import org.opennms.netmgt.collection.support.ConstantTimeKeeper;
 import org.opennms.netmgt.collection.support.NumericAttributeUtils;
+import org.opennms.netmgt.model.ResourcePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +65,7 @@ public class CollectionSetBuilder {
     private CollectionStatus m_status = CollectionStatus.SUCCEEDED;
     private Date m_timestamp = new Date();
     private Map<Resource, List<Attribute<?>>> m_attributesByResource = new LinkedHashMap<>();
+    private boolean m_disableCounterPersistence = false;
 
     public CollectionSetBuilder(CollectionAgent agent) {
         m_agent = Objects.requireNonNull(agent, "agent cannot be null");
@@ -115,7 +121,54 @@ public class CollectionSetBuilder {
         return this;
     }
 
+    public CollectionSetBuilder disableCounterPersistence(boolean disableCounterPersistence) {
+        m_disableCounterPersistence = disableCounterPersistence;
+        return this;
+    }
+
     public CollectionSetDTO build() {
-        return new CollectionSetDTO(m_agent, m_status, m_timestamp, m_attributesByResource);
+        return new CollectionSetDTO(m_agent, m_status, m_timestamp, m_attributesByResource, m_disableCounterPersistence);
+    }
+
+    public static AbstractCollectionResource toCollectionResource(Resource resource, CollectionAgent agent) {
+        return new AbstractCollectionResource(agent) {
+            @Override
+            public String getResourceTypeName() {
+                return "*";
+            }
+
+            @Override
+            public String getInstance() {
+                return resource.getInstance();
+            }
+
+            @Override
+            public ResourcePath getPath() {
+                return ResourcePath.get(super.getPath(), resource.getPath(this));
+            }
+
+            @Override
+            public TimeKeeper getTimeKeeper() {
+                if (resource.getTimestamp() != null) {
+                    return new ConstantTimeKeeper(resource.getTimestamp());
+                }
+                return null;
+            }
+
+            @Override
+            public String toString() {
+                return resource.toString();
+            }
+        };
+    }
+
+    public int getNumResources() {
+        return m_attributesByResource.keySet().size();
+    }
+
+    public int getNumAttributes() {
+        return m_attributesByResource.values().stream()
+                    .mapToInt(attrs -> attrs.size())
+                    .sum();
     }
 }
