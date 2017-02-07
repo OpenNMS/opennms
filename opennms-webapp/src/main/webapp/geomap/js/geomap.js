@@ -42,7 +42,6 @@ Geomap = function() {
         };
         var theMap = undefined;
         var markersGroup = undefined;
-        var markersData = [];
 
         var triggerRetry = function(fn) {
             if (timer != undefined) {
@@ -123,7 +122,6 @@ Geomap = function() {
 
         var resetMap = function(theMarkers) {
             markersGroup.clearLayers();
-            markersData = [];
             var icons = getIcons();
             for (var i = 0; i < theMarkers.length; i++) {
                 var markerData = theMarkers[i];
@@ -144,7 +142,6 @@ Geomap = function() {
                     marker.bindPopup(popup);
                     marker.data = markerData;
                     markersGroup.addLayer(marker);
-                    markersData.push(markerData);
                 }
             }
         };
@@ -400,15 +397,16 @@ Geomap = function() {
                         var severityArray = [0, 0, 0, 0, 0, 0, 0];
                         var classArray = severities;
 
-                        for (var i = 0; i < markersData.length; i++) {
-                            severityArray[markersData[i].severityInfo.id - 1]++;
-                            if (severity < markersData[i].severityInfo.id) {
-                                severity = markersData[i].severityInfo.id;
-                                severityLabel = markersData[i].severityInfo.label
+                        for (var i = 0; i < cluster.getAllChildMarkers().length; i++) {
+                            var markerData = cluster.getAllChildMarkers()[i].data;
+                            severityArray[markerData.severityInfo.id - 1]++;
+                            if (severity < markerData.severityInfo.id) {
+                                severity = markerData.severityInfo.id;
+                                severityLabel = markerData.severityInfo.label
                             }
                         }
 
-                        var svg = createSvgElement(severityArray.slice(2, severityArray.length), classArray, markersData.length);
+                        var svg = createSvgElement(severityArray.slice(2, severityArray.length), classArray, cluster.getAllChildMarkers().length);
                         return L.divIcon({
                             iconSize: L.point(40, 40),
                             className: "marker-cluster marker-cluster-" + severityLabel,
