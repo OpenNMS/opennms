@@ -321,7 +321,7 @@ public class ThresholdingSet {
         // Find the filters for threshold definition for selected group/dataSource
         ResourceFilter[] filters = thresholdEntity.getThresholdConfig().getBasethresholddef().getResourceFilter();
         if (filters.length == 0) {
-            LOG.info("passedThresholdFilters: No filters found for threshold {}", thresholdEntity.toString());
+            LOG.info("passedThresholdFilters: No filters found for threshold {}", thresholdEntity);
             return true;
         }
 

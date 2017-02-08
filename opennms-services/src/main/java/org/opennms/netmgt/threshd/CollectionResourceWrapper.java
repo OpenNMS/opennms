@@ -476,11 +476,15 @@ public class CollectionResourceWrapper {
      */
     public String getFieldValue(String ds) {
 
-        LOG.debug("getFieldValue: Getting Value for {}::{}", m_resource.getResourceTypeName(), ds);
 
         if (ds == null || "".equals(ds)) {
+            LOG.warn("getFieldValue: No resource attribute defined specified, returning null");
             return null;
-        } else if ("nodeid".equalsIgnoreCase(ds)) {
+        }
+
+        LOG.debug("getFieldValue: Getting Value for {}::{}", m_resource.getResourceTypeName(), ds);
+
+        if ("nodeid".equalsIgnoreCase(ds)) {
             return Integer.toString(m_nodeId);
         } else if ("ipaddress".equalsIgnoreCase(ds)) {
             return m_hostAddress;
