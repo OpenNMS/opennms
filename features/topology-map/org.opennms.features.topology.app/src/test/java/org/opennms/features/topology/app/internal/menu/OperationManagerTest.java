@@ -44,10 +44,10 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import com.google.common.collect.Lists;
 import com.vaadin.ui.MenuBar;
 
-public class MenuManagerTest {
+public class OperationManagerTest {
     @Test
     public void submenuAlphabeticalOrderTest() {
-        MenuManager cmdManager = new MenuManager();
+        OperationManager cmdManager = new OperationManager();
         cmdManager.addOrUpdateGroupOrder("File", Lists.newArrayList("new", "additions"));
         cmdManager.onBind(createTestOperation(), createProperties("File", "Operation1?group=new", ""));
         cmdManager.onBind(createTestOperation(), createProperties("File", "Operation3", ""));
@@ -75,7 +75,7 @@ public class MenuManagerTest {
 
     @Test
     public void groupingSeparatorTest() {
-        MenuManager cmdManager = new MenuManager();
+        OperationManager cmdManager = new OperationManager();
         cmdManager.addOrUpdateGroupOrder("Default", Lists.newArrayList("new", "help", "additions"));
 
         cmdManager.onBind(createTestOperation(), createProperties("Device", "Operation1?group=additions", ""));
@@ -102,7 +102,7 @@ public class MenuManagerTest {
 
     @Test
     public void layoutEditMenuGroupingTest() {
-        MenuManager cmdManager = new MenuManager();
+        OperationManager cmdManager = new OperationManager();
         cmdManager.addOrUpdateGroupOrder("Edit", Lists.newArrayList("new", "layout", "additions"));
 
         cmdManager.onBind(createTestOperation(), createProperties("Edit", "Circle Layout?group=layout", ""));
@@ -131,7 +131,7 @@ public class MenuManagerTest {
 
     @Test
     public void layoutEditMenuGroupingNoGroupTest() {
-        MenuManager cmdManager = new MenuManager();
+        OperationManager cmdManager = new OperationManager();
         cmdManager.addOrUpdateGroupOrder("Edit", Lists.newArrayList("new", "middle", "additions"));
 
         cmdManager.onBind(createTestOperation(), createProperties("Edit", "Circle Layout?group=layout", ""));
@@ -159,7 +159,7 @@ public class MenuManagerTest {
 
     @Test
     public void submenuGroupOrderAlphabeticallyTest() {
-        MenuManager cmdManager = new MenuManager();
+        OperationManager cmdManager = new OperationManager();
         cmdManager.addOrUpdateGroupOrder("File", Lists.newArrayList("new", "help", "additions"));
 
         cmdManager.onBind(createTestOperation(), createProperties("File", "Operation1", ""));
@@ -201,7 +201,7 @@ public class MenuManagerTest {
         expected.put("Help", Lists.newArrayList("start", "main", "tools", "updates", "end", "additions"));
         expected.put("Default", Lists.newArrayList("start", "main", "end", "additions"));
 
-        MenuManager cmdManager = new MenuManager();
+        OperationManager cmdManager = new OperationManager();
         cmdManager.updateMenuConfig(props);
         Map<String, List<String>> actual = cmdManager.getMenuOrderConfig();
 
@@ -245,9 +245,9 @@ public class MenuManagerTest {
         };
     }
     
-    private static TopologyMenuBar getMenuBar(MenuManager menuManager) {
+    private static TopologyMenuBar getMenuBar(OperationManager operationManager) {
         TopologyMenuBar topologyMenuBar = new TopologyMenuBar();
-        topologyMenuBar.buildMenu(null, null, menuManager);
+        topologyMenuBar.buildMenu(null, null, operationManager);
         return topologyMenuBar;
     }
 }

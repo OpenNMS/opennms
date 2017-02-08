@@ -42,15 +42,9 @@ import org.opennms.features.topology.api.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.MenuBar;
+public class OperationManager {
 
-/**
- * Helper class to manage creation of the {@link MenuBar} and the {@link org.vaadin.peter.contextmenu.ContextMenu}
- * of the Topology UI.
- */
-public class MenuManager {
-
-	private static final Logger LOG = LoggerFactory.getLogger(MenuManager.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OperationManager.class);
 
 	/**
 	 * {@ink Operation} registered to the OSGI service registry (including the service properties).

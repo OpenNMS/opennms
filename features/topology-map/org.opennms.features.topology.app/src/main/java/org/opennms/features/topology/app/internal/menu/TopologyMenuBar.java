@@ -56,7 +56,7 @@ public class TopologyMenuBar extends MenuBar {
     }
 
     // Builds the menu
-    public void buildMenu(GraphContainer graphContainer, UI mainWindow, MenuManager menuManager) {
+    public void buildMenu(GraphContainer graphContainer, UI mainWindow, OperationManager operationManager) {
         final DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, OperationContext.DisplayLocation.MENUBAR);
         final ArrayList<VertexRef> targets = new ArrayList<>(graphContainer.getSelectionManager().getSelectedVertexRefs());
 
@@ -65,9 +65,9 @@ public class TopologyMenuBar extends MenuBar {
 
         // Build new Menu
         MenuBuilder menuBuilder = new MenuBuilder();
-        menuBuilder.setTopLevelMenuOrder(menuManager.getTopLevelMenuOrder());
-        menuBuilder.setSubMenuGroupOrder(menuManager.getSubMenuGroupOrder());
-        for (OperationServiceWrapper operationServiceWrapper : menuManager.getOperationWrappers()) {
+        menuBuilder.setTopLevelMenuOrder(operationManager.getTopLevelMenuOrder());
+        menuBuilder.setSubMenuGroupOrder(operationManager.getSubMenuGroupOrder());
+        for (OperationServiceWrapper operationServiceWrapper : operationManager.getOperationWrappers()) {
             if (operationServiceWrapper.getMenuPosition() != null) { // if menu position is null, there is no place to put it
                 org.opennms.features.topology.app.internal.menu.MenuItem item = new OperationMenuItem(operationServiceWrapper);
                 menuBuilder.addMenuItem(item, operationServiceWrapper.getMenuPosition().split("\\|"));

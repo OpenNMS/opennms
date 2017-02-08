@@ -70,7 +70,7 @@ public class TopologyContextMenu extends ContextMenu {
 		setAsContextMenuOf(ui);
 	}
 
-	public void buildMenu(GraphContainer graphContainer, UI mainWindow, MenuManager menuManager, List<VertexRef> targets) {
+	public void buildMenu(GraphContainer graphContainer, UI mainWindow, OperationManager operationManager, List<VertexRef> targets) {
 		final OperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, OperationContext.DisplayLocation.CONTEXTMENU);
 
 		// Clear Menu
@@ -78,7 +78,7 @@ public class TopologyContextMenu extends ContextMenu {
 
 		// Rebuild menu
 		MenuBuilder menuBuilder = new MenuBuilder();
-		for (OperationServiceWrapper operationServiceWrapper : menuManager.getOperationWrappers()) {
+		for (OperationServiceWrapper operationServiceWrapper : operationManager.getOperationWrappers()) {
 			if (operationServiceWrapper.getContextMenuPosition() != null) {
 				MenuItem item = new OperationMenuItem(operationServiceWrapper);
 				menuBuilder.addMenuItem(item, operationServiceWrapper.getContextMenuPosition().isEmpty() ? null: operationServiceWrapper.getContextMenuPosition().split("\\|"));
