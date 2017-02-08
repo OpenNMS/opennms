@@ -113,9 +113,16 @@ public class GenericTypeResource implements Resource {
     }
 
     @Override
+    public String getTypeName() {
+        return m_resourceType.getName();
+    }
+
+    @Override
     public String toString() {
         return String.format("GenericTypeResource[node=%s, resourceType=%s,"
                 + "storageStrategy=%s, persistenceSelectorStrategy=%s",
                 m_node, m_resourceType, m_storageStrategy, m_persistenceSelectorStrategy);
     }
+
+
 }
