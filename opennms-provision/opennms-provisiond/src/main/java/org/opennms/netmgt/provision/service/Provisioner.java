@@ -44,7 +44,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.joda.time.Duration;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.tasks.TaskCoordinator;
@@ -245,7 +244,7 @@ public class Provisioner implements SpringServiceDaemon {
         checkNodeListForRemovals(schedules);
         
         for(final NodeScanSchedule schedule : schedules) {
-            if (Duration.ZERO.equals(schedule.getScanInterval())) {
+            if (schedule.getScanInterval().getMillis() <= 0) {
                 continue;
             }
             if(!m_scheduledNodes.containsKey(schedule.getNodeId())) {
