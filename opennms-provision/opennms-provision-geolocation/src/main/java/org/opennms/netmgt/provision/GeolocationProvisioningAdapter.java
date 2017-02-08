@@ -47,6 +47,8 @@ public class GeolocationProvisioningAdapter extends SimplerQueuedProvisioningAda
 
     private static final Logger LOG = LoggerFactory.getLogger(GeolocationProvisioningAdapter.class);
 
+    private boolean enabled = Boolean.valueOf(System.getProperty("org.opennms.provisiond.resolveMissingCoordinatesFromAddressString", "true"));
+
     private NodeDao nodeDao;
 
     private ServiceRegistry serviceRegistry;
@@ -57,7 +59,9 @@ public class GeolocationProvisioningAdapter extends SimplerQueuedProvisioningAda
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        serviceRegistry = BeanUtils.getBean("soaContext", "serviceRegistry", ServiceRegistry.class);
         Objects.requireNonNull(nodeDao);
+        Objects.requireNonNull(serviceRegistry);
     }
 
     @Override
@@ -67,20 +71,18 @@ public class GeolocationProvisioningAdapter extends SimplerQueuedProvisioningAda
     }
 
     @Override
-    public boolean isNodeReady(AdapterOperation op) {
-        if (op.getType() == AdapterOperationType.ADD || op.getType() == AdapterOperationType.UPDATE) {
-            return nodeDao.get(op.getNodeId()) != null && getGeolocationResolver() != null;
-        }
-        return true;
-    }
-
-    @Override
     public void doUpdateNode(int nodeId) {
         LOG.debug("Invoked doUpdateNode on node with id {}.", nodeId);
         doUpdateNodeInternal(nodeId);
     }
 
     private void doUpdateNodeInternal(int nodeId) {
+        if (!enabled || getGeolocationResolver() == null) {
+            LOG.info("{} is either disabled manually or no GeocoderService is available (disabled={}, GeocoderService available={})", getName(), !enabled, getGeolocationResolver() != null);
+            return;
+        }
+
+        // Update geolocation information if required
         final OnmsNode node = getNode(nodeId);
         final OnmsGeolocation geolocation = node.getAssetRecord().getGeolocation();
 
@@ -122,15 +124,7 @@ public class GeolocationProvisioningAdapter extends SimplerQueuedProvisioningAda
         return onmsNode;
     }
 
-    private ServiceRegistry getServiceRegistry() {
-        if (serviceRegistry == null) {
-            serviceRegistry = BeanUtils.getBean("soaContext", "serviceRegistry", ServiceRegistry.class);
-            Objects.requireNonNull(serviceRegistry);
-        }
-        return serviceRegistry;
-    }
-
     private GeolocationResolver getGeolocationResolver() {
-        return getServiceRegistry().findProvider(GeolocationResolver.class);
+        return serviceRegistry.findProvider(GeolocationResolver.class);
     }
 }
