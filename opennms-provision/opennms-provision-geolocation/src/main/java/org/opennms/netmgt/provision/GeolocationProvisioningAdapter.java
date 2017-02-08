@@ -76,32 +76,6 @@ public class GeolocationProvisioningAdapter extends SimplerQueuedProvisioningAda
         doUpdateNodeInternal(nodeId);
     }
 
-    private void doUpdateNodeInternal(int nodeId) {
-        if (!enabled || getGeolocationResolver() == null) {
-            LOG.info("{} is either disabled manually or no GeocoderService is available (disabled={}, GeocoderService available={})", getName(), !enabled, getGeolocationResolver() != null);
-            return;
-        }
-
-        // Update geolocation information if required
-        final OnmsNode node = getNode(nodeId);
-        final OnmsGeolocation geolocation = node.getAssetRecord().getGeolocation();
-
-        // Only resolve long/lat if not already set and an address is set
-        if (geolocation.getLatitude() == null
-                    && geolocation.getLatitude() == null
-                    && !Strings.isNullOrEmpty(geolocation.asAddressString())) {
-
-            final Coordinates coordinates = getGeolocationResolver().resolve(geolocation.asAddressString());
-            if (coordinates != null) {
-                geolocation.setLongitude(coordinates.getLongitude());
-                geolocation.setLatitude(coordinates.getLatitude());
-                nodeDao.saveOrUpdate(node);
-            } else {
-                LOG.warn("Could not resolve address string '{}' for node with id {}", geolocation.asAddressString(), nodeId);
-            }
-        }
-    }
-
     @Override
     public void doDeleteNode(int nodeid) {
         LOG.debug("Invoked doDeleteNode on node with id {}. Nothing to do.", nodeid);
@@ -127,4 +101,31 @@ public class GeolocationProvisioningAdapter extends SimplerQueuedProvisioningAda
     private GeolocationResolver getGeolocationResolver() {
         return serviceRegistry.findProvider(GeolocationResolver.class);
     }
+
+    private void doUpdateNodeInternal(int nodeId) {
+        if (!enabled || getGeolocationResolver() == null) {
+            LOG.info("{} is either disabled manually or no GeocoderService is available (disabled={}, GeocoderService available={})", getName(), !enabled, getGeolocationResolver() != null);
+            return;
+        }
+
+        // Update geolocation information if required
+        final OnmsNode node = getNode(nodeId);
+        final OnmsGeolocation geolocation = node.getAssetRecord().getGeolocation();
+
+        // Only resolve long/lat if not already set and an address is set
+        if (geolocation.getLatitude() == null
+                && geolocation.getLatitude() == null
+                && !Strings.isNullOrEmpty(geolocation.asAddressString())) {
+
+            final Coordinates coordinates = getGeolocationResolver().resolve(geolocation.asAddressString());
+            if (coordinates != null) {
+                geolocation.setLongitude(coordinates.getLongitude());
+                geolocation.setLatitude(coordinates.getLatitude());
+                nodeDao.saveOrUpdate(node);
+            } else {
+                LOG.warn("Could not resolve address string '{}' for node with id {}", geolocation.asAddressString(), nodeId);
+            }
+        }
+    }
+
 }
