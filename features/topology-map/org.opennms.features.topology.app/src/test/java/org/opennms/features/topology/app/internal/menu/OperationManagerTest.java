@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal.menu;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -37,8 +38,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.google.common.collect.Lists;
@@ -246,8 +250,15 @@ public class OperationManagerTest {
     }
     
     private static TopologyMenuBar getMenuBar(OperationManager operationManager) {
+        // Mock all the things
+        GraphContainer graphContainerMock = Mockito.mock(GraphContainer.class);
+        SelectionManager selectionManagerMock = Mockito.mock(SelectionManager.class);
+        Mockito.when(graphContainerMock.getSelectionManager()).thenReturn(selectionManagerMock);
+        Mockito.when(selectionManagerMock.getSelectedVertexRefs()).thenReturn(new ArrayList<>());
+
+        // Create menu bar
         TopologyMenuBar topologyMenuBar = new TopologyMenuBar();
-        topologyMenuBar.updateMenu(null, null, operationManager);
+        topologyMenuBar.updateMenu(graphContainerMock, null, operationManager);
         return topologyMenuBar;
     }
 }
