@@ -63,6 +63,11 @@ public class InterfaceLevelResource implements Resource {
     }
 
     @Override
+    public String getTypeName() {
+        return CollectionResource.RESOURCE_TYPE_IF;
+    }
+
+    @Override
     public String toString() {
         return String.format("InterfaceLevelResource[node=%s, ifName=%s]", m_node, m_ifName);
     }
