@@ -33,7 +33,6 @@ import org.opennms.features.topology.app.internal.gwt.client.HudDisplayState;
 import com.vaadin.ui.AbstractComponent;
 
 public class HudDisplay extends AbstractComponent {
-    private static final long serialVersionUID = 1L;
 
     public void setVertexFocusCount(int count){
         getState().setVertexFocusCount(count);
