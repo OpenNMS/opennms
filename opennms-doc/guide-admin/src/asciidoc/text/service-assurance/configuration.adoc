@@ -1,0 +1,54 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-pollerd-configuration]]
+=== Pollerd Configuration
+
+.Configuration and log files related to Pollerd.
+[options="header, autowidth"]
+|===
+| File                                          | Description
+| `$OPENNMS_HOME/etc/poller-configuration.xml`  | Configuration file for monitors and global daemon configuration
+| `$OPENNMS_HOME/logs/poller.log`               | Log file for all monitors and the global _Pollerd_
+| `$OPENNMS_HOME/etc/response-graph.properties` | RRD graph definitions for service response time measurements
+| `$OPENNMS_HOME/etc/events/opennms.events.xml` | Event definitions for _Pollerd_, i.e. _nodeLostService_, _interfaceDown_ or _nodeDown_
+|===
+
+To change the behavior for service monitoring, the `poller-configuration.xml` can be modified.
+The configuration file is structured in the following parts:
+
+* _Global daemon config_: Define the size of the used _Thread Pool_ to run _Service Monitors_ in parallel.
+  Define and configure the _Critical Service_ for _Node Event Correlation_.
+* _Polling packages_: Package to allow grouping of configuration parameters for _Service Monitors_.
+* _Downtime Model_: Configure the behavior of _Pollerd_ to run tests in case of an _Outage_ is detected.
+* _Monitor service association_: Based on the name of the service, the implementation for application or network management protocols are assigned.
+
+.Global configuration parameters for Pollerd
+[source, xml]
+----
+<poller-configuration threads="30" <1>
+                      pathOutageEnabled="false" <2>
+                      serviceUnresponsiveEnabled="false"> <3>
+----
+
+<1> Size of the _Thread Pool_ to run _Service Monitors_ in parallel
+<2> Enable or Disable _Path Outage_ functionality based on a _Critical Node_ in a network path
+<3> In case of unresponsive service services a _serviceUnresponsive_ event is generated and not an outage.
+    It prevents to apply the _Downtime Model_ to retest the service after 30 seconds and prevents false alarms.
+
+Configuration changes are applied by restarting _OpenNMS_ and _Pollerd_.
+It is also possible to send an _Event_ to _Pollerd_ reloading the configuration.
+An _Event_ can be sent on the _CLI_ or the _Web User Interface_.
+
+.Send configuration reload event on CLI
+[source, shell]
+----
+cd $OPENNMS_HOME/bin
+./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Pollerd'
+----
+
+.Send configuration reload event with the Web User Interface
+image::service-assurance/04_send-event-WebUI.png[]
+
+IMPORTANT: If you define *new* services in `poller-configuration.xml` a service restart of _OpenNMS_ is necessary.

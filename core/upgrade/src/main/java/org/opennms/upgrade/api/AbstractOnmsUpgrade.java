@@ -353,7 +353,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @param filesToCompress the list of files to compress
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    private void zipFiles(File zipFile, File sourceFolder, List<File> filesToCompress) throws OnmsUpgradeException {
+    private File zipFiles(File zipFile, File sourceFolder, List<File> filesToCompress) throws OnmsUpgradeException {
         try {
             FileOutputStream fos = new FileOutputStream(zipFile);
             ZipOutputStream zos = new ZipOutputStream(fos);
@@ -374,6 +374,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
             zos.flush();
             zos.close();
             fos.close();
+            return zipFile;
         } catch (Exception e) {
             throw new OnmsUpgradeException("Cannot ZIP files because " + e.getMessage(), e);
         }
@@ -403,8 +404,8 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @param sourceFile the source file
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    protected void zipFile(File sourceFile) throws OnmsUpgradeException {
-        zipFiles(new File(sourceFile.getAbsolutePath() + ZIP_EXT), sourceFile.getParentFile(), Collections.singletonList(sourceFile));
+    protected File zipFile(File sourceFile) throws OnmsUpgradeException {
+        return zipFiles(new File(sourceFile.getAbsolutePath() + ZIP_EXT), sourceFile.getParentFile(), Collections.singletonList(sourceFile));
     }
 
     /**

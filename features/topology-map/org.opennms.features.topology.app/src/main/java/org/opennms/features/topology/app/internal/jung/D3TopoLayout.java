@@ -28,20 +28,19 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
+import java.awt.geom.Point2D;
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Pair;
-
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
 import org.opennms.features.topology.api.DblBoundingBox;
 import org.opennms.features.topology.app.internal.jung.QuadTree.Node;
 import org.opennms.features.topology.app.internal.jung.QuadTree.Visitor;
-
-import java.awt.geom.Point2D;
-import java.util.HashMap;
-import java.util.Map;
 
 public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements IterativeContext {
 
@@ -156,12 +155,6 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         if(getDefaultCharge() != 0){
             
             DblBoundingBox bounds = new DblBoundingBox(0,0,getSize().getWidth(), getSize().getHeight());
-            //for(V v : getGraph().getVertices()) {
-            //    VertexData vData = getVertexData(v);
-            //    DblBoundingBox rounded = new DblBoundingBox((int)vData.getX(), (int)vData.getY(), 1, 1);
-            //    bounds.addBoundingbox(rounded);
-            //}
-            
             QuadTree<VertexData> quadTree = new QuadTree<VertexData>(bounds);
             for(V v : getGraph().getVertices()) {
                 VertexData vData = getVertexData(v);
@@ -210,7 +203,6 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         for(V v : getGraph().getVertices()) {
             VertexData vData = getVertexData(v);
             Point2D location = transform(v);
-            //System.err.printf("Setting location of %s to (%f, %f)%n", v, vData.getX(), vData.getY());
             location.setLocation(vData.getX(), vData.getY());
         }
         
@@ -248,9 +240,6 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
 
                 currentForce = 1 - currentForce;
                 srcVertexData.offset(xDelta * currentForce, yDelta * currentForce);
-                
-                //System.err.println("Edge Length: " + srcVertexData.distance(targetVertexData));
-
             }
 
         }
@@ -307,7 +296,6 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
             vData.setLocation(x, y);
             vData.setPrevious(tempX, tempY);
             Point2D location = transform(v);
-            //System.err.printf("Setting location of %s to (%f, %f)%n", v, vData.getX(), vData.getY());
             location.setLocation(vData.getX(), vData.getY());
         }
         
@@ -316,9 +304,6 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
 
     }
     
-    // position verlet integration
-    //skipping for now
-
     private double getGravity() {
         return 0.1;
     }
@@ -372,8 +357,6 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
             m_previous.setLocation(m_previous.getX()+x, m_previous.getY()+y);
         }
         
-        
-
         public void setPrevious(Point2D location) {
             m_previous = (Point2D) location.clone();
         }
@@ -381,8 +364,6 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         public void setPrevious(double x, double y) {
             m_previous = new Point2D.Double(x, y);
         }
-
-
 
         @Override
         public void setLocation(double x, double y) {
@@ -393,10 +374,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         }
 
         private void print(String before, String after) {
-            //System.err.printf("Update location from %s to %s%n", before, after);
         }
-        
-
 
         @Override
         public void setLocation(Point2D p) {
@@ -405,8 +383,6 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
             String after = this.toString();
             print(before, after);
         }
-
-
 
         protected double norm()
         {
@@ -462,7 +438,6 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         protected double getDistance() {
             return m_distance;
         }
-
 
         public double getStrength() {
             return m_strength;

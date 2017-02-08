@@ -25,28 +25,21 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+--%>
 
-package org.opennms.web.springframework.security;
+<%@page language="java"
+        contentType="text/html"
+        session="true"
+%>
 
-import java.security.Principal;
-import java.util.Set;
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
+    <jsp:param name="title" value="Business Services Master Page" />
+    <jsp:param name="headTitle" value="Business Services Master Page" />
+    <jsp:param name="location" value="admin" />
+    <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+    <jsp:param name="breadcrumb" value="Business Services Master Page" />
+    <jsp:param name="vaadinEmbeddedStyles" value="true" />
+</jsp:include>
 
-import javax.security.auth.callback.CallbackHandler;
-
-import org.opennms.netmgt.config.api.UserConfig;
-import org.springframework.security.core.GrantedAuthority;
-
-public interface LoginHandler {
-
-    public CallbackHandler callbackHandler();
-    public UserConfig userConfig();
-    public SpringSecurityUserDao springSecurityUserDao();
-
-    public Set<Principal> createPrincipals(final GrantedAuthority authority);
-    public String user();
-    public void setUser(final String user);
-
-    public Set<Principal> principals();
-    public void setPrincipals(final Set<Principal> principals);
-
-}
+<iframe id="vaadin-content" src="osgi/bsm-master-page" frameborder="0" style="height:100%; width:100%;"></iframe>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

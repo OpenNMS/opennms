@@ -168,9 +168,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
         if(m_focusedContainer == null){
             m_focusedContainer = new VerticalPanel();
-
             m_scrollContainer = new FlowPanel();
-            m_scrollContainer.getElement().getStyle().setBackgroundColor("#f9f9f9");
             m_scrollContainer.add(m_focusedContainer);
 
         }

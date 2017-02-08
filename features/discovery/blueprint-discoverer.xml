@@ -1,0 +1,60 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+
+	<!-- Pinger service -->
+	<reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
+
+	<!-- DistPollerDao -->
+	<reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+
+	<!-- Get the current OnmsDistPoller for this system -->
+	<bean id="distPoller" factory-ref="distPollerDao" factory-method="whoami"/>
+
+	<!-- Configuration properties -->
+	<!-- 
+		update-strategy="reload" causes unit test failures because the Blueprint context
+		can be destroyed and recreated by CM properties updates while the Camel context
+		is initializing:
+
+		https://issues.apache.org/jira/browse/ARIES-961
+	-->
+	<cm:property-placeholder id="discovererProperties" persistent-id="org.opennms.netmgt.discoverer" update-strategy="none" placeholder-prefix="$[" placeholder-suffix="]">
+		<cm:default-properties>
+			<!-- Get the location name of the current monitoring system -->
+			<cm:property name="monitoringLocationName">
+				<bean factory-ref="distPoller" factory-method="getLocation"/>
+			</cm:property>
+		</cm:default-properties>
+	</cm:property-placeholder>
+
+	<!-- This processor performs ICMP pings and reports the results -->
+	<bean id="discoverer" class="org.opennms.netmgt.discovery.actors.Discoverer">
+		<argument ref="pinger" />
+	</bean>
+
+	<!-- ActiveMQ component provided by minion-core -->
+	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)"/>
+
+	<camelContext id="discovererCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+		<propertyPlaceholder id="properties" location="blueprint:discovererProperties" />
+
+		<!-- Location queue -->
+		<route id="discovererRoute">
+			<!-- TODO: Use a more sophisticated naming convention for this queue. See NMS-8217 -->
+			<from uri="queuingservice:Location-{{monitoringLocationName}}" />
+			<log loggingLevel="INFO" message="blueprint-discovery.xml: Executing DiscoveryJob" />
+			<log loggingLevel="INFO" message="blueprint-discovery.xml: ${body}" />
+			<bean ref="discoverer" />
+		</route>
+	</camelContext>
+
+</blueprint>

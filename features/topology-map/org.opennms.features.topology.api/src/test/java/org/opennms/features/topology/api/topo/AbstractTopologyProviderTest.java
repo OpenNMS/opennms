@@ -29,26 +29,39 @@
 package org.opennms.features.topology.api.topo;
 
 import java.net.MalformedURLException;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 
 public class AbstractTopologyProviderTest {
 
     @Test
     public void testIdGenerator() throws MalformedURLException, JAXBException {
         AbstractTopologyProvider provider = new AbstractTopologyProvider("test") {
-            
+
+            @Override
+            public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+                return SelectionChangedListener.Selection.NONE;
+            }
+
+            @Override
+            public boolean contributesTo(ContentType type) {
+                return true;
+            }
+
             @Override
             public void save() {
-                ; // nothing to do 
+                // nothing to do
             }
             
             @Override
             public void refresh() {
-                ; // nothing to do
+                // nothing to do
             }
 
             @Override

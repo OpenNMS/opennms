@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features 
+  name="minion-${project.version}"
+  xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 http://karaf.apache.org/xmlns/features/v1.0.0"
+>
+    <!-- OpenNMS Features -->
+    <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
+
+    <!-- TODO: Maybe this is already defined somewhere else -->
+    <feature name="minion-core-api" description="OpenNMS :: Minion :: Core :: API" version="${project.version}">
+      <bundle>mvn:org.opennms.features.minion/core-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-discoverer" description="OpenNMS :: Discovery :: Discoverer" version="${project.version}">
+      <feature>opennms-discovery</feature>
+      <feature>opennms-discovery-distPollerDaoMinion</feature>
+      <feature>opennms-icmp-jna</feature>
+      <feature>minion-core-api</feature>
+      <bundle>blueprint:mvn:org.opennms.features/org.opennms.features.discovery/${project.version}/xml/blueprint-discoverer</bundle>
+    </feature>
+
+    <!-- TODO: Refactor this into a common Minion-only DAO package -->
+    <feature name="opennms-discovery-distPollerDaoMinion" description="OpenNMS :: Discovery :: DistPollerDaoMinion" version="${project.version}">
+      <feature>opennms-dao-api</feature>
+      <feature>opennms-discovery</feature>
+      <feature>minion-core-api</feature>
+      <bundle>blueprint:mvn:org.opennms.features/org.opennms.features.discovery/${project.version}/xml/blueprint-discovery-distPollerDaoMinion</bundle>
+    </feature>
+</features>

@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal.operations;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.OperationContext.DisplayLocation;
@@ -38,16 +39,18 @@ import org.opennms.features.topology.app.internal.TopologyUI;
 
 public class RedoLayoutOperation implements Operation {
 
-	@Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-        if (operationContext != null && operationContext.getGraphContainer() != null) {
-            //operationContext.getGraphContainer().getBaseTopology().refresh();
-            //operationContext.getGraphContainer().setDirty(true);
-            operationContext.getGraphContainer().redoLayout();
+    public void execute(final GraphContainer graphContainer) {
+            graphContainer.getBaseTopology().refresh();
+            graphContainer.setDirty(true);
+            graphContainer.redoLayout();
             TopologyUI.getCurrent().markAsDirtyRecursive();
+    }
 
+    @Override
+    public void execute(List<VertexRef> targets, OperationContext operationContext) {
+        if (operationContext != null && operationContext.getGraphContainer() != null) {
+            execute(operationContext.getGraphContainer());
         }
-        return null;
     }
 
     @Override

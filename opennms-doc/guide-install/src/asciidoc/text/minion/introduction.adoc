@@ -1,0 +1,17 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-minion]]
+== OpenNMS Minion
+
+_Minion_ gives enterprises the ability to create a globally distributed, scalable monitoring fabric.
+
+IMPORTANT: Support for _Minion_ is currently _experimental_ and packages are only available for RHEL-based systems.
+
+NOTE: Before attempting to setup _Minion_, you must have an instance of _OpenNMS_ set up using the same version of the packages.
+
+_Minion_ can be installed on the same system as _OpenNMS_ or on other systems provided that it can communicate with:
+
+. The OpenNMS REST interface
+. The ActiveMQ broker used by OpenNMS

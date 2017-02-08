@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.ticketd;
 
+import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.api.integration.ticketing.*;
@@ -103,16 +104,17 @@ public class DroolsTicketerServiceLayer extends DefaultTicketerServiceLayer {
 	 * Called from API implemented method after successful retrieval of Alarm.
 	 * 
 	 * @param alarm OpenNMS Model class alarm
-	 * @return OpenNMS Ticket processed by Drools logic.
+	 * @param attributes
+     * @return OpenNMS Ticket processed by Drools logic.
 	 */
     @Override
-    protected Ticket createTicketFromAlarm(OnmsAlarm alarm) {
-        LOG.debug("createTicketFromAlarm: Processing ticket.");
-        
+    protected Ticket createTicketFromAlarm(OnmsAlarm alarm, Map<String, String> attributes) {
+        LOG.debug("Initializing ticket from alarm: {}", alarm);
+
         // Call superclass method if the knowledge-base was not properly created.
         if( m_knowledgeBase == null ) {
             LOG.error("KnowledgeBase is NULL, creating basic ticket form alarm.");
-            return super.createTicketFromAlarm(alarm);
+            return super.createTicketFromAlarm(alarm, attributes);
         }
         
         Ticket ticket = new Ticket();
@@ -127,8 +129,8 @@ public class DroolsTicketerServiceLayer extends DefaultTicketerServiceLayer {
         } finally {
             session.dispose();
         }
-        
-        LOG.debug("createTicketFromAlarm: Succesfully processed ticket.");
+
+        LOG.debug("Successfully initialized ticket: {} from alarm: {}.", ticket, alarm);
         return ticket;
     }
 }

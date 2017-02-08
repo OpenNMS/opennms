@@ -29,7 +29,6 @@
 
   <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
-    <property name="location" value="file:${opennms.home}/etc/model-importer.properties" />
     <!-- 
       We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
       preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
@@ -40,8 +39,14 @@
       TODO: Fix this behavior after upgrading to Spring 3.1.
     -->
     <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    <property name="properties">
+      <props>
+        <prop key="importer.foreign-source.dir">${opennms.home}/etc/foreign-sources</prop>
+        <prop key="importer.requisition.dir">${opennms.home}/etc/imports</prop>
+      </props>
+    </property>
   </bean>
-  
+
   <!-- 
     DataSourceFactory has been changed to return TransactionAwareDataSources so
     legacy code can participate in transactions properly.
@@ -60,6 +65,8 @@
     <property name="dataSource" ref="dataSource" />
     <property name="packagesToScan">
       <list>
+        <!-- TODO: Move into org.opennms.netmgt.model -->
+        <value>org.opennms.netmgt.bsm</value>
         <!-- TODO: Move into org.opennms.netmgt.model -->
         <value>org.opennms.netmgt.config.monitoringLocations</value>
         <value>org.opennms.netmgt.dao.hibernate</value>
@@ -85,6 +92,10 @@
       </value>
     </property>
   </bean>
+  <bean id="sessionFactoryWrapper" class="org.opennms.netmgt.dao.hibernate.DefaultSessionFactoryWrapper">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  <onmsgi:service ref="sessionFactoryWrapper" interface="org.opennms.netmgt.dao.api.SessionFactoryWrapper"/>
 
   <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
     <property name="sessionFactory" ref="sessionFactory" />
@@ -381,6 +392,12 @@
   </bean>
  
   <onmsgi:service interface="org.opennms.netmgt.dao.api.LocationMonitorDao" ref="locationMonitorDao" />
+
+  <bean id="scanReportDao" class="org.opennms.netmgt.dao.hibernate.ScanReportDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+ 
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.ScanReportDao" ref="scanReportDao" />
 
   <bean id="surveillanceViewConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/surveillance-views.xml" />

@@ -6,7 +6,7 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>17.0.1-SNAPSHOT</version>
+        <version>18.0.1-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>jmxconfiggenerator</artifactId>
@@ -42,12 +42,14 @@
                 <groupId>org.opennms.maven.plugins</groupId>
                 <artifactId>features-maven-plugin</artifactId>
                 <configuration>
+                    <features>
+                        <feature>guava</feature>
+                        <feature>commons-io</feature>
+                    </features>
                     <bundles>
                         <bundle>mvn:org.opennms.features/jmxconfiggenerator/${project.version}</bundle>
-                        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
                         <bundle>wrap:mvn:args4j/args4j/${args4jVersion}</bundle>
                         <bundle>wrap:mvn:org.jvnet.opendmk/jmxremote_optional/${jmxremote.optional.version}</bundle>
-                        <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
                         <bundle>mvn:org.apache.velocity/velocity/${velocity.version}</bundle>
                     </bundles>
                 </configuration>
@@ -129,11 +131,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4jVersion}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>args4j</groupId>
@@ -148,17 +152,20 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <!-- Provided by a Karaf feature -->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+            <!-- Provided by a Karaf feature -->
+            <scope>provided</scope>
         </dependency>
 
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     <pluginRepositories>

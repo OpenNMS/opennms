@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>18.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>com.lmax</groupId>
       <artifactId>disruptor</artifactId>
-      <version>3.3.2</version>
+      <version>${lmaxDisruptorVersion}</version>
     </dependency>
     <dependency>
       <groupId>args4j</groupId>

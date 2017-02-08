@@ -247,11 +247,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testModelImporter() {
-        testConfigFile("model-importer.properties");
-    }
-
-    @Test
     /**
      * FIXME: Don't know why this is ignored.
      * 
@@ -286,6 +281,14 @@ public class ConfigTesterTest {
     @Ignore
     public void testNsclientDatacollectionConfig() {
         testConfigFile("nsclient-datacollection-config.xml");
+    }
+
+    /**
+     * Used by the ActiveMQ broker embedded inside applicationContext-daemon.xml.
+     */
+    @Test
+    public void testOpennmsActivemq() {
+        ignoreConfigFile("opennms-activemq.xml");
     }
 
     @Test

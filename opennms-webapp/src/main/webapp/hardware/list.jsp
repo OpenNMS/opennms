@@ -50,7 +50,7 @@
 
     public void init() throws ServletException {
         WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-        hwEntityDao = (HwEntityDao) webAppContext.getBean("hwEntityDao", HwEntityDao.class);
+        hwEntityDao = webAppContext.getBean("hwEntityDao", HwEntityDao.class);
     }
 
     public String getTitle(OnmsHwEntity entity) {

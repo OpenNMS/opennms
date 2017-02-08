@@ -51,6 +51,7 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
         new String[] { "Import and Export Asset Information", "//h3[text()='Import and Export Assets']" },
         new String[] { "Manage Surveillance Categories", "//h3[text()='Surveillance Categories']" },
         new String[] { "Configure Discovery", "//h3[text()='General Settings']" },
+        new String[] { "Run Single Discovery Scan", "//h3[text()='Exclude Ranges']" },
         new String[] { "Configure SNMP Community Names by IP Address", "//h3[text()='SNMP Config Lookup']" },
         new String[] { "Manually Add an Interface", "//h3[text()='Enter IP Address']" },
         new String[] { "Delete Nodes", "//h3[text()='Delete Nodes']" },
@@ -105,11 +106,35 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllLinks() throws Exception {
-        adminPage();
-        findElementById("content");
-        findElementByXpath("//div[contains(@class,'panel-body')]");
-        final int count = countElementsMatchingCss("div.panel-body > ul > li > a");
-        assertEquals("We expect " + m_adminPageEntries.length + " link entries on the admin page.", m_adminPageEntries.length, count);
+        for (final String[] entry : new String[][] {
+                // OpenNMS System
+                new String[] { "Configure Users, Groups and On-Call Roles", "//h3[text()='Users and Groups']" },
+                new String[] { "System Configuration", "//h3[text()='OpenNMS Configuration']" },
+                new String[] { "Instrumentation Log Reader", "//h3[text()='Filtering']" },
+
+                // Operations
+                new String[] { "Configure Discovery", "//h3[text()='General Settings']" },
+                new String[] { "Configure SNMP Community Names by IP Address", "//h3[text()='SNMP Config Lookup']" },
+                new String[] { "Configure SNMP Data Collection per Interface", "//h3[text()='Manage SNMP Data Collection per Interface']" },
+                new String[] { "Manage and Unmanage Interfaces and Services", "//h3[text()='Manage and Unmanage Interfaces and Services']" },
+                new String[] { "Configure Thresholds", "//h3[text()='Threshold Configuration']" },
+                new String[] { "Manually Send an Event", "//h3[text()='Send Event to OpenNMS']" },
+                new String[] { "Configure Notifications", "//h3[text()='Configure Notifications']" },
+                new String[] { "Configure Scheduled Outages", "//form//input[@value='New Name']" },
+                new String[] { "Customize Event Configurations", "//div[@id='content']//iframe" },
+                new String[] { "Configure SNMP Collections and Data Collection Groups", "//div[@id='content']//iframe" },
+                new String[] { "SNMP MIB Compiler", "//div[@id='content']//iframe" },
+                new String[] { "Ops Board Configuration", "//div[@id='content']//iframe" },
+                new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe" },
+                new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe" },
+                new String[] { "Manage Business Services", "//div[@id='content']//iframe" },
+
+                // Node Provisioning
+                new String[] { "Manually Add an Interface", "//h3[text()='Enter IP Address']" },
+                new String[] { "Manage Provisioning Requisitions", "//h3[text()='Default Foreign Source Definition']" },
+                new String[] { "Import and Export Asset Information", "//h3[text()='Import and Export Assets']" },
+                new String[] { "Manage Surveillance Categories", "//h3[text()='Surveillance Categories']" },
+                new String[] { "Delete Nodes", "//h3[text()='Delete Nodes']" },
 
         for (final String[] entry : m_adminPageEntries) {
             LOG.debug("clicking: '{}', expecting: '{}'", entry[0], entry[1]);

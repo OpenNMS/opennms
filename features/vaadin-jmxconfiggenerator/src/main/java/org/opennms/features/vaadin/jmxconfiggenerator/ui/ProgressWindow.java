@@ -28,6 +28,10 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui;
 
+import org.opennms.netmgt.vaadin.core.UIHelper;
+import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
+import org.opennms.features.vaadin.jmxconfiggenerator.jobs.JobManager;
+
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -36,7 +40,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import org.opennms.features.vaadin.jmxconfiggenerator.jobs.JobManager;
 
 /**
  * A modal "PopUp" which shows some text to the user and a "sandglass" (ok it is
@@ -62,7 +65,7 @@ public class ProgressWindow extends Window {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				jobManager.cancelAllJobs();
-				UIHelper.updateView(UiState.ServiceConfigurationView);
+				UIHelper.getCurrent(JmxConfigGeneratorUI.class).updateView(UiState.ServiceConfigurationView);
 			}
 		});
 
@@ -84,7 +87,7 @@ public class ProgressWindow extends Window {
 			@Override
 			public void windowClose(CloseEvent e) {
 				// By default polling is disabled
-				UIHelper.getCurrent().setPollInterval(-1);
+				UIHelper.getCurrent(JmxConfigGeneratorUI.class).setPollInterval(-1);
 			}
 		});
 	}
@@ -95,7 +98,7 @@ public class ProgressWindow extends Window {
 		// We need to poll, otherwise hiding the progress window will not be
 		// visible to the client, because it is triggered by the server.
 		// Polling fixes this. But do not forget to disable polling when closing the window (see above)
-		UIHelper.getCurrent().setPollInterval(250);
+		UIHelper.getCurrent(JmxConfigGeneratorUI.class).setPollInterval(250);
 	}
 
 	public void setLabelText(String label) {

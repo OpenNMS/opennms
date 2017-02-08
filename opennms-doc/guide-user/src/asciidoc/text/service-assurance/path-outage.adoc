@@ -1,0 +1,21 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gu-service-assurance-path-outage]]
+=== Path Outage
+
+An outage of a central core component can cause a lot of node outages and notifications.
+For this reason it is possible to define a _Critical Path_.
+The _Critical Path_ has to be defined from the network perspective of the monitoring system.
+The following image shows a simple example how devices can be reached in a Layer 3 network topology.
+
+[[path-outage-example]]
+.Path Outage example
+image::service-assurance/04_path-outage.png[width=600]
+
+In figure <<path-outage-example, Path Outage example>> implies a network Layer 3 topology.
+From the perspective of the monitoring system, _default-gw-01_ is on the _Critical Path_ to two networks.
+In case _default-gw-01_ is down, it is not possible to reach any node in the two networks behind _default-gw-01_.
+To guide a network administrator to the correct problem, _Notifications_ to all other unreachable _Nodes_ based on the _Critical Path_ are suppressed.
+The administrator will get just one _Notification_ for the _default-gw-01_.

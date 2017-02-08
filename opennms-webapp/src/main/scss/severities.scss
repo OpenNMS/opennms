@@ -42,7 +42,7 @@ $severity-alarm-cleared-border: $color_mountain_mist_approx;
       border-top: 1px solid $table-border-color;
     }
     .bright, &.bright {
-      background-image: url(../images/bg#{$type}.png);
+      background-image: url(/opennms/images/bg#{$type}.png);
       background-repeat: repeat-y;
       background-position: left top;
       padding-left: 18px;

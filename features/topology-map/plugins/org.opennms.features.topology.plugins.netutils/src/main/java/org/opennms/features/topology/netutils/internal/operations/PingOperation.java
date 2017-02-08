@@ -51,28 +51,21 @@ public class PingOperation extends AbstractOperation {
     }
 
     @Override
-    public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
-        final VertexRef target = targets.get(0);
-        final Vertex vertex = getVertexItem(operationContext, target);
-        new PingWindow(vertex, new PingService(pinger)).open();
-        return null;
-    }
+    public void execute(final List<VertexRef> targets, final OperationContext operationContext) {
+        if (targets != null) {
+            for (final VertexRef target : targets) {
+                final String addrValue = getIpAddrValue(operationContext, target);
+                final String labelValue = getLabelValue(operationContext, target);
+                final Integer nodeValue = getNodeIdValue(operationContext, target);
 
-    @Override
-    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        if (targets.size() == 1) {
-            // Only enable if we actually have something to ping
-            String ipAddress = getVertexItem(operationContext, targets.get(0)).getIpAddress();
-            if (!Strings.isNullOrEmpty(ipAddress)) {
-                try {
-                    InetAddressUtils.getInetAddress(ipAddress);
-                    return true;
-                } catch (IllegalArgumentException ex) {
-                    return false;
+                if (addrValue != null && nodeValue != null && nodeValue > 0) {
+                    final Node node = new Node(nodeValue.intValue(), addrValue, labelValue == null? "" : labelValue);
+                    final String url = getPingURL();
+                    final String fullUrl = url.startsWith("/")? url : getFullUrl(url);
+                    operationContext.getMainWindow().addWindow(new PingWindow(node, fullUrl));
                 }
             }
         }
-        return false;
     }
 
     @Override

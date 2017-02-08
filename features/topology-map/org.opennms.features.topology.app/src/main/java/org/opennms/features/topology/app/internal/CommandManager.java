@@ -73,7 +73,7 @@ public class CommandManager {
 			return m_graphContainer;
 		}
 
-                @Override
+		@Override
 		public DisplayLocation getDisplayLocation() {
 			return m_displayLocation;
 		}
@@ -254,8 +254,11 @@ public class CommandManager {
 		for (String topLevelItem : topLevelOrder) {
 			if (!topLevelItem.equals("Additions")) {
 				String key = "submenu." + topLevelItem + ".groups";
-				addOrUpdateGroupOrder(topLevelItem,
-						Arrays.asList(props.get(key).toString().split(",")));
+				Object value = props.get(key);
+				if (value != null) {
+					addOrUpdateGroupOrder(topLevelItem,
+						Arrays.asList(value.toString().split(",")));
+				}
 			}
 		}
 		addOrUpdateGroupOrder(
@@ -288,23 +291,40 @@ public class CommandManager {
 		//Check for null because separators have no Operation
 		
 		try {
-		if(operation != null) {
-    		List<VertexRef> selectedVertices = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
-			boolean visibility = operation.display(selectedVertices, operationContext);
-    		menuItem.setVisible(visibility);
-    		boolean enabled = operation.enabled(selectedVertices, operationContext);
-    		menuItem.setEnabled(enabled);
-    
-    		if (operation instanceof CheckedOperation) {
-    			if (!menuItem.isCheckable()) {
-    				menuItem.setCheckable(true);
-    			}
-    
-    			menuItem.setChecked(((CheckedOperation) operation).isChecked(selectedVertices, operationContext));
-    		}
-		}
+			if(operation != null) {
+				List<VertexRef> selectedVertices = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
+				boolean visibility = operation.display(selectedVertices, operationContext);
+				menuItem.setVisible(visibility);
+				boolean enabled = operation.enabled(selectedVertices, operationContext);
+				menuItem.setEnabled(enabled);
+
+				if (operation instanceof CheckedOperation) {
+					if (!menuItem.isCheckable()) {
+						menuItem.setCheckable(true);
+					}
+
+					menuItem.setChecked(((CheckedOperation) operation).isChecked(selectedVertices, operationContext));
+				}
+			}
 		} catch (final RuntimeException e) {
 		    LoggerFactory.getLogger(this.getClass()).warn("updateMenuItem: operation failed", e);
 		}
+	}
+
+	public <T extends CheckedOperation> T findOperationByLabel(Class<T> operationClass, String label) {
+		if (label == null) {
+			return null; // nothing to do
+		}
+		for (Command eachCommand : m_commandList) {
+			try {
+				OperationCommand opCommand = (OperationCommand) eachCommand;
+				String opLabel = MenuBarBuilder.removeLabelProperties(opCommand.getCaption());
+				if (label.equals(opLabel)) {
+					T operation = (T) opCommand.getOperation();
+					return operation;
+				}
+			} catch (ClassCastException e) {}
+		}
+		return null;
 	}
 }

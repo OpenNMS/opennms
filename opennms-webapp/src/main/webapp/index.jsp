@@ -48,6 +48,16 @@
            if (Boolean.parseBoolean(showNodesWithOutages)) { %>
 		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
         <% } %>
+		<!-- Business Services box -->
+		<% String showBusinessServicesProblems = System.getProperty("opennms.businessServicesWithProblems.show", "true");
+			if (Boolean.parseBoolean(showBusinessServicesProblems)) { %>
+		<jsp:include page="/bsm/summary-box.htm" flush="false" />
+		<% } %>
+		<!-- Applications box -->
+		<% String showApplicationsProblems = System.getProperty("opennms.applicationsWithProblems.show", "true");
+			if (Boolean.parseBoolean(showApplicationsProblems)) { %>
+		<jsp:include page="/application/summary-box.htm" flush="false" />
+		<% } %>
 	</div>
 
 	<!-- Middle Column -->

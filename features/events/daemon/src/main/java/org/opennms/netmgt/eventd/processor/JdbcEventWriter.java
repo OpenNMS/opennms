@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.util.AutoAction;
 import org.opennms.netmgt.dao.util.OperatorAction;
 import org.opennms.netmgt.dao.util.SnmpInfo;
@@ -191,7 +192,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             set(insStmt, 6, EventDatabaseConstants.format(event.getInterface(), EVENT_INTERFACE_FIELD_SIZE));
 
             // systemId
-            String systemId = "localhost";
+            String systemId = DistPollerDao.DEFAULT_DIST_POLLER_ID;
             if (eventHeader != null && eventHeader.getDpName() != null) {
                 systemId = eventHeader.getDpName();
             } else if (event.getDistPoller() != null) {

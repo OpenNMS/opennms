@@ -72,16 +72,16 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         //v3
         gotoPage();
         new Select(findElementByName("version")).selectByVisibleText("v3");
-        enterText(By.name("firstIPAddress"), "1.2.3.4");
+        findElementByName("firstIPAddress").sendKeys("1.2.3.4");
 
         new Select(findElementByName("securityLevel")).selectByVisibleText("authNoPriv");
         new Select(findElementByName("authProtocol")).selectByVisibleText("MD5");
         new Select(findElementByName("privProtocol")).selectByVisibleText("DES");
-        enterText(By.name("authPassPhrase"), "authMe!");
-        enterText(By.name("privPassPhrase"), "privMe!");
+        findElementByName("authPassPhrase").sendKeys("authMe!");
+        findElementByName("privPassPhrase").sendKeys("privMe!");
         findElementByName("saveConfig").click();
 
-        enterText(By.name("ipAddress"), "1.2.3.4");
+        findElementByName("ipAddress").sendKeys("1.2.3.4");
         findElementByName("getConfig").click();
 
         // give the page time to rearrange the DOM before checking things
@@ -157,20 +157,14 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
             final String errorMessageTemplate = errorMessages[i];
 
             // we must set first ip to a valid value, otherwise we get an "ip not set" error
-            enterText(By.name("firstIPAddress"), "1.2.3.4");
+            findElementByName("firstIPAddress").sendKeys("1.2.3.4");
             // now do the validation
-            enterText(By.name(fieldName), "abc"); // no integer
-            validate(errorMessageTemplate, fieldName, fieldLabel, "abc", false);
-            enterText(By.name(fieldName), "-5"); // < 0
-            validate(errorMessageTemplate, fieldName, fieldLabel, "-5", false);
-            enterText(By.name( fieldName), "0"); // = 0
-            if (i != 1) { // A retryCount of zero is legal
-                validate(errorMessageTemplate, fieldName, fieldLabel, "0", false);
-            }
-            enterText(By.name(fieldName), "1000"); // > 0
-            validate(errorMessageTemplate, fieldName, fieldLabel, "1000", true);
+            validate(errorMessageTemplate, fieldName, fieldLabel, "abc", false); // no integer
+            validate(errorMessageTemplate, fieldName, fieldLabel, "-5", false); // < 0
+            validate(errorMessageTemplate, fieldName, fieldLabel, "0", false); // = 0
+            validate(errorMessageTemplate, fieldName, fieldLabel, "1000", true); // > 0
             // reset to default
-            findElementByName(fieldName).clear();
+            findElementByName(fieldName).sendKeys("");
         }
 
         // now test max request size individually
@@ -178,8 +172,8 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
         final boolean[] success = new boolean[]{false, true, true, true};
         for (int i=0; i<input.length; i++) {
             gotoPage();
-            enterText(By.name("firstIPAddress"), "1.2.3.4");
-            enterText(By.name("maxRequestSize"), input[i]);
+            findElementByName("firstIPAddress").sendKeys("1.2.3.4");
+            findElementByName("maxRequestSize").sendKeys(input[i]);
             validate(maxRequestSizeErrorTemplate, "maxRequestSize", "Max Request Size", input[i], success[i]);
         }
     }
@@ -286,6 +280,11 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
     }
 
     private void validate (final String errorMessageTemplate, final String fieldName, final String fieldLabel, final String fieldValue, final Boolean success) {
+        // empty field before typing
+        findElementByName(fieldName).clear();
+        findElementByName(fieldName).sendKeys(fieldValue);
+
+        // try to save
         findElementByName("saveConfig").click();
         String alertText = handleAlert();
         if (success) {

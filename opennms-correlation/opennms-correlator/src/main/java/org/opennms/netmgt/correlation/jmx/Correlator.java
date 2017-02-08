@@ -32,9 +32,7 @@ import java.util.Map;
 
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.logging.Logging;
-import org.springframework.beans.factory.access.BeanFactoryLocator;
-import org.springframework.beans.factory.access.BeanFactoryReference;
-import org.springframework.context.access.DefaultLocatorFactory;
+import org.opennms.core.spring.BeanUtils;
 
 public class Correlator implements CorrelatorMBean {
 
@@ -49,9 +47,7 @@ public class Correlator implements CorrelatorMBean {
     public void init() {
         Map<String,String> mdc = Logging.getCopyOfContextMap();
         Logging.putPrefix("correlator");
-        final BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
-        final BeanFactoryReference bf = bfl.useBeanFactory("correlatorContext");
-        m_correlator = (org.opennms.netmgt.correlation.Correlator) bf.getFactory().getBean("correlator");
+        m_correlator = BeanUtils.getBean("correlatorContext", "correlator", org.opennms.netmgt.correlation.Correlator.class);
         Logging.setContextMap(mdc);
     }
 

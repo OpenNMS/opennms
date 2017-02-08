@@ -578,6 +578,9 @@ public abstract class EventConstants {
     public static final String LOCATION_MONITOR_CONFIG_CHANGE_DETECTED_UEI="uei.opennms.org/remote/configurationChangeDetected";
     public static final String LOCATION_MONITOR_CONNECTION_ADDRESS_CHANGED_UEI="uei.opennms.org/remote/locationMonitorConnectionAddressChanged";
 
+    public static final String REMOTE_SUCCESSFUL_SCAN_REPORT_UEI="uei.opennms.org/remote/successfulScanReport";
+    public static final String REMOTE_UNSUCCESSFUL_SCAN_REPORT_UEI="uei.opennms.org/remote/unsuccessfulScanReport";
+
     /** Constant <code>RELOAD_IMPORT_UEI="uei.opennms.org/internal/importer/reloa"{trunked}</code> */
     public static final String RELOAD_IMPORT_UEI = "uei.opennms.org/internal/importer/reloadImport";
     /** Constant <code>IMPORT_STARTED_UEI="uei.opennms.org/internal/importer/impor"{trunked}</code> */
@@ -1068,6 +1071,35 @@ public abstract class EventConstants {
      * Used for indication the second endpoint to a map link.
      */
     public static final String PARM_ENDPOINT2 = "endPoint2";
+
+    //
+    // for Alarmd
+    //
+
+    // Sent when an alarm is created
+    public static final String ALARM_CREATED_UEI   = "uei.opennms.org/alarms/alarmCreated";
+    // Sent when an alarm is escalated, either by a user action or an automation
+    public static final String ALARM_ESCALATED_UEI   = "uei.opennms.org/alarms/alarmEscalated";
+    // Sent when an alarm is cleared, either by a user action or an automation
+    public static final String ALARM_CLEARED_UEI = "uei.opennms.org/alarms/alarmCleared";
+    // Sent when an alarm is un-cleared, either by a user action or an automation
+    public static final String ALARM_UNCLEARED_UEI = "uei.opennms.org/alarms/alarmUncleared";
+    // Sent when an alarm is updated with a reduce event
+    public static final String ALARM_UPDATED_WITH_REDUCED_EVENT_UEI = "uei.opennms.org/alarms/alarmUpdatedWithReducedEvent";
+
+    //
+    // for Bsmd
+    //
+    public static final String BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI = "uei.opennms.org/bsm/serviceOperationalStatusChanged";
+    public static final String BUSINESS_SERVICE_PROBLEM_UEI = "uei.opennms.org/bsm/serviceProblem";
+    public static final String BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI = "uei.opennms.org/bsm/serviceProblemResolved";
+
+    public static final String PARM_BUSINESS_SERVICE_ID = "businessServiceId";
+    public static final String PARM_BUSINESS_SERVICE_NAME = "businessServiceName";
+    public static final String PARM_NEW_SEVERITY_ID = "newSeverityId";
+    public static final String PARM_NEW_SEVERITY_LABEL = "newSeverityLabel";
+    public static final String PARM_PREV_SEVERITY_ID = "prevSeverityId";
+    public static final String PARM_PREV_SEVERITY_LABEL = "prevSeverityLabel";
 
     //
     // for NCS service

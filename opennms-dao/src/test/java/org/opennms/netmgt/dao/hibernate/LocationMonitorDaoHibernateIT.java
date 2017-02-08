@@ -109,8 +109,9 @@ public class LocationMonitorDaoHibernateIT implements InitializingBean {
     	mon.setLocation("RDU");
     	
     	m_locationMonitorDao.save(mon);
-    	
     	m_locationMonitorDao.flush();
+
+        // We clear the cache to get a new element and not the same as above
     	m_locationMonitorDao.clear();
 
     	OnmsLocationMonitor mon2 = m_locationMonitorDao.get(mon.getId());

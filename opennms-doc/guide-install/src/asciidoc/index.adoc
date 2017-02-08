@@ -42,3 +42,8 @@ include::text/newts/configure-opennms.adoc[]
 include::text/r/introduction.adoc[]
 include::text/r/rhel.adoc[]
 include::text/r/debian.adoc[]
+
+// Installation Guide for Minion
+include::text/minion/introduction.adoc[]
+include::text/minion/rhel.adoc[]
+include::text/minion/configure.adoc[]

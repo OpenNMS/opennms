@@ -111,7 +111,6 @@ public class HibernateCriteriaConverterIT implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase
-    @Ignore("This test appears to flap since the upgrade to Hibernate 3.5.")
     public void testNodeIlikeQuery() {
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.isNotNull("id").eq("label", "node1").alias("ipInterfaces", "iface").ilike("iface.ipAddress", "1%");

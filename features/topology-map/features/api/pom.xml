@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms.features.topology</groupId>
         <artifactId>features</artifactId>
-        <version>17.0.1-SNAPSHOT</version>
+        <version>18.0.1-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -26,7 +26,6 @@
                 <configuration>
                     <features>
                         <feature>vaadin</feature>
-                        <feature>opennms-osgi-core</feature>
                     </features>
                 </configuration>
             </plugin>

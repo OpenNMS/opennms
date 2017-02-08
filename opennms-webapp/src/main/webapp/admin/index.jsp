@@ -146,7 +146,8 @@
             <li><a href="admin/ng-requisitions/app/index.jsp">Manage Provisioning Requisitions</a></li>
             <li><a href="admin/asset/index.jsp">Import and Export Asset Information</a></li>
             <li><a href="admin/categories.htm">Manage Surveillance Categories</a></li>
-            <li><a href="admin/discovery/modifyDiscoveryConfig">Configure Discovery</a></li>
+            <li><a href="admin/discovery/edit-config.jsp">Configure Discovery</a></li>
+            <li><a href="admin/discovery/edit-scan.jsp">Run Single Discovery Scan</a></li>
             <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP Address</a></li>
             <li><a href="javascript:addInterfacePost()">Manually Add an Interface</a></li>
             <li><a href="javascript:deletePost()">Delete Nodes</a></li>
@@ -194,6 +195,7 @@
         <ul class="list-unstyled">
             <li><a href="admin/sched-outages/index.jsp">Configure Scheduled Outages</a></li>
             <li><a href="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
+            <%=getAdminPageNavEntries("service-monitoring")%>
         </ul>
       </div> <!-- panel-body -->
     </div> <!-- panel -->

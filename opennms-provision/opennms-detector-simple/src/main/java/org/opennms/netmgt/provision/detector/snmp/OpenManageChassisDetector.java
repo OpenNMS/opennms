@@ -100,7 +100,7 @@ public class OpenManageChassisDetector extends SnmpDetector {
             configureAgentVersion(agentConfig);
 
             // Get the OpenManage chassis status
-            String chassisStatus = getValue(agentConfig, CHASSIS_STATUS_OID);
+            String chassisStatus = getValue(agentConfig, CHASSIS_STATUS_OID, isHex());
 
             // If no chassis status received, do not detect the protocol and quit
             if (chassisStatus == null) {

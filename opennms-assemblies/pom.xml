@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>18.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.assemblies</artifactId>
@@ -49,7 +49,6 @@
     <module>remote-poller-onejar</module>
     <module>remote-poller-standalone</module>
     <module>remote-poller-nsis</module>
-    <module>rxtx-assembly</module>
     <!-- <module>system-report-onejar</module> -->
     <module>version</module>
     <module>webapp-full</module>

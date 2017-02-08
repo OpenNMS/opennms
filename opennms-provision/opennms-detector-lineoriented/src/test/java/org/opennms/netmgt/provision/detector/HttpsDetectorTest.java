@@ -40,7 +40,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,7 +69,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
     private SSLServer m_server;
 
     @Rule
-    public static WireMockRule m_wireMockRule = new WireMockRule(wireMockConfig().httpsPort(SSL_PORT));
+    public WireMockRule m_wireMockRule = new WireMockRule(wireMockConfig().httpsPort(SSL_PORT));
 
     private ResponseDefinitionBuilder getOKResponse() {
         return aResponse()
@@ -117,11 +116,6 @@ public class HttpsDetectorTest implements ApplicationContextAware{
                 Thread.currentThread().interrupt();
             }
         }
-    }
-
-    @AfterClass
-    public static void stopWireMock() {
-        m_wireMockRule.shutdownServer();
     }
 
     @Test(timeout=20000)

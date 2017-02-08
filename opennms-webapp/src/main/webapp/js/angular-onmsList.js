@@ -6,6 +6,7 @@ var BASE_REST_URL = 'api/v2';
 /**
  * ISO-8601 date format string.
  */
+var ISO_8601_DATE_FORMAT = 'yyyy-MM-ddTHH:mm:ss.sssZ';
 var ISO_8601_DATE_FORMAT_WITHOUT_MILLIS = 'yyyy-MM-ddTHH:mm:ssZ';
 
 /**
@@ -48,6 +49,65 @@ function toFiql(clauses) {
 		first = false;
 	}
 	return fiql;
+}
+
+/**
+ * Convert from a FIQL query string into separate clause objects.
+ * This only works for simple queries composed of multiple AND (';')
+ * clauses.
+ * 
+ * TODO: Expand this to cover more FIQL syntax
+ */
+function fromFiql(fiql) {
+	var statements = fiql.split(';');
+	var segments = [];
+	var clauses = [];
+	for (var i = 0; i < statements.length; i++) {
+		if (statements[i].indexOf('==') > 0) {
+			segments = statements[i].split('==');
+			clauses.push({
+				property: segments[0],
+				operator: 'EQ',
+				value: segments[1]
+			});
+		} else if (statements[i].indexOf('!=') > 0) {
+			segments = statements[i].split('!=');
+			clauses.push({
+				property: segments[0],
+				operator: 'NE',
+				value: segments[1]
+			});
+		} else if (statements[i].indexOf('=lt=') > 0) {
+			segments = statements[i].split('=lt=');
+			clauses.push({
+				property: segments[0],
+				operator: 'LT',
+				value: segments[1]
+			});
+		} else if (statements[i].indexOf('=le=') > 0) {
+			segments = statements[i].split('=le=');
+			clauses.push({
+				property: segments[0],
+				operator: 'LE',
+				value: segments[1]
+			});
+		} else if (statements[i].indexOf('=gt=') > 0) {
+			segments = statements[i].split('=gt=');
+			clauses.push({
+				property: segments[0],
+				operator: 'GT',
+				value: segments[1]
+			});
+		} else if (statements[i].indexOf('=ge=') > 0) {
+			segments = statements[i].split('=ge=');
+			clauses.push({
+				property: segments[0],
+				operator: 'GE',
+				value: segments[1]
+			});
+		}
+	}
+	return clauses;
 }
 
 /**
@@ -341,6 +401,8 @@ function parseContentRange(contentRange) {
 		$log.debug('ListCtrl initializing...');
 
 		$scope.defaults = {
+			_s: '',
+			searchClauses: [],
 			limit: 20,
 			offset: 0,
 			orderBy: '',
@@ -350,9 +412,8 @@ function parseContentRange(contentRange) {
 		// Restore any query parameters that you can from the 
 		// query string, blank out the rest
 		$scope.query = {
-			// TODO: Figure out how to parse and restore the FIQL search param
-			searchParam: '',
-			searchClauses: [],
+			searchParam: typeof $location.search()._s === 'undefined' ? $scope.defaults._s : $location.search()._s,
+			searchClauses: typeof $location.search()._s === 'undefined' ? $scope.defaults.searchClauses : fromFiql($location.search()._s),
 			limit: typeof $location.search().limit === 'undefined' ? $scope.defaults.limit : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.defaults.limit),
 			newLimit: typeof $location.search().limit === 'undefined' ? $scope.defaults.limit : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.defaults.limit),
 			offset: typeof $location.search().offset === 'undefined' ? $scope.defaults.offset : (Number($location.search().offset) > 0 ? Number($location.search().offset) : $scope.defaults.offset),
@@ -384,7 +445,7 @@ function parseContentRange(contentRange) {
 			if (queryParams.offset === $scope.defaults.offset || queryParams.offset === '') { delete queryParams.offset; }
 			if (queryParams.orderBy === $scope.defaults.orderBy || queryParams.orderBy === '') { delete queryParams.orderBy; }
 			if (queryParams.order === $scope.defaults.order || queryParams.order === '') { delete queryParams.order; }
-			if (queryParams._s === '') { delete queryParams._s; }
+			if (queryParams._s === $scope.defaults._s || queryParams._s === '') { delete queryParams._s; }
 
 			$location.search(queryParams);
 		}, 
@@ -399,8 +460,7 @@ function parseContentRange(contentRange) {
 				// it includes the millisecond portion of the date.
 				//clause.value = new Date(clause.value).toISOString();
 
-				// TODO: Add milliseconds to this timestamp once CXF can parse it
-				clause.value = $filter('date')(new Date(clause.value), ISO_8601_DATE_FORMAT_WITHOUT_MILLIS);
+				clause.value = $filter('date')(new Date(clause.value), ISO_8601_DATE_FORMAT);
 			}
 
 			// Make sure the clause isn't already in the list of search clauses
@@ -437,8 +497,7 @@ function parseContentRange(contentRange) {
 
 		// Convert an epoch timestamp into String format before adding the search clause
 		$scope.addEpochTimestampSearchClause = function(clause) {
-			// TODO: Add milliseconds to this timestamp once CXF can parse it
-			clause.value = $filter('date')(clause.value, ISO_8601_DATE_FORMAT_WITHOUT_MILLIS);
+			clause.value = $filter('date')(clause.value, ISO_8601_DATE_FORMAT);
 			$scope.addSearchClause(clause);
 		}
 

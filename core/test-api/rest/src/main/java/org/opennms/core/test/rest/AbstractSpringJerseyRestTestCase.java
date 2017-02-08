@@ -65,6 +65,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.cxf.transport.servlet.CXFServlet;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.db.DataSourceFactory;
@@ -98,7 +99,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
     public static String POST = "POST";
     public static String DELETE = "DELETE";
     public static String PUT = "PUT";
-    
+    public static String ACCEPT = "Accept";
+
     private static int nodeCounter = 1;
 
     ///String contextPath = "/opennms/rest";
@@ -276,7 +278,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return createRequest(context, requestType, urlPath, "admin", emptySet);
     }
 
-    protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath, final String username, final Collection<String> roles) {
+    protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath, Map<String, String> parameterMap, final String username, final Collection<String> roles) {
         final MockHttpServletRequest request = new MockHttpServletRequestThatWorks(context, requestType, contextPath + urlPath);
         request.setContextPath(contextPath);
         request.setUserPrincipal(MockUserPrincipal.getInstance());
@@ -286,7 +288,16 @@ public abstract class AbstractSpringJerseyRestTestCase {
                 request.addUserRole(role);
             }
         }
+        if (parameterMap != null) {
+            for (Entry<String, String> eachEntry : parameterMap.entrySet()) {
+                request.addParameter(eachEntry.getKey(), eachEntry.getValue());
+            }
+        }
         return request;
+    }
+
+    protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath, final String username, final Collection<String> roles) {
+        return createRequest(context, requestType, urlPath, Collections.emptyMap(), username, roles);
     }
 
     protected static void setUser(final String user, final String[] roles) {
@@ -479,9 +490,24 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return xml;
     }
 
-    protected <T> T getXmlObject(JAXBContext context, String url, int expectedStatus, Class<T> expectedClass) throws Exception {
-        MockHttpServletRequest request = createRequest(servletContext, GET, url, getUser(), getUserRoles());
+    protected <T> T getJsonObject(ObjectMapper mapper, String url, Map<String, String> parameterMap, int expectedStatus, Class<T> expectedClass) throws Exception {
+        MockHttpServletRequest request = createRequest(servletContext, GET, url, parameterMap, getUser(), getUserRoles());
         MockHttpServletResponse response = createResponse();
+        request.addHeader(ACCEPT, MediaType.APPLICATION_JSON);
+        dispatch(request, response);
+        assertEquals(expectedStatus, response.getStatus());
+
+        System.err.printf("json: %s%n", response.getContentAsString());
+
+        InputStream in = new ByteArrayInputStream(response.getContentAsByteArray());
+
+        return mapper.readValue(in, expectedClass);
+    }
+
+    protected <T> T getXmlObject(JAXBContext context, String url, Map<String, String> parameterMap, int expectedStatus, Class<T> expectedClass) throws Exception {
+        MockHttpServletRequest request = createRequest(servletContext, GET, url, parameterMap, getUser(), getUserRoles());
+        MockHttpServletResponse response = createResponse();
+        request.addHeader(ACCEPT, MediaType.APPLICATION_XML);
         dispatch(request, response);
         assertEquals(expectedStatus, response.getStatus());
 
@@ -492,9 +518,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
         Unmarshaller unmarshaller = context.createUnmarshaller();
 
         T result = expectedClass.cast(unmarshaller.unmarshal(in));
-
         return result;
+    }
 
+    protected <T> T getXmlObject(JAXBContext context, String url, int expectedStatus, Class<T> expectedClass) throws Exception {
+        return getXmlObject(context, url, Collections.emptyMap(), expectedStatus, expectedClass);
     }
 
     protected void putXmlObject(final JAXBContext context, final String url, final int expectedStatus, final Object object) throws Exception {

@@ -7,10 +7,16 @@
 
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory"/>
 
+    <bean id="vmwareMetaInfo" class="org.opennms.features.topology.api.topo.DefaultMetaInfo">
+        <property name="name" value="VMware Topology Provider"/>
+        <property name="description" value="The VMware Topology Provider displays the infrastructure information gathered by the VMware Provisioning process."/>
+    </bean>
+
     <bean id="vmwareTopologyProvider" init-method="refresh"
           class="org.opennms.features.topology.plugins.topo.vmware.internal.VmwareTopologyProvider">
         <property name="nodeDao" ref="nodeDao"/>
         <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+        <property name="metaInfo" ref="vmwareMetaInfo"/>
     </bean>
 
     <service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="vmwareTopologyProvider">
@@ -29,5 +35,16 @@
         <service-properties>
             <entry key="label" value="VMware"/>
         </service-properties>
+    </service>
+
+    <service>
+        <interfaces>
+            <value>org.opennms.features.topology.api.IconRepository</value>
+            <value>org.osgi.service.cm.ManagedService</value>
+        </interfaces>
+        <service-properties>
+            <entry key="service.pid" value="org.opennms.features.topology.app.icons.vmware"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository" />
     </service>
 </blueprint>

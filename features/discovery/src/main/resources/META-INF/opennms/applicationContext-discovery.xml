@@ -4,35 +4,131 @@
   xmlns:tx="http://www.springframework.org/schema/tx"
   xmlns:context="http://www.springframework.org/schema/context"
   xmlns:util="http://www.springframework.org/schema/util"
-  xmlns:aop="http://www.springframework.org/schema/aop"
-  xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
   xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
   xsi:schemaLocation="
   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
-  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
 ">
 
   <context:annotation-config />
 
+  <!-- Pinger service -->
+  <!-- <onmsgi:reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" /> -->
+
+  <!-- Event IPC manager service -->
+  <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
+
+  <!-- Persistent DiscoveryConfiguration -->
+  <!-- <onmsgi:reference id="discoveryFactory" interface="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory"/> -->
+
+  <!-- Create a set of Properties that can be used as propertyPlaceholders for Camel -->
+  <bean id="discoveryProperties" class="org.opennms.netmgt.discovery.DiscoveryConfigurationFactoryPropertiesConverter" factory-method="getProperties">
+    <constructor-arg ref="discoveryFactory"/>
+  </bean>
+
+  <!-- Create a Camel PropertiesComponent -->
+  <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
+    <property name="initialProperties" ref="discoveryProperties"/>
+  </bean>
+
+  <!--
+    TODO: Hook this filter into DAO/event channel so that it can provide an up-to-date
+    list of managed IP addresses like the legacy Discovery process did.
+  -->
+  <bean id="unmanagedInterfaceFilter" class="org.opennms.netmgt.discovery.UnmanagedInterfaceFilter"/>
+
+  <!-- This processor generates a list of DiscoveryJobs from a DiscoveryConfiguration -->
+  <bean id="rangeChunker" class="org.opennms.netmgt.discovery.actors.RangeChunker">
+    <property name="ipAddressFilter" ref="unmanagedInterfaceFilter"/>
+  </bean>
+
+  <!-- This processor performs ICMP pings and reports the results -->
+  <bean id="discoverer" class="org.opennms.netmgt.discovery.actors.Discoverer">
+    <constructor-arg ref="pinger" />
+  </bean>
+
+  <!-- This processor sends newSuspect events for IP addresses reported in a DiscoveryResult -->
+  <bean id="eventWriter" class="org.opennms.netmgt.discovery.actors.EventWriter">
+    <constructor-arg ref="eventForwarder" />
+  </bean>
+
+  <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
+    <property name="brokerURL" value="vm://localhost?create=false" />
+    <!-- TODO: HZN-490 Add configurable authentication -->
+    <!--
+    <property name="userName" value="karaf" />
+    <property name="password" value="karaf" />
+    -->
+  </bean>
+
+  <!-- Process the EventListener annotations on Discovery -->
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
 
+  <!-- Discovery daemon -->
   <bean id="daemon" class="org.opennms.netmgt.discovery.Discovery">
     <property name="discoveryFactory" ref="discoveryFactory" />
-    <property name="eventForwarder" ref="eventForwarder"/>
-    <property name="pinger" ref="pinger"/>
+    <property name="eventForwarder" ref="eventForwarder" />
+    <property name="unmanagedInterfaceFilter" ref="unmanagedInterfaceFilter" />
   </bean>
 
-  <!--   
-  <bean id="callBack" class="org.opennms.netmgt.discovery.DiscoveryPingResponseCallback">
-    <property name="discoveryFactory" ref="discoveryFactory" />
+  <!-- Create a Camel dispatcher that consumes DiscoveryConfiguration tasks -->
+  <bean id="discoveryTaskExecutorCamel" class="org.opennms.netmgt.discovery.DiscoveryTaskExecutorCamelImpl">
+    <constructor-arg value="seda:submitDiscoveryTask"/>
   </bean>
-  -->
-  
+
+  <onmsgi:service interface="org.opennms.netmgt.discovery.DiscoveryTaskExecutor" ref="discoveryTaskExecutorCamel"/>
+
+  <camelContext id="discoveryCamelContext" xmlns="http://camel.apache.org/schema/spring">
+
+    <!-- Bootstrap timer -->
+    <route id="startDiscoveryTimer">
+      <from uri="timer:discoveryTimer?period={{restartSleepTime}}&amp;delay={{initialSleepTime}}&amp;fixedRate=true&amp;daemon=true" />
+      <!-- Set the DiscoveryConfiguration as the message body -->
+      <transform><simple>${bean:discoveryFactory.getConfiguration}</simple></transform>
+      <!-- Submit it as a Discovery task -->
+      <to uri="seda:submitDiscoveryTask" />
+    </route>
+
+    <route id="submitDiscoveryTask">
+      <from uri="seda:submitDiscoveryTask" />
+      <bean ref="rangeChunker" />
+      <split>
+        <!-- Split the DiscoveryJobs -->
+        <simple>${body}</simple>
+        <!-- Calculate an appropriate JMS timeout based on the task -->
+        <setHeader headerName="CamelJmsRequestTimeout">
+          <simple>${body.calculateTaskTimeout}</simple>
+        </setHeader>
+        <!--
+          Use recipientList so that we can have a dynamic 'to:' URI.
+          Make sure that the exchange is using an InOut pattern so 
+          that the output is passed to the next endpoint.
+        -->
+        <setExchangePattern pattern="InOut"/>
+        <recipientList>
+          <!-- TODO: NMS-8217: Use a more sophisticated naming convention for this queue -->
+          <simple>activemq:Location-${body.location}</simple>
+        </recipientList>
+        <!-- Send the DiscoveryResults to the eventWriter -->
+        <bean ref="eventWriter" />
+      </split>
+    </route>
+
+    <!-- Default localhost location queue -->
+    <route id="localhostLocationDiscoveryRoute">
+      <from uri="activemq:Location-localhost?concurrentConsumers=8" />
+      <log loggingLevel="INFO" message="applicationContext-discovery.xml: Executing DiscoveryJob" />
+      <log loggingLevel="INFO" message="applicationContext-discovery.xml: ${body}" />
+      <bean ref="discoverer" />
+    </route>
+  </camelContext>
+
 </beans>

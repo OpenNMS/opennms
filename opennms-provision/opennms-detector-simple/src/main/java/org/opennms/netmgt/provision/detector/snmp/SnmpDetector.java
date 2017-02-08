@@ -30,19 +30,28 @@ package org.opennms.netmgt.provision.detector.snmp;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+
+import com.google.common.collect.Lists;
 
 @Component
 /**
@@ -53,26 +62,99 @@ import org.springframework.util.Assert;
  */
 @Scope("prototype")
 public class SnmpDetector extends SyncAbstractDetector implements InitializingBean {
+
+    public enum MatchType {
+        // Service detected if 1 or more entries match an expected value
+        Any {
+            @Override
+            boolean isServiceDetected(List<String> retrievedValues, String expectedValuePattern) {
+                Pattern expectedPattern = Pattern.compile(Objects.requireNonNull(expectedValuePattern));
+                retrievedValues = removeNullElements(retrievedValues);
+                if (retrievedValues.isEmpty()) {
+                    return false;
+                }
+                boolean anyMatch = retrievedValues
+                        .stream()
+                        .anyMatch(eachRetrievedValue -> expectedPattern.matcher(eachRetrievedValue).matches());
+                return anyMatch;
+            }
+        },
+        // Service detected if ALL entries match an expected value
+        All {
+            @Override
+            boolean isServiceDetected(List<String> retrievedValues, String expectedValuePattern) {
+                Pattern expectedPattern = Pattern.compile(Objects.requireNonNull(expectedValuePattern));
+                retrievedValues = removeNullElements(retrievedValues);
+                if (retrievedValues.isEmpty()) {
+                    return false;
+                }
+                boolean allMatch = retrievedValues
+                        .stream()
+                        .allMatch(eachRetrievedValue -> expectedPattern.matcher(eachRetrievedValue).matches());
+                return allMatch;
+            }
+        },
+        // Service detected in the meaning of invert Any
+        None {
+            @Override
+            boolean isServiceDetected(List<String> retrievedValues, String expectedValuePattern) {
+                return !Any.isServiceDetected(retrievedValues, expectedValuePattern);
+            }
+        },
+        // Service detected if the table exist
+        Exist {
+            @Override
+            boolean isServiceDetected(List<String> retrievedValues, String expectedValuePattern) {
+                return !removeNullElements(retrievedValues).isEmpty();
+            }
+        };
+
+        abstract boolean isServiceDetected(List<String> retrievedValues, String expectedValuePattern);
+
+        private static List<String> removeNullElements(List<String> input) {
+            return input
+                    .stream()
+                    .filter(v -> v != null)
+                    .collect(Collectors.toList());
+        }
+
+        public static MatchType createFrom(String input) {
+            Objects.requireNonNull(input);
+            for (MatchType eachType : values()) {
+                if (eachType.name().equalsIgnoreCase(input)) {
+                    return eachType;
+                }
+            }
+            throw new IllegalArgumentException("No MatchType found for name " + input);
+        }
+    }
     
     /** Constant <code>DEFAULT_SERVICE_NAME="SNMP"</code> */
     protected static final String DEFAULT_SERVICE_NAME = "SNMP";
 
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpDetector.class);
+
     /**
-     * The system object identifier to retreive from the remote agent.
+     * The system object identifier to retrieve from the remote agent.
      */
     private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0";
     
-    //These are -1 so by default we use the AgentConfig 
+    //These are -1 so by default we use the AgentConfig
     private static final int DEFAULT_PORT = -1;
     private static final int DEFAULT_TIMEOUT = -1;
     private static final int DEFAULT_RETRIES = -1;
     
     private String m_oid = DEFAULT_OID;
+    private boolean m_isTable = false;
+    private boolean m_hex = false;
+
     private String m_forceVersion;
     private String m_vbvalue;
-    
+
     private SnmpAgentConfigFactory m_agentConfigFactory;
-    
+
+    private MatchType matchType;
+
     /**
      * <p>Constructor for SnmpDetector.</p>
      */
@@ -95,33 +177,64 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
         Assert.notNull(m_agentConfigFactory);
     }
 
+    public String getIsTable() {
+        return String.valueOf(m_isTable);
+    }
+
+    public void setIsTable(String table) {
+        m_isTable = "true".equalsIgnoreCase(table);
+    }
+
+    public void setHex(String hex) {
+        m_hex = "true".equalsIgnoreCase(hex);
+    }
+
+    public String getHex() {
+        return String.valueOf(m_hex);
+    }
+
+    protected boolean isHex() {
+        return m_hex;
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean isServiceDetected(InetAddress address) {
         try {
-
             SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
-            String expectedValue = null;
-            
             configureAgentPTR(agentConfig);
-            
             configureAgentVersion(agentConfig);
-            
-            if (getVbvalue() != null) {
-                expectedValue = getVbvalue();
-            }
-            
-            String retrievedValue = getValue(agentConfig, getOid());
-            
-            if (retrievedValue != null && expectedValue != null) {
-                return (Pattern.compile(expectedValue).matcher(retrievedValue).matches());
+
+            final String expectedValue = getVbvalue();
+            if (this.m_isTable) {
+                LOG.debug(getServiceName() + ": table detect enabled");
+                final SnmpObjId snmpObjId = SnmpObjId.get(getOid());
+                final Map<SnmpInstId, SnmpValue> table = SnmpUtils.getOidValues(agentConfig, DEFAULT_SERVICE_NAME, snmpObjId);
+                final List<String> retrievedValues = table.values().stream().map(snmpValue -> m_hex ? snmpValue.toHexString() : snmpValue.toString()).collect(Collectors.toList());
+                return isServiceDetected(this.matchType, retrievedValues, expectedValue);
             } else {
-                return (retrievedValue != null);
+                final String retrievedValue = getValue(agentConfig, getOid(), m_hex);
+                // we have to ensure that if expectedValue is defined, we use ANY, this is due to backwards compatibility
+                MatchType matchType = this.matchType;
+                if (matchType == null && expectedValue != null) {
+                    matchType = MatchType.Any;
+                }
+                return isServiceDetected(matchType, Lists.newArrayList(retrievedValue), expectedValue);
             }
-            
         } catch (Throwable t) {
             throw new UndeclaredThrowableException(t);
         }
+    }
+
+    private boolean isServiceDetected(MatchType matchType, List<String> retrievedValues, String expectedValue) {
+        matchType = matchType == null ? MatchType.Exist : matchType;
+        // If matchType is NOT Exist, than we need an expectedValue
+        if (matchType != MatchType.Exist && expectedValue == null) {
+            throw new IllegalArgumentException(getServiceName() + ": expectedValue was not defined using matchType=" + matchType + " but is required. Otherwise set matchType to " + MatchType.Exist);
+        }
+        boolean isServiceDetected = matchType.isServiceDetected(retrievedValues, expectedValue);
+        LOG.debug(getServiceName() + ": services detected {} using matchType={}, expectedValue={}, retrievedValues={}",isServiceDetected, matchType, expectedValue, retrievedValues);
+        return isServiceDetected;
     }
 
     /**
@@ -171,13 +284,12 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
      * @param oid a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    protected String getValue(SnmpAgentConfig agentConfig, String oid) {
+    protected  static String getValue(SnmpAgentConfig agentConfig, String oid, boolean hex) {
         SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(oid));
         if (val == null || val.isNull() || val.isEndOfMib() || val.isError()) {
             return null;
-        }
-        else {
-            return val.toString();
+        }  else {
+            return hex ? val.toHexString() : val.toString();
         }
         
     }
@@ -266,5 +378,13 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
     /** {@inheritDoc} */
     @Override
     public void dispose() {
+    }
+
+    public void setMatchType(String matchType) {
+        this.matchType = MatchType.createFrom(matchType);
+    }
+
+    public String getMatchType() {
+        return matchType.name();
     }
 }

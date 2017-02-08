@@ -4,9 +4,9 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 
 					http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 					http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 
-					https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
+					http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
 					http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 
-					https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
+					http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd">
    
     <cm:property-placeholder id="linkdConfig" persistent-id="org.opennms.features.topology.plugins.topo.linkd" update-strategy="reload">
         <cm:default-properties>
@@ -34,22 +34,10 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <reference id="cdpElementDao" interface="org.opennms.netmgt.dao.api.CdpElementDao" availability="mandatory"/>
     <reference id="ipNetToMediaDao" interface="org.opennms.netmgt.dao.api.IpNetToMediaDao" availability="mandatory"/>
 
-    <!-- Metrics -->
-    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
-
-    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
-        <argument ref="metricRegistry"/>
+    <bean id="enlinkdMetaInfo" class="org.opennms.features.topology.api.topo.DefaultMetaInfo">
+        <property name="name" value="Enhanced Linkd Topology Provider"/>
+        <property name="description" value="This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."/>
     </bean>
-
-    <bean id="metricRegistryDomainedJmxReporterBuilder" factory-ref="metricRegistryJmxReporterBuilder" factory-method="inDomain">
-        <argument value="org.opennms.features.topology.plugins.topo.linkd" />
-    </bean>
-
-    <bean id="metricRegistryJmxReporter"
-        factory-ref="metricRegistryDomainedJmxReporterBuilder"
-        factory-method="build"
-        init-method="start"
-        destroy-method="stop" />
 
     <!--Topology Provider Shared Components-->
     <bean id="linkdHopCriteriaFactory" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdHopCriteriaFactory">
@@ -77,6 +65,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
         <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
         <property name="bridgeTopologyDao" ref="bridgeTopologyDao" />
+        <property name="metaInfo" ref="enlinkdMetaInfo"/>
         <property name="ipNetToMediaDao" ref="ipNetToMediaDao"/>
     </bean>
 
@@ -104,6 +93,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     	</interfaces>
         <service-properties>
             <entry key="label" value="Enhanced Linkd" />
+            <entry key="preferredLayout" value="D3 Layout" />
         </service-properties>
     </service>
 
@@ -114,69 +104,28 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <property name="alarmDao" ref="alarmDao"/>
     </bean>
 
-    <service interface="org.opennms.features.topology.api.CheckedOperation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="View"/>
-            <entry key="operation.label" value="Link Status"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.LinkdEdgeStatusToggleOperation" init-method="init">
-            <property name="enlinkdService" ref="enlinkd" />
-            <property name="edgeStatusProvider" ref="linkdEdgeStatusProvider"/>
-        </bean>
-    </service>
-    <!-- End LldpLinkStatusProvider -->
+	<bean id="enlinkdWrappedEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdWrappedEdgeStatusProviders" init-method="init">
+        <property name="enlinkdService" ref="enlinkd" />
+        <property name="edgeStatusProvider" ref="linkdEdgeStatusProvider"/>
+    </bean>
 
-    <service interface="org.opennms.features.topology.api.IconRepository">
-        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
-            <property name="iconMap">
-                <map>
-                    <entry key="linkd:group" value="cloud"/>
-                    <entry key="linkd:system" value="generic"/>
-                    <!-- 
-                    set this for icons that are snmp enabled but whose oid we don't recognize
-                    defaults 'link:system'
-                    <entry key="linkd:system:snmp" value="theme://images/generic-device.png"/>
-                     -->
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.5813.1.13" value="opennms_server"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.283" value="workgroup_switch"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.485" value="workgroup_switch"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.516" value="workgroup_switch"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.559" value="router"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.563" value="router"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.564" value="router"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.576" value="router"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.616" value="workgroup_switch"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.617" value="router"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.620" value="router"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.669" value="router"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.696" value="router"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.697" value="router"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.745" value="router"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.797" value="workgroup_switch"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.1021" value="workgroup_switch"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.1025" value="workgroup_switch"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.1034" value="accesspoint"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.1227" value="workgroup_switch"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.253.8.62.1.19.4.24.1" value="printer"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.311.1.1.3.1.2" value="fileserver"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.311.1.1.3.1.3" value="fileserver"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.674.10895.3022" value="workgroup_switch"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.890.1.15" value="workgroup_switch"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.1916.2.71" value="workgroup_switch"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.29" value="router"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.39" value="access_gateway"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.3375.2.1.3.4.20" value="access_gateway"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.3375.2.1.3.4.43" value="access_gateway"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.4526.100.4.8" value="workgroup_switch"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.4526.100.10.7" value="workgroup_switch"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.4526.100.11.22" value="workgroup_switch"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.8072.3.2.10" value="linux_file_server"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.8072.3.2.3" value="linux_file_server"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.8072.3.2.255" value="linux_file_server"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.22420.1.1" value="access_gateway"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.30065.1.3011.7048.427.3648" value="workgroup_switch"/>
-                </map>
-            </property>
-        </bean>
+    <service interface="org.opennms.features.topology.api.topo.EdgeStatusProvider" ref="enlinkdWrappedEdgeStatusProvider" />
+
+    <!-- status provider -->
+    <bean id="statusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.AlarmStatusProvider">
+        <argument ref="alarmDao"/>
+    </bean>
+    <service interface="org.opennms.features.topology.api.topo.StatusProvider" ref="statusProvider" />
+
+    <!-- Icon definition -->
+    <service>
+        <interfaces>
+            <value>org.opennms.features.topology.api.IconRepository</value>
+            <value>org.osgi.service.cm.ManagedService</value>
+        </interfaces>
+        <service-properties>
+            <entry key="service.pid" value="org.opennms.features.topology.app.icons.linkd"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository" />
     </service>
 </blueprint>

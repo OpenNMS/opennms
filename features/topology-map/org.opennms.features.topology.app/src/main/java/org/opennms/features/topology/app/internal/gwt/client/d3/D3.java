@@ -343,6 +343,15 @@ public class D3 extends JavaScriptObject {
     public static final native void eventPreventDefault() /*-{
         $wnd.d3.event.preventDefault();
     }-*/;
+
+    public static final native boolean eventDefaultPrevented() /*-{
+        console.log("d3.event:" + $wnd.d3.event);
+        if ($wnd.d3.event != undefined && $wnd.d3.event.defaultPrevented != undefined) {
+            console.log("d3.event:" + $wnd.d3.event.defaultPrevented);
+            return $wnd.d3.event.defaultPrevented;
+        }
+        return false;
+    }-*/;
     
     public static final native D3 d3() /*-{
         return $wnd.d3;
@@ -444,6 +453,11 @@ public class D3 extends JavaScriptObject {
         return this.style(style);
     }-*/;
 
+    /**
+     * HTTP GET the provided file and append it to the dom element "defs".
+     *
+     * @param file the file to GET
+     */
     public final native void injectSVGDef(String file) /*-{
          $wnd.d3.xml(file, function(svg){
 

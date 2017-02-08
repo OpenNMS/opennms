@@ -3,17 +3,13 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>18.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jaxb-dependencies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Dependencies JAXB</name>
-  <properties>
-    <!-- this has been moved to master pom so the version can be used in the karaf system exports -->
-    <fastInfosetVersion>1.2.2</fastInfosetVersion>
-  </properties>
   <dependencies>
     <!--
     <dependency>
@@ -31,6 +27,11 @@
       <groupId>org.eclipse.persistence</groupId>
       <artifactId>org.eclipse.persistence.moxy</artifactId>
       <version>${eclipselinkVersion}</version>
+    </dependency>
+    <!-- MOXy 2.5.1 relies on javax.mail classes for Base64 decoding -->
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
     </dependency>
   </dependencies>
 </project>

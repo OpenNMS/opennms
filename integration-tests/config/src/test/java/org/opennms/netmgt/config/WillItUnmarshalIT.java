@@ -37,8 +37,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import junit.framework.AssertionFailedError;
-
 import org.apache.commons.io.FileUtils;
 import org.exolab.castor.util.LocalConfiguration;
 import org.junit.Before;
@@ -53,8 +51,8 @@ import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
 import org.opennms.netmgt.alarmd.northbounder.email.EmailNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfig;
-import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfig;
+import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
@@ -121,6 +119,8 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * This is an integration test checking if all provided example XML files can be
@@ -431,7 +431,7 @@ public class WillItUnmarshalIT {
                 assertEquals(this.exception, exception.toString());
 
             } else {
-                fail("Unexpected exception: " + ex);
+                throw new RuntimeException(ex);
             }
         }
     }

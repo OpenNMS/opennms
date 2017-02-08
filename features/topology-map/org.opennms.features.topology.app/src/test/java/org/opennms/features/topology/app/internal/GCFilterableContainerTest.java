@@ -30,11 +30,15 @@ package org.opennms.features.topology.app.internal;
 
 import java.net.MalformedURLException;
 import java.util.List;
+
 import javax.xml.bind.JAXBException;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -48,6 +52,16 @@ public class GCFilterableContainerTest {
     @Before
     public void setUp() throws MalformedURLException, JAXBException {
         GraphProvider provider = new AbstractTopologyProvider("test") {
+            @Override
+            public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+                return SelectionChangedListener.Selection.NONE;
+            }
+
+            @Override
+            public boolean contributesTo(ContentType type) {
+                return false;
+            }
+
             @Override public void save() { }
             @Override public void refresh() { }
             @Override public Criteria getDefaultCriteria() { return null; }
@@ -67,7 +81,8 @@ public class GCFilterableContainerTest {
             }
         };
         provider.load(null);
-        graphContainer = new VEProviderGraphContainer(provider, new ProviderManager());
+        graphContainer = new VEProviderGraphContainer(new ProviderManager());
+        graphContainer.setBaseTopology(provider);
     }
     
     @Test

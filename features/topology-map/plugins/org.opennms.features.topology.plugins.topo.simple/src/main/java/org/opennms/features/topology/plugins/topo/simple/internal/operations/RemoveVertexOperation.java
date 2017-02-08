@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public class RemoveVertexOperation implements Operation {
 
     @Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+    public void execute(List<VertexRef> targets, OperationContext operationContext) {
         GraphContainer graphContainer = operationContext.getGraphContainer();
         
         if (targets == null) {
@@ -55,7 +55,6 @@ public class RemoveVertexOperation implements Operation {
             
         	graphContainer.redoLayout();
         }
-        return null;
     }
 
     @Override

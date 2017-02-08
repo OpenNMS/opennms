@@ -38,11 +38,7 @@ public interface Operation {
     public static final String OPERATION_CONTEXT_LOCATION = "operation.contextMenuLocation";
     public static final String OPERATION_LABEL = "operation.label";
     
-    public interface Undoer {
-        void undo(OperationContext operationContext);
-    }
-    
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext);
+    public void execute(List<VertexRef> targets, OperationContext operationContext);
     public boolean display(List<VertexRef> targets, OperationContext operationContext);
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext);
     public String getId();

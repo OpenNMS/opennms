@@ -29,12 +29,8 @@
 
 --%>
 
-<%@page import="java.util.Collection"%>
-<%@page import="org.opennms.core.utils.WebSecurityUtils"%>
-<%@page import="org.opennms.netmgt.model.OnmsNode"%>
-<%@page import="org.opennms.web.element.ElementNotFoundException"%>
-<%@page import="org.opennms.web.element.NetworkElementFactory"%>
-<%@page import="org.opennms.web.element.NetworkElementFactoryInterface"%>
+<%@page import="org.opennms.web.enlinkd.EnLinkdElementFactory"%>
+<%@page import="org.opennms.web.enlinkd.EnLinkdElementFactoryInterface"%>
 <%@page import="org.opennms.web.enlinkd.BridgeLinkNode"%>
 <%@page import="org.opennms.web.enlinkd.BridgeLinkRemoteNode"%>
 <%@page import="org.opennms.web.enlinkd.BridgeLinkSharedHost"%>
@@ -66,9 +62,6 @@
 		throw new ElementNotFoundException("No such node in database", "node", "element/linkednode.jsp", "node", "element/nodeList.htm");
     }
 
-	pageContext.setAttribute("nodeId", nodeId);
-	pageContext.setAttribute("nodeLabel", node_db.getLabel());
-
 	Collection<LldpLinkNode> lldpLinks = enlinkdfactory.getLldpLinks(nodeId);
 	Collection<BridgeLinkNode> bridgelinks = enlinkdfactory.getBridgeLinks(nodeId);
 	Collection<CdpLinkNode> cdpLinks = enlinkdfactory.getCdpLinks(nodeId);
@@ -98,7 +91,8 @@
 </script>
 
 <!-- Body -->
-  <h4>Node: ${nodeLabel}</h4>
+  <h4>Node: <%=node_db.getLabel()%></h4>
+
 
 <div class="row">
 <div class="col-md-12">

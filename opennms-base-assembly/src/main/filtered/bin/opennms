@@ -619,11 +619,6 @@ if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c -- -DisThreadContextMapInheri
     ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -DisThreadContextMapInheritable=true"
 fi
 
-# Fix for NMS-8125: Groovy meta-space leak
-if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c -- -Dgroovy.use.classvalue=` -eq 0 ]; then
-    ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dgroovy.use.classvalue=true"
-fi
-
 if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c MaxMetaspaceSize=` -eq 0 ]; then
 	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:MaxMetaspaceSize=256m"
 fi

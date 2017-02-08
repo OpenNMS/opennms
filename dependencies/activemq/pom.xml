@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>18.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -86,6 +86,12 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!--
+      This is causing problems when building the Remote Poller JNLP since it is a
+      compile dependency on an XML artifact. Exclude it for now since we cannot
+      load ActiveMQ inside Karaf right now because of Spring version conflicts
+      anyway.
+
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-karaf</artifactId>
@@ -93,7 +99,7 @@
       <type>xml</type>
       <classifier>features</classifier>
       <exclusions>
-        <!-- Exclude all Felix, Karaf, Jetty, and Pax dependencies since they are part of the OSGi container -->
+        <!- - Exclude all Felix, Karaf, Jetty, and Pax dependencies since they are part of the OSGi container - ->
         <exclusion>
           <groupId>org.apache.felix</groupId>
           <artifactId>org.apache.felix.framework</artifactId>
@@ -122,7 +128,7 @@
           <groupId>org.ops4j.pax.logging</groupId>
           <artifactId>pax-logging-service</artifactId>
         </exclusion>
-        <!-- Exclude all logging APIs since they are provided by the container -->
+        <!- - Exclude all logging APIs since they are provided by the container - ->
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
@@ -131,7 +137,7 @@
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
         </exclusion>
-        <!-- Exclude legacy Spring artifacts -->
+        <!- - Exclude legacy Spring artifacts - ->
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-asm</artifactId>
@@ -162,6 +168,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>

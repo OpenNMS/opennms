@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>18.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -25,6 +25,9 @@
 
     <!-- Events -->
     <module>events</module>
+
+    <!-- Executor factories -->
+    <module>executor-factory</module>
 
     <!-- OpenNMS Collection API and implementations -->
     <module>collection</module>
@@ -49,6 +52,9 @@
 
     <!-- OpenNMS Resource CLI tool -->
     <module>resource-cli</module>
+
+    <!-- OpenNMS rest commons module -->
+    <module>rest-commons</module>
 
     <!-- OpenNMS OSGI Core -->
     <module>opennms-osgi-core</module>
@@ -95,6 +101,9 @@
     <!-- OpenNMS Vaadin Themes -->
     <module>themes</module>
 
+    <!-- Vaadin Feature -->
+    <module>vaadin</module>
+
     <!-- Generic Vaadin components -->
     <module>vaadin-components</module>
 
@@ -115,19 +124,12 @@
     <module>ncs</module>
     <module>springframework-security</module>
     <module>system-report</module>
-    <module>timeseries-evaluate</module>
 
-    <!-- OpenNMS Plugin Manager -->
-    <module>vaadin-opennms-pluginmanager</module>
-    
-    <!-- ReST Elastic Search Integration -->
-    <module>opennms-es-rest</module>
-    
-    <!-- Alarm Change Notifier -->
-    <module>alarm-change-notifier</module>
-    
-    <!-- Internal Plugins Descriptor -->
-    <module>internal-plugins-descriptor</module>
-    
+    <!-- Elasticsearch event-forwarder-->
+    <module>elasticsearch</module>
+
+    <!-- Minion -->
+    <module>minion</module>
+    <module>scv</module>
   </modules>
 </project>

@@ -28,7 +28,16 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -36,13 +45,28 @@ import org.opennms.features.topology.api.AutoRefreshSupport;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphVisitor;
+import org.opennms.features.topology.api.IconManager;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.CollapsibleCriteria;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeListener;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.EdgeStatusProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.RefComparator;
+import org.opennms.features.topology.api.topo.StatusProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexListener;
+import org.opennms.features.topology.api.topo.VertexProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -241,8 +265,9 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private Property<Double> m_scaleProperty = new ScaleProperty(0.0);
     private LayoutAlgorithm m_layoutAlgorithm;
     private SelectionManager m_selectionManager;
+    private IconManager m_iconManager;
     private StatusProvider m_statusProvider;
-    private Set<EdgeStatusProvider> m_edgeStatusProviders;
+    private EdgeStatusProvider m_edgeStatusProvider;
     private MergingGraphProvider m_mergedGraphProvider;
     private MapViewManager m_viewManager = new DefaultMapViewManager();
     private String m_sessionId;
@@ -253,8 +278,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private VEGraph m_graph;
     private AtomicBoolean m_containerDirty = new AtomicBoolean(Boolean.TRUE);
 
-    public VEProviderGraphContainer(GraphProvider graphProvider, ProviderManager providerManager) {
-        m_mergedGraphProvider = new MergingGraphProvider(graphProvider, providerManager);
+    public VEProviderGraphContainer(ProviderManager providerManager) {
+        m_mergedGraphProvider = new MergingGraphProvider(providerManager);
     }
 
     @Override
@@ -430,28 +455,34 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             m_graph.updateLayout(displayVertices, displayEdges);
         }
 
-        unselectVerticesWhichAreNotVisibleAnymore(m_graph, m_selectionManager);
+        unselectElementsWhichAreNotVisibleAnymore(m_graph, m_selectionManager);
 
-        for(Criteria criteria : getCriteria()){
-            if(criteria instanceof VertexHopGraphProvider.FocusNodeHopCriteria){
-                VertexHopGraphProvider.FocusNodeHopCriteria focusCriteria = (VertexHopGraphProvider.FocusNodeHopCriteria) criteria;
-                List<VertexRef> vertexRefs = new LinkedList<VertexRef>();
-                for(VertexRef vRef : focusCriteria.getVertices()){
+        removeVerticesWhichAreNotVisible(displayVertices);
+    }
+
+    // Remove all vertices from focus which are not visible
+    private void removeVerticesWhichAreNotVisible(final List<Vertex> displayVertices) {
+        for(Criteria criteria : getCriteria()) {
+            if (criteria instanceof VertexHopCriteria
+                    // CollapsibleCriteria may contain not visible vertices (when collapsed)
+                    // and multiple collapsible criteria may contain the same vertices.
+                    // We do not remove them manually for now
+                    && !(criteria instanceof CollapsibleCriteria)) {
+                final VertexHopCriteria hopCriteria = (VertexHopCriteria) criteria;
+                for(VertexRef vRef : hopCriteria.getVertices()){
                     if(!displayVertices.contains(vRef)){
-                        vertexRefs.add(vRef);
+                        removeCriteria(hopCriteria);
                     }
                 }
-                focusCriteria.removeAll(vertexRefs);
             }
         }
     }
 
-    // we have to find out if each selected vertex is still displayable,
-    // if not we deselect it.
-    private static void unselectVerticesWhichAreNotVisibleAnymore(Graph graph, SelectionManager selectionManager) {
+    // we have to find out if each selected vertex/edge is still displayable, if not we deselect it.
+    private static void unselectElementsWhichAreNotVisibleAnymore(Graph graph, SelectionManager selectionManager) {
         if (selectionManager == null) return;
-        List<VertexRef> selectedVertexRefs = new ArrayList<VertexRef>(selectionManager.getSelectedVertexRefs());
-        List<VertexRef> newSelectedVertexRefs = new ArrayList<VertexRef>();
+        List<VertexRef> selectedVertexRefs = new ArrayList<>(selectionManager.getSelectedVertexRefs());
+        List<VertexRef> newSelectedVertexRefs = new ArrayList<>();
         for (VertexRef eachSelectedVertex : selectedVertexRefs) {
             for (Vertex eachDisplayableVertex : graph.getDisplayVertices()) {
                 if (eachDisplayableVertex.getNamespace().equals(eachSelectedVertex.getNamespace())
@@ -462,9 +493,24 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             }
         }
 
+        List<EdgeRef> selectedEdgeRefs = new ArrayList<>(selectionManager.getSelectedEdgeRefs());
+        List<EdgeRef> newSelectedEdgeRefs = new ArrayList<>();
+        for (EdgeRef eachSelectedEdgeRef : selectedEdgeRefs) {
+            for (Edge eachDisplayableEdge : graph.getDisplayEdges()) {
+                if (eachDisplayableEdge.getNamespace().equals(eachSelectedEdgeRef.getNamespace())
+                        && eachDisplayableEdge.getId().equals(eachSelectedEdgeRef.getId())) {
+                    newSelectedEdgeRefs.add(eachSelectedEdgeRef);
+                    break;
+                }
+            }
+        }
+
         // if the selection changed, inform selectionManager
         if (!newSelectedVertexRefs.equals(selectedVertexRefs)) {
             selectionManager.setSelectedVertexRefs(newSelectedVertexRefs);
+        }
+        if (!newSelectedEdgeRefs.equals(selectedEdgeRefs)) {
+            selectionManager.setSelectedEdgeRefs(newSelectedEdgeRefs);
         }
     }
 
@@ -547,7 +593,46 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 		}
 	}
 
-	@Override
+    @Override
+    public <T extends Criteria> Set<T> findCriteria(Class<T> criteriaType) {
+        Objects.requireNonNull(criteriaType);
+        final Set<T> criteriaSet = new HashSet<>();
+        for (Criteria eachCriteria : getCriteria()) {
+            if (criteriaType.isAssignableFrom(eachCriteria.getClass())) {
+                criteriaSet.add((T) eachCriteria);
+            }
+        }
+        return criteriaSet;
+    }
+
+    @Override
+    public <T extends Criteria> T findSingleCriteria(Class<T> criteriaType) {
+        if (criteriaType == null) {
+            return null;
+        }
+        Set<T> criteriaSet = findCriteria(criteriaType);
+        if (!criteriaSet.isEmpty()) {
+            if (criteriaSet.size() > 1) {
+                s_log.warn("Found more than one criteria of type {}. Returning first.", criteriaType);
+            }
+            return criteriaSet.iterator().next();
+        }
+
+        // not found
+        return null;
+    }
+
+    @Override
+    public IconManager getIconManager() {
+        return m_iconManager;
+    }
+
+    @Override
+    public void setIconManager(IconManager iconManager) {
+        m_iconManager = iconManager;
+    }
+
+    @Override
 	public void addChangeListener(ChangeListener listener) {
 		m_listeners.add(listener);
 	}
@@ -611,9 +696,14 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
 
     @Override
-    public Set<EdgeStatusProvider> getEdgeStatusProviders(){
-        if(m_edgeStatusProviders == null) m_edgeStatusProviders = new HashSet<EdgeStatusProvider>();
-        return m_edgeStatusProviders;
+    public EdgeStatusProvider getEdgeStatusProvider(){
+        return m_edgeStatusProvider;
+    }
+
+    @Override
+    public void setEdgeStatusProvider(EdgeStatusProvider edgeStatusProvider) {
+        m_edgeStatusProvider = edgeStatusProvider;
+        setDirty(true);
     }
 
     @Override

@@ -4,7 +4,7 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi" 
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd"
@@ -16,13 +16,18 @@
     <!-- Scan the following packages for controllers that are annotated with the @Controller annotation -->
     <context:component-scan base-package="org.opennms.web.controller"/>
 
-    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
-        <property name="locations">
-            <list>
-                <value>file:${opennms.home}/etc/model-importer.properties</value>
-            </list>
-        </property>
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+        <!-- 
+          We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+          preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+          the issue documented here:
+
+          https://jira.springsource.org/browse/SPR-6428
+
+          TODO: Fix this behavior after upgrading to Spring 3.1.
+        -->
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
     <!-- Map controllers based on their bean name -->
@@ -221,6 +226,16 @@
     <bean name="/alarm/summary-box.htm" class="org.opennms.web.controller.alarm.AlarmBoxController">
         <property name="successView" value="alarm/summary-box"/>
         <property name="alarmRepository" ref="alarmRepository"/>
+    </bean>
+
+    <bean name="/bsm/summary-box.htm" class="org.opennms.web.controller.bsm.BusinessServicesBoxController">
+        <property name="successView" value="bsm/summary-box"/>
+        <property name="businessServiceManager" ref="businessServiceManager"/>
+    </bean>
+
+    <bean name="/application/summary-box.htm" class="org.opennms.web.controller.application.ApplicationBoxController">
+        <property name="successView" value="application/summary-box"/>
+        <property name="applicationDao" ref="applicationDao"/>
     </bean>
 
    	<bean name="/event/*" class="org.opennms.web.controller.event.EventController">
@@ -423,6 +438,11 @@
                                 <property name="url" value="distributedStatusSummary.htm"/>
                                 <property name="locationMatch" value="distributedstatus"/>
                                 <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Scan Reports"/>
+                                <property name="url" value="scanreports/index.jsp"/>
+                                <property name="locationMatch" value="scanReport"/>
                             </bean>
                         </list>
                     </property>

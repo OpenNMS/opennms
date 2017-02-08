@@ -47,6 +47,6 @@ public class MockDistPollerDao extends AbstractMockDao<OnmsDistPoller,String> im
     @Override
     public OnmsDistPoller whoami() {
         // Return the OnmsDistPoller with the default UUID
-        return get("00000000-0000-0000-0000-000000000000");
+        return get(DEFAULT_DIST_POLLER_ID);
     }
 }

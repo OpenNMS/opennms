@@ -28,26 +28,39 @@
 
 package org.opennms.features.topology.app.internal;
 
-import com.vaadin.annotations.JavaScript;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.shared.MouseEventDetails;
-import com.vaadin.ui.AbstractComponent;
-import org.opennms.features.topology.api.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
+import org.opennms.features.topology.api.BoundingBox;
+import org.opennms.features.topology.api.Graph;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphContainer.ChangeListener;
+import org.opennms.features.topology.api.GraphVisitor;
+import org.opennms.features.topology.api.MapViewManager;
+import org.opennms.features.topology.api.MapViewManagerListener;
+import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.SelectionContext;
+import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.gwt.client.TopologyComponentServerRpc;
 import org.opennms.features.topology.app.internal.gwt.client.TopologyComponentState;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
-
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
 import org.slf4j.LoggerFactory;
 
-@JavaScript({"gwt/public/topologywidget/js/d3.v3.4.13.js"})
+import com.vaadin.annotations.JavaScript;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.shared.MouseEventDetails;
+import com.vaadin.ui.AbstractComponent;
+
+@JavaScript({"theme://js/d3.v3.4.13.js"})
 public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener, MapViewManagerListener {
 
     TopologyComponentServerRpc m_rpc = new TopologyComponentServerRpc(){
@@ -85,6 +98,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         @Override
         public void mapPhysicalBounds(int width, int height) {
+            getState().setPhysicalDimensions(width, height);
             getViewManager().setViewPort(width, height);
             getViewManager().setMapBounds(m_graph.getLayout().getBounds());
         }
@@ -99,11 +113,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
             Object menuTarget = null;
             if (type.toLowerCase().equals("vertex")) {
-                String targetKey = target;
-                menuTarget = getGraph().getVertexByKey(targetKey);
+                menuTarget = getGraph().getVertexByKey(target);
             } else if (type.toLowerCase().equals("edge")) {
-                String targetKey = (String)target;
-                menuTarget = getGraph().getEdgeByKey(targetKey);
+                menuTarget = getGraph().getEdgeByKey(target);
             }
 
             m_contextMenuHandler.showContextMenu(menuTarget, x, y);
@@ -140,7 +152,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     };
 
     public interface VertexUpdateListener{
-        public void onVertexUpdate();
+        void onVertexUpdate();
     }
 
     private static final long serialVersionUID = 1L;
@@ -180,7 +192,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         setScaleDataSource(m_graphContainer.getScaleProperty());
 
-        getState().setSVGDefFiles(m_iconRepoManager.getSVGIconDefs());
+        getState().setSVGDefFiles(m_iconRepoManager.getSVGIconFiles());
         updateGraph();
     }
 
@@ -238,10 +250,13 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             vertexRefsToSelect.addAll(m_graphContainer.getSelectionManager().getSelectedVertexRefs());
             vertexRefsToSelect.removeAll(vertexRefsToDeselect);
         }
-        m_graphContainer.getSelectionManager().deselectAll();
-        m_graphContainer.getSelectionManager().selectVertexRefs( m_graphContainer.getVertexRefForest(vertexRefsToSelect) );
-        m_blockSelectionEvents = false;
-        updateMenuItems();
+        Collection<VertexRef> selectedVertices = m_graphContainer.getVertexRefForest(vertexRefsToSelect);
+        if (!m_graphContainer.getSelectionManager().getSelectedVertexRefs().equals(selectedVertices)) {
+            m_graphContainer.getSelectionManager().deselectAll();
+            m_graphContainer.getSelectionManager().selectVertexRefs(selectedVertices);
+            m_blockSelectionEvents = false;
+            updateMenuItems();
+        }
     }
 
     private void selectEdge(String edgeKey) {
@@ -261,7 +276,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         Vertex vertex = getGraph().getVertexByKey(id);
 
-        getGraph().getLayout().setLocation(vertex, x, y);
+        getGraph().getLayout().setLocation(vertex, new Point(x, y));
 
         if (selected) {
             m_graphContainer.getSelectionManager().selectVertexRefs(Collections.singleton(vertex));

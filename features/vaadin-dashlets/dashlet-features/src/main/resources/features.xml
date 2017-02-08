@@ -10,6 +10,10 @@
     <feature>opennms-core</feature>
     <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-alarms/${pom.version}</bundle>
   </feature>
+  <feature name="dashlet-bsm" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: BSM">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-bsm/${pom.version}</bundle>
+  </feature>
   <feature name="dashlet-summary" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: Summary">
     <feature>opennms-core</feature>
     <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-summary/${pom.version}</bundle>

@@ -1,29 +1,29 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
- * <p>
+ *
  * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
- * <p>
+ *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- * <p>
+ *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
- * <p>
+ *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * <p>
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
- * <p>
+ *      http://www.gnu.org/licenses/
+ *
  * For more information contact:
  * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.features.topology.plugins.browsers;
@@ -40,7 +40,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -51,6 +52,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionOperations;
 
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -78,6 +80,9 @@ public class OnmsDaoContainerIT {
     @Autowired
     private AlarmDao m_alarmDao;
 
+    @Autowired
+    private TransactionOperations m_transactionTemplate;
+
     @Before
     public void setUp() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -86,15 +91,15 @@ public class OnmsDaoContainerIT {
 
     @Test
     public void verifyCacheIsReloadedCorrectly() {
-        OnmsDaoContainer<OnmsAlarm, Integer> container = new OnmsDaoContainer<OnmsAlarm, Integer>(OnmsAlarm.class, m_alarmDao) {
+        OnmsVaadinContainer<OnmsAlarm, Integer> container = new OnmsVaadinContainer<OnmsAlarm, Integer>(OnmsAlarm.class, new OnmsDaoContainerDatasource<>(m_alarmDao, m_transactionTemplate)) {
             @Override
             protected Integer getId(OnmsAlarm bean) {
                 return bean == null ? null : bean.getId();
             }
 
             @Override
-            public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
-
+            protected ContentType getContentType() {
+                return ContentType.Alarm;
             }
         };
 

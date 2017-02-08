@@ -1,0 +1,36 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+=== Reduce Functions
+
+A _Reduce Function_ is used to aggregate the _Operational Status_ for the _BS_.
+The _Alarm Severity_ from the _Edges_ are used as input for the _Reduce Function_.
+For this operation the following _Reduce Functions_ are available:
+
+.Status calculation _Reduce Functions_
+[options="header, autowidth"]
+|===
+| Name                      | Description
+| `Highest Severity`        | Uses the value of the highest severity, _Weight_ is ignored.
+| `Threshold`               | Uses the highest severity found more often than the given threshold, e.g. 0.26 can also be seen as 26%, which means at least 2 of 4 _Alarms_ need to be raised to change the _BS_.
+| `Highest Severity Above`  | Uses the highest severity greater than the given threshold severity.
+|===
+
+The following table shows the status calculation with _Edges_ assigned to an _IP Service_.
+The _IP-Service_ is driven by the monitoring of the _ICMP_ service for three Web Server.
+In the table below you find a configuration where _Web Server 3_ is weighted 3 times higher than the other and a threshold of 0.33 (33%) is configured.
+
+.Example for status calculation using the Threshold function
+[options="header, autowidth"]
+|===
+| Name       | Weight | Weight Factor | Input Severity | Operational Status | Critical | Major | Minor | Warning | Normal
+| Web-ICMP-1 |   1    |     0.2       |    Critical    |      Critical      |    0.2   |  0.2  |  0.2  |   0.2   |  0.2
+| Web-ICMP-2 |   1    |     0.2       |     Normal     |       Normal       |    0     |  0    |  0    |   0     |  0.2
+| Web-ICMP-3 |   3    |     0.6       |    Warning     |      Warning       |    0     |  0    |  0    |   0.6   |  0.6
+| Total      |        |     1.0       |                |                    |    0.2   |  0.2  |  0.2  |   0.8   |  1
+| Percentage |        |     100%      |                |                    |    20%   |  20%  |  20%  |   80%   |  100%
+|===
+
+The _Operational Status Severity_ is evaluated from left to right, the first value higher then the configured _Threshold_ is used.
+In this case the _Operational Status_ is set to _Warning_ because the first threshold which exceeds _33%_ is _Warning_ with _80%_.

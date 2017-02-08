@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.topology</groupId>
     <artifactId>features</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>18.0.1-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -24,45 +24,13 @@
         <artifactId>features-maven-plugin</artifactId>
         <configuration>
           <repositories>
-            <repository>mvn:${project.groupId}/vaadin/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features/vaadin/${project.version}/xml/features</repository>
             <repository>mvn:${project.groupId}/opennms-topology-api/${project.version}/xml/features</repository>
           </repositories>
           <features>
             <feature>opennms-core</feature>
             <feature>opennms-topology-api</feature>
           </features>
-          <configs>
-            <config>
-                <name>org.opennms.features.topology.app</name>
-                <contents>
-                    servletAlias=/topology
-                    widgetset=org.opennms.features.topology.widgetset.gwt.TopologyWidgetset
-                    theme=topo_default
-                </contents>
-            </config>
-            <config>
-                <name>org.opennms.features.topology.app.menu</name>
-                <contents>
-                    toplevelMenuOrder=File,Edit,View,Additions,Help
-                    submenu.File.groups=start,new,close,save,print,open,import,additions,end
-                    submenu.Edit.groups=start,undo,cut,find,add,layout,end,additions
-                    submenu.View.groups=start,layout,topology,grouping,additions,end
-                    submenu.Help.groups=start,main,tools,updates,end,additions
-                    submenu.Default.groups=start,main,end,additions
-                </contents>
-            </config>
-            <config>
-                <name>org.opennms.features.topology.app.icons</name>
-                <contents>
-                    # The following properties are mappings of vertex types to icons,
-                    # the icon must be a url.
-                    #
-                    # Prefix your url with theme:// to designate that url to the image is in the theme bundle
-                    #
-                    server=theme://images/server.png 
-                </contents>
-            </config>
-          </configs>
         </configuration>
       </plugin>
     </plugins>
@@ -70,7 +38,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>vaadin</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>

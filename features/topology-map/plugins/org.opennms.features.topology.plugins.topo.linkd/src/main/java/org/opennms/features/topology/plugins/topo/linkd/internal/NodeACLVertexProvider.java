@@ -37,11 +37,14 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaInfo;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -311,5 +314,20 @@ public class NodeACLVertexProvider implements GraphProvider {
     @Override
     public int getVertexTotalCount() {
         return m_delegate.getVertexTotalCount();
+    }
+
+    @Override
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+        return m_delegate.getSelection(selectedVertices, type);
+    }
+
+    @Override
+    public boolean contributesTo(ContentType type) {
+        return m_delegate.contributesTo(type);
+    }
+
+    @Override
+    public MetaInfo getMetaInfo() {
+        return m_delegate.getMetaInfo();
     }
 }

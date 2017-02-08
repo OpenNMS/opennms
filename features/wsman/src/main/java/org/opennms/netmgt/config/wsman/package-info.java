@@ -26,5 +26,114 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://xmlns.opennms.org/xsd/config/wsman-datacollection", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package org.opennms.netmgt.config.wsman;
+package org.opennms.netmgt.bsm.persistence;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.Properties;
+
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdgeEntity;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
+
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+    "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+    "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+    "classpath:/META-INF/opennms/applicationContext-soa.xml",
+    "classpath:/META-INF/opennms/applicationContext-dao.xml",
+    "classpath*:/META-INF/opennms/component-dao.xml",
+    "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+    "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+    "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase(reuseDatabase = false, tempDbClass = MockDatabase.class)
+@Transactional
+public class BusinessServiceChildEdgeIT {
+
+    @Autowired
+    private DatabasePopulator m_databasePopulator;
+
+    @Autowired
+    private BusinessServiceDao m_businessServiceDao;
+
+    @Autowired
+    private BusinessServiceEdgeDao m_businessServiceEdgeDao;
+
+    @BeforeClass
+    public static void setUpClass() {
+        MockLogAppender.setupLogging(true, "TRACE", new Properties());
+    }
+
+    @Before
+    public void setUp() {
+        BeanUtils.assertAutowiring(this);
+        m_databasePopulator.populateDatabase();
+    }
+
+    @Test
+    public void canCreateReadUpdateAndDeleteEdges() {
+        // Create the Parent Business Service
+        BusinessServiceEntity parent = new BusinessServiceEntityBuilder()
+            .name("Parent Service")
+            .reduceFunction(new MostCriticalEntity())
+            .toEntity();
+        // Create the Child Business Service
+        BusinessServiceEntity child = new BusinessServiceEntityBuilder()
+                .name("Child Service")
+                .reduceFunction(new MostCriticalEntity())
+                .toEntity();
+        Long parentServiceId = m_businessServiceDao.save(parent);
+        Long childServiceId = m_businessServiceDao.save(child);
+        m_businessServiceDao.flush();
+
+        // Initially there should be no edges
+        assertEquals(0, m_businessServiceEdgeDao.countAll());
+
+        // Create an edge
+        BusinessServiceChildEdgeEntity edge = new BusinessServiceChildEdgeEntity();
+        edge.setMapFunction(new IdentityEntity());
+        edge.setBusinessService(parent);
+        edge.setChild(child);
+        m_businessServiceEdgeDao.save(edge);
+        m_businessServiceEdgeDao.flush();
+
+        // Read an edge
+        assertEquals(1, m_businessServiceEdgeDao.countAll());
+        assertEquals(edge, m_businessServiceEdgeDao.get(edge.getId()));
+        assertEquals(parentServiceId, edge.getBusinessService().getId());
+        assertEquals(childServiceId, edge.getChild().getId());
+
+        // Update an edge
+        edge.setWeight(2);
+        m_businessServiceEdgeDao.save(edge);
+        m_businessServiceEdgeDao.flush();
+
+        BusinessServiceEdgeEntity otherEdge = m_businessServiceEdgeDao.get(edge.getId());
+        assertEquals(edge, otherEdge);
+        assertEquals(1, m_businessServiceEdgeDao.countAll());
+
+        // Delete an edge
+        m_businessServiceEdgeDao.delete(edge);
+        assertEquals(0, m_businessServiceEdgeDao.countAll());
+    }
+}
