@@ -29,8 +29,8 @@
 package org.opennms.core.test.camel;
 
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
+import org.opennms.netmgt.icmp.AbstractPingerFactory;
 import org.opennms.netmgt.icmp.PingerFactory;
-import org.opennms.netmgt.icmp.PingerFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,8 +50,8 @@ public class CamelBlueprintTest extends CamelBlueprintTestSupport {
         System.setProperty( "de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString() );
         try {
             final PingerFactory pingerFactory = getOsgiService(PingerFactory.class, 2000);
-            if (pingerFactory instanceof PingerFactoryImpl) {
-                ((PingerFactoryImpl) pingerFactory).reset();
+            if (pingerFactory instanceof AbstractPingerFactory) {
+                ((AbstractPingerFactory) pingerFactory).reset();
             }
         } catch (final Exception e) {
             LOG.warn("Failed to get PingerFactory. This may be intentional.");

@@ -215,6 +215,7 @@
             <feature>opennms-icmp-jna</feature>
             <feature>opennms-icmp-jni</feature>
             <feature>opennms-icmp-jni6</feature>
+            <feature>opennms-icmp-best</feature>
             <feature>opennms-icmp-commands</feature>
             <feature>opennms-javamail</feature>
             <feature>opennms-model</feature>

@@ -622,6 +622,8 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         getReadLock().lock();
         try {
             return getConfiguration().getRestartSleepTime();
+        } catch (final NullPointerException e) {
+            return 86400000L;
         } finally {
             getReadLock().unlock();
         }
@@ -637,6 +639,8 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         getReadLock().lock();
         try {
             return getConfiguration().getInitialSleepTime();
+        } catch (final NullPointerException e) {
+            return 30000L;
         } finally {
             getReadLock().unlock();
         }

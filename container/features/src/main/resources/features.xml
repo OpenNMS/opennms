@@ -690,6 +690,15 @@
       <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-icmp-best" description="OpenNMS :: ICMP :: Best Match" version="${project.version}">
+      <feature>opennms-icmp-api</feature>
+      <feature>opennms-icmp-jna</feature>
+      <feature>opennms-icmp-jni</feature>
+      <feature>opennms-icmp-jni6</feature>
+
+      <bundle>mvn:org.opennms/opennms-icmp-best/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-icmp-jna" description="OpenNMS :: ICMP :: JNA" version="${project.version}">
       <feature version="${guavaVersion}">guava</feature>
 
