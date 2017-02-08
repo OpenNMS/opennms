@@ -9,6 +9,6 @@
 
   <context:annotation-config />
 
-  <bean id="pingerFactory" class="org.opennms.netmgt.icmp.PingerFactoryImpl" />
+  <bean id="pingerFactory" class="org.opennms.netmgt.icmp.best.BestMatchPingerFactory" />
 
 </beans>

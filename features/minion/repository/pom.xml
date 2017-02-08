@@ -196,6 +196,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.collection</groupId>
+            <artifactId>org.opennms.features.collection.collectors</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features</groupId>
             <artifactId>org.opennms.features.wsman</artifactId>
             <version>${project.version}</version>
