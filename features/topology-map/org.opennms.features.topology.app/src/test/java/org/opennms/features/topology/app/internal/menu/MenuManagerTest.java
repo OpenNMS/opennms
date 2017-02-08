@@ -56,7 +56,7 @@ public class MenuManagerTest {
 
         cmdManager.onBind(createTestOperation(), createProperties("File|New", "NewOperation", ""));
 
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = getMenuBar(cmdManager);
 
         List<MenuBar.MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -86,7 +86,7 @@ public class MenuManagerTest {
         cmdManager.onBind(createTestOperation(), createProperties("Device", "NewOperation?group=additions", ""));
 
 
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = getMenuBar(cmdManager);
 
         List<MenuBar.MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -113,7 +113,7 @@ public class MenuManagerTest {
         cmdManager.onBind(createTestOperation(), createProperties("Edit", "Spring Layout?group=layout", ""));
 
 
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = getMenuBar(cmdManager);
 
         List<MenuBar.MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -142,7 +142,7 @@ public class MenuManagerTest {
         cmdManager.onBind(createTestOperation(), createProperties("Edit", "Spring Layout?group=layout", ""));
 
 
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = getMenuBar(cmdManager);
 
         List<MenuBar.MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -169,7 +169,7 @@ public class MenuManagerTest {
 
         cmdManager.onBind(createTestOperation(), createProperties("File|New", "NewOperation", ""));
 
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = getMenuBar(cmdManager);
 
         List<MenuBar.MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -243,5 +243,11 @@ public class MenuManagerTest {
                 return null;
             }
         };
+    }
+    
+    private static TopologyMenuBar getMenuBar(MenuManager menuManager) {
+        TopologyMenuBar topologyMenuBar = new TopologyMenuBar();
+        topologyMenuBar.buildMenu(null, null, menuManager);
+        return topologyMenuBar;
     }
 }
