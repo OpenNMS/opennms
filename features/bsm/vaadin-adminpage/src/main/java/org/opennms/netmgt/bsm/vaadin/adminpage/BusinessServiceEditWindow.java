@@ -313,6 +313,18 @@ public class BusinessServiceEditWindow extends Window {
             boolean thresholdFunction = m_reduceFunctionNativeSelect.getValue() == Threshold.class;
             boolean highestSeverityAboveFunction = m_reduceFunctionNativeSelect.getValue() == HighestSeverityAbove.class;
 
+            int height = 550;
+
+            if (thresholdFunction) {
+                height += 45;
+            }
+
+            if (highestSeverityAboveFunction) {
+                height += 40;
+            }
+
+            setHeight(height, Unit.PIXELS);
+
             setVisible(m_thresholdTextField, thresholdFunction);
             setVisible(m_thresholdStatusSelect, highestSeverityAboveFunction);
         });
