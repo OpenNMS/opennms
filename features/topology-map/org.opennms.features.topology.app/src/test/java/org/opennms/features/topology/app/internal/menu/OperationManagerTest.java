@@ -247,7 +247,7 @@ public class OperationManagerTest {
     
     private static TopologyMenuBar getMenuBar(OperationManager operationManager) {
         TopologyMenuBar topologyMenuBar = new TopologyMenuBar();
-        topologyMenuBar.buildMenu(null, null, operationManager);
+        topologyMenuBar.updateMenu(null, null, operationManager);
         return topologyMenuBar;
     }
 }

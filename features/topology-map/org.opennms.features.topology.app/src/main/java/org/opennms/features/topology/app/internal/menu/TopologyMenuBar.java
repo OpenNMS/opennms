@@ -56,7 +56,7 @@ public class TopologyMenuBar extends MenuBar {
     }
 
     // Builds the menu
-    public void buildMenu(GraphContainer graphContainer, UI mainWindow, OperationManager operationManager) {
+    public void updateMenu(GraphContainer graphContainer, UI mainWindow, OperationManager operationManager) {
         final DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, OperationContext.DisplayLocation.MENUBAR);
         final ArrayList<VertexRef> targets = new ArrayList<>(graphContainer.getSelectionManager().getSelectedVertexRefs());
 

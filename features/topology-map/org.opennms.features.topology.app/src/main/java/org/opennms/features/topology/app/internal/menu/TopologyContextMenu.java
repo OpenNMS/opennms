@@ -66,11 +66,11 @@ public class TopologyContextMenu extends ContextMenu {
 		addItems(menuBar);
 	}
 
-	public TopologyContextMenu(UI ui) {
-		setAsContextMenuOf(ui);
+	public TopologyContextMenu() {
+
 	}
 
-	public void buildMenu(GraphContainer graphContainer, UI mainWindow, OperationManager operationManager, List<VertexRef> targets) {
+	public void updateMenu(GraphContainer graphContainer, UI mainWindow, OperationManager operationManager, List<VertexRef> targets) {
 		final OperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, OperationContext.DisplayLocation.CONTEXTMENU);
 
 		// Clear Menu

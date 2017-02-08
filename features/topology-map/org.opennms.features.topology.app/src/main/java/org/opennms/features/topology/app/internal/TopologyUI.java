@@ -709,12 +709,18 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         m_mapLayout.setSizeFull();
 
         m_menuBar = new TopologyMenuBar();
-        m_contextMenu = new TopologyContextMenu(this);
+        m_contextMenu = new TopologyContextMenu();
         updateMenu();
         if(m_widgetManager.widgetCount() != 0) {
             updateWidgetView(m_widgetManager);
         }else {
             m_layout.addComponent(m_mapLayout);
+        }
+        // Set expand ratio so that extra space is not allocated to this vertical component
+        if (m_showHeader) {
+            m_rootLayout.addComponent(m_menuBar, 1);
+        } else {
+            m_rootLayout.addComponent(m_menuBar, 0);
         }
     }
 
@@ -966,17 +972,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 	@Override
 	public void updateMenu() {
         if(m_menuBar != null) {
-            m_rootLayout.removeComponent(m_menuBar);
-        }
-        if(m_contextMenu != null) {
-            m_contextMenu.detach();
-        }
-        m_menuBar.buildMenu(m_graphContainer, this, m_operationManager);
-        // Set expand ratio so that extra space is not allocated to this vertical component
-        if (m_showHeader) {
-            m_rootLayout.addComponent(m_menuBar, 1);
-        } else {
-            m_rootLayout.addComponent(m_menuBar, 0);
+            m_menuBar.updateMenu(m_graphContainer, this, m_operationManager);
         }
 	}
 
@@ -996,7 +992,8 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         // The target must be set before we update the operation context because the op context
         // operations are dependent on the target of the right-click
         // we have to generate the context menu here
-        m_contextMenu.buildMenu(m_graphContainer, this, m_operationManager, targets);
+        m_contextMenu.updateMenu(m_graphContainer, this, m_operationManager, targets);
+        m_contextMenu.setAsContextMenuOf(this);
 		m_contextMenu.open(left, top);
 	}
 
