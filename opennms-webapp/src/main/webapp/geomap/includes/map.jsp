@@ -104,8 +104,7 @@
                 mapId: "<%= mapId %>",
                 hideControlsOnStartup: <%= getParameter(request, "hideControlsOnStartup") %> ,
                 strategy: "<%= getParameter(request, "strategy") %>" ,
-                severity: "<%= getParameter(request, "severity") %>",
-                resolveCoordinatesFromAddressString: false,
+                severity: "<%= getParameter(request, "severity") %>"
             })
         });
     </script>

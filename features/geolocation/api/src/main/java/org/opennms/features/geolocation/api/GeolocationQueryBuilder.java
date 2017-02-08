@@ -67,11 +67,6 @@ public class GeolocationQueryBuilder {
         return this;
     }
 
-    public GeolocationQueryBuilder withResolveMissingCoordinatesFromAddressString(boolean resolve) {
-        query.setResolveCoordinatesFromAddressString(resolve);
-        return this;
-    }
-
     public GeolocationQuery build() {
         return query;
     }

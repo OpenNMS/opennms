@@ -102,7 +102,7 @@ public class AlarmStatusCalculatorIT {
     @Transactional
     public void verifyCalculateStatus() {
         final OnmsNode node = databasePopulator.getNode1();
-        final GeolocationQuery query = new GeolocationQueryBuilder().withResolveMissingCoordinatesFromAddressString(false).build();
+        final GeolocationQuery query = new GeolocationQueryBuilder().build();
         final StatusCalculator statusCalculator = new AlarmStatusCalculator(genericPersistenceAccessor);
         final Set<Integer> nodeIds = Sets.newHashSet(node.getId());
 
