@@ -102,7 +102,6 @@ public class NodeMapComponent extends AbstractComponent implements GeoAssetProvi
     public void refresh() {
         List<GeolocationInfo> locations = geolocationService.getLocations(new GeolocationQueryBuilder()
                 .withIncludeAcknowledgedAlarms(false)
-                .withResolveMissingCoordinatesFromAddressString(false)
                 .withStatusCalculationStrategy(StatusCalculationStrategy.Alarms)
                 .withSeverity(GeolocationSeverity.Normal)
                 .build());

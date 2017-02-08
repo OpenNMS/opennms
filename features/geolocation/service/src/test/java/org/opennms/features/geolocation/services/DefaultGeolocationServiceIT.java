@@ -126,7 +126,6 @@ public class DefaultGeolocationServiceIT {
         });
         // Query
         GeolocationQuery query = new GeolocationQueryBuilder()
-                .withResolveMissingCoordinatesFromAddressString(false)
                 .withStatusCalculationStrategy(StatusCalculationStrategy.Alarms)
                 .build();
 
@@ -153,15 +152,10 @@ public class DefaultGeolocationServiceIT {
     public void verifyLocationLookup() {
         // Query
         GeolocationQuery query = new GeolocationQueryBuilder()
-                .withResolveMissingCoordinatesFromAddressString(false)
                 .withStatusCalculationStrategy(StatusCalculationStrategy.Alarms)
                 .build();
 
         // no node has long/lat set, the lookup is empty
-        Assert.assertEquals(0, geolocationService.getLocations(query).size());
-
-        // Even if we force to resolve address strings, the result is empty, as there is no geolocation information available
-        query.setResolveCoordinatesFromAddressString(true);
         Assert.assertEquals(0, geolocationService.getLocations(query).size());
 
         // Set dummy geolocation for all nodes
