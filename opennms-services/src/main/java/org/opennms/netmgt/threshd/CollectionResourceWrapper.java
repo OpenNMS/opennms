@@ -478,7 +478,7 @@ public class CollectionResourceWrapper {
 
 
         if (ds == null || "".equals(ds)) {
-            LOG.warn("getFieldValue: No resource attribute defined specified, returning null");
+            LOG.info("getFieldValue: No resource attribute defined specified, returning null");
             return null;
         }
 
