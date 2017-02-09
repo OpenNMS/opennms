@@ -4,7 +4,7 @@
 
 ==== HttpCollector
 
-The _HttpCollector_ is used to collect performance data through via _HTTP_ and _HTTPS_.
+The _HttpCollector_ is used to collect performance data via _HTTP_ and _HTTPS_.
 Attributes are extracted from the _HTTP_ responses using a regular expression.
 
 ===== Collector Facts
@@ -30,7 +30,7 @@ Attributes are extracted from the _HTTP_ responses using a regular expression.
 |===
 
 
-===== SNMP Collection Configuration
+===== HTTP Collection Configuration
 
 _HTTP Collections_ are defined in the `etc/http-datacollection-config.xml`.
 
