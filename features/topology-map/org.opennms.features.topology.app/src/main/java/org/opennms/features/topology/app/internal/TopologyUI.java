@@ -34,7 +34,6 @@ import static org.opennms.features.topology.app.internal.operations.TopologySele
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -93,7 +92,6 @@ import org.opennms.osgi.locator.OnmsServiceManagerLocator;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -356,20 +354,18 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
             @Override
             public Component getComponent(GraphContainer container) {
-                synchronized (m_currentHudDisplayLock) {
-                    m_currentHudDisplay = new HudDisplay();
-                    m_currentHudDisplay.setImmediate(true);
-                    m_currentHudDisplay.setProvider(m_graphContainer.getBaseTopology().getVertexNamespace().equals("nodes") ? "Linkd" : m_graphContainer.getBaseTopology().getVertexNamespace());
-                    m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));
-                    m_currentHudDisplay.setEdgeFocusCount(0);
-                    m_currentHudDisplay.setVertexSelectionCount(m_graphContainer.getSelectionManager().getSelectedVertexRefs().size());
-                    m_currentHudDisplay.setEdgeSelectionCount(m_graphContainer.getSelectionManager().getSelectedEdgeRefs().size());
-                    m_currentHudDisplay.setVertexContextCount(m_graphContainer.getGraph().getDisplayVertices().size());
-                    m_currentHudDisplay.setEdgeContextCount(m_graphContainer.getGraph().getDisplayEdges().size());
-                    m_currentHudDisplay.setVertexTotalCount(m_graphContainer.getBaseTopology().getVertexTotalCount());
-                    m_currentHudDisplay.setEdgeTotalCount(m_graphContainer.getBaseTopology().getEdges().size());
-                    return m_currentHudDisplay;
-                }
+                m_currentHudDisplay = new HudDisplay();
+                m_currentHudDisplay.setImmediate(true);
+                m_currentHudDisplay.setProvider(m_graphContainer.getBaseTopology().getVertexNamespace().equals("nodes") ? "Linkd" : m_graphContainer.getBaseTopology().getVertexNamespace());
+                m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));
+                m_currentHudDisplay.setEdgeFocusCount(0);
+                m_currentHudDisplay.setVertexSelectionCount(m_graphContainer.getSelectionManager().getSelectedVertexRefs().size());
+                m_currentHudDisplay.setEdgeSelectionCount(m_graphContainer.getSelectionManager().getSelectedEdgeRefs().size());
+                m_currentHudDisplay.setVertexContextCount(m_graphContainer.getGraph().getDisplayVertices().size());
+                m_currentHudDisplay.setEdgeContextCount(m_graphContainer.getGraph().getDisplayEdges().size());
+                m_currentHudDisplay.setVertexTotalCount(m_graphContainer.getBaseTopology().getVertexTotalCount());
+                m_currentHudDisplay.setEdgeTotalCount(m_graphContainer.getBaseTopology().getEdges().size());
+                return m_currentHudDisplay;
             }
 
             @Override
@@ -549,7 +545,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private SearchBox m_searchBox;
     private TabSheet tabSheet;
     private BundleContext m_bundlecontext;
-    private final Object m_currentHudDisplayLock = new Object();
     private HudDisplay m_currentHudDisplay;
 
     private String getHeader(HttpServletRequest request) throws Exception {
@@ -1312,10 +1307,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         updateTimestamp(System.currentTimeMillis());
         updateMenuItems();
 
-        synchronized (m_currentHudDisplayLock) {
-            if (m_currentHudDisplay != null) {
-                m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));
-            }
+        if (m_currentHudDisplay != null) {
+            m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));
         }
     }
 
@@ -1363,11 +1356,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
     @Override
     public void selectionChanged(SelectionContext selectionContext) {
-        synchronized (m_currentHudDisplayLock) {
-            if (m_currentHudDisplay != null) {
-                m_currentHudDisplay.setVertexSelectionCount(selectionContext.getSelectedVertexRefs().size());
-                m_currentHudDisplay.setEdgeSelectionCount(selectionContext.getSelectedEdgeRefs().size());
-            }
+        if (m_currentHudDisplay != null) {
+            m_currentHudDisplay.setVertexSelectionCount(selectionContext.getSelectedVertexRefs().size());
+            m_currentHudDisplay.setEdgeSelectionCount(selectionContext.getSelectedEdgeRefs().size());
         }
 
         //After selection always set the pantool back to active tool
