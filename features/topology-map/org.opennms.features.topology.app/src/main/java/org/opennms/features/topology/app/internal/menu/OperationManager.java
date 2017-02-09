@@ -30,33 +30,21 @@ package org.opennms.features.topology.app.internal.menu;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.CheckedOperation;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.MenuBar;
+public class OperationManager {
 
-/**
- * Helper class to manage creation of the {@link MenuBar} and the {@link org.vaadin.peter.contextmenu.ContextMenu}
- * of the Topology UI.
- */
-public class MenuManager {
-
-	private static final Logger LOG = LoggerFactory.getLogger(MenuManager.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OperationManager.class);
 
 	/**
 	 * {@ink Operation} registered to the OSGI service registry (including the service properties).
@@ -82,41 +70,6 @@ public class MenuManager {
 
 	public void removeMenuItemUpdateListener(MenuUpdateListener listener) {
 		m_menuUpdateListeners.remove(listener);
-	}
-
-	public MenuBar getMenuBar(List<VertexRef> targets, OperationContext operationContext) {
-		MenuBuilder menuBuilder = new MenuBuilder();
-		menuBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
-		menuBuilder.setSubMenuGroupOrder(m_subMenuGroupOrder);
-		for (OperationServiceWrapper operationServiceWrapper : m_operations) {
-			if (operationServiceWrapper.getMenuPosition() != null) { // if menu position is null, there is no place to put it
-				MenuItem item = new OperationMenuItem(operationServiceWrapper);
-				menuBuilder.addMenuItem(item, operationServiceWrapper.getMenuPosition().split("\\|"));
-			}
-
-		}
-		MenuBar menu = menuBuilder.build(targets, operationContext, () -> updateCommandListeners());
-		return menu;
-	}
-
-	/**
-	 * Gets the ContextMenu add-on for the app based on OSGi Operations
-	 * @param operationContext
-	 * @return
-	 */
-	public TopologyContextMenu getContextMenu(List<VertexRef> targets, OperationContext operationContext) {
-		MenuBuilder menuBuilder = new MenuBuilder();
-		for (OperationServiceWrapper operationServiceWrapper : m_operations) {
-			if (operationServiceWrapper.getContextMenuPosition() != null) {
-				MenuItem item = new OperationMenuItem(operationServiceWrapper);
-				menuBuilder.addMenuItem(item, operationServiceWrapper.getContextMenuPosition().isEmpty() ? null: operationServiceWrapper.getContextMenuPosition().split("\\|"));
-			}
-		}
-
-		addNavigateToItems(menuBuilder, targets, operationContext);
-
-		MenuBar menu = menuBuilder.build(targets, operationContext, () -> updateCommandListeners());
-		return new TopologyContextMenu(menu);
 	}
 
 	public void onBind(Operation operation, Map<String, String> props) {
@@ -175,7 +128,19 @@ public class MenuManager {
 		return m_subMenuGroupOrder;
 	}
 
-	public <T extends CheckedOperation> T findOperationByLabel(Class<T> operationClass, String label) {
+	public List<OperationServiceWrapper> getOperationWrappers() {
+		return Collections.unmodifiableList(m_operations);
+	}
+
+	public List<String> getTopLevelMenuOrder() {
+		return Collections.unmodifiableList(m_topLevelMenuOrder);
+	}
+
+	public Map<String, List<String>> getSubMenuGroupOrder() {
+		return new HashMap<>(m_subMenuGroupOrder);
+	}
+
+	public <T extends CheckedOperation> T findOperationByLabel(String label) {
 		if (label == null) {
 			return null; // nothing to do
 		}
@@ -189,33 +154,5 @@ public class MenuManager {
 			} catch (ClassCastException e) {}
 		}
 		return null;
-	}
-
-	// adds menu items for the "navigate to" operation
-	private void addNavigateToItems(MenuBuilder menuBuilder, List<VertexRef> targets, OperationContext operationContext) {
-		if (!targets.isEmpty()) {
-			menuBuilder.createPath("Navigate To");
-
-			final GraphContainer graphContainer = operationContext.getGraphContainer();
-			// Find the vertices in other graphs that this vertex links to
-			final Collection<VertexRef> oppositeVertices = graphContainer.getMetaTopologyProvider().getOppositeVertices(targets.get(0));
-
-			// Find all namespaces
-			final Set<String> targetNamespaces = oppositeVertices.stream().map(v -> v.getNamespace()).collect(Collectors.toSet());
-
-			// Find provider for namespaces and add menu entry
-			for (String eachTargetNamespace : targetNamespaces) {
-				// Find the graph provider for the target namespace
-				final GraphProvider targetGraphProvider = graphContainer.getMetaTopologyProvider().getGraphProviders().stream()
-						.filter(g -> g.getVertexNamespace().equals(eachTargetNamespace))
-						.findFirst().orElse(null);
-				if (targetGraphProvider == null) {
-					LOG.warn("No graph provider found for namespace '{}'.", eachTargetNamespace);
-					continue;
-				}
-				NavigationMenuItem item = new NavigationMenuItem(targetGraphProvider, targets.get(0));
-				menuBuilder.addMenuItem(item, "Navigate To");
-			}
-		}
 	}
 }
