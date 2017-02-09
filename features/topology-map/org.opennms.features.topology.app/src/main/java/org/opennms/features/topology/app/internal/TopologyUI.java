@@ -347,7 +347,20 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                     ? Collections.<InfoPanelItem>singleton(new InfoPanelItem() {
                             @Override
                             public Component getComponent() {
-                                return m_hudDisplay;
+                                m_currentHudDisplay = new HudDisplay();
+                                m_currentHudDisplay.setImmediate(true);
+                                m_currentHudDisplay.setProvider(m_graphContainer.getBaseTopology().getVertexNamespace().equals("nodes")
+                                                                ? "Linkd"
+                                                                : m_graphContainer.getBaseTopology().getVertexNamespace());
+                                m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));
+                                m_currentHudDisplay.setEdgeFocusCount(0);
+                                m_currentHudDisplay.setVertexSelectionCount(m_graphContainer.getSelectionManager().getSelectedVertexRefs().size());
+                                m_currentHudDisplay.setEdgeSelectionCount(m_graphContainer.getSelectionManager().getSelectedEdgeRefs().size());
+                                m_currentHudDisplay.setVertexContextCount(m_graphContainer.getGraph().getDisplayVertices().size());
+                                m_currentHudDisplay.setEdgeContextCount(m_graphContainer.getGraph().getDisplayEdges().size());
+                                m_currentHudDisplay.setVertexTotalCount(m_graphContainer.getBaseTopology().getVertexTotalCount());
+                                m_currentHudDisplay.setEdgeTotalCount(m_graphContainer.getBaseTopology().getEdges().size());
+                                return m_currentHudDisplay;
                             }
 
                             @Override
@@ -491,7 +504,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     private SearchBox m_searchBox;
     private TabSheet tabSheet;
     private BundleContext m_bundlecontext;
-    private HudDisplay m_hudDisplay;
+    private HudDisplay m_currentHudDisplay;
     private ToolbarPanel m_toolbarPanel;
     private TransactionOperations m_transactionOperations;
     private final LayoutManager m_layoutManager;
@@ -725,10 +738,6 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     }
 
     private Component createMapLayout() {
-        // Hud Display
-        m_hudDisplay = new HudDisplay();
-        m_hudDisplay.setImmediate(true);
-
         // Topology (Map) Component
         m_topologyComponent = new TopologyComponent(m_graphContainer, m_iconRepositoryManager, this);
         m_topologyComponent.setSizeFull();
@@ -1065,18 +1074,13 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             }
 
         }
-        m_hudDisplay.setProvider(graphContainer.getBaseTopology().getVertexNamespace().equals("nodes") ? "Linkd" : graphContainer.getBaseTopology().getVertexNamespace());
-        m_hudDisplay.setVertexFocusCount(getFocusVertices(graphContainer));
-        m_hudDisplay.setEdgeFocusCount(0);
-        m_hudDisplay.setVertexSelectionCount(graphContainer.getSelectionManager().getSelectedVertexRefs().size());
-        m_hudDisplay.setEdgeSelectionCount(graphContainer.getSelectionManager().getSelectedEdgeRefs().size());
-        m_hudDisplay.setVertexContextCount(graphContainer.getGraph().getDisplayVertices().size());
-        m_hudDisplay.setEdgeContextCount(graphContainer.getGraph().getDisplayEdges().size());
-        m_hudDisplay.setVertexTotalCount(graphContainer.getBaseTopology().getVertexTotalCount());
-        m_hudDisplay.setEdgeTotalCount(graphContainer.getBaseTopology().getEdges().size());
 
         updateTabVisibility();
         updateMenu();
+
+        if (m_currentHudDisplay != null) {
+            m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));
+        }
     }
 
     private int getFocusVertices(GraphContainer graphContainer) {
@@ -1120,8 +1124,10 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
     @Override
     public void selectionChanged(SelectionContext selectionContext) {
-        m_hudDisplay.setVertexSelectionCount(selectionContext.getSelectedVertexRefs().size());
-        m_hudDisplay.setEdgeSelectionCount(selectionContext.getSelectedEdgeRefs().size());
+        if (m_currentHudDisplay != null) {
+            m_currentHudDisplay.setVertexSelectionCount(selectionContext.getSelectedVertexRefs().size());
+            m_currentHudDisplay.setEdgeSelectionCount(selectionContext.getSelectedEdgeRefs().size());
+        }
 
         if(m_topologyComponent != null) m_topologyComponent.setActiveTool("pan");
         saveHistory();
