@@ -204,7 +204,7 @@
 	</service>
 
 	<bean id="nodeMapsLink" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapNavEntry">
-		<property name="url" value="node-maps#search/nodeId=%nodeid%" />
+		<property name="url" value="node-maps#search/nodeId=%25nodeid%25" />
 		<property name="name" value="View in Geographical Map" />
 	</bean>
 
