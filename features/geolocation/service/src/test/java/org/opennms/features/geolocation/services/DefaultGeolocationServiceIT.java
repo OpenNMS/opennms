@@ -146,26 +146,4 @@ public class DefaultGeolocationServiceIT {
             }
         });
     }
-
-    @Test
-    @Transactional
-    public void verifyLocationLookup() {
-        // Query
-        GeolocationQuery query = new GeolocationQueryBuilder()
-                .withStatusCalculationStrategy(StatusCalculationStrategy.Alarms)
-                .build();
-
-        // no node has long/lat set, the lookup is empty
-        Assert.assertEquals(0, geolocationService.getLocations(query).size());
-
-        // Set dummy geolocation for all nodes
-        nodeDao.findAll().forEach(n -> {
-            OnmsGeolocation geolocation = n.getAssetRecord().getGeolocation();
-            geolocation.setCity("Pittsboro");
-            geolocation.setState("NC");
-            geolocation.setCountry("USA");
-            nodeDao.saveOrUpdate(n);
-        });
-        Assert.assertEquals(nodeDao.countAll(), geolocationService.getLocations(query).size());
-    }
 }
