@@ -297,7 +297,7 @@ public class EventToIndex implements AutoCloseable {
 						BulkResult result = getJestClient().execute(bulk);
 
 						// If the bulk command fails completely...
-						if (result.getResponseCode() != 200) {
+						if (!result.isSucceeded()) {
 							logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
 
 							// Try and issue the bulk actions individually as a fallback
@@ -331,7 +331,7 @@ public class EventToIndex implements AutoCloseable {
 						}
 
 						// If the bulk command fails completely...
-						if (result.getResponseCode() != 200) {
+						if (!result.isSucceeded()) {
 							logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
 
 							// Try and issue the bulk actions individually as a fallback
@@ -403,7 +403,7 @@ public class EventToIndex implements AutoCloseable {
 			result = client.execute(action);
 		}
 
-		if(result.getResponseCode() != 200){
+		if(!result.isSucceeded()){
 			logEsError(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
 		} else if(LOG.isDebugEnabled()) {
 			logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
@@ -843,7 +843,7 @@ public class EventToIndex implements AutoCloseable {
 	private static void createIndex(JestClient client, String name, String type) throws IOException {
 		// create new index
 		CreateIndex createIndex = new CreateIndex.Builder(name).build();
-		JestResult result = client.execute(createIndex);
+		JestResult result = new OnmsJestResult(client.execute(createIndex));
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("created new alarm index: {} type: {}" +
 					"\n   received search result: {}" +
