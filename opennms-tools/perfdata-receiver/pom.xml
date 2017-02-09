@@ -53,7 +53,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-tcp</artifactId>
-      <version>18.0.4-SNAPSHOT</version>
+      <version>18.0.4</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
