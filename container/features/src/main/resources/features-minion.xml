@@ -65,6 +65,13 @@
       <bundle>mvn:org.opennms/opennms-detectorclient-rpc/${project.version}</bundle>
     </feature>
 
+    <feature name="minion-provisiond-requisitions" description="Minion :: Provisond :: Requisitions" version="${project.version}">
+      <feature>opennms-provisioning</feature>
+      <feature>opennms-core-web</feature>
+      <feature>minion-rpc-server</feature>
+      <bundle>mvn:org.opennms/opennms-requisition-service/${project.version}</bundle>
+    </feature>
+
     <feature name="minion-shell" description="Minion :: Shell" version="${project.version}">
       <feature>minion-shell-provision</feature>
       <feature>minion-shell-poller</feature>

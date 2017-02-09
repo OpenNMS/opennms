@@ -27,6 +27,7 @@
     <module>opennms-detector-web</module>
     <module>opennms-detector-bsf</module>
     <module>opennms-detectorclient-rpc</module>
+    <module>opennms-requisition-service</module>
   </modules>
   <dependencyManagement>
     <dependencies>
