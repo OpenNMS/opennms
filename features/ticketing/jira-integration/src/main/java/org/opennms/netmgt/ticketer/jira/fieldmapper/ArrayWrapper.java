@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,37 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.support.builder;
+package org.opennms.netmgt.ticketer.jira.fieldmapper;
 
-import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import org.opennms.netmgt.collection.api.CollectionResource;
+/**
+ *  Wrapper class to help splitting string values, separated by "," and map each split value to its
+ *  according (custom) jira field value.
+ *
+ *  E.g. "label1,label2" becomes ["label1", "label2"], or "label1,label" becomes [{"name":"label1"}, {"name":"label2"}]"
+ */
+public class ArrayWrapper {
 
-public interface Resource {
-
-    public Resource getParent();
-
-    /**
-     * Returns the type name associated with the resource. Used for thresholding.
-     *
-     * @return type name
-     */
-    public String getTypeName();
-
-    /**
-     * Returns a unique name for the instance of this resource.
-     * Used by the {@link org.opennms.netmgt.collection.support.IndexStorageStrategy}
-     *
-     * @return instance name
-     */
-    public String getInstance();
-
-    /**
-     * Retrieves the path of the resource, relative to the repository root.
-     *
-     * @param resource Used by the {@link GenericTypeResource} in order to determine the instance name.
-     * @return relative path
-     */
-    public Path getPath(CollectionResource resource);
-
+    public Object map(Function<String, Object> itemFunction, String attributeValue) {
+        return Arrays.stream(attributeValue.split(","))
+                .map(eachItem -> itemFunction.apply(eachItem))
+                .collect(Collectors.toList());
+    }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,37 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.support.builder;
+package org.opennms.netmgt.ticketer.jira.fieldmapper;
 
-import java.nio.file.Path;
+import com.atlassian.jira.rest.client.api.domain.FieldSchema;
 
-import org.opennms.netmgt.collection.api.CollectionResource;
+public interface FieldMapper {
 
-public interface Resource {
+    boolean matches(FieldSchema schema);
 
-    public Resource getParent();
-
-    /**
-     * Returns the type name associated with the resource. Used for thresholding.
-     *
-     * @return type name
-     */
-    public String getTypeName();
-
-    /**
-     * Returns a unique name for the instance of this resource.
-     * Used by the {@link org.opennms.netmgt.collection.support.IndexStorageStrategy}
-     *
-     * @return instance name
-     */
-    public String getInstance();
-
-    /**
-     * Retrieves the path of the resource, relative to the repository root.
-     *
-     * @param resource Used by the {@link GenericTypeResource} in order to determine the instance name.
-     * @return relative path
-     */
-    public Path getPath(CollectionResource resource);
-
+    Object mapToFieldValue(String fieldId, FieldSchema schema, String attributeValue);
 }

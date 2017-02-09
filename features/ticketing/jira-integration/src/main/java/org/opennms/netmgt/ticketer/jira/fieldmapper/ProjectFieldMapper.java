@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,49 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.support.builder;
+package org.opennms.netmgt.ticketer.jira.fieldmapper;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Map;
+import java.util.function.Supplier;
 
-import org.opennms.netmgt.collection.api.CollectionResource;
+import com.atlassian.jira.rest.client.api.domain.FieldSchema;
 
-public class InterfaceLevelResource implements Resource {
-
-    private NodeLevelResource m_node;
-    private String m_ifName;
-
-    public InterfaceLevelResource(NodeLevelResource node, String ifName) {
-        m_node = node;
-        m_ifName = ifName;
-    }
-
-    public String getIfName() {
-        return m_ifName;
+public class ProjectFieldMapper extends AbstractModifyableOptionKeyFieldMapper {
+    public ProjectFieldMapper(Supplier<Map<String, String>> optionKeySupplier) {
+        super(optionKeySupplier);
     }
 
     @Override
-    public NodeLevelResource getParent() {
-        return m_node;
+    public boolean matches(FieldSchema schema) {
+        return "project".equals(schema.getType());
     }
 
     @Override
-    public String getInstance() {
-        return m_ifName;
-    }
-
-    @Override
-    public Path getPath(CollectionResource resource) {
-        return Paths.get(getIfName());
-    }
-
-    @Override
-    public String getTypeName() {
-        return CollectionResource.RESOURCE_TYPE_IF;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("InterfaceLevelResource[node=%s, ifName=%s]", m_node, m_ifName);
+    public Object mapToFieldValue(String fieldId, FieldSchema schema, String attributeValue) {
+        return createComplexIssueInputField(fieldId, "key", attributeValue);
     }
 }

@@ -1,6 +1,41 @@
 [[release-18-changelog]]
 === Changelog
 
+[releasenotes-changelog-18.0.4]
+==== Release 18.0.4
+
+Release 18.0.4 is the latest stable release of OpenNMS.  It contains a number of bug fixes and enhancements, including
+a fix for a deadlock that can be triggered by using the topology UI and a rather large performance fix for startup if
+you are using BSM.  For a high-level overview of what's changed in OpenNMS 18, see
+<<whatsnew-18.adoc#releasenotes-18,What's New in OpenNMS 18>>.
+
+The codename for 18.0.4 is _link:https://en.wikipedia.org/wiki/Kiwa_hirsuta[Kiwa Hirsuta]_.
+
+===== Bug
+
+* There are graph templates that are not working with RRDtool (Issue http://issues.opennms.org/browse/NMS-6345[NMS-6345])
+* vmware urls do not support username/passwords that require URL encoding (Issue http://issues.opennms.org/browse/NMS-6530[NMS-6530])
+* If a target node is rebooted the RRD/JRB files contains spikes because the sysUpTime check is not working (Issue http://issues.opennms.org/browse/NMS-7106[NMS-7106])
+* Switching Topology Providers causes Exception (Issue http://issues.opennms.org/browse/NMS-8330[NMS-8330])
+* Restarting OMNS results in numerous SNMP outage alarms and notifications (Issue http://issues.opennms.org/browse/NMS-8620[NMS-8620])
+* Exception in LatencyStoringServiceMonitorAdaptor: IncorrectResultSizeDataAccessException (Issue http://issues.opennms.org/browse/NMS-8756[NMS-8756])
+* auto-acknoledge random fails (Issue http://issues.opennms.org/browse/NMS-8901[NMS-8901])
+* Invalid graph templates (Issue http://issues.opennms.org/browse/NMS-8907[NMS-8907])
+* WS-Man throws event 4776 and 4625 with domain user on windows side (Issue http://issues.opennms.org/browse/NMS-8925[NMS-8925])
+* Statsd: erroneous reporting; aggregators not reset between worker's runs (Issue http://issues.opennms.org/browse/NMS-8944[NMS-8944])
+* JIRA Ticketer: java.net.SocketException: Too many open files (Issue http://issues.opennms.org/browse/NMS-8947[NMS-8947])
+* WS_Man datacollection using WQL fails with 'unsupported element' (Issue http://issues.opennms.org/browse/NMS-8955[NMS-8955])
+* BSMD takes a huge amount of time to start when it has a large amount of services (Issue http://issues.opennms.org/browse/NMS-8978[NMS-8978])
+* Typo in linkednode.jsp in panel title (Issue http://issues.opennms.org/browse/NMS-8981[NMS-8981])
+* adjust default size of BSM window (Issue http://issues.opennms.org/browse/NMS-9002[NMS-9002])
+* NRT Graphing does not show SNMP counter values correctly (Issue http://issues.opennms.org/browse/NMS-9005[NMS-9005])
+* Jira-Ticketer: Attribute values for some custom fields are not mapped correctly (Issue http://issues.opennms.org/browse/NMS-9023[NMS-9023])
+* Copyright bump 2017 (Issue http://issues.opennms.org/browse/NMS-9060[NMS-9060])
+* ACLs broken for Assets page (Issue http://issues.opennms.org/browse/NMS-9065[NMS-9065])
+* deadlock in topology on demo (Issue http://issues.opennms.org/browse/NMS-9067[NMS-9067])
+* WS-Man thresholding reports: No thresholds configured for resource type '*' (Issue http://issues.opennms.org/browse/NMS-9077[NMS-9077])
+* Correlation engine's cancelTimer method should be public (Issue http://issues.opennms.org/browse/NMS-9087[NMS-9087])
+
 [releasenotes-changelog-18.0.3]
 ==== Release 18.0.3
 
