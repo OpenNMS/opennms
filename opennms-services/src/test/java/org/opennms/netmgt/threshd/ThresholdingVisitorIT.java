@@ -103,7 +103,9 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -1660,7 +1662,7 @@ public class ThresholdingVisitorIT {
         EasyMock.verify(agent);        
         verifyEvents(0);
     }
-    
+
     private static SnmpCollectionAgent createCollectionAgent() {
         SnmpCollectionAgent agent = EasyMock.createMock(SnmpCollectionAgent.class);
         EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
@@ -1668,6 +1670,15 @@ public class ThresholdingVisitorIT {
         EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
         EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType)EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();
         EasyMock.expect(agent.getAttributeNames()).andReturn(Collections.emptySet()).anyTimes();
+        EasyMock.expect(agent.getType()).andReturn(NetworkInterface.TYPE_INET).anyTimes();
+        EasyMock.expect(agent.getAddress()).andReturn(InetAddrUtils.getLocalHostAddress()).anyTimes();
+        EasyMock.expect(agent.isStoreByForeignSource()).andReturn(false).anyTimes();
+        EasyMock.expect(agent.getNodeLabel()).andReturn("test").anyTimes();
+        EasyMock.expect(agent.getForeignSource()).andReturn(null).anyTimes();
+        EasyMock.expect(agent.getForeignId()).andReturn(null).anyTimes();
+        EasyMock.expect(agent.getLocationName()).andReturn(null).anyTimes();
+        EasyMock.expect(agent.getSysObjectId()).andReturn(null).anyTimes();
+        EasyMock.expect(agent.getSavedSysUpTime()).andReturn(0L).anyTimes();
         EasyMock.replay(agent);
         return agent;
     }
