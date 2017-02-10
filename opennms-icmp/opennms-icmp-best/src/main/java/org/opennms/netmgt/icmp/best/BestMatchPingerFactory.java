@@ -101,6 +101,18 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
     }
 
     static Class<? extends Pinger> findPinger() {
+        final String pingerClassStr = System.getProperty("org.opennms.netmgt.icmp.pingerClass");
+        if (pingerClassStr != null) {
+            try {
+                final Class<? extends Pinger> pingerClass = Class.forName(pingerClassStr).asSubclass(Pinger.class);
+                LOG.warn("Not scanning for best pinger because explicit pinger class has been set: {}", pingerClassStr);
+                return pingerClass;
+            } catch (final Throwable t) {
+                LOG.error("org.opennms.netmgt.icmp.pingerClass is set ({}), but it failed to initialize! Erroring out.", pingerClassStr, t);
+                throw new IllegalStateException("Unable to initialize pinger class set in org.opennms.netmgt.icmp.pingerClass", t);
+            }
+        }
+
         PingerMatch match = PingerMatch.NONE;
         Class<? extends Pinger> pinger = NullPinger.class;
 
