@@ -1,8 +1,7 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -27,24 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
+package org.opennms.netmgt.ticketer.jira.fieldmapper;
 
-<%@page language="java" contentType="text/html" session="true" %>
+import java.util.Arrays;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-<%
-    String strategy = System.getProperty("org.opennms.geomap.defaultStrategy", "Alarms");
-    String severity = System.getProperty("org.opennms.geomap.defaultSeverity", "Normal");
-%>
+/**
+ *  Wrapper class to help splitting string values, separated by "," and map each split value to its
+ *  according (custom) jira field value.
+ *
+ *  E.g. "label1,label2" becomes ["label1", "label2"], or "label1,label" becomes [{"name":"label1"}, {"name":"label2"}]"
+ */
+public class ArrayWrapper {
 
-<div class="panel panel-default fix-subpixel">
-    <div class="panel-heading">
-        <h3 class="panel-title">Regional Status</h3>
-    </div>
-    <div>
-        <jsp:include page="includes/map.jsp">
-            <jsp:param name="hideControlsOnStartup" value="true"/>
-            <jsp:param name="strategy" value="<%= strategy %>"/>
-            <jsp:param name="severity" value="<%= severity %>"/>
-        </jsp:include>
-    </div>
-</div>
+    public Object map(Function<String, Object> itemFunction, String attributeValue) {
+        return Arrays.stream(attributeValue.split(","))
+                .map(eachItem -> itemFunction.apply(eachItem))
+                .collect(Collectors.toList());
+    }
+}

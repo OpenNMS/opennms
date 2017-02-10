@@ -1,8 +1,7 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -27,24 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
+package org.opennms.netmgt.ticketer.jira.fieldmapper;
 
-<%@page language="java" contentType="text/html" session="true" %>
+import com.atlassian.jira.rest.client.api.domain.FieldSchema;
 
-<%
-    String strategy = System.getProperty("org.opennms.geomap.defaultStrategy", "Alarms");
-    String severity = System.getProperty("org.opennms.geomap.defaultSeverity", "Normal");
-%>
+public class DefaultFieldMapper implements FieldMapper {
+    @Override
+    public boolean matches(FieldSchema schema) {
+        return true;
+    }
 
-<div class="panel panel-default fix-subpixel">
-    <div class="panel-heading">
-        <h3 class="panel-title">Regional Status</h3>
-    </div>
-    <div>
-        <jsp:include page="includes/map.jsp">
-            <jsp:param name="hideControlsOnStartup" value="true"/>
-            <jsp:param name="strategy" value="<%= strategy %>"/>
-            <jsp:param name="severity" value="<%= severity %>"/>
-        </jsp:include>
-    </div>
-</div>
+    @Override
+    public Object mapToFieldValue(String fieldId, FieldSchema schema, String attributeValue) {
+        return attributeValue;
+    }
+}

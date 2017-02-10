@@ -28,17 +28,33 @@
 
 package org.opennms.netmgt.ticketer.jira;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.Supplier;
 
-import com.atlassian.jira.rest.client.api.domain.input.ComplexIssueInputFieldValue;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.CascadingSelectFieldMapper;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.ComponentFieldMapper;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.DefaultFieldMapper;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.FieldMapper;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.GroupFieldMapper;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.IssueTypeFieldMapper;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.LabelsFieldMapper;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.MultiSelectFieldMapper;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.NumberFieldMapper;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.PriorityFieldMapper;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.ProjectFieldMapper;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.SingleSelectFieldMapper;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.StringFieldMapper;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.UserFieldMapper;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.VersionFieldMapper;
+
+import com.atlassian.jira.rest.client.api.domain.FieldSchema;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
-import com.google.common.base.Strings;
 
 /**
  * The {@link FieldMapperRegistry} maps String input values to a JIRA ReST API representation.
@@ -49,52 +65,31 @@ import com.google.common.base.Strings;
  */
 public class FieldMapperRegistry {
 
-    private final Map<String, Function<String, ?>> functionMap = new HashMap<>();
+    private final List<FieldMapper> fieldMapperList = new ArrayList<>();
+
+    private final Map<String, String> alternativeOptionKeyLookupMap;
 
     public FieldMapperRegistry(Properties properties) {
         Objects.requireNonNull(properties);
-        Map<String, String> lookupMap = buildLookupMap(properties);
+        alternativeOptionKeyLookupMap = buildLookupMap(properties);
 
-        // Each function maps a field by its type to the JIRA ReST API representation (ComplexInputFieldValue in most cases)
-        functionMap.put("number", input -> Long.valueOf(input));
-        functionMap.put("group", input -> createComplexInputFieldValue(lookupMap, "group", "name", input));
-        functionMap.put("user", input -> createComplexInputFieldValue(lookupMap, "user", "name", input));
-        functionMap.put("issuetype", input -> createComplexInputFieldValue(lookupMap, "issuetype", "name", input));
-        functionMap.put("priority", input -> createComplexInputFieldValue(lookupMap, "priority", "name", input));
-        functionMap.put("version", input -> createComplexInputFieldValue(lookupMap, "version", "name", input));
-        functionMap.put("component", input -> createComplexInputFieldValue(lookupMap, "component", "name", input));
-        functionMap.put("option", input -> createComplexInputFieldValue(lookupMap, "option", "value", input));
-        functionMap.put("project", input -> createComplexInputFieldValue(lookupMap, "project", "key", input));
+        final Supplier<Map<String, String>> lookupMapSupplier = () -> alternativeOptionKeyLookupMap;
 
-        // option-with-child values can be null, empty, "value" or "value1,value2".
-        functionMap.put("option-with-child", input -> {
-            if (!Strings.isNullOrEmpty(input)) {
-                final String[] split = input.split(","); // split by ","
-                if (split != null && split.length >= 1) { // we have at least one value
-                    final Map<String, Object> parentValueMap = new HashMap<>();
-                    parentValueMap.put("value", split[0]); // set first value
-                    final ComplexIssueInputFieldValue parentValue = new ComplexIssueInputFieldValue(parentValueMap);
-                    if (split.length >= 2) { // if we have a 2nd value, set it as child of value 1
-                        parentValue.getValuesMap().put("child", ComplexIssueInputFieldValue.with("value", split[1]));
-                    }
-                    return parentValue;
-                }
-            }
-            return null;
-        });
-    }
-
-    protected static ComplexIssueInputFieldValue createComplexInputFieldValue(Map<String, String> lookupMap, String lookupKey, String defaultKey, String input) {
-        // a concrete key is defined
-        if (lookupMap.containsKey(lookupKey)) {
-            return ComplexIssueInputFieldValue.with(lookupMap.get(lookupKey), input);
-        }
-        // no default key is defined, in most cases "name" is the right key.
-        if (Strings.isNullOrEmpty(defaultKey)) {
-            return ComplexIssueInputFieldValue.with("name", input);
-        }
-        // no concrete key is defined, but we have a fallback key, we use that
-        return ComplexIssueInputFieldValue.with(defaultKey, input);
+        // Order matters, first entry which matches is used to do the mapping!
+        fieldMapperList.add(new CascadingSelectFieldMapper(lookupMapSupplier));
+        fieldMapperList.add(new ComponentFieldMapper(lookupMapSupplier));
+        fieldMapperList.add(new GroupFieldMapper(lookupMapSupplier));
+        fieldMapperList.add(new IssueTypeFieldMapper(lookupMapSupplier));
+        fieldMapperList.add(new LabelsFieldMapper());
+        fieldMapperList.add(new MultiSelectFieldMapper(lookupMapSupplier));
+        fieldMapperList.add(new NumberFieldMapper());
+        fieldMapperList.add(new PriorityFieldMapper(lookupMapSupplier));
+        fieldMapperList.add(new ProjectFieldMapper(lookupMapSupplier));
+        fieldMapperList.add(new SingleSelectFieldMapper(lookupMapSupplier));
+        fieldMapperList.add(new StringFieldMapper());
+        fieldMapperList.add(new UserFieldMapper(lookupMapSupplier));
+        fieldMapperList.add(new VersionFieldMapper(lookupMapSupplier));
+        fieldMapperList.add(new DefaultFieldMapper());
     }
 
     /**
@@ -116,37 +111,13 @@ public class FieldMapperRegistry {
     }
 
     /**
-     * Helper method to lookup a Function to convert a value by its type and variant to the Jira ReST API representation.
+     * Returns the FieldMapper, which is registered with <code>schema</code>.
      *
-     * @param type The type, e.g. "user", "group", "version", "array", etc.
-     * @param variant The variant. Is only set if "type" is "array". In that case, the "variant" defines each element in the array (e.g. "user", "version", etc)
-     * @return A function to transform the input to its Jira ReST API representation.
+     * @param schema The schema to lookup a {@link FieldMapper} for.
+     * @return the FieldMapper, which is registered with <code>schema</code>.
      */
-    public Function<String, ?> lookup(String type, String variant) {
-        // If we have an array and a type set, we split the values to build the array
-        // and apply the "variant" function to each element in the array.
-        // E.g. "label1,label2" becomes ["label1", "label2"] if variant is "string"
-        // "label1,label" becomes [{"name":"label1"}, {"name":"label2"}]" if variant is for example "version"
-        if ("array".equals(type) && !Strings.isNullOrEmpty(variant)) {
-            return (Function<String, Object>) input -> {
-                Function<String, ?> function = lookup(variant);
-                return Arrays.stream(input.split(",")).map(v -> function.apply(v)).collect(Collectors.toList());
-            };
-        }
-        return lookup(type); // no array (Note: variant should be empty or null in this case)
-    }
-
-    /**
-     * Returns the function, which is registered with <code>key</code>, if no such function exists, {@link Function#identity()} is returned.
-     *
-     * @param key The key to lookup the function for
-     * @return the function, which is registered with <code>key</code>, if no such function exists, {@link Function#identity()} is returned.
-     */
-    private Function<String, ?> lookup(String key) {
-        final Function<String, ?> function = functionMap.get(key);
-        if (function != null) {
-            return function;
-        }
-        return Function.identity(); // Default
+    public FieldMapper lookup(FieldSchema schema) {
+        Optional<FieldMapper> firstMapper = fieldMapperList.stream().filter(f -> f.matches(schema)).findFirst();
+        return firstMapper.get();
     }
 }
