@@ -50,7 +50,7 @@ import org.opennms.core.test.http.annotations.Webapp;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -59,6 +59,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
@@ -123,7 +124,7 @@ public class HttpDataCollectionIT {
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
         EasyMock.expect(m_collectionAgent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
-        EasyMock.expect(m_collectionAgent.getStorageDir()).andReturn(new File("1")).anyTimes();
+        EasyMock.expect(m_collectionAgent.getStorageResourcePath()).andReturn(ResourcePath.get("1")).anyTimes();
 
         m_nodeDao = EasyMock.createMock(NodeDao.class);
         OnmsNode node = new OnmsNode();
@@ -169,7 +170,7 @@ public class HttpDataCollectionIT {
         collector.setServiceName("HTTP");
 
         XmlCollectionSet collectionSet = collector.collect(m_collectionAgent, collection, parameters);
-        Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
         CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, repository, false, false);
@@ -207,7 +208,7 @@ public class HttpDataCollectionIT {
         collector.setServiceName("HTTP");
 
         XmlCollectionSet collectionSet = collector.collect(m_collectionAgent, collection, parameters);
-        Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
         CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, repository, false, false);
@@ -245,7 +246,7 @@ public class HttpDataCollectionIT {
         collector.setServiceName("HTTP");
 
         XmlCollectionSet collectionSet = collector.collect(m_collectionAgent, collection, parameters);
-        Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
         CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, repository, false, false);
@@ -283,7 +284,7 @@ public class HttpDataCollectionIT {
         collector.setServiceName("HTTP");
 
         XmlCollectionSet collectionSet = collector.collect(m_collectionAgent, collection, parameters);
-        Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
         CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, repository, false, false);

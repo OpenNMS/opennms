@@ -47,11 +47,12 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
@@ -205,7 +206,7 @@ public class NodeLevelDataOnMultipleNodesTest {
         CollectionAgent collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(collectionAgent.getNodeId()).andReturn(nodeId).anyTimes();
         EasyMock.expect(collectionAgent.getHostAddress()).andReturn(ipAddress).anyTimes();
-        EasyMock.expect(collectionAgent.getStorageDir()).andReturn(new File(Integer.toString(nodeId))).anyTimes();
+        EasyMock.expect(collectionAgent.getStorageResourcePath()).andReturn(ResourcePath.get(Integer.toString(nodeId))).anyTimes();
         EasyMock.replay(collectionAgent);
 
         m_collector.initialize(collectionAgent, parameters);
@@ -213,7 +214,7 @@ public class NodeLevelDataOnMultipleNodesTest {
         m_collector.release(collectionAgent);
         collectionSet = m_collector.collect(collectionAgent, m_eventProxy, parameters);
         m_collector.release(collectionAgent);
-        Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
 

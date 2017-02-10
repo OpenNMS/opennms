@@ -57,6 +57,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SurveillanceStatus;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -96,6 +97,12 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     public String getLabelForId(Integer id) {
         List<String> list = findObjects(String.class, "select n.label from OnmsNode as n where n.id = ?", id);
         return list == null || list.isEmpty() ? null : list.get(0);
+    }
+
+    @Override
+    public String getLocationForId(Integer id) {
+        List<OnmsMonitoringLocation> list = findObjects(OnmsMonitoringLocation.class, "select n.location from OnmsNode as n where n.id = ?", id);
+        return list == null || list.isEmpty() ? null : list.get(0).getLocationName();
     }
 
     /** {@inheritDoc} */

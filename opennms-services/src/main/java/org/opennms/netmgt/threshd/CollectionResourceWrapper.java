@@ -38,6 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.IfInfo;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
@@ -292,9 +293,9 @@ public class CollectionResourceWrapper {
         String parentResourceTypeName = CollectionResource.RESOURCE_TYPE_NODE;
         String parentResourceName = Integer.toString(getNodeId());
         // I can't find a better way to deal with this when storeByForeignSource is enabled        
-        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
+        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().toString().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
             // If separatorChar is backslash (like on Windows) use a double-escaped backslash in the regex
-            String[] parts = m_resource.getParent().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
+            String[] parts = m_resource.getParent().toString().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
             if (parts.length == 3) {
                 parentResourceTypeName = "nodeSource";
                 parentResourceName = parts[1] + ":" + parts[2];
@@ -400,7 +401,7 @@ public class CollectionResourceWrapper {
         // Generating a unique ID for the node/resourceType/resource/metric combination.
         String id =  "node[" + m_nodeId + "].resourceType[" + m_resource.getResourceTypeName() + "].instance[" + m_resource.getInterfaceLabel() + "].metric[" + ds + "]";
         Double current = numValue.doubleValue();
-        if (m_attributes.get(ds).getType().toLowerCase().startsWith("counter") == false) {
+        if (!AttributeType.COUNTER.equals(m_attributes.get(ds).getType())) {
             LOG.debug("getAttributeValue: id={}, value= {}", id, current);
             return current;
         } else {
@@ -421,6 +422,9 @@ public class CollectionResourceWrapper {
             LOG.debug("getCounterValue: id={}, last={}, current={}", id, (last==null ? last : last.m_value +"@"+ last.m_timestamp), current);
             if (last == null) {
                 m_localCache.put(id, Double.NaN);
+                if (m_counterReset) {
+                    s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
+                }
                 LOG.info("getCounterValue: unknown last value for {}, ignoring current", id);
             } else {                
                 Double delta = current.doubleValue() - last.m_value.doubleValue();
@@ -485,7 +489,7 @@ public class CollectionResourceWrapper {
         } else if ("iflabel".equalsIgnoreCase(ds)) {
             return getIfLabel();
         } else if ("id".equalsIgnoreCase(ds)) {
-            return m_resource.getPath().getFileName().toString();
+            return m_resource.getPath().getName().toString();
         }
 
         try {

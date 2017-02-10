@@ -64,7 +64,7 @@ public class QueryRequestValidator {
             }
 
             if (request.getHeartbeat() % request.getInterval() != 0) {
-                throw new ValidationException("Hearbeat must be a multiple of the interval. Interval: {} Hearbeat: {}",
+                throw new ValidationException("Heartbeat must be a multiple of the interval. Interval: {} Heartbeat: {}",
                         request.getInterval(), request.getHeartbeat());
             }
         }

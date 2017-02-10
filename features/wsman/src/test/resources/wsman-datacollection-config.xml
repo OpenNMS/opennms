@@ -12,9 +12,9 @@
     <group name="drac-power-supply"
            resource-uri="http://schemas.dell.com/wbem/wscim/1/cim-schema/2/DCIM_ComputerSystem/DCIM_PowerSupplyView"
            resource-type="node">
-        <attrib name="TotalOutputPower" alias="dracOutputPower" type="Gauge"/>
-        <attrib name="InputVoltage" alias="dracInputVoltage" type="Gauge"/>
-        <attrib name="OtherIdentifyingInfo" alias="serviceTag" index-of="#IdentifyingDescriptions matches '.*ServiceTag'" type="String"/>
+        <attrib name="TotalOutputPower" alias="dracOutputPower" type="gauge"/>
+        <attrib name="InputVoltage" alias="dracInputVoltage" type="gauge"/>
+        <attrib name="OtherIdentifyingInfo" alias="serviceTag" index-of="#IdentifyingDescriptions matches '.*ServiceTag'" type="string"/>
     </group>
 
     <group name="filtered-drac-power-supply"
@@ -22,7 +22,7 @@
            dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL"
            filter="select Range1MaxInputPower from DCIM_PowerSupplyView where DetailedState != 'Absent' and PrimaryStatus != 0"
            resource-type="node">
-        <attrib name="Range1MaxInputPower" alias="dracRangeInputPower" type="Gauge"/>
+        <attrib name="Range1MaxInputPower" alias="dracRangeInputPower" type="gauge"/>
     </group>
 
     <system-definition name="Dell iDRAC 6">

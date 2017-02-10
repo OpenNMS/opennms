@@ -38,8 +38,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -51,6 +49,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -103,10 +102,7 @@ public class TrapHandlerITCase implements InitializingBean {
     private InterfaceToNodeCache m_cache;
 
     @Autowired
-    private TrapQueueProcessorFactory m_processorFactory;
-
-    @Resource(name="snmpTrapPort")
-    private Integer m_snmpTrapPort;
+    private TrapdConfig m_trapdConfig;
 
     private boolean m_doStop = false;
 
@@ -149,7 +145,6 @@ public class TrapHandlerITCase implements InitializingBean {
             m_trapd.stop();
             m_trapd = null;
         }
-        
     }
 
     @Test
@@ -393,7 +388,6 @@ public class TrapHandlerITCase implements InitializingBean {
     @DirtiesContext
     public void testNodeGainedModifiesIpMgr() throws Exception {
         long nodeId = 1;
-        m_processorFactory.setNewSuspect(true);
 
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
 
@@ -417,7 +411,6 @@ public class TrapHandlerITCase implements InitializingBean {
     @DirtiesContext
     public void testInterfaceReparentedModifiesIpMgr() throws Exception {
         long nodeId = 1;
-        m_processorFactory.setNewSuspect(true);
 
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
 
@@ -447,7 +440,6 @@ public class TrapHandlerITCase implements InitializingBean {
         m_cache.dataSourceSync();
 
         long nodeId = 0;
-        m_processorFactory.setNewSuspect(true);
 
         // Send an interfaceDeleted to clear the entry out of the cache
         Event event = anticipateEvent(EventConstants.INTERFACE_DELETED_EVENT_UEI, m_ip, m_dbPopulator.getNode1().getId());
@@ -503,7 +495,9 @@ public class TrapHandlerITCase implements InitializingBean {
             String event,
             String snmpTrapVersion, String enterprise,
             int generic, int specific, LinkedHashMap<String, SnmpValue> varbinds) throws Exception {
-        m_processorFactory.setNewSuspect(newSuspectOnTrap);
+        TrapdConfigBean newConfig = new TrapdConfigBean(m_trapdConfig);
+        newConfig.setNewSuspectOnTrap(newSuspectOnTrap);
+        m_trapdConfig.update(newConfig);
 
         if (newSuspectOnTrap) {
             // Note: the nodeId will be zero because the node is not known
@@ -572,7 +566,7 @@ public class TrapHandlerITCase implements InitializingBean {
         pdu.setTimeStamp(0);
         pdu.setAgentAddress(m_ip);
 
-        pdu.send(getHostAddress(), m_snmpTrapPort, "public");
+        pdu.send(getHostAddress(),  m_trapdConfig.getSnmpTrapPort(), "public");
     }
 
 	private String getHostAddress() {
@@ -592,7 +586,7 @@ public class TrapHandlerITCase implements InitializingBean {
             Map.Entry<String,SnmpValue> pairs = it.next();
             pdu.addVarBind(SnmpObjId.get(pairs.getKey()), pairs.getValue());
         }
-        pdu.send(getHostAddress(), m_snmpTrapPort, "public");
+        pdu.send(getHostAddress(), m_trapdConfig.getSnmpTrapPort(), "public");
     }
 
 
@@ -619,7 +613,7 @@ public class TrapHandlerITCase implements InitializingBean {
                     SnmpUtils.getValueFactory().getObjectId(enterpriseId));
         }
 
-        pdu.send(getHostAddress(), m_snmpTrapPort, "public");
+        pdu.send(getHostAddress(), m_trapdConfig.getSnmpTrapPort(), "public");
     }
 
     public void sendV2Trap(String enterprise, int specific, LinkedHashMap<String, SnmpValue> varbinds) throws Exception {
@@ -648,7 +642,7 @@ public class TrapHandlerITCase implements InitializingBean {
             pdu.addVarBind(SnmpObjId.get(entry.getKey()), entry.getValue());
         }
 
-        pdu.send(getHostAddress(), m_snmpTrapPort, "public");
+        pdu.send(getHostAddress(), m_trapdConfig.getSnmpTrapPort(), "public");
     }
 
 }

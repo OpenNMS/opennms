@@ -173,15 +173,14 @@ public abstract class SnmpUtils {
     public static String getStrategyClassName() {
         // Use SNMP4J as the default SNMP strategy
         return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");
-//        return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
     }
 
-    public static void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final InetAddress address, final int snmpTrapPort, final List<SnmpV3User> snmpUsers) throws IOException {
-        getStrategy().registerForTraps(listener, processorFactory, address, snmpTrapPort, snmpUsers);
+    public static void registerForTraps(final TrapNotificationListener listener, final InetAddress address, final int snmpTrapPort, final List<SnmpV3User> snmpUsers) throws IOException {
+        getStrategy().registerForTraps(listener, address, snmpTrapPort, snmpUsers);
     }
 
-    public static void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final InetAddress address, final int snmpTrapPort) throws IOException {
-        getStrategy().registerForTraps(listener, processorFactory, address, snmpTrapPort);
+    public static void registerForTraps(final TrapNotificationListener listener, final InetAddress address, final int snmpTrapPort) throws IOException {
+        getStrategy().registerForTraps(listener, address, snmpTrapPort);
     }
     
     public static void unregisterForTraps(final TrapNotificationListener listener, final InetAddress address, final int snmpTrapPort) throws IOException {
@@ -261,7 +260,7 @@ public abstract class SnmpUtils {
 	 * initialization and continue incrementing till end of 63 bits and then
 	 * wrap to zero.</p>
 	 * 
-	 * @see http://issues.opennms.org/browse/NMS-5423
+	 * @see <a href="http://issues.opennms.org/browse/NMS-5423">NMS-5423</a>
 	 */
 	public static Long getProtoCounter63Value(byte[] valBytes) {
 	    if (valBytes.length != 8) {

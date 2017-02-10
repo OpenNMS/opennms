@@ -986,9 +986,9 @@
         <attrib name="mem.totalCapacity.average" alias="MemTlCyAvg" type="Gauge"/>
         <attrib name="mem.unreserved.average" alias="MemUdAvg" type="Gauge"/>
         <attrib name="mem.usage.average" alias="MemUsageAvg" type="Gauge"/>
-        <attrib name="mem.vmfs.pbc.overhead.latest" alias="MemVmfs.pbc.OdLat" type="Gauge"/>
+        <attrib name="mem.vmfs.pbc.overhead.latest" alias="MemVmfsPbcOdLat" type="Gauge"/>
         <attrib name="mem.vmfs.pbc.capMissRatio.latest" alias="MemVmfsPbcCpMsRtiLt" type="Gauge"/>
-        <attrib name="mem.vmfs.pbc.size.latest" alias="MemVmfs.pbc.sizeLat" type="Gauge"/>
+        <attrib name="mem.vmfs.pbc.size.latest" alias="MemVmfsPbcSizeLat" type="Gauge"/>
         <attrib name="mem.vmfs.pbc.sizeMax.latest" alias="MemVmfsPbcSizMaxLat" type="Gauge"/>
         <attrib name="mem.vmfs.pbc.workingSet.latest" alias="MemVmfsPbcWrkSetLat" type="Gauge"/>
         <attrib name="mem.vmfs.pbc.workingSetMax.latest" alias="MemVmfsPbcWrkStMxLt" type="Gauge"/>

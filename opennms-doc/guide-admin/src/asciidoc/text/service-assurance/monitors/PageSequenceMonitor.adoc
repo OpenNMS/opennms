@@ -42,7 +42,6 @@ Additionally, it is possible to configure a page sequence containing a path thro
 [options="header, autowidth"]
 |===
 | Parameter        | Description                                                                                          | Required | Default value
-| `timeout`        | Time in milliseconds to wait before assuming that a packet has not responded.                        | optional | `3000`
 | `retry`          | The number of retries per page.                                                                      | optional | `0`
 | `strict-timeout` | Defines a timer to wait before a retry attempt is made.
                      It is only used if at least one (1) retry is configured.
@@ -53,6 +52,8 @@ Additionally, it is possible to configure a page sequence containing a path thro
 | `sequence-retry` | The retry parameter for the entire page sequence.                                                    | optional | `0`
 |===
 
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
 .Page Sequence Parameter
 [options="header, autowidth"]
 |===
@@ -60,7 +61,7 @@ Additionally, it is possible to configure a page sequence containing a path thro
 | `name`                     | The name of the page-sequence. *(Is this relevant/used?)*                                  | optional | `-`
 | `method`                   | _HTTP_ method for example _GET_ or _POST_                                                  | `-`      | `-`
 | `http-version`             | _HTTP_ protocol version number, 0.9, 1.0 or 1.1                                            | optional | `HTTP/1.1`
-| `user-agent`               | Set the _user agent_ field in _HTTP_ header to identify the OpenNMS monitor                | optional | `-`
+| `user-agent`               | Set the _user agent_ field in _HTTP_ header to identify the OpenNMS monitor                | optional | `OpenNMS PageSequenceMonitor (Service name: "${SERVICE NAME}")`
 | `virtual-host`             | Set the _virtual host_ field in _HTTP_ header.
                                In case of an HTTPS request, this is also the virtual domain to send as part of the _TLS_
                                negotiation, known as server name indication (_SNI_)

@@ -4,7 +4,7 @@
 
 === Advanced Minion Configuration
 
-This section provides information for advanced configuration topics, such as _Syslog_-, _SNMP Trap_ receiving or running in non-root environments.
+This section provides information for advanced configuration topics, such as _Syslog_, _SNMP Trap_ receiving or running in non-root environments.
 
 [[gi-install-minion-rhel-ping]]
 ==== Configure Linux to Allow Non-Root ICMP

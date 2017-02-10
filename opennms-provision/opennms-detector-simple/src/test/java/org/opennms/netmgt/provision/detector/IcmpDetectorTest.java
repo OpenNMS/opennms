@@ -38,8 +38,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.icmp.AbstractPingerFactory;
 import org.opennms.netmgt.icmp.PingerFactory;
-import org.opennms.netmgt.icmp.PingerFactoryImpl;
 import org.opennms.netmgt.icmp.jna.JnaPinger;
 import org.opennms.netmgt.icmp.jni.JniPinger;
 import org.opennms.netmgt.provision.detector.icmp.IcmpDetector;
@@ -118,10 +118,10 @@ public class IcmpDetectorTest {
         assertFalse("ICMP was incorrectly identified on " + InetAddressUtils.UNPINGABLE_ADDRESS.getHostAddress(), m_icmpDetector.isServiceDetected(InetAddressUtils.UNPINGABLE_ADDRESS));
     }
 
-    private PingerFactoryImpl getPingerFactory() {
-        if (m_pingerFactory instanceof PingerFactoryImpl) {
-            return (PingerFactoryImpl) m_pingerFactory;
+    private AbstractPingerFactory getPingerFactory() {
+        if (m_pingerFactory instanceof AbstractPingerFactory) {
+            return (AbstractPingerFactory) m_pingerFactory;
         }
-        throw new IllegalStateException("Pinger factory for testing is not a normal PingerFactoryImpl!");
+        throw new IllegalStateException("Pinger factory for testing is not a normal AbstractPingerFactory!");
     }
 }

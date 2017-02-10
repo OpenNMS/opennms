@@ -30,6 +30,8 @@ package org.opennms.features.topology.app.internal.ui.geographical;
 
 import java.util.Objects;
 
+import org.opennms.features.geolocation.api.Coordinates;
+
 public class Marker {
 
     private Coordinates coordinates;

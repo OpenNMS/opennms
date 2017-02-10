@@ -1,3 +1,13 @@
+opennms (18.0.3-1) stable; urgency=high
+
+  * New stable release.  This release contains a few bug fixes and a enhancements,
+    and a fix for a discovery/provisioning regression that can cause duplicate nodes.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/18.0.3/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 05 Jan 2017 15:09:00 -0500
+
 opennms (18.0.2-1) stable; urgency=high
 
   * New stable release.  This release contains a few bug fixes and enhancements.

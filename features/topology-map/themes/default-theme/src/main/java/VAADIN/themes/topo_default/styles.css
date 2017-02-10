@@ -276,6 +276,16 @@ div.v-table-header-wrap {
     content: "\f124";
 }
 
+.search-token-ctrls .icon-minus:before {
+    content:"\f068";
+    font-family: FontAwesome;
+}
+
+.search-token-ctrls .icon-plus:before {
+    content:"\f067";
+    font-family: FontAwesome;
+}
+
 .gwt-SuggestBox {
   padding: 2px;
 }

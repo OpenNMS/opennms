@@ -9,7 +9,7 @@ version:         20.0.0-SNAPSHOT
 
 ### Description
 
-This project sends opennms data to elastic search using the Jest ReST library
+This project sends opennms data to Elasticsearch using the Jest ReST library
 (https://github.com/searchbox-io/Jest)
 
 Three indexes are created; one for alarms, one for alarm change events and one for raw events.

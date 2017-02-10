@@ -20,9 +20,6 @@ NOTE: This description was built on _RHEL 7_ and _CentOS 7.1_.
 
 Start by <<gi-install-rhel-repository,setting up the OpenNMS Yum repository>> and <<gi-install-oracle-java,installing Java>>.
 
-NOTE: _Minion_ currently requires a JDK.
-      See http://issues.opennms.org/browse/HZN-620[HZN-620] for details.
-
 Once the _Yum_ repository has been configured:
 
 .Install the _Minion_ packages

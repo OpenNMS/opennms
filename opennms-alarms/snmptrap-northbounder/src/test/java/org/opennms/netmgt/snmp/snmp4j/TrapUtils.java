@@ -30,7 +30,7 @@ package org.opennms.netmgt.snmp.snmp4j;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.TrapData;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TrapIdentity;
-import org.opennms.netmgt.snmp.TrapNotification;
+import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier.Snmp4JV1TrapInformation;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier.Snmp4JV2TrapInformation;
 import org.snmp4j.smi.VariableBinding;
@@ -48,7 +48,7 @@ public abstract class TrapUtils {
      * @param trapNotification the trap notification
      * @return the identity
      */
-    public static TrapData getTrapData(TrapNotification trapNotification) {
+    public static TrapData getTrapData(TrapInformation trapNotification) {
         if (trapNotification instanceof Snmp4JV1TrapInformation) {
             Snmp4JV1TrapInformation info = (Snmp4JV1TrapInformation) trapNotification;
             TrapIdentity identity = info.getTrapIdentity();

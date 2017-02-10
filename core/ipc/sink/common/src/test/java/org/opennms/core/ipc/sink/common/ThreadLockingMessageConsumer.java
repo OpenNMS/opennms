@@ -34,6 +34,8 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.test.ThreadLocker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This {@link MessageConsumer} is used to verify the number of threads
@@ -42,6 +44,7 @@ import org.opennms.test.ThreadLocker;
  * @author jwhite
  */
 public class ThreadLockingMessageConsumer<S extends Message, T extends Message> extends ThreadLocker implements MessageConsumer<S, T> {
+    private static final Logger LOG = LoggerFactory.getLogger(ThreadLockingMessageConsumer.class);
 
     private final SinkModule<S, T> module;
 
@@ -55,7 +58,8 @@ public class ThreadLockingMessageConsumer<S extends Message, T extends Message> 
     }
 
     @Override
-    public void handleMessage(T message) {
+    public void handleMessage(final T message) {
+        LOG.debug("handling message: {} ({} extra threads waiting)", message, getNumExtraThreadsWaiting());
         park();
     }
 }

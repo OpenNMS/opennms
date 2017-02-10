@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.poller;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
@@ -39,7 +38,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.model.ResourcePath;
 
 import com.google.common.collect.Maps;
@@ -180,11 +179,11 @@ public class LatencyCollectionResource implements CollectionResource {
     }
 
     @Override
-    public Path getPath() {
-        if (MonitoringLocationDao.isDefaultLocationName(m_location)) {
-            return Paths.get(m_ipAddress);
+    public ResourcePath getPath() {
+        if (MonitoringLocationUtils.isDefaultLocationName(m_location)) {
+            return ResourcePath.get(m_ipAddress);
         } else {
-            return Paths.get(ResourcePath.sanitize(m_location), m_ipAddress);
+            return ResourcePath.get(ResourcePath.sanitize(m_location), m_ipAddress);
         }
     }
 
@@ -195,8 +194,8 @@ public class LatencyCollectionResource implements CollectionResource {
     }
 
     @Override
-    public String getParent() {
-        return m_ipAddress;
+    public ResourcePath getParent() {
+        return ResourcePath.get(m_ipAddress);
     }
 
     @Override

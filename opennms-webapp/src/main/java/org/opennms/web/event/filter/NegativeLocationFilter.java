@@ -32,7 +32,7 @@ import org.opennms.web.filter.NotEqualOrNullFilter;
 import org.opennms.web.filter.SQLType;
 
 public class NegativeLocationFilter extends NotEqualOrNullFilter<String> {
-    public static final String TYPE = "locationNot";
+    public static final String TYPE = "locationnot";
     private String m_location;
 
     public NegativeLocationFilter(String location) {
@@ -42,7 +42,7 @@ public class NegativeLocationFilter extends NotEqualOrNullFilter<String> {
 
     @Override
     public String getTextDescription() {
-        return ("location is not " + m_location);
+        return ("Location is not " + m_location);
     }
 
     @Override

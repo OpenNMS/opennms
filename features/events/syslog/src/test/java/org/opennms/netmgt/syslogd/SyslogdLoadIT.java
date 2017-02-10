@@ -49,7 +49,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.camel.DispatcherWhiteboard;
+import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -64,6 +64,8 @@ import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.support.TcpEventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.syslogd.api.SyslogConnection;
+import org.opennms.netmgt.syslogd.api.SyslogMessageLogDTO;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -75,6 +77,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codahale.metrics.MetricRegistry;
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -85,25 +89,12 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml",
         "classpath:/syslogdTest.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class SyslogdLoadIT implements InitializingBean {
-
-    public static class MockDispatcherWhiteboard extends DispatcherWhiteboard {
-
-        private final SyslogConnectionHandler m_handler = new SyslogConnectionHandlerDefaultImpl();
-
-        public MockDispatcherWhiteboard(String endpointUri) {
-            super(endpointUri);
-        }
-
-        @Override
-        public void dispatch(final Object message) throws NoSuchMethodException, SecurityException {
-            m_handler.handleSyslogConnection((SyslogConnection)message);
-        }
-    }
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogdLoadIT.class);
 
@@ -121,7 +112,14 @@ public class SyslogdLoadIT implements InitializingBean {
     @Autowired
     private SyslogdConfigFactory m_config;
 
+    @Autowired
+    private MockMessageDispatcherFactory<SyslogConnection, SyslogMessageLogDTO> m_messageDispatcherFactory;
+
     private Syslogd m_syslogd;
+
+    private SyslogSinkConsumer m_syslogSinkConsumer;
+
+    private SyslogSinkModule m_syslogSinkModule;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -136,6 +134,13 @@ public class SyslogdLoadIT implements InitializingBean {
 
         m_eventCounter = new EventCounter();
         this.m_eventIpcManager.addEventListener(m_eventCounter);
+
+        m_syslogSinkConsumer = new SyslogSinkConsumer(new MetricRegistry());
+        m_syslogSinkConsumer.setDistPollerDao(m_distPollerDao);
+        m_syslogSinkConsumer.setSyslogdConfig(m_config);
+        m_syslogSinkConsumer.setEventForwarder(m_eventIpcManager);
+        m_syslogSinkModule = m_syslogSinkConsumer.getModule();
+        m_messageDispatcherFactory.setConsumer(m_syslogSinkConsumer);
     }
 
     @After
@@ -155,32 +160,18 @@ public class SyslogdLoadIT implements InitializingBean {
                 IOUtils.closeQuietly(stream);
             }
         }
+        // Update the beans with the new config.
+        if (m_syslogSinkConsumer != null) {
+            m_syslogSinkConsumer.setSyslogdConfig(m_config);
+            m_syslogSinkModule = m_syslogSinkConsumer.getModule();
+        }
     }
 
     private void startSyslogdJavaNet() throws Exception {
         m_syslogd = new Syslogd();
         SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(m_config);
         receiver.setDistPollerDao(m_distPollerDao);
-        receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
-        m_syslogd.setSyslogReceiver(receiver);
-        m_syslogd.init();
-        SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
-    }
-
-    private void startSyslogdNio() throws Exception {
-        m_syslogd = new Syslogd();
-        SyslogReceiverNioThreadPoolImpl receiver = new SyslogReceiverNioThreadPoolImpl(m_config);
-        receiver.setDistPollerDao(m_distPollerDao);
-        receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
-        m_syslogd.setSyslogReceiver(receiver);
-        m_syslogd.init();
-        SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
-    }
-
-    private void startSyslogdNioDisruptor() throws Exception {
-        m_syslogd = new Syslogd();
-        SyslogReceiverNioDisruptorImpl receiver = new SyslogReceiverNioDisruptorImpl(m_config);
-        receiver.setDistPollerDao(m_distPollerDao);
+        receiver.setMessageDispatcherFactory(m_messageDispatcherFactory);
         m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
@@ -190,7 +181,7 @@ public class SyslogdLoadIT implements InitializingBean {
         m_syslogd = new Syslogd();
         SyslogReceiverCamelNettyImpl receiver = new SyslogReceiverCamelNettyImpl(m_config);
         receiver.setDistPollerDao(m_distPollerDao);
-        receiver.setSyslogDispatcher(new MockDispatcherWhiteboard("seda:handleMessageBlueprint"));
+        receiver.setMessageDispatcherFactory(m_messageDispatcherFactory);
         m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
@@ -217,11 +208,11 @@ public class SyslogdLoadIT implements InitializingBean {
         // Test by directly invoking the SyslogConnection task
         System.err.println("Starting to send packets");
         final long start = System.currentTimeMillis();
-        SyslogConnectionHandler handler = new SyslogConnectionHandlerDefaultImpl();
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
-            handler.handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation()));
+            SyslogMessageLogDTO messageLog = m_syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
+            m_syslogSinkConsumer.handleMessage(messageLog);
         }
 
         long mid = System.currentTimeMillis();
@@ -242,20 +233,6 @@ public class SyslogdLoadIT implements InitializingBean {
     @Transactional
     public void testSyslogReceiverJavaNet() throws Exception {
         startSyslogdJavaNet();
-        doTestSyslogReceiver();
-    }
-
-    @Test
-    @Transactional
-    public void testSyslogReceiverNio() throws Exception {
-        startSyslogdNio();
-        doTestSyslogReceiver();
-    }
-
-    @Test
-    @Transactional
-    public void testSyslogReceiverNioDisruptor() throws Exception {
-        startSyslogdNioDisruptor();
         doTestSyslogReceiver();
     }
 
@@ -338,12 +315,14 @@ public class SyslogdLoadIT implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - BOMfoo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation()));
+        SyslogMessageLogDTO messageLog = m_syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
+        m_syslogSinkConsumer.handleMessage(messageLog);
 
         // handle a valid packet
         bytes = "<34>1 2003-10-11T22:14:15.000Z plonk -ev/pts/8\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation()));
+        messageLog = m_syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
+        m_syslogSinkConsumer.handleMessage(messageLog);
 
         m_eventCounter.waitForFinish(120000);
         
@@ -364,12 +343,14 @@ public class SyslogdLoadIT implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation()));
+        SyslogMessageLogDTO messageLog = m_syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
+        m_syslogSinkConsumer.handleMessage(messageLog);
 
         // handle a valid packet
         bytes = "<34>monkeysatemybrain!\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config, m_distPollerDao.whoami().getId(), m_distPollerDao.whoami().getLocation()));
+        messageLog = m_syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
+        m_syslogSinkConsumer.handleMessage(messageLog);
 
         m_eventCounter.waitForFinish(120000);
         

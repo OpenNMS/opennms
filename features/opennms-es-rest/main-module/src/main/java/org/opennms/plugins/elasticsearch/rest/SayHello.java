@@ -36,10 +36,10 @@ package org.opennms.plugins.elasticsearch.rest;
 public class SayHello {
 	public SayHello(){
 		super();
-		System.out.println("Hello - Elastic Search ReST Event Forwarder started");
+		System.out.println("Hello - Elasticsearch ReST Event Forwarder started");
 	}
 	
 	public void destroyMethod(){
-		System.out.println("Goodbye - Elastic Search ReST Event Forwarder stopped");
+		System.out.println("Goodbye - Elasticsearch ReST Event Forwarder stopped");
 	}
 }

@@ -1,11 +1,11 @@
 # Minion Default Features
+opennms-core-ipc-sink-camel
 opennms-syslogd-listener-camel-netty
-opennms-syslogd-handler-minion
 opennms-trapd-listener
-opennms-trapd-handler-minion
 minion-shell
 minion-heartbeat-producer
 minion-snmp-proxy
 minion-provisiond-detectors
 minion-poller
+minion-collection
 minion-icmp-proxy

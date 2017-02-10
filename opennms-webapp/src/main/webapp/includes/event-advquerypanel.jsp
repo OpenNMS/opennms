@@ -94,8 +94,8 @@
 
 	<div class="row">
 		<div class="form-group col-sm-6">
-			<label for="location">Location:</label>
-			<select class="form-control" name="location">
+			<label for="nodelocation">Node Location:</label>
+			<select class="form-control" name="nodelocation">
 				<option selected="selected">Any</option>
 				<% for (OnmsMonitoringLocation onmsMonitoringLocation : monitoringLocations ) { %>
 				<option value="<%= onmsMonitoringLocation.getLocationName() %>">

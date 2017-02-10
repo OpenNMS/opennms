@@ -56,12 +56,13 @@ import org.opennms.netmgt.collectd.vmware.cim.VmwareCimCollectionAttributeType;
 import org.opennms.netmgt.collectd.vmware.cim.VmwareCimCollectionResource;
 import org.opennms.netmgt.collectd.vmware.cim.VmwareCimCollectionSet;
 import org.opennms.netmgt.collectd.vmware.cim.VmwareCimMultiInstanceCollectionResource;
+import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.config.vmware.cim.Attrib;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimCollection;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimGroup;
@@ -79,7 +80,7 @@ import com.vmware.vim25.HostRuntimeInfo;
 import com.vmware.vim25.HostSystemPowerState;
 import com.vmware.vim25.mo.HostSystem;
 
-public class VmwareCimCollector implements ServiceCollector {
+public class VmwareCimCollector extends AbstractLegacyServiceCollector {
 
     /**
      * logging for VMware CIM data collection
@@ -253,7 +254,7 @@ public class VmwareCimCollector implements ServiceCollector {
 
         collectionSet.setCollectionTimestamp(new Date());
 
-        collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
+        collectionSet.setStatus(CollectionStatus.FAILED);
 
         VmwareViJavaAccess vmwareViJavaAccess = null;
 
@@ -369,7 +370,7 @@ public class VmwareCimCollector implements ServiceCollector {
                     }
                 }
             }
-            collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
+            collectionSet.setStatus(CollectionStatus.SUCCEEDED);
         }
 
         vmwareViJavaAccess.disconnect();

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collectd;
 
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.config.datacollection.MibObject;
@@ -40,7 +41,7 @@ import org.opennms.netmgt.config.datacollection.MibObject;
  * @version $Id: $
  */
 public class StringAttributeType extends SnmpAttributeType {
-    
+
     /**
      * <p>supportsType</p>
      *
@@ -50,7 +51,12 @@ public class StringAttributeType extends SnmpAttributeType {
     public static boolean supportsType(String rawType) {
         return rawType.toLowerCase().startsWith("string");
     }
-    
+
+    @Override
+    public AttributeType getType() {
+        return AttributeType.STRING;
+    }
+
     /**
      * <p>Constructor for StringAttributeType.</p>
      *

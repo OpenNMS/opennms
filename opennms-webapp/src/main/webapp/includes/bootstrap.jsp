@@ -108,7 +108,7 @@
       <script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
     </c:if>
 
-    <c:if test="${param.enableSpringDojo == 'true'}">	
+    <c:if test="${param.enableSpringDojo == 'true'}">
       <script type="text/javascript" src='<%= baseHref %>resources/dojo/dojo.js'></script>
       <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
       <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
@@ -140,6 +140,17 @@
   <script type="text/javascript" src="<%= baseHref %>lib/flot-datatable/jquery.flot.datatable.min.js"></script>
   <script type="text/javascript" src="<%= baseHref %>js/backshift.onms.min.js"></script>
 </c:if>
+
+  <c:if test="${param.usegeomap == 'true'}">
+    <script type="text/javascript" src="<%= baseHref %>lib/leaflet/dist/leaflet-src.js" ></script>
+    <script type="text/javascript" src="<%= baseHref %>lib/leaflet.markercluster/dist/leaflet.markercluster-src.js" ></script>
+    <script type="text/javascript" src="<%= baseHref %>geomap/js/geomap.js"></script>
+    <link rel="stylesheet" href="<%= baseHref %>css/geomap.css" />
+    <link rel="stylesheet" href="<%= baseHref %>lib/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="<%= baseHref %>lib/leaflet.markercluster/dist/MarkerCluster.css"/>
+    <link rel="stylesheet" href="<%= baseHref %>lib/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
+    <link rel="stylesheet" href="<%= baseHref %>lib/ionicons/css/ionicons.css"/>
+  </c:if>
 
 <c:forEach var="script" items="${paramValues.script}">
     <c:out value="${script}" escapeXml="false" />

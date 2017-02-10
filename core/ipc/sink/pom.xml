@@ -14,6 +14,7 @@
     <module>api</module>
     <module>common</module>
     <module>camel-impl</module>
+    <module>kafka-impl</module>
     <module>mock-impl</module>
     <module>xml</module>
   </modules>

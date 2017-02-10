@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author admin
  *
  */
-@Command(scope = "elastic-search", name = "send-historic-events", description="Sends events in selected OpenNMS to Elastic Search")
+@Command(scope = "elastic-search", name = "send-historic-events", description="Sends events in selected OpenNMS to Elasticsearch")
 public class SendEventsToEsCommand extends OsgiCommandSupport {
 	private static final Logger LOG = LoggerFactory.getLogger(SendEventsToEsCommand.class);
 
@@ -96,7 +96,7 @@ public class SendEventsToEsCommand extends OsgiCommandSupport {
 			if (this.useNodelabel!=null) getOpenNMSHistoricEventsToEs().setUseNodeLabel(Boolean.valueOf(useNodelabel));
 
 			
-			String msg= "Sending events to Elastic Search. "
+			String msg= "Sending events to Elasticsearch. "
 					+ "\n Limit ="+getOpenNMSHistoricEventsToEs().getLimit()
 					+ "\n Offset ="+getOpenNMSHistoricEventsToEs().getOffset()
 					+ "\n Retreiving events from OpenNMS URL="+getOpenNMSHistoricEventsToEs().getOnmsUrl()

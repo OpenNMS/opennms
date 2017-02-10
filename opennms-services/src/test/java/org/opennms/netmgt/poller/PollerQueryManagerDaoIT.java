@@ -33,6 +33,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -60,6 +61,7 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
@@ -132,6 +134,8 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 
 	@Autowired
 	private LocationAwarePollerClient m_locationAwarePollerClient;
+
+	private LocationAwarePingClient m_locationAwarePingClient;
 
 	@Override
 	public void setTemporaryDatabase(MockDatabase database) {
@@ -206,14 +210,17 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_eventMgr.setEventWriter(m_db);
 		m_eventMgr.addEventListener(m_outageAnticipator);
 		m_eventMgr.setSynchronous(false);
-		
+
+		m_locationAwarePingClient = mock(LocationAwarePingClient.class);
+
 		DefaultPollContext pollContext = new DefaultPollContext();
 		pollContext.setEventManager(m_eventMgr);
 		pollContext.setLocalHostName("localhost");
 		pollContext.setName("Test.DefaultPollContext");
 		pollContext.setPollerConfig(m_pollerConfig);
 		pollContext.setQueryManager(m_queryManager);
-		
+		pollContext.setLocationAwarePingClient(m_locationAwarePingClient);
+
 		PollableNetwork network = new PollableNetwork(pollContext);
 
 		m_poller = new Poller();

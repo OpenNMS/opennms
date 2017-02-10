@@ -22,7 +22,7 @@ This way the alarm change events are associated with the otiginal source of the 
 
 Alarm change events have a severity of normal since they only reflect changes to the alarm.
 
-Events from the alarm-change-notifier are used by the opennms-es-rest plugin to send alarm history to Elastic Search
+Events from the alarm-change-notifier are used by the opennms-es-rest plugin to send alarm history to Elasticsearch
 (See https://github.com/gallenc/opennms-es-rest)
 
 

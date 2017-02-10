@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== RadiusAuthMonitor
 
 This monitor allows to test the functionality of the link:http://freeradius.org/rfc/rfc2865.html[RADIUS] authentication system.
@@ -55,6 +58,8 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
 | `nasid`    | The link:http://freeradius.org/rfc/rfc2865.html#NAS-Identifier[Network Access Server identifier]
                originating the _Access-Request_.                                                                       | optional | `opennms`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 Example configuration how to configure the monitor in the `poller-configuration.xml`.

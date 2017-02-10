@@ -29,6 +29,7 @@
 package org.opennms.protocols.xml.collector;
 
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
@@ -60,10 +61,10 @@ public class XmlCollectionAttributeType extends AbstractCollectionAttributeType 
      */
     @Override
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-        if ("string".equalsIgnoreCase(m_object.getDataType())) {
-            persister.persistStringAttribute(attribute);
-        } else {
+        if (m_object.getDataType().isNumeric()) {
             persister.persistNumericAttribute(attribute);
+        } else {
+            persister.persistStringAttribute(attribute);
         }
     }
 
@@ -79,7 +80,7 @@ public class XmlCollectionAttributeType extends AbstractCollectionAttributeType 
      * @see org.opennms.netmgt.config.collector.AttributeDefinition#getType()
      */
     @Override
-    public String getType() {
+    public AttributeType getType() {
         return m_object.getDataType();
     }
 

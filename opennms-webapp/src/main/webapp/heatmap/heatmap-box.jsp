@@ -118,77 +118,94 @@
     <div id="treemap"></div>
 
     <script type="text/javascript">
-        require(['jquery', 'jquery-ui/jquery-ui', '../js/jquery.ui.treemap'], function( $ ) {
-            var mouseclickHandler = function (e, data) {
-                var nodes = data.nodes;
-                var ids = data.ids;
-                <%
-                  if ("foreignSources".equals(heatmap)) {
-                %>
-                location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByForeignSource&foreignSource=" + nodes[0].id;
-                <%
-                  }
 
-                  if ("categories".equals(heatmap)) {
-                %>
-                location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByCategory&category=" + nodes[0].id;
-                <%
-                  }
+        function addOnLoadEvent(funcToAdd) {
+            var oldOnLoadFunction = window.onload;
+            if (typeof window.onload != 'function') {
+                window.onload = funcToAdd;
+            } else {
+                window.onload = function() {
+                    if (oldOnLoadFunction) {
+                        oldOnLoadFunction();
+                    }
+                    funcToAdd();
+                }
+            }
+        }
 
-                  if ("monitoredServices".equals(heatmap)) {
-                %>
-                location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByMonitoredService&monitoredService=" + nodes[0].id;
-                <%
-                  }
+        addOnLoadEvent(function() {
+            require(['jquery', 'jquery-ui/jquery-ui', '../js/jquery.ui.treemap'], function( $ ) {
+                var mouseclickHandler = function (e, data) {
+                    var nodes = data.nodes;
+                    var ids = data.ids;
+                    <%
+                      if ("foreignSources".equals(heatmap)) {
+                    %>
+                    location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByForeignSource&foreignSource=" + nodes[0].id;
+                    <%
+                      }
 
-                  if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap) || "nodesByMonitoredService".equals(heatmap)) {
-                %>
-                location.href = "/opennms/element/node.jsp?node=" + nodes[0].elementId
-                <%
-                  }
-                %>
-            };
+                      if ("categories".equals(heatmap)) {
+                    %>
+                    location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByCategory&category=" + nodes[0].id;
+                    <%
+                      }
 
-            var url = "<%=url%>";
-            var children;
+                      if ("monitoredServices".equals(heatmap)) {
+                    %>
+                    location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByMonitoredService&monitoredService=" + nodes[0].id;
+                    <%
+                      }
 
-            function refresh() {
-                var height = $(window).height() - 105 - $("#treemap").offset().top;
+                      if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap) || "nodesByMonitoredService".equals(heatmap)) {
+                    %>
+                    location.href = "/opennms/element/node.jsp?node=" + nodes[0].elementId
+                    <%
+                      }
+                    %>
+                };
 
-                if (height < 0) {
-                    height = $(window).width();
+                var url = "<%=url%>";
+                var children;
+
+                function refresh() {
+                    var height = $(window).height() - 105 - $("#treemap").offset().top;
+
+                    if (height < 0) {
+                        height = $(window).width();
+                    }
+
+                    height = Math.min(height, $(window).width());
+
+                    $("#treemap").treemap({
+                        "dimensions": [
+                            $("#treemap").width(),
+                            height
+                        ],
+                        "colorStops": [
+                            {"val": 1.0, "color": "#CC0000"},
+                            {"val": 0.4, "color": "#FF3300"},
+                            {"val": 0.2, "color": "#FF9900"},
+                            {"val": 0.1, "color": "#FFCC00"},
+                            {"val": 0.0, "color": "#336600"}
+                        ],
+                        "labelsEnabled": true,
+                        "nodeData": {
+                            "id": "<%=heatmap%>",
+                            "children": children
+                        }
+                    }).bind('treemapclick', mouseclickHandler);
                 }
 
-                height = Math.min(height, $(window).width());
-
-                $("#treemap").treemap({
-                    "dimensions": [
-                        $("#treemap").width(),
-                        height
-                    ],
-                    "colorStops": [
-                        {"val": 1.0, "color": "#CC0000"},
-                        {"val": 0.4, "color": "#FF3300"},
-                        {"val": 0.2, "color": "#FF9900"},
-                        {"val": 0.1, "color": "#FFCC00"},
-                        {"val": 0.0, "color": "#336600"}
-                    ],
-                    "labelsEnabled": true,
-                    "nodeData": {
-                        "id": "<%=heatmap%>",
-                        "children": children
-                    }
-                }).bind('treemapclick', mouseclickHandler);
-            }
-
-            $(window).resize(function() {
-                refresh();
-            });
-
-            $(document).ready(function () {
-                $.getJSON(url, function (data) {
-                    children = data.children;
+                $(window).resize(function() {
                     refresh();
+                });
+
+                $(document).ready(function () {
+                    $.getJSON(url, function (data) {
+                        children = data.children;
+                        refresh();
+                    });
                 });
             });
         });

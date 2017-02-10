@@ -3,7 +3,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,7 +50,8 @@
 
     String noticeIdString = request.getParameter("notice");
 
-    String eventSeverity;
+    String eventSeverity = null;
+    String eventLocation = null;
     
     int noticeID = -1;
     
@@ -71,11 +72,13 @@
     if (NoticeFactory.canDisplayEvent(notice.getEventId())) {
 		Event event = EventFactory.getEvent(notice.getEventId());
 		eventSeverity = event.getSeverity().getLabel();
+		eventLocation = event.getLocation();
     } else {
 		eventSeverity = new String("Cleared");
     }
 
 	String nodeLabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId());
+	String nodeLocation = NetworkElementFactory.getInstance(getServletContext()).getNodeLocation(notice.getNodeId());
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -97,9 +100,9 @@
   <table class="table table-condensed severity">
   <tr class="severity-<%=eventSeverity.toLowerCase()%>">
     <th class="col-md-1">Notification&nbsp;Time</th>
-    <td class="col-md-3"><fmt:formatDate value="<%=notice.getTimeSent()%>" type="BOTH" /></td>
+    <td class="col-md-2"><fmt:formatDate value="<%=notice.getTimeSent()%>" type="BOTH" /></td>
     <th class="col-md-1">Time&nbsp;Replied</th>
-    <td class="col-md-3">
+    <td class="col-md-2">
       <c:choose>
         <c:when test="<%=notice.getTimeReplied() != null%>">
           <fmt:formatDate value="<%=notice.getTimeReplied()%>" type="BOTH" />
@@ -110,11 +113,22 @@
       </c:choose>
     </td>
     <th class="col-md-1">Responder</th>
-    <td class="col-md-3"><%=notice.getResponder()!=null ? notice.getResponder() : "&nbsp;"%></td>
+    <td class="col-md-2"><%=notice.getResponder()!=null ? notice.getResponder() : "&nbsp;"%></td>
+    <th class="col-md-1">Location</th>
+    <td class="col-md-2">
+      <c:choose>
+        <c:when test="<%= eventLocation != null %>">
+          <a href="event/detail.jsp?id=<%=notice.getEventId()%>"><%= eventLocation %></a>
+        </c:when>
+        <c:otherwise>
+          &nbsp;
+        </c:otherwise>
+      </c:choose>
+    </td>
   </tr>
   <tr class="severity-<%=eventSeverity.toLowerCase()%>">
-    <th>Node</th>
-    <td>
+    <th class="col-md-1">Node</th>
+    <td class="col-md-2">
       <%if (nodeLabel!=null) { %>
         <c:url var="nodeLink" value="element/node.jsp">
           <c:param name="node" value="<%=String.valueOf(notice.getNodeId())%>"/>
@@ -125,9 +139,8 @@
       <% } %>
     </td>
 
-    <th>Interface</th>
-
-    <td>
+    <th class="col-md-1">Interface</th>
+    <td class="col-md-2">
       <%if (nodeLabel!=null && notice.getIpAddress()!=null) { %>
         <c:url var="interfaceLink" value="element/interface.jsp">
           <c:param name="node" value="<%=String.valueOf(notice.getNodeId())%>"/>
@@ -141,9 +154,8 @@
       <% } %>
     </td>
           
-    <th>Service</th>
-
-    <td>
+    <th class="col-md-1">Service</th>
+    <td class="col-md-2">
       <%if (nodeLabel!=null && notice.getIpAddress()!=null && notice.getServiceName()!=null) { %>
         <c:url var="serviceLink" value="element/service.jsp">
           <c:param name="node" value="<%=String.valueOf(notice.getNodeId())%>"/>
@@ -157,11 +169,26 @@
         &nbsp;
       <% } %>
     </td>
+
+    <th class="col-md-1">Node&nbsp;Location</th>
+    <td class="col-md-2">
+      <c:choose>
+        <c:when test="<%= nodeLocation != null %>">
+          <c:url var="nodeLocationLink" value="element/node.jsp">
+            <c:param name="node" value="<%=String.valueOf(notice.getNodeId())%>"/>
+          </c:url>
+          <a href="${nodeLink}"><c:out value="<%=nodeLocation%>"/></a>
+        </c:when>
+        <c:otherwise>
+          &nbsp;
+        </c:otherwise>
+      </c:choose>
+    </td>
   </tr>
 
   <%if (nodeLabel!=null) { %>
     <tr class="severity-<%=eventSeverity.toLowerCase()%>">
-      <td colspan="6">
+      <td colspan="8">
         <c:url var="outageLink" value="outage/list.htm">
           <c:param name="filter" value='<%="node=" + notice.getNodeId()%>'/>
         </c:url>

@@ -28,9 +28,10 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
-import java.nio.file.Path;
+import java.util.Date;
 
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.model.ResourcePath;
 
 public interface Resource {
 
@@ -50,6 +51,33 @@ public interface Resource {
      * @param resource Used by the {@link GenericTypeResource} in order to determine the instance name.
      * @return relative path
      */
-    public Path getPath(CollectionResource resource);
+    public ResourcePath getPath(CollectionResource resource);
+
+    /**
+     * Returns the {@link Date} to use for attributes associated with this resource.
+     *
+     * @return a {@link Date} or null if the current time should be used.
+     */
+    public Date getTimestamp();
+
+    /**
+     * <p>
+     * Used to lookup additional resource related information that may not
+     * have been available when the resource was created, and optionally return a
+     * new resource.
+     * </p>
+     *
+     * <p>
+     * See {@link DeferredGenericTypeResource#resolve()}.
+     * </p>
+     *
+     * <p>
+     * This method should only be called when running in the context of the OpenNMS
+     * JVM (and not the Minion).
+     * </p>
+     *
+     * @return possibly a new resource, or this same instance if no resolving was performed
+     */
+    public Resource resolve();
 
 }

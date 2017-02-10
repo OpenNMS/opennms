@@ -18,7 +18,7 @@
 
   <context:annotation-config />
 
-  <bean id="pingerFactory" class="org.opennms.netmgt.icmp.PingerFactoryImpl" />
+  <bean id="pingerFactory" class="org.opennms.netmgt.icmp.best.BestMatchPingerFactory" />
   <onmsgi:service interface="org.opennms.netmgt.icmp.PingerFactory" ref="pingerFactory" />
 
   <bean id="pinger" factory-bean="pingerFactory" factory-method="getInstance">

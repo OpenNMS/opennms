@@ -111,6 +111,7 @@
 
     <!-- Other projects -->
     <module>geocoder</module>
+    <module>geolocation</module>
     <module>instrumentationLogReader</module>
     <module>name-cutter</module>
     <module>ncs</module>
@@ -131,7 +132,7 @@
     <!-- OpenNMS Plugin Manager -->
     <module>vaadin-opennms-pluginmanager</module>
     
-    <!-- ReST Elastic Search Integration -->
+    <!-- ReST Elasticsearch Integration -->
     <module>opennms-es-rest</module>
     
     <!-- Alarm Change Notifier -->

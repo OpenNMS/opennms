@@ -31,173 +31,19 @@
           </instructions>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-artifacts</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>blueprint-trapd-handler-default.xml</file>
-                  <type>xml</type>
-                  <classifier>blueprint-trapd-handler-default</classifier>
-                </artifact>
-                <artifact>
-                  <file>blueprint-trapd-handler-minion.xml</file>
-                  <type>xml</type>
-                  <classifier>blueprint-trapd-handler-minion</classifier>
-                </artifact>
-                <artifact>
-                  <file>blueprint-trapd-listener.xml</file>
-                  <type>xml</type>
-                  <classifier>blueprint-trapd-listener</classifier>
-                </artifact>
-                <artifact>
-                  <file>blueprint-trapd-handler-kafka.xml</file>
-                  <type>xml</type>
-                  <classifier>blueprint-trapd-handler-kafka</classifier>
-                </artifact>
-                <artifact>
-                  <file>blueprint-trapd-handler-kafka-default.xml</file>
-                  <type>xml</type>
-                  <classifier>blueprint-trapd-handler-kafka-default</classifier>
-                </artifact>
-              </artifacts>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- Copy all of the blueprint files into the target directory -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-blueprints</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/blueprints/OSGI-INF/blueprint</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.basedir}</directory>
-                  <filtering>false</filtering>
-                  <includes>
-                    <include>blueprint*.xml</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- Wrap the blueprints that we need in featuresBoot on OpenNMS in JAR files -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>blueprint-trapd-handler-default</id>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-              <archive>
-                <manifestEntries>
-                  <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                  <Bundle-SymbolicName>
-                    org.opennms.features.events.traps.blueprint-trapd-handler-default
-                  </Bundle-SymbolicName>
-                  <Bundle-Version>${opennms.osgi.version}</Bundle-Version>
-                  <DynamicImport-Package>*</DynamicImport-Package>
-                  <!-- Avoid carriage returns here -->
-                  <Import-Package>org.apache.camel,org.opennms.core.camel,org.opennms.netmgt.trapd</Import-Package>
-                </manifestEntries>
-              </archive>
-              <classifier>blueprint-trapd-handler-default</classifier>
-              <classesDirectory>${project.build.directory}/blueprints</classesDirectory>
-              <includes>
-                <include>OSGI-INF/blueprint/blueprint-trapd-handler-default.xml</include>
-              </includes>
-            </configuration>
-          </execution>
-          <execution>
-            <id>blueprint-trapd-handler-kafka-default</id>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-              <archive>
-                <manifestEntries>
-                  <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                  <Bundle-SymbolicName>
-                    org.opennms.features.events.traps.blueprint-trapd-handler-kafka-default
-                  </Bundle-SymbolicName>
-                  <Bundle-Version>${opennms.osgi.version}</Bundle-Version>
-                  <DynamicImport-Package>*</DynamicImport-Package>
-                  <!-- Avoid carriage returns here -->
-                  <Import-Package>org.apache.camel,org.opennms.core.camel,org.opennms.netmgt.trapd</Import-Package>
-                </manifestEntries>
-              </archive>
-              <classifier>blueprint-trapd-handler-kafka-default</classifier>
-              <classesDirectory>${project.build.directory}/blueprints</classesDirectory>
-              <includes>
-                <include>OSGI-INF/blueprint/blueprint-trapd-handler-kafka-default.xml</include>
-              </includes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-kafka</artifactId>
-      <version>${camelVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-impl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <!-- snappy-java has OSGi loading problems because of JNI bits -->
-        <exclusion>
-          <groupId>org.xerial.snappy</groupId>
-          <artifactId>snappy-java</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>  
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>camel-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <!-- TODO: Is this necessary now that we're using RestClient? -->
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-netty-http</artifactId>
       <version>${camelVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>camel-dependencies</artifactId>
-      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -216,17 +62,38 @@
       <artifactId>opennms-dao-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.api</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.xml</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.minion</groupId>
+      <artifactId>core-api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Test Dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.mock-impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.events</groupId>
@@ -236,26 +103,32 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.activemq</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.camel</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.db</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.services</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.xml</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -327,33 +200,6 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-tx</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!-- TODO: Is this necessary now that we're using RestClient? -->
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-netty-http</artifactId>
-      <version>${camelVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.minion</groupId>
-      <artifactId>core-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.curator</groupId>
-      <artifactId>curator-test</artifactId>
-      <version>${curatorVersion}</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>log4j</artifactId>
-          <groupId>log4j</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>slf4j-log4j12</artifactId>
-          <groupId>org.slf4j</groupId>
         </exclusion>
       </exclusions>
     </dependency>

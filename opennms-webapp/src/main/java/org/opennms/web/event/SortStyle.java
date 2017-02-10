@@ -44,6 +44,7 @@ public enum SortStyle {
     SEVERITY("severity"),
     TIME("time"),
     NODE("node"),
+    NODE_LOCATION("nodelocation"),
     INTERFACE("interface"),
     SERVICE("service"),
     POLLER("poller"),
@@ -53,6 +54,7 @@ public enum SortStyle {
     REVERSE_SEVERITY("rev_severity"),
     REVERSE_TIME("rev_time"),
     REVERSE_NODE("rev_node"),
+    REVERSE_NODE_LOCATION("rev_nodelocation"),
     REVERSE_INTERFACE("rev_interface"),
     REVERSE_SERVICE("rev_service"),
     REVERSE_POLLER("rev_poller"),
@@ -151,6 +153,14 @@ public enum SortStyle {
             clause = " ORDER BY NODELABEL DESC";
             break;
     
+        case NODE_LOCATION:
+            clause = " ORDER BY NODE.LOCATION ASC, NODELABEL ASC";
+            break;
+            
+        case REVERSE_NODE_LOCATION:
+            clause = " ORDER BY NODE.LOCATION DESC, NODELABEL ASC";
+            break;
+
         case INTERFACE:
             clause = " ORDER BY IPADDR ASC";
             break;

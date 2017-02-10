@@ -35,20 +35,25 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.rpc.api.RequestRejectedException;
+import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.dao.api.CriticalPath;
 import org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
+import org.opennms.netmgt.icmp.proxy.PingSummary;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableService;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +88,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     private volatile PollerConfig m_pollerConfig;
     private volatile QueryManager m_queryManager;
     private volatile EventIpcManager m_eventManager;
-    private volatile PingerFactory m_pingerFactory;
+    private volatile LocationAwarePingClient m_locationAwarePingClient;
     private volatile String m_name;
     private volatile String m_localHostName;
     private volatile boolean m_listenerAdded = false;
@@ -180,12 +185,12 @@ public class DefaultPollContext implements PollContext, EventListener {
         m_queryManager = queryManager;
     }
 
-    public PingerFactory getPingerFactory() {
-        return m_pingerFactory;
+    public LocationAwarePingClient getLocationAwarePingClient() {
+        return m_locationAwarePingClient;
     }
 
-    public void setPingerFactory(final PingerFactory pingerFactory) {
-        m_pingerFactory = pingerFactory;
+    public void setLocationAwarePingClient(LocationAwarePingClient locationAwarePingClient) {
+        m_locationAwarePingClient = locationAwarePingClient;
     }
 
     /* (non-Javadoc)
@@ -265,19 +270,13 @@ public class DefaultPollContext implements PollContext, EventListener {
         
         if (uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)
                 && this.getPollerConfig().isPathOutageEnabled()) {
-            String[] criticalPath = PathOutageManagerDaoImpl.getInstance().getCriticalPath(nodeId);
-            
-            if (criticalPath[0] != null && !"".equals(criticalPath[0].trim())) {
-                if (! testCriticalPath(criticalPath)) {
+            final CriticalPath criticalPath = PathOutageManagerDaoImpl.getInstance().getCriticalPath(nodeId);
+            if (criticalPath != null && criticalPath.getIpAddress() != null) {
+                if (!testCriticalPath(criticalPath)) {
                     LOG.debug("Critical path test failed for node {}", nodeId);
-                    
-                    // add eventReason, criticalPathIp, criticalPathService
-                    // parms
-                    
                     bldr.addParam(EventConstants.PARM_LOSTSERVICE_REASON, EventConstants.PARM_VALUE_PATHOUTAGE);
-                    bldr.addParam(EventConstants.PARM_CRITICAL_PATH_IP, criticalPath[0]);
-                    bldr.addParam(EventConstants.PARM_CRITICAL_PATH_SVC, criticalPath[1]);
-                    
+                    bldr.addParam(EventConstants.PARM_CRITICAL_PATH_IP, InetAddrUtils.str(criticalPath.getIpAddress()));
+                    bldr.addParam(EventConstants.PARM_CRITICAL_PATH_SVC, criticalPath.getServiceName());
                 } else {
                     LOG.debug("Critical path test passed for node {}", nodeId);
                 }
@@ -444,33 +443,52 @@ public class DefaultPollContext implements PollContext, EventListener {
         LOG.trace("onEvent: processing of pollEvent completed: {}", pollEvent);
     }
 
-    boolean testCriticalPath(String[] criticalPath) {
-        if (criticalPath == null || criticalPath.length < 2) {
-            LOG.error("testCriticalPath: illegal arguments, ignoring.");
-            return true;
+    private boolean testCriticalPath(CriticalPath criticalPath) {
+        if (!"ICMP".equalsIgnoreCase(criticalPath.getServiceName())) {
+            LOG.warn("Critical paths using services other than ICMP are not currently supported."
+                    + " ICMP will be used for testing {}.", criticalPath);
         }
-        final InetAddress ipAddress = InetAddressUtils.addr(criticalPath[0]);
-        if (ipAddress == null) {
-            LOG.error("testCriticalPath: failed to convert string address to InetAddress {}", criticalPath[0]);
-            return true;
-        }
+
+        final InetAddress ipAddress = criticalPath.getIpAddress();
+        final int retries = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries();
+        final int timeout = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout();
+
         boolean available = false;
         try {
-            int retries = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries();
-            int timeout = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout();
-            Number retval = m_pingerFactory.getInstance().ping(ipAddress, timeout, retries);
-            if (retval != null) {
+            final PingSummary pingSummary = m_locationAwarePingClient.ping(ipAddress)
+                    .withLocation(criticalPath.getLocationName())
+                    .withTimeout(timeout, TimeUnit.MILLISECONDS)
+                    .withRetries(retries)
+                    .execute()
+                    .get();
+
+            // We consider the path to be available if any of the requests were successful
+            available = pingSummary.getSequences().stream()
+                            .filter(s -> s.isSuccess())
+                            .count() > 0;
+        } catch (InterruptedException e) {
+            LOG.warn("Interrupted while testing {}. Marking the path as available.", criticalPath);
+            available = true;
+        } catch (Throwable e) {
+            final Throwable cause = e.getCause();
+            if (cause != null && cause instanceof RequestTimedOutException) {
+                LOG.warn("No response was received when remotely testing {}."
+                        + " Marking the path as available.", criticalPath);
+                available = true;
+            } else if (cause != null && cause instanceof RequestRejectedException) {
+                LOG.warn("Request was rejected when attemtping to test the remote path {}."
+                        + " Marking the path as available.", criticalPath);
                 available = true;
             }
-        } catch (Throwable e) {
-            LOG.warn("Pinger failed to ping {}", ipAddress, e);
+            LOG.warn("An unknown error occured while testing the critical path: {}."
+                    + " Marking the path as unavailable.", criticalPath, e);
             available = false;
         }
-        LOG.debug("testCriticalPath: checking {}@{}, available ? {}", criticalPath[1], criticalPath[0], available);
+        LOG.debug("testCriticalPath: checking {}@{}, available ? {}", criticalPath.getServiceName(), ipAddress, available);
         return available;
     }
 
-    String getNodeLabel(int nodeId) {
+    private String getNodeLabel(int nodeId) {
         String nodeLabel = null;
         try {
             nodeLabel = getQueryManager().getNodeLabel(nodeId);
