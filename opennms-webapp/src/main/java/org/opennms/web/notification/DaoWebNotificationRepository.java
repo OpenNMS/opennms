@@ -79,6 +79,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("event", "event", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("event.distPoller", "distPoller", OnmsCriteria.LEFT_JOIN);
         
         notificationCriteria.visit(new NotificationCriteriaVisitor<RuntimeException>(){
 
@@ -107,6 +108,9 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
             @Override
             public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
                 switch(sortStyle){
+                    case LOCATION:
+                        criteria.addOrder(Order.desc("event.distPoller.location"));
+                        break;
                     case RESPONDER:
                         criteria.addOrder(Order.desc("answeredBy"));        
                         break;
@@ -118,6 +122,9 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
                         break;
                     case NODE:
                         criteria.addOrder(Order.desc("node.label"));
+                        break;
+                    case NODE_LOCATION:
+                        criteria.addOrder(Order.desc("node.location.locationName"));
                         break;
                     case INTERFACE:
                         criteria.addOrder(Order.desc("ipAddress"));
@@ -131,6 +138,9 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
                     case SEVERITY:
                         criteria.addOrder(Order.desc("event.eventSeverity"));
                         break;
+                    case REVERSE_LOCATION:
+                        criteria.addOrder(Order.desc("event.distPoller.location"));
+                        break;
                     case REVERSE_RESPONDER:
                         criteria.addOrder(Order.asc("answeredBy"));            
                         break;
@@ -142,6 +152,9 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
                         break;
                     case REVERSE_NODE:
                         criteria.addOrder(Order.asc("node.label"));
+                        break;
+                    case REVERSE_NODE_LOCATION:
+                        criteria.addOrder(Order.asc("node.location.locationName"));
                         break;
                     case REVERSE_INTERFACE:
                         criteria.addOrder(Order.asc("ipAddress"));

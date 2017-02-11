@@ -71,22 +71,41 @@ public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> 
 		TrapdConfiguration configWithEmptyUser = new TrapdConfiguration(162,"*");
 		configWithEmptyUser.addSnmpv3User(userC);
 
+		// With the new sink pattern (Release 19.0.0) new properties have been introduced. Add tests for them as well
+		TrapdConfiguration configWithAllCustomTrapdProperties = new TrapdConfiguration(1111, "192.193.194.195");
+		configWithAllCustomTrapdProperties.setIncludeRawMessage(true);
+		configWithAllCustomTrapdProperties.setThreads(10);
+		configWithAllCustomTrapdProperties.setBatchSize(1);
+		configWithAllCustomTrapdProperties.setQueueSize(2);
+		configWithAllCustomTrapdProperties.setNewSuspectOnTrap(true);
+		configWithAllCustomTrapdProperties.setBatchInterval(0);
+
 		return Arrays.asList(new Object[][] {
-			{
-				new TrapdConfiguration(162,"*"),
-				"<trapd-configuration "
-					+ "snmp-trap-address=\"*\" "
-					+ "snmp-trap-port=\"162\" "
-					+ "new-suspect-on-trap=\"false\" "
-					+ "/>",
-				"target/classes/xsds/trapd-configuration.xsd"
-			},
+				{
+						new TrapdConfiguration(162,"*"),
+						"<trapd-configuration "
+								+ "snmp-trap-address=\"*\" "
+								+ "snmp-trap-port=\"162\" "
+								+ "new-suspect-on-trap=\"false\" "
+								+ "include-raw-message=\"false\" "
+								+ "threads=\"0\" "
+								+ "queue-size=\"10000\" "
+								+ "batch-size=\"1000\" "
+								+ "batch-interval=\"500\""
+								+ "/>",
+						"target/classes/xsds/trapd-configuration.xsd"
+				},
 			{
 				new TrapdConfiguration(162,"*"),
 				"<trapd-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/trapd\" "
 					+ "snmp-trap-address=\"*\" "
 					+ "snmp-trap-port=\"162\" "
 					+ "new-suspect-on-trap=\"false\" "
+					+ "include-raw-message=\"false\" "
+					+ "threads=\"0\" "
+					+ "queue-size=\"10000\" "
+					+ "batch-size=\"1000\" "
+					+ "batch-interval=\"500\""
 					+ "/>",
 				"target/classes/xsds/trapd-configuration.xsd"
 			},
@@ -96,6 +115,11 @@ public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> 
 					+ "snmp-trap-address=\"*\" "
 					+ "snmp-trap-port=\"162\" "
 					+ "new-suspect-on-trap=\"false\" "
+					+ "include-raw-message=\"false\" "
+					+ "threads=\"0\" "
+					+ "queue-size=\"10000\" "
+					+ "batch-size=\"1000\" "
+					+ "batch-interval=\"500\""
 					+ ">"
 					+   "<snmpv3-user security-name=\"opennms\" auth-passphrase=\"0p3nNMSv3\" auth-protocol=\"MD5\" privacy-passphrase=\"0p3nNMSv3\" privacy-protocol=\"DES\"/>"
 					+ "</trapd-configuration>",
@@ -107,6 +131,11 @@ public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> 
 					+ "snmp-trap-address=\"*\" "
 					+ "snmp-trap-port=\"162\" "
 					+ "new-suspect-on-trap=\"false\" "
+					+ "include-raw-message=\"false\" "
+					+ "threads=\"0\" "
+					+ "queue-size=\"10000\" "
+					+ "batch-size=\"1000\" "
+					+ "batch-interval=\"500\""
 					+ ">"
 					+   "<snmpv3-user security-name=\"opennms\" auth-passphrase=\"0p3nNMSv3\" auth-protocol=\"MD5\" privacy-passphrase=\"0p3nNMSv3\" privacy-protocol=\"DES\"/>"
 					+   "<snmpv3-user security-name=\"opennms2\" auth-passphrase=\"0p3nNMSv3\" auth-protocol=\"MD5\" privacy-passphrase=\"0p3nNMSv3\" privacy-protocol=\"DES\"/>"
@@ -119,9 +148,28 @@ public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> 
 					+ "snmp-trap-address=\"*\" "
 					+ "snmp-trap-port=\"162\" "
 					+ "new-suspect-on-trap=\"false\" "
+					+ "include-raw-message=\"false\" "
+					+ "threads=\"0\" "
+					+ "queue-size=\"10000\" "
+					+ "batch-size=\"1000\" "
+					+ "batch-interval=\"500\""
 					+ ">"
 					+   "<snmpv3-user />"
 					+ "</trapd-configuration>",
+				"target/classes/xsds/trapd-configuration.xsd"
+			},
+			{
+				configWithAllCustomTrapdProperties,
+				"<trapd-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/trapd\" "
+						+ "snmp-trap-address=\"192.193.194.195\" "
+						+ "snmp-trap-port=\"1111\" "
+						+ "new-suspect-on-trap=\"true\" "
+						+ "include-raw-message=\"true\" "
+						+ "threads=\"10\" "
+						+ "queue-size=\"2\" "
+						+ "batch-size=\"1\" "
+						+ "batch-interval=\"0\""
+						+ "/>",
 				"target/classes/xsds/trapd-configuration.xsd"
 			}
 		});

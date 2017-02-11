@@ -30,11 +30,12 @@ package org.opennms.core.ipc.sink.mock;
 
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
+import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 
 /**
- * A simple {@link MessageProducerFactory} that handles all messages with a single consumer.
+ * A simple {@link MessageDispatcherFactory} that handles all messages with a single consumer.
  *
  * Used for testing.
  *

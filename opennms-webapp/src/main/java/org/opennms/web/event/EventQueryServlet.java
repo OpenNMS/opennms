@@ -52,6 +52,7 @@ import org.opennms.web.event.filter.IPAddrLikeFilter;
 import org.opennms.web.event.filter.LocationFilter;
 import org.opennms.web.event.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.event.filter.LogMessageSubstringFilter;
+import org.opennms.web.event.filter.NodeLocationFilter;
 import org.opennms.web.event.filter.NodeNameLikeFilter;
 import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.event.filter.SeverityFilter;
@@ -139,6 +140,12 @@ public class EventQueryServlet extends HttpServlet {
         String location = WebSecurityUtils.sanitizeString(request.getParameter("location"));
         if (location != null && !location.equalsIgnoreCase("any")) {
             filterArray.add(new LocationFilter(WebSecurityUtils.sanitizeString(location)));
+        }
+
+        // convenient syntax for NodeLocationFilter
+        String nodeLocation = WebSecurityUtils.sanitizeString(request.getParameter("nodelocation"));
+        if (nodeLocation != null && !nodeLocation.equalsIgnoreCase("any")) {
+            filterArray.add(new NodeLocationFilter(WebSecurityUtils.sanitizeString(nodeLocation)));
         }
 
         // convenient syntax for SystemIdFilter

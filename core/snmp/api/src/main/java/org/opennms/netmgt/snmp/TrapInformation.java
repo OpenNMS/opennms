@@ -31,12 +31,7 @@ package org.opennms.netmgt.snmp;
 import java.net.InetAddress;
 import java.util.Date;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public abstract class TrapInformation implements TrapNotification {
-
-    private static final transient Logger LOG = LoggerFactory.getLogger(TrapInformation.class);
+public abstract class TrapInformation {
 
     /**
      * The internet address of the sending agent.
@@ -64,13 +59,10 @@ public abstract class TrapInformation implements TrapNotification {
      */
     private String location;
 
-    private TrapProcessor m_trapProcessor;
-
-    protected TrapInformation(InetAddress agent, String community, TrapProcessor trapProcessor) {
+    protected TrapInformation(InetAddress agent, String community) {
         m_creationTime = new Date().getTime();
         m_agent = agent;
         m_community = community;
-        m_trapProcessor = trapProcessor;
     }
 
     /**
@@ -104,8 +96,13 @@ public abstract class TrapInformation implements TrapNotification {
         return m_community;
     }
 
-    protected void validate() {
-        // by default we do nothing;
+    /**
+     * Validate the trap.
+     *
+     * @throws IllegalArgumentException on validation error.
+     */
+    public void validate() throws IllegalArgumentException {
+        // by default we do nothing
     }
 
     /**
@@ -123,17 +120,6 @@ public abstract class TrapInformation implements TrapNotification {
         m_creationTime = creationTime;
     }
 
-    @Override
-    public final TrapProcessor getTrapProcessor() {
-        // We do this here so that processing of the data is delayed until it is requested.
-        return processTrap(this, m_trapProcessor);
-    }
-
-    @Override
-    public final void setTrapProcessor(final TrapProcessor trapProcessor) {
-        m_trapProcessor = trapProcessor;
-    }
-
     public abstract String getVersion();
 
     public abstract int getPduLength();
@@ -145,38 +131,10 @@ public abstract class TrapInformation implements TrapNotification {
      */
     public abstract long getTimeStamp();
 
-    protected abstract TrapIdentity getTrapIdentity();
+    public abstract TrapIdentity getTrapIdentity();
 
-    protected static TrapProcessor processTrap(TrapInformation trap, TrapProcessor trapProcessor) {
-        
-        trap.validate();
-        
-        trapProcessor.setSystemId(trap.getSystemId());
-        trapProcessor.setLocation(trap.getLocation());
-        trapProcessor.setCreationTime(trap.getCreationTime());
-        trapProcessor.setVersion(trap.getVersion());
-        trapProcessor.setCommunity(trap.getCommunity());
-        trapProcessor.setAgentAddress(trap.getAgentAddress());
-        trapProcessor.setTrapAddress(trap.getTrapAddress());
-    
-        LOG.debug("{} trap - trapInterface: ()", trap.getVersion(), trap.getTrapAddress());
-        
-        // time-stamp
-        trapProcessor.setTimeStamp(trap.getTimeStamp());
-    
-        trapProcessor.setTrapIdentity(trap.getTrapIdentity());
-        
-        for (int i = 0; i < trap.getPduLength(); i++) {
-            trap.processVarBindAt(i);
-        } // end for loop
-    
-        return trapProcessor;
-    }
+    protected abstract Integer getRequestId();
 
-    protected abstract void processVarBindAt(int i);
-
-    protected void processVarBind(SnmpObjId name, SnmpValue value) {
-        m_trapProcessor.processVarBind(name, value);
-    }
+    public abstract SnmpVarBindDTO getSnmpVarBindDTO(int i);
 
 }

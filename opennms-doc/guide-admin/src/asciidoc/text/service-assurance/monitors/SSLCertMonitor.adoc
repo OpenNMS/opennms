@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== SSLCertMonitor
 
 This monitor is used to test if a SSL certificate presented by a remote network server are
@@ -35,12 +38,13 @@ You can configure a threshold in days applied on the `notAfter` date.
 | Parameter     | Description                                                                       | Required | Default value
 | `port`        | TCP port for the service with SSL certificate.                                    | required | `-1`
 | `retry`       | Number of attempts to get the certificate state                                   | optional | `0`
-| `timeout`     | Time in milliseconds to wait before next attempt.                                 | optional | `3000`
 | `days`        | Number of days before the certificate expires that we mark the service as failed. | optional | `7`
 | `server-name` | This is the DNS hostname to send as part of the _TLS_ negotiation, known as
                   server name indication (_SNI_)
-                  (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546] section 3.1)             | optional | ``
+                  (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546] section 3.1)             | optional | `-`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Variables which can be passed in the configuration for `server-name`
 [options="header, autowidth"]

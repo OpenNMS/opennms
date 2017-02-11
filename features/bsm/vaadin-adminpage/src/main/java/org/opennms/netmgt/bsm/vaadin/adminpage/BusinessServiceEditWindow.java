@@ -351,6 +351,18 @@ public class BusinessServiceEditWindow extends Window {
             boolean highestSeverityAboveFunction = m_reduceFunctionNativeSelect.getValue() == HighestSeverityAbove.class;
             boolean exponentialPropagationFunction = m_reduceFunctionNativeSelect.getValue() == ExponentialPropagation.class;
 
+            int height = 550;
+
+            if (thresholdFunction) {
+                height += 45;
+            }
+
+            if (highestSeverityAboveFunction) {
+                height += 40;
+            }
+
+            setHeight(height, Unit.PIXELS);
+
             setVisible(m_thresholdTextField, thresholdFunction);
             setVisible(m_thresholdStatusSelect, highestSeverityAboveFunction);
             setVisible(m_exponentialPropagationBaseTextField, exponentialPropagationFunction);

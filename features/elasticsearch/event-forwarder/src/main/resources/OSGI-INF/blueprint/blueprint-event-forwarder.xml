@@ -23,6 +23,8 @@
     <cm:default-properties>
         <cm:property name="elasticsearchCluster" value="opennms"/>
         <cm:property name="elasticsearchIp" value="127.0.0.1"/>
+        <cm:property name="elasticsearchHttpPort" value="9200"/>
+        <cm:property name="elasticsearchTransportPort" value="9300"/>
         <cm:property name="logAllEvents" value="false"/>
         <cm:property name="logEventDescription" value="false"/>
         <cm:property name="cache_max_ttl" value="0"/> <!-- set to zero to disable TTL -->
@@ -76,7 +78,7 @@
     <property name="cache" ref="nodeDataCache"/>
   </bean>
 
-  <bean id="indexNameFunction" class="org.opennms.features.elasticsearch.eventforwarder.internal.IndexNameFunction">
+  <bean id="indexNameFunction" class="org.opennms.core.camel.IndexNameFunction">
     <argument value="yyyy.MM"/>
   </bean>
 
@@ -108,7 +110,7 @@
           <constant>application/x-www-form-urlencoded</constant>
         </setHeader>
         <bean ref="elmapping" method="process"/>
-        <to uri="http:{{elasticsearchIp}}:9200/_template/{{elasticsearchCluster}}"/>
+        <to uri="http:{{elasticsearchIp}}:{{elasticsearchHttpPort}}/_template/{{elasticsearchCluster}}"/>
         <log message="${body}"/>
     </route>
 
@@ -131,7 +133,7 @@
     <route id="toElasticsearch" autoStartup="true" startupOrder="5" errorHandlerRef="noErrorHandler">
         <from uri="seda:ES?concurrentConsumers={{concurrentConsumers}}&amp;size={{queueSize}}"/>
         <log loggingLevel="DEBUG" message="ES: ${body.toString()}"/>
-        <to uri="elasticsearch://{{elasticsearchCluster}}?operation=INDEX&amp;ip={{elasticsearchIp}}"/>
+        <to uri="elasticsearch://{{elasticsearchCluster}}?operation=INDEX&amp;ip={{elasticsearchIp}}&amp;port={{elasticsearchTransportPort}}"/>
     </route>
 
   </camelContext>

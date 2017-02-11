@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,9 +32,9 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpVarBindDTO;
 import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.snmp.TrapInformation;
-import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.protocols.snmp.SnmpIPAddress;
 import org.opennms.protocols.snmp.SnmpPduTrap;
 import org.opennms.protocols.snmp.SnmpVarBind;
@@ -59,11 +59,9 @@ public class V1TrapInformation extends TrapInformation {
      *            The community string from the SNMP packet.
      * @param pdu
      *            The encapsulated Protocol Data Unit.
-     * @param trapProcessor The trap processor used to process the trap data
-     * 
      */
-    public V1TrapInformation(InetAddress agent, String community, SnmpPduTrap pdu, TrapProcessor trapProcessor) {
-        super(agent, community, trapProcessor);
+    public V1TrapInformation(InetAddress agent, String community, SnmpPduTrap pdu) {
+        super(agent, community);
         m_pdu = pdu;
     }
 
@@ -78,7 +76,7 @@ public class V1TrapInformation extends TrapInformation {
     }
 
     @Override
-    protected TrapIdentity getTrapIdentity() {
+    public TrapIdentity getTrapIdentity() {
         return new TrapIdentity(SnmpObjId.get(m_pdu.getEnterprise().getIdentifiers()), m_pdu.getGeneric(), m_pdu.getSpecific());
     }
 
@@ -97,10 +95,26 @@ public class V1TrapInformation extends TrapInformation {
     }
 
     @Override
-    protected void processVarBindAt(int i) {
+    public SnmpVarBindDTO getSnmpVarBindDTO(int i) {
         SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getName().getIdentifiers());
         SnmpValue value = new JoeSnmpValue(getVarBindAt(i).getValue());
-        processVarBind(name, value);
+        return new SnmpVarBindDTO(name, value);
     }
 
+	@Override
+	protected Integer getRequestId() {
+		// JoeSnmp does not expose request-id for v1 TRAP PDU
+		return 0;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder("[");
+		sb.append("Version=").append(getVersion())
+			.append(", Agent-Addr=").append(getTrapAddress().getHostAddress())
+			.append(", Length=").append(getPduLength())
+			.append(", Identity=").append(getTrapIdentity().toString())
+			.append("]");
+		return sb.toString();
+	}
 }

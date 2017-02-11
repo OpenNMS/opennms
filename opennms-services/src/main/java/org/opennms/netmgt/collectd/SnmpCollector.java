@@ -34,11 +34,11 @@ import java.util.Date;
 import java.util.Map;
 
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -56,10 +56,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
  */
-public class SnmpCollector implements ServiceCollector {
-    
+public class SnmpCollector extends AbstractLegacyServiceCollector {
+
     private static final Logger LOG = LoggerFactory.getLogger(SnmpCollector.class);
-    
+
     /**
      * Name of monitored service.
      */

@@ -33,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,8 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
@@ -60,6 +63,8 @@ import com.google.common.collect.Lists;
  * @author jwhite
  */
 public class TopologyIT extends OpenNMSSeleniumTestCase {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TopologyIT.class);
 
     private TopologyUIPage topologyUiPage;
 
@@ -159,7 +164,12 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         public void select() {
-            getElement().findElement(By.xpath("//*[@class='svgIconOverlay']")).click();
+            testCase.waitUntil(null, null, new Callable<Boolean>() {
+                @Override public Boolean call() throws Exception {
+                    getElement().findElement(By.xpath("//*[@class='svgIconOverlay']")).click();
+                    return true;
+                }
+            });
         }
 
         private WebElement getElement() {
@@ -182,6 +192,30 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             } finally {
                 testCase.setImplicitWait();
             }
+        }
+
+        public PingWindow ping() {
+            return new PingWindow(testCase, contextMenu()).open();
+        }
+    }
+
+    public static class PingWindow {
+        private final OpenNMSSeleniumTestCase testCase;
+        private final ContextMenu contextMenu;
+
+        private PingWindow(OpenNMSSeleniumTestCase testCase, ContextMenu contextMenu) {
+            this.testCase = Objects.requireNonNull(testCase);
+            this.contextMenu = Objects.requireNonNull(contextMenu);
+        }
+
+        private PingWindow open() {
+            contextMenu.click("Ping");
+            testCase.findElementByXpath("//div[@class='popupContent']//div[@class='v-window-header' and contains(text(), 'Ping')]");
+            return this;
+        }
+
+        public void close() {
+            testCase.findElementByXpath("//div[@class='v-window-closebox']").click();
         }
     }
 
@@ -275,14 +309,17 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             resetMenu();
             Actions actions = new Actions(testCase.m_driver);
             for (String label : labels) {
-                WebElement menuElement = getMenubarElement(label);
-                actions.moveToElement(menuElement);
-                menuElement.click();
-                // we should wait, otherwise the menu has not yet updated
                 try {
+                    WebElement menuElement = getMenubarElement(label);
+                    actions.moveToElement(menuElement);
+                    menuElement.click();
+                    // we should wait, otherwise the menu has not yet updated
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     throw Throwables.propagate(e);
+                } catch (Throwable e) {
+                    LOG.error("Unexpected exception while clicking on menu item {}", label, e);
+                    throw e;
                 }
             }
             return this;
@@ -307,10 +344,20 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         public TopologyUIPage setAutomaticRefresh(boolean enabled) {
+            LOG.info("setAutomaticRefresh: {} refresh", enabled ? "enabling" : "disabling");
             boolean alreadyEnabled = isMenuItemChecked("Automatic Refresh", "View");
             if ((alreadyEnabled && !enabled) || (!alreadyEnabled && enabled)) {
+                LOG.info("setAutomaticRefresh: toggling setting to {} refresh", enabled ? "enable" : "disable");
                 clickOnMenuItemsWithLabels("View", "Automatic Refresh");
+            } else {
+                LOG.info("setAutomaticRefresh: refresh is already {}", enabled ? "enabled" : "disabled");
             }
+            return this;
+        }
+
+        public TopologyUIPage refreshNow() {
+            testCase.findElementById("refreshNow").click();
+            waitForTransition();
             return this;
         }
 
@@ -599,6 +646,34 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             .setAutomaticRefresh(true)
             .setAutomaticRefresh(false)
             .setAutomaticRefresh(true);
+    }
+
+    // Verifies that the ping operation is available. See NMS-9019
+    @Test
+    public void verifyPingOperation() {
+        // Create Dummy Node
+        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
+                "<scan-interval>1d</scan-interval>\n" +
+                "<detectors/>\n" +
+                "<policies/>\n" +
+                "</foreign-source>";
+        createForeignSource(REQUISITION_NAME, foreignSourceXML);
+        final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
+                "   <node foreign-id=\"tests\" node-label=\"Dummy Node\">" +
+                "       <interface ip-addr=\"127.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "</model-import>";
+        createRequisition(REQUISITION_NAME, requisitionXML, 1);
+
+        // Find Node and try select ping from context menu
+        topologyUiPage.selectTopologyProvider(TopologyProvider.ENLINKD);
+        topologyUiPage.clearFocus();
+        topologyUiPage.refreshNow();
+        topologyUiPage.search("Dummy Node").selectItemThatContains("Dummy Node");
+        PingWindow pingWindow = topologyUiPage.findVertex("Dummy Node").ping();
+        pingWindow.close();
     }
 
     /**

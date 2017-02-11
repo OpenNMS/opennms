@@ -35,7 +35,7 @@ import com.vaadin.annotations.StyleSheet;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 
 @JavaScript({
-        "theme://leaflet/leaflet.js",
+        "theme://leaflet/leaflet-src.js",
         "theme://js/location-component_connector.js"
 })
 @StyleSheet(

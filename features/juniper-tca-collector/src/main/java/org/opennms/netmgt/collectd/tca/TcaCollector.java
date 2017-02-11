@@ -38,11 +38,11 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collectd.tca.dao.TcaDataCollectionConfigDao;
+import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class TcaCollector implements ServiceCollector {
+public class TcaCollector extends AbstractLegacyServiceCollector {
 	private static final Logger LOG = LoggerFactory.getLogger(TcaCollector.class);
 
 	/** The TCA Data Collection Configuration DAO. */

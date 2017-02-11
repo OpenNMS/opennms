@@ -24,7 +24,7 @@ include::text/surveillance-view.adoc[]
 include::text/dashboard.adoc[]
 
 [[gu-bsm]]
-== Busines Service Monitoring
+== Business Service Monitoring
 include::text/bsm/introduction.adoc[]
 include::text/bsm/business-service-hierarchy.adoc[]
 include::text/bsm/operational-status.adoc[]

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -45,14 +46,13 @@ import org.opennms.core.wsman.exceptions.InvalidResourceURI;
 import org.opennms.core.wsman.exceptions.WSManException;
 import org.opennms.core.wsman.utils.ResponseHandlingUtils;
 import org.opennms.core.wsman.utils.RetryNTimesLoop;
+import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
-import org.opennms.netmgt.collection.support.builder.AttributeType;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.GenericTypeResourceWithoutInstance;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.netmgt.config.api.ResourceTypesDao;
@@ -81,7 +81,7 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
-public class WsManCollector implements ServiceCollector {
+public class WsManCollector extends AbstractLegacyServiceCollector {
     private static final Logger LOG = LoggerFactory.getLogger(WsManCollector.class);
 
     private WSManClientFactory m_factory = new CXFWSManClientFactory();
@@ -155,13 +155,22 @@ public class WsManCollector implements ServiceCollector {
     private void collectGroupUsing(Group group, CollectionAgent agent, WSManClient client, int retries, CollectionSetBuilder builder) throws CollectionException {
         // Determine the appropriate resource type
         final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
+        final AtomicInteger instanceId = new AtomicInteger();
         Supplier<Resource> resourceSupplier = () -> nodeResource;
         if (!"node".equalsIgnoreCase(group.getResourceType())) {
             final ResourceType resourceType = m_resourceTypesDao.getResourceTypeByName(group.getResourceType());
             if (resourceType == null) {
                 throw new CollectionException("No resource type found with name '" + group.getResourceType() + "'.");
             }
-            resourceSupplier = () -> new GenericTypeResourceWithoutInstance(nodeResource, resourceType);
+            resourceSupplier = () -> {
+                // Generate a unique instance for each node in each group to ensure
+                // that the attributes are grouped together properly.
+                // Since these instances have no real meaning, a storage strategy
+                // similar to the SiblingColumnStorageStrategy should be used instead
+                // of the IndexStorageStrategy.
+                final String instance = String.format("%s%d", group.getName(), instanceId.getAndIncrement());
+                return new GenericTypeResource(nodeResource, resourceType, instance);
+            };
         }
         if (LOG.isDebugEnabled()) {
             LOG.debug("Using resource {} for group named {}", resourceSupplier.get(), group.getName());
@@ -204,13 +213,6 @@ public class WsManCollector implements ServiceCollector {
 
             // Associate the values with the configured attributes
             for (Attrib attrib : group.getAttrib()) {
-                AttributeType type = AttributeType.getByName(attrib.getType());
-                if (type == null) {
-                    LOG.error("Unsupported attribute type: {} for attribute: {} in group: {}. Value will be skipped.",
-                            attrib.getType(), attrib.getName(), group.getName());
-                    continue;
-                }
-
                 if (attrib.getFilter() != null && !ResponseHandlingUtils.matchesFilter(attrib.getFilter(), elementValues)) {
                     continue;
                 }
@@ -235,19 +237,7 @@ public class WsManCollector implements ServiceCollector {
                     continue;
                 }
 
-                if (type.isNumeric()) {
-                    Double value;
-                    try {
-                        value = Double.parseDouble(valueAsString);
-                    } catch (NumberFormatException e) {
-                        LOG.warn("Value '{}' for attribute: {} in group: {} could not be parsed into a number. Value will be skipped.",
-                                valueAsString, attrib.getName(), group.getName());
-                        value = Double.NaN;
-                    }
-                    builder.withNumericAttribute(resource, group.getName(), attrib.getAlias(), value, type);
-                } else {
-                    builder.withStringAttribute(resource, group.getName(), attrib.getAlias(), valueAsString);
-                }
+                builder.withAttribute(resource, group.getName(), attrib.getAlias(), valueAsString, attrib.getType());
             }
         }
     }

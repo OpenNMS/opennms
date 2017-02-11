@@ -39,8 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
-import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.SinkModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +55,7 @@ import com.google.common.util.concurrent.Striped;
  * @param <S> individual message
  * @param <T> aggregated message (i.e. bucket)
  */
-public class Aggregator<S extends Message, T extends Message> implements AutoCloseable, Runnable {
+public class Aggregator<S, T> implements AutoCloseable, Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(Aggregator.class);
 
@@ -90,16 +88,15 @@ public class Aggregator<S extends Message, T extends Message> implements AutoClo
 
     private final Striped<Lock> lockStripes = Striped.lock(NUM_STRIPE_LOCKS);
 
-    public Aggregator(SinkModule<S, T> module, AggregatingMessageProducer<S,T> messageProducer) {
-        Objects.requireNonNull(module);
+    public Aggregator(String id, AggregationPolicy<S,T> policy, AggregatingMessageProducer<S,T> messageProducer) {
+        aggregationPolicy = Objects.requireNonNull(policy);
         this.messageProducer = Objects.requireNonNull(messageProducer);
-        aggregationPolicy = Objects.requireNonNull(module.getAggregationPolicy());
         completionSize = aggregationPolicy.getCompletionSize();
         completionIntervalMs = aggregationPolicy.getCompletionIntervalMs();
 
-        if (aggregationPolicy.getCompletionIntervalMs() > 0) {
+        if (completionIntervalMs > 0) {
             // Periodically verify the buckets, and flush those that are older than completionIntervalMs
-            flushTimer = new Timer(String.format("SinkAggregatorFlush-%s", module.getId()));
+            flushTimer = new Timer(String.format("AggregatorFlush-%s", id));
             flushTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
@@ -108,7 +105,7 @@ public class Aggregator<S extends Message, T extends Message> implements AutoClo
                     } catch (Throwable t) {
                         // The timer may abort if we throw, so we catch here to make
                         // sure that the timer keeps running
-                        LOG.error("An error occurred while flushing one or more aggregates in module '{}'.", module, t);
+                        LOG.error("An error occurred while flushing one or more aggregates in module '{}'.", id, t);
                     }
                 }
             }, completionIntervalMs, completionIntervalMs);

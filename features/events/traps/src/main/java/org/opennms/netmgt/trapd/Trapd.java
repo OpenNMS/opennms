@@ -28,10 +28,6 @@
 
 package org.opennms.netmgt.trapd;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.slf4j.Logger;
@@ -77,7 +73,7 @@ public class Trapd extends AbstractServiceDaemon {
      * The class instance used to receive new events from for the system.
      */
     @Autowired
-    private TrapReceiver m_trapReceiver;
+    private TrapListener m_trapListener;
 
     /**
      * <P>
@@ -117,7 +113,7 @@ public class Trapd extends AbstractServiceDaemon {
 
         LOG.debug("start: Initializing the Trapd receiver");
 
-        m_trapReceiver.start();
+        m_trapListener.start();
 
         m_status = RUNNING;
 
@@ -136,7 +132,7 @@ public class Trapd extends AbstractServiceDaemon {
         m_status = PAUSE_PENDING;
 
         LOG.debug("pause: Calling pause on trap receiver");
-        m_trapReceiver.stop();
+        m_trapListener.stop();
 
         m_status = PAUSED;
 
@@ -155,7 +151,7 @@ public class Trapd extends AbstractServiceDaemon {
         m_status = RESUME_PENDING;
 
         LOG.debug("resume: Calling resume on trap receiver");
-        m_trapReceiver.start();
+        m_trapListener.start();
 
         m_status = RUNNING;
 
@@ -173,7 +169,7 @@ public class Trapd extends AbstractServiceDaemon {
         // shutdown and wait on the background processing thread to exit.
         LOG.debug("stop: Closing communication paths");
 
-        m_trapReceiver.stop();
+        m_trapListener.stop();
 
         m_status = STOPPED;
 
@@ -193,47 +189,4 @@ public class Trapd extends AbstractServiceDaemon {
     public static String getLoggingCategory() {
         return LOG4J_CATEGORY;
     }
-    
-    public long getTrapsReceived() {
-        return TrapQueueProcessor.getTrapsReceived();
-    }
-
-    public long getV1TrapsReceived() {
-        return TrapQueueProcessor.getV1TrapsReceived();
-    }
-
-    public long getV2cTrapsReceived() {
-        return TrapQueueProcessor.getV2cTrapsReceived();
-    }
-
-    public long getV3TrapsReceived() {
-        return TrapQueueProcessor.getV3TrapsReceived();
-    }
-    
-    public long getVUnknownTrapsReceived() {
-        return TrapQueueProcessor.getVersionUnknownTrapsReceived();
-    }
-
-    public long getTrapsDiscarded() {
-        return TrapQueueProcessor.getTrapsDiscarded();
-    }
-
-    public long getTrapsErrored() {
-        return TrapQueueProcessor.getTrapsErrored();
-    }
-
-	/**
-	 * @return the m_trapReceiver
-	 */
-	public TrapReceiver getTrapReceiver() {
-		return m_trapReceiver;
-	}
-
-	/**
-	 * @param m_trapReceiver the m_trapReceiver to set
-	 */
-	public void setTrapReceiver(TrapReceiver trapReceiver) {
-		this.m_trapReceiver = trapReceiver;
-	}
-
 }

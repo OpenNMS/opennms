@@ -1332,7 +1332,7 @@
     <commonsMath3Version>3.5</commonsMath3Version>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
     <c3p0Version>0.9.5.2</c3p0Version>
-    <curatorVersion>3.1.0</curatorVersion>
+    <curatorVersion>3.2.1</curatorVersion>
     <cxfVersion>3.1.7</cxfVersion>
     <dnsjavaVersion>2.1.3</dnsjavaVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
@@ -1393,7 +1393,7 @@
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
-    <wsmanVersion>1.1.1</wsmanVersion>
+    <wsmanVersion>1.2.2</wsmanVersion>
 
     <springVersion>4.0.7.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
@@ -1759,6 +1759,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.collection</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.db</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
@@ -1929,7 +1935,22 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.collectors</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.client-rpc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
         <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.test-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2442,6 +2463,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-icmp-jna</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-icmp-best</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

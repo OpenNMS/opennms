@@ -32,7 +32,7 @@
             </mbean>
 
 
-            <!-- Route/seda stats for syslogListen -->
+            <!-- Route stats for syslogListen -->
             <mbean name="Syslog Listener" objectname="org.apache.camel:context=syslogdListenerCamelNettyContext,type=routes,name=&quot;syslogListen&quot;">
                 <attrib name="ExchangesCompleted" alias="SlogListComplete" type="counter"/>
                 <attrib name="ExchangesFailed" alias="SlogListFailed" type="counter"/>
@@ -42,81 +42,6 @@
                 <attrib name="MinProcessingTime" alias="SlogListMinProc" type="gauge"/>
                 <attrib name="LastProcessingTime" alias="SlogListLastProc" type="gauge"/>
                 <attrib name="TotalProcessingTime" alias="SlogListTotProc" type="counter"/>
-            </mbean>
-
-            <!-- Route/seda stats for syslogMarshal -->
-            <mbean name="Syslog Marshaller" objectname="org.apache.camel:context=syslogdHandlerMinionContext,type=routes,name=&quot;syslogMarshal&quot;">
-                <attrib name="ExchangesCompleted" alias="SlogMarComplete" type="counter"/>
-                <attrib name="ExchangesFailed" alias="SlogMarFailed" type="counter"/>
-                <attrib name="ExchangesTotal" alias="SlogMarTotal" type="counter"/>
-                <attrib name="MaxProcessingTime" alias="SlogMarMaxProc" type="gauge"/>
-                <attrib name="MeanProcessingTime" alias="SlogMarMeanProc" type="gauge"/>
-                <attrib name="MinProcessingTime" alias="SlogMarMinProc" type="gauge"/>
-                <attrib name="LastProcessingTime" alias="SlogMarLastProc" type="gauge"/>
-                <attrib name="TotalProcessingTime" alias="SlogMarTotProc" type="counter"/>
-            </mbean>
-
-            <!-- Route/seda stats for syslogSendJms -->
-            <mbean name="Syslog JMS Sender" objectname="org.apache.camel:context=syslogdHandlerMinionContext,type=routes,name=&quot;syslogSendJms&quot;">
-                <attrib name="ExchangesCompleted" alias="SlogJmsComplete" type="counter"/>
-                <attrib name="ExchangesFailed" alias="SlogJmsFailed" type="counter"/>
-                <attrib name="ExchangesTotal" alias="SlogJmsTotal" type="counter"/>
-                <attrib name="MaxProcessingTime" alias="SlogJmsMaxProc" type="gauge"/>
-                <attrib name="MeanProcessingTime" alias="SlogJmsMeanProc" type="gauge"/>
-                <attrib name="MinProcessingTime" alias="SlogJmsMinProc" type="gauge"/>
-                <attrib name="LastProcessingTime" alias="SlogJmsLastProc" type="gauge"/>
-                <attrib name="TotalProcessingTime" alias="SlogJmsTotProc" type="counter"/>
-            </mbean>
-
-            <!-- Route/seda stats for syslogSendKafka -->
-            <mbean name="Syslog Kafka Sender" objectname="org.apache.camel:context=syslogdHandlerKafkaContext,type=routes,name=&quot;syslogSendKafka&quot;">
-                <attrib name="ExchangesCompleted" alias="SlogKafComplete" type="counter"/>
-                <attrib name="ExchangesFailed" alias="SlogKafFailed" type="counter"/>
-                <attrib name="ExchangesTotal" alias="SlogKafTotal" type="counter"/>
-                <attrib name="MaxProcessingTime" alias="SlogKafMaxProc" type="gauge"/>
-                <attrib name="MeanProcessingTime" alias="SlogKafMeanProc" type="gauge"/>
-                <attrib name="MinProcessingTime" alias="SlogKafMinProc" type="gauge"/>
-                <attrib name="LastProcessingTime" alias="SlogKafLastProc" type="gauge"/>
-                <attrib name="TotalProcessingTime" alias="SlogKafTotProc" type="counter"/>
-            </mbean>
-
-
-            <!-- Route/seda stats for trapMarshal -->
-            <mbean name="Trap Marshaller" objectname="org.apache.camel:context=trapdHandlerMinionContext,type=routes,name=&quot;trapMarshal&quot;">
-                <!-- TODO: Make aliases unique -->
-                <attrib name="ExchangesCompleted" alias="TrapMarComplete" type="counter"/>
-                <attrib name="ExchangesFailed" alias="TrapMarFailed" type="counter"/>
-                <attrib name="ExchangesTotal" alias="TrapMarTotal" type="counter"/>
-                <attrib name="MaxProcessingTime" alias="TrapMarMaxProc" type="gauge"/>
-                <attrib name="MeanProcessingTime" alias="TrapMarMeanProc" type="gauge"/>
-                <attrib name="MinProcessingTime" alias="TrapMarMinProc" type="gauge"/>
-                <attrib name="LastProcessingTime" alias="TrapMarLastProc" type="gauge"/>
-                <attrib name="TotalProcessingTime" alias="TrapMarTotProc" type="counter"/>
-            </mbean>
-
-            <!-- Route/seda stats for trapSendJms -->
-            <mbean name="Trap JMS Sender" objectname="org.apache.camel:context=trapdHandlerMinionContext,type=routes,name=&quot;trapSendJms&quot;">
-                <!-- TODO: Make aliases unique -->
-                <attrib name="ExchangesCompleted" alias="TrapJmsComplete" type="counter"/>
-                <attrib name="ExchangesFailed" alias="TrapJmsFailed" type="counter"/>
-                <attrib name="ExchangesTotal" alias="TrapJmsTotal" type="counter"/>
-                <attrib name="MaxProcessingTime" alias="TrapJmsMaxProc" type="gauge"/>
-                <attrib name="MeanProcessingTime" alias="TrapJmsMeanProc" type="gauge"/>
-                <attrib name="MinProcessingTime" alias="TrapJmsMinProc" type="gauge"/>
-                <attrib name="LastProcessingTime" alias="TrapJmsLastProc" type="gauge"/>
-                <attrib name="TotalProcessingTime" alias="TrapJmsTotProc" type="counter"/>
-            </mbean>
-
-            <!-- Route/seda stats for trapSendKafka -->
-            <mbean name="Trap Kafka Sender" objectname="org.apache.camel:context=trapdHandlerKafkaContext,type=routes,name=&quot;trapSendKafka&quot;">
-                <attrib name="ExchangesCompleted" alias="TrapKafComplete" type="counter"/>
-                <attrib name="ExchangesFailed" alias="TrapKafFailed" type="counter"/>
-                <attrib name="ExchangesTotal" alias="TrapKafTotal" type="counter"/>
-                <attrib name="MaxProcessingTime" alias="TrapKafMaxProc" type="gauge"/>
-                <attrib name="MeanProcessingTime" alias="TrapKafMeanProc" type="gauge"/>
-                <attrib name="MinProcessingTime" alias="TrapKafMinProc" type="gauge"/>
-                <attrib name="LastProcessingTime" alias="TrapKafLastProc" type="gauge"/>
-                <attrib name="TotalProcessingTime" alias="TrapKafTotProc" type="counter"/>
             </mbean>
 
 
@@ -133,13 +58,56 @@
             </mbean>
 
 
-            <!-- TODO: Collect route stats for RPC.Server.Discover (when available) -->
+            <!-- Route stats for RPC.Server.DNS -->
+            <mbean name="DNS RPC Server" objectname="org.apache.camel:context=org.opennms.core.ipc.rpc.camel-impl,type=routes,name=&quot;RPC.Server.DNS&quot;">
+                <attrib name="ExchangesCompleted" alias="DnsComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="DnsFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="DnsTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="DnsMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="DnsMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="DnsMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="DnsLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="DnsTotProc" type="counter"/>
+            </mbean>
 
 
-            <!-- TODO: Collect route stats for RPC.Server.DNS (when available) -->
+            <!-- Route stats for RPC.Server.PING -->
+            <mbean name="Ping RPC Server" objectname="org.apache.camel:context=org.opennms.core.ipc.rpc.camel-impl,type=routes,name=&quot;RPC.Server.PING&quot;">
+                <attrib name="ExchangesCompleted" alias="PingComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="PingFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="PingTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="PingMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="PingMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="PingMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="PingLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="PingTotProc" type="counter"/>
+            </mbean>
 
 
-            <!-- TODO: Collect route stats for RPC.Server.Poll (when available) -->
+            <!-- Route stats for RPC.Server.PING-SWEEP -->
+            <mbean name="Ping Sweep RPC Server" objectname="org.apache.camel:context=org.opennms.core.ipc.rpc.camel-impl,type=routes,name=&quot;RPC.Server.PING-SWEEP&quot;">
+                <attrib name="ExchangesCompleted" alias="SweepComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="SweepFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="SweepTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="SweepMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="SweepMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="SweepMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="SweepLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="SweepTotProc" type="counter"/>
+            </mbean>
+
+
+            <!-- Route stats for RPC.Server.Poller -->
+            <mbean name="Poller RPC Server" objectname="org.apache.camel:context=org.opennms.core.ipc.rpc.camel-impl,type=routes,name=&quot;RPC.Server.Poller&quot;">
+                <attrib name="ExchangesCompleted" alias="PollComplete" type="counter"/>
+                <attrib name="ExchangesFailed" alias="PollFailed" type="counter"/>
+                <attrib name="ExchangesTotal" alias="PollTotal" type="counter"/>
+                <attrib name="MaxProcessingTime" alias="PollMaxProc" type="gauge"/>
+                <attrib name="MeanProcessingTime" alias="PollMeanProc" type="gauge"/>
+                <attrib name="MinProcessingTime" alias="PollMinProc" type="gauge"/>
+                <attrib name="LastProcessingTime" alias="PollLastProc" type="gauge"/>
+                <attrib name="TotalProcessingTime" alias="PollTotProc" type="counter"/>
+            </mbean>
 
 
             <!-- Route stats for RPC.Server.SNMP -->

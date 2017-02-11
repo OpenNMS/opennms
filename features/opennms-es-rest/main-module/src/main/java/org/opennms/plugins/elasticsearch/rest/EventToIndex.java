@@ -28,47 +28,70 @@
 
 package org.opennms.plugins.elasticsearch.rest;
 
-import io.searchbox.client.JestClient;
-import io.searchbox.client.JestResult;
-import io.searchbox.core.DocumentResult;
-import io.searchbox.core.Index;
-import io.searchbox.core.Update;
-import io.searchbox.indices.CreateIndex;
-
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.opennms.netmgt.events.api.EventParameterUtils;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.opennms.plugins.elasticsearch.rest.NodeCache;
+import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EventToIndex {
+import io.searchbox.action.BulkableAction;
+import io.searchbox.client.JestClient;
+import io.searchbox.client.JestResult;
+import io.searchbox.core.Bulk;
+import io.searchbox.core.BulkResult;
+import io.searchbox.core.BulkResult.BulkResultItem;
+import io.searchbox.core.DocumentResult;
+import io.searchbox.core.Index;
+import io.searchbox.core.Update;
+import io.searchbox.indices.CreateIndex;
+
+public class EventToIndex implements AutoCloseable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(EventToIndex.class);
 
-	public static final String ALARM_INDEX_NAME = "opennms-alarms";
-	public static final String ALARM_EVENT_INDEX_NAME = "opennms-events-alarmchange";
-	public static final String EVENT_INDEX_NAME = "opennms-events-raw";
-	public static final String ALARM_INDEX_TYPE = "alarmdata";
-	public static final String EVENT_INDEX_TYPE = "eventdata";
+	public static enum Indices {
+		ALARMS,
+		ALARM_EVENTS,
+		EVENTS
+	}
+
+	@SuppressWarnings("serial")
+	public static final EnumMap<Indices,String> INDEX_NAMES = new EnumMap<Indices,String>(Indices.class) {{
+		this.put(Indices.ALARMS, "opennms-alarms");
+		this.put(Indices.ALARM_EVENTS, "opennms-events-alarmchange");
+		this.put(Indices.EVENTS, "opennms-events-raw");
+	}};
+
+	@SuppressWarnings("serial")
+	public static final EnumMap<Indices,String> INDEX_TYPES = new EnumMap<Indices,String>(Indices.class) {{
+		this.put(Indices.ALARMS, "alarmdata");
+		this.put(Indices.ALARM_EVENTS, "eventdata");
+		this.put(Indices.EVENTS, "eventdata");
+	}};
+
 
 	// stem of all alarm change notification uei's
+	// TODO: Move these into EventConstants
 	public static final String ALARM_NOTIFICATION_UEI_STEM = "uei.opennms.org/plugin/AlarmChangeNotificationEvent";
 
 	// uei definitions of alarm change events
+	// TODO: Move these into EventConstants
 	public static final String ALARM_DELETED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmDeleted";
 	public static final String ALARM_CREATED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/NewAlarmCreated";
 	public static final String ALARM_SEVERITY_CHANGED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmSeverityChanged";
@@ -95,10 +118,12 @@ public class EventToIndex {
 	public static final String ALARM_DELETED_TIME="alarmdeletedtime";
 
 	// uei definitions of memo change events
+	// TODO: Move these into EventConstants
 	public static final String STICKY_MEMO_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/StickyMemoUpdate";
 	public static final String JOURNAL_MEMO_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/JournalMemoUpdate";
 
 	// param names in memo change events
+	// TODO: Move these into EventConstants
 	public static final String MEMO_VALUES_PARAM="memovalues";
 	public static final String MEMO_ALARMID_PARAM="alarmid";
 	public static final String MEMO_BODY_PARAM="body";
@@ -106,6 +131,8 @@ public class EventToIndex {
 	public static final String MEMO_REDUCTIONKEY_PARAM="reductionkey";
 
 	private boolean logEventDescription=false;
+
+	private boolean logAllEvents=false;
 
 	private boolean archiveRawEvents=true;
 
@@ -139,6 +166,14 @@ public class EventToIndex {
 
 	public void setLogEventDescription(boolean logEventDescription) {
 		this.logEventDescription = logEventDescription;
+	}
+
+	public boolean isLogAllEvents() {
+		return logAllEvents;
+	}
+
+	public void setLogAllEvents(boolean logAllEvents) {
+		this.logAllEvents = logAllEvents;
 	}
 
 	public NodeCache getNodeCache() {
@@ -198,48 +233,203 @@ public class EventToIndex {
 	}
 
 
-
 	/**
 	 * returns a singleton jest client from factory for use by this class
 	 * @return
 	 */
 	private JestClient getJestClient(){
-		if (jestClient==null) {
+		if (jestClient == null) {
 			synchronized(this){
-				if (jestClient==null){
-					if (restClientFactory==null) throw new RuntimeException("JestClientFactory must be set");
-					jestClient= restClientFactory.getJestClient();
+				if (jestClient == null){
+					if (restClientFactory == null) throw new RuntimeException("JestClientFactory must be set");
+					jestClient = restClientFactory.getJestClient();
 				}
 			}
 		}
 		return jestClient;
 	}
 
-	public void destroy(){
-		if (jestClient!=null)
-			try{
-				jestClient.shutdownClient();
-			}catch (Exception e){}
-		jestClient=null;
+	@Override
+	public void close(){
+		if (jestClient != null) {
+			synchronized(this){
+				try{
+					jestClient.shutdownClient();
+				} catch (Throwable e) {
+					LOG.warn("Unexpected exception while shutting down REST client", e);
+				}
+				jestClient = null;
+			}
+		}
 	}
 
+	/**
+	 * @param events
+	 */
+	public void forwardEvents(final List<Event> events) {
+
+		final List<BulkableAction<DocumentResult>> actions = convertEventsToEsActions(events);
+
+		if (actions != null && actions.size() > 0) {
+			// Split the actions up by index
+			for (Map.Entry<String,List<BulkableAction<DocumentResult>>> entry : actions.stream().collect(Collectors.groupingBy(BulkableAction::getIndex)).entrySet()) {
+
+				try {
+					final List<BulkableAction<DocumentResult>> actionList = entry.getValue();
+
+					if (entry.getValue().size() == 1) {
+						// Not bulk
+						final BulkableAction<DocumentResult> action = actionList.get(0);
+						executeSingleAction(getJestClient(), action);
+					} else {
+						// The type will be identical for all events in the same index
+						final String type = actionList.get(0).getType();
+
+						final Bulk.Builder builder = new Bulk.Builder()
+								.defaultIndex(entry.getKey())
+								.defaultType(type);
+
+						// Add all actions to the bulk operation
+						builder.addAction(actionList);
+
+						final Bulk bulk = builder.build();
+
+						BulkResult result = getJestClient().execute(bulk);
+
+						// If the bulk command fails completely...
+						if (!result.isSucceeded()) {
+							logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+
+							// Try and issue the bulk actions individually as a fallback
+							for (BulkableAction<DocumentResult> action : entry.getValue()) {
+								executeSingleAction(getJestClient(), action);
+							}
+
+							continue;
+						}
+
+						// Check the return codes of the results
+						List<BulkResultItem> items = result.getItems();
+						boolean all404s = true;
+						for (BulkResultItem item : items) {
+							if (item.status != 404) {
+								all404s = false;
+								break;
+							}
+						}
+
+						if(all404s){
+							// index doesn't exist for upsert command so create new index and try again
+
+							if(LOG.isDebugEnabled()) {
+								LOG.debug("index name "+entry.getKey() + " doesn't exist, creating new index");
+							}
+
+							createIndex(getJestClient(), entry.getKey(), type);
+
+							result = getJestClient().execute(bulk);
+						}
+
+						// If the bulk command fails completely...
+						if (!result.isSucceeded()) {
+							logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+
+							// Try and issue the bulk actions individually as a fallback
+							for (BulkableAction<DocumentResult> action : entry.getValue()) {
+								executeSingleAction(getJestClient(), action);
+							}
+
+							continue;
+						}
+
+						// Log any unsuccessful completions as errors
+						for (BulkResultItem item : result.getItems()) {
+							if(item.status != 200){
+								logEsError(item.operation, entry.getKey(), item.type, "none", item.status, item.error);
+							} else if(LOG.isDebugEnabled()) {
+								// If debug is enabled, log all completions
+								logEsDebug(item.operation, entry.getKey(), item.type, "none", item.status, item.error);
+							}
+						}
+					}
+				} catch (Throwable ex){
+					LOG.error("Unexpected problem sending event to Elasticsearch", ex);
+					// Shutdown the ES client, it will be recreated as needed
+					close();
+				}
+			}
+		}
+	}
+
+	private static final void logEsError(String operation, String index, String type, String result, int responseCode, String errorMessage) {
+		LOG.error("Error while performing {} on Elasticsearch index: {}, type: {}\n" +
+				"   received result: {}\n" + 
+				"   response code: {}\n" + 
+				"   error message: {}",
+				operation, index, type, result, responseCode, errorMessage
+		);
+	}
+
+	private static final void logEsDebug(String operation, String index, String type, String result, int responseCode, String errorMessage) {
+		LOG.debug("Performed {} on Elasticsearch index: {}, type: {}\n" +
+				"   received result: {}\n" + 
+				"   response code: {}\n" + 
+				"   error message: {}",
+				operation, index, type, result, responseCode, errorMessage
+		);
+	}
+
+	/**
+	 * This executes single Elasticsearch actions, creating indices as needed.
+	 * 
+	 * @param client
+	 * @param action
+	 * @throws IOException
+	 */
+	private static void executeSingleAction(JestClient client, BulkableAction<DocumentResult> action) throws IOException {
+
+		DocumentResult result = client.execute(action);
+
+		if(result.getResponseCode() == 404){
+			// index doesn't exist for upsert command so create new index and try again
+
+			if(LOG.isDebugEnabled()) {
+				logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+				LOG.debug("index name "+action.getIndex() + " doesn't exist, creating new index");
+			}
+
+			createIndex(client, action.getIndex(), action.getType());
+
+			result = client.execute(action);
+		}
+
+		if(!result.isSucceeded()){
+			logEsError(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+		} else if(LOG.isDebugEnabled()) {
+			logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+		}
+	}
 
 	/** 
-	 * this handles the incoming event and deals with it as an alarm change event or a normal event
+	 * <p>This method converts events into a sequence of Elasticsearch index/update commands.
+	 * Three types of actions are possible:</p>
+	 * <ul>
+	 * <li>Updating an alarm document based on an {@link #ALARM_NOTIFICATION_UEI_STEM} event</li>
+	 * <li>Indexing the {@link #ALARM_NOTIFICATION_UEI_STEM} events</li>
+	 * <li>Indexing all other events</li>
+	 * </ul>
+	 * 
 	 * @param event
 	 */
-	public void forwardEvent(Event event){
+	private List<BulkableAction<DocumentResult>> convertEventsToEsActions(List<Event> events) {
 
-		try{
+		final List<BulkableAction<DocumentResult>> retval = new ArrayList<>();
+
+		for (Event event : events) {
+
 			maybeRefreshCache(event);
 
-			// handling uei definitions of alarm change events
-
-			String uei=event.getUei();
-			Update alarmUpdate=null;
-			Index eventIndex=null;
-			DocumentResult alarmIndexresult=null;
-			DocumentResult eventIndexresult=null;
+			final String uei = event.getUei();
 
 			// if alarm change notification then handle change
 			// change alarm index and add event to alarm change event index
@@ -253,181 +443,58 @@ public class EventToIndex {
 				} else {
 					// handle alarm change events
 
-					if (ALARM_CREATED_EVENT.equals(uei)){
-						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Created Event to ES:"+event.toString());
-
-					} else if( ALARM_DELETED_EVENT.equals(uei)){
-						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Deleted Event to ES:"+event.toString());
-
-					} else if (ALARM_SEVERITY_CHANGED_EVENT.equals(uei)){
-						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Changed Severity Event to ES:"+event.toString());
-
-					} else if (ALARM_CLEARED_EVENT.equals(uei)){
-						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Cleared Event to ES:"+event.toString());
-
-					} else if (ALARM_ACKNOWLEDGED_EVENT.equals(uei)){
-						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Acknowledged Event to ES:"+event.toString());
-
-					} else if (ALARM_UNACKNOWLEDGED_EVENT.equals(uei)){
-						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Unacknowledged Event to ES:"+event.toString());
-
-					} else if (ALARM_SUPPRESSED_EVENT.equals(uei)){
-						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Suppressed Event to ES:"+event.toString());
-
-					} else if (ALARM_UNSUPPRESSED_EVENT.equals(uei)){
-						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Unsuppressed Event to ES:"+event.toString());
-
-					} else if (ALARM_TROUBLETICKET_STATE_CHANGE_EVENT.equals(uei)){
-						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm TroubleTicked state changed Event to ES:"+event.toString());
-
-					} else if (ALARM_CHANGED_EVENT.equals(uei)){
-						if (LOG.isDebugEnabled()) LOG.debug("Sending Alarm Changed Event to ES:"+event.toString());
-
+					if (LOG.isDebugEnabled()) {
+						if (ALARM_CREATED_EVENT.equals(uei)){
+							LOG.debug("Sending Alarm Created Event to ES:"+event.toString());
+						} else if( ALARM_DELETED_EVENT.equals(uei)){
+							LOG.debug("Sending Alarm Deleted Event to ES:"+event.toString());
+						} else if (ALARM_SEVERITY_CHANGED_EVENT.equals(uei)){
+							LOG.debug("Sending Alarm Changed Severity Event to ES:"+event.toString());
+						} else if (ALARM_CLEARED_EVENT.equals(uei)){
+							LOG.debug("Sending Alarm Cleared Event to ES:"+event.toString());
+						} else if (ALARM_ACKNOWLEDGED_EVENT.equals(uei)){
+							LOG.debug("Sending Alarm Acknowledged Event to ES:"+event.toString());
+						} else if (ALARM_UNACKNOWLEDGED_EVENT.equals(uei)){
+							LOG.debug("Sending Alarm Unacknowledged Event to ES:"+event.toString());
+						} else if (ALARM_SUPPRESSED_EVENT.equals(uei)){
+							LOG.debug("Sending Alarm Suppressed Event to ES:"+event.toString());
+						} else if (ALARM_UNSUPPRESSED_EVENT.equals(uei)){
+							LOG.debug("Sending Alarm Unsuppressed Event to ES:"+event.toString());
+						} else if (ALARM_TROUBLETICKET_STATE_CHANGE_EVENT.equals(uei)){
+							LOG.debug("Sending Alarm TroubleTicked state changed Event to ES:"+event.toString());
+						} else if (ALARM_CHANGED_EVENT.equals(uei)){
+							LOG.debug("Sending Alarm Changed Event to ES:"+event.toString());
+						}
 					}
 
 					if(archiveAlarms){
 						// if an alarm change event, use the alarm change fields to update the alarm index
-						alarmUpdate = populateAlarmIndexBodyFromAlarmChangeEvent(event, ALARM_INDEX_NAME, ALARM_INDEX_TYPE);
-						String alarmindexname=alarmUpdate.getIndex();
-
-						alarmIndexresult = getJestClient().execute(alarmUpdate);
-
-						if(alarmIndexresult.getResponseCode()==404){
-							// index doesn't exist for upsert command so create new index and try again
-
-							if(LOG.isDebugEnabled()) {
-								LOG.debug("trying to update alarm"
-										+ "\n   received search result: "+alarmIndexresult.getJsonString()
-										+ "\n   response code:" +alarmIndexresult.getResponseCode() 
-										+ "\n   error message: "+alarmIndexresult.getErrorMessage());
-								LOG.debug("index name "+alarmindexname + " doesnt exist creating new index");
-							}
-
-							// create new index
-							CreateIndex createIndex = new CreateIndex.Builder(alarmindexname).build();
-							JestResult result = getJestClient().execute(createIndex);
-							if(LOG.isDebugEnabled()) {
-								LOG.debug("created new alarm index:"+alarmindexname+" type:"+ ALARM_INDEX_TYPE
-										+ "\n   received search result: "+result.getJsonString()
-										+ "\n   response code:" +result.getResponseCode() 
-										+ "\n   error message: "+result.getErrorMessage());
-							}
-							alarmIndexresult = getJestClient().execute(alarmUpdate);
-						}
-
-						if(alarmIndexresult.getResponseCode()!=200){
-							LOG.error("Problem sending alarm to es index:" +alarmindexname+ " type:"+ ALARM_INDEX_TYPE
-									+ "\n   received search result: "+alarmIndexresult.getJsonString()
-									+ "\n   response code:" +alarmIndexresult.getResponseCode() 
-									+ "\n   error message: "+alarmIndexresult.getErrorMessage());
-						} else if(LOG.isDebugEnabled()) {
-							LOG.debug("Alarm sent to es index:" +alarmindexname+ " type:"+ ALARM_INDEX_TYPE
-									+ "\n   received search result: "+alarmIndexresult.getJsonString()
-									+ "\n   response code:" +alarmIndexresult.getResponseCode() 
-									+ "\n   error message: "+alarmIndexresult.getErrorMessage());
-
-						}
+						Update alarmUpdate = populateAlarmIndexBodyFromAlarmChangeEvent(event, INDEX_NAMES.get(Indices.ALARMS), INDEX_TYPES.get(Indices.ALARMS));
+						retval.add(alarmUpdate);
 					}
 				}
 
 				// save all Alarm Change Events including memo change events
 				if(archiveAlarmChangeEvents){
-					eventIndex = populateEventIndexBodyFromEvent(event, ALARM_EVENT_INDEX_NAME, EVENT_INDEX_TYPE);
-					String alarmeventindexname=eventIndex.getIndex();
-					eventIndexresult = getJestClient().execute(eventIndex);
-
-					if(eventIndexresult.getResponseCode()==404){
-						// index doesn't exist for upsert command so create new index first
-
-						if(LOG.isDebugEnabled()) {
-							LOG.debug("trying to update alarm event index"
-									+ "\n   received search result: "+eventIndexresult.getJsonString()
-									+ "\n   response code:" +eventIndexresult.getResponseCode() 
-									+ "\n   error message: "+eventIndexresult.getErrorMessage());
-							LOG.debug("index name "+alarmeventindexname + " doesnt exist creating new index");
-						}
-
-						// create new index
-						CreateIndex createIndex = new CreateIndex.Builder(alarmeventindexname).build();
-						JestResult result = getJestClient().execute(createIndex);
-						if(LOG.isDebugEnabled()) {
-							LOG.debug("created new alarm change event index:"+alarmeventindexname+" type:"+ EVENT_INDEX_TYPE
-									+ "\n   received search result: "+result.getJsonString()
-									+ "\n   response code:" +result.getResponseCode() 
-									+ "\n   error message: "+result.getErrorMessage());
-						}
-						eventIndexresult = getJestClient().execute(eventIndex);
-					}
-
-
-					if(eventIndexresult.getResponseCode()!=200){
-						LOG.error("Problem sending Alarm Event to es index:" +alarmeventindexname+ " type:"+ EVENT_INDEX_TYPE
-								+ "\n   received search result: "+alarmIndexresult.getJsonString()
-								+ "\n   response code:" +alarmIndexresult.getResponseCode() 
-								+ "\n   error message: "+alarmIndexresult.getErrorMessage());
-					} else if(LOG.isDebugEnabled()) {
-						LOG.debug("Alarm Event sent to es index:"+alarmeventindexname+" type:"+ EVENT_INDEX_TYPE
-								+ "\n   received search result: "+eventIndexresult.getJsonString()
-								+ "\n   response code:" +eventIndexresult.getResponseCode() 
-								+ "\n   error message: "+eventIndexresult.getErrorMessage());
-
-					}
+					Index eventIndex = populateEventIndexBodyFromEvent(event, INDEX_NAMES.get(Indices.ALARM_EVENTS), INDEX_TYPES.get(Indices.ALARM_EVENTS));
+					retval.add(eventIndex);
 				}
 
 			} else {
-				// else handle all other event types
-
+				// Handle all other event types
 				if(archiveRawEvents){
-					// only send events to ES which are persisted to database
-					if(event.getDbid()!=null && event.getDbid()!=0) {
-						if (LOG.isDebugEnabled()) LOG.debug("Sending Event to ES:"+event.toString());
-						// Send the event to the event forwarder
-						eventIndex = populateEventIndexBodyFromEvent(event, EVENT_INDEX_NAME, EVENT_INDEX_TYPE);
-						String eventindexname=eventIndex.getIndex();
-						eventIndexresult = getJestClient().execute(eventIndex);
-
-						if(eventIndexresult.getResponseCode()==404){
-							// index doesn't exist for upsert command so create new index first
-
-							if(LOG.isDebugEnabled()) {
-								LOG.debug("trying to update event index"
-										+ "\n   received search result: "+eventIndexresult.getJsonString()
-										+ "\n   response code:" +eventIndexresult.getResponseCode() 
-										+ "\n   error message: "+eventIndexresult.getErrorMessage());
-								LOG.debug("index name "+eventindexname + " doesnt exist creating new index");
-							}
-
-							// create new index
-							CreateIndex createIndex = new CreateIndex.Builder(eventindexname).build();
-							JestResult result = getJestClient().execute(createIndex);
-							if(LOG.isDebugEnabled()) {
-								LOG.debug("created new event index:"+eventindexname+" type:"+ EVENT_INDEX_TYPE
-										+ "\n   received search result: "+result.getJsonString()
-										+ "\n   response code:" +result.getResponseCode() 
-										+ "\n   error message: "+result.getErrorMessage());
-							}
-							eventIndexresult = getJestClient().execute(eventIndex);
-						}
-
-						if(LOG.isDebugEnabled()) {
-							LOG.debug("Event sent to es index:"+eventindexname+" type:"+ EVENT_INDEX_TYPE
-									+ "\n   received search result: "+eventIndexresult.getJsonString()
-									+ "\n   response code:" +eventIndexresult.getResponseCode() 
-									+ "\n   error message: "+eventIndexresult.getErrorMessage());
-						}
+					// only send events to ES if they are persisted to database or logAllEvents is set to true
+					if(logAllEvents || (event.getDbid()!=null && event.getDbid()!=0)) {
+						Index eventIndex = populateEventIndexBodyFromEvent(event, INDEX_NAMES.get(Indices.EVENTS), INDEX_TYPES.get(Indices.EVENTS));
+						retval.add(eventIndex);
+					} else {
+						if (LOG.isDebugEnabled()) LOG.debug("Not Sending Event to ES: null event.getDbid()="+event.getDbid()+ " Event="+event.toString());
 					}
-
-				} else {
-					if (LOG.isDebugEnabled()) LOG.debug("Not Sending Event to ES: null event.getDbid()="+event.getDbid()+ " Event="+event.toString());
 				}
 			}
-
-
-
-		} catch (Exception ex){
-			LOG.error("problem sending event to Elastic Search",ex);
 		}
 
+		return retval;
 	}
 
 	/**
@@ -440,9 +507,9 @@ public class EventToIndex {
 
 		Map<String,String> body=new HashMap<String,String>();
 
-		String id=(event.getDbid()==null ? null: Integer.toString(event.getDbid()));
+		Integer id=(event.getDbid()==null ? null: event.getDbid());
 
-		body.put("id",id);
+		body.put("id",Integer.toString(id));
 		body.put("eventuei",event.getUei());
 
 		Calendar cal=Calendar.getInstance();
@@ -522,12 +589,20 @@ public class EventToIndex {
 			LOG.debug(str);
 		}
 
-		Index index = new Index.Builder(body).index(completeIndexName)
-				.type(indexType).id(id).build();
+		Index.Builder builder = new Index.Builder(body)
+				.index(completeIndexName)
+				.type(indexType);
+
+		// NMS-9015: If the event is a database event, set the ID of the
+		// document to the event's database ID. Otherwise, allow ES to
+		// generate a unique ID value.
+		if (id > 0) {
+			builder = builder.id(Integer.toString(id));
+		}
+
+		Index index = builder.build();
 
 		return index;
-
-
 	}
 
 	/**
@@ -686,7 +761,7 @@ public class EventToIndex {
 
 
 		if (alarmValues.get("alarmid")==null){
-			LOG.error("No alarmid param - cannot create alarm elastic search record from event content:"+ event.toString());
+			LOG.error("No alarmid param - cannot create alarm Elasticsearch record from event content:"+ event.toString());
 		} else{
 			String id = alarmValues.get("alarmid").toString();
 
@@ -765,6 +840,17 @@ public class EventToIndex {
 		}
 	}
 
-
+	private static void createIndex(JestClient client, String name, String type) throws IOException {
+		// create new index
+		CreateIndex createIndex = new CreateIndex.Builder(name).build();
+		JestResult result = new OnmsJestResult(client.execute(createIndex));
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("created new alarm index: {} type: {}" +
+					"\n   received search result: {}" +
+					"\n   response code: {}" + 
+					"\n   error message: {}", 
+					name, type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+		}
+	}
 
 }

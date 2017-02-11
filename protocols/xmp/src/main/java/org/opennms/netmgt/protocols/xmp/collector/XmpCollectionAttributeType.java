@@ -60,6 +60,7 @@ package org.opennms.netmgt.protocols.xmp.collector;
 import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpVar;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
@@ -140,13 +141,23 @@ class XmpCollectionAttributeType extends AbstractCollectionAttributeType {
      */
     @Override
     public String getName() { return aVar.getObjName(); }
+
     /**
      * <p>getType</p>
      *
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String getType() { return Xmp.syntaxToString(aVar.getSyntax()); }
+    public AttributeType getType() {
+        switch (aVar.getSyntax()) {
+            case Xmp.SYNTAX_COUNTER:
+                return AttributeType.COUNTER;
+            case Xmp.SYNTAX_DISPLAYSTRING:
+                return AttributeType.STRING;
+            default:
+                return AttributeType.GAUGE;
+        }
+    }
 
     /**
      * <p>toString</p>

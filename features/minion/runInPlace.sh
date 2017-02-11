@@ -1,6 +1,10 @@
 #!/bin/bash -e
 test -d container || (echo "This command must be ran from the features/minion directory" && exit 1)
 
+MYDIR=`dirname $0`
+MYDIR=`cd "$MYDIR"; pwd`
+export PATH="$MYDIR/../../bin:$MYDIR/../../maven/bin:$PATH"
+
 # Delete files owned by root
 sudo rm -rf container/karaf/target/karaf
 

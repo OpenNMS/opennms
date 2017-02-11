@@ -59,15 +59,21 @@ public class VerifyCommand extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-        System.out.println("Verifiing Jira Ticketer Plugin...");
-
+        JiraRestClient connection = null;
         // Validate all settings
-        validateConfiguration();
-        JiraRestClient connection = verifyConnection();
-        validateProjectKey(connection);
-        validateIssueType(connection);
-        verifyCustomFields(connection);
-        return null;
+        try {
+            System.out.println("Verifiing Jira Ticketer Plugin...");
+            validateConfiguration();
+            connection = verifyConnection();
+            validateProjectKey(connection);
+            validateIssueType(connection);
+            verifyCustomFields(connection);
+            return null;
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+        }
     }
 
     private void verifyCustomFields(JiraRestClient client) {

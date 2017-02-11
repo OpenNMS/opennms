@@ -1,3 +1,4 @@
+
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
@@ -37,6 +38,7 @@ Monitor specific parameters for the StrafePingMonitor
 | `rrd-base-name`       | The name of the RRD file to write (minus the extension, `.rrd` or `.jrb`)                  | required | `strafeping`
 |===
 
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

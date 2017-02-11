@@ -16,11 +16,12 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </cm:property-placeholder>
 
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
-    <reference id="geocoderService" interface="org.opennms.features.geocoder.GeocoderService" availability="mandatory" />
+    <reference id="geolocationService" interface="org.opennms.features.geolocation.api.GeolocationService" availability="mandatory" />
+    <reference id="geolocationConfiguration" interface="org.opennms.features.geolocation.api.GeolocationConfiguration" availability="mandatory" />
     <reference id="layoutDao" interface="org.opennms.netmgt.topology.persistence.api.LayoutDao" availability="mandatory" />
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
-        <argument ref="menuManager"/>
+        <argument ref="operationManager"/>
         <argument ref="historyManager"/>
         <argument ref="veGraphContainer" />
         <argument ref="iconRepoManager"/>
@@ -158,11 +159,11 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
             <entry key="service.pid" value="org.opennms.features.topology.app.menu"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.menu.MenuConfigManagedService">
-            <property name="menuManager" ref="menuManager"/>
+            <property name="operationManager" ref="operationManager"/>
         </bean>
     </service>
     
-    <bean id="menuManager" class="org.opennms.features.topology.app.internal.menu.MenuManager" />
+    <bean id="operationManager" class="org.opennms.features.topology.app.internal.menu.OperationManager" />
 
     <!-- Set up Layout Manager -->
     <bean id="layoutManager" class="org.opennms.features.topology.app.internal.support.LayoutManager">
@@ -171,12 +172,12 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </bean>
 
     <reference-list interface="org.opennms.features.topology.api.Operation" availability="optional">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="menuManager">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="operationManager">
         </reference-listener>
     </reference-list>
     
     <reference-list interface="org.opennms.features.topology.api.CheckedOperation" availability="optional">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="menuManager">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="operationManager">
         </reference-listener>
     </reference-list>
 
@@ -456,9 +457,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </service>
     <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
         <bean class="org.opennms.features.topology.app.internal.info.LocationInfoPanelItemProvider">
-            <argument ref="nodeDao" />
-            <argument ref="geocoderService" />
-            <argument value="${resolveCoordinatesFromAddressString}"/>
+            <argument ref="geolocationService" />
+            <argument ref="geolocationConfiguration" />
+            <argument value="${resolveCoordinatesFromAddressString}" />
         </bean>
     </service>
 </blueprint>

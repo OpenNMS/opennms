@@ -1,0 +1,29 @@
+@import "properties.scss";
+
+$severity-alarm-critical-text: black;
+$severity-alarm-critical-bg: #f5cdcd;
+$severity-alarm-critical-border: #cc0000;
+
+$severity-alarm-major-text: black;
+$severity-alarm-major-bg: #ffd7cd;
+$severity-alarm-major-border: #ff3300;
+
+$severity-alarm-minor-text: black;
+$severity-alarm-minor-bg: #ffebcd;
+$severity-alarm-minor-border: #ff9900;
+
+$severity-alarm-warning-text: black;
+$severity-alarm-warning-bg: #fff5cd;
+$severity-alarm-warning-border: #ffcc00;
+
+$severity-alarm-indeterminate-text: black;
+$severity-alarm-indeterminate-bg: #ebebcd;
+$severity-alarm-indeterminate-border: $color_olive_approx;
+
+$severity-alarm-normal-text: black;
+$severity-alarm-normal-bg: #d7e1cd;
+$severity-alarm-normal-border: $color_dell_approx;
+
+$severity-alarm-cleared-text: black;
+$severity-alarm-cleared-bg: #eeeeee;
+$severity-alarm-cleared-border: $color_mountain_mist_approx;

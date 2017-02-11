@@ -32,11 +32,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,14 +42,14 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import org.joda.time.DateTime;
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
 import org.opennms.netmgt.ticketer.jira.cache.Cache;
 import org.opennms.netmgt.ticketer.jira.cache.TimeoutRefreshPolicy;
+import org.opennms.netmgt.ticketer.jira.fieldmapper.FieldMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +58,7 @@ import com.atlassian.jira.rest.client.api.domain.BasicIssue;
 import com.atlassian.jira.rest.client.api.domain.CimFieldInfo;
 import com.atlassian.jira.rest.client.api.domain.CimProject;
 import com.atlassian.jira.rest.client.api.domain.Comment;
+import com.atlassian.jira.rest.client.api.domain.FieldSchema;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.Transition;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
@@ -89,7 +88,7 @@ public class JiraTicketerPlugin implements Plugin {
     // therefore we cache it.
     private final Cache<List<CimProject>> fieldInfoCache;
 
-    private final LoadingCache<CimFieldInfo, Function<String, ?>> fieldMapFunctionCache;
+    private final LoadingCache<FieldSchema, FieldMapper> fieldMapFunctionCache;
 
     public JiraTicketerPlugin() {
         Long cacheReloadTime = getConfig().getCacheReloadTime();
@@ -100,19 +99,25 @@ public class JiraTicketerPlugin implements Plugin {
         fieldMapFunctionCache = CacheBuilder.newBuilder()
                 .maximumSize(100)
                 .expireAfterWrite(cacheReloadTime, TimeUnit.MILLISECONDS)
-                .build(new CacheLoader<CimFieldInfo, Function<String, ?>>() {
+                .build(new CacheLoader<FieldSchema, FieldMapper>() {
                     @Override
-                    public Function<String, ?> load(CimFieldInfo key) throws Exception {
-                        return new FieldMapperRegistry(getConfig().getProperties()).lookup(key.getSchema().getType(), key.getSchema().getItems());
+                    public FieldMapper load(FieldSchema schema) throws Exception {
+                        final FieldMapperRegistry fieldMapperRegistry = new FieldMapperRegistry(getConfig().getProperties());
+                        return fieldMapperRegistry.lookup(schema);
                     }
                 });
         fieldInfoCache = new Cache<>(
-                () -> JiraClientUtils.getIssueMetaData(
-                    getConnection(),
-                    "projects.issuetypes.fields",
-                    getConfig().getIssueTypeId(),
-                    getConfig().getProjectKey()),
-                new TimeoutRefreshPolicy(cacheReloadTime, TimeUnit.NANOSECONDS));
+                () -> {
+                    try (JiraRestClient client = getConnection()) {
+                        return JiraClientUtils.getIssueMetaData(
+                                client,
+                                "projects.issuetypes.fields",
+                                getConfig().getIssueTypeId(),
+                                getConfig().getProjectKey());
+                    }
+                },
+                new TimeoutRefreshPolicy(cacheReloadTime, TimeUnit.NANOSECONDS)
+        );
     }
 
     protected JiraRestClient getConnection() throws PluginException {
@@ -128,8 +133,14 @@ public class JiraTicketerPlugin implements Plugin {
      */
     @Override
     public Ticket get(String ticketId) throws PluginException {
-        JiraRestClient jira = getConnection();
+        try (JiraRestClient client = getConnection()) {
+            return getInternal(ticketId, client);
+        } catch (IOException e) {
+            throw new PluginException(e);
+        }
+    }
 
+    private Ticket getInternal(String ticketId, JiraRestClient jira) throws PluginException {
         // w00t
         Issue issue;
         try {
@@ -218,8 +229,14 @@ public class JiraTicketerPlugin implements Plugin {
     */
     @Override
     public void saveOrUpdate(Ticket ticket) throws PluginException {
+        try (JiraRestClient client = getConnection()) {
+            saveOrUpdateInternal(ticket, client);
+        } catch (IOException e) {
+            throw new PluginException(e);
+        }
+    }
 
-        JiraRestClient jira = getConnection();
+    private void saveOrUpdateInternal(Ticket ticket, JiraRestClient jira) throws PluginException {
         Config config = getConfig();
         if (ticket.getId() == null || ticket.getId().equals("")) {
             // If we can't find a ticket with the specified ID then create one.
@@ -306,32 +323,49 @@ public class JiraTicketerPlugin implements Plugin {
         if (!ticket.hasAttributes()) {
             return;
         }
-        try {
-            final List<String> populatedFields = Lists.newArrayList(); // List of fields already populated
-            final Collection<CimFieldInfo> fields = JiraClientUtils.getFields(fieldInfoCache.get());
-            for (Entry<String, String> eachEntry : ticket.getAttributes().entrySet()) {
-                if (!Strings.isNullOrEmpty(eachEntry.getValue())) { // ignore null or empty values
-                    // Find a field representation in jira
-                    for (CimFieldInfo eachField : fields) {
-                        if (eachEntry.getKey().equals(eachField.getId())) {
+        final List<String> populatedFields = Lists.newArrayList(); // List of fields already populated
+        final Collection<CimFieldInfo> fields = getFields();
+        for (Entry<String, String> eachEntry : ticket.getAttributes().entrySet()) {
+            if (!Strings.isNullOrEmpty(eachEntry.getValue())) { // ignore null or empty values
+                // Find a field representation in jira
+                for (CimFieldInfo eachField : fields) {
+                    if (eachEntry.getKey().equals(eachField.getId())) {
+                        try {
                             final String attributeValue = eachEntry.getValue();
-                            final Object mappedFieldValue = fieldMapFunctionCache.get(eachField).apply(attributeValue);
+                            final Object mappedFieldValue = fieldMapFunctionCache.get(eachField.getSchema()).mapToFieldValue(eachField.getId(), eachField.getSchema(), attributeValue);
                             builder.setFieldValue(eachField.getId(), mappedFieldValue);
                             populatedFields.add(eachField.getId());
                             break; // we found a representation, now continue with next attribute
+                        } catch (Exception ex) {
+                            LOG.error("Could not convert attribute (id={}, value={}) to jira field value. Ignoring attribute.", eachField.getId(), eachEntry.getValue(), ex);
                         }
                     }
                 }
             }
-            if (populatedFields.size() != ticket.getAttributes().size()) {
-                for (String eachKey : ticket.getAttributes().keySet()) {
-                    if (!populatedFields.contains(eachKey)) {
-                        LOG.warn("Ticket attribute '{}' is defined, but was not mapped to a (custom) field in JIRA. Attribute is skipped.", eachKey);
-                    }
+        }
+        // Inform about not found attributes
+        if (populatedFields.size() != ticket.getAttributes().size()) {
+            for (String eachKey : ticket.getAttributes().keySet()) {
+                if (!populatedFields.contains(eachKey)) {
+                    LOG.warn("Ticket attribute '{}' is defined, but was not mapped to a (custom) field in JIRA. Attribute is skipped.", eachKey);
                 }
             }
+        }
+
+        // Inform if required attribute has not been set
+        final List<CimFieldInfo> requiredFieldsNotSet = fields.stream().filter(f -> f.isRequired()).filter(f -> !populatedFields.contains(f)).collect(Collectors.toList());
+        if (!requiredFieldsNotSet.isEmpty()) {
+            final String missingFields = requiredFieldsNotSet.stream().map(f -> String.format("id: %s, name: %s", f.getId(), f.getName())).collect(Collectors.joining(", "));
+            LOG.warn("Not all required (custom) jira fields have been set. The following are unset: %s", missingFields);
+        }
+    }
+
+    private Collection<CimFieldInfo> getFields() {
+        try {
+            return JiraClientUtils.getFields(fieldInfoCache.get());
         } catch (Exception ex) {
-            LOG.error("Could not convert attributes to field values", ex);
+            LOG.error("Error while retrieving (custom) field definitions from JIRA.", ex);
+            return new ArrayList<>();
         }
     }
 }

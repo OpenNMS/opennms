@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -90,6 +91,20 @@ public class KarafExtenderTest {
                 new Feature("feature-3"),
                 new Feature("feature-4")),
                 karafExtender.getFeaturesBoot());
+        
+        // Now add another file that disables features-1 and feature-2 above
+        Files.write("!feature-1\n" +
+                "!feature-2/18.0.0\n", new File(featuresBootDotD, "core2.boot"), Charsets.UTF_8);
+
+        // Read and filter
+        List<Feature> features = karafExtender.getFeaturesBoot();
+        karafExtender.filterFeatures(features);
+
+        // Verify
+        assertEquals(Lists.newArrayList(
+                new Feature("feature-3"),
+                new Feature("feature-4")),
+                features);
     }
 
     @Test

@@ -16,25 +16,34 @@
   <context:annotation-config />
   <tx:annotation-driven/>
 
-  <bean id="syslogdExecutorFactory" class="org.opennms.core.concurrent.ExecutorFactoryJavaImpl"/>
-
-  <bean id="syslogConnectionHandler" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerDefaultImpl">
-    <!-- TODO: Inject executorFactory and use it to construct Executors -->
+  <!-- Consume messages provided by the Sink API -->
+  <bean id="syslogSinkConsumer" class="org.opennms.netmgt.syslogd.SyslogSinkConsumer" >
+    <constructor-arg ref="syslogdMetricRegistry"/>
   </bean>
 
-  <bean id="syslogReceiverJavaNet" class="org.opennms.netmgt.syslogd.SyslogReceiverJavaNetImpl">
-    <constructor-arg ref="syslogdConfigFactory"/>
-    <property name="distPollerDao" ref="distPollerDao"/>
-    <property name="syslogConnectionHandlers" ref="syslogConnectionHandler"/>
+  <bean id="syslogdMetricRegistry" class="com.codahale.metrics.MetricRegistry" />
+
+  <bean id="syslogdMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+      <constructor-arg ref="syslogdMetricRegistry"/>
   </bean>
 
-  <!-- Expose one particular implementation as the chosen implementation -->
-  <onmsgi:service interface="org.opennms.netmgt.syslogd.SyslogReceiver" ref="syslogReceiverJavaNet"/>
+  <bean id="syslogdMetricRegistryDomainedJmxReporterBuilder" factory-bean="syslogdMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+      <constructor-arg value="org.opennms.netmgt.syslogd"/>
+  </bean>
+
+  <bean id="syslogdMetricRegistryJmxReporter"
+        factory-bean="syslogdMetricRegistryDomainedJmxReporterBuilder"
+        factory-method="build"
+        init-method="start"
+        destroy-method="stop" />
+
+  <!-- Listen for Syslog message and dispatch them to the Sink API -->
+  <bean id="syslogReceiverCamelNetty" class="org.opennms.netmgt.syslogd.SyslogReceiverCamelNettyImpl" destroy-method="stop">
+    <constructor-arg  ref="syslogdConfigFactory" />
+  </bean>
 
   <bean id="daemon" class="org.opennms.netmgt.syslogd.Syslogd">
-    <property name="syslogReceiver">
-      <onmsgi:reference interface="org.opennms.netmgt.syslogd.SyslogReceiver"/>
-    </property>
+    <property name="syslogReceiver" ref="syslogReceiverCamelNetty" />
   </bean>
 
 </beans>

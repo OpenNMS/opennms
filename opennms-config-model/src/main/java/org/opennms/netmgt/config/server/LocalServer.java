@@ -39,17 +39,20 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
+import java.net.InetAddress;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.Validator;
+import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.xml.ValidateUsing;
 import org.xml.sax.ContentHandler;
 
@@ -74,7 +77,8 @@ public class LocalServer implements Serializable {
      * Field m_defaultCriticalPathIp.
      */
     @XmlAttribute(name="defaultCriticalPathIp")
-    private String m_defaultCriticalPathIp;
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+    private InetAddress m_defaultCriticalPathIp;
 
     /**
      * Field m_defaultCriticalPathService.
@@ -122,8 +126,8 @@ public class LocalServer implements Serializable {
      * 
      * @return the value of field 'DefaultCriticalPathIp'.
      */
-    public String getDefaultCriticalPathIp() {
-        return m_defaultCriticalPathIp == null? "" : m_defaultCriticalPathIp;
+    public InetAddress getDefaultCriticalPathIp() {
+        return m_defaultCriticalPathIp;
     }
 
     /**
@@ -242,7 +246,7 @@ public class LocalServer implements Serializable {
      * @param ip the value of field
      * 'defaultCriticalPathIp'.
      */
-    public void setDefaultCriticalPathIp(final String ip) {
+    public void setDefaultCriticalPathIp(final InetAddress ip) {
         m_defaultCriticalPathIp = ip;
     }
 

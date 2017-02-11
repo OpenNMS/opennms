@@ -47,11 +47,12 @@ import org.opennms.netmgt.collectd.jdbc.JdbcCollectionResource;
 import org.opennms.netmgt.collectd.jdbc.JdbcCollectionSet;
 import org.opennms.netmgt.collectd.jdbc.JdbcMultiInstanceCollectionResource;
 import org.opennms.netmgt.collectd.jdbc.JdbcSingleInstanceCollectionResource;
+import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.config.jdbc.JdbcColumn;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollection;
 import org.opennms.netmgt.config.jdbc.JdbcQuery;
@@ -61,7 +62,7 @@ import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JdbcCollector implements ServiceCollector {
+public class JdbcCollector extends AbstractLegacyServiceCollector {
     private static final Logger LOG = LoggerFactory.getLogger(JdbcCollector.class);
 
     private JdbcDataCollectionConfigDao m_jdbcCollectionDao;
@@ -274,7 +275,7 @@ public class JdbcCollector implements ServiceCollector {
                     agentState.closeConnection(con);
                 }
             }
-            collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
+            collectionSet.setStatus(CollectionStatus.SUCCEEDED);
             return collectionSet;
         } finally {
             // Make sure that when we're done we close all results, statements and connections.

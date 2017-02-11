@@ -38,8 +38,8 @@ import java.util.Map.Entry;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.PersisterFactory;
-import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.PollerConfig;
@@ -182,7 +182,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
         CollectionSetVisitor persister = m_persisterFactory.createPersister(params, repository, false, true, true);
 
         SingleResourceCollectionSet collectionSet = new SingleResourceCollectionSet(latencyResource, new Date());
-        collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
+        collectionSet.setStatus(CollectionStatus.SUCCEEDED);
         collectionSet.visit(persister);
     }
 

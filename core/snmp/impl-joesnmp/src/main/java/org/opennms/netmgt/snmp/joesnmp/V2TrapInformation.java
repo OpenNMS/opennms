@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,9 +32,9 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpVarBindDTO;
 import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.snmp.TrapInformation;
-import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpPduPacket;
@@ -88,11 +88,9 @@ public class V2TrapInformation extends TrapInformation {
 	 *            The community string from the SNMP packet.
 	 * @param pdu
 	 *            The encapsulated Protocol Data Unit.
-	 * @param trapProcessor The trap processor used to process the trap data
-	 * 
 	 */
-	public V2TrapInformation(InetAddress agent, String community, SnmpPduPacket pdu, TrapProcessor trapProcessor) {
-		super(agent, community, trapProcessor);
+	public V2TrapInformation(InetAddress agent, String community, SnmpPduPacket pdu) {
+		super(agent, community);
         m_pdu = pdu;
 	}
 
@@ -119,7 +117,7 @@ public class V2TrapInformation extends TrapInformation {
     }
 
     @Override
-    protected TrapIdentity getTrapIdentity() {
+    public TrapIdentity getTrapIdentity() {
         // Get the value for the snmpTrapOID
         SnmpObjectId snmpTrapOid = (SnmpObjectId) m_pdu.getVarBindAt(V2TrapInformation.SNMP_TRAP_OID_INDEX).getValue();
         SnmpObjectId lastVarBindOid = m_pdu.getVarBindAt(getPduLength() - 1).getName();
@@ -142,7 +140,7 @@ public class V2TrapInformation extends TrapInformation {
     }
 
     @Override
-    protected void validate() {
+    public void validate() {
         //
         // verify the type
         //
@@ -173,17 +171,35 @@ public class V2TrapInformation extends TrapInformation {
     }
 
     @Override
-    protected void processVarBindAt(int i) {
+    public SnmpVarBindDTO getSnmpVarBindDTO(int i) {
     	if (i<2) {
             if (i == 0) {
             	LOG.debug("Skipping processing of varbind it is the sysuptime and the first varbind, it is not processed as a parm per RFC2089");
             } else {
             	LOG.debug("Skipping processing of varbind it is the trap OID and the second varbind, it is not processed as a parm per RFC2089");				
 			}
+			return null;
     	} else {
     		SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getName().getIdentifiers());
     		SnmpValue value = new JoeSnmpValue(getVarBindAt(i).getValue());
-    		processVarBind(name, value);
+    		return new SnmpVarBindDTO(name, value);
     	}
     }
+
+	@Override
+	protected Integer getRequestId() {
+		return m_pdu.getRequestId();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder("[");
+		sb.append("Version=").append(getVersion())
+			.append(", Source-Address=").append(getTrapAddress().getHostAddress())
+			.append(", Length=").append(getPduLength())
+			.append(", Identity=").append(getTrapIdentity().toString())
+			.append(", Request-ID=").append(getRequestId())
+			.append("]");
+		return sb.toString();
+	}
 }

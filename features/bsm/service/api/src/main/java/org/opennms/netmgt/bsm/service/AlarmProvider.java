@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.bsm.service;
 
+import java.util.Map;
+import java.util.Set;
+
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 
 /**
@@ -38,6 +41,6 @@ import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
  */
 public interface AlarmProvider {
 
-    public AlarmWrapper lookup(String reductionKey);
+    Map<String, AlarmWrapper> lookup(Set<String> reductionKeys);
 
 }

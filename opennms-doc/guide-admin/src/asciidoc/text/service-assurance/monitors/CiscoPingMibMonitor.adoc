@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== CiscoPingMibMonitor
 
 This poller monitor's purpose is to create conceptual rows (entries) in the _ciscoPingTable_ on _Cisco IOS_ devices that support the link:http://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?local=en&mibName=CISCO-PING-MIB[CISCO-PING-MIB].
@@ -67,10 +70,6 @@ _IOS_ seems to clean up entries in this table within a manner of minutes after t
 [options="header, autowidth"]
 |===
 | Parameter                     | Description                                                                           | Required | Default value
-| `timeout`                     | A timeout, in milliseconds, that should override the SNMP timeout specified in
-                                  `snmp-config.xml`. Do not use without a very good reason to do so.                    | optional | from `snmp-config.xml`
-| `retry`                       | Number of retries to attempt if the initial attempt times out. Overrides the
-                                  equivalent value from `snmp-config.xml`. Do not use unless really needed.             | optional | from `snmp-config.xml`
 | `version`                     | SNMP protocol version (1, 2c, or 3) to use for operations performed by this service
                                   monitor. Do not use with out a very good reason to do so.                             | optional | from `snmp-config.xml`
 | `packet-count`                | Number of ping packets that the remote _IOS_ device should send.                      | optional | `5`
@@ -111,7 +110,9 @@ _IOS_ seems to clean up entries in this table within a manner of minutes after t
                                   monitor's response-time samples will be persisted                                     | optional | `-`
 |===
 
-This is optional just if you can use variables in the configuration
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+This is optional just if you can use variables in the configuration.
 
 .Variables which can be used in the configuration
 [options="header, autowidth"]

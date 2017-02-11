@@ -29,7 +29,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -39,6 +38,7 @@ import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.poller.support.InetNetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -72,6 +72,10 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
         return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao, transMgr));
     }
 
+    public static SnmpCollectionAgent create(final Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr, final String location) {
+        return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao, transMgr), location);
+    }
+
     // miscellaneous junk?
     private int m_ifCount = -1;
     private long m_sysUpTime = -1;
@@ -86,15 +90,21 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
     private String m_foreignId = null;
     private String m_locationName = null;
     private String m_nodeLabel = null;
-    private File m_storageDir = null;
+    private ResourcePath m_storageResourcePath = null;
     
     private CollectionAgentService m_agentService;
     private Set<SnmpIfData> m_snmpIfData;
 
     private DefaultCollectionAgent(final CollectionAgentService agentService) {
+        this(agentService, null);
+    }
+
+    private DefaultCollectionAgent(final CollectionAgentService agentService, final String location) {
         super(null);
         m_agentService = agentService;
-        
+        m_storageResourcePath = agentService.getStorageResourcePath();
+        m_locationName = location;
+
         if (Boolean.getBoolean("org.opennms.netmgt.collectd.DefaultCollectionAgent.loadSnmpDataOnInit")) {
             getSnmpInterfaceData();
         }
@@ -229,22 +239,11 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
         return m_locationName;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#getStorageDir()
-     */
-    /**
-     * <p>getStorageDir</p>
-     *
-     * @return a {@link java.io.File} object.
-     */
     @Override
-    public File getStorageDir() {
-        if (m_storageDir == null) {
-            m_storageDir = m_agentService.getStorageDir();
-        }
-        return m_storageDir;
+    public ResourcePath getStorageResourcePath() {
+        return m_storageResourcePath;
     }
-    
+
     private int getIfIndex() {
         if (m_ifIndex == -1) {
             m_ifIndex = m_agentService.getIfIndex();

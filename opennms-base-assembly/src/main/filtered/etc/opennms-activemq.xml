@@ -37,15 +37,7 @@
     -->
     <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" dataDirectory="${activemq.data}">
         <plugins>
-          <bean id="openNMSJaasBrokerPlugin" class="org.opennms.netmgt.activemq.auth.OpenNMSJaasBrokerPlugin" xmlns="http://www.springframework.org/schema/beans" >
-            <!-- Automatically trust connection from the localhost -->
-            <property name="trustedHosts">
-	      <list>
-                <value>127.0.0.1</value>
-	        <value>::1</value>
-              </list>
-            </property>
-          </bean>
+          <bean id="openNMSJaasBrokerPlugin" class="org.opennms.netmgt.activemq.auth.OpenNMSJaasBrokerPlugin" xmlns="http://www.springframework.org/schema/beans" />
 
           <authorizationPlugin>
             <map>

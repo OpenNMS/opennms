@@ -38,6 +38,8 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.opennms.core.rpc.api.RequestRejectedException;
+import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
@@ -45,7 +47,7 @@ import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -91,7 +93,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     private IfNumberTracker m_ifNumber;
     private SysUpTimeTracker m_sysUpTime;
     private SnmpNodeCollector m_nodeCollector;
-    private int m_status=ServiceCollector.COLLECTION_FAILED;
+    private CollectionStatus m_status = CollectionStatus.FAILED;
     private boolean m_ignorePersist;
     private Date m_timestamp;
 
@@ -367,6 +369,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
             CompletableFuture<CollectionTracker> future = m_client.walk(getAgentConfig(), getTracker())
                 .withDescription("SnmpCollectors for " + agent.getHostAddress())
                 .withLocation(getCollectionAgent().getLocationName())
+                .withTimeToLive(m_snmpCollection.getServiceParameters().getServiceInterval())
                 .execute();
 
             // wait for collection to finish
@@ -380,14 +383,24 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
             SnmpPropertyExtenderProcessor processor = new SnmpPropertyExtenderProcessor();
             processor.process(this, m_snmpCollection.getName(), m_agent.getSysObjectId(), m_agent.getHostAddress());
 
-            m_status = ServiceCollector.COLLECTION_SUCCEEDED;
+            m_status = CollectionStatus.SUCCEEDED;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new CollectionWarning("collect: Collection of node SNMP "
-                    + "data for interface " + getCollectionAgent().getHostAddress()
-                    + " interrupted: " + e, e);
+            throw new CollectionUnknown(String.format("Collection of SNMP data for interface %s at location %s was interrupted.",
+                    getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName()), e);
         } catch (ExecutionException e) {
-            throw new CollectionWarning(e.getMessage(), e.getCause());
+            final Throwable cause = e.getCause();
+            if (cause != null && cause instanceof RequestTimedOutException) {
+                throw new CollectionUnknown(String.format("No response received when remotely collecting SNMP data"
+                        + " for interface %s at location %s interrupted.",
+                        getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName()), e);
+            } else if (cause != null && cause instanceof RequestRejectedException) {
+                throw new CollectionUnknown(String.format("The request to remotely collect SNMP data"
+                        + " for interface %s at location %s was rejected.",
+                        getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName()), e);
+            }
+            throw new CollectionWarning(String.format("Unexpected exception when collecting SNMP data for interface %s at location %s.",
+                    getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName()), e);
         }
     }
 
@@ -553,13 +566,8 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return m_snmpCollection.getIfAliasResourceType(getCollectionAgent());
     }
 
-    /**
-     * <p>getStatus</p>
-     *
-     * @return a int.
-     */
     @Override
-    public int getStatus() {
+    public CollectionStatus getStatus() {
         return m_status;
     }
 

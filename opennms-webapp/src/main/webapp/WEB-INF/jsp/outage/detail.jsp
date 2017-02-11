@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -144,14 +144,22 @@
               &nbsp;
             <% } %>
           </td>
-          <th>Location</th>
-          <td colspan="3">
+          <th>Event Source Location</th>
+          <td>
+            <% if( outage.getEventLocation() != null ) { %>
+            <%=outage.getEventLocation()%>
+            <% } else { %>
+            &nbsp;
+            <% } %>
+          </td>
+          <th>Node Location</th>
+          <td>
             <% if( outage.getLocation() != null ) { %>
             <%=outage.getLocation()%>
             <% } else { %>
             &nbsp;
             <% } %>
-          </td>
+          <td>
         </tr>
       </table>
 </div>

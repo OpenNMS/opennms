@@ -48,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** 
- * Initialises Elastic Search by sending a template
+ * Initialises Elasticsearch by sending a template
  * @author cgallen
  *
  */
@@ -144,11 +144,11 @@ public class ElasticSearchInitialiser {
 							+ "'\n     templateName: '"+templateName
 							+ "'\n     contents: "+jsonObject.toJSONString());
 				} catch (ParseException e1) {
-					throw new RuntimeException("cannot parse json Elastic Search template mapping from file "+fileName, e1);
+					throw new RuntimeException("cannot parse json Elasticsearch template mapping from file "+fileName, e1);
 				}
 
 			} catch (Exception e) {
-				throw new RuntimeException("Problem reading Elastic Search template mapping fileName="+fileName, e);
+				throw new RuntimeException("Problem reading Elasticsearch template mapping fileName="+fileName, e);
 			}
 		}
 
@@ -218,15 +218,15 @@ public class ElasticSearchInitialiser {
 
 						PutTemplate putTemplate = new PutTemplate.Builder(templateName, body).build();
 
-						JestResult jestResult = getJestClient().execute(putTemplate);
+						JestResult jestResult = new OnmsJestResult(getJestClient().execute(putTemplate));
 
 						if (! jestResult.isSucceeded()){
-							LOG.error("Error sending template '"+templateName+"' to Elastic Search"
+							LOG.error("Error sending template '"+templateName+"' to Elasticsearch"
 									+ " received result: "+jestResult.getJsonString()
 									+ "\n   response code:" +jestResult.getResponseCode() 
 									+ "\n   error message: "+jestResult.getErrorMessage());
 						} else {
-							LOG.info("Sent template '"+templateName+"' to Elastic Search"
+							LOG.info("Sent template '"+templateName+"' to Elasticsearch"
 									+ " received result: "+jestResult.getJsonString()
 									+ "\n   response code:" +jestResult.getResponseCode() 
 									+ "\n   error message: "+jestResult.getErrorMessage());
@@ -237,12 +237,12 @@ public class ElasticSearchInitialiser {
 					initialised.set(true); // will only be true if all json templates processed
 
 				} catch (Exception ex) {
-					LOG.error("could not send template '"+templateName+"' to Elastic Search",ex);
+					LOG.error("could not send template '"+templateName+"' to Elasticsearch",ex);
 				}
 
 				if ( initialiserIsRunning.get() && ! initialised.get()) {
 					try {
-						LOG.error("waiting "+retryTimer+" ms before retrying to sending all templates again to Elastic Search");
+						LOG.error("waiting "+retryTimer+" ms before retrying to sending all templates again to Elasticsearch");
 						synchronized (this){
 							wait(retryTimer);
 						}

@@ -47,7 +47,7 @@ public class HeartbeatModule extends AbstractXmlSinkModule<Heartbeat, Heartbeat>
 
     @Override
     public String getId() {
-        return "Hearbeat";
+        return "Heartbeat";
     }
 
     @Override

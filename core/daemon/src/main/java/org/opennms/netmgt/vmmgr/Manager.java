@@ -239,7 +239,8 @@ public class Manager implements ManagerMBean {
     }
 
     private void testPinger() {
-        final Pinger pinger = new PingerFactoryImpl().getInstance();
+        final PingerFactoryImpl pingerFactory = new PingerFactoryImpl();
+        final Pinger pinger = pingerFactory.getInstance();
 
         boolean hasV4 = pinger.isV4Available();
         boolean hasV6 = pinger.isV6Available();
@@ -282,6 +283,8 @@ public class Manager implements ManagerMBean {
         }
         
         // at least one is initialized, and we haven't said otherwise, so barrel ahead
+        // but first, reset the pinger factory so we can let auto-detection happen
+        pingerFactory.reset();
     }
 
     private void throwPingError(final String message) throws IllegalStateException {

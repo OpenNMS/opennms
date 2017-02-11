@@ -184,6 +184,7 @@ public class MockLogAppender {
         resetEvents();
 
         setProperty(MockLogger.DEFAULT_LOG_LEVEL_KEY, level);
+        setProperty(MockLogger.LOG_KEY_PREFIX + "com.jcraft.jsch", "WARN");
         setProperty(MockLogger.LOG_KEY_PREFIX + "com.mchange", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "com.mchange.v2", "WARN");
         setProperty(MockLogger.LOG_KEY_PREFIX + "httpclient", "INFO");

@@ -31,103 +31,179 @@ package org.opennms.netmgt.trapd;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.camel.MinionDTO;
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.ipc.sink.api.Message;
+import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.netmgt.snmp.SnmpResult;
-import org.snmp4j.smi.OID;
+import org.opennms.netmgt.snmp.SnmpVarBindDTO;
+import org.opennms.netmgt.snmp.TrapInformation;
+
+import com.google.common.base.MoreObjects;
 
 @XmlRootElement(name = "trap-dto")
 @XmlAccessorType(XmlAccessType.NONE)
-public class TrapDTO extends MinionDTO {
+public class TrapDTO implements Message {
 
-	public static final String COMMUNITY = "community";
-	public static final String CREATION_TIME = "creationTime";
-	public static final String PDU_LENGTH = "pduLength";
-	public static final String VERSION = "version";
-	public static final String TIMESTAMP = "timestamp";
-	public static final String AGENT_ADDRESS = "agentAddress";
-	public static final String GENERIC = "generic";
-	public static final String ENTERPRISEID = "enterpriseId";
-	public static final String SPECIFIC = "specific";
-
-	protected TrapDTO() {
-		// No-arg constructor for JAXB
-		super();
-	}
-
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this)
-				.append("systemId", super.getHeaders().get(SYSTEM_ID))
-				.append("location", super.getHeaders().get(LOCATION))
-				.append("sourceAddress", super.getHeaders().get(SOURCE_ADDRESS))
-				.append("sourcePort", super.getHeaders().get(SOURCE_PORT))
-				.append("agentAddress", super.getHeaders().get(AGENT_ADDRESS))
-				.append("community", super.getHeaders().get(COMMUNITY))
-				.append("generic", super.getHeaders().get(GENERIC))
-				.append("enterpriseId", super.getHeaders().get(ENTERPRISEID))
-				.append("specific", super.getHeaders().get(SPECIFIC))
-				.append("creationTime", super.getHeaders().get(CREATION_TIME))
-				.append("pduLength", super.getHeaders().get(PDU_LENGTH))
-				.append("timestamp", super.getHeaders().get(TIMESTAMP))
-				.append("version", super.getHeaders().get(VERSION))
-				.append("body", super.getBody()).toString();
-	}
-
+	@XmlElement(name = "agent-address")
+	@XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+	private InetAddress agentAddress;
+	@XmlElement(name = "community")
+	private String community;
+	@XmlElement(name = "version", required=true)
+	private String version;
+	@XmlElement(name = "timestamp")
+	private long timestamp;
+	@XmlElement(name = "pdu-length")
+	private int pduLength;
+	@XmlElement(name = "creation-time")
+	private long creationTime;
+	@XmlElement(name = "raw-message")
+	private byte[] rawMessage;
+	@XmlElement(name = "trap-identity")
+	private TrapIdentityDTO trapIdentity;
 	@XmlElementWrapper(name = "results")
 	@XmlElement(name = "result")
-	private List<SnmpResult> results = new ArrayList<>(0);
+	private List<SnmpResult> results = new ArrayList<>();
 
-	public void setCommunity(String m_community) {
-		super.putHeader(COMMUNITY, m_community);
+	// No-arg constructor for JAXB
+	public TrapDTO() {
+
 	}
 
-	public void setCreationTime(long m_creationTime) {
-		super.putHeader(CREATION_TIME, String.valueOf(m_creationTime));
+	public TrapDTO(TrapInformation trapInfo) {
+		setAgentAddress(trapInfo.getAgentAddress());
+		setCommunity(trapInfo.getCommunity());
+		setVersion(trapInfo.getVersion());
+		setTimestamp(trapInfo.getTimeStamp());
+		setPduLength(trapInfo.getPduLength());
+		setCreationTime(trapInfo.getCreationTime());
+		setTrapIdentity(new TrapIdentityDTO(trapInfo.getTrapIdentity()));
+
+		// Map variable bindings
+		final List<SnmpResult> results = new ArrayList<>();
+		for (int i = 0; i < trapInfo.getPduLength(); i++) {
+			final SnmpVarBindDTO varBindDTO = trapInfo.getSnmpVarBindDTO(i);
+			if (varBindDTO != null) {
+				final SnmpResult snmpResult = new SnmpResult(varBindDTO.getSnmpObjectId(), null, varBindDTO.getSnmpValue());
+				results.add(snmpResult);
+			}
+		}
+		setResults(results);
 	}
 
-	public void setPduLength(int m_pduLength) {
-		super.putHeader(PDU_LENGTH, String.valueOf(m_pduLength));
+	private void setResults(List<SnmpResult> results) {
+		this.results = new ArrayList<>(results);
 	}
 
-	public void setVersion(String m_version) {
-		super.putHeader(VERSION, m_version);
+	public void setAgentAddress(InetAddress agentAddress) {
+		this.agentAddress = agentAddress;
 	}
 
-	public void setTimestamp(Long m_timestamp) {
-		super.putHeader(TIMESTAMP, Long.toString(m_timestamp));
+	public InetAddress getAgentAddress() {
+		return agentAddress;
 	}
 
-	public void setAgentAddress(InetAddress m_agentAddress) {
-		super.putHeader(AGENT_ADDRESS, InetAddressUtils.str(m_agentAddress));
+	public void setCommunity(String community) {
+		this.community = community;
+	}
+
+	public String getCommunity() {
+		return community;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setPduLength(int pduLength) {
+		this.pduLength = pduLength;
+	}
+
+	public int getPduLength() {
+		return pduLength;
+	}
+
+	public void setCreationTime(long creationTime) {
+		this.creationTime = creationTime;
+	}
+
+	public long getCreationTime() {
+		return creationTime;
+	}
+
+	public void setTrapIdentity(TrapIdentityDTO trapIdentity) {
+		this.trapIdentity = trapIdentity;
+	}
+
+	public TrapIdentityDTO getTrapIdentity() {
+		return trapIdentity;
 	}
 
 	public List<SnmpResult> getResults() {
 		return results;
 	}
 
-	public void setResults(List<SnmpResult> results) {
-		this.results = results;
-	}
-	
-	public void setEnterpriseId(OID enterpriseId) {
-		super.putHeader(ENTERPRISEID, enterpriseId.toString());
-	}
-	
-	public void setGeneric(int generic) {
-		super.putHeader(GENERIC, Integer.toString(generic));
-	}
-	
-	public void setSpecific(int specific) {
-		super.putHeader(SPECIFIC, Integer.toString(specific));
+	public byte[] getRawMessage() {
+		return rawMessage;
 	}
 
+	public void setRawMessage(byte[] rawMessage) {
+		this.rawMessage = rawMessage;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(community, version, timestamp, pduLength, creationTime, rawMessage, trapIdentity, results, agentAddress);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (null == obj) return false;
+		if (getClass() != obj.getClass()) return false;
+		final TrapDTO other = (TrapDTO) obj;
+		boolean equals = Objects.equals(community, other.community)
+				&& Objects.equals(version, other.version)
+				&& Objects.equals(timestamp, other.timestamp)
+				&& Objects.equals(pduLength, other.pduLength)
+				&& Objects.equals(creationTime, other.creationTime)
+				&& Objects.equals(rawMessage, other.rawMessage)
+				&& Objects.equals(trapIdentity, other.trapIdentity)
+				&& Objects.equals(results, other.results)
+				&& Objects.equals(agentAddress, other.agentAddress);
+		return equals;
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("agentAddress", agentAddress)
+				.add("community", community)
+				.add("trapIdentity", trapIdentity)
+				.add("creationTime", creationTime)
+				.add("pduLength", pduLength)
+				.add("timestamp", timestamp)
+				.add("version", version)
+				.add("rawMessage", rawMessage).toString();
+	}
 }

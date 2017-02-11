@@ -44,7 +44,7 @@ import java.net.UnknownHostException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.snmp.TrapNotification;
+import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
@@ -80,8 +80,8 @@ public class TrapNotificationSerializationTest {
 		snmp4JV1TrapPdu.add(new VariableBinding(new OID(
 				".1.3.6.1.6.3.1.1.4.1.0"), new OctetString("mockhost")));
 
-		TrapNotification snmp4JV1Trap = new Snmp4JTrapNotifier.Snmp4JV1TrapInformation(
-				inetAddress, new String("public"), snmp4JV1TrapPdu, null);
+		TrapInformation snmp4JV1Trap = new Snmp4JTrapNotifier.Snmp4JV1TrapInformation(
+				inetAddress, new String("public"), snmp4JV1TrapPdu);
 		assertTrue(writeTrapNotificationObject(snmp4JV1Trap));
 	}
 
@@ -97,8 +97,8 @@ public class TrapNotificationSerializationTest {
 		snmp4JV2cTrapPdu.add(new VariableBinding(new OID(
 				".1.3.6.1.6.3.1.1.4.1.0"), new OctetString("mockhost")));
 
-		TrapNotification snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
-				inetAddress, new String("public"), snmp4JV2cTrapPdu, null);
+		TrapInformation snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
+				inetAddress, new String("public"), snmp4JV2cTrapPdu);
 		assertTrue(writeTrapNotificationObject(snmp4JV2cTrap));
 	}
 
@@ -115,19 +115,19 @@ public class TrapNotificationSerializationTest {
 		snmp4JV3TrapPdu.add(new VariableBinding(new OID(
 				".1.3.6.1.6.3.1.1.4.1.0"), new OctetString("mockhost")));
 
-		TrapNotification snmp4JV3Trap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
-				inetAddress, new String("public"), snmp4JV3TrapPdu, null);
+		TrapInformation snmp4JV3Trap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
+				inetAddress, new String("public"), snmp4JV3TrapPdu);
 		assertTrue(writeTrapNotificationObject(snmp4JV3Trap));
 	}
 
-	public boolean writeTrapNotificationObject(TrapNotification object) {
+	public boolean writeTrapNotificationObject(TrapInformation object) {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(bos);
 			objectOutputStream.writeObject(object);
 
 			ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
-			TrapNotification notification = (TrapNotification)in.readObject();
+			TrapInformation notification = (TrapInformation)in.readObject();
 		} catch (NotSerializableException e) {
 			return true;
 		} catch (FileNotFoundException e) {

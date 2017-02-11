@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== LdapsMonitor
 
 The LDAPS monitor tests the response of an SSL-enabled LDAP server.
@@ -21,6 +24,8 @@ All LdapMonitor parameters apply, so please refer to <<poller-ldap-monitor,LdapM
 | Parameter              | Description                                                | Required | Default value
 | `port`                 | The destination port where connections shall be attempted. | optional | `636`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

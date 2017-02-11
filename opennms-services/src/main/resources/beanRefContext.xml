@@ -6,6 +6,7 @@
    <bean id="collectdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
+         <value>META-INF/opennms/applicationContext-rpc-collector.xml</value>
          <value>META-INF/opennms/applicationContext-collectd.xml</value>
        </list>
      </constructor-arg>

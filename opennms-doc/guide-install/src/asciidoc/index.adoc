@@ -16,6 +16,7 @@
 
 // Installation Guide for {opennms-product-name}
 include::text/opennms/introduction.adoc[]
+include::text/opennms/compatibility-matrix.adoc[]
 include::text/opennms/repository.adoc[]
 include::text/opennms/rhel.adoc[]
 include::text/opennms/debian.adoc[]

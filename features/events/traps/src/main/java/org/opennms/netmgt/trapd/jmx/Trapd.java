@@ -29,6 +29,7 @@
 package org.opennms.netmgt.trapd.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
+import org.opennms.netmgt.trapd.TrapSinkConsumer;
 
 /**
  * <p>Trapd class.</p>
@@ -52,42 +53,46 @@ public class Trapd extends AbstractSpringContextJmxServiceDaemon<org.opennms.net
     /** {@inheritDoc} */
     @Override
     public long getTrapsReceived() {
-        return getDaemon().getTrapsReceived();
+        return getTrapdInstrumentation().getTrapsReceived();
     }
 
     /** {@inheritDoc} */
     @Override
     public long getV1TrapsReceived() {
-        return getDaemon().getV1TrapsReceived();
+        return getTrapdInstrumentation().getV1TrapsReceived();
     }
     
     /** {@inheritDoc} */
     @Override
     public long getV2cTrapsReceived() {
-        return getDaemon().getV2cTrapsReceived();
+        return getTrapdInstrumentation().getV2cTrapsReceived();
     }
     
     /** {@inheritDoc} */
     @Override
     public long getV3TrapsReceived() {
-        return getDaemon().getV3TrapsReceived();
+        return getTrapdInstrumentation().getV3TrapsReceived();
     }
     
     /** {@inheritDoc} */
     @Override
     public long getVUnknownTrapsReceived() {
-        return getDaemon().getVUnknownTrapsReceived();
+        return getTrapdInstrumentation().getVUnknownTrapsReceived();
     }
     
     /** {@inheritDoc} */
     @Override
     public long getTrapsDiscarded() {
-        return getDaemon().getTrapsDiscarded();
+        return getTrapdInstrumentation().getTrapsDiscarded();
     }
     
     /** {@inheritDoc} */
     @Override
     public long getTrapsErrored() {
-        return getDaemon().getTrapsErrored();
+        return getTrapdInstrumentation().getTrapsErrored();
+    }
+    
+    private TrapdInstrumentation getTrapdInstrumentation() {
+        return TrapSinkConsumer.trapdInstrumentation;
     }
 }

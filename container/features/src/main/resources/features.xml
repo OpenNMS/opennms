@@ -107,21 +107,6 @@
       <bundle>mvn:org.apache.camel/camel-elasticsearch/${camelVersion}</bundle>
     </feature>
 
-    <!-- need to override camel-kafka because it pulls in a Zookeeper version that has bad OSGi metadata -->
-    <feature name='onms-camel-kafka' version='${camelVersion}' resolver='(obr)' start-level='50'>
-      <bundle dependency="true">mvn:org.scala-lang/scala-library/2.10.4</bundle>
-      <!-- NMS-8929: Upgrade Zookeeper to fix bug https://issues.apache.org/jira/browse/ZOOKEEPER-2056 -->
-      <!-- <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.6</bundle> -->
-      <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.7</bundle>
-      <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-core/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
-      <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-annotation/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
-      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_2.10/0.8.1_1</bundle>
-      <!-- HZN-811: Missing dependency on zkclient, can be removed when we upgrade to Camel 2.16.0+ -->
-      <bundle dependency="true">wrap:mvn:com.101tec/zkclient/0.3$Bundle-Version=0.3&amp;Export-Package=*;-noimport:=true;version="0.3"</bundle>
-      <feature version="2.14.1">camel-core</feature>
-      <bundle>mvn:org.apache.camel/camel-kafka/2.14.1</bundle>
-    </feature>
-
     <feature name="opennms-elasticsearch-event-forwarder" description="OpenNMS :: Features :: Elasticsearch :: Event Forwarder" version="${project.version}">
       <feature>camel-core</feature>
       <feature>camel-blueprint</feature>
@@ -587,17 +572,39 @@
       <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-core-ipc-sink" description="OpenNMS :: Core :: IPC :: Sink" version="${project.version}">
+    <feature name='opennms-kafka' description="OpenNMS :: Features :: Kafka" version="${project.version}">
+      <bundle dependency="true">mvn:org.scala-lang/scala-library/2.10.6</bundle>
+      <!-- NMS-8929: Upgrade Zookeeper to fix bug https://issues.apache.org/jira/browse/ZOOKEEPER-2056 -->
+      <!-- <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.6</bundle> -->
+      <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.9</bundle>
+      <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-core/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
+      <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-annotation/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
+      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_2.10/0.10.1.1_1</bundle>
+      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/0.10.1.1_1</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-sink-api" description="OpenNMS :: Core :: IPC :: Sink :: API" version="${project.version}">
       <feature>org.json</feature>
       <feature>javax.mail</feature>
-      <feature>opennms-core-camel</feature>
-      <feature>camel-blueprint</feature>
       <feature>rate-limited-logger</feature>
       <feature>dropwizard-metrics</feature>
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.xml/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-sink-camel" description="OpenNMS :: Core :: IPC :: Sink :: Camel Impl." version="${project.version}">
+      <feature>opennms-core-ipc-sink-api</feature>
+      <feature>opennms-core-camel</feature>
+      <feature>camel-blueprint</feature>
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.camel-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-sink-kafka" description="OpenNMS :: Core :: IPC :: Sink :: Kafka Impl." version="${project.version}">
+      <feature>opennms-core-ipc-sink-api</feature>
+      <feature>opennms-kafka</feature>
+      <feature>opennms-core-camel</feature>
+      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.kafka-impl/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-rpc" description="OpenNMS :: Core :: IPC :: RPC" version="${project.version}">
@@ -681,6 +688,15 @@
 
       <bundle dependency="true">mvn:org.opennms.lib/org.opennms.lib.tracker/${trackerVersion}</bundle>
       <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-icmp-best" description="OpenNMS :: ICMP :: Best Match" version="${project.version}">
+      <feature>opennms-icmp-api</feature>
+      <feature>opennms-icmp-jna</feature>
+      <feature>opennms-icmp-jni</feature>
+      <feature>opennms-icmp-jni6</feature>
+
+      <bundle>mvn:org.opennms/opennms-icmp-best/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-icmp-jna" description="OpenNMS :: ICMP :: JNA" version="${project.version}">
@@ -820,12 +836,10 @@
       <feature>activemq-camel</feature>
       <feature>camel-core</feature>
       <feature>camel-http</feature>
-      <feature>onms-camel-kafka</feature>
       <feature>camel-netty</feature>
       <feature version="${guavaVersion}">guava</feature>
 
       <feature>dropwizard-metrics</feature>
-      <feature>lmax-disruptor</feature>
 
       <feature>opennms-core</feature>
       <feature>opennms-core-camel</feature>
@@ -833,6 +847,7 @@
       <feature>opennms-core-db</feature>
       <feature>opennms-config</feature>
       <feature>opennms-dao-api</feature>
+      <feature>opennms-core-ipc-sink-api</feature>
 
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}</bundle>
     </feature>
@@ -851,54 +866,11 @@
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-listener-camel-netty</bundle>
     </feature>
 
-    <feature name="opennms-syslogd-listener-nio" description="OpenNMS :: Syslogd :: Listener :: NIO" version="${project.version}">
-      <feature>camel-blueprint</feature>
-      <feature>opennms-syslogd</feature>
-
-      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-listener-nio</bundle>
-    </feature>
-
-    <!-- TODO: Rename this. It's more of an Dominion-side syslog connection handler... -->
-    <feature name="opennms-syslogd-handler-default" description="OpenNMS :: Syslogd :: Handler :: Default" version="${project.version}">
-      <feature>activemq-camel</feature>
-      <feature>camel-blueprint</feature>
-      <feature>camel-http</feature>
-      <feature>opennms-activemq-component</feature>
-      <feature>opennms-core-camel</feature>
-
-      <!--
-      These classes are in the system classpath inside OpenNMS
-      <feature>opennms-syslogd</feature>
-      -->
-
-      <!-- Naked blueprint bundles don't work in featuresBoot on Karaf 2.4.X so we have to wrap them in a JAR -->
-      <!-- <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-default</bundle> -->
-      <bundle>mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/jar/blueprint-syslog-handler-default</bundle>
-    </feature>
-
-    <!-- TODO: Rename this. It's more of an Dominion-side syslog connection handler... -->
-    <feature name="opennms-syslogd-handler-kafka-default" description="OpenNMS :: Syslogd :: Handler :: Kafka :: Default" version="${project.version}">
-      <feature>camel-blueprint</feature>
-      <feature>onms-camel-kafka</feature>
-      <feature>opennms-core-camel</feature>
-
-      <!--
-      These classes are in the system classpath inside OpenNMS
-      <feature>opennms-syslogd</feature>
-      -->
-
-      <!-- Naked blueprint bundles don't work in featuresBoot on Karaf 2.4.X so we have to wrap them in a JAR -->
-      <!-- <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-kafka-default</bundle> -->
-      <bundle>mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/jar/blueprint-syslog-handler-kafka-default</bundle>
-    </feature>
-
     <!-- TrapD feature -->
     <feature name="opennms-trapd" description="OpenNMS :: Trapd" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
-      <feature>activemq-camel</feature>
       <feature>camel-core</feature>
       <feature>camel-http</feature>
-      <feature>onms-camel-kafka</feature>
       <feature>camel-netty</feature>
       <feature version="${guavaVersion}">guava</feature>
 
@@ -910,48 +882,9 @@
       <feature>opennms-dao-api</feature>
       <feature>opennms-events-api</feature>
       <feature>opennms-snmp</feature>
+      <feature>opennms-core-ipc-sink-api</feature>
 
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}</bundle>
-    </feature>
-
-    <feature name="opennms-trapd-listener" description="OpenNMS :: Trapd :: Listener" version="${project.version}">
-      <feature>camel-blueprint</feature>
-      <feature>opennms-trapd</feature>
-      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-listener</bundle>
-    </feature>
-    
-    <!-- TODO: Rename this. It's more of an Dominion-side trap message handler... -->
-    <feature name="opennms-trapd-handler-default" description="OpenNMS :: Trapd :: Handler :: Default" version="${project.version}">
-      <feature>activemq-camel</feature>
-      <feature>camel-blueprint</feature>
-      <feature>camel-http</feature>
-      <feature>opennms-activemq-component</feature>
-      <feature>opennms-core-camel</feature>
-
-      <!--
-      These classes are in the system classpath inside OpenNMS
-      <feature>opennms-trapd</feature>
-      -->
-
-      <!-- Naked blueprint bundles don't work in featuresBoot on Karaf 2.4.X so we have to wrap them in a JAR -->
-      <!-- <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-default</bundle> -->
-      <bundle>mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/jar/blueprint-trapd-handler-default</bundle>
-    </feature>
-
-    <!-- TODO: Rename this. It's more of an Dominion-side trap message handler... -->
-    <feature name="opennms-trapd-handler-kafka-default" description="OpenNMS :: Trapd :: Handler :: Kafka :: Default" version="${project.version}">
-      <feature>camel-blueprint</feature>
-      <feature>onms-camel-kafka</feature>
-      <feature>opennms-core-camel</feature>
-
-      <!--
-      These classes are in the system classpath inside OpenNMS
-      <feature>opennms-trapd</feature>
-      -->
-
-      <!-- Naked blueprint bundles don't work in featuresBoot on Karaf 2.4.X so we have to wrap them in a JAR -->
-      <!-- <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-kafka-default</bundle> -->
-      <bundle>mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/jar/blueprint-trapd-handler-kafka-default</bundle>
     </feature>
 
     <feature name="tsrm-troubleticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: Tivoli Service Request Manager (TSRM)">

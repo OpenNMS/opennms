@@ -34,27 +34,26 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
+import org.opennms.core.collection.test.CollectionSetUtils;
 import org.opennms.core.wsman.WSManClientFactory;
-import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
-import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
-import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.GenericTypeResourceWithoutInstance;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.netmgt.config.datacollection.Parameter;
@@ -70,6 +69,7 @@ import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.ResourcePath;
 import org.w3c.dom.Node;
 
 import com.google.common.collect.Maps;
@@ -82,13 +82,13 @@ public class WSManCollectorTest {
     public void canProcessEnumerationResults() {
         Group group = new Group();
         group.setName("ComputerSystem");
-        addAttribute(group, "PrimaryStatus", "GaugeWithValue", "Gauge");
-        addAttribute(group, "!PrimaryStatus!", "GaugeWithoutValue", "Gauge");
-        addAttribute(group, "ElementName", "StringWithValue", "String");
-        addAttribute(group, "!ElementName!", "StringWithoutValue", "String");
+        addAttribute(group, "PrimaryStatus", "GaugeWithValue", AttributeType.GAUGE);
+        addAttribute(group, "!PrimaryStatus!", "GaugeWithoutValue", AttributeType.GAUGE);
+        addAttribute(group, "ElementName", "StringWithValue", AttributeType.STRING);
+        addAttribute(group, "!ElementName!", "StringWithoutValue", AttributeType.STRING);
 
         CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getStorageDir()).thenReturn(new java.io.File(""));
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         Supplier<Resource> resourceSupplier = () -> mock(NodeLevelResource.class);
 
@@ -112,7 +112,7 @@ public class WSManCollectorTest {
         WsManCollector.processEnumerationResults(group, builder, resourceSupplier, nodes);
 
         // Verify
-        Map<String, CollectionAttribute> attributesByName = getAttributes(builder.build());
+        Map<String, CollectionAttribute> attributesByName = CollectionSetUtils.getAttributesByName(builder.build());
         assertFalse("The CollectionSet should not contain attributes for missing values.", attributesByName.containsKey("GaugeWithoutValue"));
         assertFalse("The CollectionSet should not contain attributes for missing values.", attributesByName.containsKey("StringWithoutValue"));
         assertEquals(42.1, attributesByName.get("GaugeWithValue").getNumericValue().doubleValue(), 2);
@@ -139,11 +139,11 @@ public class WSManCollectorTest {
         attr.setName("OtherIdentifyingInfo");
         attr.setAlias("ServiceTag");
         attr.setIndexOf("#IdentifyingDescriptions matches '.*ServiceTag'");
-        attr.setType("String");
+        attr.setType(AttributeType.STRING);
         group.addAttrib(attr);
 
         CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getStorageDir()).thenReturn(new java.io.File(""));
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         Supplier<Resource> resourceSupplier = () -> mock(NodeLevelResource.class);
 
@@ -171,7 +171,7 @@ public class WSManCollectorTest {
         WsManCollector.processEnumerationResults(group, builder, resourceSupplier, nodes);
 
         // Verify
-        Map<String, CollectionAttribute> attributesByName = getAttributes(builder.build());
+        Map<String, CollectionAttribute> attributesByName = CollectionSetUtils.getAttributesByName(builder.build());
         assertEquals("C7BBBP1", attributesByName.get("ServiceTag").getStringValue());
     }
 
@@ -184,18 +184,18 @@ public class WSManCollectorTest {
         attr.setName("CurrentReading");
         attr.setAlias("sysBoardInletTemp");
         attr.setFilter("#ElementName == 'System Board Inlet Temp'");
-        attr.setType("Gauge");
+        attr.setType(AttributeType.GAUGE);
         group.addAttrib(attr);
 
         attr = new Attrib();
         attr.setName("CurrentReading");
         attr.setAlias("sysBoardExhaustTemp");
         attr.setFilter("#ElementName == 'System Board Exhaust Temp'");
-        attr.setType("Gauge");
+        attr.setType(AttributeType.GAUGE);
         group.addAttrib(attr);
 
         CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getStorageDir()).thenReturn(new java.io.File(""));
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         Supplier<Resource> resourceSupplier = () -> mock(NodeLevelResource.class);
 
@@ -215,7 +215,7 @@ public class WSManCollectorTest {
         WsManCollector.processEnumerationResults(group, builder, resourceSupplier, nodes);
 
         // Verify
-        Map<String, CollectionAttribute> attributesByName = getAttributes(builder.build());
+        Map<String, CollectionAttribute> attributesByName = CollectionSetUtils.getAttributesByName(builder.build());
         assertEquals(Double.valueOf(260), attributesByName.get("sysBoardInletTemp").getNumericValue());
         assertEquals(Double.valueOf(370), attributesByName.get("sysBoardExhaustTemp").getNumericValue());
     }
@@ -241,7 +241,7 @@ public class WSManCollectorTest {
         collector.setNodeDao(nodeDao);
 
         CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getStorageDir()).thenReturn(new java.io.File(""));
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
         collector.initialize(agent, Maps.newHashMap());
 
         Map<String, Object> collectionParams = Maps.newHashMap();
@@ -249,8 +249,8 @@ public class WSManCollectorTest {
 
         CollectionSet collectionSet = collector.collect(agent, null, collectionParams);
 
-        assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
-        assertEquals(0, getAttributes(collectionSet).size());
+        assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
+        assertEquals(0, CollectionSetUtils.getAttributesByName(collectionSet).size());
     }
 
 
@@ -273,21 +273,24 @@ public class WSManCollectorTest {
         PersistenceSelectorStrategy pstrategy = new PersistenceSelectorStrategy();
         pstrategy.setClazz(PersistAllSelectorStrategy.class.getCanonicalName());
         rt.setPersistenceSelectorStrategy(pstrategy);
-        Supplier<Resource> resourceSupplier = () -> new GenericTypeResourceWithoutInstance(node, rt);
+        final AtomicInteger instanceId = new AtomicInteger();
+        Supplier<Resource> resourceSupplier = () -> {
+            return new GenericTypeResource(node, rt, Integer.toString(instanceId.getAndIncrement()));
+        };
 
         // Define our group
         Group group = new Group();
         group.setName("windows-os-wmi-processor");
-        addAttribute(group, "Name", "wmiOSCpuName", "string");
-        addAttribute(group, "InterruptsPersec", "wmiOSCpuIntsPerSec", "Gauge");
-        addAttribute(group, "PercentProcessorTime", "wmiOSCpuPctProcTime", "Gauge");
-        addAttribute(group, "PercentDPCTime", "wmiOSCpuPctDPCTime", "Gauge");
-        addAttribute(group, "PercentInterruptTime", "wmiOSCpuPctIntrTime", "Gauge");
-        addAttribute(group, "PercentUserTime", "wmiOSCpuPctUserTime", "Gauge");
+        addAttribute(group, "Name", "wmiOSCpuName", AttributeType.STRING);
+        addAttribute(group, "InterruptsPersec", "wmiOSCpuIntsPerSec", AttributeType.GAUGE);
+        addAttribute(group, "PercentProcessorTime", "wmiOSCpuPctProcTime", AttributeType.GAUGE);
+        addAttribute(group, "PercentDPCTime", "wmiOSCpuPctDPCTime", AttributeType.GAUGE);
+        addAttribute(group, "PercentInterruptTime", "wmiOSCpuPctIntrTime", AttributeType.GAUGE);
+        addAttribute(group, "PercentUserTime", "wmiOSCpuPctUserTime", AttributeType.GAUGE);
 
         // Mock the agent
         CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getStorageDir()).thenReturn(new java.io.File(""));
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
 
         // Sample data
@@ -313,48 +316,14 @@ public class WSManCollectorTest {
                 "wsProcIndex/c0/windows-os-wmi-processor/wmiOSCpuIntsPerSec[null,95.0]",
                 "wsProcIndex/c1/windows-os-wmi-processor/wmiOSCpuName[c1,null]",
                 "wsProcIndex/c1/windows-os-wmi-processor/wmiOSCpuIntsPerSec[null,100.0]"),
-                flatten(builder.build()));
+                CollectionSetUtils.flatten(builder.build()));
     }
 
-    private static void addAttribute(Group group, String name, String alias, String type) {
+    private static void addAttribute(Group group, String name, String alias, AttributeType type) {
         Attrib attr = new Attrib();
         attr.setName(name);
         attr.setAlias(alias);
         attr.setType(type);
         group.addAttrib(attr);
-    }
-
-    private static List<String> flatten(CollectionSet collectionSet) {
-        final List<String> strings = new ArrayList<>();
-        collectionSet.visit(new AbstractCollectionSetVisitor() {
-            CollectionResource resource;
-            AttributeGroup group;
-
-            @Override
-            public void visitResource(CollectionResource resource) {
-                this.resource = resource;
-            }
-            @Override
-            public void visitGroup(AttributeGroup group) {
-                this.group = group;
-            }
-            @Override
-            public void visitAttribute(CollectionAttribute attribute) {
-                strings.add(String.format("%s/%s/%s[%s,%s]", resource.getPath(), group.getName(),
-                        attribute.getName(),attribute.getStringValue(),attribute.getNumericValue()));
-            }
-        });
-        return strings;
-    }
-
-    private static Map<String, CollectionAttribute> getAttributes(CollectionSet collectionSet) {
-        final Map<String, CollectionAttribute> attributesByName = Maps.newHashMap();
-        collectionSet.visit(new AbstractCollectionSetVisitor() {
-            @Override
-            public void visitAttribute(CollectionAttribute attribute) {
-                attributesByName.put(attribute.getName(), attribute);
-            }
-        });
-        return attributesByName;
     }
 }
