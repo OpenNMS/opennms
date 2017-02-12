@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,14 +51,18 @@ public abstract class SocketUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(SocketUtils.class);
 
     public static Socket wrapSocketInSslContext(Socket socket) throws IOException {
-        return wrapSocketInSslContext(socket, null);
+        return wrapSocketInSslContext(socket, null, null);
     }
 
-    public static SSLSocket wrapSocketInSslContext(Socket socket, String[] cipherSuites) throws IOException {
-        TrustManager[] tm = { new RelaxedX509TrustManager() };
+    public static Socket wrapSocketInSslContext(Socket socket, String protocol) throws IOException {
+        return wrapSocketInSslContext(socket, protocol, null);
+    }
+
+    public static Socket wrapSocketInSslContext(Socket socket, String protocol, String[] cipherSuites) throws IOException {
+        TrustManager[] tm = { new RelaxedX509ExtendedTrustManager() };
         SSLContext sslContext = null;
         try {
-            sslContext = SSLContext.getInstance("SSL");
+            sslContext = SSLContext.getInstance(protocol == null ? "SSL" : protocol);
             sslContext.init(null, tm, new java.security.SecureRandom());
         } catch (NoSuchAlgorithmException e) {
         	LOG.error("wrapSocket: Error wrapping socket, throwing runtime exception", e);
