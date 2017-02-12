@@ -278,7 +278,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
     	} else {
     	    // Set this socket to use anonymous Diffie-Hellman ciphers. This removes the authentication
     	    // benefits of SSL, but it's how NRPE rolls so we have to play along.
-    	    return SocketUtils.wrapSocketInSslContext(socket, ADH_CIPHER_SUITES);
+	    return SocketUtils.wrapSocketInSslContext(socket, null, ADH_CIPHER_SUITES);
     	}
     	
     }

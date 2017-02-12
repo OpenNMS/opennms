@@ -34,17 +34,23 @@ import java.util.Arrays;
 
 public class SslSocketWrapper implements SocketWrapper {
     private final String[] m_cipherSuites;
+    private final String m_protocol;
 
     public SslSocketWrapper() {
-        this(null);
+        this(null, null);
     }
 
     public SslSocketWrapper(String[] cipherSuites) {
+        this(null, cipherSuites);
+    }
+
+    public SslSocketWrapper(String protocol, String[] cipherSuites) {
+        m_protocol = protocol == null ? "SSL" : protocol;
         m_cipherSuites = cipherSuites == null ? null : Arrays.copyOf(cipherSuites, cipherSuites.length);
     }
 
     @Override
     public Socket wrapSocket(Socket socket) throws IOException {
-        return SocketUtils.wrapSocketInSslContext(socket, m_cipherSuites);
+        return SocketUtils.wrapSocketInSslContext(socket, m_protocol, m_cipherSuites);
     }
 }
