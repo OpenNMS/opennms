@@ -1318,7 +1318,6 @@
     <batikVersion>1.7</batikVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <camelVersion>2.14.1</camelVersion>
-    <elasticsearchVersion>1.0.0_4</elasticsearchVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.10</commonsCodecVersion>
