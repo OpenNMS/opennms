@@ -54,11 +54,11 @@ public abstract class SocketUtils {
         return wrapSocketInSslContext(socket, null, null);
     }
 
-    public static Socket wrapSocketInSslContext(Socket socket, String protocol) throws IOException {
+    public static SSLSocket wrapSocketInSslContext(Socket socket, String protocol) throws IOException {
         return wrapSocketInSslContext(socket, protocol, null);
     }
 
-    public static Socket wrapSocketInSslContext(Socket socket, String protocol, String[] cipherSuites) throws IOException {
+    public static SSLSocket wrapSocketInSslContext(Socket socket, String protocol, String[] cipherSuites) throws IOException {
         TrustManager[] tm = { new RelaxedX509ExtendedTrustManager() };
         SSLContext sslContext = null;
         try {
