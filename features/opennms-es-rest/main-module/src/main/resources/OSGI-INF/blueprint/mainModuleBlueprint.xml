@@ -29,10 +29,11 @@
       <cm:property name="archiveAlarmChangeEvents" value="true" />
       <cm:property name="archiveOldAlarmValues" value="true" />
       <cm:property name="archiveNewAlarmValues" value="true" />
-      <cm:property name="batchSize" value="1" /> <!-- disable batching by default -->
-      <cm:property name="batchInterval" value="0" /> <!-- disable batching by default -->
-      <cm:property name="cache_max_ttl" value="0" /> <!-- set to zero to disable TTL -->
-      <cm:property name="cache_max_size" value="10000" /> <!-- set to zero to disable max size -->
+      <cm:property name="batchSize" value="1" /> <!-- Disable batching by default -->
+      <cm:property name="batchInterval" value="0" /> <!-- Disable batching by default -->
+      <cm:property name="threads" value="0" /> <!-- Use the default number of threads -->
+      <cm:property name="cache_max_ttl" value="0" /> <!-- Set to zero to disable TTL -->
+      <cm:property name="cache_max_size" value="10000" /> <!-- Set to zero to disable max size -->
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -78,6 +79,7 @@
     <property name="indexNameFunction" ref="indexNameFunction" />
     <property name="logEventDescription" value="${logEventDescription}" />
     <property name="logAllEvents" value="${logAllEvents}" />
+    <property name="threads" value="${threads}" />
     <property name="archiveRawEvents" value="${archiveRawEvents}" />
     <property name="archiveAlarms" value="${archiveAlarms}" />
     <property name="archiveAlarmChangeEvents" value="${archiveAlarmChangeEvents}" />
