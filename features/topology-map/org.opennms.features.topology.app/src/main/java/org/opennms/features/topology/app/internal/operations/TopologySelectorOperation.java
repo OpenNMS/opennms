@@ -46,6 +46,7 @@ import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.jung.D3TopoLayoutAlgorithm;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -157,7 +158,7 @@ public class TopologySelectorOperation extends AbstractCheckedOperation {
 				return ((LayoutOperation) operation).getLayoutAlgorithm();
 			}
 		}
-		return null; // no preferredLayout defined
+		return new D3TopoLayoutAlgorithm(); // fall back to D3
 	}
 
 	private StatusProvider findVertexStatusProvider(GraphProvider graphProvider) {
