@@ -38,22 +38,22 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.xml.ValidateUsing;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 @XmlRootElement(name="locations")
 @ValidateUsing("monitoring-locations.xsd")
 @JsonRootName("locations")
-public class OnmsMonitoringLocationDefinitionList extends JaxbListWrapper<LocationDef> {
+public class OnmsMonitoringLocationDefinitionList extends JaxbListWrapper<OnmsMonitoringLocation> {
     private static final long serialVersionUID = 1L;
 
     public OnmsMonitoringLocationDefinitionList() { super(); }
-    public OnmsMonitoringLocationDefinitionList(final Collection<? extends LocationDef> definitions) {
+    public OnmsMonitoringLocationDefinitionList(final Collection<? extends OnmsMonitoringLocation> definitions) {
         super(definitions);
     }
 
     @XmlElement(name="location")
     @JsonProperty("location")
-    public List<LocationDef> getObjects() {
+    public List<OnmsMonitoringLocation> getObjects() {
         return super.getObjects();
     }
 }

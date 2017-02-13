@@ -31,11 +31,13 @@ package org.opennms.netmgt.eventd.processor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.util.AutoAction;
@@ -51,12 +53,20 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DeadlockLoserDataAccessException;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.util.Assert;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 
 /**
  * EventWriter loads the information in each 'Event' into the database.
@@ -73,25 +83,31 @@ import org.springframework.util.Assert;
  * Values for the ' <parms>' block are loaded with each parm name and parm value
  * delimited with the NAME_VAL_DELIM.
  * 
- * @see org.opennms.netmgt.model.events.Constants#MULTIPLE_VAL_DELIM
- * @see org.opennms.netmgt.model.events.Constants#DB_ATTRIB_DELIM
- * @see org.opennms.netmgt.model.events.Constants#NAME_VAL_DELIM
+ * @see org.opennms.netmgt.events.api.EventDatabaseConstants#MULTIPLE_VAL_DELIM
+ * @see org.opennms.netmgt.events.api.EventDatabaseConstants#DB_ATTRIB_DELIM
+ * @see org.opennms.netmgt.events.api.EventDatabaseConstants#NAME_VAL_DELIM
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class HibernateEventWriter implements EventWriter {
     private static final Logger LOG = LoggerFactory.getLogger(HibernateEventWriter.class);
+
+    public static final String LOG_MSG_DEST_DO_NOT_PERSIST = "donotpersist";
+    public static final String LOG_MSG_DEST_SUPRRESS = "suppress";
+    public static final String LOG_MSG_DEST_LOG_AND_DISPLAY = "logndisplay";
+    public static final String LOG_MSG_DEST_LOG_ONLY = "logonly";
+    public static final String LOG_MSG_DEST_DISPLAY_ONLY = "displayonly";
+    
+    @Autowired
+    private TransactionOperations m_transactionManager;
     
     @Autowired
     private NodeDao nodeDao;
     
     @Autowired
-    private IpInterfaceDao ipInterfaceDao;
-    
-    @Autowired
-    private MonitoredServiceDao monitoredServiceDao;
-    
+    private MonitoringSystemDao monitoringSystemDao;
+
     @Autowired
     private DistPollerDao distPollerDao;
     
@@ -103,6 +119,12 @@ public class HibernateEventWriter implements EventWriter {
 
     @Autowired
     private EventUtil eventUtil;
+
+    private final Timer writeTimer;
+
+    public HibernateEventWriter(MetricRegistry registry) {
+        writeTimer = Objects.requireNonNull(registry).timer("eventlogs.process.write");
+    }
 
     /**
      * <p>checkEventSanityAndDoWeProcess</p>
@@ -121,8 +143,8 @@ public class HibernateEventWriter implements EventWriter {
          */
         Assert.notNull(event.getLogmsg(), "event does not have a logmsg");
         if (
-            "donotpersist".equals(event.getLogmsg().getDest()) || 
-            "suppress".equals(event.getLogmsg().getDest())
+            LOG_MSG_DEST_DO_NOT_PERSIST.equalsIgnoreCase(event.getLogmsg().getDest()) ||
+            LOG_MSG_DEST_SUPRRESS.equalsIgnoreCase(event.getLogmsg().getDest())
         ) {
             LOG.debug("{}: uei '{}' marked as '{}'; not processing event.", logPrefix, event.getUei(), event.getLogmsg().getDest());
             return false;
@@ -130,21 +152,65 @@ public class HibernateEventWriter implements EventWriter {
         return true;
     }
 
+
+    @Override
+    public void process(Log eventLog) throws EventProcessorException {
+        if (eventLog != null && eventLog.getEvents() != null) {
+            final List<Event> eventsInLog = eventLog.getEvents().getEventCollection();
+            // This shouldn't happen, but just to be safe...
+            if (eventsInLog == null) {
+                return;
+            }
+
+            // Find the events in the log that need to be persisted
+            final List<Event> eventsToPersist = eventsInLog.stream()
+                .filter(e -> checkEventSanityAndDoWeProcess(e, "HibernateEventWriter"))
+                .collect(Collectors.toList());
+
+            // If there are no events to persist, avoid creating a database transaction
+            if (eventsToPersist.size() < 1) {
+                return;
+            }
+
+            // Time the transaction and insertions
+            try (Context context = writeTimer.time()) {
+                final AtomicReference<EventProcessorException> exception = new AtomicReference<>();
+
+                m_transactionManager.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+                        for (Event eachEvent : eventsToPersist) {
+                            try {
+                                process(eventLog.getHeader(), eachEvent);
+                            } catch (EventProcessorException e) {
+                                exception.set(e);
+                                return;
+                            }
+                        }
+                    }
+                });
+
+                if (exception.get() != null) {
+                    throw exception.get();
+                }
+            }
+        }
+    }
+
     /**
      * {@inheritDoc}
      *
      * The method that inserts the event into the database
      */
-    @Override
-    public void process(final Header eventHeader, final Event event) throws EventProcessorException {
-        if (!checkEventSanityAndDoWeProcess(event, "HibernateEventWriter")) {
-            return;
-        }
-
+    private void process(final Header eventHeader, final Event event) throws EventProcessorException {
         LOG.debug("HibernateEventWriter: processing {}, nodeid: {}, ipaddr: {}, serviceid: {}, time: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
 
         try {
-            insertEvent(eventHeader, event);
+            final OnmsEvent ovent = createOnmsEvent(eventHeader, event);
+            eventDao.save(ovent);
+
+            // Update the event with the database ID of the event stored in the database
+            event.setDbid(ovent.getId());
         } catch (DeadlockLoserDataAccessException e) {
             throw new EventProcessorException("Encountered deadlock when inserting event: " + event.toString(), e);
         } catch (Throwable e) {
@@ -153,13 +219,13 @@ public class HibernateEventWriter implements EventWriter {
     }
 
     /**
-     * Insert values into the EVENTS table
+     * Creates OnmsEvent to be inserted afterwards.
      * 
      * @exception java.lang.NullPointerException
      *                Thrown if a required resource cannot be found in the
      *                properties file.
      */
-    private void insertEvent(final Header eventHeader, final Event event) {
+    private OnmsEvent createOnmsEvent(final Header eventHeader, final Event event) {
 
         OnmsEvent ovent = new OnmsEvent();
 
@@ -191,19 +257,20 @@ public class HibernateEventWriter implements EventWriter {
         if (event.hasIfIndex()) {
             ovent.setIfIndex(event.getIfIndex());
         } else {
-        	ovent.setIfIndex(null);
+            ovent.setIfIndex(null);
         }
 
         // systemId
 
         // If available, use the header's distPoller
         if (eventHeader != null && eventHeader.getDpName() != null && !"".equals(eventHeader.getDpName().trim())) {
+            // TODO: Should we also try a look up the value in the MinionDao and LocationMonitorDao here?
             ovent.setDistPoller(distPollerDao.get(eventHeader.getDpName()));
         }
         // Otherwise, use the event's distPoller
         if (ovent.getDistPoller() == null && event.getDistPoller() != null && !"".equals(event.getDistPoller().trim())) {
-            ovent.setDistPoller(distPollerDao.get(event.getDistPoller()));
-        } 
+            ovent.setDistPoller(monitoringSystemDao.get(event.getDistPoller()));
+        }
         // And if both are unavailable, use the local system as the event's source system
         if (ovent.getDistPoller() == null) {
             ovent.setDistPoller(distPollerDao.whoami());
@@ -224,7 +291,9 @@ public class HibernateEventWriter implements EventWriter {
         ovent.setEventParms(EventDatabaseConstants.format(parametersString, 0));
 
         // eventCreateTime
-        // TODO: Should we use event.getCreationTime() here?
+        // TODO: We are overriding the 'eventcreatetime' field of the event with a new Date
+        // representing the storage time of the event. 'eventcreatetime' should really be
+        // renamed to something like 'eventpersisttime' since that is closer to its meaning.
         ovent.setEventCreateTime(new Date());
 
         // eventDescr
@@ -240,19 +309,19 @@ public class HibernateEventWriter implements EventWriter {
             // set log message
             ovent.setEventLogMsg(EventDatabaseConstants.format(event.getLogmsg().getContent(), 0));
             String logdest = event.getLogmsg().getDest();
-            if ("logndisplay".equals(logdest)) {
+            if (LOG_MSG_DEST_LOG_AND_DISPLAY.equals(logdest)) {
                 // if 'logndisplay' set both log and display column to yes
                 ovent.setEventLog(String.valueOf(MSG_YES));
                 ovent.setEventDisplay(String.valueOf(MSG_YES));
-            } else if ("logonly".equals(logdest)) {
+            } else if (LOG_MSG_DEST_LOG_ONLY.equals(logdest)) {
                 // if 'logonly' set log column to true
                 ovent.setEventLog(String.valueOf(MSG_YES));
                 ovent.setEventDisplay(String.valueOf(MSG_NO));
-            } else if ("displayonly".equals(logdest)) {
+            } else if (LOG_MSG_DEST_DISPLAY_ONLY.equals(logdest)) {
                 // if 'displayonly' set display column to true
                 ovent.setEventLog(String.valueOf(MSG_NO));
                 ovent.setEventDisplay(String.valueOf(MSG_YES));
-            } else if ("suppress".equals(logdest)) {
+            } else if (LOG_MSG_DEST_SUPRRESS.equals(logdest)) {
                 // if 'suppress' set both log and display to false
                 ovent.setEventLog(String.valueOf(MSG_NO));
                 ovent.setEventDisplay(String.valueOf(MSG_NO));
@@ -325,11 +394,10 @@ public class HibernateEventWriter implements EventWriter {
             ovent.setEventAckUser(null);
             ovent.setEventAckTime(null);
         }
+        return ovent;
+    }
 
-        eventDao.save(ovent);
-        eventDao.flush();
-
-        // Update the event with the database ID of the event stored in the database
-        event.setDbid(ovent.getId());
+    public void setTransactionManager(TransactionOperations transactionManager) {
+        m_transactionManager = transactionManager;
     }
 }

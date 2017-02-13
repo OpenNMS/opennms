@@ -28,6 +28,11 @@
 
 package org.opennms.features.topology.app.internal.ui;
 
+import java.util.List;
+
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.topo.Criteria;
+
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
@@ -35,8 +40,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.topo.Criteria;
 
 public class NoContentAvailableWindow extends Window {
 
@@ -70,20 +73,15 @@ public class NoContentAvailableWindow extends Window {
         noDefaultsAvailable.setVisible(false);
 
         Button defaultFocusButton = new Button("Use Default Focus");
+        defaultFocusButton.setId("defaultFocusBtn");
         defaultFocusButton.addClickListener(new Button.ClickListener() {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                Criteria defaultCriteria = graphContainer.getBaseTopology().getDefaultCriteria();
-                if (defaultCriteria != null) {
-                    // check if there is already a criteria registered for focus vertices. If so, remove them
-                	Criteria[] allCriteria = graphContainer.getCriteria();
-                	for (Criteria criterion : allCriteria) {
-						graphContainer.removeCriteria(criterion);
-					}
-
-                    graphContainer.addCriteria(defaultCriteria); // add default criteria
-                    graphContainer.redoLayout(); // we need to redo the layout
+                List<Criteria> defaultCriteriaList = graphContainer.getBaseTopology().getDefaults().getCriteria();
+                if (defaultCriteriaList != null) {
+                    defaultCriteriaList.forEach(eachCriteria -> graphContainer.addCriteria(eachCriteria));
+                    graphContainer.redoLayout();
                     noDefaultsAvailable.setVisible(false);
                 } else {
                     noDefaultsAvailable.setVisible(true);

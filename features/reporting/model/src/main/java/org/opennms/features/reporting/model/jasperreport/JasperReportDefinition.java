@@ -33,18 +33,18 @@ import javax.xml.bind.annotation.XmlAttribute;
 public interface JasperReportDefinition {
 
     @XmlAttribute(name = "id")
-    public abstract String getId();
+    String getId();
 
     @XmlAttribute(name = "template")
-    public abstract String getTemplate();
+    String getTemplate();
 
     @XmlAttribute(name = "engine")
-    public abstract String getEngine();
+    String getEngine();
 
-    public abstract void setId(String id);
+    void setId(String id);
 
-    public abstract void setTemplate(String template);
+    void setTemplate(String template);
 
-    public abstract void setEngine(String engine);
+    void setEngine(String engine);
 
 }

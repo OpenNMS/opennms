@@ -36,8 +36,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
 import org.opennms.netmgt.icmp.EchoPacket;
 
-import com.sun.jna.Platform;
-
 /**
  * JnaPinger
  *
@@ -54,22 +52,7 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
     private volatile boolean m_stopped = false;
     private final List<PingReplyListener> m_listeners = new ArrayList<PingReplyListener>();
 
-    private static final String SOCK_DGRAM_ENVIRONMENT_VARIABLE = "JICMP_USE_SOCK_DGRAM";
-
-    public static int getSocketType() {
-        if (
-            // If the user has set an environment variable
-            "1".equals(System.getenv(SOCK_DGRAM_ENVIRONMENT_VARIABLE)) || 
-            "true".equalsIgnoreCase(System.getenv(SOCK_DGRAM_ENVIRONMENT_VARIABLE)) ||
-            // or we're on Mac OS X where SOCK_DGRAM ping is supported by the kernel 
-            Platform.isMac()
-        ) {
-            return NativeDatagramSocket.SOCK_DGRAM;
-        } else {
-            return NativeDatagramSocket.SOCK_RAW;
-        }
-    }
-
+    @SuppressWarnings("unused")
     protected AbstractPinger(int pingerId, NativeDatagramSocket pingSocket) {
         m_pingerId = pingerId;
         m_pingSocket = pingSocket;

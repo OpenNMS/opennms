@@ -28,12 +28,18 @@
 
 package org.opennms.netmgt.daemon;
 
-import org.junit.Before;
+import javax.jms.QueueConnection;
+import javax.jms.QueueSender;
+import javax.jms.QueueSession;
+import javax.jms.TextMessage;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -42,17 +48,25 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
 		"classpath:/META-INF/opennms/applicationContext-daemon.xml"
 })
-@JUnitConfigurationEnvironment//(systemProperties="activemq.data=target/activemq")
+@JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
 public class DaemonContextIT {
 
-	@Before
-	public void setUp() throws Throwable {
-	}
+    @Autowired
+    ActiveMQConnectionFactory activeMQConnectionFactory;
 
+	/**
+	* Verifies that the embedded ActiveMQ broker bootstraps successfully
+	* and is accessible using the provided connection factory.
+	*/
 	@Test
-	public void testActiveMqBroker() throws Throwable {
-		// TODO: Add some tests to make sure that the ActiveMQ broker started successfully
+	public void canUseEmbeddedActiveMQBroker() throws Throwable {
+	    QueueConnection connection = activeMQConnectionFactory.createQueueConnection();
+	    QueueSession session = connection.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE );
+	    TextMessage message = session.createTextMessage();
+	    message.setText("ping");
+	    QueueSender sender = session.createSender(session.createQueue("pong"));
+	    sender.send(message);
 	}
 
 }

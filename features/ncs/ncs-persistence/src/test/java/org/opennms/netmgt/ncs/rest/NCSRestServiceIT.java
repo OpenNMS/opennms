@@ -236,7 +236,7 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestTestCase {
 	@After
 	@Override
 	public void tearDown() throws Exception {
-		final Collection<Event> events = m_eventAnticipator.unanticipatedEvents();
+		final Collection<Event> events = m_eventAnticipator.getUnanticipatedEvents();
 		for (final Event e : events) {
 			System.err.println("unanticipated event: " + e.getUei() + formatParms(e.getParmCollection()));
 		}

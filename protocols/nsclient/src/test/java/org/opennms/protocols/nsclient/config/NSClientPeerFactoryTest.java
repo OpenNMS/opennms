@@ -67,11 +67,11 @@ public class NSClientPeerFactoryTest {
 
         NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
+        assertEquals(1, factory.getConfig().getDefinition().size());
 
         factory.optimize();
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
+        assertEquals(1, factory.getConfig().getDefinition().size());
     }
 
     /**
@@ -98,17 +98,17 @@ public class NSClientPeerFactoryTest {
 
         NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(2, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(0, factory.getConfig().getDefinition(0).getRangeCount());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(2, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(0, factory.getConfig().getDefinition().get(0).getRange().size());
 
         factory.optimize();
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
-        assertEquals("192.168.0.5", factory.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.0.6", factory.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(0, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(1, factory.getConfig().getDefinition().get(0).getRange().size());
+        assertEquals("192.168.0.5", factory.getConfig().getDefinition().get(0).getRange().get(0).getBegin());
+        assertEquals("192.168.0.6", factory.getConfig().getDefinition().get(0).getRange().get(0).getEnd());
     }
 
     @Test
@@ -127,17 +127,17 @@ public class NSClientPeerFactoryTest {
 
         NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(2, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(0, factory.getConfig().getDefinition(0).getRangeCount());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(2, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(0, factory.getConfig().getDefinition().get(0).getRange().size());
 
         factory.optimize();
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
-        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedb", factory.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedc", factory.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(0, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(1, factory.getConfig().getDefinition().get(0).getRange().size());
+        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedb", factory.getConfig().getDefinition().get(0).getRange().get(0).getBegin());
+        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedc", factory.getConfig().getDefinition().get(0).getRange().get(0).getEnd());
     }
 
     @Test
@@ -156,17 +156,17 @@ public class NSClientPeerFactoryTest {
 
         NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(2, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(0, factory.getConfig().getDefinition(0).getRangeCount());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(2, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(0, factory.getConfig().getDefinition().get(0).getRange().size());
 
         factory.optimize();
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
-        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedb%5", factory.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedc%5", factory.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(0, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(1, factory.getConfig().getDefinition().get(0).getRange().size());
+        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedb%5", factory.getConfig().getDefinition().get(0).getRange().get(0).getBegin());
+        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedc%5", factory.getConfig().getDefinition().get(0).getRange().get(0).getEnd());
     }
 
     @Test
@@ -185,16 +185,16 @@ public class NSClientPeerFactoryTest {
 
         NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(2, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(0, factory.getConfig().getDefinition(0).getRangeCount());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(2, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(0, factory.getConfig().getDefinition().get(0).getRange().size());
 
         factory.optimize();
 
         // No optimization should occur because the addresses have different scope IDs
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(2, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(0, factory.getConfig().getDefinition(0).getRangeCount());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(2, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(0, factory.getConfig().getDefinition().get(0).getRange().size());
     }
 
     /**
@@ -224,17 +224,17 @@ public class NSClientPeerFactoryTest {
 
         NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(1, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(2, factory.getConfig().getDefinition(0).getRangeCount());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(1, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(2, factory.getConfig().getDefinition().get(0).getRange().size());
 
         factory.optimize();
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
-        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fed0%1", factory.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedf%1", factory.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(0, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(1, factory.getConfig().getDefinition().get(0).getRange().size());
+        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fed0%1", factory.getConfig().getDefinition().get(0).getRange().get(0).getBegin());
+        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedf%1", factory.getConfig().getDefinition().get(0).getRange().get(0).getEnd());
     }
 
     /**
@@ -264,19 +264,19 @@ public class NSClientPeerFactoryTest {
 
         NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(1, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(2, factory.getConfig().getDefinition(0).getRangeCount());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(1, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(2, factory.getConfig().getDefinition().get(0).getRange().size());
 
         factory.optimize();
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(2, factory.getConfig().getDefinition(0).getRangeCount());
-        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fed0%1", factory.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("fe80:0000:0000:0000:0000:0000:0000:feda%1", factory.getConfig().getDefinition(0).getRange(0).getEnd());
-        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedb%2", factory.getConfig().getDefinition(0).getRange(1).getBegin());
-        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedf%2", factory.getConfig().getDefinition(0).getRange(1).getEnd());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(0, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(2, factory.getConfig().getDefinition().get(0).getRange().size());
+        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fed0%1", factory.getConfig().getDefinition().get(0).getRange().get(0).getBegin());
+        assertEquals("fe80:0000:0000:0000:0000:0000:0000:feda%1", factory.getConfig().getDefinition().get(0).getRange().get(0).getEnd());
+        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedb%2", factory.getConfig().getDefinition().get(0).getRange().get(1).getBegin());
+        assertEquals("fe80:0000:0000:0000:0000:0000:0000:fedf%2", factory.getConfig().getDefinition().get(0).getRange().get(1).getEnd());
     }
 
     /**
@@ -303,17 +303,17 @@ public class NSClientPeerFactoryTest {
 
         NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(1, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(1, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(1, factory.getConfig().getDefinition().get(0).getRange().size());
 
         factory.optimize();
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
-        assertEquals("192.168.0.6", factory.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.0.12", factory.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(0, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(1, factory.getConfig().getDefinition().get(0).getRange().size());
+        assertEquals("192.168.0.6", factory.getConfig().getDefinition().get(0).getRange().get(0).getBegin());
+        assertEquals("192.168.0.12", factory.getConfig().getDefinition().get(0).getRange().get(0).getEnd());
     }
 
     /**
@@ -340,17 +340,17 @@ public class NSClientPeerFactoryTest {
 
         NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(1, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(1, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(1, factory.getConfig().getDefinition().get(0).getRange().size());
 
         factory.optimize();
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
-        assertEquals("192.168.0.6", factory.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.0.12", factory.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(0, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(1, factory.getConfig().getDefinition().get(0).getRange().size());
+        assertEquals("192.168.0.6", factory.getConfig().getDefinition().get(0).getRange().get(0).getBegin());
+        assertEquals("192.168.0.12", factory.getConfig().getDefinition().get(0).getRange().get(0).getEnd());
     }
 
     /**
@@ -378,16 +378,16 @@ public class NSClientPeerFactoryTest {
 
         NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(3, factory.getConfig().getDefinition(0).getRangeCount());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(0, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(3, factory.getConfig().getDefinition().get(0).getRange().size());
 
         factory.optimize();
 
-        assertEquals(1, factory.getConfig().getDefinitionCount());
-        assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
-        assertEquals("192.168.0.6", factory.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.0.100", factory.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals(1, factory.getConfig().getDefinition().size());
+        assertEquals(0, factory.getConfig().getDefinition().get(0).getSpecific().size());
+        assertEquals(1, factory.getConfig().getDefinition().get(0).getRange().size());
+        assertEquals("192.168.0.6", factory.getConfig().getDefinition().get(0).getRange().get(0).getBegin());
+        assertEquals("192.168.0.100", factory.getConfig().getDefinition().get(0).getRange().get(0).getEnd());
     }
 }

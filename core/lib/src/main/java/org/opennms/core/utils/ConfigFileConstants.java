@@ -210,16 +210,6 @@ public abstract class ConfigFileConstants {
     public static final int ADMIN_PITXML_FILE_NAME;
 
     /**
-     * The "magic" users config file
-     */
-    public static final int MAGIC_USERS_CONF_FILE_NAME;
-
-    /**
-     * The "poller-config" config file
-     */
-    public static final int POLLER_CONF_FILE_NAME;
-
-    /**
      * The properties file that contains a list of event uies to exclude from
      * the notification wizard
      */
@@ -484,8 +474,6 @@ public abstract class ConfigFileConstants {
         SERVICE_CONF_FILE_NAME = 13;
 
         ADMIN_PITXML_FILE_NAME = 15;
-        MAGIC_USERS_CONF_FILE_NAME = 16;
-        POLLER_CONF_FILE_NAME = 17;
         EXCLUDE_UEI_FILE_NAME = 18;
         USERS_CONF_FILE_NAME = 19;
 
@@ -604,8 +592,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[SERVICE_CONF_FILE_NAME] = "service-configuration.xml";
 
         FILE_ID_TO_NAME[ADMIN_PITXML_FILE_NAME] = "pitXML.xml";
-        FILE_ID_TO_NAME[MAGIC_USERS_CONF_FILE_NAME] = "magic-users.properties";
-        FILE_ID_TO_NAME[POLLER_CONF_FILE_NAME] = "poller-config.properties";
         FILE_ID_TO_NAME[EXCLUDE_UEI_FILE_NAME] = "exclude-ueis.properties";
         FILE_ID_TO_NAME[USERS_CONF_FILE_NAME] = "users.xml";
 

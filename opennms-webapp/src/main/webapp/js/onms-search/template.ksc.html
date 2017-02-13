@@ -1,0 +1,18 @@
+<div class="form-group">
+  <div class="input-group">
+    <input type="text" class="form-control" ng-model="asyncKsc" placeholder="Type the KSC report name"
+      uib-typeahead="ksc as ksc.label for ksc in getKscReports($viewValue)"
+      typeahead-editable="false"
+      typeahead-loading="kscLoadingNodes"
+      typeahead-no-results="kscNoResults"
+      typeahead-min-length="1"
+      typeahead-on-select="goToKscReport($item)"/>
+    <span class="input-group-addon">
+      <span class="glyphicon glyphicon-search"></span>
+    </span>
+  </div>
+  <i ng-show="kscLoadingNodes" class="glyphicon glyphicon-refresh"></i>
+  <p class="help-block" ng-show="kscNoResults">
+    <i class="glyphicon glyphicon-remove"></i> No Results Found
+  </p>
+</div>

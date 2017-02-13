@@ -35,9 +35,9 @@
   org.opennms.web.api.Util,
   org.opennms.netmgt.config.DiscoveryConfigFactory,
   org.opennms.netmgt.config.discovery.*,
-  org.opennms.netmgt.config.monitoringLocations.LocationDef,
   org.opennms.netmgt.provision.persist.requisition.Requisition,
   org.opennms.netmgt.dao.api.*,
+  org.opennms.netmgt.model.monitoringLocations.*,
   org.springframework.web.context.WebApplicationContext,
   org.springframework.web.context.support.WebApplicationContextUtils,
   org.opennms.web.svclayer.api.RequisitionAccessService,
@@ -144,7 +144,7 @@ if (currConfig == null) {
 // Map of primary key to label (which in this case are the same)
 MonitoringLocationDao locationDao = context.getBean(MonitoringLocationDao.class);
 Map<String,String> locations = new TreeMap<String,String>();
-for (LocationDef location : locationDao.findAll()) {
+for (OnmsMonitoringLocation location : locationDao.findAll()) {
   locations.put(location.getLocationName(), location.getLocationName());
 }
 

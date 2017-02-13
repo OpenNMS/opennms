@@ -43,9 +43,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
@@ -77,12 +75,6 @@ public class Spc391IT extends ProvisioningITCase {
 
     @Autowired
     private ResourceLoader m_resourceLoader;
-
-    @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-
-    @Autowired
-    private IpInterfaceDao m_ipInterfaceDao;
 
     @Autowired
     private NodeDao m_nodeDao;

@@ -3,11 +3,11 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-model</artifactId>
-  <name>OpenNMS Data Model Components</name>
+  <name>OpenNMS :: Model :: Objects</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -97,10 +97,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
@@ -122,11 +118,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>

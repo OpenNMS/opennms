@@ -3,48 +3,26 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.poller</artifactId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.poller</groupId>
   <artifactId>org.opennms.features.poller.remote</artifactId>
   <name>OpenNMS :: Features :: Poller :: Remote</name>
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
+  <packaging>bundle</packaging>
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
         <configuration>
-          <skipITs>${skipITs}</skipITs>
-          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
-          <systemPropertyVariables>
-            <opennms.home>${project.build.testOutputDirectory}</opennms.home>
-            <java.endorsed.dirs>${basedir}/target/endorsed</java.endorsed.dirs>
-          </systemPropertyVariables>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+          </instructions>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
@@ -58,8 +36,8 @@
     pull in a bunch of other dependencies like jetty-jsp we do not want here.
     See issue #NMS-6945 for more details -->
     <dependency>
-      <groupId>org.eclipse.jetty.orbit</groupId>
-      <artifactId>javax.servlet</artifactId>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -82,6 +60,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.poller</groupId>
@@ -123,11 +105,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

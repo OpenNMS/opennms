@@ -52,13 +52,14 @@ import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpMessage;
 import org.krupczak.xmp.XmpSession;
 import org.krupczak.xmp.XmpVar;
-import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
+import org.opennms.netmgt.provision.DetectRequest;
+import org.opennms.netmgt.provision.DetectResults;
+import org.opennms.netmgt.provision.SyncServiceDetector;
+import org.opennms.netmgt.provision.support.DetectResultsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * OpenNMS XMP Detector allows for discovery of service/protocols via
@@ -73,8 +74,7 @@ import org.springframework.stereotype.Component;
  * @author rdk <rdk@krupczak.org>
  * @version $Id: $
  */
-@Component
-@Scope("prototype")
+
 public class XmpDetector implements SyncServiceDetector {
     private static final String DEFAULT_SERVICE_NAME = "XMP";
     private static final String XMP_DEFAULT_AUTH_USER = "xmpUser";
@@ -206,7 +206,8 @@ public class XmpDetector implements SyncServiceDetector {
     }
 
     @Override
-    public final boolean isServiceDetected(InetAddress address) {
+    public final DetectResults detect(DetectRequest request) {
+        final InetAddress address = request.getAddress();
         XmpSession aSession;
         XmpMessage aReply;
         XmpVar[] vars, replyVars;
@@ -217,7 +218,7 @@ public class XmpDetector implements SyncServiceDetector {
         aSession = new XmpSession(sockopts, address, xmpPort, xmpAuthenUser);
         if (aSession.isClosed()) {
             LOG.debug("XmpDetector: null session to " + address);
-            return false;
+            return new DetectResultsImpl(false);
         }
 
         LOG.debug("XmpDetector: isServiceDetected session established with " + address);
@@ -233,7 +234,7 @@ public class XmpDetector implements SyncServiceDetector {
         if ((aReply = aSession.queryVars(vars)) == null) {
             LOG.debug("XmpDetector: isServiceDetected no vars from " + address);
             aSession.closeSession();
-            return false;
+            return new DetectResultsImpl(false);
         }
 
         aSession.closeSession();
@@ -241,7 +242,7 @@ public class XmpDetector implements SyncServiceDetector {
         // log what we retrieved
         if ((replyVars = aReply.getMIBVars()) == null) {
             LOG.debug("XmpDetector: isServiceDetected no replyVars for " + address);
-            return false;
+            return new DetectResultsImpl(false);
 
         } /* if replyVars == null */
 
@@ -250,7 +251,7 @@ public class XmpDetector implements SyncServiceDetector {
                 replyVars[1].getValue());
         LOG.debug("XmpDetector: isServiceDetected true for " + address);
 
-        return true;
+        return new DetectResultsImpl(true);
 
     } /* isServiceDetected */
 

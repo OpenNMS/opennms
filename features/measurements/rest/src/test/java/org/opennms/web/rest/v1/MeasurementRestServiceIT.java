@@ -48,6 +48,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.measurements.api.MeasurementsService;
@@ -85,6 +86,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
+    protected MonitoringLocationDao m_locationDao;
+
+    @Autowired
     protected NodeDao m_nodeDao;
 
     @Autowired
@@ -112,9 +116,8 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertNotNull(restService);
         assertNotNull(service);
 
-        OnmsNode node = new OnmsNode();
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
         node.setId(1);
-        node.setLabel("node1");
         m_nodeDao.save(node);
         m_nodeDao.flush();
 
@@ -133,7 +136,7 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void verifyRelaxMode() throws Exception {
-        sendRequest(GET, "/measurements/should_not_/exist?relaxed=true", 200);
+        sendRequest(GET, "/measurements/should_not_/exist?relaxed=true", 204);
     }
 
     /**

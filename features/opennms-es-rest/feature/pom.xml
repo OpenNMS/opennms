@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.plugins</groupId>
     <artifactId>opennms-es-rest.parent</artifactId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
 
   <!-- Feature Definition -->
@@ -13,40 +13,35 @@
   <description>Feature definition for opennms-es-rest</description>
   <packaging>pom</packaging>
 
-  <properties>
-    <!-- opennms versions -->
-    <httpcoreVersion>4.3.3</httpcoreVersion>
-    <httpclientVersion>4.3.6</httpclientVersion>
-    <httpasyncclientVersion>4.0.2</httpasyncclientVersion>
-  </properties>
   <build>
 
     <plugins>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
-        <version>1.2.0</version>
-        <executions>
-          <execution>
-            <id>features.xml</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>generate-features-xml</goal>
-            </goals>
-            <configuration>
-              <bundles>
-                <!-- <bundle>wrap:mvn:io.searchbox/jest-common/${jestVersion}</bundle> -->
-                <!-- <bundle>wrap:mvn:io.searchbox/jest/${jestVersion}</bundle> -->
-                <!-- <bundle>wrap:mvn:io.searchbox/jest-complete-osgi/${jestVersion}</bundle> -->
+        <configuration>
+          <bundles>
+            <!-- <bundle>wrap:mvn:io.searchbox/jest-common/${jestVersion}</bundle> -->
+            <!-- <bundle>wrap:mvn:io.searchbox/jest/${jestVersion}</bundle> -->
+            <!-- <bundle>wrap:mvn:io.searchbox/jest-complete-osgi/${jestVersion}</bundle> -->
 
-<!--                 <bundle>wrap:mvn:org.apache.httpcomponents/httpcore-nio/${httpcoreVersion}</bundle> -->
-                <!-- <bundle>wrap:mvn:org.apache.httpcomponents/httpasyncclient/4.1.1</bundle> -->
-                <!-- <bundle>wrap:mvn:org.apache.httpcomponents/httpasyncclient/${httpclientVersion}</bundle> -->
+            <!-- <bundle>wrap:mvn:org.apache.httpcomponents/httpcore-nio/${httpcoreVersion}</bundle> -->
+            <!-- <bundle>wrap:mvn:org.apache.httpcomponents/httpasyncclient/4.1.1</bundle> -->
+            <!-- <bundle>wrap:mvn:org.apache.httpcomponents/httpasyncclient/${httpclientVersion}</bundle> -->
 
-              </bundles>
-            </configuration>
-          </execution>
-        </executions>
+            <!-- dropwizard-metrics feature -->
+            <bundle>mvn:io.dropwizard.metrics/metrics-core/3.1.2</bundle>
+
+            <!-- rate-limited-logger feature -->
+            <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
+            <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
+
+            <!-- opennms-core-ipc-sink-api feature -->
+            <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
+            <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.common/${project.version}</bundle>
+            <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.xml/${project.version}</bundle>
+          </bundles>
+        </configuration>
       </plugin>
     </plugins>
 
@@ -90,7 +85,11 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>19.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
     </dependency>
 
     <dependency>
@@ -108,17 +107,11 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore-osgi</artifactId>
-      <!-- <version>4.4.4</version> --><!-- jest version -->
-      <version>${httpcoreVersion}</version>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-osgi</artifactId>
-      <!-- <version>4.5.2</version> --><!-- jest version -->
-      <version>${httpclientVersion}</version> <!-- best match -->
-      <scope>provided</scope>
     </dependency>
 
     <!-- <dependency> -->
@@ -132,8 +125,6 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpasyncclient-osgi</artifactId>
       <!-- <version>4.1.1</version> -->
-      <version>${httpasyncclientVersion}</version> 
-       <scope>provided</scope>
     </dependency>
 
     <!-- <dependency> -->
@@ -169,18 +160,5 @@
     <!-- [INFO] \- org.apache.httpcomponents:httpasyncclient:jar:4.1.1:provided -->
 
   </dependencies>
-  <pluginRepositories>
-    <pluginRepository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </pluginRepository>
-  </pluginRepositories>
 
 </project>

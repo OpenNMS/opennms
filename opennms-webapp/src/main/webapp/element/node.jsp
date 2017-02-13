@@ -166,6 +166,7 @@
     nodeModel.put("label", node_db.getLabel());
     nodeModel.put("foreignId", node_db.getForeignId());
     nodeModel.put("foreignSource", node_db.getForeignSource());
+    nodeModel.put("location", node_db.getLocation().getLocationName());
 
     List<Map<String, String>> links = new ArrayList<Map<String, String>>();
     links.addAll(createLinkForService(nodeId, m_telnetServiceId, "Telnet", "telnet://", "", getServletContext()));
@@ -219,14 +220,6 @@
     nodeModel.put("sysContact", WebSecurityUtils.sanitizeString(node_db.getSysContact(), true));
     nodeModel.put("sysDescription", WebSecurityUtils.sanitizeString(node_db.getSysDescription()));
     
-    if(!(node_db.getForeignSource() == null) && !(node_db.getForeignId() == null)) {
-        nodeModel.put("parentRes", node_db.getForeignSource() + ":" + node_db.getForeignId());
-        nodeModel.put("parentResType", "nodeSource");
-    } else {
-        nodeModel.put("parentRes", Integer.toString(nodeId));
-        nodeModel.put("parentResType", "node");
-    }
-
     pageContext.setAttribute("model", nodeModel);
 
 	final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
@@ -240,7 +233,7 @@
 	    if (displayStatus == DisplayStatus.DISPLAY_NO_LINK) {
 	        renderedLinks.add(link.getName());
 	    } else if (displayStatus == DisplayStatus.DISPLAY_LINK) {
-	        renderedLinks.add("<a href=\"" + link.getUrl().replace("%nodeid%", ""+nodeId) + "\">" + link.getName() + "</a>");
+	        renderedLinks.add("<a href=\"" + link.getUrl().replace("%25nodeid%25", ""+nodeId) + "\">" + link.getName() + "</a>");
 	    }
 	}
 	
@@ -272,6 +265,7 @@
 
 <%@page import="org.opennms.core.resource.Vault"%>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
+  <jsp:param name="norequirejs" value="true" />
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
   <jsp:param name="headTitle" value="ID ${model.id}" />
@@ -279,6 +273,11 @@
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="Node" />
   <jsp:param name="enableExtJS" value="false"/>
+
+  <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="js/onms-interfaces/styles.css" />' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="js/onms-interfaces/app.js"></script>' />
 </jsp:include>
 
 <script type="text/javascript">
@@ -304,10 +303,10 @@ function confirmAssetEdit() {
 
 <h4>
   <c:if test="${model.foreignSource != null}">
-    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPfs label label-default" title="Requisition: ${model.foreignSource}"><i class="fa fa-list-alt"></i>&nbsp;${model.foreignSource}</span>&nbsp;<span class="NPfid label label-default" title="Foreign ID: ${model.foreignId}"><i class="fa fa-qrcode"></i>&nbsp;${model.foreignId}</span></div>
+    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPfs label label-default" title="Requisition: ${model.foreignSource}"><i class="fa fa-list-alt"></i>&nbsp;${model.foreignSource}</span>&nbsp;<span class="NPfid label label-default" title="Foreign ID: ${model.foreignId}"><i class="fa fa-qrcode"></i>&nbsp;${model.foreignId}</span>&nbsp;<span class="NPloc label label-default" title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span></div>
   </c:if>
   <c:if test="${model.foreignSource == null}">
-    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span></div>
+    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPloc label label-default" title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span></div>
   </c:if>
 </h4>
 
@@ -372,9 +371,8 @@ function confirmAssetEdit() {
     <%-- TODO In order to show the following link only when there are metrics, an
               inexpensive method has to be implemented on either ResourceService
               or ResourceDao --%>
-    <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
-      <c:param name="parentResourceType" value="${model.parentResType}"/>
-      <c:param name="parentResource" value="${model.parentRes}"/>
+    <c:url var="resourceGraphsUrl" value="graph/chooseresource.jsp">
+      <c:param name="node" value="${model.id}"/>
       <c:param name="reports" value="all"/>
     </c:url>
     <li>
@@ -517,17 +515,13 @@ function confirmAssetEdit() {
     </jsp:include>
   </c:if>
 
-  <script type="text/javascript">
-    var nodeId = ${model.id}
-  </script>
-  <div id="interface-panel-gwt" class="panel panel-default">
+  <div id="onms-interfaces" class="panel panel-default">
     <div class="panel-heading">
-    	<h3 class="panel-title">Node Interfaces</h3>
+        <h3 class="panel-title">Node Interfaces</h3>
     </div>
-    <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
-    <div name="opennms-interfacelist" id="gwtnodeList-ie"></div>
+    <onms-interfaces node="${model.id}"/>
   </div>
-	
+
   <!-- Vlan box if available -->
   <c:if test="${! empty model.vlans}">
     <div class="panel panel-default">

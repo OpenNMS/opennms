@@ -34,8 +34,10 @@ import java.util.Set;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.osgi.VaadinApplicationContext;
 
 import com.vaadin.data.Property;
 
@@ -44,6 +46,25 @@ public interface GraphContainer extends DisplayState {
     interface ChangeListener {
         void graphChanged(GraphContainer graphContainer);
     }
+
+    /**
+     * Callback which is invoked after the {@link GraphProvider} has been changed.
+     *
+     * @see #selectTopologyProvider(GraphProvider, Callback...)
+     */
+    interface Callback {
+        /**
+         * is invoked after the {@link GraphProvider} has changed.
+         *
+         * @param graphContainer The container
+         * @param graphProvider The new graph provider
+         */
+        void callback(GraphContainer graphContainer, GraphProvider graphProvider);
+    }
+
+    MetaTopologyProvider getMetaTopologyProvider();
+
+    void setMetaTopologyProvider(MetaTopologyProvider metaGraphProvider);
 
     GraphProvider getBaseTopology();
 
@@ -58,6 +79,14 @@ public interface GraphContainer extends DisplayState {
     // clears all criteria which are currently sets
     void clearCriteria();
 
+    /**
+     * Selects the specified {@link GraphProvider}.
+     *
+     * @param graphProvider the provider to select.
+     * @param callbacks callbacks to invoke after the provider has been selected (e.g. apply semantic zoom level, etc)
+     */
+    void selectTopologyProvider(GraphProvider graphProvider, Callback... callbacks);
+
     void addChangeListener(ChangeListener listener);
 
     void removeChangeListener(ChangeListener listener);
@@ -67,6 +96,8 @@ public interface GraphContainer extends DisplayState {
     void setSelectionManager(SelectionManager selectionManager);
 
     Graph getGraph();
+
+    void setApplicationContext(VaadinApplicationContext applicationContext);
 
     AutoRefreshSupport getAutoRefreshSupport();
 
@@ -89,8 +120,7 @@ public interface GraphContainer extends DisplayState {
     // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
     String getSessionId();
 
-    // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
-    void setSessionId(String sessionId);
+    VaadinApplicationContext getApplicationContext();
 
     void setDirty(boolean dirty);
     
@@ -118,4 +148,6 @@ public interface GraphContainer extends DisplayState {
     IconManager getIconManager();
 
     void setIconManager(IconManager iconManager);
+
+    void saveLayout();
 }

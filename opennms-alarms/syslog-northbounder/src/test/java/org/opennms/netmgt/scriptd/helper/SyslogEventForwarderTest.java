@@ -179,10 +179,11 @@ public class SyslogEventForwarderTest {
         SyslogEventForwarder forwarder = new SyslogEventForwarder();
         forwarder.initialize("localTest1");
 
-        OnmsNode node = new OnmsNode("p-brane");
+        OnmsNode node = new OnmsNode();
         node.setForeignSource("TestGroup");
         node.setForeignId("1");
         node.setId(1);
+        node.setLabel("p-brane");
 
         Event event = new Event();
         event.setUei("uei.opennms.org/junit/testEvent");

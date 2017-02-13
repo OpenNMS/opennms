@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.geocoder</artifactId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.geocoder</groupId>
   <artifactId>org.opennms.features.geocoder.nominatim</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features Nominatim Geocoder</name>
+  <name>OpenNMS :: Features :: Geocoder :: Nominatim</name>
 
   <description>Nominatim Geocoder implementation</description>
   <properties>

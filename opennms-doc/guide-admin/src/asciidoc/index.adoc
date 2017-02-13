@@ -6,6 +6,7 @@
 :toc: left
 :toclevels: 3
 :numbered:
+:stem:
 
 [[ga]]
 = Administrators Guide
@@ -17,6 +18,11 @@
 [[ga-admin-datachoices]]
 == Data Choices
 include::text/datachoices.adoc[]
+
+[[ga-role-user-management]]
+== User Management
+include::text/user-management/users.adoc[]
+include::text/user-management/security-roles.adoc[]
 
 [[ga-admin-ui]]
 == Administrative Webinterface
@@ -57,6 +63,10 @@ include::text/webui/jmx-config-generator/cli.adoc[]
 === Heatmap
 include::text/webui/heatmap/introduction.adoc[]
 
+[[ga-admin-ui-trend]]
+=== Trend
+include::text/webui/trend/introduction.adoc[]
+
 [[ga-service-assurance]]
 == Service Assurance
 include::text/service-assurance/introduction.adoc[]
@@ -87,6 +97,7 @@ include::text/service-assurance/monitors/HttpPostMonitor.adoc[]
 include::text/service-assurance/monitors/HttpsMonitor.adoc[]
 include::text/service-assurance/monitors/IcmpMonitor.adoc[]
 include::text/service-assurance/monitors/ImapMonitor.adoc[]
+include::text/service-assurance/monitors/ImapsMonitor.adoc[]
 include::text/service-assurance/monitors/JCifsMonitor.adoc[]
 include::text/service-assurance/monitors/JDBCMonitor.adoc[]
 include::text/service-assurance/monitors/JDBCStoredProcedureMonitor.adoc[]
@@ -100,6 +111,7 @@ include::text/service-assurance/monitors/NrpeMonitor.adoc[]
 include::text/service-assurance/monitors/NtpMonitor.adoc[]
 include::text/service-assurance/monitors/OmsaStorageMonitor.adoc[]
 include::text/service-assurance/monitors/OpenManageChassisMonitor.adoc[]
+include::text/service-assurance/monitors/PageSequenceMonitor.adoc[]
 include::text/service-assurance/monitors/PercMonitor.adoc[]
 include::text/service-assurance/monitors/Pop3Monitor.adoc[]
 include::text/service-assurance/monitors/PrTableMonitor.adoc[]
@@ -120,13 +132,18 @@ include::text/service-assurance/monitors/XmpMonitor.adoc[]
 [[ga-performance-mgmt]]
 == Performance Management
 include::text/performance-data-collection/introduction.adoc[]
-include::text/performance-data-collection/stress-testing.adoc[]
+include::text/performance-data-collection/configuration.adoc[]
+include::text/performance-data-collection/collection-packages.adoc[]
 
 [[ga-performance-mgmt-collectors]]
 === Collectors
-include::text/performance-data-collection/collectors/introduction.adoc[]
+include::text/performance-data-collection/collectors/snmp/SnmpCollector.adoc[]
 include::text/performance-data-collection/collectors/wsman/ws-management.adoc[]
 include::text/performance-data-collection/collectors/wsman/detector.adoc[]
+
+[[ga-performance-mgmt-stress-testing]]
+=== Stress Testing
+include::text/performance-data-collection/stress-testing.adoc[]
 
 [[ga-events]]
 == Events
@@ -196,6 +213,7 @@ include::text/enlinkd/layer-3/is-is-discovery.adoc[]
 [[ga-opennms-operation]]
 == Operation
 include::text/operation/ssl/ssl.adoc[]
+include::text/operation/geocoder.adoc[]
 include::text/operation/resourcecli.adoc[]
 include::text/operation/newts-repository-converter.adoc[]
 
@@ -228,6 +246,10 @@ include::text/ticketing/tsrm.adoc[]
 [[ga-rmi]]
 == Enabling RMI
 include::text/rmi.adoc[]
+
+[[ga-minion]]
+== Minion
+include::text/minion/kafka.adoc[]
 
 [[ga-opennms-plugin-manager]]
 == Plugin Manager

@@ -48,7 +48,7 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.ProviderManager;
 import org.opennms.features.topology.app.internal.VEProviderGraphContainer;
-import org.opennms.features.topology.plugins.topo.simple.SimpleGraphBuilder;
+import org.opennms.features.topology.api.support.SimpleGraphBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

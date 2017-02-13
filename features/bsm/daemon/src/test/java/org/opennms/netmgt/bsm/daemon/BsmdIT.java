@@ -88,9 +88,7 @@ import com.google.common.collect.Lists;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-bsmd.xml"
 })
@@ -127,8 +125,6 @@ public class BsmdIT {
     @Autowired
     private TransactionOperations template;
 
-    private EventAnticipator m_anticipator;
-
     @Before
     public void setUp() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -140,9 +136,6 @@ public class BsmdIT {
         m_bsmd.setEventIpcManager(m_eventMgr);
 
         m_databasePopulator.populateDatabase();
-
-        m_anticipator = new EventAnticipator();
-        m_eventMgr.setEventAnticipator(m_anticipator);
     }
 
     @After
@@ -170,11 +163,11 @@ public class BsmdIT {
 
         // Expect a statusChanged event
         EventBuilder ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, "test");
-        m_anticipator.anticipateEvent(ebldr.getEvent());
+        m_eventMgr.getEventAnticipator().anticipateEvent(ebldr.getEvent());
 
         // Expect a serviceProblem event
         ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, "test");
-        m_anticipator.anticipateEvent(ebldr.getEvent());
+        m_eventMgr.getEventAnticipator().anticipateEvent(ebldr.getEvent());
 
         // Create the alarm
         OnmsAlarm alarm = createAlarm();
@@ -186,17 +179,17 @@ public class BsmdIT {
         m_bsmd.handleAlarmLifecycleEvents(ebldr.getEvent());
 
         // Verify expectations
-        Collection<Event> stillWaitingFor = m_anticipator.waitForAnticipated(5000);
+        Collection<Event> stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
-        verifyParametersOnAnticipatedEventsReceived(m_anticipator, simpleBs.getId());
+        verifyParametersOnAnticipatedEventsReceived(m_eventMgr.getEventAnticipator(), simpleBs.getId());
 
         // Expect a statusChanged event
         ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, "test");
-        m_anticipator.anticipateEvent(ebldr.getEvent());
+        m_eventMgr.getEventAnticipator().anticipateEvent(ebldr.getEvent());
 
         // Expect a serviceProblemResolved event
         ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI, "test");
-        m_anticipator.anticipateEvent(ebldr.getEvent());
+        m_eventMgr.getEventAnticipator().anticipateEvent(ebldr.getEvent());
 
         // Clear the alarm
         alarm.setSeverity(OnmsSeverity.CLEARED);
@@ -207,13 +200,13 @@ public class BsmdIT {
         m_bsmd.handleAlarmLifecycleEvents(ebldr.getEvent());
 
         // Verify expectations
-        stillWaitingFor = m_anticipator.waitForAnticipated(5000);
+        stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
-        verifyParametersOnAnticipatedEventsReceived(m_anticipator, simpleBs.getId());
+        verifyParametersOnAnticipatedEventsReceived(m_eventMgr.getEventAnticipator(), simpleBs.getId());
     }
 
     private static void verifyParametersOnAnticipatedEventsReceived(EventAnticipator anticipator, Long businessServiceId) {
-        for (Event e : anticipator.getAnticipatedEventsRecieved()) {
+        for (Event e : anticipator.getAnticipatedEventsReceived()) {
             // The service id should always be set
             assertEquals(e.getParm(EventConstants.PARM_BUSINESS_SERVICE_ID).getValue().getContent(), businessServiceId.toString());
             // Services parameters should also be included

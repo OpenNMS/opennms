@@ -6,12 +6,12 @@
     <relativePath>../topology-map/poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features</groupId>
   <artifactId>vaadin-snmp-events-and-metrics</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features Admin UI for SNMP Events and Metrics</name>
+  <name>OpenNMS :: Features :: SNMP Events and Metrics Admin UI</name>
   <description>
     OpenNMS Vaadin Administration UI for handling SNMP related configuration files for events and data collection.
   </description>

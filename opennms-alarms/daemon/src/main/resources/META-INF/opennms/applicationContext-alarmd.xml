@@ -10,6 +10,7 @@
   <tx:annotation-driven />
 
   <bean id="alarmPersister" class="org.opennms.netmgt.alarmd.AlarmPersisterImpl" >
+    <property name="transactionOperations" ref="transactionTemplate" />
     <property name="alarmDao" ref="alarmDao" />
     <property name="eventDao" ref="eventDao" />
     <property name="eventForwarder" ref="eventForwarder"/>

@@ -40,7 +40,7 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -64,7 +64,7 @@ public class GCFilterableContainerTest {
 
             @Override public void save() { }
             @Override public void refresh() { }
-            @Override public Criteria getDefaultCriteria() { return null; }
+            @Override public Defaults getDefaults() { return new Defaults(); }
 
             @Override public void load(String filename) throws MalformedURLException, JAXBException {
                 resetContainer();

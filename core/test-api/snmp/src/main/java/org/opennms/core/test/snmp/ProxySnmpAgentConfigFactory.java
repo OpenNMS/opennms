@@ -54,17 +54,25 @@ public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
 
     @Override
     public SnmpAgentConfig getAgentConfig(final InetAddress address) {
-    	final SnmpAgentConfigProxyMapper mapper = SnmpAgentConfigProxyMapper.getInstance();
-    	final SnmpAgentAddress agentAddress = mapper.getAddress(address);
-    	
-    	final String addressString = str(address);
-		if (agentAddress == null) {
-			LOG.debug("No agent address mapping found for {}!  Try adding a @JUnitSnmpAgent(host=\"{}\", resource=\"...\" entry...", addressString, addressString);
-    		return super.getAgentConfig(address);
-    		// throw new IllegalArgumentException("No agent address mapping found for " + addressString);
-    	}
+        return getAgentConfig(address, null);
+    }
 
-		final SnmpAgentConfig config = new SnmpAgentConfig(agentAddress.getAddress());
+    @Override
+    public SnmpAgentConfig getAgentConfig(final InetAddress address, String location) {
+        final SnmpAgentConfigProxyMapper mapper = SnmpAgentConfigProxyMapper.getInstance();
+        final SnmpAgentAddress agentAddress = mapper.getAddress(address);
+
+        final String addressString = str(address);
+        if (agentAddress == null) {
+            LOG.debug(
+                    "No agent address mapping found for {}!  Try adding a @JUnitSnmpAgent(host=\"{}\", resource=\"...\" entry...",
+                    addressString, addressString);
+
+            return super.getAgentConfig(address, location);
+
+        }
+
+        final SnmpAgentConfig config = new SnmpAgentConfig(agentAddress.getAddress());
         config.setProxyFor(address);
         config.setPort(agentAddress.getPort());
 

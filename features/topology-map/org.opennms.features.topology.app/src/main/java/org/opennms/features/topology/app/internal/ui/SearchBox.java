@@ -286,34 +286,34 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     }
 
 
-    private List<SearchSuggestion> getQueryResults(final String query) {
+    public List<SearchSuggestion> getQueryResults(final String query) {
         LOG.debug("SearchBox->getQueryResults: called with query {}", query);
 
         String namespace = m_operationContext.getGraphContainer().getBaseTopology().getVertexNamespace();
 
         List<SearchResult> results = Lists.newArrayList();
-        
+
         if (m_serviceManager == null) {
             return mapToSuggestions(results);
         }
-        
-        List<SearchProvider> providers = m_serviceManager.getServices(SearchProvider.class, null, new Hashtable<String,Object>());
+
+        List<SearchProvider> providers = m_serviceManager.getServices(SearchProvider.class, null, new Hashtable<>());
         LOG.debug("SearchBox->getQueryResults: service manager reports {} SearchProviders.", providers.size());
-        
+
 
         for (SearchProvider provider : providers) {
-            
+
             if (provider.getSearchProviderNamespace().equals(namespace) || provider.contributesTo(namespace)) {
-                
+
                 if (provider.supportsPrefix(query)) {
                     // If there is an '=' divider, strip it off. Otherwise, use an empty query string
                     String queryOnly = query.indexOf('=') > 0 ? query.substring(query.indexOf('=') + 1) : "";
                     List<SearchResult> q = provider.query(getSearchQuery(queryOnly), m_operationContext.getGraphContainer());
                     results.addAll(q);
-                    
+
                     if (m_suggestionMap.containsKey(provider)) {
                         m_suggestionMap.get(provider).addAll(q);
-                        
+
                     } else {
                         m_suggestionMap.putAll(provider, q);
                     }
@@ -363,10 +363,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         suggestion.setCollapsed(searchResult.isCollapsed());
         suggestion.setQuery(searchResult.getQuery());
         return suggestion;
-    }
-
-    private static SearchSuggestion mapToSearchSuggestion(VertexRef vertexRef) {
-    	return new SearchSuggestion(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel());
     }
 
     @Override

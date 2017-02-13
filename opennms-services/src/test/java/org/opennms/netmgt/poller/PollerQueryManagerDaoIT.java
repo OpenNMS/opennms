@@ -33,6 +33,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -57,10 +58,10 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
@@ -94,11 +95,16 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-pinger.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
 
         // Override the default QueryManager with the DAO version
         "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties={
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger"
+})
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatabase> {
 
@@ -115,8 +121,6 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 
 	private boolean m_daemonsStarted = false;
 
-	private EventAnticipator m_anticipator;
-
 	private OutageAnticipator m_outageAnticipator;
 
 	@Autowired
@@ -128,7 +132,10 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	@Autowired
 	private TransactionTemplate m_transactionTemplate;
 
-	//private DemandPollDao m_demandPollDao;
+	@Autowired
+	private LocationAwarePollerClient m_locationAwarePollerClient;
+
+	private LocationAwarePingClient m_locationAwarePingClient;
 
 	@Override
 	public void setTemporaryDatabase(MockDatabase database) {
@@ -197,22 +204,23 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_pollerConfig.setDefaultPollInterval(2000L);
 		m_pollerConfig.addService(m_network.getService(2, "192.168.1.3", "HTTP"));
 
-		m_anticipator = new EventAnticipator();
 		m_outageAnticipator = new OutageAnticipator(m_db);
 
 		m_eventMgr = new MockEventIpcManager();
 		m_eventMgr.setEventWriter(m_db);
-		m_eventMgr.setEventAnticipator(m_anticipator);
 		m_eventMgr.addEventListener(m_outageAnticipator);
 		m_eventMgr.setSynchronous(false);
-		
+
+		m_locationAwarePingClient = mock(LocationAwarePingClient.class);
+
 		DefaultPollContext pollContext = new DefaultPollContext();
 		pollContext.setEventManager(m_eventMgr);
 		pollContext.setLocalHostName("localhost");
 		pollContext.setName("Test.DefaultPollContext");
 		pollContext.setPollerConfig(m_pollerConfig);
 		pollContext.setQueryManager(m_queryManager);
-		
+		pollContext.setLocationAwarePingClient(m_locationAwarePingClient);
+
 		PollableNetwork network = new PollableNetwork(pollContext);
 
 		m_poller = new Poller();
@@ -223,6 +231,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_poller.setQueryManager(m_queryManager);
 		m_poller.setPollerConfig(m_pollerConfig);
 		m_poller.setPollOutagesConfig(m_pollerConfig);
+		m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
 
 		MockOutageConfig config = new MockOutageConfig();
 		config.setGetNextOutageID(m_db.getNextOutageIdStatement());
@@ -297,7 +306,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 
         // node is down at this point
         boolean foundNodeDown = false;
-        for (final Event event : m_anticipator.getAnticipatedEventsRecieved()) {
+        for (final Event event : m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived()) {
             if (EventConstants.NODE_DOWN_EVENT_UEI.equals(event.getUei())) {
                 foundNodeDown = true;
                 assertNull(event.getInterfaceAddress());
@@ -444,7 +453,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	}
 
 	private void resetAnticipated() {
-		m_anticipator.reset();
+		m_eventMgr.getEventAnticipator().reset();
 		m_outageAnticipator.reset();
 	}
 
@@ -778,7 +787,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
         
         verifyAnticipated(8000);
 
-        Collection<Event> receivedEvents = m_anticipator.getAnticipatedEventsRecieved();
+        Collection<Event> receivedEvents = m_eventMgr.getEventAnticipator().getAnticipatedEventsReceived();
 
         assertEquals(2, receivedEvents.size());
         
@@ -1193,12 +1202,12 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 
 	private void verifyAnticipated(long millis, boolean checkUnanticipated) {
 		// make sure the down events are received
-		MockEventUtil.printEvents("Events we're still waiting for: ", m_anticipator.waitForAnticipated(millis));
-		assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(0).isEmpty());
+		MockEventUtil.printEvents("Events we're still waiting for: ", m_eventMgr.getEventAnticipator().waitForAnticipated(millis));
+		assertTrue("Expected events not forthcoming", m_eventMgr.getEventAnticipator().waitForAnticipated(0).isEmpty());
 		if (checkUnanticipated) {
 			sleep(2000);
-			MockEventUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
-			assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
+			MockEventUtil.printEvents("Unanticipated: ", m_eventMgr.getEventAnticipator().getUnanticipatedEvents());
+			assertEquals("Received unexpected events", 0, m_eventMgr.getEventAnticipator().getUnanticipatedEvents().size());
 		}
 		sleep(1000);
 		m_eventMgr.finishProcessingEvents();
@@ -1214,9 +1223,9 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	private void anticipateUp(MockElement element, boolean force) {
 		if (force || !element.getPollStatus().equals(PollStatus.up())) {
 			Event event = element.createUpEvent();
-			m_anticipator.anticipateEvent(event);
+			m_eventMgr.getEventAnticipator().anticipateEvent(event);
 			for (Event outageResolvedEvent: m_outageAnticipator.anticipateOutageClosed(element, event)){
-			    m_anticipator.anticipateEvent(outageResolvedEvent);
+			    m_eventMgr.getEventAnticipator().anticipateEvent(outageResolvedEvent);
 			}
 		}
 	}
@@ -1228,9 +1237,9 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	private void anticipateDown(MockElement element, boolean force) {
 		if (force || !element.getPollStatus().equals(PollStatus.down())) {
 			Event event = element.createDownEvent();
-			m_anticipator.anticipateEvent(event);
+			m_eventMgr.getEventAnticipator().anticipateEvent(event);
 			for (Event outageCreatedEvent: m_outageAnticipator.anticipateOutageOpened(element, event)) {
-			    m_anticipator.anticipateEvent(outageCreatedEvent);
+			    m_eventMgr.getEventAnticipator().anticipateEvent(outageCreatedEvent);
 			}
 		}
 	}

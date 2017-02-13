@@ -184,6 +184,7 @@ public class MockLogAppender {
         resetEvents();
 
         setProperty(MockLogger.DEFAULT_LOG_LEVEL_KEY, level);
+        setProperty(MockLogger.LOG_KEY_PREFIX + "com.jcraft.jsch", "WARN");
         setProperty(MockLogger.LOG_KEY_PREFIX + "com.mchange", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "com.mchange.v2", "WARN");
         setProperty(MockLogger.LOG_KEY_PREFIX + "httpclient", "INFO");
@@ -191,6 +192,7 @@ public class MockLogAppender {
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.bsf", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.commons.httpclient.HttpMethodBase", "ERROR");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.exolab.castor", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.gwtwidgets", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.hibernate", "INFO");
@@ -202,6 +204,7 @@ public class MockLogAppender {
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.quartz", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.snmp4j", "ERROR");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.snmp4j.agent", "ERROR");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.snmp4j.transport", "WARN");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework.beans.factory.support", "WARN");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework.context.support", "WARN");

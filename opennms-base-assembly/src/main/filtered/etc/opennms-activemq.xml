@@ -36,6 +36,28 @@
         The <broker> element is used to configure the ActiveMQ broker.
     -->
     <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" dataDirectory="${activemq.data}">
+        <plugins>
+          <bean id="openNMSJaasBrokerPlugin" class="org.opennms.netmgt.activemq.auth.OpenNMSJaasBrokerPlugin" xmlns="http://www.springframework.org/schema/beans" />
+
+          <authorizationPlugin>
+            <map>
+              <authorizationMap>
+                <authorizationEntries>
+                  <!-- Users in the admin role can read/write/create any queue/topic -->
+                  <authorizationEntry queue=">" read="admin" write="admin" admin="admin" />
+                  <authorizationEntry topic=">" read="admin" write="admin" admin="admin"/>
+                  <!-- Users in the minion role can write/create queues that are not keyed by location -->
+                  <authorizationEntry queue="OpenNMS.*.*" write="minion" admin="minion" />
+                  <!-- Users in the minion role can read/create from queues that are keyed by location -->
+                  <authorizationEntry queue="OpenNMS.*.*.*" read="minion" admin="minion" />
+                  <!-- Users in the minion role can read/write/create advisory topics -->
+                  <authorizationEntry topic="ActiveMQ.Advisory.>" read="minion" write="minion" admin="minion"/>
+                </authorizationEntries>
+                <!-- Allow all users to read/write/create temporary destinations (by omitting a <tempDestinationAuthorizationEntry>) -->
+              </authorizationMap>
+            </map>
+          </authorizationPlugin>
+        </plugins>
 
         <!--
             For better performances use VM cursor and small memory limit.
@@ -135,7 +157,7 @@
             <!-- Uncomment this line to allow external TCP connections -->
             <!-- 
               WARNING: Access to port 61616 should be firewalled to prevent unauthorized injection 
-              tof data into OpenNMS when this port is open. 
+              of data into OpenNMS when this port is open.
             -->
             <!-- <transportConnector name="openwire" uri="tcp://0.0.0.0:61616?useJmx=false&amp;maximumConnections=1000&amp;wireformat.maxFrameSize=104857600"/> -->
 

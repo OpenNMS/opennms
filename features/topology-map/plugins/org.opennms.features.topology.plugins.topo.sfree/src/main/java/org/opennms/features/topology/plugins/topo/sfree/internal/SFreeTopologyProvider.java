@@ -39,7 +39,7 @@ import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleConnector;
@@ -90,8 +90,8 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
-    public Criteria getDefaultCriteria() {
-        return null; // no default focus
+    public Defaults getDefaults() {
+        return new Defaults();
     }
 
     @Override

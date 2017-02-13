@@ -15,6 +15,7 @@
         <!-- Needed by activemq-camel -->
         <bundle>mvn:javax.annotation/javax.annotation-api/1.2</bundle>
         <feature>activemq-camel</feature>
+        <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.pool/${project.version}</bundle>
 
         <!-- Used for the REST client -->
         <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
@@ -24,7 +25,7 @@
         <bundle>mvn:org.opennms.features.minion/core-impl/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-shell" description="Minion :: Shell" version="${project.version}">
+    <feature name="minion-core-shell" description="Minion :: Core :: Shell" version="${project.version}">
         <feature>minion-core</feature>
         <bundle>mvn:org.opennms.features.minion/shell/${project.version}</bundle>
     </feature>

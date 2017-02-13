@@ -6,7 +6,7 @@
         <relativePath>../../poms/compiled/</relativePath>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>compiled-bundle-settings</artifactId>
-        <version>18.0.4-SNAPSHOT</version>
+        <version>19.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -16,9 +16,9 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.topology.plugins</groupId>
-    <artifactId>ncs</artifactId>
+    <artifactId>org.opennms.features.topology.plugins.ncs</artifactId>
 
-    <name>${bundle.symbolicName}</name>
+    <name>OpenNMS :: Features :: Topology :: Plugins :: NCS</name>
 
     <packaging>bundle</packaging>
 
@@ -56,7 +56,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.ncs</groupId>
-            <artifactId>ncs-model</artifactId>
+            <artifactId>org.opennms.features.ncs.ncs-model</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -76,7 +76,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.topology</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>org.opennms.features.topology.api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -94,12 +94,12 @@
 
         <dependency>
             <groupId>org.opennms.features.ncs</groupId>
-            <artifactId>ncs-persistence</artifactId>
+            <artifactId>org.opennms.features.ncs.ncs-persistence</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>
-            <artifactId>karaf</artifactId>
+            <artifactId>org.opennms.container.karaf</artifactId>
             <version>${project.version}</version>
             <type>tar.gz</type>
             <scope>test</scope>
@@ -284,16 +284,6 @@
         <dependency>
             <groupId>org.opennms.core.test-api</groupId>
             <artifactId>org.opennms.core.test-api.http</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.core.test-api</groupId>
-            <artifactId>org.opennms.core.test-api.services</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.dependencies</groupId>

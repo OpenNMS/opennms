@@ -3,12 +3,12 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies</name>
+  <name>OpenNMS :: Dependencies</name>
   <modules>
     <module>activemq</module>
     <module>activemq-web</module>

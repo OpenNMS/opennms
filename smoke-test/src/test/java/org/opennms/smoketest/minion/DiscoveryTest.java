@@ -107,7 +107,8 @@ public class DiscoveryTest {
                 .authPreemptive(opennmsHttpHost);
 
         // Configure Discovery with the specific address of our Tomcat server
-        // No REST endpoint is currently available, so we resort to POSTin nasty form data
+        // No REST endpoint is currently available to configure the Discovery daemon
+        // so we resort to POSTin nasty form data
         executor.execute(Request.Post(String.format("http://%s:%d/opennms/admin/discovery/actionDiscovery?action=AddSpecific",
                 opennmsHttp.getAddress().getHostAddress(), opennmsHttp.getPort()))
             .bodyForm(Form.form()
@@ -137,7 +138,6 @@ public class DiscoveryTest {
         HibernateDaoFactory daoFactory = new HibernateDaoFactory(pgsql);
         EventDao eventDao = daoFactory.getDao(EventDaoHibernate.class);
 
-        // TODO: Match the Monitoring System ID when this becomes available in the event
         Criteria criteria = new CriteriaBuilder(OnmsEvent.class)
                 .eq("eventUei", EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
                 .ge("eventTime", startOfTest)

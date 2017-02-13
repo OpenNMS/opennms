@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.measurements.utils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -105,5 +106,10 @@ public class Utils {
             values[i] = Double.NaN;
         }
         return values;
+    }
+
+    public static FetchResults createEmtpyFetchResults(final long step, final Map<String, Object> constants) {
+        final Map<String, double[]> columns = new HashMap<>();
+        return new FetchResults(new long[0], columns, step, constants);
     }
 }

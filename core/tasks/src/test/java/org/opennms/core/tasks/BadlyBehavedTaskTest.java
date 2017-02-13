@@ -101,7 +101,7 @@ public class BadlyBehavedTaskTest {
         }
     }
 
-    public static class BadlyBehavedTask extends Task {
+    public static class BadlyBehavedTask extends AbstractTask {
 
         private final String m_name;
         private final List<Failure> m_failures;

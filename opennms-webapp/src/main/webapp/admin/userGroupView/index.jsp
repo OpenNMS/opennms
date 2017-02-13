@@ -57,7 +57,7 @@
           <a HREF="admin/userGroupView/groups/list.htm">Configure Groups</a>
         </p>
         <p>
-          <a HREF="admin/userGroupView/roles">Configure Roles</a>
+          <a HREF="admin/userGroupView/roles">Configure On-Call Roles</a>
         </p>
         <!--
         <p>

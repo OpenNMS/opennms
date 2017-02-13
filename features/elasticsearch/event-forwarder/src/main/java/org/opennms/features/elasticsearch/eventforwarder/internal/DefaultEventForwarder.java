@@ -2,18 +2,17 @@ package org.opennms.features.elasticsearch.eventforwarder.internal;
 
 import org.apache.camel.Produce;
 import org.opennms.core.camel.DefaultDispatcher;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultEventForwarder extends DefaultDispatcher implements EventForwarder {
+public class DefaultEventForwarder extends DefaultDispatcher implements CamelEventForwarder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultEventForwarder.class);
 
 	@Produce(property="endpointUri")
-	EventForwarder m_proxy;
+	CamelEventForwarder m_proxy;
 
 	public DefaultEventForwarder(final String endpointUri) {
 		super(endpointUri);
@@ -41,4 +40,14 @@ public class DefaultEventForwarder extends DefaultDispatcher implements EventFor
 			m_proxy.sendNow(event);
 		}
 	}
+
+    @Override
+    public void sendNowSync(Event event) {
+        sendNow(event);
+    }
+
+    @Override
+    public void sendNowSync(Log eventLog) {
+        sendNow(eventLog);
+    }
 }

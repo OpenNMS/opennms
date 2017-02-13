@@ -32,6 +32,8 @@ import java.io.Serializable;
 
 public class SharedVertex implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private String m_key;
     private int m_initialX;
     private int m_initialY;
@@ -45,6 +47,8 @@ public class SharedVertex implements Serializable {
     private String m_tooltipText;
     private String m_statusCount = "0";
     private String m_styleName = "vertex";
+    private boolean m_targets;
+    private int m_edgePathOffset;
 
     /**
      * @return the statusCount
@@ -154,5 +158,21 @@ public class SharedVertex implements Serializable {
 
     public String getStyleName() {
         return m_styleName;
+    }
+
+    public boolean isTargets() {
+        return m_targets;
+    }
+
+    public void setTargets(boolean targets) {
+        m_targets = targets;
+    }
+
+    public void setEdgePathOffset(int edgePathOffset) {
+        m_edgePathOffset = edgePathOffset;
+    }
+
+    public int getEdgePathOffset() {
+        return m_edgePathOffset;
     }
 }

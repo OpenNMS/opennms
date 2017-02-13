@@ -5,52 +5,27 @@
     <relativePath>../../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <properties>
     <bundle.symbolicName>org.opennms.features.topology.plugins.topo.bsm</bundle.symbolicName>
     <bundle.namespace>org.opennms.features.topology.plugins.topo.bsm</bundle.namespace>
-    <skipITs>true</skipITs>
   </properties>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology.plugins.topo</groupId>
-  <artifactId>bsm</artifactId>
-  <name>${bundle.symbolicName}</name>
+  <artifactId>org.opennms.features.topology.plugins.topo.bsm</artifactId>
+  <name>OpenNMS :: Features :: Topology :: Plugins :: BSM</name>
   <packaging>bundle</packaging>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
-          <systemPropertyVariables>
-            <opennms.home>${project.build.testOutputDirectory}</opennms.home>
-            <java.endorsed.dirs>${basedir}/target/endorsed</java.endorsed.dirs>
-          </systemPropertyVariables>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>api</artifactId>
+      <artifactId>org.opennms.features.topology.api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>browsers</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.browsers</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -136,12 +111,6 @@
     <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>

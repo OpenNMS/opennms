@@ -15,7 +15,7 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 
 		http://camel.apache.org/schema/blueprint
-		http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.2.xsd
+		http://camel.apache.org/schema/blueprint/camel-blueprint-2.14.1.xsd
 ">
 
   <!-- Configuration properties -->
@@ -23,9 +23,16 @@
     <cm:default-properties>
         <cm:property name="elasticsearchCluster" value="opennms"/>
         <cm:property name="elasticsearchIp" value="127.0.0.1"/>
+        <cm:property name="elasticsearchHttpPort" value="9200"/>
+        <cm:property name="elasticsearchTransportPort" value="9300"/>
+        <cm:property name="logAllEvents" value="false"/>
         <cm:property name="logEventDescription" value="false"/>
         <cm:property name="cache_max_ttl" value="0"/> <!-- set to zero to disable TTL -->
         <cm:property name="cache_max_size" value="10000"/> <!-- set to zero to disable max size -->
+        <cm:property name="concurrentConsumers" value="4"/>
+        <cm:property name="queueSize" value="1000"/>
+        <cm:property name="queueTimeout" value="0"/> <!-- Disable timeout by default -->
+        <cm:property name="blockWhenFull" value="true"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -40,23 +47,22 @@
   </service>
 
   <bean id="alarmForwarder" class="org.opennms.features.elasticsearch.eventforwarder.internal.DefaultAlarmForwarder">
-    <argument value="seda:elasticsearchForwardAlarm"/>
+    <argument value="seda:elasticsearchForwardAlarm?size=${queueSize}&amp;timeout=${queueTimeout}&amp;blockWhenFull=${blockWhenFull}"/>
   </bean>
 
-  <!-- TODO: Fetch EventIpcManager using service registry? -->
-  <bean id="eventIpcManager" class="org.opennms.netmgt.events.api.EventIpcManagerFactory" factory-method="getIpcManager"/>
-
-  <bean id="eventListener" class="org.opennms.features.elasticsearch.eventforwarder.ForwardingEventListener" init-method="init">
+  <bean id="eventListener" class="org.opennms.features.elasticsearch.eventforwarder.ForwardingEventListener" init-method="init" destroy-method="destroy">
     <property name="eventIpcManager" ref="eventIpcManager" />
     <property name="eventForwarder" ref="eventForwarder" />
+    <property name="logAllEvents" value="${logAllEvents}"/>
   </bean>
 
+  <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
   <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
 
   <!-- Event listener that connects the EventIpcManager to this Camel context -->
   <bean id="eventForwarder" class="org.opennms.features.elasticsearch.eventforwarder.internal.DefaultEventForwarder">
-    <argument value="seda:elasticsearchForwardEvent"/>
+    <argument value="seda:elasticsearchForwardEvent?size=${queueSize}&amp;timeout=${queueTimeout}&amp;blockWhenFull=${blockWhenFull}"/>
   </bean>
 
     <bean id="nodeDataCache" class="org.opennms.features.elasticsearch.eventforwarder.internal.NodeCache"
@@ -72,7 +78,7 @@
     <property name="cache" ref="nodeDataCache"/>
   </bean>
 
-  <bean id="indexNameFunction" class="org.opennms.features.elasticsearch.eventforwarder.internal.IndexNameFunction">
+  <bean id="indexNameFunction" class="org.opennms.core.camel.IndexNameFunction">
     <argument value="yyyy.MM"/>
   </bean>
 
@@ -104,30 +110,30 @@
           <constant>application/x-www-form-urlencoded</constant>
         </setHeader>
         <bean ref="elmapping" method="process"/>
-        <to uri="http:{{elasticsearchIp}}:9200/_template/{{elasticsearchCluster}}"/>
+        <to uri="http:{{elasticsearchIp}}:{{elasticsearchHttpPort}}/_template/{{elasticsearchCluster}}"/>
         <log message="${body}"/>
     </route>
 
     <route id="eventsFromOpennms" autoStartup="true" startupOrder="2">
-        <from uri="seda:elasticsearchForwardEvent"/>
-        <to uri="direct:ES_PRE"/>
+        <from uri="seda:elasticsearchForwardEvent?concurrentConsumers={{concurrentConsumers}}&amp;size={{queueSize}}"/>
+        <to uri="seda:ES_PRE?size={{queueSize}}&amp;timeout={{queueTimeout}}&amp;blockWhenFull={{blockWhenFull}}"/>
     </route>
 
     <route id="alarmsFromOpennms" autoStartup="true" startupOrder="3">
-        <from uri="seda:elasticsearchForwardAlarm"/>
-        <to uri="direct:ES_PRE"/>
+        <from uri="seda:elasticsearchForwardAlarm?concurrentConsumers={{concurrentConsumers}}&amp;size={{queueSize}}"/>
+        <to uri="seda:ES_PRE?size={{queueSize}}&amp;timeout={{queueTimeout}}&amp;blockWhenFull={{blockWhenFull}}"/>
     </route>
 
     <route id="enrichAlarmsAndEvents" autoStartup="true" startupOrder="4">
-        <from uri="direct:ES_PRE"/>
+        <from uri="seda:ES_PRE?concurrentConsumers={{concurrentConsumers}}&amp;size={{queueSize}}"/>
         <bean ref="elasticsearchHeaders" method="process"/>
-        <to uri="direct:ES"/>
+        <to uri="seda:ES?size={{queueSize}}&amp;timeout={{queueTimeout}}&amp;blockWhenFull={{blockWhenFull}}"/>
     </route>
 
     <route id="toElasticsearch" autoStartup="true" startupOrder="5" errorHandlerRef="noErrorHandler">
-        <from uri="direct:ES"/>
-        <log message="ES: ${body.toString()}"/>
-        <to uri="elasticsearch://{{elasticsearchCluster}}?operation=INDEX&amp;ip={{elasticsearchIp}}"/>
+        <from uri="seda:ES?concurrentConsumers={{concurrentConsumers}}&amp;size={{queueSize}}"/>
+        <log loggingLevel="DEBUG" message="ES: ${body.toString()}"/>
+        <to uri="elasticsearch://{{elasticsearchCluster}}?operation=INDEX&amp;ip={{elasticsearchIp}}&amp;port={{elasticsearchTransportPort}}"/>
     </route>
 
   </camelContext>

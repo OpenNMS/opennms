@@ -3,11 +3,11 @@
   <parent>
     <artifactId>opennms-provision</artifactId>
     <groupId>org.opennms</groupId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-detector-ssh</artifactId>
-  <name>OpenNMS Provision SSH Detector</name>
+  <name>OpenNMS :: Provisioning :: SSH Detector</name>
   <url>http://www.opennms.org</url>
   <packaging>bundle</packaging>
   <build>
@@ -45,11 +45,6 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

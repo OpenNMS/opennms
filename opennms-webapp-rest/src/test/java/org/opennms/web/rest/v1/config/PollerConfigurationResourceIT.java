@@ -38,9 +38,9 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,11 +76,11 @@ public class PollerConfigurationResourceIT extends AbstractSpringJerseyRestTestC
     @Override
     protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
-        LocationDef location = new LocationDef("RDU", "East Coast", new String[] { "example1" }, new String[] { "example1" }, "Research Triangle Park, NC", 35.715751f, -79.16262f, 1L);
+        OnmsMonitoringLocation location = new OnmsMonitoringLocation("RDU", "East Coast", new String[] { "example1" }, new String[] { "example1" }, "Research Triangle Park, NC", 35.715751f, -79.16262f, 1L);
         m_monitoringLocationDao.saveOrUpdate(location);
-        location = new LocationDef("00002", "IN", new String[] { "example2" }, new String[0], "2 Open St., Network, MS 00002", 38.2096f, -85.8704f, 100L, "even");
+        location = new OnmsMonitoringLocation("00002", "IN", new String[] { "example2" }, new String[0], "2 Open St., Network, MS 00002", 38.2096f, -85.8704f, 100L, "even");
         m_monitoringLocationDao.saveOrUpdate(location);
-        location = new LocationDef("00003", "IN", new String[] { "example2" }, new String[] { "example2" }, "2 Open St., Network, MS 00002", 38.2096f, -85.8704f, 100L, "odd");
+        location = new OnmsMonitoringLocation("00003", "IN", new String[] { "example2" }, new String[] { "example2" }, "2 Open St., Network, MS 00002", 38.2096f, -85.8704f, 100L, "odd");
         m_monitoringLocationDao.saveOrUpdate(location);
     }
     

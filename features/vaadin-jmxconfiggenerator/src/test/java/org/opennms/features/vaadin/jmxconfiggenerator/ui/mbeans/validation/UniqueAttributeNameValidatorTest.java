@@ -2,7 +2,7 @@ package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 
 import com.vaadin.ui.Field;
 import com.vaadin.ui.TextField;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.vaadin.jmxconfiggenerator.TestHelper;

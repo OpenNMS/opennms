@@ -45,10 +45,10 @@ public class HighestSeverityAboveTest {
         reduceFunction.setThreshold(Status.MAJOR);
 
         assertEquals(Optional.empty(), reduceFunction.reduce(Lists.newArrayList()));
-        assertEquals(Optional.empty(), reduceFunction.reduce(Lists.newArrayList(
-                Status.MINOR, Status.MAJOR, Status.WARNING)));
+        assertEquals(Optional.empty(), reduceFunction.reduce(StatusUtils.toListWithIndices(Lists.newArrayList(
+                Status.MINOR, Status.MAJOR, Status.WARNING))));
 
-        assertEquals(Optional.of(Status.CRITICAL), reduceFunction.reduce(Lists.newArrayList(
-                Status.MINOR, Status.MAJOR, Status.WARNING, Status.CRITICAL)));
+        assertEquals(Status.CRITICAL, reduceFunction.reduce(StatusUtils.toListWithIndices(Lists.newArrayList(
+                Status.MINOR, Status.MAJOR, Status.WARNING, Status.CRITICAL))).get().getStatus());
     }
 }

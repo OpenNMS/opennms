@@ -653,6 +653,14 @@ public abstract class EventConstants {
     public static final String PARAM_REPORT_TITLE = "reportTitle";
     public static final String PARAM_REPORT_GRAPH_COUNT = "graphCount";
 
+
+    public static final String MONITORING_SYSTEM_ADDED_UEI = "uei.opennms.org/internal/monitoringSystemAdded";
+    public static final String MONITORING_SYSTEM_LOCATION_CHANGED_UEI = "uei.opennms.org/internal/monitoringSystemLocationChanged";
+    public static final String MONITORING_SYSTEM_DELETED_UEI = "uei.opennms.org/internal/monitoringSystemDeleted";
+    public static final String PARAM_MONITORING_SYSTEM_TYPE = "monitoringSystemType";
+    public static final String PARAM_MONITORING_SYSTEM_ID = "monitoringSystemId";
+    public static final String PARAM_MONITORING_SYSTEM_LOCATION = "monitoringSystemLocation";
+    public static final String PARAM_MONITORING_SYSTEM_PREV_LOCATION = "monitoringSystemPreviousLocation";
     //
     // end eventUEIs
     //
@@ -917,6 +925,11 @@ public abstract class EventConstants {
     public static final String PARM_SNMP_WRITE_COMMUNITY_STRING = "writeCommunityString";
 
     /**
+     * The SNMP write community string when sent as an event parm.
+     */
+    public static final String PARM_SNMP_LOCATION = "location";
+
+    /**
      * Service monitor qualifier when sent as an event parm
      */
     public static final String PARM_QUALIFIER = "qualifier";
@@ -932,6 +945,16 @@ public abstract class EventConstants {
      * RTC subscribe event
      */
     public static final String PARM_CAT_LABEL = "catlabel";
+
+    /**
+     * Used to indicate categories added on a {@link #NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI} event.
+     */
+    public static final String PARM_CATEGORIES_ADDED = "categoriesAdded";
+
+    /**
+     * Used to indicate categories deleted on a {@link #NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI} event.
+     */
+    public static final String PARM_CATEGORIES_DELETED = "categoriesDeleted";
 
     /**
      * The username when sent as a parameter(like for the RTC subscribe)

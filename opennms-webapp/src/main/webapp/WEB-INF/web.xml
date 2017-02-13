@@ -483,13 +483,6 @@
      <url-pattern>/docs</url-pattern>
    </servlet-mapping>
 
-  <!--  servlet that gwt rpc requests get mapped to -->
-   <servlet>
-     <servlet-name>gwtDispatcher</servlet-name>
-     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-     <load-on-startup>1</load-on-startup>
-   </servlet>
-
    <!-- Serves static resource content from .jar files such as spring-js.jar -->
    <servlet>
 	<servlet-name>Resources Servlet</servlet-name>
@@ -690,11 +683,6 @@
     <!-- servlet for grabbing SNMP node information -->
     <servlet-name>snmpGetNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.SnmpGetNodesServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for grabbing SNMP interface information -->
-    <servlet-name>snmpGetInterfaces</servlet-name>
-    <servlet-class>org.opennms.web.admin.nodeManagement.SnmpGetInterfacesServlet</servlet-class>
   </servlet>
   <servlet>
     <!-- servlet for grabbing node, interface and service information -->
@@ -954,10 +942,6 @@
     <url-pattern>/admin/snmpGetNodes</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>snmpGetInterfaces</servlet-name>
-    <url-pattern>/admin/snmpGetInterfaces</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
     <servlet-name>getNodes</servlet-name>
     <url-pattern>/admin/getNodes</url-pattern>
   </servlet-mapping>
@@ -1005,11 +989,6 @@
    <servlet-mapping>
     <servlet-name>ManageSnmpIntf</servlet-name>
     <url-pattern>/element/ManageSnmpIntf</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>gwtDispatcher</servlet-name>
-    <url-pattern>*.gwt</url-pattern>
   </servlet-mapping>
 
     <servlet-mapping>
@@ -1156,10 +1135,6 @@
   <error-page>
     <exception-type>org.opennms.web.admin.nodeManagement.NoManagedInterfacesException</exception-type>
     <location>/errors/nomanagedinterfaces.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>java.lang.Throwable</exception-type>
-    <location>/errors/unknownexception.jsp</location>
   </error-page>
   <error-page>
     <error-code>500</error-code>

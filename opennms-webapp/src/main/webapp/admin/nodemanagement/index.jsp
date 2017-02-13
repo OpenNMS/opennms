@@ -115,7 +115,7 @@
   </p>
 
   <p>
-    <a href="admin/snmpGetInterfaces?node=<%=nodeId%>&nodelabel=<%=node_db.getLabel()%>">
+    <a href="admin/snmpInterfaces.jsp?node=<%=nodeId%>&nodelabel=<%=node_db.getLabel()%>">
     Configure SNMP Data Collection per Interface</a>
   </p>
 

@@ -29,8 +29,9 @@
 package org.opennms.netmgt.enlinkd;
 
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,25 +39,26 @@ import java.util.Set;
 
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
-import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
-import org.opennms.netmgt.model.topology.SharedSegment;
 import org.opennms.netmgt.model.OspfLink;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.model.topology.SharedSegment;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.opennms.core.utils.InetAddressUtils.str;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 /**
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
@@ -243,6 +245,7 @@ public abstract class EnLinkdTestHelper {
         }
     }
 
+    @SafeVarargs
     public static <T> boolean checkLinks(Iterable<T> iterable, Predicate<T>... matchers) {
         for (Predicate<T> matcher : matchers) {
             if (!Iterables.any(iterable, matcher)) {
@@ -1696,6 +1699,7 @@ public abstract class EnLinkdTestHelper {
 
         public OneBridgeCompleteTopology() {
             nodeA.setId(nodeAId);
+            nodeA.setLocation(new OnmsMonitoringLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
             element.setNode(nodeA);
             element.setBaseBridgeAddress("aaaaaaaaaaaa");
             elemlist.add(element);

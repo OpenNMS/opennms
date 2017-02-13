@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,25 +31,25 @@ package org.opennms.smoketest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Quotes;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -58,138 +58,142 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@Ignore("Until someone can look at it.")
 public class BSMAdminIT extends OpenNMSSeleniumTestCase {
-    public static final Logger LOG = LoggerFactory.getLogger(BSMAdminIT.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(BSMAdminIT.class);
 
     /**
      * Class to control the inputs of the "Business Service Edit"-Window
      */
-    private class BsmAdminPageEditWindow {
+    public static class BsmAdminPageEditWindow {
+        private final OpenNMSSeleniumTestCase testCase;
+        @SuppressWarnings("unused")
         private final String businessServiceName;
 
-        private BsmAdminPageEditWindow() {
-            this(null);
+        private BsmAdminPageEditWindow(OpenNMSSeleniumTestCase testCase) {
+            this(testCase, null);
         }
 
-        private BsmAdminPageEditWindow(final String businessServiceName) {
+        private BsmAdminPageEditWindow(final OpenNMSSeleniumTestCase testCase, final String businessServiceName) {
+            this.testCase = Objects.requireNonNull(testCase);
             this.businessServiceName = businessServiceName;
         }
 
         public BsmAdminPage save() {
-            LOG.debug("BsmAdminPageEditWindow({}).save()", this.businessServiceName);
-            clickElementUntilItDisappears(By.id("saveButton"));
-            wait.until(pageContainsText(businessServiceName));
-            return new BsmAdminPage().open();
+            testCase.clickUntilVaadinPopupDisappears(By.id("saveButton"), "Business Service Edit");
+            return new BsmAdminPage(testCase).open();
         }
 
         public BsmAdminPage cancel() {
-            LOG.debug("BsmAdminPageEditWindow({}).cancel()", this.businessServiceName);
-            clickElementUntilItDisappears(By.id("cancelButton"));
-            wait.until(ExpectedConditions.elementToBeClickable(By.id("createButton")));
-            return new BsmAdminPage();
+            final By by = By.id("cancelButton");
+            testCase.clickElementUntilElementDisappears(by, by);
+            testCase.wait.until(ExpectedConditions.elementToBeClickable(By.id("createButton")));
+            return new BsmAdminPage(testCase);
         }
 
         public BsmAdminPageEditWindow name(String newName) {
-            LOG.debug("BsmAdminPageEditWindow({}).name({})", this.businessServiceName, newName);
-            enterText(By.id("nameField"), newName).sendKeys(Keys.ENTER);
-            return new BsmAdminPageEditWindow(newName);
+            testCase.enterText(By.id("nameField"), newName);
+            testCase.findElementById("nameField").sendKeys(Keys.ENTER, Keys.TAB);
+            return new BsmAdminPageEditWindow(testCase, newName);
         }
 
         public BsmAdminPageEdgeEditWindow newEdgeWindow() {
-            LOG.debug("BsmAdminPageEditWindow({}).newEdgeWindow()", this.businessServiceName);
-            waitForElement(By.id("addEdgeButton")).click();
-            wait.until(pageContainsText("Business Service Edge Edit"));
-            return new BsmAdminPageEdgeEditWindow();
+            testCase.clickUntilVaadinPopupAppears(By.id("addEdgeButton"), "Business Service Edge Edit");
+            return new BsmAdminPageEdgeEditWindow(testCase);
         }
 
         public BsmAdminPageAttributeEditWindow newAttributeWindow() {
-            LOG.debug("BsmAdminPageEditWindow({}).newAttributeWindow()", this.businessServiceName);
-            waitForElement(By.id("addAttributeButton")).click();
-            wait.until(pageContainsText("Attribute"));
-            return new BsmAdminPageAttributeEditWindow();
+            testCase.clickUntilVaadinPopupAppears(By.id("addAttributeButton"), "Attribute");
+            return new BsmAdminPageAttributeEditWindow(testCase);
         }
 
         public BsmAdminPageAttributeEditWindow editAttributeWindow() {
-            LOG.debug("BsmAdminPageEditWindow({}).editAttributeWindow()", this.businessServiceName);
-            waitForElement(By.id("editAttributeButton")).click();
-            wait.until(pageContainsText("Attribute"));
-            return new BsmAdminPageAttributeEditWindow();
+            testCase.clickUntilVaadinPopupAppears(By.id("editAttributeButton"), "Attribute");
+            return new BsmAdminPageAttributeEditWindow(testCase);
         }
 
         public BsmAdminPageEdgeEditWindow editEdgeWindow() {
-            LOG.debug("BsmAdminPageEditWindow({}).editEdgeWindow()", this.businessServiceName);
-            findElementById("editEdgeButton").click();
-            wait.until(pageContainsText("Business Service Edge Edit"));
-            return new BsmAdminPageEdgeEditWindow();
+            testCase.clickUntilVaadinPopupAppears(By.id("editEdgeButton"), "Business Service Edge Edit");
+            return new BsmAdminPageEdgeEditWindow(testCase);
         }
 
         public BsmAdminPageEdgeEditWindow addChildEdge(String childServiceText, String mapFunctionText, int weight) throws InterruptedException {
-            LOG.debug("BsmAdminPageEditWindow({}).addChildEdge({}, {}, {})", this.businessServiceName, childServiceText, mapFunctionText, weight);
             BsmAdminPageEdgeEditWindow editPage = newEdgeWindow()
                     .selectMapFunction(mapFunctionText)
                     .selectChildService(childServiceText)
                     .weight(weight)
                     .confirm();
-            wait.until(ExpectedConditions.elementToBeClickable(By.id("addEdgeButton")));
+            testCase.wait.until(ExpectedConditions.elementToBeClickable(By.id("addEdgeButton")));
             return editPage;
         }
 
         public BsmAdminPageEditWindow addReductionKeyEdge(String reductionKeyText, String mapFunctionText, int weight) throws InterruptedException {
-            LOG.debug("BsmAdminPageEditWindow({}).addReductionKeyEdge({}, {}, {})", this.businessServiceName, reductionKeyText, mapFunctionText, weight);
             return addReductionKeyEdge(reductionKeyText, mapFunctionText, weight, null);
         }
 
         public BsmAdminPageEditWindow addReductionKeyEdge(String reductionKeyText, String mapFunctionText, int weight, String friendlyName) throws InterruptedException {
-            LOG.debug("BsmAdminPageEditWindow({}).addReductionKeyEdge({}, {}, {}, {})", this.businessServiceName, reductionKeyText, mapFunctionText, weight, friendlyName);
             newEdgeWindow()
-                    .selectMapFunction(mapFunctionText)
-                    .reductionKey(reductionKeyText)
-                    .friendlyName(friendlyName)
-                    .weight(weight)
-                    .confirm();
-            wait.until(ExpectedConditions.elementToBeClickable(By.id("addEdgeButton")));
+            .selectMapFunction(mapFunctionText)
+            .reductionKey(reductionKeyText)
+            .friendlyName(friendlyName)
+            .weight(weight)
+            .confirm();
+            testCase.wait.until(ExpectedConditions.elementToBeClickable(By.id("addEdgeButton")));
             return this;
         }
 
         public BsmAdminPageEditWindow addAttribute(String key, String value) throws InterruptedException {
-            LOG.debug("BsmAdminPageEditWindow({}).addAttribute({}, {})", this.businessServiceName, key, value);
-            newAttributeWindow()
+            final BsmAdminPageAttributeEditWindow window = newAttributeWindow();
+
+            testCase.waitUntil(null, null, new Callable<Boolean>() {
+                @Override public Boolean call() throws Exception {
+                    window
                     .key(key)
                     .value(value)
-                    .confirm();
+                    .validate();
+                    return true;
+                }
+            });
+
+            window.confirm();
             return this;
         }
 
-        public BsmAdminPageEditWindow editAttribute(String key, String value) throws InterruptedException {
-            LOG.debug("BsmAdminPageEditWindow({}).editAttribute({}, {})", this.businessServiceName, key, value);
-            getSelectWebElement("attributeList").selectByVisibleText(key);
-            editAttributeWindow()
+        public BsmAdminPageEditWindow editAttribute(final String key, final String value) throws InterruptedException {
+            testCase.selectByVisibleText("attributeList", key);
+            final BsmAdminPageAttributeEditWindow window = editAttributeWindow();
+
+            testCase.waitUntil(null, null, new Callable<Boolean>() {
+                @Override public Boolean call() throws Exception {
+                    window
                     .value(value)
-                    .confirm();
+                    .validate();
+                    return true;
+                }
+            });
+
+            window.confirm();
             return this;
         }
 
         public BsmAdminPageEditWindow editEdge(String edgeValueString, String mapFunctionText, int weight) throws InterruptedException {
-            LOG.debug("BsmAdminPageEditWindow({}).editEdge({}, {}, {})", this.businessServiceName, edgeValueString, mapFunctionText, weight);
-            getSelectWebElement("edgeList").selectByVisibleText(edgeValueString);
+            testCase.selectByVisibleText("edgeList", edgeValueString);
             editEdgeWindow()
-                    .selectMapFunction(mapFunctionText)
-                    .weight(weight)
-                    .confirm();
-            wait.until(ExpectedConditions.elementToBeClickable(By.id("editEdgeButton")));
+            .selectMapFunction(mapFunctionText)
+            .weight(weight)
+            .confirm();
+            testCase.wait.until(ExpectedConditions.elementToBeClickable(By.id("editEdgeButton")));
             return this;
         }
 
         public BsmAdminPageEditWindow editEdge(String edgeValueString, String mapFunctionText, int weight, String friendlyName) throws InterruptedException {
-            LOG.debug("BsmAdminPageEditWindow({}).editEdge({}, {}, {}, {})", this.businessServiceName, edgeValueString, mapFunctionText, weight, friendlyName);
-            getSelectWebElement("edgeList").selectByVisibleText(edgeValueString);
+            testCase.selectByVisibleText("edgeList", edgeValueString);
             editEdgeWindow()
-                    .selectMapFunction(mapFunctionText)
-                    .friendlyName(friendlyName)
-                    .weight(weight)
-                    .confirm();
-            wait.until(ExpectedConditions.elementToBeClickable(By.id("editEdgeButton")));
+            .selectMapFunction(mapFunctionText)
+            .friendlyName(friendlyName)
+            .weight(weight)
+            .confirm();
+            testCase.wait.until(ExpectedConditions.elementToBeClickable(By.id("editEdgeButton")));
             return this;
         }
 
@@ -198,40 +202,36 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow addIpServiceEdge(String ipServiceText, String mapFunctionText, int weight, String friendlyName) throws InterruptedException {
-            LOG.debug("BsmAdminPageEditWindow({}).addIpServiceEdge({}, {}, {}, {})", this.businessServiceName, ipServiceText, mapFunctionText, weight, friendlyName);
             newEdgeWindow()
-                    .selectIpService(ipServiceText)
-                    .friendlyName(friendlyName)
-                    .selectMapFunction(mapFunctionText)
-                    .weight(weight)
-                    .confirm();
-            wait.until(ExpectedConditions.elementToBeClickable(By.id("addEdgeButton")));
+            .selectIpService(ipServiceText)
+            .friendlyName(friendlyName)
+            .selectMapFunction(mapFunctionText)
+            .weight(weight)
+            .confirm();
+            testCase.wait.until(ExpectedConditions.elementToBeClickable(By.id("addEdgeButton")));
             return this;
         }
 
         public BsmAdminPageEditWindow removeEdge(String edgeValueString) {
-            LOG.debug("BsmAdminPageEditWindow({}).removeEdge({})", this.businessServiceName, edgeValueString);
-            getSelectWebElement("edgeList").selectByVisibleText(edgeValueString);
-            findElementById("removeEdgeButton").click();
+            testCase.selectByVisibleText("edgeList", edgeValueString);
+            final By option = By.xpath("//option[text()=" + Quotes.escape(edgeValueString) + "]");
+            testCase.clickElementUntilElementDisappears(By.id("removeEdgeButton"), option);
             return this;
         }
 
         public BsmAdminPageEditWindow setReductionFunction(final String reductionFunctionValueString) {
-            LOG.debug("BsmAdminPageEditWindow({}).setReductionFunction({})", this.businessServiceName, reductionFunctionValueString);
-            getSelectWebElement("reduceFunctionNativeSelect").selectByVisibleText(reductionFunctionValueString);
+            testCase.selectByVisibleText("reduceFunctionNativeSelect", reductionFunctionValueString);
             return this;
         }
 
         public BsmAdminPageEditWindow setThreshold(final float threshold) {
-            LOG.debug("BsmAdminPageEditWindow({}).setThreshold({})", this.businessServiceName, threshold);
-            findElementById("thresholdTextField").clear();
-            findElementById("thresholdTextField").sendKeys(String.valueOf(threshold));
+            testCase.enterText(By.id("thresholdTextField"), String.valueOf(threshold));
+            testCase.findElementById("thresholdTextField").sendKeys(Keys.ENTER, Keys.TAB);
             return this;
         }
 
         public BsmAdminPageEditWindow setThresholdStatus(String thresholdStatusString) {
-            LOG.debug("BsmAdminPageEditWindow({}).setThresholdStatus({})", this.businessServiceName, thresholdStatusString);
-            getSelectWebElement("thresholdStatusSelect").selectByVisibleText(thresholdStatusString);
+            testCase.selectByVisibleText("thresholdStatusSelect", thresholdStatusString);
             return this;
         }
     }
@@ -239,151 +239,173 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     /**
      * Class to control the inputs and workflow of the "Business Service Admin" Page
      */
-    private class BsmAdminPage {
+    public static class BsmAdminPage {
+        private final OpenNMSSeleniumTestCase testCase;
+        private final String bsmAdminUrl;
+
+        public BsmAdminPage(final OpenNMSSeleniumTestCase testCase) {
+            this.testCase = Objects.requireNonNull(testCase);
+            this.bsmAdminUrl = testCase.getBaseUrl() + "opennms/osgi/bsm-admin-page";
+        }
 
         public BsmAdminPage open() {
-            m_driver.get(getBsmBaseUrl());
-            try {
-                Thread.sleep(2000);
-            } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            switchToVaadinFrame();
+            testCase.getDriver().get(bsmAdminUrl);
             return this;
         }
 
         public BsmAdminPageEditWindow openNewDialog(String businessServiceName) throws InterruptedException {
-            LOG.debug("BsmAdminPage().openNewDialog({})", businessServiceName);
-            findElementById("createButton").click();
-            wait.until(pageContainsText("Business Service Edit")); // we wait until the edit dialog appears
-            return new BsmAdminPageEditWindow().name(businessServiceName);
+            LOG.debug("Opening dialog for business service: {}", businessServiceName);
+            testCase.clickUntilVaadinPopupAppears(By.id("createButton"), "Business Service Edit");
+            return new BsmAdminPageEditWindow(testCase).name(businessServiceName);
         }
 
         public BsmAdminPageEditWindow openEditDialog(String businessServiceName) {
-            LOG.debug("BsmAdminPage().openEditDialog({})", businessServiceName);
-            waitForElement(By.id("editButton-" + businessServiceName)).click();
-            wait.until(pageContainsText("Business Service Edit"));
-            return new BsmAdminPageEditWindow(businessServiceName);
+            testCase.clickUntilVaadinPopupAppears(By.id("editButton-" + businessServiceName), "Business Service Edit");
+            return new BsmAdminPageEditWindow(testCase, businessServiceName);
         }
 
         public void delete(String businessServiceName) {
-            LOG.debug("BsmAdminPage().delete({})", businessServiceName);
             delete(businessServiceName, false);
         }
 
         public void rename(String serviceName, String newServiceName) {
-            LOG.debug("BsmAdminPage().rename({}, {})", serviceName, newServiceName);
             openEditDialog(serviceName).name(newServiceName).save();
         }
 
         public void delete(String serviceName, boolean withConfirmDialog) {
-            LOG.debug("BsmAdminPage().delete({}, {})", serviceName, withConfirmDialog);
-            findDeleteButton(serviceName).click();
+            findDeleteButton(testCase, serviceName).click();
             if (withConfirmDialog) { // we remove the parent element first, the confirm dialog must be present
-                findElementById("confirmationDialog.button.ok").click();
+                testCase.clickElement(By.id("confirmationDialog.button.ok"));
             }
-            verifyElementNotPresent(By.id("deleteButton-" + serviceName));
+            verifyElementNotPresent(testCase, By.id("deleteButton-" + serviceName));
         }
 
         public void collapseAll() {
-            LOG.debug("BsmAdminPage().collapseAll()");
-            waitForElement(By.id("collapseButton")).click();
+            testCase.clickElement(By.id("collapseButton"));
         }
 
         public void expandAll() {
-            LOG.debug("BsmAdminPage().expandAll()");
-            waitForElement(By.id("expandButton")).click();
+            testCase.clickElement(By.id("expandButton"));
+        }
+
+        public void reloadDaemon() {
+            testCase.clickElement(By.id("reloadButton"));
         }
     }
 
-    private class BsmAdminPageEdgeEditWindow {
+    public static class BsmAdminPageEdgeEditWindow {
+        private final OpenNMSSeleniumTestCase testCase;
+
+        private BsmAdminPageEdgeEditWindow(final OpenNMSSeleniumTestCase testCase) {
+            this.testCase = Objects.requireNonNull(testCase);
+        }
+
         private BsmAdminPageEdgeEditWindow selectEdgeType(String edgeType) {
-            LOG.debug("BsmAdminPageEdgeEditWindow().selectEdgeType({})", edgeType);
-            getSelectWebElement("edgeTypeSelector").selectByVisibleText(edgeType);
+            testCase.selectByVisibleText("edgeTypeSelector", edgeType);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow selectIpService(String ipServiceText) {
-            LOG.debug("BsmAdminPageEdgeEditWindow().selectIpService({})", ipServiceText);
             selectEdgeType("IP Service");
-            enterText(By.xpath("//div[@id='ipServiceList']/input[1]"), ipServiceText).sendKeys(Keys.ENTER);
-            // Click on the item that appears
-            waitForElement(By.xpath("//span[text()='" + ipServiceText + "']")).click();
+            testCase.enterAutocompleteText(By.xpath("//div[@id='ipServiceList']/input[1]"), ipServiceText);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow selectChildService(String childServiceText) {
-            LOG.debug("BsmAdminPageEdgeEditWindow().selectChildService({})", childServiceText);
             selectEdgeType("Child Service");
-            enterText(By.xpath("//div[@id='childServiceList']/input[1]"), childServiceText);
-            // Click on the item that appears
-            waitForElement(By.xpath("//span[text()='" + childServiceText + "']")).click();
+            testCase.enterAutocompleteText(By.xpath("//div[@id='childServiceList']/input[1]"), childServiceText);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow selectMapFunction(String mapFunctionText) {
-            LOG.debug("BsmAdminPageEdgeEditWindow().selectMapFunction({})", mapFunctionText);
-            getSelectWebElement("mapFunctionSelector").selectByVisibleText(mapFunctionText);
+            testCase.selectByVisibleText("mapFunctionSelector", mapFunctionText);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow friendlyName(String friendlyName) throws InterruptedException {
-            LOG.debug("BsmAdminPageEdgeEditWindow().friendlyName({})", friendlyName);
-            enterText(By.id("friendlyNameField"), friendlyName != null ? friendlyName : "").sendKeys(Keys.ENTER);
+            testCase.enterText(By.id("friendlyNameField"), friendlyName != null ? friendlyName : "");
+            testCase.findElementById("friendlyNameField").sendKeys(Keys.ENTER, Keys.TAB);
+            testCase.clickElement(By.id("friendlyNameField"));
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow reductionKey(String reductionKey) throws InterruptedException {
-            LOG.debug("BsmAdminPageEdgeEditWindow().reductionKey({})", reductionKey);
             selectEdgeType("Reduction Key");
-            enterText(By.id("reductionKeyField"), reductionKey).sendKeys(Keys.ENTER);
-            findElementById("reductionKeyField").sendKeys(Keys.ENTER);
+            testCase.enterText(By.id("reductionKeyField"), reductionKey);
+            testCase.findElementById("reductionKeyField").sendKeys(Keys.ENTER, Keys.TAB);
+            testCase.clickElement(By.id("reductionKeyField"));
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow weight(int weight) {
-            LOG.debug("BsmAdminPageEdgeEditWindow().weight({})", weight);
-            enterText(By.id("weightField"), String.valueOf(weight)).sendKeys(Keys.ENTER);
+            testCase.enterText(By.id("weightField"), String.valueOf(weight));
+            testCase.findElementById("weightField").sendKeys(Keys.ENTER, Keys.TAB);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow confirm() {
-            LOG.debug("BsmAdminPageEdgeEditWindow().confirm()");
-            clickElementUntilItDisappears(By.id("saveEdgeButton"));
-            wait.until(pageContainsText("Business Service Edit"));
-            return new BsmAdminPageEdgeEditWindow();
+            testCase.clickUntilVaadinPopupDisappears(By.id("saveEdgeButton"), "Business Service Edge Edit");
+            return new BsmAdminPageEdgeEditWindow(testCase);
         }
     }
 
-    private class BsmAdminPageAttributeEditWindow {
-        public BsmAdminPageAttributeEditWindow key(String key) throws InterruptedException {
-            LOG.debug("BsmAdminPageAttributeEditWindow().key({})", key);
-            findElementById("keyField").clear();
-            findElementById("keyField").sendKeys(key);
+    public static class BsmAdminPageAttributeEditWindow {
+        private final OpenNMSSeleniumTestCase testCase;
+
+        private BsmAdminPageAttributeEditWindow(final OpenNMSSeleniumTestCase testCase) {
+            this.testCase = Objects.requireNonNull(testCase);
+        }
+
+        public BsmAdminPageAttributeEditWindow key(final String key) throws InterruptedException {
+            testCase.waitUntil(null, null, new Callable<Boolean>() {
+                @Override public Boolean call() throws Exception {
+                    final String id = "keyField";
+                    testCase.getElementImmediately(By.id(id)).clear();
+                    testCase.getElementImmediately(By.id(id)).click();
+                    testCase.getElementImmediately(By.id(id)).sendKeys(key);
+                    testCase.getElementImmediately(By.id(id)).sendKeys(Keys.TAB);
+                    testCase.getElementImmediately(By.id(id)).click();
+                    return true;
+                }
+            });
             return this;
         }
 
-        public BsmAdminPageAttributeEditWindow value(String value) {
-            LOG.debug("BsmAdminPageAttributeEditWindow().value({})", value);
-            enterText(By.id("valueField"), value);
-            //findElementById("valueField").clear();
-            //findElementById("valueField").sendKeys(value);
+        public BsmAdminPageAttributeEditWindow value(final String value) {
+            testCase.waitUntil(null, null, new Callable<Boolean>() {
+                @Override public Boolean call() throws Exception {
+                    final String id = "valueField";
+                    testCase.getElementImmediately(By.id(id)).clear();
+                    testCase.getElementImmediately(By.id(id)).click();
+                    testCase.getElementImmediately(By.id(id)).sendKeys(value);
+                    testCase.getElementImmediately(By.id(id)).click();
+                    return true;
+                }
+            });
+            return this;
+        }
+
+        public BsmAdminPageAttributeEditWindow validate() {
+            testCase.waitUntil(null, null, new Callable<Boolean>() {
+                @Override public Boolean call() throws Exception {
+                    // remove focus
+                    testCase.getVaadinPopup("Attribute").click();
+                    Thread.sleep(50);
+                    testCase.assertElementDoesNotExist(By.className("v-errorindicator"));
+                    return true;
+                }
+
+            });
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow confirm() {
-            LOG.debug("BsmAdminPageAttributeEditWindow().confirm({})");
-            waitForElement(By.id("okBtn")).click();
-            wait.until(pageContainsText("Business Service Edit"));
-            return new BsmAdminPageEdgeEditWindow();
+            testCase.clickUntilVaadinPopupDisappears(By.id("okBtn"), "Attribute");
+            return new BsmAdminPageEdgeEditWindow(testCase);
         }
     }
 
     private BsmAdminPage bsmAdminPage;
-
-    private String getBsmBaseUrl() {
-        return getBaseUrl() + "opennms/admin/bsm/adminpage.jsp";
-    }
 
     private void createTestSetup() throws Exception {
         String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
@@ -414,18 +436,14 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     @Before
     public void before() throws Exception {
-        bsmAdminPage = new BsmAdminPage();
+        bsmAdminPage = new BsmAdminPage(this);
         bsmAdminPage.open();
-    }
-
-    @After
-    public void after() throws Exception {
-        switchToDefaultFrame();
     }
 
     @Test
     public void testCanCreateAndDeleteBusinessService() throws InterruptedException {
         final String businessServiceName = createUniqueBusinessServiceName();
+        LOG.debug("Business Service Name: {}", businessServiceName);
         bsmAdminPage.openNewDialog(businessServiceName).save();
         bsmAdminPage.delete(businessServiceName);
     }
@@ -434,9 +452,9 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     public void testCanCreateAndDeleteBusinessServiceWithThreshold() throws InterruptedException {
         final String businessServiceName = createUniqueBusinessServiceName();
         bsmAdminPage.openNewDialog(businessServiceName)
-                .setReductionFunction("Threshold")
-                .setThreshold(0.25f)
-                .save();
+        .setReductionFunction("Threshold")
+        .setThreshold(0.25f)
+        .save();
 
         bsmAdminPage.delete(businessServiceName);
     }
@@ -451,7 +469,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         bsmAdminPage.rename(serviceName, RENAMED_SERVICE_NAME);
 
         // verify that element was deleted
-        verifyElementNotPresent(By.id("deleteButton-" + serviceName));
+        verifyElementNotPresent(this, By.id("deleteButton-" + serviceName));
         pageContainsText(RENAMED_SERVICE_NAME);
         bsmAdminPage.delete(RENAMED_SERVICE_NAME);
     }
@@ -471,9 +489,9 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
             // All of these IP services should be available for selection from the drop-down
             final List<String> ipServices = Lists.newArrayList(
-                    "NodeA /0:0:0:0:0:0:0:1 AAA",
-                    "NodeA /0:0:0:0:0:0:0:1 BBB",
-                    "NodeA /127.0.0.1 DDD",
+                                                               "NodeA /0:0:0:0:0:0:0:1 AAA",
+                                                               "NodeA /0:0:0:0:0:0:0:1 BBB",
+                                                               "NodeA /127.0.0.1 DDD",
                     "NodeA /127.0.0.1 CCC");
             // Try selecting each of the services, we'll use the last one in the list
             for (String ipService : ipServices) {
@@ -665,12 +683,12 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         // Verify Reduce Function selection
         BsmAdminPageEditWindow editDialog = bsmAdminPage.openEditDialog(serviceName);
-        List<WebElement> reduceFunctionSelect = getSelectWebElement("reduceFunctionNativeSelect").getAllSelectedOptions();
+        List<WebElement> reduceFunctionSelect = getSelectWebElement(this, "reduceFunctionNativeSelect").getAllSelectedOptions();
         Assert.assertEquals(1, reduceFunctionSelect.size());
         Assert.assertEquals("HighestSeverityAbove", reduceFunctionSelect.get(0).getText());
 
         // Verify Reduce Function Status Threshold
-        List<WebElement> thresholdStatusSelect = getSelectWebElement("thresholdStatusSelect").getAllSelectedOptions();
+        List<WebElement> thresholdStatusSelect = getSelectWebElement(this, "thresholdStatusSelect").getAllSelectedOptions();
         Assert.assertEquals(1, thresholdStatusSelect.size());
         Assert.assertEquals("Major", thresholdStatusSelect.get(0).getText());
         editDialog.cancel();
@@ -679,58 +697,52 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         bsmAdminPage.delete(serviceName);
     }
 
-    // switches to the embedded vaadin iframe
-    private void switchToVaadinFrame() {
-        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
-    }
-
-    // go back to the content "frame"
-    private void switchToDefaultFrame() {
-        m_driver.switchTo().defaultContent();
-    }
-
     // If we use the same name over and over again tests may pass, even if we did not create/delete items,
     // therefore we create a unique business service name all the time
-    private String createUniqueBusinessServiceName() {
+    public static String createUniqueBusinessServiceName() {
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date());
     }
 
-    private WebElement findDeleteButton(String serviceName) {
-        return findElementById("deleteButton-" + serviceName);
+    private static WebElement findDeleteButton(OpenNMSSeleniumTestCase testCase, String serviceName) {
+        return testCase.findElementById("deleteButton-" + serviceName);
     }
 
     private void verifyElementNotPresent(String text) {
         final String escapedText = text.replace("\'", "\\\'");
         final String xpathExpression = "//*[contains(., \'" + escapedText + "\')]";
-        verifyElementNotPresent(By.xpath(xpathExpression));
+        verifyElementNotPresent(this, By.xpath(xpathExpression));
     }
 
     private void verifyElementPresent(String text) {
         final String escapedText = text.replace("\'", "\\\'");
         final String xpathExpression = "//*[contains(., \'" + escapedText + "\')]";
-        try {
-            setImplicitWait(200, TimeUnit.MILLISECONDS);
-            final WebElement elem = wait.until(new ExpectedCondition<WebElement>() {
-                @Override public WebElement apply(final WebDriver driver) {
-                    try {
-                        return driver.findElement(By.xpath(xpathExpression));
-                    } catch (final Exception e) {
-                        return null;
-                    }
-                }
-            });
-            Assert.assertNotNull("element with xpath is not present: " + xpathExpression, elem);
-        } finally {
-            setImplicitWait();
-        }
+        Assert.assertNotNull("element with xpath is not present: " + xpathExpression, findElementByXpath(xpathExpression));
     }
 
     /**
      * Verifies that the provided element is not present.
      * @param by
      */
-    private void verifyElementNotPresent(final By by) {
-        new WebDriverWait(m_driver, 5 /* seconds */).until(getElementNotPresentCondition(by));
+    private static void verifyElementNotPresent(OpenNMSSeleniumTestCase testCase, final By by) {
+        new WebDriverWait(testCase.getDriver(), 5 /* seconds */).until(
+                                                                       ExpectedConditions.not(new ExpectedCondition<Boolean>() {
+                                                                           @Nullable
+                                                                           @Override
+                                                                           public Boolean apply(@Nullable WebDriver input) {
+                                                                               try {
+                                                                                   // the default implicit wait timeout is too long, make it shorter
+                                                                                   input.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+                                                                                   WebElement elementFound = input.findElement(by);
+                                                                                   return elementFound != null;
+                                                                               } catch (NoSuchElementException ex) {
+                                                                                   return false;
+                                                                               } finally {
+                                                                                   // set the implicit wait timeout back to the value it has been before
+                                                                                   input.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
+                                                                               }
+                                                                           }
+                                                                       })
+                );
     }
 
     @Test
@@ -853,7 +865,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         // If we collapse, we should not be able to see the child
         bsmAdminPage.collapseAll();
-        verifyElementNotPresent(By.id("deleteButton-" + serviceNames[1]));
+        verifyElementNotPresent(this, By.id("deleteButton-" + serviceNames[1]));
 
         // If we expand, we should be able to see the child
         bsmAdminPage.expandAll();
@@ -869,63 +881,8 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     /**
      * Vaadin usually wraps the select elements around a div element.
      * This method considers this.
-     *
-     * @param id
-     * @return
      */
-    private Select getSelectWebElement(String id) {
-        return new Select(waitForElement(By.xpath("//*[@id=\"" + id + "\"]/select")));
-    }
-
-    /**
-     * In some cases, Vaadin doesn't register our clicks,
-     * so this method keeps click until the given element
-     * is no longer found.
-     *
-     * @param by selector
-     */
-    private void clickElementUntilItDisappears(By by) {
-        scrollToElement(by);
-
-        // click once to make sure the element *ever* existed
-        waitForElement(by).click();
-
-        try {
-            setImplicitWait(200, TimeUnit.MILLISECONDS);
-            wait.until(new ExpectedCondition<Boolean>() {
-                @Override
-                public Boolean apply(final WebDriver driver) {
-                    try {
-                        driver.findElement(by).click();
-                        LOG.debug("clickElementUntilItDisappears: element still exists: {}", by);
-                        return false;
-                    } catch (NullPointerException|NoSuchElementException|StaleElementReferenceException e) {
-                        return true;
-                    }
-                }
-            });
-        } finally {
-            setImplicitWait();
-        }
-    }
-
-    private ExpectedCondition<Boolean> getElementNotPresentCondition(final By by) {
-        return ExpectedConditions.not(new ExpectedCondition<Boolean>() {
-           @Nullable
-           @Override
-           public Boolean apply(@Nullable WebDriver input) {
-               try {
-                   // the default implicit wait timeout is too long, make it shorter
-                   input.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-                   WebElement elementFound = input.findElement(by);
-                   return elementFound != null;
-               } catch (NoSuchElementException|StaleElementReferenceException ex) {
-                   return false;
-               } finally {
-                   // set the implicit wait timeout back to the value it has been before
-                   input.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
-               }
-           }
-       });
+    private static Select getSelectWebElement(final OpenNMSSeleniumTestCase testCase, final String id) {
+        return testCase.getSelect(id);
     }
 }

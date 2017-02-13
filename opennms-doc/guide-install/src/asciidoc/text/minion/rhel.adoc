@@ -2,16 +2,23 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+[[gi-install-minion]]
+=== Installing Minion
+
+This section describes how to install the _Minion_ and how to configure it to communicate with a central _{opennms-product-name}_ instance.
+
+Installing a distributed _{opennms-product-name}_ requires:
+
+* Instance of _{opennms-product-name}_ needs to be same version as _Minion_ Packages
+* Packages are only available as _RPMs_ for _RHEL_-based systems
+* _{opennms-product-name}_ needs to be installed and the communication to the _ReST_ and _ActiveMQ_ endpoints is possible
+
 [[gi-install-minion-rhel]]
-=== RHEL
+==== RHEL
 
 NOTE: This description was built on _RHEL 7_ and _CentOS 7.1_.
 
-==== Install Minion
-
-Start by <<gi-install-opennms-yum-repo,setting up the OpenNMS Yum repository>> and <<gi-install-oracle-java,installing Java>>.
-
-NOTE: OpenNMS Minion currently requires a JDK. See http://issues.opennms.org/browse/HZN-620[HZN-620] for details.
+Start by <<gi-install-rhel-repository,setting up the OpenNMS Yum repository>> and <<gi-install-oracle-java,installing Java>>.
 
 Once the _Yum_ repository has been configured:
 
@@ -42,8 +49,7 @@ The _Minion_ packages setup the following directory structure:
 └── system
 ----
 
-[[gi-install-minion-rhel-init]]
-==== Initialize Minion
+After successful installation a `minion` service can be started and enabled using _systemd_ commands.
 
 .System startup configuration for _Minion_
 [source, shell]

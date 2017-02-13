@@ -16,6 +16,7 @@
 
 // Installation Guide for {opennms-product-name}
 include::text/opennms/introduction.adoc[]
+include::text/opennms/compatibility-matrix.adoc[]
 include::text/opennms/repository.adoc[]
 include::text/opennms/rhel.adoc[]
 include::text/opennms/debian.adoc[]
@@ -46,4 +47,7 @@ include::text/r/debian.adoc[]
 // Installation Guide for Minion
 include::text/minion/introduction.adoc[]
 include::text/minion/rhel.adoc[]
-include::text/minion/configure.adoc[]
+include::text/minion/configure-opennms.adoc[]
+include::text/minion/configure-minion.adoc[]
+include::text/minion/advanced-configuration.adoc[]
+include::text/minion/troubleshooting.adoc[]

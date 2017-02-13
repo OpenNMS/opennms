@@ -1718,30 +1718,32 @@ public class InstallerDb {
      * @throws java.lang.Exception if any.
      */
     public void insertData() throws Exception {
-
-        for (final Entry<String,List<Insert>> entry : getInserts().entrySet()) {
-            final String table = entry.getKey();
-            final List<Insert> inserts = entry.getValue();
-            Status status = Status.OK;
-
-            m_out.print("- inserting initial table data for \"" + table + "\"... ");
-
-            // XXX: criteria are checked for all inserts before
-            // any of them are done so inserts don't interfere with
-            // other inserts criteria
-            final List<Insert> toBeInserted = new LinkedList<Insert>();
-            for (final Insert insert : inserts) {
-                if (insert.isCriteriaMet()) {
-                    toBeInserted.add(insert);
-                }
-            }
-            
-            for(final Insert insert : toBeInserted) {
-                status = status.combine(insert.doInsert());
-            }
-
-            m_out.println(status);
+        for (final String table : getInserts().keySet()) {
+            insertData(table);
         }
+    }
+
+    public void insertData(String table) throws Exception {
+        final List<Insert> inserts = getInserts().get(table);
+        Status status = Status.OK;
+
+        m_out.print("- inserting initial table data for \"" + table + "\"... ");
+
+        // XXX: criteria are checked for all inserts before
+        // any of them are done so inserts don't interfere with
+        // other inserts criteria
+        final List<Insert> toBeInserted = new LinkedList<Insert>();
+        for (final Insert insert : inserts) {
+            if (insert.isCriteriaMet()) {
+                toBeInserted.add(insert);
+            }
+        }
+        
+        for(final Insert insert : toBeInserted) {
+            status = status.combine(insert.doInsert());
+        }
+
+        m_out.println(status);
     }
 
     /**

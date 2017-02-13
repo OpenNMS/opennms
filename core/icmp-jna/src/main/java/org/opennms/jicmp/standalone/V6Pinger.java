@@ -48,8 +48,8 @@ import com.sun.jna.Platform;
  */
 public class V6Pinger extends AbstractPinger<Inet6Address> {
 
-    public V6Pinger() throws Exception {
-        super(NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, getSocketType(), NativeDatagramSocket.IPPROTO_ICMPV6));
+    public V6Pinger(int id) throws Exception {
+        super(NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6, id));
         
         // Windows requires at least one packet sent before a receive call can be made without error
         // so we send a packet here to make sure...  This one should not match the normal ping requests

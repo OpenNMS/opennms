@@ -35,17 +35,13 @@ import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.ssh.Ssh;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>SshDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
 public class SshDetector extends BasicDetector<NullRequest, SshResponse>{
     
     private static final String DEFAULT_SERVICE_NAME = "SSH";

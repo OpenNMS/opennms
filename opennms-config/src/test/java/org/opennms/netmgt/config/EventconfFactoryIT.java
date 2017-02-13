@@ -137,7 +137,12 @@ public class EventconfFactoryIT {
     public void testFindByEventUeiKnown1000Times() throws Exception {
     	
     	final int ATTEMPTS = 10000;
-    	
+
+        // knownUEI1 is currently set to 'uei.opennms.org/internal/capsd/snmpConflictsWithDb'
+        // and is defined in the root of the eventconf that is loaded bellow.
+        // Prior to this commit, this test would produce very different results
+        // when running against another UEI i.e. 'uei.opennms.org/default/event'
+        // that happens to be the last event defined in the last included file
         EventBuilder bldr = new EventBuilder(knownUEI1, "testFindByEventUeiKnown");
 
     	DefaultEventConfDao eventConfDao = loadConfiguration("eventconf-speedtest/eventconf.xml");

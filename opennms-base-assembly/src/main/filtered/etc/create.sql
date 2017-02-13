@@ -246,7 +246,7 @@ CREATE TABLE monitoringlocationspollingpackages (
     monitoringlocationid TEXT NOT NULL,
     packagename TEXT NOT NULL,
 
-    CONSTRAINT monitoringlocationspollingpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT monitoringlocationspollingpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX monitoringlocationspollingpackages_id_idx on monitoringlocationspollingpackages(monitoringlocationid);
@@ -257,7 +257,7 @@ CREATE TABLE monitoringlocationscollectionpackages (
     monitoringlocationid TEXT NOT NULL,
     packagename TEXT NOT NULL,
 
-    CONSTRAINT monitoringlocationscollectionpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT monitoringlocationscollectionpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX monitoringlocationscollectionpackages_id_idx on monitoringlocationscollectionpackages(monitoringlocationid);
@@ -268,11 +268,17 @@ CREATE TABLE monitoringlocationstags (
     monitoringlocationid TEXT NOT NULL,
     tag TEXT NOT NULL,
 
-    CONSTRAINT monitoringlocationstags_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT monitoringlocationstags_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX monitoringlocationstags_id_idx on monitoringlocationstags(monitoringlocationid);
 CREATE UNIQUE INDEX monitoringlocationstags_id_pkg_idx on monitoringlocationstags(monitoringlocationid, tag);
+
+--##################################################################
+--# The following command adds the initial 'Default' entry to
+--# the 'monitoringlocations' table.
+--##################################################################
+INSERT INTO monitoringlocations (id, monitoringarea) values ('Default', 'Default');
 
 
 --#####################################################
@@ -317,7 +323,7 @@ CREATE UNIQUE INDEX monitoringsystemsproperties_id_property_idx on monitoringsys
 --# The following command adds the initial localhost poller entry to
 --# the 'monitoringsystems' table.
 --##################################################################
-INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000-0000-0000-000000000000', 'localhost', 'localhost', 'OpenNMS');
+INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000-0000-0000-000000000000', 'localhost', 'Default', 'OpenNMS');
 
 
 --#####################################################
@@ -339,7 +345,7 @@ CREATE TABLE scanreports (
     timestamp TIMESTAMP WITH TIME ZONE,
 
     CONSTRAINT scanreports_pkey PRIMARY KEY (id),
-    CONSTRAINT scanreports_monitoringlocations_fkey FOREIGN KEY (location) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT scanreports_monitoringlocations_fkey FOREIGN KEY (location) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE UNIQUE INDEX scanreports_id_idx on scanreport(id);
@@ -484,8 +490,10 @@ create table node (
 	lastCapsdPoll   timestamp with time zone,
 	foreignSource	varchar(64),
 	foreignId       varchar(64),
+	location        text not null,
 
-	constraint pk_nodeID primary key (nodeID)
+	constraint pk_nodeID primary key (nodeID),
+	constraint fk_node_location foreign key (location) references monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 create index node_id_type_idx on node(nodeID, nodeType);
@@ -2350,6 +2358,7 @@ CREATE TABLE bsm_reduce (
     type character varying(32) NOT NULL,
     threshold float,
     threshold_severity integer,
+    base float,
     CONSTRAINT bsm_reduce_pkey PRIMARY KEY (id)
 );
 
@@ -2418,4 +2427,39 @@ CREATE TABLE bsm_service_children (
       REFERENCES bsm_service_edge (id) ON DELETE CASCADE,
       CONSTRAINT fk_bsm_service_child_service_id FOREIGN KEY (bsm_service_child_id)
       REFERENCES bsm_service (id) ON DELETE CASCADE
+);
+
+--##################################################################
+--# Topology tables
+--##################################################################
+
+-- Layout table
+CREATE TABLE topo_layout (
+	id varchar(255) NOT NULL,
+	created timestamp NOT NULL,
+	creator varchar(255) NOT NULL,
+	updated timestamp NOT NULL,
+	updator varchar(255) NOT NULL,
+	last_used timestamp,
+	CONSTRAINT topo_layout_pkey PRIMARY KEY (id)
+);
+
+-- Layout coordinates of vertex
+CREATE TABLE topo_vertex_position (
+	id integer NOT NULL,
+	x integer NOT NULL,
+	y integer NOT NULL,
+	vertex_namespace varchar(255) NULL,
+	vertex_id varchar(255) NULL,
+	CONSTRAINT topo_vertex_position_pkey PRIMARY KEY (id)
+);
+
+-- Relation table (layout -> vertex positions)
+CREATE TABLE topo_layout_vertex_positions (
+  vertex_position_id integer NOT NULL,
+	layout_id varchar(255) NOT NULL,
+	CONSTRAINT fk_topo_layout_vertex_positions_layout_id FOREIGN KEY (layout_id)
+	REFERENCES topo_layout (id) ON DELETE CASCADE,
+	CONSTRAINT fk_topo_layout_vertex_positions_vertex_position_id FOREIGN KEY (vertex_position_id)
+	REFERENCES topo_vertex_position (id) ON DELETE CASCADE
 );

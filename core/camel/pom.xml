@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.camel</artifactId>
-  <name>OpenNMS Core Camel</name>
+  <name>OpenNMS :: Core :: Camel</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -26,20 +26,21 @@
               JaxbUtilsMarshalProcessor or JaxbUtilsUnmarshalProcessor
             -->
             <Import-Package>
+              org.eclipse.persistence.internal.jaxb;resolution:=optional,
+              org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
+              org.opennms.netmgt.config.trapd;resolution:=optional,
+              org.opennms.netmgt.snmp;resolution:=optional,
               org.opennms.netmgt.syslogd;resolution:=optional,
+              org.opennms.netmgt.trapd;resolution:=optional,
+              org.opennms.minion.core.api;resolution:=optional,
               *
             </Import-Package>
-            <Export-Package>org.opennms.core.camel.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.api</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.xml</artifactId>
@@ -55,18 +56,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.compendium</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

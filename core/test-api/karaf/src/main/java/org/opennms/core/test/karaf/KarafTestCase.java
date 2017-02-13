@@ -87,7 +87,7 @@ public abstract class KarafTestCase {
     public static final String MAX_SSH_PORT = "8888";
 
     private static String getKarafVersion() {
-        final String karafVersion = System.getProperty("karafVersion", "2.4.0");
+        final String karafVersion = System.getProperty("karafVersion", "2.4.3");
         Objects.requireNonNull(karafVersion, "Please define a system property 'karafVersion'.");
         return karafVersion;
     }
@@ -137,6 +137,7 @@ public abstract class KarafTestCase {
      */
     @ProbeBuilder
     public TestProbeBuilder probeConfiguration(TestProbeBuilder probe) {
+        probe.setHeader(Constants.BUNDLE_MANIFESTVERSION, "2");
         probe.setHeader(Constants.BUNDLE_SYMBOLICNAME, "org.opennms.core.test.karaf.test");
         //probe.setHeader(Constants.DYNAMICIMPORT_PACKAGE, "org.opennms.core.test.karaf,*,org.apache.felix.service.*;status=provisional");
         return probe;
@@ -191,6 +192,7 @@ public abstract class KarafTestCase {
             provision(
                  bundle()
                      .add(KarafTestCase.class)
+                     .set(Constants.BUNDLE_MANIFESTVERSION, "2")
                      .set(Constants.BUNDLE_SYMBOLICNAME, "org.opennms.core.test.karaf")
                      .set(Constants.DYNAMICIMPORT_PACKAGE, "*")
                      .set(Constants.EXPORT_PACKAGE, "org.opennms.core.test.karaf")

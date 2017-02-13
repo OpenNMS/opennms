@@ -914,13 +914,15 @@
                         &lt;p&gt;This event is generated when node outage processing
                         determines that the critical path IP address/service for
                         this node is not responding..&lt;/p&gt;
+                        &lt;p&gt;More information on the affected node(s) can be found at
+                        the &lt;a href="opennms/pathOutage/index.jsp"&gt;Path Outages&lt;/a&gt; page.&lt;/p&gt;
                 </descr>
     <logmsg dest="logndisplay">
                         %parm[nodelabel]% path outage. Critical path =
                         %parm[criticalPathIp]% %parm[criticalPathServiceName]%
                 </logmsg>
     <severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+    <alarm-data reduction-key="%uei%:%dpname%:%parm[criticalPathIp]%:%parm[criticalPathServiceName]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/nodeGainedInterface</uei>
@@ -2077,5 +2079,27 @@
     <alarm-data reduction-key="uei.opennms.org/alarms/trigger:%parm[node]%:%parm[ip]%:%parm[service]%" alarm-type="2" auto-clean="false">
       <update-field field-name="severity" update-on-reduction="true"/>
     </alarm-data>
+  </event>
+  
+   <event>
+    <uei>uei.opennms.org/internal/monitoringSystemAdded</uei>
+    <event-label>Monitoring system Added</event-label>
+    <descr> A new monitoring system has been added </descr>
+    <logmsg dest="logndisplay">A new monitoring system of type '%parm[monitoringSystemType]%' has been added with ID '%parm[monitoringSystemId]%' at location '%parm[monitoringSystemLocation]%'. </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/monitoringSystemLocationChanged</uei>
+    <event-label>Monitoring system Location Changed</event-label>
+    <descr> Monitoring system location changed</descr>
+    <logmsg dest="logndisplay"> Monitoring system of type '%parm[monitoringSystemType]%' with ID '%parm[monitoringSystemId]%' has changed its location from '%parm[monitoringSystemPreviousLocation]%'  to  '%parm[monitoringSystemLocation]%'. </logmsg>
+    <severity>Normal</severity>
+  </event>
+    <event>
+    <uei>uei.opennms.org/internal/monitoringSystemDeleted</uei>
+    <event-label>Monitoring system Deleted</event-label>
+    <descr> Monitoring system Deleted</descr>
+    <logmsg dest="logndisplay"> Monitoring system of type '%parm[monitoringSystemType]%' with ID '%parm[monitoringSystemId]%' at location '%parm[monitoringSystemLocation]%' has been deleted. </logmsg>
+    <severity>Normal</severity>
   </event>
 </events>

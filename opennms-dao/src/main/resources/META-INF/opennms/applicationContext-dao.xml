@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" 
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
        ">
 
   <context:annotation-config />
   <cache:annotation-driven />
+  <tx:annotation-driven />
 
   <!-- Spring Cache Manager -->
   <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
@@ -67,10 +70,9 @@
       <list>
         <!-- TODO: Move into org.opennms.netmgt.model -->
         <value>org.opennms.netmgt.bsm</value>
-        <!-- TODO: Move into org.opennms.netmgt.model -->
-        <value>org.opennms.netmgt.config.monitoringLocations</value>
         <value>org.opennms.netmgt.dao.hibernate</value>
         <value>org.opennms.netmgt.model</value>
+        <value>org.opennms.netmgt.topology</value>
       </list>
     </property>
     <!--  property name="schemaUpdate" value="true">
@@ -266,6 +268,21 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.IfLabel" ref="ifLabel" />
 
+  <bean id="interfaceToNodeCache" class="org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl"/>
+
+  <bean id="interfaceToNodeCache-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod">
+      <value>org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache.setInstance</value>
+    </property>
+    <property name="arguments">
+      <list>
+        <ref bean="interfaceToNodeCache" />
+      </list>
+    </property>
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" ref="interfaceToNodeCache" />
+
   <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
@@ -283,6 +300,12 @@
   </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.MinionDao" ref="minionDao" />
+
+  <bean id="monitoringSystemDao" class="org.opennms.netmgt.dao.hibernate.MonitoringSystemDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoringSystemDao" ref="monitoringSystemDao" />
 
   <bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
@@ -437,14 +460,6 @@
     <property name="configResource" ref="jasperReportConfigResourceLocation" />
   </bean>
 
-  <bean id="jmxDataCollectionConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="file:${opennms.home}/etc/jmx-datacollection-config.xml" />
-  </bean>
-
-  <bean id="jmxDataCollectionConfigDao" class="org.opennms.netmgt.config.JMXDataCollectionConfigDao">
-    <property name="configResource" ref="jmxDataCollectionConfigResourceLocation" />
-  </bean>
-
   <onmsgi:service interface="org.opennms.netmgt.dao.api.JasperReportConfigDao" ref="jasperReportConfigDao" />
 
   <bean id="filterDaoFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -464,6 +479,11 @@
   </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.FilterFavoriteDao" ref="filterFavoriteDao" />
+
+  <bean id="genericHibernateAccessor" class="org.opennms.netmgt.dao.hibernate.GenericHibernateAccessor">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" ref="genericHibernateAccessor" />
 
   <bean id="topologyDao" class="org.opennms.netmgt.dao.hibernate.TopologyDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />

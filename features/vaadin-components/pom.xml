@@ -4,46 +4,19 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>vaadin-components</artifactId>
 
-  <name>OpenNMS Features :: Vaadin :: Components</name>
+  <name>OpenNMS :: Features :: Vaadin :: Components</name>
 
   <packaging>pom</packaging>
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
   <modules>
     <module>core</module>
     <module>graph</module>
     <module>extender-service</module>
   </modules>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
-          <systemPropertyVariables>
-            <opennms.home>${project.build.testOutputDirectory}</opennms.home>
-            <java.endorsed.dirs>${basedir}/target/endorsed</java.endorsed.dirs>
-          </systemPropertyVariables>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

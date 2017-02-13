@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
+import org.opennms.features.topology.link.Layout;
+import org.opennms.features.topology.link.TopologyLinkBuilder;
+import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
@@ -46,7 +46,6 @@ import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Lists;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.ContainerHierarchicalWrapper;
 import com.vaadin.server.ExternalResource;
@@ -83,18 +82,17 @@ public class BusinessServiceTreeTable extends TreeTable {
                 final BusinessService businessService = getItem(itemId).getBean().getBusinessService();
                 final Status status = stateMachine.getOperationalStatus(businessService);
                 if (status != null) {
-                    // Build the query string
-                    final List<BasicNameValuePair> urlParms = Lists.newArrayList(
-                            new BasicNameValuePair("focus-vertices", businessService.getId().toString()),
-                            new BasicNameValuePair("szl", "1"),
-                            new BasicNameValuePair("layout", "Hierarchy Layout"),
-                            new BasicNameValuePair("provider", "Business Services")
-                    );
-                    final String queryString = URLEncodedUtils.format(urlParms, Charset.forName("UTF-8"));
+                    final String topologyLink = new TopologyLinkBuilder()
+                            .focus(businessService.getId().toString())
+                            .szl(1)
+                            .layout(Layout.HIERARCHY)
+                            .provider(TopologyProvider.BUSINESS_SERVICE)
+                            .getLink();
 
                     // Generate the link
-                    final Link link = new Link("View in Topology UI", new ExternalResource(String.format("/opennms/topology?%s", queryString)));
+                    final Link link = new Link("View in Topology UI", new ExternalResource(topologyLink));
                     link.setIcon(FontAwesome.EXTERNAL_LINK_SQUARE);
+
                     // This app is typically access in an iframe, so we open the URL in a new window/tab
                     link.setTargetName("_blank");
                     layout.addComponent(link);

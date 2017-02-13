@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Features Remote Poller (JNLP)</name>
+  <name>OpenNMS :: Features :: Remote Poller :: JNLP</name>
   <url>http://maven.apache.org</url>
   <properties>
     <webstartPluginVersion>1.0-beta-7-ONMS-20140424</webstartPluginVersion>

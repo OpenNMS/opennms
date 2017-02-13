@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
@@ -56,9 +57,12 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.vaadin.server.PaintException;
 
 public class GraphPainter extends BaseGraphVisitor {
+
+    public static final int DEFAULT_EDGE_PATH_OFFSET = Integer.getInteger("org.opennms.features.topology.api.topo.defaultEdgePathOffset", 20);
 
 	private final GraphContainer m_graphContainer;
 	private final IconRepositoryManager m_iconRepoManager;
@@ -136,9 +140,19 @@ public class GraphPainter extends BaseGraphVisitor {
         v.setSVGIconId(getIconId(vertex));
 		v.setLabel(vertex.getLabel());
 		v.setTooltipText(getTooltipText(vertex));
-        v.setStyleName(getVertexStyle(vertex, selected));
+		v.setStyleName(getVertexStyle(vertex, selected));
+		v.setTargets(getTargets(vertex));
+		v.setEdgePathOffset(getEdgePathOffset(vertex));
 		m_vertices.add(v);
 	}
+
+    private static int getEdgePathOffset(Vertex vertex) {
+        if (vertex.getEdgePathOffset() != null) {
+            return vertex.getEdgePathOffset();
+        } else {
+            return DEFAULT_EDGE_PATH_OFFSET;
+        }
+    }
 
 	private String getIconId(Vertex vertex) {
 		return m_iconRepoManager.getSVGIconId(vertex);
@@ -158,6 +172,16 @@ public class GraphPainter extends BaseGraphVisitor {
         return style.toString();
 
     }
+
+	/**
+	 * Determines if the given vertex has "links" to vertices from other layers.
+	 *
+	 * @param vertex The vertex to check
+	 * @return True if links to other layers exists, false otherwise
+     */
+	private boolean getTargets(Vertex vertex) {
+		return !m_graphContainer.getMetaTopologyProvider().getOppositeVertices(vertex).isEmpty();
+	}
 
     private String getStatusCount(Vertex vertex) {
         Status status = m_statusMap.get(vertex);
@@ -192,7 +216,9 @@ public class GraphPainter extends BaseGraphVisitor {
 			e.setTargetKey(targetKey);
 			e.setSelected(isSelected(m_graphContainer.getSelectionManager(), edge));
             e.setStatus(getEdgeStatus(edge));
-
+			if (m_edgeStatusMap.get(edge) != null) {
+				e.setAdditionalStyling(m_edgeStatusMap.get(edge).getStyleProperties());
+			}
             if(m_componentState.isHighlightFocus()){
                 e.setCssClass(getStyleName(edge) + " opacity-50");
             }else{
@@ -238,11 +264,19 @@ public class GraphPainter extends BaseGraphVisitor {
 	 * Cannot return null
 	 */
 	private String getStyleName(Edge edge) {
-		String styleName = edge.getStyleName();
-		// If the style is null, use a blank string
-		styleName = (styleName == null ? "" : styleName);
-        String status = " " + getEdgeStatus(edge);
-        return isSelected(m_graphContainer.getSelectionManager(), edge) ? styleName + " selected" + status : styleName + status;
+		final String styleName = edge.getStyleName();
+		final StringJoiner stringJoiner = new StringJoiner(" ");
+		if (!Strings.isNullOrEmpty(styleName)) {
+			stringJoiner.add(styleName);
+		}
+		if (isSelected(m_graphContainer.getSelectionManager(), edge)) {
+			stringJoiner.add("selected");
+		}
+        String status = getEdgeStatus(edge);
+		if (!Strings.isNullOrEmpty(status)) {
+			stringJoiner.add(status);
+		}
+		return stringJoiner.toString();
 	}
 
 	private static boolean isSelected(SelectionManager selectionManager, Vertex vertex) {

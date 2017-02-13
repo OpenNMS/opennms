@@ -33,17 +33,15 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
+import org.opennms.features.vaadin.components.graph.InlineGraphContainer;
 import com.vaadin.ui.Label;
 
-public class InfoPanel extends HorizontalLayout {
+public class InfoPanel extends CssLayout {
 
     private static String ID = "info-panel-component";
     private static String HIDE_TOOLTIP = "Hide info panel";
     private static String SHOW_TOOLTIP = "Show info panel";
 
-    private final CssLayout contentArea = new CssLayout();
-    private final CssLayout infoArea = new CssLayout();
     /** Static Components are always visible, if expanded. */
     private final List<Component> staticComponents = Lists.newArrayList();
     private final List<Component> dynamicComponents = Lists.newArrayList();
@@ -51,10 +49,10 @@ public class InfoPanel extends HorizontalLayout {
     /** Defines if the info panel is expanded or not. If true it is expanded, false otherwise. */
     private boolean expanded = true;
 
-    public InfoPanel(SearchBox searchBox, Component mainComponent) {
+    public InfoPanel(SearchBox searchBox) {
         setId(ID);
         addStyleName(ID);
-        setSizeFull();
+        addStyleName("v-scrollable");
 
         // A CssLayout is a simple "div"-element. This makes it much easier to custom style it
         toggleButton = new CssLayout();
@@ -72,34 +70,28 @@ public class InfoPanel extends HorizontalLayout {
             refreshInfoArea();
         });
 
-        contentArea.addStyleName("v-scrollable");
-        contentArea.addComponent(mainComponent);
-        contentArea.setSizeFull();
-
-        infoArea.addStyleName("info-panel-area");
-        infoArea.addStyleName("v-scrollable");
-
         staticComponents.add(searchBox);
         staticComponents.add(toggleButton);
-
-        addComponents(infoArea, contentArea);
-        setExpandRatio(contentArea, 1);
     }
 
     private void refreshInfoArea() {
-        infoArea.removeAllComponents();
+        removeAllComponents();
         if (expanded) {
-            infoArea.removeAllComponents();
-            staticComponents.forEach(sc -> infoArea.addComponent(sc));
-            dynamicComponents.forEach(c -> infoArea.addComponent(c));
+            staticComponents.forEach(sc -> addComponent(sc));
+            dynamicComponents.forEach(c -> addComponent(c));
+
             // Add an empty component with width = 350px to always force the max length
             // This is required as otherwise the left area of the info panel would be empty, even if the info panel
             // is not shown.
             Label label = new Label();
             label.setWidth(350, Unit.PIXELS);
-            infoArea.addComponent(label);
+            addComponent(label);
+
+            // Add a graph container to trigger backshift graph renderings on each update
+            addComponent(new InlineGraphContainer());
+            
         } else {
-            infoArea.addComponent(toggleButton);
+            addComponent(toggleButton);
         }
     }
 

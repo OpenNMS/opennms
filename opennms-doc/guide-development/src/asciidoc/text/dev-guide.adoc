@@ -7,7 +7,7 @@ To build/compile OpenNMS it is necessary to run a *nix system.
 You do not need to run it physically, a virtual machine is sufficient, but the choice is yours.
 We recommend one of the following:
 
- * link:http://www.linuxmint.com/[Linux Minut] with Cinnamon Desktop environment
+ * link:http://www.linuxmint.com/[Linux Mint] with Cinnamon Desktop environment
  * link:http://ubuntu.com[Ubuntu Desktop]
  * Mac OS X
 

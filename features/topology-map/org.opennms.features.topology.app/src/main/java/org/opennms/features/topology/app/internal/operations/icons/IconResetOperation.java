@@ -70,7 +70,9 @@ public class IconResetOperation implements Operation {
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         // only enabled, if all elements are a Vertex
-        return targets.stream().filter(v -> v instanceof Vertex).count() == targets.size();
+        return targets.stream()
+                      .allMatch(v -> v instanceof Vertex
+                                  && operationContext.getGraphContainer().getIconManager().findRepositoryByIconKey(((Vertex) v).getIconKey()) != null);
     }
 
     @Override

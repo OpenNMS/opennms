@@ -2,13 +2,13 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.ncs</artifactId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.ncs</groupId>
-  <artifactId>ncs-model</artifactId>
+  <artifactId>org.opennms.features.ncs.ncs-model</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features NCS Model Components</name>
+  <name>OpenNMS :: Features :: NCS :: Model</name>
   <build>
     <plugins>
       <plugin>

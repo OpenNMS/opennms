@@ -41,7 +41,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -93,8 +92,6 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
     @Autowired
     private DatabasePopulator m_populator;
 
-    private EventAnticipator m_anticipator;
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -112,8 +109,6 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
         }
 
         MockLogAppender.setupLogging(true, "DEBUG");
-        m_anticipator = new EventAnticipator();
-        m_eventManager.setEventAnticipator(m_anticipator);
         m_eventManager.setSynchronous(true);
         m_provisioner.start();
 
@@ -125,7 +120,7 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
     @After
     public void tearDown() throws Exception {
         waitForEverything();
-        m_anticipator.verifyAnticipated();
+        m_eventManager.getEventAnticipator().verifyAnticipated();
         m_populator.resetDatabase();
     }
 
@@ -136,18 +131,18 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
 
         final Resource invalidAssetFieldResource = getResource("classpath:/import_invalidAssetFieldName.xml");
 
-        m_anticipator.anticipateEvent(getStarted(invalidAssetFieldResource));
-        m_anticipator.anticipateEvent(getSuccessful(invalidAssetFieldResource));
-        m_anticipator.anticipateEvent(getNodeAdded(nextNodeId));
-        m_anticipator.anticipateEvent(getNodeGainedInterface(nextNodeId));
-        m_anticipator.anticipateEvent(getNodeGainedService(nextNodeId));
-        m_anticipator.anticipateEvent(getNodeScanCompleted(nextNodeId));
+        m_eventManager.getEventAnticipator().anticipateEvent(getStarted(invalidAssetFieldResource));
+        m_eventManager.getEventAnticipator().anticipateEvent(getSuccessful(invalidAssetFieldResource));
+        m_eventManager.getEventAnticipator().anticipateEvent(getNodeAdded(nextNodeId));
+        m_eventManager.getEventAnticipator().anticipateEvent(getNodeGainedInterface(nextNodeId));
+        m_eventManager.getEventAnticipator().anticipateEvent(getNodeGainedService(nextNodeId));
+        m_eventManager.getEventAnticipator().anticipateEvent(getNodeScanCompleted(nextNodeId));
 
         // This requisition has an asset on some nodes called "pollercategory".
         // Change it to "pollerCategory" (capital 'C') and the test passes...
         m_provisioner.doImport(invalidAssetFieldResource.getURL().toString(), Boolean.TRUE.toString());
         waitForEverything();
-        m_anticipator.verifyAnticipated();
+        m_eventManager.getEventAnticipator().verifyAnticipated();
 
         // should still import the node, just skip the asset field
         assertEquals(1, m_nodeDao.countAll());
@@ -167,19 +162,19 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
 
         final Resource resource = getResource("classpath:/import_legacyAssetFieldName.xml");
 
-        m_anticipator.anticipateEvent(getStarted(resource));
-        m_anticipator.anticipateEvent(getSuccessful(resource));
-        m_anticipator.anticipateEvent(getNodeAdded(nextNodeId));
-        m_anticipator.anticipateEvent(getNodeGainedInterface(nextNodeId));
-        m_anticipator.anticipateEvent(getNodeGainedService(nextNodeId));
-        m_anticipator.anticipateEvent(getNodeScanCompleted(nextNodeId));
+        m_eventManager.getEventAnticipator().anticipateEvent(getStarted(resource));
+        m_eventManager.getEventAnticipator().anticipateEvent(getSuccessful(resource));
+        m_eventManager.getEventAnticipator().anticipateEvent(getNodeAdded(nextNodeId));
+        m_eventManager.getEventAnticipator().anticipateEvent(getNodeGainedInterface(nextNodeId));
+        m_eventManager.getEventAnticipator().anticipateEvent(getNodeGainedService(nextNodeId));
+        m_eventManager.getEventAnticipator().anticipateEvent(getNodeScanCompleted(nextNodeId));
 
         // This requisition has an asset called "maintContractNumber" which was changed in
         // OpenNMS 1.10. We want to preserve backwards compatibility so make sure that the
         // field still works.
         m_provisioner.doImport(resource.getURL().toString(), Boolean.TRUE.toString());
         waitForEverything();
-        m_anticipator.verifyAnticipated();
+        m_eventManager.getEventAnticipator().verifyAnticipated();
 
         // should still import the node, just skip the asset field
         assertEquals(1, m_nodeDao.countAll());
@@ -194,14 +189,14 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
 
         final Resource invalidRequisitionResource = getResource("classpath:/import_invalidRequisition.xml");
 
-        m_anticipator.anticipateEvent(getStarted(invalidRequisitionResource));
-        m_anticipator.anticipateEvent(getFailed(invalidRequisitionResource));
+        m_eventManager.getEventAnticipator().anticipateEvent(getStarted(invalidRequisitionResource));
+        m_eventManager.getEventAnticipator().anticipateEvent(getFailed(invalidRequisitionResource));
 
         // This requisition has a "foreign-source" on the node tag, which is invalid,
         // foreign-source only belongs on the top-level model-import tag.
         m_provisioner.doImport(invalidRequisitionResource.getURL().toString(), Boolean.TRUE.toString());
         waitForEverything();
-        m_anticipator.verifyAnticipated();
+        m_eventManager.getEventAnticipator().verifyAnticipated();
 
         // should fail to import the node, it should bomb if the requisition is unparseable
         assertEquals(0, m_nodeDao.countAll());

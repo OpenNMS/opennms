@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.opennms</groupId>
-    <artifactId>container</artifactId>
-    <version>18.0.4-SNAPSHOT</version>
+    <artifactId>org.opennms.container</artifactId>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
   <artifactId>opennms</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS OSGi Container - OpenNMS Features</name>
+  <name>OpenNMS :: OSGi Container :: Karaf Features</name>
   <build>
     <plugins>
       <plugin>
@@ -45,14 +45,14 @@
             <!-- <descriptor>mvn:org.apache.karaf.assemblies.features/enterprise/${karafVersion}/xml/features</descriptor> -->
 
             <!-- OpenNMS-modified Karaf base features -->
-            <!-- <repository>mvn:org.opennms.container/karaf/${project.version}/xml/features</repository> -->
+            <!-- <repository>mvn:org.opennms.container/org.opennms.container.karaf/${project.version}/xml/features</repository> -->
 
 
             <!-- OpenNMS features bundle -->
             <repository>file:${project.build.outputDirectory}/features.xml</repository>
 
             <!-- JAAS Login Module -->
-            <repository>mvn:org.opennms.container/jaas-login-module/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.container/org.opennms.container.jaas-login-module/${project.version}/xml/features</repository>
 
             <!-- JMX Config Generator features -->
             <repository>mvn:org.opennms.features/jmxconfiggenerator/${project.version}/xml/features</repository>
@@ -62,6 +62,9 @@
             <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.shell-commands/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.bsm/vaadin-adminpage/${project.version}/xml/features</repository>
+
+            <!-- Geolocation features -->
+            <repository>mvn:org.opennms.features.geolocation/geolocation/${project.version}/xml/features</repository>
 
             <!-- MIB Parser and Event/Collection features -->
             <repository>mvn:org.opennms.features/vaadin-snmp-events-and-metrics/${project.version}/xml/features</repository>
@@ -79,10 +82,10 @@
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-linkd/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-ncs/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-sfree/${project.version}/xml/features</repository>
-            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-simple/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-vmware/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-application/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-bsm/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-graphml/${project.version}/xml/features</repository>
 
             <!-- Vaadin Feature -->
             <repository>mvn:org.opennms.features/vaadin/${project.version}/xml/features</repository>
@@ -106,7 +109,7 @@
             <!-- Alarm Change Notifier -->
             <repository>mvn:org.opennms.plugins/alarm-change-notifier/${project.version}/xml/features</repository> 
     
-            <!-- ReST Elastic Search Integration -->
+            <!-- ReST Elasticsearch Integration -->
             <repository>mvn:org.opennms.plugins/opennms-es-rest/${project.version}/xml/features</repository>
             
             <!-- Internal Plugins Descriptor -->
@@ -205,29 +208,32 @@
             <feature>opennms-dao-api</feature>
             <feature>opennms-dao</feature>
             <feature>opennms-discovery</feature>
-            <feature>opennms-discovery-daemon</feature>
             <feature>opennms-events-api</feature>
             <feature>opennms-events-daemon</feature>
-            <feature>opennms-events-traps</feature>
+            <feature>opennms-events-commands</feature>
             <feature>opennms-icmp-api</feature>
             <feature>opennms-icmp-jna</feature>
             <feature>opennms-icmp-jni</feature>
             <feature>opennms-icmp-jni6</feature>
+            <feature>opennms-icmp-best</feature>
+            <feature>opennms-icmp-commands</feature>
             <feature>opennms-javamail</feature>
             <feature>opennms-model</feature>
             <feature>opennms-poller-api</feature>
+            <feature>opennms-poller-shell</feature>
             <feature>opennms-provisioning</feature>
+            <feature>opennms-provisioning-detectors</feature>
+            <feature>opennms-provisioning-shell</feature>
             <feature>opennms-reporting</feature>
             <feature>opennms-rrd-api</feature>
             <feature>opennms-rrd-jrobin</feature>
             <feature>opennms-snmp</feature>
+            <feature>opennms-snmp-commands</feature>
             <feature>opennms-syslogd</feature>
             <feature>opennms-syslogd-listener-javanet</feature>
             <feature>opennms-syslogd-listener-camel-netty</feature>
-            <feature>opennms-syslogd-listener-nio</feature>
-            <feature>opennms-syslogd-handler-default</feature>
-            <feature>opennms-syslogd-handler-kafka</feature>
-            <feature>opennms-syslogd-handler-minion</feature>
+            <feature>opennms-trapd</feature>
+
             <!-- <feature>opennms-webapp</feature> -->
             <feature>org.json</feature>
             <feature>postgresql</feature>
@@ -260,10 +266,10 @@
             <feature>opennms-topology-runtime-linkd</feature>
             <feature>opennms-topology-runtime-ncs</feature>
             <feature>opennms-topology-runtime-sfree</feature>
-            <feature>opennms-topology-runtime-simple</feature>
             <feature>opennms-topology-runtime-vmware</feature>
             <feature>opennms-topology-runtime-application</feature>
             <feature>opennms-topology-runtime-bsm</feature>
+            <feature>opennms-topology-runtime-graphml</feature>
             <feature>vaadin</feature>
             <feature>vaadin-dashboard</feature>
             <feature>vaadin-jmxconfiggenerator</feature>
@@ -340,14 +346,20 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.container</groupId>
-      <artifactId>karaf</artifactId>
+      <artifactId>org.opennms.container.karaf</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
-      <artifactId>jaas-login-module</artifactId>
+      <artifactId>org.opennms.container.jaas-login-module</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.activemq</groupId>
+      <artifactId>org.opennms.features.activemq.component</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -360,6 +372,12 @@
     <dependency>
       <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.syslog</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.traps</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -433,6 +451,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.geolocation</groupId>
+      <artifactId>geolocation</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
       <artifactId>opennms-topology-runtime-browsers</artifactId>
       <version>${project.version}</version>
@@ -469,14 +494,14 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-sfree</artifactId>
+      <artifactId>opennms-topology-runtime-graphml</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-simple</artifactId>
+      <artifactId>opennms-topology-runtime-sfree</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
@@ -545,6 +570,20 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-commands</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.icmp.proxy.rpc-impl</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.commands</artifactId>
       <version>${project.version}</version>
@@ -559,8 +598,43 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.snmp</groupId>
+      <artifactId>org.opennms.core.snmp.proxy.rpc-impl</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-detectorclient-rpc</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.poller</groupId>
+      <artifactId>org.opennms.features.poller.client-rpc</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.commands</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.commands</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-wmi</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

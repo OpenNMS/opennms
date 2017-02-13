@@ -73,6 +73,7 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -172,6 +173,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     private CategoryDao m_categoryDao;
 
     @Autowired
+    private MonitoringLocationDao m_locationDao;
+
+    @Autowired
     private DistPollerDao m_distPollerDao;
 
     @Autowired
@@ -182,9 +186,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Autowired
     private ProvisionService m_provisionService;
-
-    @Autowired
-    private ImportScheduler m_importSchedule;
 
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
@@ -218,9 +219,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     @Before
     public void setUp() throws Exception {
         if (m_distPollerDao.findAll().size() == 0) {
-            OnmsDistPoller distPoller = new OnmsDistPoller("00000000-0000-0000-0000-000000000000");
+            OnmsDistPoller distPoller = new OnmsDistPoller(DistPollerDao.DEFAULT_DIST_POLLER_ID);
             distPoller.setLabel("localhost");
-            distPoller.setLocation("localhost");
+            distPoller.setLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
             distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
             m_distPollerDao.save(distPoller);
         }
@@ -419,10 +420,10 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
         importFromResource("classpath:/tec_dump.xml", Boolean.TRUE.toString());
 
-        for (final Event e : m_eventAnticipator.getAnticipatedEventsRecieved()) {
+        for (final Event e : m_eventAnticipator.getAnticipatedEventsReceived()) {
             System.err.println("received anticipated: " + e);
         }
-        for (final Event e : m_eventAnticipator.unanticipatedEvents()) {
+        for (final Event e : m_eventAnticipator.getUnanticipatedEvents()) {
             System.err.println("received unanticipated: " + e);
         }
 
@@ -1117,7 +1118,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
         assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
         runScan(scan);
 
         assertEquals(2, m_ipInterfaceDao.findAll().size());
@@ -1150,7 +1151,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
         assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
         runScan(scan);
 
         assertEquals(1, m_ipInterfaceDao.findAll().size());
@@ -1491,9 +1492,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         OnmsNode node = nodes.iterator().next();
         assertNotNull(node);
 
-        OnmsNode nodeCopy = new OnmsNode();
+        OnmsNode nodeCopy = new OnmsNode(m_locationDao.getDefaultLocation(), OLD_LABEL);
         nodeCopy.setId(node.getId());
-        nodeCopy.setLabel(OLD_LABEL);
         nodeCopy.setLabelSource(NodeLabelSource.USER);
 
         assertNotSame(node, nodeCopy);
@@ -1538,7 +1538,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test(timeout=300000)
     public void testCreateUndiscoveredNode() throws Exception {
-        m_provisionService.createUndiscoveredNode("127.0.0.1", "discovered");
+        m_provisionService.createUndiscoveredNode("127.0.0.1", "discovered", null);
     }
 
     /**
@@ -1638,7 +1638,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", Boolean.TRUE.toString());
 
         m_eventAnticipator.verifyAnticipated();
-        assertEquals(0, m_eventAnticipator.unanticipatedEvents().size());
+        assertEquals(0, m_eventAnticipator.getUnanticipatedEvents().size());
         m_eventAnticipator.reset();
 
         m_eventAnticipator.anticipateEvent(nodeScanCompleted(nextNodeId));
@@ -1806,7 +1806,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         m_eventAnticipator.anticipateEvent(nodeScanAborted(node.getId()));
         m_eventAnticipator.setDiscardUnanticipated(true);
 
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "should_not_exist", "1");
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "should_not_exist", "1", node.getLocation());
         runScan(scan);
 
         m_eventAnticipator.verifyAnticipated();
@@ -1883,11 +1883,10 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     }
 
     private OnmsNode createNode(final String foreignSource) {
-        OnmsNode node = new OnmsNode();
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "default");
         //node.setId(nodeId);
         node.setLastCapsdPoll(new Date());
         node.setForeignSource(foreignSource);
-        node.setLabel("default");
 
         m_nodeDao.save(node);
         m_nodeDao.flush();

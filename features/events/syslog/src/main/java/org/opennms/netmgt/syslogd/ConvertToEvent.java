@@ -28,15 +28,12 @@
 
 package org.opennms.netmgt.syslogd;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -52,10 +49,15 @@ import org.opennms.netmgt.config.syslogd.ParameterAssignment;
 import org.opennms.netmgt.config.syslogd.ProcessMatch;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
+import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * This routine does the majority of Syslogd's work.
@@ -80,7 +82,18 @@ public class ConvertToEvent {
 
     private final Event m_event;
 
-    private static final Map<String,Pattern> CACHED_PATTERNS = Collections.synchronizedMap(new WeakHashMap<String,Pattern>());
+    private static final LoadingCache<String,Pattern> CACHED_PATTERNS = CacheBuilder.newBuilder().build(
+        new CacheLoader<String,Pattern>() {
+            public Pattern load(String expression) {
+                try {
+                    return Pattern.compile(expression, Pattern.MULTILINE);
+                } catch(final PatternSyntaxException e) {
+                    LOG.warn("Failed to compile regex pattern '{}'", expression, e);
+                    return null;
+                }
+            }
+        }
+    );
 
     /**
      * Constructs a new event encapsulation instance based upon the
@@ -94,10 +107,12 @@ public class ConvertToEvent {
      * @throws MessageDiscardedException 
      */
     public ConvertToEvent(
+        final String systemId,
+        final String location,
         final DatagramPacket packet,
         final SyslogdConfig config
     ) throws UnsupportedEncodingException, MessageDiscardedException {
-        this(packet.getAddress(), packet.getPort(), new String(packet.getData(), 0, packet.getLength(), "US-ASCII"), config);
+        this(systemId, location, packet.getAddress(), packet.getPort(), new String(packet.getData(), 0, packet.getLength(), "US-ASCII"), config);
     }
 
     /**
@@ -115,6 +130,8 @@ public class ConvertToEvent {
      * @throws MessageDiscardedException 
      */
     public ConvertToEvent(
+        final String systemId,
+        final String location,
         final InetAddress addr,
         final int port,
         final String data,
@@ -136,8 +153,9 @@ public class ConvertToEvent {
             syslogString = data;
         }
 
-
-        LOG.debug("Converting to event: {}", this);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Converting to event: {}", this);
+        }
 
         SyslogParser parser = SyslogParser.getParserInstance(config, syslogString);
         if (!parser.find()) {
@@ -151,7 +169,9 @@ public class ConvertToEvent {
             throw new MessageDiscardedException(ex);
         }
 
-        LOG.debug("got syslog message {}", message);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("got syslog message {}", message);
+        }
         if (message == null) {
             throw new MessageDiscardedException(String.format("Unable to parse '%s'", syslogString));
         }
@@ -160,20 +180,23 @@ public class ConvertToEvent {
         final String facilityTxt = message.getFacility().toString();
 
         EventBuilder bldr = new EventBuilder("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt, "syslogd");
-        bldr.setCreationTime(message.getDate());
+
+        bldr.setDistPoller(systemId);
+
+        bldr.setTime(message.getDate());
 
         // Set event host
         bldr.setHost(InetAddressUtils.getLocalHostName());
 
-        final String hostAddress = message.getHostAddress();
-        if (hostAddress != null && hostAddress.length() > 0) {
+        final InetAddress hostAddress = message.getHostAddress();
+        if (hostAddress != null) {
             // Set nodeId
-            long nodeId = SyslogdIPMgrJDBCImpl.getInstance().getNodeId(hostAddress);
-            if (nodeId != -1) {
+            int nodeId = AbstractInterfaceToNodeCache.getInstance().getNodeId(location, hostAddress);
+            if (nodeId > 0) {
                 bldr.setNodeid(nodeId);
             }
 
-            bldr.setInterface(addr(hostAddress));
+            bldr.setInterface(hostAddress);
         }
         
         bldr.setLogDest("logndisplay");
@@ -206,14 +229,16 @@ public class ConvertToEvent {
 
         final List<UeiMatch> ueiMatch = ueiList == null? null : ueiList.getUeiMatchCollection();
         if (ueiMatch == null) {
-            LOG.warn("No ueiList configured.");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("No ueiList configured.");
+            }
         } else {
             for (final UeiMatch uei : ueiMatch) {
                 final boolean otherStuffMatches = containsIgnoreCase(uei.getFacilityCollection(), facilityTxt) &&
                                                   containsIgnoreCase(uei.getSeverityCollection(), priorityTxt) &&
                                                   matchProcess(uei.getProcessMatch(), message.getProcessName()) && 
                                                   matchHostname(uei.getHostnameMatch(), message.getHostName()) &&
-                                                  matchHostAddr(uei.getHostaddrMatch(), message.getHostAddress());
+                                                  matchHostAddr(uei.getHostaddrMatch(), str(hostAddress));
 
                 // Single boolean check is added instead of performing multiple
                 // boolean check for both if and else if which causes a extra time
@@ -235,7 +260,9 @@ public class ConvertToEvent {
         boolean doHide = false;
         final List<HideMatch> hideMatch = hideMessage == null? null : hideMessage.getHideMatchCollection();
         if (hideMatch == null) {
-            LOG.warn("No hideMessage configured.");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("No hideMessage configured.");
+            }
         } else {
             for (final HideMatch hide : hideMatch) {
                 if (hide.getMatch().getType().equals("substr")) {
@@ -344,17 +371,7 @@ public class ConvertToEvent {
     }
 
     private static Pattern getPattern(final String expression) {
-        final Pattern msgPat = CACHED_PATTERNS.get(expression);
-        if (msgPat == null) {
-            try {
-                final Pattern newPat = Pattern.compile(expression, Pattern.MULTILINE);
-                CACHED_PATTERNS.put(expression, newPat);
-                return newPat;
-            } catch(final PatternSyntaxException pse) {
-                LOG.warn("Failed to compile regex pattern '{}'", expression, pse);
-            }
-        }
-        return msgPat;
+        return CACHED_PATTERNS.getUnchecked(expression);
     }
 
     private static boolean matchSubstring(final String discardUei, final EventBuilder bldr, String message, final UeiMatch uei) throws MessageDiscardedException {

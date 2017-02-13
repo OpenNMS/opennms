@@ -3,7 +3,7 @@
   <parent>
     <artifactId>org.opennms.features</artifactId>
     <groupId>org.opennms</groupId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -12,7 +12,6 @@
   <packaging>jar</packaging>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <skipITs>true</skipITs>
   </properties>
   <dependencies>
     <dependency>
@@ -70,23 +69,11 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -99,12 +86,6 @@
       <artifactId>org.opennms.core.test-api.db</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-	  <artifactId>hamcrest-library</artifactId>
-	  <version>1.3</version>
-	  <scope>test</scope>
-	 </dependency>
     <dependency>
       <groupId>org.opennms.newts</groupId>
       <artifactId>newts-cassandra-test</artifactId>
@@ -158,26 +139,6 @@
         </configuration>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
-          <systemPropertyVariables>
-            <opennms.home>${project.build.testOutputDirectory}</opennms.home>
-            <java.endorsed.dirs>${basedir}/target/endorsed</java.endorsed.dirs>
-          </systemPropertyVariables>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 </project>

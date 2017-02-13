@@ -50,13 +50,13 @@ import org.ops4j.pax.exam.spi.reactors.PerMethod;
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
-@Ignore("disabling until the karaf 2.4.3 upgrade and tests can be stabilized")
+@Ignore("Disabling until the tests can be stabilized")
 public class OnmsFeatureKarafIT extends KarafTestCase {
 
 	@Before
 	public void setUp() {
 		final String version = getOpenNMSVersion();
-		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("karaf").version(version).type("xml").classifier("features").getURL());
+		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version(version).type("xml").classifier("features").getURL());
 		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("features").getURL());
 	}
 
@@ -210,7 +210,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureJna() {
-		installFeature("net.java.dev.jna");
+		installFeature("java-native-access");
 		System.out.println(executeCommand("features:list -i"));
 	}
 
@@ -334,6 +334,12 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
+	@Ignore("OSGi dependency problems: org.opennms.netmgt.alarmd.api")
+	public void testInstallFeatureOpennmsElasticsearchEventForwarder() {
+		installFeature("opennms-elasticsearch-event-forwarder");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	@Test
 	public void testInstallFeatureOpennmsEventsApi() {
 		installFeature("opennms-events-api");
 		System.out.println(executeCommand("features:list -i"));
@@ -343,14 +349,72 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("opennms-events-daemon");
 		System.out.println(executeCommand("features:list -i"));
 	}
+	
 	@Test
-	public void testInstallFeatureOpennmsEventsTraps() {
-		installFeature("opennms-events-traps");
+	public void testInstallFeatureOpennmsSyslogd() {
+		installFeature("opennms-syslogd");
 		System.out.println(executeCommand("features:list -i"));
 	}
+	
+	@Test
+	public void testInstallFeatureOpennmsSyslogdListenerJavanet() {
+		installFeature("opennms-syslogd-listener-javanet");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	public void testInstallFeatureOpennmsSyslogdListenerCamelNetty() {
+		installFeature("opennms-syslogd-listener-camel-netty");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	@Ignore("Incomplete blueprint")
+	public void testInstallFeatureOpennmsSyslogdListenerNio() {
+		installFeature("opennms-syslogd-listener-nio");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	@Ignore("OSGi dependency problems")
+	public void testInstallFeatureOpennmsSyslogdHandlerDefault() {
+		installFeature("opennms-syslogd-handler-default");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	public void testInstallFeatureOpennmsTrapd() {
+		installFeature("opennms-trapd");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	public void testInstallFeatureOpennmsTrapdListener() {
+		installFeature("opennms-trapd-listener");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	@Ignore("OSGi dependency problems: org.opennms.netmgt.trapd")
+	public void testInstallFeatureOpennmsTrapdHandlerDefault() {
+		installFeature("opennms-trapd-handler-default");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	public void testInstallFeatureOpennmsTrapdHandlerKafkaDefault() {
+		installFeature("opennms-trapd-handler-kafka-default");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
 	@Test
 	public void testInstallFeatureOpennmsIcmpApi() {
 		installFeature("opennms-icmp-api");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	@Test
+	public void testInstallFeatureOpennmsIcmpBest() {
+		installFeature("opennms-icmp-best");
 		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
@@ -429,6 +493,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureSpringSecurity32() {
+		installFeature("pax-http"); // Provides javax.servlet version 2.6
 		installFeature("spring-security32");
 		System.out.println(executeCommand("features:list -i"));
 	}
@@ -440,6 +505,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 
     @Test
     public void testInstallFeatureTsrmTroubleticketer() {
+        installFeature("pax-http"); // Provides javax.servlet version 2.6
         installFeature("tsrm-troubleticketer");
         System.out.println(executeCommand("features:list -i"));
     }

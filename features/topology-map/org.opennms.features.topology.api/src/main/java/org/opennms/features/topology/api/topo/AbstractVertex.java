@@ -43,6 +43,7 @@ public class AbstractVertex extends DefaultVertexRef implements Vertex {
 	private boolean m_locked = false;
 	private String m_ipAddr;
 	private Integer m_nodeID;
+	private Integer m_edgePathOffset;
 
 	@Deprecated
 	public AbstractVertex(String namespace, String id) {
@@ -165,6 +166,17 @@ public class AbstractVertex extends DefaultVertexRef implements Vertex {
 		m_nodeID = nodeID;
 	}
 
+	@Override
+	public Integer getEdgePathOffset() {
+		return m_edgePathOffset;
+	}
+
+	public void setEdgePathOffset(Integer edgePathOffset) {
+		m_edgePathOffset = edgePathOffset;
+	}
+
 	 @Override
-	 public String toString() { return "Vertex:"+getNamespace()+":"+getId() + "[label="+getLabel()+", styleName="+getStyleName()+"]"; } 
+	 public String toString() { return "Vertex:"+getNamespace()+":"+getId() + "[label="+getLabel()+", styleName="+getStyleName()+"]"; }
+
+
 }

@@ -31,11 +31,12 @@ package org.opennms.netmgt.bsm.service.model.functions.reduce;
 import java.util.List;
 import java.util.Optional;
 
-import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.StatusWithIndex;
+import org.opennms.netmgt.bsm.service.model.StatusWithIndices;
 
 public interface ReductionFunction {
 
-    Optional<Status> reduce(List<Status> statuses);
+    Optional<StatusWithIndices> reduce(List<StatusWithIndex> statuses);
 
     <T> T accept(ReduceFunctionVisitor<T> visitor);
 

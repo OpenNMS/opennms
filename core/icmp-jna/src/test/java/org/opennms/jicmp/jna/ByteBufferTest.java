@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,7 +40,12 @@ import org.junit.Test;
 
 import com.sun.jna.LastErrorException;
 import com.sun.jna.Native;
+import com.sun.jna.Platform;
 import com.sun.jna.ptr.IntByReference;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 
 
 /**
@@ -64,7 +69,19 @@ public class ByteBufferTest {
         System.err.print(String.format(fmt, args));
     }
 
-    
+    @Rule
+    public TestName m_testName = new TestName();
+
+    @Before
+    public void setUp() throws Exception {
+        System.err.println("------------------- begin " + m_testName.getMethodName() + " ---------------------");
+    }
+
+    @After
+    public void tearDown() throws InterruptedException {
+        System.err.println("------------------- end " + m_testName.getMethodName() + " -----------------------");
+    }
+
     @Test
     public void testWrap() throws Exception {
         
@@ -105,9 +122,14 @@ public class ByteBufferTest {
     
     @Test(timeout=30000)
     public void testPassing() throws Exception {
-        Server server = new Server(7777);
+        if (Platform.isMac() || Platform.isFreeBSD() || Platform.isOpenBSD()) {
+            printf("sockaddr_in is incompatible with bsd_sockaddr_in\n");
+            return;
+        }
+        Server server = new Server(0);
         server.start();
         server.waitForStart();
+        int port = server.getPort();
 
         String msg = "OpenNMS!";
 
@@ -118,13 +140,13 @@ public class ByteBufferTest {
             byte[] data = msg.getBytes("US-ASCII");
             String sent = msg.substring(4,7);
             ByteBuffer buf = ByteBuffer.wrap(data, 4, 3).slice();
-            
+
             socket = socket(NativeDatagramSocket.PF_INET, NativeDatagramSocket.SOCK_DGRAM, NativeDatagramSocket.IPPROTO_UDP);
 
-            sockaddr_in destAddr = new sockaddr_in(InetAddress.getLocalHost(), 7777);
+            sockaddr_in destAddr = new sockaddr_in(InetAddress.getLocalHost(), port);
             sendto(socket, buf, buf.remaining(), 0, destAddr, destAddr.size());
 
-            
+
             sockaddr_in in_addr = new sockaddr_in();
             IntByReference szRef = new IntByReference(in_addr.size());
             

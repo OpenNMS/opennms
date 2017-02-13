@@ -105,7 +105,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 					condition.accept(visitor);
 				}
 			} catch (PropertyNotFoundException | ArrayIndexOutOfBoundsException e) {
-				LOG.warn(e.getClass().getSimpleName() + " while parsing FIQL search, ignoring: " + e.getMessage());
+				LOG.warn(e.getClass().getSimpleName() + " while parsing FIQL search, ignoring: " + e.getMessage(), e);
 			}
 		}
 
@@ -187,6 +187,10 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Response create(@Context final UriInfo uriInfo, T object) {
+		return doCreate(uriInfo, object);
+	}
+
+	protected Response doCreate(UriInfo uriInfo, T object) {
 		K id = getDao().save(object);
 		return Response.created(getRedirectUri(uriInfo, id)).build();
 	}

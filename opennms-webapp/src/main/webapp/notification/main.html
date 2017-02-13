@@ -12,10 +12,15 @@
 						<div class="form-group">
 						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'notifyId'">
 							<option value="notifyId">ID</option>
-							<option value="label">Label</option>
-							<option value="location">Location</option>
-							<option value="status">Status</option>
-							<option value="lastUpdated">Last Updated</option>
+							<option value="event.id">Event ID</option>
+							<option value="event.eventSeverity">Event Severity</option>
+							<option value="pageTime">Sent Time</option>
+							<option value="answeredBy">Responder</option>
+							<option value="respondTime">Response Time</option>
+							<option value="node.id">Node ID</option>
+							<option value="node.label">Node Label</option>
+							<option value="ipAddress">IP Address</option>
+							<option value="serviceType.name">Service</option>
 						</select>
 						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
 							<option value="EQ">=</option>
@@ -25,8 +30,8 @@
 							<option value="GT">&gt;</option>
 							<option value="GE">&gt;=</option>
 						</select>
-						<input class="form-control" type="text" ng-model="clause.value" ng-show="clause.property !== 'lastUpdated'" />
-						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-show="clause.property === 'lastUpdated'"/>
+						<input class="form-control" type="text" ng-model="clause.value" ng-if="clause.property !== 'pageTime' &amp;&amp; clause.property !== 'respondTime'" />
+						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-if="clause.property === 'pageTime' || clause.property === 'respondTime'"/>
 						</div>
 						<br/><br/>
 						<button class="btn btn-default" type="submit">Submit</button>
@@ -80,8 +85,13 @@
 			<a ng-click="clearSearch()"><i class="fa fa-ban fa-lg"></i></a>
 			&nbsp;
 		</span>
+		<div class="btn-group" style="margin:3px">
+			<button type="button" class="btn btn-default {{getSearchClause(ackClause) != null ? 'active' : ''}}" ng-click="replaceSearchClause(unackClause, ackClause)">Acknowledged</button>
+			<button type="button" class="btn btn-default {{getSearchClause(unackClause) != null ? 'active' : ''}}" ng-click="replaceSearchClause(ackClause, unackClause)">Unacknowledged</button>
+			<button type="button" class="btn btn-default {{(getSearchClause(ackClause) == null &amp;&amp; getSearchClause(unackClause) == null) ? 'active' : ''}}" ng-click="removeSearchClauses([getSearchClause(ackClause), getSearchClause(unackClause)])">All</button>
+		</div>
 		<span ng-hide="query.searchClauses.length == 0">
-			<span ng-repeat="clause in query.searchClauses">
+			<span ng-repeat="clause in query.searchClauses" ng-if="!clauseEquals(clause, ackClause) &amp;&amp; !clauseEquals(clause, unackClause)">
 				<div class="btn-group" style="margin:3px;">
 					<button class="btn btn-primary" ng-click="removeSearchClause(clause)">
 						{{clause.property | property}}
@@ -169,53 +179,54 @@
 				<tr>
 					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('notifyId')">ID</a>
-						<i ng-show="query.orderBy === 'notifyId' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'notifyId' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'notifyId' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'notifyId' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('event.id')">Event ID</a>
-						<i ng-show="query.orderBy === 'event.id' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'event.id' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'event.id' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'event.id' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('event.eventSeverity')">Severity</a>
-						<i ng-show="query.orderBy === 'event.eventSeverity' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'event.eventSeverity' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'event.eventSeverity' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'event.eventSeverity' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('pageTime')">Sent Time</a>
-						<i ng-show="query.orderBy === 'pageTime' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'pageTime' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'pageTime' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'pageTime' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('answeredBy')">Responder</a>
-						<i ng-show="query.orderBy === 'answeredBy' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'answeredBy' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'answeredBy' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'answeredBy' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('respondTime')">Response Time</a>
-						<i ng-show="query.orderBy === 'respondTime' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'respondTime' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'respondTime' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'respondTime' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('node.label')">Node</a>
-						<i ng-show="query.orderBy === 'node.label' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'node.label' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'node.label' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'node.label' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('ipAddress')">IP Address</a>
-						<i ng-show="query.orderBy === 'ipAddress' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'ipAddress' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'ipAddress' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'ipAddress' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('serviceType.name')">Service</a>
-						<i ng-show="query.orderBy === 'serviceType.name' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'serviceType.name' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'serviceType.name' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'serviceType.name' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 				</tr>
 
 				<tr ng-repeat-start="item in items" class="{{getSeverityClass(item.severity)}}">
 					<td class="text-nowrap" style="line-height:24px;" rowspan="2">
+						<input type="checkbox" ng-checked="selectedNotifications.indexOf(item.id) >= 0" ng-click="toggleNotificationSelection(item.id)"/>
 						{{item.id}}
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'notifyId',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'notifyId',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o fa-lg"/></a>
@@ -232,7 +243,7 @@
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'event.eventSeverity',operator:'NE',value:item.severity})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item.pageTime !== null">
+						<span ng-show="item.pageTime | isNotEmpty">
 							{{item.pageTime | date:'MMM d, yyyy h:mm:ss a'}}
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'pageTime',operator:'GE',value:item.pageTime})"><i class="fa fa-toggle-left fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'pageTime',operator:'LE',value:item.pageTime})"><i class="fa fa-toggle-right fa-lg"/></a>
@@ -246,7 +257,7 @@
 						</span>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item.respondTime !== null">
+						<span ng-show="item.respondTime | isNotEmpty">
 							{{item.respondTime | date:'MMM d, yyyy h:mm:ss a'}}
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'respondTime',operator:'GE',value:item.respondTime})"><i class="fa fa-toggle-left fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'respondTime',operator:'LE',value:item.respondTime})"><i class="fa fa-toggle-right fa-lg"/></a>
@@ -254,21 +265,21 @@
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.nodeLabel !== null">
-							{{item.nodeLabel}}
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'node.label',operator:'EQ',value:item.nodeLabel})"><i class="fa fa-plus-square-o fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'node.label',operator:'NE',value:item.nodeLabel})"><i class="fa fa-minus-square-o fa-lg"/></a>
+							<a href="element/node.jsp?node={{item.nodeId}}" title="{{item.nodeLabel}}">{{item.nodeLabel}}</a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'node.id',operator:'EQ',value:item.nodeId})"><i class="fa fa-plus-square-o fa-lg"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'node.id',operator:'NE',value:item.nodeId})"><i class="fa fa-minus-square-o fa-lg"/></a>
 						</span>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.ipAddress | isNotEmpty">
-							{{item.ipAddress}}
+							<a href="element/interface.jsp?node={{item.nodeId}}&amp;intf={{item.ipAddress}}">{{item.ipAddress}}</a>
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'ipAddress',operator:'EQ',value:item.ipAddress})"><i class="fa fa-plus-square-o fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'ipAddress',operator:'NE',value:item.ipAddress})"><i class="fa fa-minus-square-o fa-lg"/></a>
 						</span>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.serviceType !== null &amp;&amp; item.serviceType.name !== null">
-							{{item.serviceType.name}}
+							<a href="element/service.jsp?node={{item.nodeId}}&amp;intf={{item.ipAddress}}&amp;service={{item.serviceType.id}}">{{item.serviceType.name}}</a>
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'serviceType.name',operator:'EQ',value:item.serviceType.name})"><i class="fa fa-plus-square-o fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'serviceType.name',operator:'NE',value:item.serviceType.name})"><i class="fa fa-minus-square-o fa-lg"/></a>
 						</span>
@@ -280,5 +291,10 @@
 			</tbody>
 		</table>
 	</div>
+
+	<button type="button" ng-click="selectedNotifications = []" class="btn btn-default">Reset</button>
+	<button type="button" ng-click="selectAllNotifications()" class="btn btn-default">Select All</button>
+	<button type="button" ng-click="acknowledgeSelectedNotifications()" class="btn btn-default">Acknowledge Notices</button>
+	<br/><br/>
 </div>
 </div>

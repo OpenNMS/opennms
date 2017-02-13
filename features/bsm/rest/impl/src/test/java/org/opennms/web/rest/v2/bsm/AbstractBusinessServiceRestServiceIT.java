@@ -563,7 +563,7 @@ public abstract class AbstractBusinessServiceRestServiceIT extends AbstractSprin
         }
 
         List<FunctionMetaDTO> reduceFunctions = getAndUnmarshal("/business-services/functions/reduce", 200, FunctionMetaListDTO.class).getFunctions();
-        Assert.assertEquals(3, reduceFunctions.size());
+        Assert.assertEquals(4, reduceFunctions.size());
         for (FunctionMetaDTO eachFunction : reduceFunctions) {
             FunctionMetaDTO manuallyRead = getAndUnmarshal("/business-services/functions/reduce/" + eachFunction.getName(), 200, FunctionMetaDTO.class);
             Assert.assertEquals(eachFunction, manuallyRead);

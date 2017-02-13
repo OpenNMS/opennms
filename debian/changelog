@@ -1,3 +1,26 @@
+opennms (19.0.0-1) stable; urgency=high
+
+  * New stable release.  This is the first in the 19 series, with a ton of bug
+    fixes and new features, most notably support for all major OpenNMS polling
+    and collection features in the Minion.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/19.0.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 13 Feb 2017 12:00:00 -0500
+
+opennms (18.0.4-1) stable; urgency=high
+
+  * New stable release.  This release contains a number of bug fixes and
+    enhancements, including a fix for a deadlock that can be triggered by using
+    the topology UI and a rather large performance fix for startup if you are
+    using BSM.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/18.0.4/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 05 Jan 2017 15:09:00 -0500
+
 opennms (18.0.3-1) stable; urgency=high
 
   * New stable release.  This release contains a few bug fixes and a enhancements,

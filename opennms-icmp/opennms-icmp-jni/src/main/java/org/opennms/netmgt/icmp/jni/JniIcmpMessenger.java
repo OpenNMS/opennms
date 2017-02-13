@@ -59,7 +59,7 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
      */
     public JniIcmpMessenger(int pingerId) throws IOException {
         m_pingerId = pingerId;
-        m_socket = new IcmpSocket();
+        m_socket = new IcmpSocket(Integer.valueOf(pingerId).shortValue());
     }
 
     void processPackets(ReplyHandler<JniPingResponse> callback) {
@@ -147,6 +147,16 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
         // Construct and return the new reply
         //
         return new JniPingResponse(packet.getAddress(), pkt);
+    }
+
+    public void setTrafficClass(int tc) throws IOException {
+        m_socket.setTrafficClass(tc);
+    }
+
+    public void setAllowFragmentation(final boolean allow) throws IOException {
+        if (!allow) {
+            m_socket.dontFragment();
+        }
     }
 
 }

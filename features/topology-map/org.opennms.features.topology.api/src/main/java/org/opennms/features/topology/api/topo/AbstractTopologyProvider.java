@@ -48,7 +48,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     protected static final String SIMPLE_VERTEX_ID_PREFIX = "v";
 	protected static final String SIMPLE_GROUP_ID_PREFIX = "g";
 	protected static final String SIMPLE_EDGE_ID_PREFIX = "e";
-    protected MetaInfo metaInfo = new DefaultMetaInfo();
+    protected TopologyProviderInfo topologyProviderInfo = new DefaultTopologyProviderInfo();
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractTopologyProvider.class);
 
@@ -372,12 +372,11 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     @Override
     public abstract void refresh();
 
-    @Override
-    public MetaInfo getMetaInfo() {
-        return metaInfo;
+    public TopologyProviderInfo getTopologyProviderInfo() {
+        return topologyProviderInfo;
     }
 
-    public void setMetaInfo(MetaInfo metaInfo) {
-        this.metaInfo = metaInfo;
+    public void setTopologyProviderInfo(TopologyProviderInfo topologyProviderInfo) {
+        this.topologyProviderInfo = topologyProviderInfo;
     }
 }

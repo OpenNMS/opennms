@@ -30,14 +30,24 @@ package org.opennms.web.rest.v2;
 
 import java.util.Collection;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +61,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Path("nodes")
 @Transactional
 public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
+
+	private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
+
+	@Autowired
+	private MonitoringLocationDao m_locationDao;
 
 	@Autowired
 	private NodeDao m_dao;
@@ -81,5 +96,15 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
 	@Override
 	protected JaxbListWrapper<OnmsNode> createListWrapper(Collection<OnmsNode> list) {
 		return new OnmsNodeList(list);
+	}
+
+	@Override
+	public Response doCreate(final UriInfo uriInfo, final OnmsNode object) {
+		if (object.getLocation() == null) {
+			OnmsMonitoringLocation location = m_locationDao.getDefaultLocation();
+			LOG.debug("addNode: Assigning new node to default location: {}", location.getLocationName());
+			object.setLocation(location);
+		}
+		return super.doCreate(uriInfo, object);
 	}
 }

@@ -39,16 +39,15 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
-import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.LikeRestriction;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -57,7 +56,8 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+
+import com.codahale.metrics.MetricRegistry;
 
 public class EventUtilDaoImpl extends AbstractEventUtil {
 
@@ -65,9 +65,6 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
 
 	@Autowired
 	private NodeDao nodeDao;
-	
-	@Autowired
-	private SnmpInterfaceDao snmpInterfaceDao;
 	
 	@Autowired
 	private AssetRecordDao assetRecordDao;
@@ -86,27 +83,39 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
 
 	private final static Map<String, PropertyDescriptor> hwEntityDescriptorsByName = getDescriptorsForStrings(OnmsHwEntity.class);
 
+    public EventUtilDaoImpl() { }
+
+    public EventUtilDaoImpl(MetricRegistry registry) {
+        super(registry);
+    }
+
     @Override
-    protected String getNodeLabel(long nodeId) {
+    public String getNodeLabel(long nodeId) {
         return nodeDao.getLabelForId(Integer.valueOf((int)nodeId));
     }
 
     @Override
-    protected String getForeignSource(long nodeId) {
+    public String getNodeLocation(long nodeId) {
+        return nodeDao.getLocationForId(Integer.valueOf((int)nodeId));
+    }
+
+    @Override
+    public String getForeignSource(long nodeId) {
         OnmsNode node = nodeDao.get((int)nodeId);
-        if (node != null)
+        if (node != null) {
             return node.getForeignSource();
+        }
         return null;
     }
 
     @Override
-    protected String getForeignId(long nodeId) {
+    public String getForeignId(long nodeId) {
         OnmsNode node = nodeDao.get((int)nodeId);
         return node == null ? null : node.getForeignId();
     }
 
     @Override
-    protected String getIfAlias(long nodeId, String ipaddr) {
+    public String getIfAlias(long nodeId, String ipaddr) {
         OnmsIpInterface iface = ipInterfaceDao.findByNodeIdAndIpAddress((int)nodeId, ipaddr);
         if (iface != null && iface.getSnmpInterface() != null) {
             return iface.getSnmpInterface().getIfAlias();
@@ -116,7 +125,7 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
     }
 
     @Override
-    protected String getAssetFieldValue(String parm, long nodeId) {
+    public String getAssetFieldValue(String parm, long nodeId) {
         final Matcher matcher = ASSET_PARM_PATTERN.matcher(parm);
         if (!matcher.matches()) {
             LOG.warn("Unsupported asset field parameter '{}'.", parm);
@@ -209,15 +218,13 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
     }
 
     @Override
-    @Transactional(readOnly=true)
     public String expandParms(String inp, Event event) {
         return super.expandParms(inp, event, null);
     }
 
     @Override
-    @Transactional(readOnly=true)
-    public String expandParms(String inp, Event event, Map<String, Map<String, String>> decode) {
-        return super.expandParms(inp, event, decode);
+    public String expandParms(String input, Event event, Map<String, Map<String, String>> decode) {
+        return super.expandParms(input, event, decode);
     }
 
     /**

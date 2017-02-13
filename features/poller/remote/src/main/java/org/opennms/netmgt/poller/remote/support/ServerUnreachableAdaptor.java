@@ -34,9 +34,9 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -95,7 +95,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
      * @return a {@link java.util.Collection} object.
      */
     @Override
-    public Collection<LocationDef> getMonitoringLocations() {
+    public Collection<OnmsMonitoringLocation> getMonitoringLocations() {
         // leave this method as it is a 'before registration' method and we want errors to occur?
         return m_remoteBackEnd.getMonitoringLocations();
     }

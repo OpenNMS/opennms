@@ -31,7 +31,6 @@ package org.opennms.netmgt.bsm.service.model.functions.reduce;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 import org.junit.Test;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -41,18 +40,18 @@ public class ThresholdTest {
     @Test
     public void verifyReduce() {
         // Example from http://www.opennms.org/wiki/BusinessServiceMonitoring
-        assertEquals(Status.MAJOR, applyThreshold(0.75f, Status.MAJOR, Status.MAJOR, Status.CRITICAL, Status.CRITICAL, Status.WARNING).get());
+        assertEquals(Status.MAJOR, applyThreshold(0.75f, Status.MAJOR, Status.MAJOR, Status.CRITICAL, Status.CRITICAL, Status.WARNING));
 
         // Another Example with higher threshold
-        assertEquals(Status.WARNING, applyThreshold(1.0f, Status.MAJOR, Status.MAJOR, Status.CRITICAL, Status.CRITICAL, Status.WARNING).get());
+        assertEquals(Status.WARNING, applyThreshold(1.0f, Status.MAJOR, Status.MAJOR, Status.CRITICAL, Status.CRITICAL, Status.WARNING));
 
         // Another Example
-        assertEquals(Status.MINOR, applyThreshold(1.0f, Status.CRITICAL, Status.MINOR).get());
+        assertEquals(Status.MINOR, applyThreshold(1.0f, Status.CRITICAL, Status.MINOR));
     }
 
-    private Optional<Status> applyThreshold(float threshold, Status...statuses) {
+    private Status applyThreshold(float threshold, Status...statuses) {
         Threshold t = new Threshold();
         t.setThreshold(threshold);
-        return t.reduce(Arrays.asList(statuses));
+        return t.reduce(StatusUtils.toListWithIndices(Arrays.asList(statuses))).get().getStatus();
     }
 }

@@ -46,6 +46,7 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LegacyOnmsDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -69,6 +70,7 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
     private SnmpInterfaceDao m_snmpInterfaceDao;
     private AssetRecordDao m_assetRecordDao;
     private CategoryDao m_categoryDao;
+    private MonitoringLocationDao m_locationDao;
     private DistPollerDao m_distPollerDao;
     private MonitoredServiceDao m_monitoredServiceDao;
     private ServiceTypeDao m_serviceTypeDao;
@@ -243,7 +245,15 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
         }
         return m_categoryDao;
     }
-    
+
+    protected MonitoringLocationDao getMonitoringLocationDao() {
+        if (m_locationDao == null) {
+            m_locationDao = getServiceRegistry().findProvider(MonitoringLocationDao.class);
+            Assert.notNull(m_locationDao);
+        }
+        return m_locationDao;
+    }
+
     protected DistPollerDao getDistPollerDao() {
         if (m_distPollerDao == null) {
             m_distPollerDao = getServiceRegistry().findProvider(DistPollerDao.class);
@@ -294,11 +304,15 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
 
     public static final class NullEventForwarder implements EventForwarder {
         @Override
-        public void sendNow(Event event) {
-        }
+        public void sendNow(Event event) { }
 
         @Override
-        public void sendNow(Log eventLog) {
-        }
+        public void sendNow(Log eventLog) { }
+
+        @Override
+        public void sendNowSync(Event event) { }
+
+        @Override
+        public void sendNowSync(Log eventLog) { }
     }
 }

@@ -114,12 +114,13 @@ import com.vaadin.ui.VerticalSplitPanel;
 @Theme("opennms")
 @JavaScript({
     "//maps.google.com/maps/api/js?sensor=false",
-    "gwt/public/leaflet-0.5.1/leaflet-src.js",
+    "gwt/public/leaflet/leaflet-src.js",
     "gwt/public/openlayers/OpenLayers.js",
     "gwt/public/markercluster/leaflet.markercluster-src.js"
 
 })
 @StyleSheet({
+    "gwt/public/leaflet/leaflet.css",
     "gwt/public/markercluster/MarkerCluster.css",
     "gwt/public/markercluster/MarkerCluster.Default.css",
     "gwt/public/node-maps.css"
@@ -136,6 +137,7 @@ public class NodeMapsApplication extends UI {
     private VaadinRequest m_request;
     private AlarmTable m_alarmTable;
     private NodeTable m_nodeTable;
+    private NodeMapConfiguration configuration;
 
     private final ScheduledExecutorService m_executor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
         @Override public Thread newThread(final Runnable runnable) {
@@ -290,8 +292,8 @@ public class NodeMapsApplication extends UI {
         addRefresher();
 
         // Notify the user if no tileserver url or options are set
-        if (!NodeMapConfiguration.isValid()) {
-            new InvalidConfigurationWindow().open();
+        if (!configuration.isValid()) {
+            new InvalidConfigurationWindow(configuration).open();
         }
 
         // Schedule refresh of node data
@@ -305,6 +307,10 @@ public class NodeMapsApplication extends UI {
                 m_executor.shutdown();
             }
         });
+    }
+
+    public void setConfiguration(NodeMapConfiguration configuration) {
+        this.configuration = configuration;
     }
 
     private void createMapPanel(final String searchString, final int maxClusterRadius) {

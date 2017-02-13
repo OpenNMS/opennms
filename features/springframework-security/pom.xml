@@ -3,16 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.springframework-security</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features Spring Framework Security</name>
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
+  <name>OpenNMS :: Features :: Spring Framework Security</name>
   <build>
     <plugins>
       <plugin>
@@ -27,27 +24,12 @@
           </instructions>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.eclipse.jetty.orbit</groupId>
-      <artifactId>javax.servlet</artifactId>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.jaas</groupId>
@@ -58,6 +40,10 @@
       <groupId>org.apache.karaf.jaas</groupId>
       <artifactId>org.apache.karaf.jaas.config</artifactId>
       <version>${karafVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-bootstrap</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -87,11 +73,6 @@
       <artifactId>opennms-web-api</artifactId>
     </dependency>
     <!-- test dependencies -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.db</artifactId>

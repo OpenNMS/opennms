@@ -29,8 +29,6 @@
 package org.opennms.netmgt.poller.remote;
 
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.isA;
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
 
 import java.beans.PropertyChangeEvent;
@@ -40,8 +38,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
-import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
@@ -54,6 +50,8 @@ import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd;
 import org.opennms.test.mock.EasyMockUtils;
+
+import junit.framework.TestCase;
 
 public class PollerFrontEndTest extends TestCase {
 
@@ -455,7 +453,6 @@ public class PollerFrontEndTest extends TestCase {
         anticipatePollServiceSetMonitorLocators();
         anticipateGetMonitorId();
         anticipateGetConfiguration();
-        anticipatePolledServicesInitialized();
         anticipateFireConfigurationChangeEvent();
     }
 
@@ -548,11 +545,6 @@ public class PollerFrontEndTest extends TestCase {
     }
 
     private void anticipateGetServicePollState() {
-    }
-
-    private void anticipatePolledServicesInitialized() {
-        m_pollService.initialize(isA(PolledService.class));
-        expectLastCall().times(pollConfig().getPolledServices().length);
     }
 
     private void anticipatePollerCheckingIn() {

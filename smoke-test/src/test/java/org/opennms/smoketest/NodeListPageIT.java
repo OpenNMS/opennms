@@ -28,29 +28,53 @@
 
 package org.opennms.smoketest;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItems;
+import static org.junit.Assert.assertThat;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
+import com.google.common.collect.Iterables;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NodeListPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         deleteTestRequisition();
-        createNode("node1");
-        createNode("node2");
+        createLocation("Pittsboro");
+        createLocation("Fulda");
+
+        createNode("loc1node1", "Pittsboro");
+        createNode("loc1node2", "Pittsboro");
+        createNode("loc2node1", "Fulda");
+        createNode("loc2node2", "Fulda");
+
         nodePage();
     }
 
     @After
     public void tearDown() throws Exception {
         deleteTestRequisition();
+        deleteLocation("Pittsboro");
+        deleteLocation("Fulda");
     }
 
-    private void createNode(final String foreignId) throws Exception {
-        final String node = "<node type=\"A\" label=\"TestMachine" + foreignId + "\" foreignSource=\""+ REQUISITION_NAME +"\" foreignId=\"" + foreignId + "\">" +
+    private void deleteLocation(final String location) throws Exception {
+        sendDelete("/rest/monitoringLocations/" + location);
+    }
+
+    private void createLocation(final String location) throws Exception {
+        sendPost("/rest/monitoringLocations", "<location location-name=\"" + location + "\" monitoring-area=\"" + location + "\"/>", 201);
+    }
+
+    private void createNode(final String foreignId, final String location) throws Exception {
+        final String node = "<node type=\"A\" label=\"TestMachine " + foreignId + "\" foreignSource=\""+ REQUISITION_NAME +"\" foreignId=\"" + foreignId + "\">" +
         "<labelSource>H</labelSource>" +
         "<sysContact>The Owner</sysContact>" +
         "<sysDescription>" +
@@ -59,6 +83,7 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
         "<sysLocation>DevJam</sysLocation>" +
         "<sysName>TestMachine" + foreignId + "</sysName>" +
         "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
+        "<location>" + location + "</location>" +
         "</node>";
         sendPost("/rest/nodes", node, 201);
     }
@@ -74,5 +99,48 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
         findElementByLink("Show interfaces").click();
         findElementByXpath("//h3[text()='Nodes and their interfaces']");
         findElementByLink("Hide interfaces");
+    }
+
+    @Test
+    public void testAvailableLocations() throws Exception {
+        // We use hasItems() instead of containsInAnyOrder() at some points because other tests do
+        // not properly clean up their created nodes ans locations.
+
+        // Check if default selection is 'all locations' and all locations are listed
+        findElementByXpath("//select[@id='monitoringLocation']//option[text()='All locations' and @selected]");
+        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//select[@id='monitoringLocation']//option")), WebElement::getText),
+                   hasItems("All locations",
+                            "Pittsboro",
+                            "Fulda"));
+
+        // Check the default lists all nodes
+        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+                   hasItems("TestMachine loc1node1",
+                            "TestMachine loc1node2",
+                            "TestMachine loc2node1",
+                            "TestMachine loc2node2"));
+
+        // Check switching to first location
+        findElementByXpath("//select[@id='monitoringLocation']//option[text()='Pittsboro']").click();
+        findElementByXpath("//select[@id='monitoringLocation']//option[text()='Pittsboro' and @selected]");
+        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+                   containsInAnyOrder("TestMachine loc1node1",
+                                      "TestMachine loc1node2"));
+
+        // Check switching to second location
+        findElementByXpath("//select[@id='monitoringLocation']//option[text()='Fulda']").click();
+        findElementByXpath("//select[@id='monitoringLocation']//option[text()='Fulda' and @selected]");
+        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+                   containsInAnyOrder("TestMachine loc2node1",
+                                      "TestMachine loc2node2"));
+
+        // Check switching to unfiltered
+        findElementByXpath("//select[@id='monitoringLocation']//option[text()='All locations']").click();
+        findElementByXpath("//select[@id='monitoringLocation']//option[text()='All locations' and @selected]");
+        assertThat(Iterables.transform(m_driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
+                   hasItems("TestMachine loc1node1",
+                            "TestMachine loc1node2",
+                            "TestMachine loc2node1",
+                            "TestMachine loc2node2"));
     }
 }

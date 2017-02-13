@@ -56,6 +56,7 @@ import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -419,8 +420,13 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
-        public void setSessionId(String sessionId) {
-           
+        public VaadinApplicationContext getApplicationContext() {
+            return null;
+        }
+
+        @Override
+        public void setApplicationContext(VaadinApplicationContext applicationContext) {
+
         }
 
         @Override
@@ -483,6 +489,26 @@ public class OSGiVerticesUpdateManagerTest {
 
         @Override
         public void setIconManager(IconManager iconManager) {
+
+        }
+
+        @Override
+        public MetaTopologyProvider getMetaTopologyProvider() {
+            return null;
+        }
+
+        @Override
+        public void setMetaTopologyProvider(MetaTopologyProvider metaGraphProvider) {
+            // pass
+        }
+
+        @Override
+        public void selectTopologyProvider(GraphProvider topologyProvider, Callback... callbacks) {
+
+        }
+
+        @Override
+        public void saveLayout() {
 
         }
     }

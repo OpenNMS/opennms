@@ -48,6 +48,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockCategoryFactory;
 import org.opennms.reporting.availability.svclayer.LegacyAvailabilityDataService;
@@ -83,8 +84,8 @@ public class AvailabilityReportIT extends TestCase {
 
         m_catFactory = new MockCategoryFactory();
         CategoryFactory.setInstance(m_catFactory);
-        m_db.update("insert into node (nodeID, nodelabel, nodeCreateTime, nodeType) values (1,'test1.availability.opennms.org','2004-03-01 09:00:00','A')");
-        m_db.update("insert into node (nodeID, nodelabel, nodeCreateTime, nodeType) values (2,'test2.availability.opennms.org','2004-03-01 09:00:00','A')");
+        m_db.update("insert into node (location, nodeID, nodelabel, nodeCreateTime, nodeType) values ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', 1,'test1.availability.opennms.org','2004-03-01 09:00:00','A')");
+        m_db.update("insert into node (location, nodeID, nodelabel, nodeCreateTime, nodeType) values ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', 2,'test2.availability.opennms.org','2004-03-01 09:00:00','A')");
 
         m_db.update("insert into service (serviceid, servicename) values\n" +
         "(1, 'ICMP');");

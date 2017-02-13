@@ -2,12 +2,12 @@
 	<parent>
 		<groupId>org.opennms.features</groupId>
 		<artifactId>org.opennms.features.ticketing</artifactId>
-		<version>18.0.4-SNAPSHOT</version>
+		<version>19.0.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.opennms.features.ticketing</groupId>
 	<artifactId>opennms-integration-otrs-common</artifactId>
-	<name>OpenNMS OTRS Integration Common</name>
+	<name>OpenNMS :: Features :: Ticketing :: OTRS :: Common</name>
 	<packaging>bundle</packaging>
 	<build>
 		<plugins>

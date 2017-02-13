@@ -49,7 +49,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -62,6 +61,7 @@ import org.opennms.netmgt.model.OnmsLocationAvailDefinitionList;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.web.rest.v1.support.OnmsMonitoringLocationDefinitionList;
 import org.opennms.web.rest.v1.support.TimeChunker;
 import org.opennms.web.rest.v1.support.TimeChunker.TimeChunk;
@@ -115,7 +115,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public OnmsMonitoringLocationDefinitionList getRemoteLocationList(){
-        List<LocationDef> monitors = m_monitoringLocationDao.findAll();
+        List<OnmsMonitoringLocation> monitors = m_monitoringLocationDao.findAll();
         return new OnmsMonitoringLocationDefinitionList(monitors);
     }
     
@@ -184,7 +184,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
 
         final MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
         
-        LocationDef locationDefinition = m_monitoringLocationDao.get(location);
+        OnmsMonitoringLocation locationDefinition = m_monitoringLocationDao.get(location);
         if (locationDefinition == null) {
             throw getException(Status.BAD_REQUEST, "Cannot find location definition: {}", location);
         }

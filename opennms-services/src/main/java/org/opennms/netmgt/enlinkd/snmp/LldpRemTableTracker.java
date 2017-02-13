@@ -207,14 +207,11 @@ public class LldpRemTableTracker extends TableTracker {
 	        return getValue(LLDP_REM_SYSNAME).toDisplayString();
 	    }
 	    
-	    public LldpLink getLldpLink(LldpLocPortGetter lldpLocPort) {
+	    public LldpLink getLldpLink() {
             LOG.info( "getLldpLink: row local port num: {}",  getLldpRemLocalPortNum());
 
-            LldpLink lldpLink = lldpLocPort.get(getLldpRemLocalPortNum());
-            // Check if lldpLink is null.....and do what?
-
-            LOG.info( "getLldpLink: row local port id: {}", lldpLink.getLldpPortId());
-            LOG.info( "getLldpLink: row local port subtype: {}", LldpPortIdSubType.getTypeString(lldpLink.getLldpPortIdSubType().getValue()));
+            LldpLink lldpLink = new LldpLink();
+            lldpLink.setLldpLocalPortNum(getLldpRemLocalPortNum());
     	
             lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId() , getLldpRemChassisidSubtype()));
             LOG.info( "getLldpLink: row rem lldp identifier: {}", lldpLink.getLldpRemChassisId());
@@ -233,7 +230,7 @@ public class LldpRemTableTracker extends TableTracker {
  
             lldpLink.setLldpRemPortDescr(getLldpRemPortDescr());
             
-    		return lldpLink;
+            return lldpLink;
 	    }
     }
 

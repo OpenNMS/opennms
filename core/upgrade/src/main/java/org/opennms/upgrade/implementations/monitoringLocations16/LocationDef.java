@@ -294,7 +294,7 @@ public class LocationDef implements Serializable {
 
     @Override
     public String toString() {
-        return "LocationDef [location-name=" + m_locationName +
+        return "OnmsMonitoringLocation [location-name=" + m_locationName +
                 ", monitoring-area=" + m_monitoringArea +
                 ", polling-package-name=" + m_pollingPackageName +
                 ", collection-package-name=" + m_collectionPackageName +

@@ -31,7 +31,7 @@ package org.opennms.web.rest.support;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +49,20 @@ import org.slf4j.LoggerFactory;
 public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisitor<T, CriteriaBuilder> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CriteriaBuilderSearchVisitor.class);
+
+	/**
+	 * Use this value to represent null values. This will translate into a 
+	 * {@link CriteriaBuilder#isNull(String)} or {@link CriteriaBuilder#isNotNull(String)}
+	 * call (depending on the operator).
+	 */
+	public static final String NULL_VALUE = "\u0000";
+
+	/**
+	 * Use this value to represent null {@link Date} values. This will translate into a 
+	 * {@link CriteriaBuilder#isNull(String)} or {@link CriteriaBuilder#isNotNull(String)}
+	 * call (depending on the operator).
+	 */
+	public static final Date NULL_DATE_VALUE = new Date(0);
 
 	/**
 	 * Class that this {@link CriteriaBuilder} will generate {@link Criteria} for.
@@ -113,7 +127,11 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 					if (isWildcard) {
 						m_criteriaBuilder.like(name, clsValue.getValue());
 					} else {
-						if (clsValue.getValue() == null) {
+						if (
+							clsValue.getValue() == null || 
+							NULL_VALUE.equals(clsValue.getValue()) ||
+							NULL_DATE_VALUE.equals(clsValue.getValue())
+						) {
 							m_criteriaBuilder.isNull(name);
 						} else {
 							m_criteriaBuilder.eq(name, clsValue.getValue());
@@ -124,7 +142,11 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 					if (isWildcard) {
 						m_criteriaBuilder.not().like(name, clsValue.getValue());
 					} else {
-						if (clsValue.getValue() == null) {
+						if (
+							clsValue.getValue() == null || 
+							NULL_VALUE.equals(clsValue.getValue()) ||
+							NULL_DATE_VALUE.equals(clsValue.getValue())
+						) {
 							m_criteriaBuilder.isNotNull(name);
 						} else {
 							// Match any rows that do not match the value or are null

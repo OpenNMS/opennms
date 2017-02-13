@@ -57,8 +57,17 @@ public class GWTVertex extends JavaScriptObject {
     	return {"id":id, "x":x, "y":y, "initialX":-1000, "initialY":-1000, "selected":false,
     	        "iconUrl":"", "svgIconId":"", "semanticZoomLevel":0, "group":null,
     	        "status":"", "statusCount":"", "iconHeight":48, "iconWidth":48, "tooltipText":"", 
-    	        "severityArray":[], "total": 0, "isGroup": true, "stylename":"vertex", "isIconNormalized": false};
+    	        "severityArray":[], "total": 0, "isGroup": true, "stylename":"vertex", "isIconNormalized": false,
+                "targets": false, "edgePathOffset": 20};
 	}-*/;
+
+    public final native boolean hasTargets()/*-{
+        return this.targets;
+    }-*/;
+
+    public final native void setTargets(boolean hasTargets)/*-{
+        this.targets = hasTargets;
+    }-*/;
 
     public final native String getId()/*-{
         return this.id;
@@ -229,6 +238,14 @@ public class GWTVertex extends JavaScriptObject {
         return this.stylename;
     }-*/;
 
+    public final native void setEdgePathOffset(int edgePathOffset) /*-{
+        this.edgePathOffset = edgePathOffset;
+    }-*/;
+
+    public final native int getEdgePathOffset() /*-{
+        return this.edgePathOffset;
+    }-*/;
+
     protected static Func<String, GWTVertex> selectionFilter() {
         return new Func<String, GWTVertex>(){
 
@@ -286,6 +303,16 @@ public class GWTVertex extends JavaScriptObject {
                     }
                 }
                 return ""; // no icon
+            }
+        };
+    }
+
+    protected static Func<String, GWTVertex> showNavigateToIndicator(){
+        return new Func<String, GWTVertex>() {
+
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                return vertex.hasTargets() ? "1" : "0";
             }
         };
     }
@@ -497,6 +524,9 @@ public class GWTVertex extends JavaScriptObject {
                         .attr("class", getStatusClass("status-badge-container"))
                         .select(".status-badge").text(getBadgeStatusText());
 
+                selection.select(".navigate-to .text")
+                        .style("opacity", showNavigateToIndicator());
+
                 return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).select("text.vertex-label").text(label()).attr("y", textLabelPlacement());
             }
         };
@@ -521,6 +551,7 @@ public class GWTVertex extends JavaScriptObject {
                 D3 statusCounter            = vertex.append("g");
                 D3 statusBadge              = vertex.append("g");
                 D3 textSelection            = vertex.append("text");
+                D3 navigateTo               = vertex.append("g").attr("class", "navigate-to");
 
                 vertex.append("svg:rect").attr("class", "svgIconOverlay").attr("width", 100).attr("height", 100).attr("opacity", 0).call(new D3Behavior() {
                     @Override
@@ -564,6 +595,13 @@ public class GWTVertex extends JavaScriptObject {
                 statusBadge.append("text").attr("x", "0px").attr("y", "0px")
                         .attr("class", "status-badge");
 
+                // Navigate To indicator
+                navigateTo.append("text")
+                        .attr("class", "text")
+                        .attr("opacity", 1)
+                        .attr("x", -23)
+                        .attr("y", 23)
+                        .text("\uf21b"); // ion-record
                 textSelection.text(label())
                     .attr("class", "vertex-label")
                     .attr("x", "0px")

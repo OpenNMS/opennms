@@ -33,6 +33,7 @@
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Web Console" />
+	<jsp:param name="usegeomap" value="true" />
 </jsp:include>
 
 <div class="row">
@@ -63,7 +64,7 @@
 	<!-- Middle Column -->
 	<div class="col-md-6" id="index-contentmiddle">
 		<%
-			String centerUrl = System.getProperty("org.opennms.web.console.centerUrl", "/includes/categories-box.jsp");
+			String centerUrl = System.getProperty("org.opennms.web.console.centerUrl", "/includes/categories-box.jsp,/geomap/map-box.jsp");
 			String[] centerUrlArr = centerUrl.split(",");
 			for(String centerUrlItem : centerUrlArr) {
 		%>
@@ -75,14 +76,11 @@
 
 	<!-- Right Column -->
 	<div class="col-md-3" id="index-contentright">
-		<!-- notification box -->    
+		<!-- notification box -->
 		<jsp:include page="/includes/notification-box.jsp" flush="false" />
 
-		<!-- Performance box -->    
-		<jsp:include page="/includes/resourceGraphs-box.jsp" flush="false" />
-
-		<!-- KSC Reports box -->    
-		<jsp:include page="/KSC/include-box.htm" flush="false" />
+		<!-- Search box -->
+		<jsp:include page="/includes/search-box.jsp" flush="false" />
 
 		<% String showGrafanaBox = System.getProperty("org.opennms.grafanaBox.show", "false");
 			if (Boolean.parseBoolean(showGrafanaBox)) { %>

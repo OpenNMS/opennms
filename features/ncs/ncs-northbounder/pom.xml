@@ -2,16 +2,13 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.ncs</artifactId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.ncs</groupId>
-  <artifactId>ncs-northbounder</artifactId>
+  <artifactId>org.opennms.features.ncs.ncs-northbounder</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features NCS Northbounder</name>
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
+  <name>OpenNMS :: Features :: NCS :: Northbounder</name>
 
   <build>
     <plugins>
@@ -48,32 +45,17 @@
           </instructions>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-model</artifactId>
+      <artifactId>org.opennms.features.ncs.ncs-model</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-persistence</artifactId>
+      <artifactId>org.opennms.features.ncs.ncs-persistence</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -103,7 +85,7 @@
     
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-test</artifactId>
+      <artifactId>org.opennms.features.ncs.ncs-test</artifactId>
       <scope>test</scope>
     </dependency>
     

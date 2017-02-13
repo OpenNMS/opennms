@@ -40,5 +40,12 @@ public interface RestClient {
      * @throws Exception on failure
      */
     public void ping() throws Exception;
+    
+    /**
+     * Used to fetch snmpV3users from REST endpoint.
+     * 
+     *  @throws Exception on failure
+     */
+    public String getSnmpV3Users() throws Exception;
 
 }

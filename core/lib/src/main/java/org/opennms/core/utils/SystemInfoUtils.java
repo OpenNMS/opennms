@@ -40,12 +40,18 @@ import org.slf4j.LoggerFactory;
 public class SystemInfoUtils {
     private static final Logger LOG = LoggerFactory.getLogger(SystemInfoUtils.class);
 
+    public static final String OPENNMS_INSTANCE_ID_SYS_PROP = "org.opennms.instance.id";
+    public static final String DEFAULT_INSTANCE_ID = "OpenNMS";
+
+    private static final String s_instanceId;
     private static final String s_displayVersion;
     private static final String s_version;
     private static String s_packageName;
     private static String s_packageDescription;
 
     static {
+        s_instanceId =  System.getProperty(OPENNMS_INSTANCE_ID_SYS_PROP, DEFAULT_INSTANCE_ID);
+
         s_displayVersion = System.getProperty("version.display", "");
         final Pattern versionPattern = Pattern.compile("^(\\d+\\.\\d+\\.\\d+).*?$");
         final Matcher m = versionPattern.matcher(s_displayVersion);
@@ -67,6 +73,20 @@ public class SystemInfoUtils {
                 LOG.info("Unable to read from installer.properties in the classpath.", e);
             }
         }
+    }
+
+    /**
+     * Retrieves the instance id of the current system.
+     *
+     * This value is used to identify OpenNMS instances in environments
+     * where multiple systems share the same infrastructure.
+     *
+     * Defaults to "OpenNMS", but can be altered by setting the "org.opennms.instance.id" system property.
+     *
+     * @return instance id string
+     */
+    public static String getInstanceId() {
+        return s_instanceId;
     }
 
     /**

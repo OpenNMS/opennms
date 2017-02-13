@@ -28,23 +28,21 @@
 
 package org.opennms.netmgt.bsm.service.model.graph.internal;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.service.internal.DefaultBusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.StatusWithIndex;
+import org.opennms.netmgt.bsm.service.model.StatusWithIndices;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class GraphAlgorithms {
 
@@ -88,80 +86,21 @@ public class GraphAlgorithms {
         return impacts;
     }
 
-
     public static Set<GraphEdge> calculateImpacting(BusinessServiceGraph graph, GraphVertex parent) {
         // Grab all of the child edges
         List<GraphEdge> childEdges = graph.getOutEdges(parent).stream()
                 .collect(Collectors.toList());
 
-        // Generate the power set of all the child edges
-        Set<Set<GraphEdge>> powerSet = generatePowerSet(childEdges);
+        // Weigh and reduce the statuses
+        List<StatusWithIndex> statuses = DefaultBusinessServiceStateMachine.weighEdges(childEdges);
+        Optional<StatusWithIndices> reducedStatus = parent.getReductionFunction().reduce(statuses);
 
-        // Sort the subsets in the power set by size
-        List<Set<GraphEdge>> subsetsInAscendingSize = powerSet.stream()
-                .sorted((a,b)-> a.size() - b.size())
-                .collect(Collectors.toList());
-
-        // Simulate replacing the mapped severity off all the edges
-        // in a given subset with the minimal severity.
-        // If the resulting  reduced value is less than the current value, we'll deem this
-        // particular subset as "impacting".
-        // Once we find an impacting subset, only continue the simulation with other
-        // subsets of that same size, since any larger subset may contain those
-        // edges along with other non-impacting edges.
-        List<Set<GraphEdge>> impactingSubsets = Lists.newArrayList();
-        for (Set<GraphEdge> subSet : subsetsInAscendingSize) {
-            if (impactingSubsets.size() > 0 && subSet.size() > impactingSubsets.iterator().next().size()) {
-                // We already found one more more smaller impacting subsets, we're done
-                break;
-            }
-
-            // Gather the statuses for all of the child edges
-            Map<GraphEdge, Status> edgesWithStatus = childEdges.stream()
-                    .collect(Collectors.toMap(Function.identity(), e -> e.getStatus()));
-
-            // Now replace the status for the edges in the current subset with minimum severity
-            for (GraphEdge edge : subSet) {
-                edgesWithStatus.put(edge, DefaultBusinessServiceStateMachine.MIN_SEVERITY);
-            }
-
-            // Weigh and reduce the statuses
-            List<Status> statuses = DefaultBusinessServiceStateMachine.weighStatuses(edgesWithStatus);
-            Status reducedStatus = parent.getReductionFunction().reduce(statuses).orElse(DefaultBusinessServiceStateMachine.MIN_SEVERITY);
-
-            // Did replacing the status of the edges in the current subset affect the status?
-            if (reducedStatus.isLessThan(parent.getStatus())) {
-                impactingSubsets.add(subSet);
-            }
+        if (!reducedStatus.isPresent()) {
+            return Collections.emptySet();
+        } else {
+            return reducedStatus.get().getIndices().stream()
+                .map(idx -> childEdges.get(idx))
+                .collect(Collectors.toSet());
         }
-
-        // Gather the edges in all of the impacting subsets by taking the union of these
-        Set<GraphEdge> union = Collections.emptySet();
-        for (Set<GraphEdge> impactingSubset : impactingSubsets) {
-            union = Sets.union(union, impactingSubset);
-        }
-        return union;
-    }
-
-    /**
-     * Generates the set of all possible subsets from the
-     * given elements.
-     *
-     * @param elements S
-     * @return P(S)
-     */
-    protected static <T> Set<Set<T>> generatePowerSet(Collection<T> elements) {
-        Set<Set<T>> powerSet = Sets.newConcurrentHashSet(); // Allows us to modify while iterating
-        powerSet.add(Sets.newHashSet());
-        for (T element : elements) {
-            Iterator<Set<T>> iterator = powerSet.iterator();
-            while (iterator.hasNext()) {
-                Set<T> existingSubset = iterator.next();
-                Set<T> newSubset = Sets.newHashSet(existingSubset);
-                newSubset.add(element);
-                powerSet.add(newSubset);
-            }
-        }
-        return powerSet;
     }
 }

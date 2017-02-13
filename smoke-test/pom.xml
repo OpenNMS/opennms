@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>18.0.4-SNAPSHOT</version>
+  <version>19.0.0-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skipITs>true</skipITs>
@@ -231,6 +231,21 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.elasticsearch</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.kafka</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.camel</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.web</artifactId>
       <version>${project.version}</version>
@@ -251,6 +266,16 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.syslog</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.link</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.smoke</groupId>
       <artifactId>org.opennms.smoke.test-api</artifactId>
       <version>2-SNAPSHOT</version>
@@ -264,6 +289,12 @@
       <groupId>net.lightbody.bmp</groupId>
       <artifactId>browsermob-core-littleproxy</artifactId>
       <version>2.1.0-beta-2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.searchbox</groupId>
+      <artifactId>jest-complete-osgi</artifactId>
+      <version>2.0.3</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

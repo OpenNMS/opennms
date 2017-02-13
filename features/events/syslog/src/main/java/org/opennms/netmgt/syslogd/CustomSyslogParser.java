@@ -63,7 +63,7 @@ public class CustomSyslogParser extends SyslogParser {
 
     @Override
     public SyslogMessage parse() throws SyslogParserException {
-        LOG.info("Message Parse start");
+        LOG.debug("Message parse start");
         final SyslogMessage syslogMessage = new SyslogMessage();
         syslogMessage.setParserClass(getClass());
 
@@ -154,9 +154,11 @@ public class CustomSyslogParser extends SyslogParser {
             final String matchedMessage = m.group(m_matchingGroupMessage);
             syslogMessage.setMatchedMessage(matchedMessage);
 
-            LOG.trace("Syslog message '{}' matched regexp '{}'", message, m_forwardingPattern);
-            LOG.trace("Found host '{}'", m.group(m_matchingGroupHost));
-            LOG.trace("Found message '{}'", matchedMessage);
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Syslog message '{}' matched regexp '{}'", message, m_forwardingPattern);
+                LOG.trace("Found host '{}'", m.group(m_matchingGroupHost));
+                LOG.trace("Found message '{}'", matchedMessage);
+            }
 
             syslogMessage.setHostName(m.group(m_matchingGroupHost));
 
@@ -192,7 +194,7 @@ public class CustomSyslogParser extends SyslogParser {
         syslogMessage.setProcessName(processName);
         syslogMessage.setMessage(message.trim());
 
-        LOG.info("Message Parse End");
+        LOG.debug("Message parse end");
         return syslogMessage;
     }
 

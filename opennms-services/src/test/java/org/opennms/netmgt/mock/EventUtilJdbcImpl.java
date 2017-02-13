@@ -74,7 +74,8 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
 	 * @throws SQLException
 	 *             if database error encountered
 	 */
-    protected String getNodeLabel(long nodeId) throws SQLException {
+	@Override
+    public String getNodeLabel(long nodeId) throws SQLException {
 
 		String nodeLabel = null;
 		java.sql.Connection dbConn = null;
@@ -117,22 +118,65 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
 		return nodeLabel;
 	}
 
-	/**
-	 * Retrieve ifAlias from the snmpinterface table of the database given a particular
-	 * nodeId and ipAddr.
-	 *
+    /**
+     * Retrieve nodeLocation from the node table of the database given a particular
+     * nodeId.
+     *
      * @deprecated Replace with standard DAO calls instead of using JDBC
-	 * @param nodeId
-	 *            Node identifier
-	 * @param ipAddr
-	 *            Interface IP address
-	 *
-	 * @return ifAlias Retreived ifAlias
-	 *
-	 * @throws SQLException
-	 *             if database error encountered
-	 */
-    protected String getIfAlias(long nodeId, String ipaddr) throws SQLException {
+     * @param nodeId
+     *            Node identifier
+     *
+     * @return nodeLocation Retrieved nodeLocation
+     *
+     * @throws SQLException
+     *             if database error encountered
+     */
+    @Override
+    public String getNodeLocation(long nodeId) throws SQLException {
+
+        String nodeLocation = null;
+        java.sql.Connection dbConn = null;
+        try {
+            Statement stmt = null;
+            try {
+                // Get datbase connection from the factory
+                dbConn = DataSourceFactory.getInstance().getConnection();
+
+                // Issue query and extract nodeLocation from result set
+                stmt = dbConn.createStatement();
+                ResultSet rs = stmt
+                        .executeQuery("SELECT location FROM node WHERE nodeid="
+                                + String.valueOf(nodeId));
+                if (rs.next()) {
+                    nodeLocation = rs.getString("location");
+                }
+            } finally {
+                // Close the statement
+                if (stmt != null) {
+                    try {
+                        stmt.close();
+                    } catch (Throwable e) {
+                        // do nothing
+                    }
+                }
+            }
+        } finally {
+
+            // Close the database connection
+            if (dbConn != null) {
+                try {
+                    dbConn.close();
+                } catch (Throwable t) {
+                    // do nothing
+                }
+            }
+        }
+
+        return nodeLocation;
+    }
+
+	@Override
+    public String getIfAlias(long nodeId, String ipaddr) throws SQLException {
 		
 		String ifAlias = null;
 		java.sql.Connection dbConn = null;
@@ -171,15 +215,8 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
 		return ifAlias;
 	}
 
-    /**
-     * Helper method.
-     * 
-     * @deprecated Replace with standard DAO calls instead of using JDBC
-     * @param parm
-     * @param event
-     * @return The value of an asset field based on the nodeid of the event 
-     */
-    protected String getAssetFieldValue(String parm, long nodeId) {
+    @Override
+    public String getAssetFieldValue(String parm, long nodeId) {
         String retParmVal = null;
         int end = parm.lastIndexOf(ASSET_END_SUFFIX);
         // The "asset[" start of this parameter is 6 characters long
@@ -223,14 +260,7 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
         return retParmVal;
     }
 
-    /**
-     * Helper method.
-     * 
-     * @deprecated Replace with standard DAO calls instead of using JDBC
-     * @param parm
-     * @param event
-     * @return The value of a hardware field based on the nodeid of the event 
-     */
+    @Override
     public String getHardwareFieldValue(String parm, long nodeId) {
         String retParmVal = null;
         int end = parm.lastIndexOf(HARDWARE_END_SUFFIX);
@@ -349,7 +379,7 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
 	 *             if database error encountered
 	 */
     @Override
-    protected String getForeignSource(long nodeId) throws SQLException {
+    public String getForeignSource(long nodeId) throws SQLException {
         String foreignSource = null;
         java.sql.Connection dbConn = null;
         try {

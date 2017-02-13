@@ -186,7 +186,7 @@ public class EventFactory {
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT events.*, monitoringsystems.id AS systemId, monitoringsystems.label AS systemLabel, node.nodeLabel, service.serviceName FROM events LEFT OUTER JOIN monitoringsystems ON events.systemId=monitoringsystems.id LEFT OUTER JOIN node USING (nodeId) LEFT OUTER JOIN service USING (serviceId) WHERE eventId=? ");
+            PreparedStatement stmt = conn.prepareStatement("SELECT events.*, monitoringsystems.id AS systemId, monitoringsystems.label AS systemLabel, monitoringsystems.location AS location, node.nodeLabel, service.serviceName FROM events LEFT OUTER JOIN monitoringsystems ON events.systemId=monitoringsystems.id LEFT OUTER JOIN node USING (nodeId) LEFT OUTER JOIN service USING (serviceId) WHERE eventId=? ");
             d.watch(stmt);
             stmt.setInt(1, eventId);
 
@@ -320,8 +320,9 @@ public class EventFactory {
             StringBuffer select = new StringBuffer("" +
                     "          SELECT events.*, node.nodelabel, service.servicename, " +
                     "                 monitoringsystems.id AS systemId, " + 
-                    "                 monitoringsystems.label AS systemLabel " +
-                    "            FROM node " + 
+                    "                 monitoringsystems.label AS systemLabel, " +
+                    "                 monitoringsystems.location AS location " +
+                    "            FROM node " +
                     "RIGHT OUTER JOIN events " +
                     "              ON (events.nodeid = node.nodeid) " + 
                     " LEFT OUTER JOIN monitoringsystems " +
@@ -876,7 +877,7 @@ public class EventFactory {
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("SELECT events.*, monitoringsystems.id AS systemId, monitoringsystems.label AS systemLabel FROM events LEFT JOIN monitoringsystems ON events.systemid=monitoringsystems.id WHERE monitoringsystems.type='OpenNMS' AND systemLabel=?");
+            StringBuffer select = new StringBuffer("SELECT events.*, monitoringsystems.id AS systemId, monitoringsystems.label AS systemLabel, monitoringsystems.location AS location FROM events LEFT JOIN monitoringsystems ON events.systemid=monitoringsystems.id WHERE monitoringsystems.type='OpenNMS' AND systemLabel=?");
 
             if (!includeAcknowledged) {
                 select.append(" AND EVENTACKUSER IS NULL");
@@ -1082,7 +1083,6 @@ public class EventFactory {
         } finally {
             d.cleanUp();
         }
-
     }
 
     /**
@@ -1200,7 +1200,6 @@ public class EventFactory {
         } finally {
             d.cleanUp();
         }
-
     }
 
     /**
@@ -1279,6 +1278,9 @@ public class EventFactory {
             element = rs.getObject("alarmid");
             event.alarmId = (element == null ) ? Integer.valueOf(0) : (Integer) element;
 
+            event.location = rs.getString("location");
+            event.systemId = rs.getString("systemId");
+
             vector.addElement(event);
         }
 
@@ -1319,5 +1321,4 @@ public class EventFactory {
         }
         return ackType.getAcknowledgeTypeClause();
     }
-
 }

@@ -50,13 +50,13 @@ import org.ops4j.pax.exam.spi.reactors.PerMethod;
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
-@Ignore("disabling until the karaf 2.4.3 upgrade and tests can be stabilized")
+@Ignore("Disabling until the tests can be stabilized")
 public class MinionFeatureKarafIT extends KarafTestCase {
 
 	@Before
 	public void setUp() {
 		final String version = getOpenNMSVersion();
-		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("karaf").version(version).type("xml").classifier("features").getURL());
+		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version(version).type("xml").classifier("features").getURL());
 		// This artifact contains Minion-only Karaf features
 		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("minion").getURL());
 	}
@@ -68,14 +68,74 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 	}
 
 	@Test
+	public void testInstallFeatureOpennmsDaoMinion() {
+		installFeature("opennms-dao-minion");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
 	public void testInstallFeatureOpennmsDiscoverer() {
 		installFeature("opennms-discoverer");
 		System.out.println(executeCommand("features:list -i"));
 	}
 
 	@Test
-	public void testInstallFeatureOpennmsDiscoveryDistPollerDaoMinion() {
-		installFeature("opennms-discovery-distPollerDaoMinion");
+	public void testInstallFeatureOpennmsSyslogdHandlerMinion() {
+		installFeature("opennms-syslogd-handler-minion");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureOpennmsSyslogdHandlerKafka() {
+		installFeature("opennms-syslogd-handler-kafka");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureOpennmsTrapdListener() {
+		installFeature("opennms-trapd-listener");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureOpennmsTrapdHandlerKafka() {
+		installFeature("opennms-trapd-handler-kafka");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionHeartbeatProducer() {
+		installFeature("minion-heartbeat-producer");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionProvisiondDetectors() {
+		installFeature("minion-provisiond-detectors");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionRpcServer() {
+		installFeature("minion-rpc-server");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionShellProvision() {
+		installFeature("minion-shell-provision");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionShell() {
+		installFeature("minion-shell");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionSnmpProxy() {
+		installFeature("minion-snmp-proxy");
 		System.out.println(executeCommand("features:list -i"));
 	}
 }

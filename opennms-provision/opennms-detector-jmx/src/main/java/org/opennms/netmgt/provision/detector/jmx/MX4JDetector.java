@@ -28,18 +28,13 @@
 
 package org.opennms.netmgt.provision.detector.jmx;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-
-@Component
 /**
  * <p>MX4JDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class MX4JDetector extends AbstractJsr160Detector {
     
     /**

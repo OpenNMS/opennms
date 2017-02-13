@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>container</artifactId>
+  <artifactId>org.opennms.container</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS OSGi Container</name>
+  <name>OpenNMS :: OSGi Container</name>
   <modules>
     <module>branding</module>
     <module>features</module>

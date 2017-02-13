@@ -7,21 +7,26 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <cm:property-placeholder id="appConfig" persistent-id="org.opennms.features.topology.app" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="servletAlias" value="/topology"/>
-            <cm:property name="widgetset" value="org.opennms.features.topology.widgetset.gwt.TopologyWidgetset"/>
-            <cm:property name="theme" value="topo_default" />
             <cm:property name="showHeader" value="true" />
             <cm:property name="autoRefresh.enabled" value="false" />
             <cm:property name="autoRefresh.interval" value="60" />
             <cm:property name="hiddenCategoryPrefix" value="" />
+            <cm:property name="resolveCoordinatesFromAddressString" value="true" />
         </cm:default-properties>
     </cm:property-placeholder>
 
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+    <reference id="geolocationService" interface="org.opennms.features.geolocation.api.GeolocationService" availability="mandatory" />
+    <reference id="geolocationConfiguration" interface="org.opennms.features.geolocation.api.GeolocationConfiguration" availability="mandatory" />
+    <reference id="layoutDao" interface="org.opennms.netmgt.topology.persistence.api.LayoutDao" availability="mandatory" />
+
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
-        <argument ref="commandManager"/>
+        <argument ref="operationManager"/>
         <argument ref="historyManager"/>
         <argument ref="veGraphContainer" />
         <argument ref="iconRepoManager"/>
+        <argument ref="layoutManager"/>
+        <argument ref="transactionOperations"/>
         <property name="widgetManager" ref="widgetManager"/>
         <property name="headerProvider" ref="onmsHeaderProvider" />
         <property name="showHeader" value="${showHeader}" />
@@ -32,6 +37,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <argument ref="providerManager" />
         <property name="bundleContext" ref="blueprintBundleContext" />
         <property name="autoRefreshSupport" ref="defaultAutoRefreshSupport"/>
+        <property name="layoutManager" ref="layoutManager" />
     </bean>
 
     <!--  Header reference -->
@@ -46,6 +52,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
+    <reference id="assetRecordDao" interface="org.opennms.netmgt.dao.api.AssetRecordDao" availability="mandatory" />
+
+    <reference id="measurementsService" interface="org.opennms.netmgt.measurements.api.MeasurementsService" availability="mandatory"/>
 
     <bean id="categoryHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.CategoryHopCriteriaFactory">
         <argument ref="categoryDao"/>
@@ -95,23 +104,23 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="topologyUIFactory">
         <service-properties>
-            <entry key="alias" value="${servletAlias}"/>
-            <entry key="init.widgetset" value="${widgetset}"/>
+            <entry key="alias" value="/topology"/>
+            <entry key="init.widgetset" value="org.opennms.features.topology.widgetset.gwt.TopologyWidgetset"/>
         </service-properties>
     </service>
     
-    <bean id="topologySelector" class="org.opennms.features.topology.app.internal.operations.TopologySelector">
+    <bean id="metaTopologySelector" class="org.opennms.features.topology.app.internal.operations.MetaTopologySelector">
     	<property name="bundleContext" ref="blueprintBundleContext" />
     </bean>
-    
-    <reference-list interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory">
-        <reference-listener bind-method="addGraphProvider" unbind-method="removeGraphProvider" ref="topologySelector" />
+
+    <reference-list interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" availability="mandatory">
+        <reference-listener bind-method="addMetaTopologyProvider" unbind-method="removeMetaTopologyProvider" ref="metaTopologySelector" />
     </reference-list>
 
     <!-- default icon repository -->
     <service>
       <interfaces>
-        <value>org.opennms.features.topology.api.IconRepository</value>
+        <value>org.opennms.features.topology.api.ConfigurableIconRepository</value>
         <value>org.osgi.service.cm.ManagedService</value>
       </interfaces>
       <service-properties>
@@ -122,10 +131,13 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <!-- Icon Repository Manager -->
     <bean id="iconRepoManager" class="org.opennms.features.topology.app.internal.support.IconRepositoryManager"/>
+    <reference-list interface="org.opennms.features.topology.api.ConfigurableIconRepository" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager" />
+    </reference-list>
     <reference-list interface="org.opennms.features.topology.api.IconRepository" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager" />
     </reference-list>
-    
+
     <bean id="providerManager" class="org.opennms.features.topology.app.internal.ProviderManager" />
     
     <reference-list interface="org.opennms.features.topology.api.topo.EdgeProvider" availability="optional">
@@ -146,25 +158,26 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <service-properties>
             <entry key="service.pid" value="org.opennms.features.topology.app.menu"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.MenuConfigManagedService">
-            <property name="commandManager" ref="commandManager"/>
+        <bean class="org.opennms.features.topology.app.internal.menu.MenuConfigManagedService">
+            <property name="operationManager" ref="operationManager"/>
         </bean>
     </service>
     
-    <bean id="commandManager" class="org.opennms.features.topology.app.internal.CommandManager" />
-    
-    <reference-list interface="org.opennms.features.topology.app.internal.Command" availability="optional">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">
-        </reference-listener>
-    </reference-list>
-    
+    <bean id="operationManager" class="org.opennms.features.topology.app.internal.menu.OperationManager" />
+
+    <!-- Set up Layout Manager -->
+    <bean id="layoutManager" class="org.opennms.features.topology.app.internal.support.LayoutManager">
+        <argument ref="layoutDao"/>
+        <argument ref="transactionOperations"/>
+    </bean>
+
     <reference-list interface="org.opennms.features.topology.api.Operation" availability="optional">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="operationManager">
         </reference-listener>
     </reference-list>
     
     <reference-list interface="org.opennms.features.topology.api.CheckedOperation" availability="optional">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="operationManager">
         </reference-listener>
     </reference-list>
 
@@ -183,6 +196,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
             <entry key="operation.label" value="Hierarchy Layout?group=layout"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.HierarchyLayoutOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="Grid Layout?group=layout"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.GridLayoutOperation"/>
     </service>
 
     <!--
@@ -242,7 +263,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
             <entry key="operation.menuLocation" value="View"/>
             <entry key="operation.label" value="Manual Layout?group=layout"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.ManualLayoutOperation"/>
+        <bean class="org.opennms.features.topology.app.internal.operations.ManualLayoutOperation">
+            <argument ref="layoutManager"/>
+        </bean>
     </service>
 
     <service interface="org.opennms.features.topology.api.Operation" >
@@ -252,6 +275,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.RedoLayoutOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.label" value="Clear Focus?group=additions"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.ClearFocusOperation"/>
     </service>
 
     <service interface="org.opennms.features.topology.api.Operation" >
@@ -306,6 +337,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
+            <entry key="operation.contextMenuLocation" value=""/>
+            <entry key="operation.label" value="Remove All Others From Focus"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.RemoveFocusOtherVerticesOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
             <!-- <entry key="operation.menuLocation" value="View"/> -->
             <entry key="operation.contextMenuLocation" value=""/>
             <entry key="operation.label" value="Rename Group"/>
@@ -348,6 +387,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <bean class="org.opennms.features.topology.app.internal.operations.AutoRefreshToggleOperation"/>
     </service>
 
+    <!--<service interface="org.opennms.features.topology.api.Operation" >-->
+        <!--<service-properties>-->
+            <!--<entry key="operation.contextMenuLocation" value=""/>-->
+            <!--<entry key="operation.label" value="Navigate To"/>-->
+        <!--</service-properties>-->
+        <!--<bean class="org.opennms.features.topology.app.internal.menu.NavigationMenuItem.NavigateToOperation"/>-->
+    <!--</service>-->
+
     <!-- removed for SPC-247
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
@@ -380,7 +427,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </reference>
 
 	<bean id="topoMapsLink" class="org.opennms.features.topology.app.internal.TopoMapNavEntry">
-		<property name="url" value="topology?focusNodes=%nodeid%&amp;szl=1" />
 		<property name="name" value="View in Topology" />
 	</bean>
 
@@ -392,16 +438,28 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 	</service>
 
     <!-- Info Items -->
-    <service interface="org.opennms.features.topology.api.info.InfoPanelItem">
-        <bean class="org.opennms.features.topology.app.internal.ui.info.DefaultVertexInfoPanelItem" />
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.ui.info.DefaultVertexInfoPanelItemProvider" />
     </service>
-    <service interface="org.opennms.features.topology.api.info.InfoPanelItem">
-        <bean class="org.opennms.features.topology.app.internal.ui.info.NodeInfoPanelItem" >
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.ui.info.NodeInfoPanelItemProvider" >
             <argument ref="nodeDao"/>
         </bean>
     </service>
-    <service interface="org.opennms.features.topology.api.info.InfoPanelItem">
-        <bean class="org.opennms.features.topology.app.internal.ui.info.DefaultEdgeInfoPanelItem" />
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.ui.info.DefaultEdgeInfoPanelItemProvider" />
     </service>
-
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.info.GenericInfoPanelItemProvider">
+            <argument ref="nodeDao" />
+            <argument ref="measurementsService"/>
+        </bean>
+    </service>
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.info.LocationInfoPanelItemProvider">
+            <argument ref="geolocationService" />
+            <argument ref="geolocationConfiguration" />
+            <argument value="${resolveCoordinatesFromAddressString}" />
+        </bean>
+    </service>
 </blueprint>

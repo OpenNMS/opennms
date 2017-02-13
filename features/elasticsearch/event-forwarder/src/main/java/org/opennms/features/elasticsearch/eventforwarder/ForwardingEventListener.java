@@ -28,6 +28,7 @@
 
 package org.opennms.features.elasticsearch.eventforwarder;
 
+import org.opennms.features.elasticsearch.eventforwarder.internal.CamelEventForwarder;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -46,16 +47,17 @@ public class ForwardingEventListener implements EventListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ForwardingEventListener.class);
 
-	private volatile EventForwarder eventForwarder;
+	private volatile CamelEventForwarder eventForwarder;
 	private volatile EventIpcManager eventIpcManager;
 	private volatile NodeDao nodeDao;
 	private volatile TransactionTemplate transactionTemplate;
+	private volatile boolean logAllEvents = false;
 
-	public EventForwarder getEventForwarder() {
+	public CamelEventForwarder getEventForwarder() {
 		return eventForwarder;
 	}
 
-	public void setEventForwarder(EventForwarder eventForwarder) {
+	public void setEventForwarder(CamelEventForwarder eventForwarder) {
 		this.eventForwarder = eventForwarder;
 	}
 
@@ -83,6 +85,14 @@ public class ForwardingEventListener implements EventListener {
 		this.transactionTemplate = transactionTemplate;
 	}
 
+	public boolean isLogAllEvents() {
+		return logAllEvents;
+	}
+
+	public void setLogAllEvents(boolean logAllEvents) {
+		this.logAllEvents = logAllEvents;
+	}
+
 	/**
 	 * <p>init</p>
 	 */
@@ -99,6 +109,15 @@ public class ForwardingEventListener implements EventListener {
 		getEventIpcManager().addEventListener(this);
 	}
 
+	public void destroy() {
+		Assert.notNull(eventIpcManager, "eventIpcManager must not be null");
+		Assert.notNull(eventForwarder, "eventForwarder must not be null");
+
+		getEventIpcManager().removeEventListener(this);
+
+		LOG.info("Elasticsearch event forwarder uninstalled");
+	}
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -111,7 +130,7 @@ public class ForwardingEventListener implements EventListener {
 	@Override
 	public void onEvent(final Event event) {
 		// only process events persisted to database
-		if(event.getDbid()!=null && event.getDbid()!=0) {
+		if(logAllEvents || (event.getDbid() != null && event.getDbid() > 0)) {
 			// Send the event to the event forwarder
 			eventForwarder.sendNow(event);
 		}

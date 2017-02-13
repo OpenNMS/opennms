@@ -45,13 +45,17 @@ public class ServiceBasedStrategyResolver implements StrategyResolver {
 
     private static final ClassBasedStrategyResolver s_classBasedStrategyResolver = new ClassBasedStrategyResolver();
 
+    private final Map<String, SnmpStrategy> m_strategies = new ConcurrentHashMap<String, SnmpStrategy>();
+
 	public static ServiceBasedStrategyResolver register() {
 		ServiceBasedStrategyResolver resolver = new ServiceBasedStrategyResolver();
 		SnmpUtils.setStrategyResolver(resolver);
 		return resolver;
 	}
-	
-	private final Map<String, SnmpStrategy> m_strategies = new ConcurrentHashMap<String, SnmpStrategy>();
+
+	public static void unregister() {
+		SnmpUtils.unsetStrategyResolver();
+	}
 
 	public void onBind(SnmpStrategy strategy, Map<String, String> props) {
 		String key = props.get("implementation");

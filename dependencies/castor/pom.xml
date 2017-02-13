@@ -3,13 +3,13 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>castor-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Castor</name>
+  <name>OpenNMS :: Dependencies :: Castor</name>
   <properties>
     <castorVersion>1.1.2.1</castorVersion>
   </properties>

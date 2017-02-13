@@ -28,16 +28,16 @@
 
 package org.opennms.features.amqp.eventreceiver;
 
-import org.apache.camel.util.KeyValueHolder;
-
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.camel.BeanInject;
-import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
+import org.apache.camel.util.KeyValueHolder;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
@@ -56,7 +56,7 @@ import com.google.common.collect.Lists;
  * @author jwhite
  */
 @Ignore
-public class AMQPEventReceiverBlueprintTest extends CamelBlueprintTestSupport {
+public class AMQPEventReceiverBlueprintTest extends CamelBlueprintTest {
 
     @BeanInject
     protected EventIpcManager eventIpcManager;
@@ -66,9 +66,8 @@ public class AMQPEventReceiverBlueprintTest extends CamelBlueprintTestSupport {
         return "OSGI-INF/blueprint/blueprint-event-receiver.xml";
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    protected String useOverridePropertiesWithConfigAdmin(Dictionary props) {
+    protected String setConfigAdminInitialConfiguration(Properties props) {
         props.put("source", "direct:source");
      
         // Return the PID

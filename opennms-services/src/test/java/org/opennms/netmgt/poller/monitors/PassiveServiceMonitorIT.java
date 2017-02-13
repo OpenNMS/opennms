@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
@@ -55,17 +54,17 @@ public class PassiveServiceMonitorIT extends PassiveStatusKeeperIT {
         
         ServiceMonitor sm = new PassiveServiceMonitor();
         
-        MonitoredService ms = createMonitoredService(1, "localhost", "127.0.0.1", "my-passive-service");
+        MonitoredService ms = createMonitoredService(1, "localhost", null, "127.0.0.1", "my-passive-service");
         PollStatus ps = sm.poll(ms, new HashMap<String, Object>());
-        assertEquals(PollStatus.down(), ps);
+        assertEquals(PollStatus.down("fail."), ps);
 
         psk.setStatus("localhost", "127.0.0.1", "my-passive-service", PollStatus.get(PollStatus.SERVICE_AVAILABLE, "testing failure"));
         ps = sm.poll(ms, new HashMap<String, Object>());
         assertEquals(PollStatus.up(), ps);
     }
 
-    private PollableService createMonitoredService(int nodeId, String nodeLabel, String ipAddr, String serviceName) throws UnknownHostException {
-        return new PollableService(new PollableInterface(new PollableNode(new PollableNetwork(new MockPollContext()), nodeId, nodeLabel), InetAddressUtils.addr(ipAddr)), serviceName);
+    private PollableService createMonitoredService(int nodeId, String nodeLabel, String nodeLocation, String ipAddr, String serviceName) throws UnknownHostException {
+        return new PollableService(new PollableInterface(new PollableNode(new PollableNetwork(new MockPollContext()), nodeId, nodeLabel, nodeLocation), InetAddressUtils.addr(ipAddr)), serviceName);
     }
 
 }

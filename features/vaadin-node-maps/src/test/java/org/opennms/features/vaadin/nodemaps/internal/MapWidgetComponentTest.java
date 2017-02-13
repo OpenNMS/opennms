@@ -45,6 +45,7 @@ public class MapWidgetComponentTest {
     @Before
     public void setUp() throws Exception {
         Logger.getLogger(MapNode.class.getName()).setLevel(Level.ALL);
+        System.setProperty("gwt.openlayers.url", "dummy value>");
     }
 
     @Test

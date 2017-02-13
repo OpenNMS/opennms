@@ -3,13 +3,13 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>pax-exam-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Apache Pax Exam</name>
+  <name>OpenNMS :: Dependencies :: Apache Pax Exam</name>
 
   <properties>
     <org.ops4j.base.version>1.5.0</org.ops4j.base.version>
@@ -63,7 +63,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <!-- <version>4.11</version> -->
     </dependency>
 
     <!-- Pax Exam features.xml -->

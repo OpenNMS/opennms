@@ -29,7 +29,6 @@
 package org.opennms.netmgt.asterisk.monitor;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.util.Map;
 
@@ -42,13 +41,10 @@ import org.asteriskjava.manager.response.ManagerResponse;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.AmiPeerFactory;
-import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.config.ami.AmiAgentConfig;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
-
+import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,12 +111,6 @@ public class AsteriskSIPPeerMonitor extends AbstractServiceMonitor {
 	  */
 	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters)
 	{
-		//check, if interface type is supported
-		final NetworkInterface<InetAddress> iface = svc.getNetInterface();
-		if (iface.getType() != NetworkInterface.TYPE_INET) 
-		{
-	    		throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-		}
 
 		//read configuration parameters
 		String sipPeer = ParameterMap.getKeyedString(parameters, "sip-peer", DEFAULT_SIPPEER);

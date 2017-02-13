@@ -47,6 +47,7 @@ import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEventParameter;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.xml.event.Parm;
@@ -590,7 +591,7 @@ public class NorthboundAlarm implements Preservable {
     private String m_desc;
 
     /** The distributed poller object. */
-    private OnmsDistPoller m_poller;
+    private OnmsMonitoringSystem m_poller;
 
     /** The first occurrence date. */
     @XmlElement(name="first-occurrence")
@@ -866,7 +867,7 @@ public class NorthboundAlarm implements Preservable {
      *
      * @return the poller
      */
-    public OnmsDistPoller getPoller() {
+    public OnmsMonitoringSystem getPoller() {
         return m_poller;
     }
 

@@ -48,7 +48,6 @@ public abstract class AbstractBusinessServiceVertex extends AbstractVertex imple
      *  @param id the unique id of this vertex. Must be unique overall the namespace.
      * @param label a human readable label
      * @param level the level of the vertex in the Business Service Hierarchy. The root element is level 0.
-     * @param status
      */
     protected AbstractBusinessServiceVertex(String id, String label, int level) {
         super(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE, id, label);

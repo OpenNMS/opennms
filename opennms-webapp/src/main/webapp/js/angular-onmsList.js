@@ -207,7 +207,7 @@ function parseContentRange(contentRange) {
 			if (
 				typeof input !== 'undefined' &&
 				input !== null &&
-				input.trim() !== ''
+				(typeof input === 'String' ? input.trim() !== '' : true)
 			) {
 				return true;
 			} else {
@@ -464,7 +464,7 @@ function parseContentRange(contentRange) {
 			}
 
 			// Make sure the clause isn't already in the list of search clauses
-			if ($scope.containsSearchClause(clause)) {
+			if ($scope.getSearchClause(clause) != null) {
 				return;
 			}
 
@@ -474,13 +474,13 @@ function parseContentRange(contentRange) {
 			$scope.refresh();
 		}
 
-		$scope.containsSearchClause = function(clause) {
+		$scope.getSearchClause = function(clause) {
 			for (var i = 0; i < $scope.query.searchClauses.length; i++) {
 				if ($scope.clauseEquals(clause, $scope.query.searchClauses[i])) {
-					return true;
+					return $scope.query.searchClauses[i];
 				}
 			}
-			return false;
+			return null;
 		}
 
 		$scope.clauseEquals = function(a, b) {
@@ -507,6 +507,58 @@ function parseContentRange(contentRange) {
 			$scope.query.searchClauses.splice($scope.query.searchClauses.indexOf(clause), 1);
 			$scope.query.searchParam = toFiql($scope.query.searchClauses);
 			$scope.refresh();
+		}
+
+		$scope.removeSearchClauses = function(clauses) {
+			for (var i = 0; i < clauses.length; i++) {
+				var index = $scope.query.searchClauses.indexOf(clauses[i]);
+				if (index >= 0) {
+					$scope.query.searchClauses.splice(index, 1);
+				}
+			}
+			$scope.query.searchParam = toFiql($scope.query.searchClauses);
+			$scope.refresh();
+		}
+
+		// Replace a search clause with a new clause
+		$scope.replaceSearchClause = function(oldClause, newClause) {
+			if(angular.isDate(newClause.value)) {
+				// Returns a value in yyyy-MM-ddTHH:mm:ss.sssZ format
+				// Unfortunately, I don't think CXF will like this because
+				// it includes the millisecond portion of the date.
+				//clause.value = new Date(clause.value).toISOString();
+
+				newClause.value = $filter('date')(new Date(newClause.value), ISO_8601_DATE_FORMAT);
+			}
+
+			// TODO: Add validation?
+			var scopeOldClause = $scope.getSearchClause(oldClause);
+			var scopeNewClause = $scope.getSearchClause(newClause);
+			if (scopeOldClause == null) {
+				if (scopeNewClause == null) {
+					// If the old clause is not present, simply add the new clause
+					$scope.addSearchClause(newClause);
+				} else {
+					// If the old clause is not present and the new clause is already
+					// present, then do nothing
+				}
+			} else {
+				if (scopeNewClause == null) {
+					// If the old clause is present and the new clause is not, replace
+					// the values inside the old clause and then refresh
+					scopeOldClause.property = newClause.property;
+					scopeOldClause.operator = newClause.operator;
+					scopeOldClause.value = newClause.value;
+
+					$scope.query.searchParam = toFiql($scope.query.searchClauses);
+					$scope.refresh();
+				} else {
+					// If the old clause is present and the new clause is present,
+					// then just remove the old clause (as if it had been replaced by
+					// the already-existing new clause)
+					$scope.removeSearchClause(oldClause);
+				}
+			}
 		}
 
 		// Clear the current search

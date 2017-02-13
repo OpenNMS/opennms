@@ -16,5 +16,5 @@ The available _Map Functions_ are:
 | `Increase` | Increase the _Severity_ by one level and use it as _Operational Status_ of the _BS_
 | `Decrease` | Decrease the _Severity_ by one level and use it as _Operational Status_ of the _BS_
 | `SetTo`    | Set the _Operational Status_ to a constant _Severity_ value
-| `Ignore`   | The input of the _Edge_ is ignored for _Operational Status_ calcualation
+| `Ignore`   | The input of the _Edge_ is ignored for _Operational Status_ calculation
 |===

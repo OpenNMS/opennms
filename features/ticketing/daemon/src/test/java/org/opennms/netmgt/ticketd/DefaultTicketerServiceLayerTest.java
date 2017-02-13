@@ -69,6 +69,9 @@ public class DefaultTicketerServiceLayerTest {
 
     @Before
     public void setUp() throws Exception {
+        System.clearProperty(DefaultTicketerServiceLayer.SKIP_CREATE_WHEN_CLEARED_SYS_PROP);
+        System.clearProperty(DefaultTicketerServiceLayer.SKIP_CLOSE_WHEN_NOT_CLEARED_SYS_PROP);
+
         m_eventIpcManager = new MockEventIpcManager();
         EventIpcManagerFactory.setIpcManager(m_eventIpcManager);
         MockLogAppender.setupLogging();
@@ -209,20 +212,18 @@ public class DefaultTicketerServiceLayerTest {
 
     /**
      * Test method for {@link org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer#closeTicketForAlarm(int, java.lang.String)}.
+     * @throws PluginException 
      */
     @Test
-    public void testCloseTicketForAlarm() {
+    public void testCloseTicketForAlarm() throws PluginException {
         EasyMock.expect(m_alarmDao.get(m_alarm.getId())).andReturn(m_alarm);
-        try {
-            EasyMock.expect(m_ticketerPlugin.get(m_ticket.getId())).andReturn(m_ticket);
-        } catch (PluginException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        EasyMock.expect(m_ticketerPlugin.get(m_ticket.getId())).andReturn(m_ticket);
 
         expectNewTicketState(Ticket.State.CLOSED);
 
         expectNewAlarmState(TroubleTicketState.CLOSED);
+
+        m_alarm.setSeverity(OnmsSeverity.CLEARED);
 
         m_easyMockUtils.replayAll();
 
@@ -234,21 +235,19 @@ public class DefaultTicketerServiceLayerTest {
     /**
      * Test method for {@link org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer#closeTicketForAlarm(int, java.lang.String)}.
      * Tests for correct alarm TroubleTicketState set as CLOSE_FAILED when ticketer plugin fails
+     * @throws PluginException 
      */
     @Test
-    public void testFailedCloseTicketForAlarm() {
-        
+    public void testFailedCloseTicketForAlarm() throws PluginException {
         EasyMock.expect(m_alarmDao.get(m_alarm.getId())).andReturn(m_alarm);
-        
-        try {
-            m_ticketerPlugin.get(m_ticket.getId());
-        } catch (PluginException e) {
-            //e.printStackTrace();
-        }
-        
+
+        m_ticketerPlugin.get(m_ticket.getId());
+
         EasyMock.expectLastCall().andThrow(new PluginException("Failed Close"));
 
         expectNewAlarmState(TroubleTicketState.CLOSE_FAILED);
+
+        m_alarm.setSeverity(OnmsSeverity.CLEARED);
 
         m_easyMockUtils.replayAll();
 
@@ -360,7 +359,8 @@ public class DefaultTicketerServiceLayerTest {
 
     @Test
     public void createIsSkippedWhenAlarmIsCleared() {
-        System.setProperty(DefaultTicketerServiceLayer.SKIP_CREATE_WHEN_CLEARED_SYS_PROP, "true");
+        // This should be the default behavior
+        //System.setProperty(DefaultTicketerServiceLayer.SKIP_CREATE_WHEN_CLEARED_SYS_PROP, Boolean.TRUE.toString());
 
         m_defaultTicketerServiceLayer = new DefaultTicketerServiceLayer();
         m_defaultTicketerServiceLayer.setAlarmDao(m_alarmDao);
@@ -378,8 +378,34 @@ public class DefaultTicketerServiceLayerTest {
     }
 
     @Test
+    public void createIsNotSkippedWhenAlarmIsCleared() throws PluginException {
+        // This should only happen when skipCreateWhenCleared=false
+        System.setProperty(DefaultTicketerServiceLayer.SKIP_CREATE_WHEN_CLEARED_SYS_PROP, Boolean.FALSE.toString());
+
+        m_defaultTicketerServiceLayer = new DefaultTicketerServiceLayer();
+        m_defaultTicketerServiceLayer.setAlarmDao(m_alarmDao);
+        m_defaultTicketerServiceLayer.setTicketerPlugin(m_ticketerPlugin);
+
+        m_alarm.setSeverity(OnmsSeverity.CLEARED);
+        EasyMock.expect(m_alarmDao.get(m_alarm.getId())).andReturn(m_alarm);
+
+        m_ticketerPlugin.saveOrUpdate(EasyMock.isA(Ticket.class));
+        EasyMock.expectLastCall();
+
+        m_alarmDao.saveOrUpdate(m_alarm);
+        EasyMock.expectLastCall();
+
+        m_easyMockUtils.replayAll();
+
+        m_defaultTicketerServiceLayer.createTicketForAlarm(m_alarm.getId(), Collections.emptyMap());
+
+        m_easyMockUtils.verifyAll();
+    }
+
+    @Test
     public void closedIsSkippedWhenAlarmIsNotCleared() {
-        System.setProperty(DefaultTicketerServiceLayer.SKIP_CLOSE_WHEN_NOT_CLEARED_SYS_PROP, "true");
+        // This should be the default behavior
+        //System.setProperty(DefaultTicketerServiceLayer.SKIP_CLOSE_WHEN_NOT_CLEARED_SYS_PROP, Boolean.TRUE.toString());
 
         m_defaultTicketerServiceLayer = new DefaultTicketerServiceLayer();
         m_defaultTicketerServiceLayer.setAlarmDao(m_alarmDao);
@@ -391,6 +417,35 @@ public class DefaultTicketerServiceLayerTest {
         m_easyMockUtils.replayAll();
 
         m_defaultTicketerServiceLayer.closeTicketForAlarm(m_alarm.getId(), "id");
+
+        // Verify that no additional calls where made (such as trying to close the ticket)
+        m_easyMockUtils.verifyAll();
+    }
+
+    @Test
+    public void closedIsNotSkippedWhenAlarmIsNotCleared() throws PluginException {
+        // This should only happen when skipCreateWhenCleared=false
+        System.setProperty(DefaultTicketerServiceLayer.SKIP_CLOSE_WHEN_NOT_CLEARED_SYS_PROP, Boolean.FALSE.toString());
+
+        m_defaultTicketerServiceLayer = new DefaultTicketerServiceLayer();
+        m_defaultTicketerServiceLayer.setAlarmDao(m_alarmDao);
+        m_defaultTicketerServiceLayer.setTicketerPlugin(m_ticketerPlugin);
+
+        m_alarm.setSeverity(OnmsSeverity.CRITICAL);
+        EasyMock.expect(m_alarmDao.get(m_alarm.getId())).andReturn(m_alarm);
+
+        EasyMock.expect(m_ticketerPlugin.get(m_ticket.getId())).andReturn(m_ticket);
+        EasyMock.expectLastCall();
+
+        m_ticketerPlugin.saveOrUpdate(EasyMock.isA(Ticket.class));
+        EasyMock.expectLastCall();
+
+        m_alarmDao.saveOrUpdate(m_alarm);
+        EasyMock.expectLastCall();
+
+        m_easyMockUtils.replayAll();
+
+        m_defaultTicketerServiceLayer.closeTicketForAlarm(m_alarm.getId(), m_ticket.getId());
 
         // Verify that no additional calls where made (such as trying to close the ticket)
         m_easyMockUtils.verifyAll();

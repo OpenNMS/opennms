@@ -16,6 +16,10 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
+import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +39,9 @@ public class ConvertToEventTest {
      * @throws IOException
      */
     @Test
-    public void testConvertToEvent() throws MarshalException,
-            ValidationException, IOException {
+    public void testConvertToEvent() throws MarshalException, ValidationException, IOException {
+
+        InterfaceToNodeCacheDaoImpl.setInstance(new MockInterfaceToNodeCache());
 
         // 10000 sample syslogmessages from xml file are taken and passed as
         // Inputstream to create syslogdconfiguration
@@ -63,9 +68,12 @@ public class ConvertToEventTest {
         // @param len The length of the XML data in the buffer
         try {
             ConvertToEvent convertToEvent = new ConvertToEvent(
+                DistPollerDao.DEFAULT_DIST_POLLER_ID,
+                MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
                 pkt.getAddress(),
                 pkt.getPort(),
-                data, config
+                data,
+                config
             );
             LOG.info("Generated event: {}", convertToEvent.getEvent().toString());
         } catch (MessageDiscardedException e) {
@@ -82,6 +90,8 @@ public class ConvertToEventTest {
 
         try {
             ConvertToEvent convertToEvent = new ConvertToEvent(
+                DistPollerDao.DEFAULT_DIST_POLLER_ID,
+                MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
                 InetAddressUtils.ONE_TWENTY_SEVEN,
                 9999,
                 "<190>Mar 11 08:35:17 aaa_host 30128311: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet", 

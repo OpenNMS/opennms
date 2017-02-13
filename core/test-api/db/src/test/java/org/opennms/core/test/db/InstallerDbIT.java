@@ -1613,17 +1613,22 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
         getInstallerDb().updatePlPgsql();
         getInstallerDb().addStoredProcedures();
 
+        addTableFromSQL("monitoringlocations");
         addTableFromSQL("monitoringsystems");
         addTableFromSQL("node");
-        
+
+        // Insert the default monitoring location
+        getInstallerDb().insertData("monitoringlocations");
+
         // Add snmpinterface table with an arbitrary change so it gets upgraded
         addTableFromSQLWithReplacements("snmpinterface", new String[][] {
                 new String[] {
                         "snmpIfAlias\\s+varchar\\(\\d+\\),", ""
                 } });
 
-        executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
-                   + "VALUES ( 1, now() )");
+        // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
+        executeSQL("INSERT INTO node ( location, nodeId, nodeCreateTime ) "
+                   + "VALUES ( 'Default', 1, now() )");
         executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
                    + "VALUES ( 1, 1 )");
         

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.bsm</groupId>
     <artifactId>org.opennms.features.bsm.service</artifactId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features.bsm.service.api</artifactId>
@@ -27,10 +27,12 @@
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
         <configuration>
+          <features>
+            <feature>guava</feature>
+          </features>
           <bundles>
             <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.persistence.api/${project.version}</bundle>
             <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}</bundle>
-            <bundle>wrap:mvn:com.google.guava/guava/${guavaVersion}</bundle>
             <bundle>wrap:mvn:net.sf.jung/jung-api/${jungVersion}</bundle>
           </bundles>
         </configuration>

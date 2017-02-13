@@ -33,6 +33,7 @@ import java.io.InputStream;
 import junit.framework.TestCase;
 
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.xml.AbstractCastorConfigDao;
 import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.test.ThrowableAnticipator;
@@ -43,6 +44,10 @@ import org.springframework.core.io.Resource;
 /**
  * Unit tests for common AbstractCastorConfigDao functionality.
  * 
+ * This unit test is in opennms-dao, but the class it is testing
+ * is in org.opennms.core.xml because we don't have any Castor classes
+ * available in org.opennms.core.xml.
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see AbstractCastorConfigDao
  */

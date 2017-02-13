@@ -539,7 +539,6 @@ public abstract class MockEventUtil {
     public static EventBuilder createEventBuilder(String source, String uei) {
         EventBuilder builder = new EventBuilder(uei, source);
         Date currentTime = new Date();
-        builder.setCreationTime(currentTime);
         builder.setTime(currentTime);
         return builder;
     }

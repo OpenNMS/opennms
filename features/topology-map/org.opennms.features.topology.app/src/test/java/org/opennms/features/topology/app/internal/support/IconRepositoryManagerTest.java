@@ -32,13 +32,13 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.features.topology.api.IconRepository;
+import org.opennms.features.topology.api.ConfigurableIconRepository;
 
 import com.google.common.collect.Maps;
 
 public class IconRepositoryManagerTest {
 
-    private static class ConfigIconRepository implements IconRepository {
+    private static class TestIconRepository implements ConfigurableIconRepository {
 
         private Map<String, String> m_iconMap = Maps.newHashMap();
 
@@ -67,7 +67,7 @@ public class IconRepositoryManagerTest {
 
         }
 
-        private ConfigIconRepository withIconConfig(String iconKey, String iconId) {
+        private TestIconRepository withIconConfig(String iconKey, String iconId) {
             addIconMapping(iconKey, iconId);
             return this;
         }
@@ -75,7 +75,7 @@ public class IconRepositoryManagerTest {
     
     @Test
     public void testParseConfig() {
-        ConfigIconRepository iconRepository = new ConfigIconRepository()
+        TestIconRepository iconRepository = new TestIconRepository()
                 .withIconConfig("key1", "mx9600_external")
                 .withIconConfig("linkd.group", "cloud")
                 .withIconConfig("linkd.system", "generic")

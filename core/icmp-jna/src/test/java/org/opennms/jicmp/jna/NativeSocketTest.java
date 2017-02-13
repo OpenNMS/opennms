@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,7 +45,9 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 /**
  * NativeSocketTest
@@ -59,18 +61,25 @@ public class NativeSocketTest {
     private static final ExecutorService m_executor = Executors.newCachedThreadPool();
 
     Server m_server;
+    int m_port = 0;
 
+    @Rule
+    public TestName m_testName = new TestName();
 
     @Before
     public void setUp() throws Exception {
-        m_server = new Server(7777);
+        System.err.println("------------------- begin " + m_testName.getMethodName() + " ---------------------");
+        m_server = new Server(m_port);
         m_server.start();
         m_server.waitForStart();
+        m_port = m_server.getPort();
     }
 
     @After
     public void tearDown() throws InterruptedException {
         m_server.stop();
+        m_port = 0;
+        System.err.println("------------------- end " + m_testName.getMethodName() + " -----------------------");
     }
 
     public void printf(final String fmt, final Object... args) {
@@ -91,7 +100,7 @@ public class NativeSocketTest {
                         printf("Sending cmd: %s\n", cmd);
 
                         final byte[] data = cmd.getBytes("UTF-8");
-                        final DatagramPacket p = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), 7777);
+                        final DatagramPacket p = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), sock.getLocalPort());
                         sock.send(p);
 
                         printf("Receiving...\n");
@@ -132,7 +141,7 @@ public class NativeSocketTest {
         NativeDatagramSocket socket = null;
 
         try {
-            socket = NativeDatagramSocket.create(family, NativeDatagramSocket.SOCK_DGRAM, NativeDatagramSocket.IPPROTO_UDP);
+            socket = NativeDatagramSocket.create(family, NativeDatagramSocket.IPPROTO_UDP, 1234);
 
             for(final String cmd : cmds) {
                 final NativeDatagramSocket sock = socket;
@@ -140,7 +149,7 @@ public class NativeSocketTest {
                     @Override public NativeDatagramPacket call() throws Exception {
                         printf("Sending cmd: %s\n", cmd);
                         final ByteBuffer buf = UTF_8.encode(cmd);
-                        final NativeDatagramPacket p = new NativeDatagramPacket(buf, address, 7777); 
+                        final NativeDatagramPacket p = new NativeDatagramPacket(buf, address, m_port);
                         sock.send(p);
 
                         printf("Receiving...\n");
@@ -171,20 +180,16 @@ public class NativeSocketTest {
     @Test(timeout=10000)
     @Ignore("This is ignored since I haven't found a way to interrupt a socket blocked on recvfrom in linux")
     public void testCloseInReceive() throws Exception {
-        NativeDatagramSocket socket = null;
-        try {
-            socket = NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, NativeDatagramSocket.SOCK_DGRAM, NativeDatagramSocket.IPPROTO_UDP);
-
-            final NativeDatagramSocket sock = socket;
+        try(final NativeDatagramSocket socket = NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, NativeDatagramSocket.IPPROTO_UDP, 1234)) {
             final FutureTask<NativeDatagramPacket> task = new FutureTask<NativeDatagramPacket>(new Callable<NativeDatagramPacket>() {
                 @Override public NativeDatagramPacket call() throws Exception {
                     final ByteBuffer buf = UTF_8.encode("msg1");
-                    final NativeDatagramPacket p = new NativeDatagramPacket(buf, InetAddress.getLocalHost(), 7777); 
-                    sock.send(p);
+                    final NativeDatagramPacket p = new NativeDatagramPacket(buf, InetAddress.getLocalHost(), m_port);
+                    socket.send(p);
 
                     final NativeDatagramPacket r = new NativeDatagramPacket(128);
                     printf("Receiving...\n");
-                    sock.receive(r);
+                    socket.receive(r);
                     printf("Received\n");
                     return r;
                 }
@@ -196,8 +201,6 @@ public class NativeSocketTest {
 
             final String response = UTF_8.decode(r.getContent()).toString();
             printf("Received Response: %s from %s:%d\n", response, r.getAddress().getHostAddress(), r.getPort());
-        } finally {
-            if (socket != null) socket.close();
         }
     }
 

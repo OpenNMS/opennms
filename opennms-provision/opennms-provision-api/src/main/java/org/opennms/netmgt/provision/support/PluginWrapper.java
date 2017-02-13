@@ -77,16 +77,18 @@ public class PluginWrapper {
             if (pd.getName().equals("class")) {
                 continue;
             }
-            Method m = pd.getReadMethod();
-            if (m.isAnnotationPresent(Require.class)) {
-                Set<String> values = new TreeSet<String>();
-                Require a = m.getAnnotation(Require.class);
-                for (String key: a.value()) {
-                    values.add(key);
+            final Method m = pd.getReadMethod();
+            if (m != null) {
+                if (m.isAnnotationPresent(Require.class)) {
+                    Set<String> values = new TreeSet<String>();
+                    Require a = m.getAnnotation(Require.class);
+                    for (String key: a.value()) {
+                        values.add(key);
+                    }
+                    m_required.put(pd.getName(), values);
+                } else {
+                    m_optional.put(pd.getName(), new HashSet<String>());
                 }
-                m_required.put(pd.getName(), values);
-            } else {
-                m_optional.put(pd.getName(), new HashSet<String>());
             }
         }
     }

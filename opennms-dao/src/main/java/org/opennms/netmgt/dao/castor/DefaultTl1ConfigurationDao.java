@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao.castor;
 import java.util.Collections;
 import java.util.List;
 
+import org.opennms.core.xml.AbstractCastorConfigDao;
 import org.opennms.netmgt.config.tl1d.Tl1Element;
 import org.opennms.netmgt.config.tl1d.Tl1dConfiguration;
 import org.opennms.netmgt.dao.api.Tl1ConfigurationDao;

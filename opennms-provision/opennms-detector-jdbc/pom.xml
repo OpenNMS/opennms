@@ -3,16 +3,13 @@
   <parent>
     <artifactId>opennms-provision</artifactId>
     <groupId>org.opennms</groupId>
-    <version>18.0.4-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-detector-jdbc</artifactId>
-  <name>OpenNMS Provision JDBC Detector</name>
+  <name>OpenNMS :: Provisioning :: JDBC Detector</name>
   <url>http://www.opennms.org</url>
   <packaging>bundle</packaging>
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
   <build>
     <plugins>
       <plugin>
@@ -27,21 +24,6 @@
             <Export-Package>org.opennms.netmgt.provision.detector.jdbc.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
@@ -83,11 +65,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

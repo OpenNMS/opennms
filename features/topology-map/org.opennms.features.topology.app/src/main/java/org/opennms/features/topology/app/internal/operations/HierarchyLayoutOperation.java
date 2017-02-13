@@ -53,6 +53,6 @@ public class HierarchyLayoutOperation extends LayoutOperation {
     // Prevent non hierarchical topologies to use this operation. See NMS-8703
     @Override
     protected boolean enabled(GraphContainer container) {
-        return container.getBaseTopology().getMetaInfo().isHierarchical();
+        return container.getBaseTopology().getTopologyProviderInfo().isHierarchical();
     }
 }

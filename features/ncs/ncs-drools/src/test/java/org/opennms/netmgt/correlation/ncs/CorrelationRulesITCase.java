@@ -45,7 +45,6 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -61,7 +60,6 @@ import org.springframework.transaction.annotation.Transactional;
 		"classpath:META-INF/opennms/correlation-engine.xml",
 		"classpath:test-context.xml"
 })
-@JUnitConfigurationEnvironment
 @Transactional
 @DirtiesContext
 public abstract class CorrelationRulesITCase {
@@ -86,7 +84,7 @@ public abstract class CorrelationRulesITCase {
     protected void verify(DroolsCorrelationEngine engine) {
     	getAnticipator().verifyAnticipated(0, 0, 0, 0, 0);
         if (m_anticipatedMemorySize != null) {
-            assertEquals("Unexpected number of objects in working memory: "+engine.getMemoryObjects(), m_anticipatedMemorySize.intValue(), engine.getMemorySize());
+            assertEquals("Unexpected number of objects in working memory: "+engine.getKieSessionObjects(), m_anticipatedMemorySize.intValue(), engine.getKieSessionObjects().size());
         }
     }
 

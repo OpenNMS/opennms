@@ -45,8 +45,7 @@ import org.opennms.netmgt.config.wsman.WsmanAgentConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.w3c.dom.Node;
 
 import com.google.common.collect.ListMultimap;
@@ -61,7 +60,6 @@ import com.google.common.collect.Maps;
  * @author jwhite
  */
 public class WsManMonitor extends AbstractServiceMonitor {
-    private static final Logger LOG = LoggerFactory.getLogger(WsManMonitor.class);
 
     public static final String RESOURCE_URI_PARAM = "resource-uri";
 
@@ -72,13 +70,6 @@ public class WsManMonitor extends AbstractServiceMonitor {
     private WSManClientFactory m_factory = new CXFWSManClientFactory();
 
     private WSManConfigDao m_wsManConfigDao;
-
-    @Override
-    public void initialize(Map<String, Object> parameters) {
-        LOG.debug("initialize({})", parameters);
-        // Retrieve the configuration DAO
-        m_wsManConfigDao = BeanUtils.getBean("daoContext", "wsManConfigDao", WSManConfigDao.class);
-    }
 
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
@@ -106,6 +97,9 @@ public class WsManMonitor extends AbstractServiceMonitor {
         }
 
         // Setup the WS-Man Client
+        if (m_wsManConfigDao == null) {
+            m_wsManConfigDao = BeanUtils.getBean("daoContext", "wsManConfigDao", WSManConfigDao.class);
+        }
         final WsmanAgentConfig config = m_wsManConfigDao.getConfig(svc.getAddress());
         final WSManEndpoint endpoint = m_wsManConfigDao.getEndpoint(config, svc.getAddress());
         final WSManClient client = m_factory.getClient(endpoint);

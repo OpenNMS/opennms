@@ -102,6 +102,9 @@
     <bean id="monitoringLocationDao" class="org.opennms.netmgt.dao.mock.MockMonitoringLocationDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoringLocationDao" ref="monitoringLocationDao" />
 
+    <bean id="monitoringSystemDao" class="org.opennms.netmgt.dao.mock.MockMonitoringSystemDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoringSystemDao" ref="monitoringSystemDao" />
+
     <bean id="memoDao" class="org.opennms.netmgt.dao.mock.MockMemoDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.MemoDao" ref="memoDao" />
 

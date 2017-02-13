@@ -65,8 +65,9 @@ public abstract class AbstractMergingJaxbConfigDao<K, V> {
     // Configuration
     private final Class<K> m_entityClass;
     private final String m_description;
-    private final Path m_rootFile;
-    private final Path m_includeFolder;
+    private Path m_opennmsHome;
+    private Path m_rootFile;
+    private Path m_includeFolder;
     private Long m_reloadCheckInterval = DEFAULT_RELOAD_CHECK_INTERVAL;
 
     // State
@@ -87,6 +88,15 @@ public abstract class AbstractMergingJaxbConfigDao<K, V> {
         m_description = Objects.requireNonNull(description, "description argument");
         m_rootFile = rootFile;
         m_includeFolder = Objects.requireNonNull(includeFolder, "includeFolder argument");
+        m_opennmsHome = Paths.get(ConfigFileConstants.getHome());
+    }
+
+    public void setOpennmsHome(Path opennmsHome) {
+        m_opennmsHome = opennmsHome;
+    }
+
+    public Path getOpennmsHome() {
+        return m_opennmsHome;
     }
 
     public abstract V translateConfig(K config);
@@ -125,7 +135,15 @@ public abstract class AbstractMergingJaxbConfigDao<K, V> {
             }
             m_object = mergedObject;
             m_lastUpdate = System.currentTimeMillis();
+            onConfigUpdated(m_object);
         }
+    }
+
+    /**
+     * Called when the configuration updated was updated.
+     */
+    public void onConfigUpdated(V object) {
+        // Do nothing by default, allows subclasses to hook in.
     }
 
     private void reconfigureDaos() {
@@ -158,9 +176,8 @@ public abstract class AbstractMergingJaxbConfigDao<K, V> {
     }
 
     private List<File> getXmlFiles() {
-        final Path opennmsHome = Paths.get(ConfigFileConstants.getHome());
         final List<File> xmlFiles = new LinkedList<>();
-        try (Stream<Path> stream = Files.walk(opennmsHome.resolve(m_includeFolder), 1)) {
+        try (Stream<Path> stream = Files.walk(m_opennmsHome.resolve(m_includeFolder), 1)) {
             stream.map(Path::toFile)
                 .filter(f -> f.isFile())
                 .filter(f -> f.canRead())
@@ -174,7 +191,7 @@ public abstract class AbstractMergingJaxbConfigDao<K, V> {
 
         if (m_rootFile != null) {
             // Prepend the root file, ensure that it is always first in the list
-            xmlFiles.add(0, opennmsHome.resolve(m_rootFile).toFile()); 
+            xmlFiles.add(0, m_opennmsHome.resolve(m_rootFile).toFile()); 
         }
         return xmlFiles;
     }

@@ -5,7 +5,7 @@
 ~~~~
 project groupId: org.opennms.plugins
 project name:    alarm-change-notifier
-version:         18.0.3-SNAPSHOT
+version:         19.0.0-SNAPSHOT
 ~~~~
 
 ## Description
@@ -22,7 +22,7 @@ This way the alarm change events are associated with the otiginal source of the 
 
 Alarm change events have a severity of normal since they only reflect changes to the alarm.
 
-Events from the alarm-change-notifier are used by the opennms-es-rest plugin to send alarm history to Elastic Search
+Events from the alarm-change-notifier are used by the opennms-es-rest plugin to send alarm history to Elasticsearch
 (See https://github.com/gallenc/opennms-es-rest)
 
 
@@ -77,10 +77,10 @@ ssh -p 8101 admin@localhost
 to install the feature in karaf use
 
 ~~~~
-karaf@root> features:addurl mvn:org.opennms.plugins/alarm-change-notifier/18.0.3-SNAPSHOT/xml/features
+karaf@root> features:addurl mvn:org.opennms.plugins/alarm-change-notifier/19.0.0-SNAPSHOT/xml/features
 karaf@root> features:install alarm-change-notifier
 
-(or features:install alarm-change-notifier/18.0.3-SNAPSHOT for a specific version of the feature)
+(or features:install alarm-change-notifier/19.0.0-SNAPSHOT for a specific version of the feature)
 ~~~~
 
 

@@ -1,6 +1,10 @@
 #!/bin/bash -e
 test -d container || (echo "This command must be ran from the features/minion directory" && exit 1)
 
+MYDIR=`dirname $0`
+MYDIR=`cd "$MYDIR"; pwd`
+export PATH="$MYDIR/../../bin:$MYDIR/../../maven/bin:$PATH"
+
 # Delete files owned by root
 sudo rm -rf container/karaf/target/karaf
 
@@ -26,7 +30,10 @@ mkdir -p "$MINION_HOME/repositories/default"
 tar zxvf repository-*-repo.tar.gz -C "$MINION_HOME/repositories/default"
 popd
 
+# Enable Hawtio
+echo 'hawtio-offline' > "$MINION_HOME/etc/featuresBoot.d/hawtio.boot"
+
 # Start the container as root (currently required for ICMP)
 pushd "$MINION_HOME"
-sudo ./bin/karaf
+sudo ./bin/karaf debug
 popd

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.bsm</artifactId>
-        <version>18.0.4-SNAPSHOT</version>
+        <version>19.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features.bsm</groupId>
     <artifactId>vaadin-adminpage</artifactId>
@@ -54,6 +54,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.topology</groupId>
+            <artifactId>org.opennms.features.topology.link</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.bsm</groupId>
             <artifactId>org.opennms.features.bsm.service.api</artifactId>
             <version>${project.version}</version>
@@ -82,11 +87,6 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-dao-mock</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

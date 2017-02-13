@@ -28,31 +28,21 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractSearchProvider;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
-import org.opennms.features.topology.api.topo.SearchResult;
+import org.opennms.features.topology.api.topo.SimpleSearchProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
-public class BusinessServiceSearchProvider extends AbstractSearchProvider implements SearchProvider {
-    private static final Logger LOG = LoggerFactory.getLogger(BusinessServiceSearchProvider.class);
+public class BusinessServiceSearchProvider extends SimpleSearchProvider {
 
     private BusinessServiceManager businessServiceManager;
 
@@ -62,19 +52,8 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
     }
 
     @Override
-    public boolean contributesTo(String namespace) {
-        return BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE.equalsIgnoreCase(namespace);
-    }
-
-    @Override
-    public boolean supportsPrefix(String searchPrefix) {
-        return supportsPrefix("bsm=", searchPrefix);
-    }
-
-    @Override
-    public List<SearchResult> query(SearchQuery searchQuery, GraphContainer container) {
-        LOG.info("BusinessServiceSearchProvider->query: called with search query: '{}'", searchQuery);
-        List<SearchResult> results = Lists.newArrayList();
+    public List<? extends VertexRef> queryVertices(SearchQuery searchQuery, GraphContainer container) {
+        List<BusinessServiceVertex> results = Lists.newArrayList();
 
         String queryString = searchQuery.getQueryString();
         CriteriaBuilder bldr = new CriteriaBuilder(BusinessService.class);
@@ -89,42 +68,11 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
             final BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(bs, 0);
             // Only consider results which are available in the Topology Provider, see BSM-191
             if (container.getBaseTopology().getVertex(businessServiceVertex) != null) {
-                SearchResult searchResult = new SearchResult(businessServiceVertex);
-                searchResult.setCollapsed(false);
-                searchResult.setCollapsible(true);
-                results.add(searchResult);
+                results.add(businessServiceVertex);
             }
         }
 
-        LOG.info("BusinessServiceSearchProvider->query: found {} results: {}", results.size(), results);
         return results;
-    }
-
-    @Override
-    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
-        VertexRef vertexToFocus = new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
-        return Sets.newHashSet(vertexToFocus);
-    }
-
-    @Override
-    public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        LOG.debug("BusinessServiceSearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
-
-        DefaultVertexHopCriteria criterion = new DefaultVertexHopCriteria(new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel()));
-        container.addCriteria(criterion);
-
-        LOG.debug("BusinessServiceSearchProvider->addVertexHop: adding hop criteria {}.", criterion);
-        LOG.debug("BusinessServiceSearchProvider->addVertexHop: current criteria {}.", Arrays.toString(container.getCriteria()));
-    }
-
-    @Override
-    public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        LOG.debug("BusinessServiceSearchProvider->removeVertexHopCriteria: called with search result: '{}'", searchResult);
-
-        DefaultVertexHopCriteria criterion = new DefaultVertexHopCriteria(new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel()));
-        container.removeCriteria(criterion);
-
-        LOG.debug("BusinessServiceSearchProvider->removeVertexHopCriteria: current criteria {}.", Arrays.toString(container.getCriteria()));
     }
 
     public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {

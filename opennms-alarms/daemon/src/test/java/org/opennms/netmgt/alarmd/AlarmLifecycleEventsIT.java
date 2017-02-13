@@ -42,8 +42,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
@@ -79,14 +79,15 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
     private Alarmd m_alarmd;
 
     @Autowired
+    private MonitoringLocationDao m_locationDao;
+
+    @Autowired
     private NodeDao m_nodeDao;
 
     @Autowired
     private MockEventIpcManager m_eventMgr;
 
     private MockDatabase m_database;
-
-    private EventAnticipator m_anticipator;
 
     @Override
     public void setTemporaryDatabase(final MockDatabase database) {
@@ -95,16 +96,13 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
 
     @Before
     public void setUp() throws Exception {
-        m_anticipator = new EventAnticipator();
-        m_eventMgr.setEventAnticipator(m_anticipator);
 
         // Events need database IDs to make alarmd happy
         m_eventMgr.setEventWriter(m_database);
 
         // Events need to real nodes too
-        final OnmsNode node = new OnmsNode();
+        final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
         node.setId(1);
-        node.setLabel("node1");
         m_nodeDao.save(node);
 
         Vacuumd.destroySingleton();
@@ -122,9 +120,9 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
     @Test
     public void canGenerateAlarmLifecycleEvents() {
         // Expect an alarmCreated event
-        m_anticipator.resetAnticipated();
-        m_anticipator.anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
-        m_anticipator.setDiscardUnanticipated(true);
+        m_eventMgr.getEventAnticipator().resetAnticipated();
+        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
+        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
 
         // Send a nodeDown
         sendNodeDownEvent(1);
@@ -133,9 +131,9 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
         await().until(allAnticipatedEventsWereReceived());
 
         // Expect an alarmUpdatedWithReducedEvent event
-        m_anticipator.resetAnticipated();
-        m_anticipator.anticipateEvent(new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, "alarmd").getEvent());
-        m_anticipator.setDiscardUnanticipated(true);
+        m_eventMgr.getEventAnticipator().resetAnticipated();
+        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, "alarmd").getEvent());
+        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
 
         // Send another nodeDown
         sendNodeDownEvent(1);
@@ -144,10 +142,10 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
         await().until(allAnticipatedEventsWereReceived());
 
         // Expect an alarmCreated and a alarmCleared event
-        m_anticipator.resetAnticipated();
-        m_anticipator.anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
-        m_anticipator.anticipateEvent(new EventBuilder(EventConstants.ALARM_CLEARED_UEI, "alarmd").getEvent());
-        m_anticipator.setDiscardUnanticipated(true);
+        m_eventMgr.getEventAnticipator().resetAnticipated();
+        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
+        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CLEARED_UEI, "alarmd").getEvent());
+        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
 
         // Send a nodeUp
         sendNodeUpEvent(1);
@@ -157,9 +155,9 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
         await().atMost(1, MINUTES).until(allAnticipatedEventsWereReceived());
 
         // Expect an alarmUncleared event
-        m_anticipator.resetAnticipated();
-        m_anticipator.anticipateEvent(new EventBuilder(EventConstants.ALARM_UNCLEARED_UEI, "alarmd").getEvent());
-        m_anticipator.setDiscardUnanticipated(true);
+        m_eventMgr.getEventAnticipator().resetAnticipated();
+        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_UNCLEARED_UEI, "alarmd").getEvent());
+        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
 
         // Send another nodeDown
         sendNodeDownEvent(1);
@@ -173,7 +171,7 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
         return new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                return m_anticipator.getAnticipatedEvents().isEmpty();
+                return m_eventMgr.getEventAnticipator().getAnticipatedEvents().isEmpty();
             }
         };
     }
@@ -181,7 +179,6 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
     private void sendNodeUpEvent(long nodeId) {
         EventBuilder builder = new EventBuilder(EventConstants.NODE_UP_EVENT_UEI, "test");
         Date currentTime = new Date();
-        builder.setCreationTime(currentTime);
         builder.setTime(currentTime);
         builder.setNodeid(nodeId);
         builder.setSeverity("Normal");
@@ -201,7 +198,6 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
     private void sendNodeDownEvent(long nodeId) {
         EventBuilder builder = new EventBuilder(EventConstants.NODE_DOWN_EVENT_UEI, "test");
         Date currentTime = new Date();
-        builder.setCreationTime(currentTime);
         builder.setTime(currentTime);
         builder.setNodeid(nodeId);
         builder.setSeverity("Major");

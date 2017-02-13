@@ -30,8 +30,6 @@ package org.opennms.features.topology.app.internal.jung;
 
 import java.util.Collection;
 
-import edu.uci.ics.jung.algorithms.layout.SpringLayout;
-import edu.uci.ics.jung.graph.SparseGraph;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
@@ -40,6 +38,9 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+
+import edu.uci.ics.jung.algorithms.layout.SpringLayout;
+import edu.uci.ics.jung.graph.SparseGraph;
 
 public class SpringLayoutAlgorithm extends AbstractLayoutAlgorithm {
 

@@ -41,10 +41,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
@@ -73,32 +70,23 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath*:/META-INF/opennms/component-dao.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class PathOutageDaoIT implements InitializingBean {
+
     @Autowired
-    private DistPollerDao m_distPollerDao;
-    
+    private MonitoringLocationDao m_locationDao;
+
     @Autowired
     private NodeDao m_nodeDao;
-
-    @Autowired
-    private IpInterfaceDao m_ipInterfaceDao;
-
-    @Autowired
-    private MonitoredServiceDao m_monitoredServiceDao;
 
     @Autowired
     private PathOutageDao m_pathOutageDao;
 
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
-
-    @Autowired
-    private EventDao m_eventDao;
 
     @Autowired
     TransactionTemplate m_transTemplate;
@@ -126,7 +114,7 @@ public class PathOutageDaoIT implements InitializingBean {
         assertNotNull(serviceType);
 
         // This will be our router with one IP address
-        OnmsNode router = new OnmsNode("router");
+        OnmsNode router = new OnmsNode(m_locationDao.getDefaultLocation(), "router");
         m_nodeDao.save(router);
         OnmsIpInterface routerIpInterface = new OnmsIpInterface(addr("172.16.1.1"), router);
         routerIpInterface.setIsManaged("M");
@@ -134,7 +122,7 @@ public class PathOutageDaoIT implements InitializingBean {
         routerService.setStatus("A");
 
         // Add a node that will be routed through the router
-        OnmsNode node = new OnmsNode("localhost");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost");
         m_nodeDao.save(node);
         OnmsIpInterface nodeIpInterface = new OnmsIpInterface(addr("172.16.1.2"), node);
         nodeIpInterface.setIsManaged("M");
@@ -142,7 +130,7 @@ public class PathOutageDaoIT implements InitializingBean {
         nodeMonitoredService.setStatus("A");
 
         // Make another node with an interface that is initially marked as deleted
-        OnmsNode newNode = new OnmsNode("newnode");
+        OnmsNode newNode = new OnmsNode(m_locationDao.getDefaultLocation(), "newnode");
         m_nodeDao.save(newNode);
         OnmsIpInterface newIpInterface = new OnmsIpInterface(addr("172.16.1.3"), newNode);
         newIpInterface.setIsManaged("D");

@@ -17,6 +17,8 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 
+import com.google.common.collect.Maps;
+
 public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 
     public static class LinkdEdgeStatus implements Status{
@@ -42,6 +44,11 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
             statusMap.put("status", m_status);
 
             return statusMap;
+        }
+
+        @Override
+        public Map<String, String> getStyleProperties() {
+            return Maps.newHashMap();
         }
 
         @Override

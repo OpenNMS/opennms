@@ -40,8 +40,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opennms.features.topology.api.AutoRefreshSupport;
+import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphVisitor;
@@ -61,12 +65,17 @@ import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.jung.D3TopoLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.LayoutManager;
+import org.opennms.features.topology.app.internal.operations.LayoutOperation;
+import org.opennms.osgi.VaadinApplicationContext;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -259,6 +268,123 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 		}
     }
 
+    private static class TopologyProviderSelectionHelper {
+
+        private static final Logger LOG = LoggerFactory.getLogger(TopologyProviderSelectionHelper.class);
+
+        private static final LayoutAlgorithm DEFAULT_LAYOUT_ALGORITHM = new D3TopoLayoutAlgorithm();
+
+        private BundleContext m_bundleContext;
+
+        private TopologyProviderSelectionHelper(BundleContext bundleContext) {
+            m_bundleContext = bundleContext;
+        }
+
+        public void switchLayoutProvider(GraphContainer graphContainer, GraphProvider topologyProvider, Callback... callbacks) {
+            final String preferredLayout = topologyProvider.getDefaults().getPreferredLayout();
+
+            // We automatically set status providers if there are any
+            StatusProvider vertexStatusProvider = findVertexStatusProvider(topologyProvider);
+            EdgeStatusProvider edgeStatusProvider = findEdgeStatusProvider(topologyProvider);
+            LayoutAlgorithm layoutAlgorithm = findLayoutAlgorithm(preferredLayout);
+
+            // Refresh the topology provider, triggering the vertices to load  if they have not yet loaded
+            topologyProvider.refresh();
+            graphContainer.setEdgeStatusProvider(edgeStatusProvider);
+            graphContainer.setVertexStatusProvider(vertexStatusProvider);
+            if (layoutAlgorithm != null) {
+                graphContainer.setLayoutAlgorithm(layoutAlgorithm);
+            }
+            graphContainer.setBaseTopology(topologyProvider);
+            if (callbacks != null) {
+                for (Callback eachCallback : callbacks) {
+                    eachCallback.callback(graphContainer, topologyProvider);
+                }
+            }
+            graphContainer.redoLayout();
+        }
+
+        private LayoutAlgorithm findLayoutAlgorithm(String preferredLayout) {
+            if (preferredLayout != null) {
+                // LayoutOperations are exposed as CheckedOperations
+                CheckedOperation operation = findSingleService(m_bundleContext, CheckedOperation.class, null, String.format("(operation.label=%s*)", preferredLayout));
+                if (operation instanceof LayoutOperation) { // Cast it to LayoutOperation if possible
+                    return ((LayoutOperation) operation).getLayoutAlgorithm();
+                }
+            }
+            LOG.warn("No preferredLayout defined. Fallback to {}", DEFAULT_LAYOUT_ALGORITHM.getClass().getSimpleName());
+            return DEFAULT_LAYOUT_ALGORITHM; // no preferredLayout defined
+        }
+
+        private StatusProvider findVertexStatusProvider(GraphProvider graphProvider) {
+            StatusProvider vertexStatusProvider = findSingleService(
+                    m_bundleContext,
+                    StatusProvider.class,
+                    statusProvider -> statusProvider.contributesTo(graphProvider.getVertexNamespace()),
+                    null);
+            return vertexStatusProvider;
+        }
+
+        private EdgeStatusProvider findEdgeStatusProvider(GraphProvider graphProvider) {
+            EdgeStatusProvider edgeStatusProvider = findSingleService(
+                    m_bundleContext,
+                    EdgeStatusProvider.class,
+                    statusProvider -> statusProvider.contributesTo(graphProvider.getEdgeNamespace()),
+                    null);
+            return edgeStatusProvider;
+        }
+
+        /**
+         * Finds a service registered with the OSGI Service Registry of type <code>clazz</code>.
+         * If a <code>bundleContextFilter</code> is provided, it is used to query for the service, e.g. "(operation.label=My Label*)".
+         * In addition each clazz of type T found in the OSGI Service Registry must afterwards pass the provided <code>postFilter</code>.
+         *
+         * If multiple services are found, only the first one is returned.
+         *
+         * @return A object of type <code>clazz</code> or null.
+         */
+        private <T> T findSingleService(BundleContext bundleContext, Class<T> clazz, Predicate<T> postFilter, String bundleContextFilter) {
+            List<T> providers = findServices(bundleContext, clazz, bundleContextFilter);
+            Stream<T> stream = providers.stream();
+            if (postFilter != null) { // filter may be null
+                stream = stream.filter(postFilter);
+            }
+            providers = stream.collect(Collectors.toList());
+            if (providers.size() > 1) {
+                LOG.warn("Found more than one {}s. This is not supported. Using 1st one in list.", clazz.getSimpleName());
+            }
+            if (!providers.isEmpty()) {
+                return providers.iterator().next();
+            }
+            return null;
+        }
+
+        /**
+         * Find services of class <code>clazz</code> registered in the OSGI Service Registry.
+         * The optional filter criteria <code>query</code> is used.
+         *
+         * @return All found services registered in the OSGI Service Registry of type <code>clazz</code>.
+         */
+        private <T> List<T> findServices(BundleContext bundleContext, Class<T> clazz, String query) {
+            List<T> serviceList = new ArrayList<>();
+            LOG.debug("Finding Service of type {} and additional filter criteria {} ...", clazz, query);
+            try {
+                ServiceReference<?>[] allServiceReferences = bundleContext.getAllServiceReferences(clazz.getName(), query);
+                if (allServiceReferences != null) {
+                    for (ServiceReference<?> eachServiceReference : allServiceReferences) {
+                        @SuppressWarnings("unchecked")
+                        T statusProvider = (T) bundleContext.getService(eachServiceReference);
+                        serviceList.add(statusProvider);
+                    }
+                }
+            } catch (InvalidSyntaxException e) {
+                LOG.error("Could not query BundleContext for services", e);
+            }
+            LOG.debug("Found {} services", serviceList.size());
+            return serviceList;
+        }
+    }
+
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
 
     private int m_semanticZoomLevel = 1;
@@ -270,13 +396,16 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private EdgeStatusProvider m_edgeStatusProvider;
     private MergingGraphProvider m_mergedGraphProvider;
     private MapViewManager m_viewManager = new DefaultMapViewManager();
-    private String m_sessionId;
+    private VaadinApplicationContext applicationContext;
     private BundleContext m_bundleContext;
     private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
     private AutoRefreshSupport m_autoRefreshSupport;
+    private LayoutManager m_layoutManager;
     
     private VEGraph m_graph;
     private AtomicBoolean m_containerDirty = new AtomicBoolean(Boolean.TRUE);
+
+    private MetaTopologyProvider m_metaTopologyProvider;
 
     public VEProviderGraphContainer(ProviderManager providerManager) {
         m_mergedGraphProvider = new MergingGraphProvider(providerManager);
@@ -354,6 +483,16 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             m_layoutAlgorithm.updateLayout(this);
             fireGraphChanged();
         }
+    }
+
+    @Override
+    public MetaTopologyProvider getMetaTopologyProvider() {
+        return m_metaTopologyProvider;
+    }
+
+    @Override
+    public void setMetaTopologyProvider(MetaTopologyProvider metaGraphProvider) {
+        m_metaTopologyProvider = metaGraphProvider;
     }
 
     @Override
@@ -586,6 +725,10 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         m_bundleContext = bundleContext;
     }
 
+    public void setLayoutManager(LayoutManager layoutManager) {
+        m_layoutManager = layoutManager;
+    }
+
     @Override
 	public void fireGraphChanged() {
 		for(ChangeListener listener : m_listeners) {
@@ -630,6 +773,17 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public void setIconManager(IconManager iconManager) {
         m_iconManager = iconManager;
+    }
+
+    @Override
+    public void saveLayout() {
+        m_layoutManager.persistLayout(this);
+        fireGraphChanged();
+    }
+
+    @Override
+    public void selectTopologyProvider(GraphProvider graphProvider, Callback... callback) {
+        new TopologyProviderSelectionHelper(m_bundleContext).switchLayoutProvider(this, graphProvider, callback);
     }
 
     @Override
@@ -708,18 +862,27 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public String getSessionId() {
-        return m_sessionId;
+        return applicationContext.getSessionId();
     }
 
-    @Override
-    public void setSessionId(String sessionId) {
-        m_sessionId = sessionId;
+    private void setSessionId(String sessionId) {
         try {
             m_bundleContext.removeServiceListener(this);
-            m_bundleContext.addServiceListener(this, String.format("(&(objectClass=%s)(sessionId=%s))", "org.opennms.features.topology.api.topo.Criteria", m_sessionId));
+            m_bundleContext.addServiceListener(this, String.format("(&(objectClass=%s)(sessionId=%s))", "org.opennms.features.topology.api.topo.Criteria", sessionId));
         } catch (InvalidSyntaxException e) {
             LoggerFactory.getLogger(getClass()).error("registerServiceListener() failed", e);
         }
+    }
+
+    @Override
+    public VaadinApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    @Override
+    public void setApplicationContext(VaadinApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+        setSessionId(applicationContext.getSessionId());
     }
 
     @Override
