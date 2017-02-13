@@ -124,13 +124,13 @@ public class EuiLevelMapper extends Object {
                 // node service down count
                 levelNode.setNodesvcdowncount(rtcDataMgr.getServiceDownCount(nodeID, rtcCat.getLabel()));
                 // add the node
-                levelCat.addNode(levelNode);
+                levelCat.getNode().add(levelNode);
             }
 
         }
 
         // add category
-        level.addCategory(levelCat);
+        level.getCategory().add(levelCat);
 
         return level;
     }
