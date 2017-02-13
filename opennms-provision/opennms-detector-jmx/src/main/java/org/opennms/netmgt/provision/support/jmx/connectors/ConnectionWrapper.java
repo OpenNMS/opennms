@@ -37,6 +37,7 @@ import javax.management.MBeanServerConnection;
  * close it.
  * 
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public interface ConnectionWrapper extends Closeable {
     /**
