@@ -142,6 +142,7 @@ include::text/performance-data-collection/collectors/wsman/ws-management.adoc[]
 include::text/performance-data-collection/collectors/wsman/detector.adoc[]
 include::text/performance-data-collection/collectors/http.adoc[]
 include::text/performance-data-collection/collectors/jdbc.adoc[]
+include::text/performance-data-collection/collectors/jmx.adoc[]
 
 [[ga-performance-mgmt-shell]]
 === Shell Commands
