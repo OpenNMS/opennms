@@ -51,7 +51,6 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.config.EventTranslatorConfigFactory;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -86,7 +85,6 @@ public class EventTranslatorIT {
     private MockEventIpcManager m_eventMgr;
     private MockDatabase m_db;
     private MockNetwork m_network;
-    private EventAnticipator m_anticipator;
     private OutageAnticipator m_outageAnticipator;
     private EventTranslatorConfigFactory m_config;
 
@@ -101,7 +99,6 @@ public class EventTranslatorIT {
 
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
-        m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.addEventListener(m_outageAnticipator);
         m_eventMgr.setSynchronous(true);
 
@@ -132,7 +129,6 @@ public class EventTranslatorIT {
     
 
     private void createAnticipators() {
-        m_anticipator = new EventAnticipator();
         m_outageAnticipator = new OutageAnticipator(m_db);
     }
 

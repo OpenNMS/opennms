@@ -39,12 +39,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.springframework.util.Assert;
@@ -64,7 +64,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
     }
 
     @Override
-    public Collection<OnmsLocationMonitor> findByLocationDefinition(final LocationDef locationDefinition) {
+    public Collection<OnmsLocationMonitor> findByLocationDefinition(final OnmsMonitoringLocation locationDefinition) {
         final Set<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
         for (final OnmsLocationMonitor mon : findAll()) {
             if (mon.getLocation().equals(locationDefinition.getLocationName())) {

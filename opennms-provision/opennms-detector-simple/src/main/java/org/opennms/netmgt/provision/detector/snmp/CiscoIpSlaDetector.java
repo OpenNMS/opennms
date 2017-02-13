@@ -40,17 +40,15 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
+
 /**
  * <p>CiscoIpSlaDetector class.</p>
  *
  * @author agalue
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class CiscoIpSlaDetector extends SnmpDetector {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CiscoIpSlaDetector.class);
@@ -95,9 +93,8 @@ public class CiscoIpSlaDetector extends SnmpDetector {
      * added to service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address) {
+    public boolean isServiceDetected(final InetAddress address, final SnmpAgentConfig agentConfig) {
         try {
-            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
             configureAgentPTR(agentConfig);
             configureAgentVersion(agentConfig);
 

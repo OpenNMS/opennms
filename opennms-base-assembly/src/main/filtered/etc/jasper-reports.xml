@@ -1,19 +1,21 @@
-<jasper-reports xmlns="http://xmlns.opennms.org/xsd/config/jasper-reports">
-   <report engine="jdbc" id="Early-Morning-Report" template="Early-Morning-Report.jrxml"/>
-   <report engine="jdbc" id="Response-Time-Summary-Report" template="ResponseTimeSummary.jrxml"/>
-   <report engine="jdbc" id="Node-Availability-Report" template="NodeAvailabilityReport.jrxml"/>
-   <report engine="jdbc" id="Availability-Summary-Report" template="AvailabilitySummary.jrxml"/>
-   <report engine="jdbc" id="Response-Time-Report" template="ResponseTime.jrxml"/>
-   <report engine="jdbc" id="Serial-Interface-Utilization-Summary" template="SerialInterfaceUtilizationSummary.jrxml"/>
-   <report engine="jdbc" id="Total-Bytes-Transferred-By-Interface" template="TotalBytesTransferredByInterface.jrxml"/>
-   <report engine="jdbc" id="Average-Peak-Traffic-Rates" template="AveragePeakTrafficRates.jrxml"/>
-   <report engine="jdbc" id="Interface-Availability-Report" template="InterfaceAvailabilityReport.jrxml"/>
-   <report engine="jdbc" id="Snmp-Interface-Oper-Availability" template="SnmpInterfaceOperAvailabilityReport.jrxml"/>
-   <report engine="jdbc" id="AssetMangementMaintExpired" template="AssetManagementMaintExpired.jrxml"/>
-   <report engine="jdbc" id="AssetMangementMaintStrategy" template="AssetManagementMaintStrategy.jrxml"/>
-   <report engine="jdbc" id="Event-Analysis" template="EventAnalysis.jrxml"/>
-   <report engine="jdbc" id="InterfaceUtilizationForecast" template="InterfaceUtilizationForecast.jrxml"/>
-   <report engine="jdbc" id="InterfaceUtilizationForecastHC" template="InterfaceUtilizationForecastHC.jrxml"/>
-   <report engine="jdbc" id="NetSnmpDiskUtilizationForecast" template="NetSnmpDiskUtilizationForecast.jrxml"/>
-   <report engine="jdbc" id="DiskUsageForCTX" template="DiskUsageForCTX.jrxml"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<jasper-reports
+        xmlns:this="http://xmlns.opennms.org/xsd/config/jasper-reports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/jasper-reports">
+        <report id="Early-Morning-Report" template="Early-Morning-Report.jrxml" engine="jdbc" />
+        <report id="Response-Time-Summary-Report" template="ResponseTimeSummary.jrxml" engine="jdbc" />
+        <report id="Node-Availability-Report" template="NodeAvailabilityReport.jrxml" engine="jdbc" />
+        <report id="Availability-Summary-Report" template="AvailabilitySummary.jrxml" engine="jdbc" />
+        <report id="Response-Time-Report" template="ResponseTime.jrxml" engine="jdbc" />
+        <report id="Serial-Interface-Utilization-Summary" template="SerialInterfaceUtilizationSummary.jrxml" engine="jdbc" />
+        <report id="Total-Bytes-Transferred-By-Interface" template="TotalBytesTransferredByInterface.jrxml" engine="jdbc" />
+        <report id="Average-Peak-Traffic-Rates" template="AveragePeakTrafficRates.jrxml" engine="jdbc" />
+        <report id="Interface-Availability-Report" template="InterfaceAvailabilityReport.jrxml" engine="jdbc" />
+        <report id="Snmp-Interface-Oper-Availability" template="SnmpInterfaceOperAvailabilityReport.jrxml" engine="jdbc" />
+        <report id="AssetMangementMaintExpired" template="AssetManagementMaintExpired.jrxml" engine="jdbc" />
+        <report id="AssetMangementMaintStrategy" template="AssetManagementMaintStrategy.jrxml" engine="jdbc" />
+        <report id="Event-Analysis" template="EventAnalysis.jrxml" engine="jdbc" />
+        <report id="DiskUsageForCTX" template="DiskUsageForCTX.jrxml" engine="jdbc" />
+        <report id="Top20-IOWait" template="TopIOWait.jrxml" engine="jdbc" />
 </jasper-reports>

@@ -156,6 +156,15 @@ javaCheck() {
 # foolproof but should get us close.
 #
 javaPaths() {
+        if [ -x "${opennms_home}/bin/find-java.sh" ]; then
+                found="$("${opennms_home}/bin/find-java.sh" 1.8.0 1.8.9999)"
+                if [ -d "${found}" ] && [ -x "${found}/bin/java" ]; then
+                        JP="${found}/bin/java"
+                        return 0
+                fi
+        fi
+
+        warn "${opennms_home}/bin/find-java.sh failed to find a valid JDK. Falling back to the old algorithm."
         for searchdir in $searchdirs; do
                 if [ ! -d "$searchdir" ]; then
                         continue;

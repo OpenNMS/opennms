@@ -28,18 +28,14 @@
 
 package org.opennms.netmgt.correlation.drools;
 
-import static org.easymock.EasyMock.expect;
-
 import org.junit.Test;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.mock.EasyMockUtils;
 
 
 public class FusionRulesTest extends CorrelationRulesTestCase {
-    private EasyMockUtils m_mocks = new EasyMockUtils();
-    
+
     @Test
     public void testDroolsFusion() throws Exception {
         
@@ -52,10 +48,6 @@ public class FusionRulesTest extends CorrelationRulesTestCase {
         m_anticipatedMemorySize = 5;
         
         verify(engine);
-    }
-    
-    private Event createRootCauseResolvedEvent(int symptom, int cause) {
-        return new EventBuilder(createNodeEvent("rootCauseResolved", cause)).getEvent();
     }
 
     public Event createNodeDownEvent(int nodeid) {

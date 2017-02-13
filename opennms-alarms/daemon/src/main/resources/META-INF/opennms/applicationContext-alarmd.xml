@@ -10,12 +10,13 @@
   <tx:annotation-driven />
 
   <bean id="alarmPersister" class="org.opennms.netmgt.alarmd.AlarmPersisterImpl" >
+    <property name="transactionOperations" ref="transactionTemplate" />
     <property name="alarmDao" ref="alarmDao" />
     <property name="eventDao" ref="eventDao" />
+    <property name="eventForwarder" ref="eventForwarder"/>
   </bean>
 
   <bean id="daemon" class="org.opennms.netmgt.alarmd.Alarmd" >
-    <property name="eventForwarder" ref="eventForwarder"/>
     <property name="persister" ref="alarmPersister" />
     <property name="northboundInterfaces" ref="northbounderList" />
   </bean>

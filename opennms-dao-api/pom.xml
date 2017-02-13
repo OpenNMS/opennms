@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-dao-api</artifactId>
-  <name>OpenNMS DAO Persistence Layer API</name>
+  <name>OpenNMS :: Model :: DAO :: API</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

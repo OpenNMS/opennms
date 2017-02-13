@@ -587,7 +587,7 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: #366903;
 }
 
-.surveillance-view .v-select-select{
+.v-select-select{
   box-sizing: border-box;
 }
 
@@ -595,6 +595,19 @@ td.v-table-cell-content.v-table-cell-content-marked {
   color: #366903;
   cursor: pointer;
   opacity: 1.0;
+}
+
+.v-link a:link span {
+  color: $color_opennms;
+}
+.v-link a:visited span {
+  color: $color_opennms;
+}
+.v-link a:hover span {
+  color: $color_opennms_light;
+}
+.v-link a:active span {
+  color: $color_opennms;
 }
 
 .v-ui {

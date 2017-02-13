@@ -9,17 +9,12 @@
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.logging</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Core Logging API</name>
+  <name>OpenNMS :: Core :: Logging API</name>
   <description>OpenNMS uses the SLF4J api for all logging.  This api is intended to abstract logging configuration, startup and shutdown.</description>
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>

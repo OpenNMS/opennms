@@ -12,7 +12,7 @@
 
     <groupId>org.opennms.features.vaadin-dashlets</groupId>
     <artifactId>dashlet-features</artifactId>
-		<name>OpenNMS Features Vaadin Dashlets Features</name>
+    <name>OpenNMS :: Features :: Dashlets :: Features</name>
     <packaging>pom</packaging>
 
     <build>

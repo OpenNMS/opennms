@@ -5,12 +5,18 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
 
 public class MockDiscoveryConfigurationFactory implements DiscoveryConfigurationFactory {
 
     public MockDiscoveryConfigurationFactory() {
+    }
+
+    @Override
+    public DiscoveryConfiguration getConfiguration() {
+        throw new UnsupportedOperationException("Not yet implemented!");
     }
 
     @Override
@@ -39,7 +45,12 @@ public class MockDiscoveryConfigurationFactory implements DiscoveryConfiguration
     }
 
     @Override
-    public int getIntraPacketDelay() {
+    public long getIntraPacketDelay() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public double getPacketsPerSecond() {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

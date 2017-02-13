@@ -78,8 +78,6 @@ public class PollerConfigServlet extends HttpServlet {
 
     org.opennms.netmgt.config.poller.Package pkg = null;
 
-    Properties props = new Properties();
-
     PollerConfig pollerFactory = null;
 
     /**
@@ -91,7 +89,6 @@ public class PollerConfigServlet extends HttpServlet {
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
         try {
-            props.load(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)));
             PollerConfigFactory.init();
             pollerFactory = PollerConfigFactory.getInstance();
             pollerConfig = pollerFactory.getConfiguration();
@@ -118,7 +115,6 @@ public class PollerConfigServlet extends HttpServlet {
     public void reloadFiles() throws ServletException {
         ServletConfig config = this.getServletConfig();
         try {
-            props.load(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)));
             PollerConfigFactory.init();
             pollerFactory = PollerConfigFactory.getInstance();
             pollerConfig = pollerFactory.getConfiguration();
@@ -164,7 +160,6 @@ public class PollerConfigServlet extends HttpServlet {
             java.util.List<String> checkedList = new ArrayList<String>();
             java.util.List<String> deleteList = new ArrayList<String>();
 
-            props.store(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)), null);
             StringTokenizer strTok = new StringTokenizer(query, "&");
             while (strTok.hasMoreTokens()) {
                 String token = strTok.nextToken();
@@ -247,8 +242,6 @@ public class PollerConfigServlet extends HttpServlet {
                             if (svc.getName().equals(svcname)) {
                                 pkg.removeService(svc);
                                 removeMonitor(svc.getName());
-                                props.remove("service." + svc.getName() + ".protocol");
-                                props.store(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)), null);
                                 break;
                             }
                         }

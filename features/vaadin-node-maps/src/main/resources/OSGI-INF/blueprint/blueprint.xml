@@ -3,7 +3,7 @@
 	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 	xsi:schemaLocation="
 	http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-	http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
+	http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
 ">
 
 	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
@@ -12,6 +12,7 @@
 	<reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
 	<reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" availability="mandatory" />
 	<reference id="geocoderService" interface="org.opennms.features.geocoder.GeocoderService" availability="mandatory" />
+	<reference id="geolocationConfiguration" interface="org.opennms.features.geolocation.api.GeolocationConfiguration" availability="mandatory" />
 	<reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="optional" />
 
 	<bean id="alarmTableCellStyleGenerator" class="org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator" />
@@ -33,6 +34,7 @@
 	<!-- Wrap the DAO in a Vaadin container -->
 	<bean id="alarmDaoContainer" class="org.opennms.features.topology.plugins.browsers.AlarmDaoContainer" scope="prototype">
 		<argument ref="alarmDao" />
+        <argument ref="transactionTemplate" />
 	</bean>
 	
 	<bean id="alarmTable" class="org.opennms.features.topology.plugins.browsers.AlarmTable" scope="prototype">
@@ -95,6 +97,7 @@
 	<!-- Wrap the DAO in a Vaadin container -->
 	<bean id="nodeDaoContainer" class="org.opennms.features.topology.plugins.browsers.NodeDaoContainer" scope="prototype">
 		<argument ref="nodeDao" />
+        <argument ref="transactionTemplate" />
 	</bean>
 
 	<bean id="nodeTableSelectionLinkGenerator" class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
@@ -164,6 +167,10 @@
 		</cm:default-properties>
 	</cm:property-placeholder>
 
+	<bean id="configuration" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapConfiguration" >
+		<argument ref="geolocationConfiguration" />
+	</bean>
+
 	<bean id="mapWidget" class="org.opennms.features.vaadin.nodemaps.internal.MapWidgetComponent" scope="prototype">
 		<property name="nodeDao" ref="nodeDao" />
 		<property name="assetRecordDao" ref="assetDao" />
@@ -171,6 +178,7 @@
 		<property name="geocoderService" ref="geocoderService" />
 		<property name="transactionOperations" ref="transactionTemplate" />
 		<property name="groupByState" value="${groupByState}" />
+		<property name="configuration" ref="configuration" />
 	</bean>
 
 	<bean id="nodeMapsApplication" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplication" scope="prototype">
@@ -178,6 +186,7 @@
 		<property name="mapWidgetComponent" ref="mapWidget" />
 		<property name="alarmTable" ref="alarmTable" />
 		<property name="nodeTable" ref="nodeTable" />
+		<property name="configuration" ref="configuration" />
 	</bean>
 
 	<bean id="nodeMapsApplicationFactory" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplicationFactory">
@@ -195,7 +204,7 @@
 	</service>
 
 	<bean id="nodeMapsLink" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapNavEntry">
-		<property name="url" value="node-maps#search/nodeId=%nodeid%" />
+		<property name="url" value="node-maps#search/nodeId=%25nodeid%25" />
 		<property name="name" value="View in Geographical Map" />
 	</bean>
 
@@ -218,5 +227,5 @@
 		</service-properties>
 	</service>
 
-	<service id="geoAssetProvider" interface="org.opennms.features.topology.api.geo.GeoAssetProvider" ref="mapWidget" />
+	<service id="geoAssetProvider" interface="org.opennms.features.vaadin.nodemaps.internal.GeoAssetProvider" ref="mapWidget" />
 </blueprint>

@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>atomikos-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Atomikos</name>
+  <name>OpenNMS :: Dependencies :: Atomikos</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use Atomikos.

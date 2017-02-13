@@ -10,12 +10,13 @@
     <groupId>org.opennms.features</groupId>
     <artifactId>vaadin-dashlets</artifactId>
 
-    <name>OpenNMS Features Vaadin Dashlets</name>
+    <name>OpenNMS :: Features :: Dashlets</name>
 
     <packaging>pom</packaging>
 
     <modules>
         <module>dashlet-alarms</module>
+        <module>dashlet-bsm</module>
         <module>dashlet-map</module>
         <module>dashlet-summary</module>
         <module>dashlet-image</module>

@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config-jaxb</artifactId>
-  <name>OpenNMS JAXB Configuration Model</name>
+  <name>OpenNMS :: Model :: Config :: JAXB</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

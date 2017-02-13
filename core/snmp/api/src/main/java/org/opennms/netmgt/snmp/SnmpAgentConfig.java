@@ -30,6 +30,10 @@ package org.opennms.netmgt.snmp;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -39,6 +43,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 import org.json.JSONTokener;
+import org.json.JSONWriter;
 
 /**
  * @author (various previous authors not documented)
@@ -70,70 +75,31 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         }
 
         final JSONObject protocolConfig = new JSONObject(new JSONTokener(protocolConfigString)).optJSONObject("snmp");
-
         if (protocolConfig == null) {
             throw new IllegalArgumentException("Invalid protocol configuration string for SnmpAgentConfig: Expected it to start with snmp object" + protocolConfigString);
         }
 
-        final SnmpAgentConfig agentConfig = new SnmpAgentConfig();
-        if (!protocolConfig.isNull("address")) agentConfig.setAddress(InetAddrUtils.addr(protocolConfig.optString("address")));
-        if (!protocolConfig.isNull("proxyFor")) agentConfig.setProxyFor(InetAddrUtils.addr(protocolConfig.optString("proxyFor")));
-        if (!protocolConfig.isNull("port")) agentConfig.setPort(protocolConfig.optInt("port"));
-        if (!protocolConfig.isNull("timeout")) agentConfig.setTimeout(protocolConfig.optInt("timeout"));
-        if (!protocolConfig.isNull("retries")) agentConfig.setRetries(protocolConfig.optInt("retries"));
-        if (!protocolConfig.isNull("max-vars-per-pdu")) agentConfig.setMaxVarsPerPdu(protocolConfig.optInt("max-vars-per-pdu"));
-        if (!protocolConfig.isNull("max-repetitions")) agentConfig.setMaxRepetitions(protocolConfig.optInt("max-repetitions"));
-        if (!protocolConfig.isNull("max-request-size")) agentConfig.setMaxRequestSize(protocolConfig.optInt("max-request-size"));
-        if (!protocolConfig.isNull("version")) agentConfig.setVersion(protocolConfig.optInt("version"));
-        if (!protocolConfig.isNull("security-level")) agentConfig.setSecurityLevel(protocolConfig.optInt("security-level"));
-        if (!protocolConfig.isNull("security-name")) agentConfig.setSecurityName(protocolConfig.optString("security-name"));
-        if (!protocolConfig.isNull("auth-passphrase")) agentConfig.setAuthPassPhrase(protocolConfig.optString("auth-passphrase"));
-        if (!protocolConfig.isNull("auth-protocol")) agentConfig.setAuthProtocol(protocolConfig.optString("auth-protocol"));
-        if (!protocolConfig.isNull("priv-passphrase")) agentConfig.setPrivPassPhrase(protocolConfig.optString("priv-passphrase"));
-        if (!protocolConfig.isNull("priv-protocol")) agentConfig.setPrivProtocol(protocolConfig.optString("priv-protocol"));
-        if (!protocolConfig.isNull("context-name")) agentConfig.setContextName(protocolConfig.optString("context-name"));
-        if (!protocolConfig.isNull("engine-id")) agentConfig.setEngineId(protocolConfig.optString("engine-id"));
-        if (!protocolConfig.isNull("context-engine-id")) agentConfig.setContextEngineId(protocolConfig.optString("context-engine-id"));
-        if (!protocolConfig.isNull("enterprise-id")) agentConfig.setEnterpriseId(protocolConfig.optString("enterprise-id"));
-        if (!protocolConfig.isNull("read-community")) agentConfig.setReadCommunity(protocolConfig.optString("read-community"));
-        if (!protocolConfig.isNull("write-community")) agentConfig.setWriteCommunity(protocolConfig.optString("write-community"));
+        Map<String, String> attributes = new HashMap<>();
+        @SuppressWarnings("unchecked")
+        Iterator<String> keysItr = protocolConfig.keys();
+        while(keysItr.hasNext()) {
+            String key = keysItr.next();
+            attributes.put(key, protocolConfig.isNull(key) ? null : protocolConfig.getString(key));
+        }
 
-        return agentConfig;
+        return SnmpAgentConfig.fromMap(attributes);
     }
 
     public String toProtocolConfigString() {
-        return new JSONStringer()
-        .object()
-        .key("snmp")
-        .object()
-        .key("address").value((m_address == null)
-                              ? null
-                                  : InetAddrUtils.str(m_address))
-                                  .key("proxyFor").value((m_proxyFor == null)
-                                                         ? null
-                                                             : InetAddrUtils.str(m_proxyFor))
-                                                             .key("port").value(getPort())
-                                                             .key("timeout").value(getTimeout())
-                                                             .key("retries").value(getRetries())
-                                                             .key("max-vars-per-pdu").value(getMaxVarsPerPdu())
-                                                             .key("max-repetitions").value(getMaxRepetitions())
-                                                             .key("max-request-size").value(getMaxRequestSize())
-                                                             .key("version").value(getVersion())
-                                                             .key("security-level").value(getSecurityLevel())
-                                                             .key("security-name").value(getSecurityName())
-                                                             .key("auth-passphrase").value(getAuthPassPhrase())
-                                                             .key("auth-protocol").value(getAuthProtocol())
-                                                             .key("priv-passphrase").value(getPrivPassPhrase())
-                                                             .key("priv-protocol").value(getPrivProtocol())
-                                                             .key("context-name").value(getContextName())
-                                                             .key("engine-id").value(getEngineId())
-                                                             .key("context-engine-id").value(getContextEngineId())
-                                                             .key("enterprise-id").value(getEnterpriseId())
-                                                             .key("read-community").value(getReadCommunity())
-                                                             .key("write-community").value(getWriteCommunity())
-                                                             .endObject()
-                                                             .endObject()
-                                                             .toString();
+        final JSONWriter writer = new JSONStringer()
+                .object()
+                .key("snmp")
+                .object();
+        toMap().entrySet().stream()
+                .forEach(e -> writer.key(e.getKey()).value(e.getValue()));
+        return writer.endObject()
+                .endObject()
+                .toString();
     }
 
     /**
@@ -257,5 +223,57 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
                     && Objects.equals(getWriteCommunity(), other.getWriteCommunity());
         }
         return false;
+    }
+
+    public Map<String, String> toMap() {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("address", m_address == null ? null : InetAddrUtils.str(m_address));
+        map.put("proxyFor", m_proxyFor == null ? null : InetAddrUtils.str(m_proxyFor));
+        map.put("port", Integer.toString(getPort()));
+        map.put("timeout", Integer.toString(getTimeout()));
+        map.put("retries", Integer.toString(getRetries()));
+        map.put("max-vars-per-pdu", Integer.toString(getMaxVarsPerPdu()));
+        map.put("max-repetitions", Integer.toString(getMaxRepetitions()));
+        map.put("max-request-size", Integer.toString(getMaxRequestSize()));
+        map.put("version", Integer.toString(getVersion()));
+        map.put("security-level", Integer.toString(getSecurityLevel()));
+        map.put("security-name", getSecurityName());
+        map.put("auth-passphrase", getAuthPassPhrase());
+        map.put("auth-protocol", getAuthProtocol());
+        map.put("priv-passphrase", getPrivPassPhrase());
+        map.put("priv-protocol", getPrivProtocol());
+        map.put("context-name", getContextName());
+        map.put("engine-id", getEngineId());
+        map.put("context-engine-id", getContextEngineId());
+        map.put("enterprise-id", getEnterpriseId());
+        map.put("read-community", getReadCommunity());
+        map.put("write-community", getWriteCommunity());
+        return map;
+    }
+
+    public static SnmpAgentConfig fromMap(Map<String, String> map) {
+        SnmpAgentConfig config = new SnmpAgentConfig();
+        if (map.get("address") != null) config.setAddress(InetAddrUtils.addr(map.get("address")));
+        if (map.get("proxyFor") != null) config.setProxyFor(InetAddrUtils.addr(map.get("proxyFor")));
+        if (map.get("port") != null) config.setPort(Integer.parseInt(map.get("port")));
+        if (map.get("timeout") != null) config.setTimeout(Integer.parseInt(map.get("timeout")));
+        if (map.get("retries") != null) config.setRetries(Integer.parseInt(map.get("retries")));
+        if (map.get("max-vars-per-pdu") != null) config.setMaxVarsPerPdu(Integer.parseInt(map.get("max-vars-per-pdu")));
+        if (map.get("max-repetitions") != null) config.setMaxRepetitions(Integer.parseInt(map.get("max-repetitions")));
+        if (map.get("max-request-size") != null) config.setMaxRequestSize(Integer.parseInt(map.get("max-request-size")));
+        if (map.get("version") != null) config.setVersion(Integer.parseInt(map.get("version")));
+        if (map.get("security-level") != null) config.setSecurityLevel(Integer.parseInt(map.get("security-level")));
+        if (map.get("security-name") != null) config.setSecurityName(map.get("security-name"));
+        if (map.get("auth-passphrase") != null) config.setAuthPassPhrase(map.get("auth-passphrase"));
+        if (map.get("auth-protocol") != null) config.setAuthProtocol(map.get("auth-protocol"));
+        if (map.get("priv-passphrase") != null) config.setPrivPassPhrase(map.get("priv-passphrase"));
+        if (map.get("priv-protocol") != null) config.setPrivProtocol(map.get("priv-protocol"));
+        if (map.get("context-name") != null) config.setContextName(map.get("context-name"));
+        if (map.get("engine-id") != null) config.setEngineId(map.get("engine-id"));
+        if (map.get("context-engine-id") != null) config.setContextEngineId(map.get("context-engine-id"));
+        if (map.get("enterprise-id") != null) config.setEnterpriseId(map.get("enterprise-id"));
+        if (map.get("read-community") != null) config.setReadCommunity(map.get("read-community"));
+        if (map.get("write-community") != null) config.setWriteCommunity(map.get("write-community"));
+        return config;
     }
 }

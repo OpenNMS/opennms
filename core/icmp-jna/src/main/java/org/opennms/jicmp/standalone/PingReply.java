@@ -33,6 +33,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * PingReply
  *
+ * @deprecated This interface has a lot of overlap with {@link EchoPacket}...
+ * one of them needs to be moved into an API project.
+ * 
  * @author brozow
  */
 interface PingReply {
@@ -40,7 +43,7 @@ interface PingReply {
     public abstract long getSentTimeNanos();
 
     public abstract long getReceivedTimeNanos();
-    
+
     public abstract long getElapsedTimeNanos();
 
     public abstract double elapsedTime(TimeUnit unit);

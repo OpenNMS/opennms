@@ -44,7 +44,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  */
 public abstract class NodeDiscovery implements ReadyRunnable {
 
-	/**
+    /**
      * The node ID of the system used to collect the SNMP information
      */
     protected final Node m_node;
@@ -70,7 +70,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
 
 
     protected final EnhancedLinkd m_linkd;
-
+    
     /**
      * Constructs a new SNMP collector for a node using the passed interface
      * as the collection point. The collection does not occur until the
@@ -273,7 +273,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
      */
     public SnmpAgentConfig getPeer() {
-        return m_linkd.getSnmpAgentConfig(getTarget());
+        return m_linkd.getSnmpAgentConfig(getTarget(), m_node.getLocation());
     }
 
     /**
@@ -368,6 +368,10 @@ public abstract class NodeDiscovery implements ReadyRunnable {
         return m_node.getSysname();
     }
 
+    public String getLocation() {
+        return m_node.getLocation();
+    }
+
     public abstract String getName();
 
 	@Override
@@ -401,6 +405,5 @@ public abstract class NodeDiscovery implements ReadyRunnable {
 		if (m_poll_interval != other.m_poll_interval)
 			return false;
 		return true;
-	}
-    
+	}	
 }

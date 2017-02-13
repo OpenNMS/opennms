@@ -9,7 +9,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.collection</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Features Collection</name>
+  <name>OpenNMS :: Features :: Collection</name>
   <modules>
     <module>api</module>
     <module>persistence-rrd</module>

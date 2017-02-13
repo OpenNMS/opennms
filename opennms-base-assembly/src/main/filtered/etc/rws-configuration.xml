@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rws-configuration xmlns="http://xmlns.opennms.org/xsd/config/rws">
-    <base-url server_url="http://rws-not-configured" directory="/rws"/>
+<rws-configuration>
+    <base-url server_url="http://rws-not-configured"/>
     <!-- The following URLs are test based urls where you can find the current rws server -->
     <!-- base-url server_url="http://www.rionero.com/rws-current"/ -->
     <!-- base-url server_url="http://www.rionero.com/auth/rws-current" username="opennms" password="MyRancidApi"/-->

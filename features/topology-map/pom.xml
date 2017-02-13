@@ -9,9 +9,9 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
-  <artifactId>topology</artifactId>
+  <artifactId>org.opennms.features.topology</artifactId>
 
-  <name>OpenNMS Features Topology (OSGi project)</name>
+  <name>OpenNMS :: Features :: Topology (OSGi project)</name>
 
   <!--
    | describe your project here
@@ -33,9 +33,11 @@
     <module>poms</module>
     <module>provision</module>
     <module>org.opennms.features.topology.api</module>
-    <module>org.opennms.features.topology.widgetset</module>
     <module>org.opennms.features.topology.app</module>
+    <module>org.opennms.features.topology.link</module>
+    <module>org.opennms.features.topology.persistence</module>
     <module>org.opennms.features.topology.shell</module>
+    <module>org.opennms.features.topology.widgetset</module>
     <module>plugins</module>
     <module>features</module>
     <module>themes</module>

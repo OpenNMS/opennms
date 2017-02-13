@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<jmx-datacollection-config>
+	<jmx-collection name="jsr160-included">
+		<rrd step="300">
+			<rra>RRA:AVERAGE:0.5:1:8928</rra>
+			<rra>RRA:AVERAGE:0.5:12:8784</rra>
+			<rra>RRA:MIN:0.5:12:8784</rra>
+			<rra>RRA:MAX:0.5:12:8784</rra>
+		</rrd>
+        <mbeans>
+        	<mbean name="JMV Memory" objectname="java.lang:type=OperatingSystem">
+        		<attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge" />
+        		<attrib name="TotalPhysicalMemorySize" alias="TotalMemory"
+        			type="gauge" />
+        		<attrib name="FreeSwapSpaceSize" alias="FreeSwapSpace" type="gauge" />
+        		<attrib name="TotalSwapSpaceSize" alias="TotalSwapSpace" type="gauge" />
+        	</mbean>
+        
+        	<mbean name="JMV Threading" objectname="java.lang:type=Threading">
+        		<attrib name="ThreadCount" alias="ThreadCount" type="gauge" />
+        		<attrib name="PeakThreadCount" alias="PeakThreadCount" type="gauge" />
+        		<attrib name="DaemonThreadCount" alias="DaemonThreadCount"
+        			type="gauge" />
+        		<attrib name="CurrentThreadCpuTime" alias="CurThreadCpuTime"
+        			type="gauge" />
+        	</mbean>
+        
+        	<mbean name="JMV MemoryPool" objectname="java.lang:type=MemoryPool">
+        		<attrib name="CollectionUsageThresholdCount" alias="CollectionUsage"
+        			type="counter" />
+        	</mbean>
+        
+        	<mbean name="JMV ClassLoading" objectname="java.lang:type=ClassLoading">
+        		<attrib name="TotalLoadedClassCount" alias="TotLoadedClasses"
+        			type="gauge" />
+        		<attrib name="LoadedClassCount" alias="LoadedClasses" type="gauge" />
+        		<attrib name="UnloadedClassCount" alias="UnloadedClass" type="gauge" />
+        	</mbean>
+        </mbeans>
+	</jmx-collection>
+</jmx-datacollection-config>

@@ -1,4 +1,4 @@
-package org.opennms.netmgt.correlation.ncs;
+package org.opennms.netmgt.correlation.ncs.dep;
 
 import function org.opennms.core.utils.InetAddressUtils.addr;
 import function org.opennms.core.utils.InetAddressUtils.str;
@@ -11,6 +11,7 @@ import java.util.HashSet;
 
 
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
+import org.opennms.netmgt.correlation.ncs.*;
 import org.opennms.netmgt.model.ncs.*;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;

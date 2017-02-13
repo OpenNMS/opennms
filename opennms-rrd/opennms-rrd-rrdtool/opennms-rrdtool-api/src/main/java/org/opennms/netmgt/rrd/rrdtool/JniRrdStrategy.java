@@ -69,13 +69,16 @@ public class JniRrdStrategy extends AbstractJniRrdStrategy<JniRrdStrategy.Create
 			this.filename = filename;
 			this.parameter = parameter;
 		}
-		
-            @Override
+
+		@Override
 		public String toString() {
 			return OPERATION + " " + filename + " " + parameter;
 		}
-		
-    }
+
+		public String getPath() {
+			return filename;
+		}
+	}
 
     /**
      * <p>getConfigurationProperties</p>
@@ -164,6 +167,7 @@ public class JniRrdStrategy extends AbstractJniRrdStrategy<JniRrdStrategy.Create
             LOG.debug("createRRD: skipping RRD file");
             return;
         }
+        LOG.debug("createRRD: creating RRD file ", createCommand.getPath());
         LOG.debug("Executing: rrdtool {}", createCommand.toString());
         Interface.launch(createCommand.toString());
         

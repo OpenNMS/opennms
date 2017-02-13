@@ -70,10 +70,8 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventd.xml",
         "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
         "classpath:/mockForeignSourceContext.xml",
-        "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml",
         "classpath:/testSiteStatusServiceContext.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"

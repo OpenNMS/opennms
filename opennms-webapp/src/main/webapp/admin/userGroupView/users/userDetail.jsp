@@ -72,7 +72,7 @@
   <div class="col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h2 class="panel-title">Details for User: <%=user.getUserId()%> <%= user.isReadOnly()? "(Read Only)":"" %></h2>
+        <h2 class="panel-title">Details for User: <%=user.getUserId()%></h2>
       </div>
       <table class="table table-condensed">
         <tr>
@@ -83,7 +83,14 @@
             <%=user.getFullName()%>
           </td>
         </tr>
-
+        <tr>
+          <th>
+            Security Roles:
+          </th>
+          <td width="75%">
+            <%=org.apache.commons.lang.StringUtils.join(user.getRoleCollection().toArray(new String[user.getRoleCollection().size()]), "<br/>")%>
+          </td>
+        </tr>
         <tr>
           <th>
             Comments:

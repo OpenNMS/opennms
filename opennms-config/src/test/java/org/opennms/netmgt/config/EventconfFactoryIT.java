@@ -137,7 +137,12 @@ public class EventconfFactoryIT {
     public void testFindByEventUeiKnown1000Times() throws Exception {
     	
     	final int ATTEMPTS = 10000;
-    	
+
+        // knownUEI1 is currently set to 'uei.opennms.org/internal/capsd/snmpConflictsWithDb'
+        // and is defined in the root of the eventconf that is loaded bellow.
+        // Prior to this commit, this test would produce very different results
+        // when running against another UEI i.e. 'uei.opennms.org/default/event'
+        // that happens to be the last event defined in the last included file
         EventBuilder bldr = new EventBuilder(knownUEI1, "testFindByEventUeiKnown");
 
     	DefaultEventConfDao eventConfDao = loadConfiguration("eventconf-speedtest/eventconf.xml");
@@ -594,11 +599,7 @@ public class EventconfFactoryIT {
         File eventsDirFile = new File(eventConfFile.getParentFile(), "events");
         assertTrue("events directory exists at " + eventsDirFile.getAbsolutePath(), eventsDirFile.exists());
         assertTrue("events directory is a directory at " + eventsDirFile.getAbsolutePath(), eventsDirFile.isDirectory());
-
-        // Exclude files which we know are on disk, but are not included in the default eventconf.xml
-        Set<File> onDiskNotIncludedExcludes = new HashSet<>();
-        onDiskNotIncludedExcludes.add(new File(eventsDirFile, "AlarmChangeNotifierEvents.xml"));
-
+        
         File[] eventFilesOnDiskArray = eventsDirFile.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String name) {
@@ -623,7 +624,6 @@ public class EventconfFactoryIT {
         
         Set<File> onDiskNotIncluded = new HashSet<File>(eventFilesOnDisk);
         onDiskNotIncluded.removeAll(eventFilesIncluded);
-        onDiskNotIncluded.removeAll(onDiskNotIncludedExcludes);
         if (!onDiskNotIncluded.isEmpty()) {
             fail("Events directory " + eventsDirFile.getAbsolutePath() + " contains event files that are not referenced in event configuration file " + eventConfFile.getAbsolutePath() + ":\n\t"
                     + StringUtils.collectionToDelimitedString(onDiskNotIncluded, "\n\t"));

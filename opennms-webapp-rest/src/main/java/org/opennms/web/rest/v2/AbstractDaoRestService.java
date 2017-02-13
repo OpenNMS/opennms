@@ -30,7 +30,6 @@ package org.opennms.web.rest.v2;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -49,7 +48,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.ext.search.PropertyNotFoundException;
@@ -64,6 +62,7 @@ import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.RedirectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,7 +105,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 					condition.accept(visitor);
 				}
 			} catch (PropertyNotFoundException | ArrayIndexOutOfBoundsException e) {
-				LOG.warn("Error while parsing FIQL search, ignoring: " + e.getMessage());
+				LOG.warn(e.getClass().getSimpleName() + " while parsing FIQL search, ignoring: " + e.getMessage(), e);
 			}
 		}
 
@@ -139,7 +138,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 		final List<T> coll = getDao().findMatching(crit);
 
 		if (coll == null || coll.size() < 1) {
-			return Response.status(Status.NOT_FOUND).build();
+			return Response.status(Status.NO_CONTENT).build();
 		} else {
 			Integer offset = crit.getOffset();
 
@@ -188,6 +187,10 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Response create(@Context final UriInfo uriInfo, T object) {
+		return doCreate(uriInfo, object);
+	}
+
+	protected Response doCreate(UriInfo uriInfo, T object) {
 		K id = getDao().save(object);
 		return Response.created(getRedirectUri(uriInfo, id)).build();
 	}
@@ -263,7 +266,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 				LOG.debug("delete: deleting object {}", object);
 				getDao().delete(object);
 			}
-			return Response.ok().build();
+			return Response.noContent().build();
 		} finally {
 			writeUnlock();
 		}
@@ -328,21 +331,6 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 	}
 
 	private static URI getRedirectUri(final UriInfo uriInfo, final Object... pathComponents) {
-		if (pathComponents != null && pathComponents.length == 0) {
-			final URI requestUri = uriInfo.getRequestUri();
-			try {
-				return new URI(requestUri.getScheme(), requestUri.getUserInfo(), requestUri.getHost(), requestUri.getPort(), requestUri.getPath().replaceAll("/$", ""), null, null);
-			} catch (final URISyntaxException e) {
-				return requestUri;
-			}
-		} else {
-			UriBuilder builder = uriInfo.getRequestUriBuilder();
-			for (final Object component : pathComponents) {
-				if (component != null) {
-					builder = builder.path(component.toString());
-				}
-			}
-			return builder.build();
-		}
+		return RedirectHelper.getRedirectUri(uriInfo, pathComponents);
 	}
 }

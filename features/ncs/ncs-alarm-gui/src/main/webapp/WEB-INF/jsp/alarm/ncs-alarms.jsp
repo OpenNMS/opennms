@@ -120,7 +120,7 @@
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
-<link rel="stylesheet" href="css/font-awesome-4.3.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="lib/font-awesome/css/font-awesome.min.css">
 
   <script type="text/javascript">
     function checkAllCheckboxes() {
@@ -347,7 +347,7 @@
           <% if( parms.ackType == AcknowledgeType.BOTH ) { %>
               <td class="divider" valign="middle" rowspan="1">
                 <nobr>
-                  <input type="checkbox" name="alarm" disabled="true" <%=alarms[i].isAcknowledged() ? "checked='true'" : ""%> /> 
+                  <input type="checkbox" name="alarm" disabled="disabled" <%=alarms[i].isAcknowledged() ? "checked='true'" : ""%> /> 
                 </nobr>
           <% } else if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
               <td class="divider" valign="middle" rowspan="1">

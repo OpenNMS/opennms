@@ -55,7 +55,7 @@
     <dependency>
       <groupId>com.lmax</groupId>
       <artifactId>disruptor</artifactId>
-      <version>3.3.2</version>
+      <version>${lmaxDisruptorVersion}</version>
     </dependency>
     <dependency>
       <groupId>args4j</groupId>
@@ -84,14 +84,12 @@
     <dependency>
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
-      <version>1.1.0</version>
     </dependency>
 
     <!-- Testing -->
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.lib</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.newts</groupId>

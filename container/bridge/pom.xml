@@ -5,14 +5,14 @@
 
     <parent>
         <groupId>org.opennms</groupId>
-        <artifactId>container</artifactId>
+        <artifactId>org.opennms.container</artifactId>
         <version>2017.1.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>
-    <artifactId>bridge</artifactId>
+    <artifactId>org.opennms.container.bridge</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS OSGi Container - Web Servlet OSGi Bridge</name>
+    <name>OpenNMS :: OSGi Container :: Web Servlet OSGi Bridge</name>
 
     <build>
         <plugins>
@@ -29,7 +29,7 @@
                         </Bundle-SymbolicName>
                         <Export-Package>
                             org.apache.felix.http.api;version=${felixVersion},
-                            org.osgi.service.http;version=1.2.0
+                            org.osgi.service.http;version=1.2.1
                         </Export-Package>
                         <Private-Package>
                             org.opennms.container.web.felix.base.internal.*,
@@ -47,8 +47,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.eclipse.jetty.orbit</groupId>
-            <artifactId>javax.servlet</artifactId>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -50,18 +51,23 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HistoryOperation;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
+import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
+
 /**
- * Immutable class that stores a snapshot of the topology layout at a given time.
+ * Immutable class that stores a snapshot of the topology state (layout, selected/focused vertices, etc) at a given time.
  */
 @XmlRootElement(name="saved-history")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SavedHistory {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SavedHistory.class);
 
     @XmlAttribute(name="semantic-zoom-level")
     private int m_szl;
@@ -72,97 +78,63 @@ public class SavedHistory {
 
     @XmlElement(name="locations")
     @XmlJavaTypeAdapter(VertexRefPointMapAdapter.class)
-    private Map<VertexRef, Point> m_locations = new HashMap<VertexRef, Point>();
+    private Map<VertexRef, Point> m_locations = new HashMap<>();
 
-    @XmlElement(name="selection")
-    @XmlJavaTypeAdapter(VertexRefSetAdapter.class)
-    private Set<VertexRef> m_selectedVertices;
+    @XmlElementWrapper(name="selection")
+    @XmlElement(name="vertex")
+    @XmlJavaTypeAdapter(VertexRefAdapter.class)
+    private Set<VertexRef> m_selectedVertices = Sets.newHashSet();
 
-    @XmlElement(name="focus")
-    @XmlJavaTypeAdapter(VertexRefSetAdapter.class)
-    private Set<VertexRef> m_focusVertices;
+    @XmlElementWrapper(name="focus")
+    @XmlElement(name="vertex")
+    @XmlJavaTypeAdapter(VertexRefAdapter.class)
+    private Set<VertexRef> m_focusVertices = Sets.newHashSet();
 
     /**
      * A map of key-value settings for the HistoryOperation components that are registered.
      */
     @XmlElement(name="settings")
     @XmlJavaTypeAdapter(StringMapAdapter.class)
-    private final Map<String,String> m_settings = new HashMap<String,String>();
+    private final Map<String,String> m_settings = new HashMap<>();
 
     protected SavedHistory() {
         // Here for JAXB support
     }
 
-    private static Set<VertexRef> getUnmodifiableSet(Collection<VertexRef> vertices) {
-        HashSet<VertexRef> selectedVertices = new HashSet<VertexRef>();
-        selectedVertices.addAll(vertices);
-        return Collections.unmodifiableSet(selectedVertices);
-    }
-    
-    private static Map<String,String> getOperationSettings(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
-        Map<String,String> retval = new HashMap<String,String>();
-        for (HistoryOperation operation : operations) {
-            retval.putAll(operation.createHistory(graphContainer));
-        }
-        return retval;
-    }
-    
     public SavedHistory(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
         this(
-            graphContainer.getSemanticZoomLevel(), 
+            graphContainer.getSemanticZoomLevel(),
             graphContainer.getMapViewManager().getCurrentBoundingBox(),
             saveLocations(graphContainer.getGraph()),
             getUnmodifiableSet(graphContainer.getSelectionManager().getSelectedVertexRefs()),
             getFocusVertices(graphContainer),
-            getOperationSettings(graphContainer, operations)
-        );
+            getOperationSettings(graphContainer, operations));
     }
 
-    protected static Set<VertexRef> getFocusVertices(GraphContainer graphContainer) {
-        Set<VertexRef> retVal = new HashSet<VertexRef>();
-
-        Criteria[] criterias = graphContainer.getCriteria();
-        for (Criteria crit : criterias) {
-            if (crit instanceof VertexHopGraphProvider.VertexHopCriteria && crit.getNamespace().equals("nodes")) {
-                retVal.addAll(((VertexHopGraphProvider.VertexHopCriteria) crit).getVertices());
-            }
-        }
-
-        FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
-        if (criteria != null) {
-            retVal.addAll(criteria.getVertices());
-        }
-
-        return retVal;
-    }
-
-    SavedHistory(int szl, BoundingBox box, Map<VertexRef,Point> locations, Set<VertexRef> selectedVertices, Set<VertexRef> focusVertices, Map<String,String> operationSettings) {
+    SavedHistory(
+            int szl,
+            BoundingBox box,
+            Map<VertexRef,Point> locations,
+            Set<VertexRef> selectedVertices,
+            Set<VertexRef> focusVertices,
+            Map<String,String> operationSettings) {
         m_szl = szl;
         m_boundBox = box;
         m_locations = locations;
         m_selectedVertices = selectedVertices;
         m_focusVertices = focusVertices;
         m_settings.putAll(operationSettings);
-        LoggerFactory.getLogger(this.getClass()).debug("Created " + toString());
-    }
-
-    private static Map<VertexRef,Point> saveLocations(Graph graph) {
-        Collection<? extends Vertex> vertices = graph.getDisplayVertices();
-        Map<VertexRef,Point> locations = new HashMap<VertexRef,Point>();
-        for(Vertex vert : vertices) {
-            locations.put(vert, graph.getLayout().getLocation(vert));
-        }
-        return locations;
+        LOG.debug("Created " + toString());
     }
 
     public int getSemanticZoomLevel() {
         return m_szl;
     }
-    
+
     public BoundingBox getBoundingBox() {
         return m_boundBox;
     }
-    
+
     public String getFragment() {
         StringBuffer retval = new StringBuffer().append("(").append(m_szl).append("),").append(m_boundBox.fragment()).append(",").append(m_boundBox.getCenter());
         // Add a CRC of all of the key-value pairs in m_settings to make the fragment unique
@@ -173,6 +145,7 @@ public class SavedHistory {
                 settingsCrc.update(entry.getValue().getBytes("UTF-8"));
             } catch (UnsupportedEncodingException e) {
                 // Impossible on modern JVMs
+                LOG.error(e.getMessage(), e);
             }
         }
         retval.append(String.format(",(%X)", settingsCrc.getValue()));
@@ -186,6 +159,7 @@ public class SavedHistory {
                 locationsCrc.update((int)entry.getValue().getY());
             } catch(UnsupportedEncodingException e) {
                 // Impossible on modern JVMs
+                LOG.error(e.getMessage(), e);
             }
         }
         retval.append(String.format(",(%X)", locationsCrc.getValue()));
@@ -197,6 +171,7 @@ public class SavedHistory {
                 selectionsCrc.update(entry.getId().getBytes("UTF-8"));
             } catch(UnsupportedEncodingException e) {
                 // Impossible on modern JVMs
+                LOG.error(e.getMessage(), e);
             }
         }
         retval.append(String.format(",(%X)", selectionsCrc.getValue()));
@@ -208,53 +183,33 @@ public class SavedHistory {
                 focusCrc.update(entry.getId().getBytes("UTF-8"));
             } catch(UnsupportedEncodingException e) {
                 // Impossible on modern JVMs
+                LOG.error(e.getMessage(), e);
             }
         }
         retval.append(String.format(",(%X)", focusCrc.getValue()));
-
         return retval.toString();
     }
 
     public void apply(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
-        LoggerFactory.getLogger(this.getClass()).debug("Applying " + toString());
-
-        if (m_focusVertices.size() > 0) {
-            FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer);
-            // Clear existing focus nodes
-            criteria.clear();
-            // Add focus nodes from history
-            criteria.addAll(m_focusVertices);
-        } else {
-            // Remove any existing VertexHopCriteria
-            FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
-            if (criteria != null) {
-                graphContainer.removeCriteria(criteria);
-            }
-        }
+        LOG.debug("Applying " + toString());
 
         // Apply the history for each registered HistoryOperation
         for (HistoryOperation operation : operations) {
             try {
                 operation.applyHistory(graphContainer, m_settings);
             } catch (Throwable e) {
-                LoggerFactory.getLogger(this.getClass()).warn("Failed to perform applyHistory() operation", e);
+                LOG.warn("Failed to perform applyHistory() operation", e);
             }
         }
+        // Set Vertices in Focus after all other operations are applied, otherwise the topology provider may have changed
+        // which results in a graphContainer.clearCriteria()
+        applyVerticesInFocus(m_focusVertices, graphContainer);
         applySavedLocations(m_locations, graphContainer.getGraph().getLayout());
         graphContainer.setSemanticZoomLevel(getSemanticZoomLevel());
-
-        // Apply the selected vertices
-        graphContainer.getSelectionManager().setSelectedVertexRefs(m_selectedVertices);
-
+        graphContainer.getSelectionManager().setSelectedVertexRefs(m_selectedVertices); // Apply the selected vertices
         graphContainer.getMapViewManager().setBoundingBox(getBoundingBox());
     }
 
-    private static void applySavedLocations(Map<VertexRef, Point> locations, Layout layout) {
-        for(VertexRef ref : locations.keySet()) {
-            layout.setLocation(ref, locations.get(ref));
-        }
-    }
-    
     @Override
     public String toString() {
         StringBuffer retval = new StringBuffer().append(this.getClass().getSimpleName()).append(": ").append(getFragment()).append(": ");
@@ -282,5 +237,54 @@ public class SavedHistory {
             retval.append("}");
         }
         return retval.toString();
+    }
+
+    private static Set<VertexRef> getUnmodifiableSet(Collection<VertexRef> vertices) {
+        HashSet<VertexRef> selectedVertices = new HashSet<>();
+        selectedVertices.addAll(vertices);
+        return Collections.unmodifiableSet(selectedVertices);
+    }
+
+    private static Map<String,String> getOperationSettings(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
+        Map<String,String> retval = new HashMap<>();
+        for (HistoryOperation operation : operations) {
+            retval.putAll(operation.createHistory(graphContainer));
+        }
+        return retval;
+    }
+
+    private static Set<VertexRef> getFocusVertices(GraphContainer graphContainer) {
+        final Set<VertexRef> retVal = new HashSet<>();
+        Criteria[] criterias = graphContainer.getCriteria();
+        for (Criteria crit : criterias) {
+            if (crit instanceof VertexHopGraphProvider.VertexHopCriteria
+                    && !(crit instanceof CollapsibleCriteria)) {
+                retVal.addAll(((VertexHopGraphProvider.VertexHopCriteria) crit).getVertices());
+            }
+        }
+        return retVal;
+    }
+
+    private static Map<VertexRef,Point> saveLocations(Graph graph) {
+        Collection<? extends Vertex> vertices = graph.getDisplayVertices();
+        Map<VertexRef,Point> locations = new HashMap<>();
+        for(Vertex vert : vertices) {
+            locations.put(vert, graph.getLayout().getLocation(vert));
+        }
+        return locations;
+    }
+
+    private static void applyVerticesInFocus(Set<VertexRef> focusVertices, GraphContainer graphContainer) {
+        Set<VertexHopGraphProvider.VertexHopCriteria> vertexHopCriterias = Criteria.getCriteriaForGraphContainer(graphContainer, VertexHopGraphProvider.VertexHopCriteria.class);
+        for (VertexHopGraphProvider.VertexHopCriteria eachCriteria : vertexHopCriterias) {
+            graphContainer.removeCriteria(eachCriteria);
+        }
+        focusVertices.forEach(vertexRef -> graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(vertexRef)));
+    }
+
+    private static void applySavedLocations(Map<VertexRef, Point> locations, Layout layout) {
+        for(VertexRef ref : locations.keySet()) {
+            layout.setLocation(ref, locations.get(ref));
+        }
     }
 }

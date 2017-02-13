@@ -10,32 +10,12 @@
     <properties>
         <bundle.symbolicName>org.opennms.features.topology.plugins.browsers</bundle.symbolicName>
         <bundle.namespace>org.opennms.features.topology.plugins.browsers</bundle.namespace>
-        <skipITs>true</skipITs>
     </properties>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.topology.plugins</groupId>
-    <artifactId>browsers</artifactId>
-    <name>${bundle.symbolicName}</name>
+    <artifactId>org.opennms.features.topology.plugins.browsers</artifactId>
+    <name>OpenNMS :: Features :: Topology :: Plugins :: Browsers</name>
     <packaging>bundle</packaging>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <skipITs>${skipITs}</skipITs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-        </build>
     <dependencies>
         <!--
          | uncomment to add all imported (non-local) bundles to your compilation classpath
@@ -49,12 +29,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.osgi</groupId>
-            <artifactId>opennms-osgi-core</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -83,17 +57,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>opennms-topology-api</artifactId>
             <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>org.opennms.osgi.features.topology</groupId>
+            <groupId>org.opennms.features</groupId>
             <artifactId>vaadin</artifactId>
             <type>pom</type>
         </dependency>
@@ -110,24 +79,8 @@
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
-            <artifactId>opennms-rrd-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-rrdtool-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
             <artifactId>opennms-rrd-jrobin</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>jrrd2-dependencies</artifactId>
-            <scope>test</scope>
-            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.collection</groupId>
@@ -142,12 +95,6 @@
         <dependency>
             <groupId>org.opennms.core.test-api</groupId>
             <artifactId>org.opennms.core.test-api.db</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-dao</artifactId>
-            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>

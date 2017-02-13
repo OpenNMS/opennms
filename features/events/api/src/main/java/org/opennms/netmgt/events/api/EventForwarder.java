@@ -40,19 +40,30 @@ import org.opennms.netmgt.xml.event.Log;
 public interface EventForwarder {
     
     /**
-     * Called by a service to send an event to eventd
+     * Asynchronously sends an event to eventd.
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public void sendNow(Event event);
 
     /**
-     * Called by a service to send a set of events to eventd
+     * Asynchronously sends a set of events to eventd.
      *
      * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
      */
     public void sendNow(Log eventLog);
 
+    /**
+     * Synchronously sends an event to eventd.
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    public void sendNowSync(Event event);
 
-
+    /**
+     * Synchronously sends a set of events to eventd.
+     *
+     * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
+     */
+    public void sendNowSync(Log eventLog);
 }

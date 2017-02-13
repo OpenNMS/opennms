@@ -784,7 +784,7 @@ Do not confuse it with the Bootstrap .pagination class.
     :: spans in the node list and node details pages
     -------------------------------------------------- */
 
-span.NLdbid, span.NLfs, span.NLfid {
+span.NLdbid, span.NLfs, span.NLfid, span.NLloc {
   display: none;
 }
 
@@ -792,7 +792,7 @@ div.NLnode {
   line-height: 2em;
 }
 
-div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.NLfid {
+div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.NLfid, div.NLnode:hover span.NLloc {
   display: inline;
 }
 

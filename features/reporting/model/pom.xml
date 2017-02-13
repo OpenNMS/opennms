@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.reporting</groupId>
   <artifactId>org.opennms.features.reporting.model</artifactId>
-  <name>OpenNMS Features Reporting Model</name>
+  <name>OpenNMS :: Features :: Reporting :: Model</name>
   <url>http://www.opennms.org/</url>
   <packaging>bundle</packaging>
   <build>

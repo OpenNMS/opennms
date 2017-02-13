@@ -98,10 +98,11 @@ public class AgentConfigurationResourceTest {
         final List<InetAddress> addresses = Arrays.asList(oneNinetyTwo);
         m_filterDao.setActiveIPAddressList(addresses);
 
-        final OnmsNode node = new OnmsNode("foo");
+        final OnmsNode node = new OnmsNode();
         node.setId(1);
         node.setForeignSource("foo");
         node.setForeignId("bar");
+        node.setLabel("foo");
         node.setSysObjectId(".1.2.3.4.5");
         final OnmsIpInterface iface = new OnmsIpInterface(oneNinetyTwo, node);
         final OnmsServiceType serviceType = new OnmsServiceType("SNMP");
@@ -153,15 +154,16 @@ public class AgentConfigurationResourceTest {
     }
     
     private static final class TestSnmpConfigDao implements SnmpAgentConfigFactory {
-        @Override
-        public SnmpAgentConfig getAgentConfig(final InetAddress address) {
-            return new SnmpAgentConfig(address, getDefaults());
-        }
 
         private static SnmpConfiguration getDefaults() {
             final SnmpConfiguration config = new SnmpConfiguration();
             config.setPort(1161);
             return config;
+        }
+
+        @Override
+        public SnmpAgentConfig getAgentConfig(InetAddress address, String location) {
+            return new SnmpAgentConfig(address, getDefaults());
         }
     }
 }

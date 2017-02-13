@@ -9,7 +9,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.opennms.core</groupId>
 	<artifactId>org.opennms.core.config</artifactId>
-	<name>OpenNMS Core Configuration Library</name>
+	<name>OpenNMS :: Core :: Configuration</name>
 	<packaging>bundle</packaging>
 	<build>
 		<plugins>
@@ -41,6 +41,10 @@
 		<dependency>
 			<groupId>org.opennms.core</groupId>
 			<artifactId>org.opennms.core.xml</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-config-jaxb</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.opennms</groupId>

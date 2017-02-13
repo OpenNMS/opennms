@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<http-datacollection-config xmlns="http://xmlns.opennms.org/xsd/config/http-datacollection" rrdRepository="${install.share.dir}/rrd/snmp/">
+<http-datacollection-config  
+    xmlns:http-dc="http://xmlns.opennms.org/xsd/config/http-datacollection" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/http-datacollection http://www.opennms.org/xsd/config/http-datacollection-config.xsd" 
+    rrdRepository="${install.share.dir}/rrd/snmp/" >
   <!--
   <http-collection name="doc-count">
     <rrd step="300">

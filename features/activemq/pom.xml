@@ -18,6 +18,8 @@
 
   <modules>
     <module>broker</module>
+    <module>component</module>
+    <module>pool</module>
   </modules>
 
 </project>

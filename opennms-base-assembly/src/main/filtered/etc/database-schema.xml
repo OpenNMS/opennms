@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database-schema xmlns="http://xmlns.opennms.org/xsd/config/filter">
-    <table visible="false" name="distPoller" key="secondary">
-        <column name="dpNumber" visible="true"/>
-        <column name="dpName" visible="true"/>
-        <column name="dpIP" visible="true"/>
-        <column name="dpComment" visible="true"/>
-        <column name="dpDiscLimit" visible="true"/>
-        <column name="dpAdminState" visible="true"/>
-        <column name="dpRunState" visible="true"/>
-    </table>
     <table visible="true" name="node" key="secondary">
         <join type="inner" column="nodeID" table="ipInterface" table-column="nodeID"/>
         <column name="nodeID" visible="true"/>
-        <column name="dpName" visible="false"/>
+        <column name="location" visible="true"/>
         <column name="nodeCreateTime" visible="true"/>
         <column name="nodeParentID" visible="true"/>
         <column name="nodeType" visible="true"/>
@@ -22,6 +13,10 @@
         <column name="nodeSysLocation" visible="true"/>
         <column name="nodeSysContact" visible="true"/>
         <column name="nodeLabel" visible="true"/>
+        <column name="nodeLabelSource" visible="true"/>
+        <column name="nodeNetbiosName" visible="true"/>
+        <column name="nodeDomainName" visible="true"/>
+        <column name="operatingSystem" visible="true"/>
         <column name="foreignSource" visible="true"/>
         <column name="foreignID" visible="true"/>
     </table>
@@ -52,7 +47,6 @@
         <join type="inner" column="id" table="ipInterface" table-column="snmpinterfaceid"/>
         <column name="id" visible="false"/>
         <column name="nodeID" visible="false"/>
-        <column name="ipAddr" visible="false"/>
         <column name="snmpIpAdEntNetMask" visible="true"/>
         <column name="snmpPhysAddr" visible="true"/>
         <column name="snmpIfIndex" visible="true"/>
@@ -62,7 +56,8 @@
         <column name="snmpIfAlias" visible="true"/>
         <column name="snmpIfAdminStatus" visible="true"/>
         <column name="snmpIfOperStatus" visible="true"/>
-        <column name="snmpcollect" visible="true"/>
+        <column name="snmpCollect" visible="true"/>
+        <column name="snmpPoll" visible="true"/>
     </table>
     <table visible="true" name="service" key="secondary">
         <join type="inner" column="serviceID" table="ifServices" table-column="serviceID"/>

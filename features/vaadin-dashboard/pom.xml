@@ -11,7 +11,7 @@
     <groupId>org.opennms.features</groupId>
     <artifactId>vaadin-dashboard</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS Features Dashboard</name>
+    <name>OpenNMS :: Features :: Dashboard</name>
     <description>
         OpenNMS Vaadin Dashboard
     </description>
@@ -135,12 +135,6 @@
 
     <pluginRepositories>
         <pluginRepository>
-            <id>codehaus-snapshots</id>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
-            <url>http://maven.opennms.org/content/repositories/codehaus-snapshots/</url>
-        </pluginRepository>
-        <pluginRepository>
             <id>vaadin-snapshots</id>
             <snapshots><enabled>true</enabled></snapshots>
             <releases><enabled>false</enabled></releases>
@@ -149,32 +143,7 @@
     </pluginRepositories>
 
     <dependencies>
-        <dependency>
-            <groupId>org.vaadin.addons</groupId>
-            <artifactId>dragdroplayouts</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <scope>provided</scope>
-        </dependency>
-<!--
-        <dependency>
-            <groupId>org.vaadin.addon</groupId>
-            <artifactId>PortalLayout</artifactId>
-            <version>2.0.alpha5</version>
-        </dependency>
--->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- OSGi Dependencies -->
-
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -186,36 +155,35 @@
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.opennms.osgi</groupId>
-            <artifactId>opennms-osgi-core</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Vaadin Dependencies -->
 
         <dependency>
-            <groupId>org.opennms.osgi.features.topology</groupId>
+            <groupId>org.opennms.features</groupId>
             <artifactId>vaadin</artifactId>
             <type>pom</type>
         </dependency>
-
-        <!-- Required by pax/vaadin -->
         <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>servlet-dependencies</artifactId>
-            <type>pom</type>
-            <scope>provided</scope>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
+        <!-- Other dependencies -->
         <dependency>
             <groupId>org.opennms.features.themes</groupId>
             <artifactId>dashboard-theme</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>dragdroplayouts</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-web-api</artifactId>

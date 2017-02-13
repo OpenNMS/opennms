@@ -57,6 +57,12 @@
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.rest.api</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config-jaxb</artifactId>
       <version>${project.version}</version>
@@ -76,7 +82,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-model</artifactId>
+      <artifactId>org.opennms.features.ncs.ncs-model</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>

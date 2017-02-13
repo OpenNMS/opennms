@@ -198,11 +198,11 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         });
     }
 
-    private static void logError(final String reportId, final Exception exception) {
+    private void logError(final String reportId, final Exception exception) {
         LOG.error("failed to run or render report: {}", reportId, exception);
     }
 
-    private static void mailReport(final DeliveryOptions deliveryOptions, final ByteArrayOutputStream outputStream) {
+    private void mailReport(final DeliveryOptions deliveryOptions, final ByteArrayOutputStream outputStream) {
         ByteArrayInputStream inputStream = null;
         try {
             inputStream = new ByteArrayInputStream(outputStream.toByteArray());

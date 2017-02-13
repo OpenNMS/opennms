@@ -32,6 +32,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
@@ -187,7 +189,35 @@ public class Snmp4JStrategyIT extends MockSnmpAgentITCase {
         assertSnmpValueEquals("values[0]", SnmpValue.SNMP_INT32, 42, values[0]);
         assertSnmpValueEquals("values[1]", SnmpValue.SNMP_GAUGE32, 42, values[1]);
     }
-    
+
+    @Test
+    public void testAsyncGetSingleValue() throws Exception {
+        SnmpObjId[] oids = new SnmpObjId[] { SnmpObjId.get(".1.3.5.1.1.3.0") };
+
+        CompletableFuture<SnmpValue[]> future = m_strategy.getAsync(getAgentConfig(), oids);
+        SnmpValue[] values = future.get();
+
+        assertNotNull("values should not be null", values);
+        assertEquals("values list size", 1, values.length);
+        assertSnmpValueEquals("values[0]", SnmpValue.SNMP_INT32, 42, values[0]);
+    }
+
+    @Test
+    public void testAsyncGetMultipleValues() throws Exception {
+        SnmpObjId[] oids = new SnmpObjId[] {
+                SnmpObjId.get(".1.3.5.1.1.3.0"),
+                SnmpObjId.get(".1.3.5.1.1.4.0"),
+        };
+
+        CompletableFuture<SnmpValue[]> future = m_strategy.getAsync(getAgentConfig(), oids);
+        SnmpValue[] values = future.get();
+
+        assertNotNull("values should not be null", values);
+        assertEquals("values list size", 2, values.length);
+        assertSnmpValueEquals("values[0]", SnmpValue.SNMP_INT32, 42, values[0]);
+        assertSnmpValueEquals("values[1]", SnmpValue.SNMP_GAUGE32, 42, values[1]);
+    }
+
     @Test
     public void testGetNextSingleValue() throws Exception {
         SnmpObjId[] oids = new SnmpObjId[] { SnmpObjId.get(".1.3.5.1.1.3.0") };

@@ -141,10 +141,7 @@ public class InstanceStrategyIntegrationTest implements InitializingBean {
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
 
         // Create our event manager and anticipator
-        m_anticipator = new EventAnticipator();
-
         m_eventMgr = new MockEventIpcManager();
-        m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.setSynchronous(true);
 
         // Ensure our annotations are called
@@ -592,18 +589,18 @@ public class InstanceStrategyIntegrationTest implements InitializingBean {
 
         // No event should be generated
         sleep(POLLING_INTERVAL_DELTA);
-        assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
+        assertEquals("Received unexpected events", 0, m_anticipator.getUnanticipatedEvents().size());
         m_anticipator.reset();
     }
 
     private void verifyAnticipated(long millis) {
         // Verify the AP UP/DOWN events
         LOG.debug("Events we're still waiting for: {}", m_anticipator.waitForAnticipated(millis));
-        LOG.debug("Unanticipated: {}", m_anticipator.unanticipatedEvents());
+        LOG.debug("Unanticipated: {}", m_anticipator.getUnanticipatedEvents());
 
         assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(0).isEmpty());
         sleep(200);
-        assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
+        assertEquals("Received unexpected events", 0, m_anticipator.getUnanticipatedEvents().size());
         m_anticipator.reset();
     }
 

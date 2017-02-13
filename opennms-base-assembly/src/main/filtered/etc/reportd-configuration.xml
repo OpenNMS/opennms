@@ -17,8 +17,8 @@
         Year (Opt)     empty, 1970-2099    , - * /
    -->
    <!-- Below is an example configuration using the sample report and will run daily, at midnight
-     <report report-name="sample-report" report-template="sample-report.jrxml" report-engine="jdbc">
+    <report report-name="sample-report" report-template="sample-report.jrxml" report-engine="jdbc">
         <cron-schedule>0 0 0 * * ? *</cron-schedule>
-     </report> 
-   -->
+    </report> 
+    --> 
 </reportd-configuration>

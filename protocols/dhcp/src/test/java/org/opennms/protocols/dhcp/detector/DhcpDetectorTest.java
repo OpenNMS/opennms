@@ -63,6 +63,8 @@ public class DhcpDetectorTest implements InitializingBean {
     private static String DHCP_SERVER_IP = "192.0.2.1";
 
     @Autowired
+    public DhcpDetectorFactory m_detectorFactory;
+    
     public DhcpDetector m_detector;
 
     private Dhcpd m_dhcpd;
@@ -77,7 +79,7 @@ public class DhcpDetectorTest implements InitializingBean {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-
+        m_detector = m_detectorFactory.createDetector();
         m_dhcpd = Dhcpd.getInstance();
         m_dhcpd.init();
         // binds on port 68, hardcoded  :P

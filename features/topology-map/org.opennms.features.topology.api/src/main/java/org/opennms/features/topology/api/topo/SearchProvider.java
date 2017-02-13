@@ -48,8 +48,7 @@ public interface SearchProvider {
 	
 	/**
 	 * This is a namespace for search providers...
-	 * TODO: Not currently used
-	 * 
+	 *
 	 * @return
 	 */
     String getSearchProviderNamespace();

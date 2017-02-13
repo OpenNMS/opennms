@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<data-source-configuration xmlns="http://xmlns.opennms.org/xsd/config/opennms-datasources">
+<datasource-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-datasources" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources 
+  http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
 
   <!-- 
     Available implementations:
@@ -16,7 +19,7 @@
       org.opennms.core.db.HikariCPConnectionFactory
         - Uses HikariCP (http://brettwooldridge.github.io/HikariCP/), a lightweight and extremely fast connection pool
    -->
-  <connection-pool factory="org.opennms.core.db.C3P0ConnectionFactory"
+  <connection-pool factory="org.opennms.core.db.HikariCPConnectionFactory"
     idleTimeout="600"
     loginTimeout="3"
     minPool="50"
@@ -36,4 +39,4 @@
                     url="jdbc:postgresql://localhost:5432/template1"
                     user-name="${install.database.admin.user}"
                     password="${install.database.admin.password}" />
-</data-source-configuration>
+</datasource-configuration>

@@ -94,12 +94,12 @@
   pollerCfgFactory.rebuildPackageIpListMap();    
 %>
 <c:url var="eventUrl1" value="event/list.htm">
-    <c:param name="filter" value="<%="node=" + nodeId%>"/>
-    <c:param name="filter" value="<%="interface=" + ipAddr%>"/>
+    <c:param name="filter" value='<%="node=" + nodeId%>'/>
+    <c:param name="filter" value='<%="interface=" + ipAddr%>'/>
 </c:url>
 <c:url var="eventUrl2" value="event/list.htm">
-    <c:param name="filter" value="<%="node=" + nodeId%>"/>
-    <c:param name="filter" value="<%="ifindex=" + ifIndex%>"/>
+    <c:param name="filter" value='<%="node=" + nodeId%>'/>
+    <c:param name="filter" value='<%="ifindex=" + ifIndex%>'/>
 </c:url>
 
 <%

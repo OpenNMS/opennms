@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.ListIterator;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.xml.AbstractCastorConfigDao;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;

@@ -17,6 +17,8 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 
+import com.google.common.collect.Maps;
+
 public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 
     public static class LinkdEdgeStatus implements Status{
@@ -45,6 +47,11 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
         }
 
         @Override
+        public Map<String, String> getStyleProperties() {
+            return Maps.newHashMap();
+        }
+
+        @Override
         public String toString() {
             return "LinkdEdgeStatus[" + m_status + "]";
         }
@@ -53,7 +60,7 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
     private AlarmDao m_alarmDao;
 
     @Override
-    public String getNameSpace() {
+    public String getNamespace() {
         return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
     }
 

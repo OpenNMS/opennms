@@ -9,7 +9,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.ncs</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Features NCS Root Project</name>
+  <name>OpenNMS :: Features :: NCS</name>
   <modules>
     <module>ncs-test</module>
     <module>ncs-model</module>

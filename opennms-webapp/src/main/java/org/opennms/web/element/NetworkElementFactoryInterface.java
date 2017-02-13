@@ -28,16 +28,24 @@
 
 package org.opennms.web.element;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 public interface NetworkElementFactoryInterface {
 
 	String getNodeLabel(int nodeId);
+
+	/**
+	 * Get the location name associated with the node.
+	 *
+	 * @param nodeId the node's ID
+	 * @return the location as a string, or null if the node does not have a location
+	 */
+	String getNodeLocation(int nodeId);
 
 	/**
 	 * Find the IP address of the primary SNMP interface.
@@ -441,4 +449,8 @@ public interface NetworkElementFactoryInterface {
     Integer getIfIndex(int ipinterfaceid);
     
     Integer getIfIndex(int nodeID, String ipaddr);
+
+	List<OnmsMonitoringLocation> getMonitoringLocations();
+
+	List<OnmsMonitoringSystem> getMonitoringSystems();
 }

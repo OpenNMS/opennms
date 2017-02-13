@@ -9,7 +9,7 @@
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.criteria</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Core Criteria Tools</name>
+  <name>OpenNMS :: Core :: Criteria Tools</name>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

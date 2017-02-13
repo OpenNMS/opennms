@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -42,8 +43,10 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.api.OpennmsServerConfig;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.CriticalPath;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
@@ -76,9 +79,6 @@ public class PathOutageManagerDaoImpl implements PathOutageManager {
 	
 	@Autowired
 	private OutageDao outageDao;
-	
-	@Autowired
-	private IpInterfaceDao ipInterfaceDao;
 
     @Autowired
     private OpennmsServerConfig serverConfig;
@@ -121,29 +121,27 @@ public class PathOutageManagerDaoImpl implements PathOutageManager {
     }
 
     @Override
-    public String[] getCriticalPath(int nodeId) {
+    public CriticalPath getCriticalPath(int nodeId) {
         //"SELECT criticalpathip, criticalpathservicename FROM pathoutage WHERE nodeid=?";
+        String location = null;
+        InetAddress pathIp = serverConfig.getDefaultCriticalPathIp();
+        String serviceName = "ICMP";
 
-        OnmsPathOutage out = pathOutageDao.get(nodeId);
-
-        if (out == null) {
-            return new String[] {
-                serverConfig.getDefaultCriticalPathIp(),
-                "ICMP"
-            };
+        final OnmsNode node = nodeDao.get(nodeId);
+        if (node != null) {
+            location = MonitoringLocationUtils.getLocationNameOrNullIfDefault(node);
         }
 
-        final String[] cpath = new String[] { InetAddressUtils.str(out.getCriticalPathIp()), out.getCriticalPathServiceName() };
-
-        if (cpath[0] == null || "".equals(cpath[0].trim())) {
-            // If no critical path was located in the table, then use the default critical path
-            cpath[0] = serverConfig.getDefaultCriticalPathIp();
-            cpath[1] = "ICMP";
-        } else if (cpath[1] == null || "".equals(cpath[1].trim())) {
-            // If there was no service name in the table, then use the default of ICMP
-            cpath[1] = "ICMP";
+        final OnmsPathOutage out = pathOutageDao.get(nodeId);
+        if (out != null) {
+            if (out.getCriticalPathIp() != null) {
+                pathIp = out.getCriticalPathIp();
+            }
+            if (out.getCriticalPathServiceName() != null && !"".equals(out.getCriticalPathServiceName().trim())) {
+                serviceName = out.getCriticalPathServiceName();
+            }
         }
-        return cpath;
+        return new CriticalPath(location, pathIp, serviceName);
     }
 
     /**

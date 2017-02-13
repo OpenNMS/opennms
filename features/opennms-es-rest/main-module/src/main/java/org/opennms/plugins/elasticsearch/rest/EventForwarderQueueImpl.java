@@ -28,9 +28,12 @@
 
 package org.opennms.plugins.elasticsearch.rest;
 
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
+import org.opennms.core.ipc.sink.aggregation.AggregatingMessageProducer;
+import org.opennms.core.ipc.sink.aggregation.ArrayListAggregationPolicy;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -38,28 +41,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * queues events received from OpenNMS for forwarding to elastic search. drops
- * events if ES not keeping up and queue has become full.
+ * Queues events received from OpenNMS for forwarding to Elasticsearch.
  * 
  * @author cgallen
- *
+ * @author Seth
  */
-public class EventForwarderQueueImpl implements EventForwarder {
+public class EventForwarderQueueImpl implements EventForwarder, AutoCloseable {
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(EventForwarderQueueImpl.class);
 
-	private Integer maxQueueLength = 1000;
-
-	private LinkedBlockingQueue<Event> queue = null;
-	private AtomicBoolean clientRunning = new AtomicBoolean(false);
-
-	private RemovingConsumer removingConsumer = new RemovingConsumer();
-	private Thread removingConsumerThread = new Thread(removingConsumer);
+	private AggregatingMessageProducer<Event,List<Event>> producer;
 
 	private EventToIndex eventToIndex = null;
 
 	private ElasticSearchInitialiser elasticSearchInitialiser = null;
+
+	/**
+	 * Disable batching by default
+	 */
+	private int batchSize = 1;
+
+	private int batchInterval = 0;
 
 	public EventToIndex getEventToIndex() {
 		return eventToIndex;
@@ -69,63 +72,74 @@ public class EventForwarderQueueImpl implements EventForwarder {
 		this.eventToIndex = eventToIndex;
 	}
 
-	public Integer getMaxQueueLength() {
-		return maxQueueLength;
-	}
-
-	public void setMaxQueueLength(Integer maxQueueLength) {
-		this.maxQueueLength = maxQueueLength;
-	}
-
 	@Override
 	public void sendNow(Event event) {
-
 		// if no elasticSearchInitialiser defined then just run
 		// else check if initialised then send event
-		if (elasticSearchInitialiser != null
-				&& elasticSearchInitialiser.isInitialised()) {
-
-			if (LOG.isDebugEnabled())
-				LOG.debug("Event received: queue.size() " + queue.size()
-						+ " queue.remainingCapacity() "
-						+ queue.remainingCapacity() + "\n   event:"
-						+ event.toString());
-			
-			if (!queue.offer(event)) {
-				LOG.warn("ElasticSearch interface discarding event dbid="
-						+ event.getDbid()
-						+ " Cannot queue any more events. Event queue full. size="
-						+ queue.size());
-			}
+		if (elasticSearchInitialiser != null && elasticSearchInitialiser.isInitialised()) {
+			producer.send(event);
 		} else {
 			if (LOG.isDebugEnabled())
-				LOG.debug("Not sending event received elasticsearch not initialised"
+				LOG.debug("Not sending event received: Elasticsearch is not initialised"
 						+ "\n   event:" + event.toString());
 		}
 	}
 
 	@Override
-	public void sendNow(Log arg0) {
-		// NOT USED
+	public void sendNow(Log eventLog) {
+		if (eventLog != null && eventLog.getEvents() != null) {
+			for (Event event : eventLog.getEvents().getEvent()) {
+				sendNow(event);
+			}
+		}
+	}
+
+	/**
+	 * Call {@link AggregatingMessageProducer#dispatch(Object)} to synchronously
+	 * dispatch the event.
+	 */
+	@Override
+	public void sendNowSync(Event event) {
+		producer.dispatch(Collections.singletonList(event));
+	}
+
+	/**
+	 * Call {@link AggregatingMessageProducer#dispatch(Object)} to synchronously
+	 * dispatch the events.
+	 */
+	@Override
+	public void sendNowSync(Log eventLog) {
+		if (eventLog != null && eventLog.getEvents() != null) {
+			producer.dispatch(Arrays.asList(eventLog.getEvents().getEvent()));
+		}
 	}
 
 	public void init() {
-		LOG.debug("initialising EventFowarderQueue with queue size "
-				+ maxQueueLength);
-		queue = new LinkedBlockingQueue<Event>(maxQueueLength);
-
-		// start consuming thread
-		clientRunning.set(true);
-		removingConsumerThread.start();
-
+		producer = new EventIndexProducer(batchSize, batchInterval);
 	}
 
-	public void destroy() {
-		LOG.debug("shutting down EventFowarderQueue");
+	@Override
+	public void close() throws Exception {
+		if (producer != null) {
+			producer.close();
+			producer = null;
+		}
+	}
 
-		// signal consuming thread to stop
-		clientRunning.set(false);
-		removingConsumerThread.interrupt();
+	public int getBatchSize() {
+		return batchSize;
+	}
+
+	public void setBatchSize(int batchSize) {
+		this.batchSize = batchSize;
+	}
+
+	public int getBatchInterval() {
+		return batchInterval;
+	}
+
+	public void setBatchInterval(int batchInterval) {
+		this.batchInterval = batchInterval;
 	}
 
 	/**
@@ -144,41 +158,29 @@ public class EventForwarderQueueImpl implements EventForwarder {
 		this.elasticSearchInitialiser = elasticSearchInitialiser;
 	}
 
-	/*
-	 * Class run in separate thread to remove and process notifications from the
-	 * queue
+	/**
+	 * This {@link AggregatingMessageProducer} aggregates using a single
+	 * bucket for all received events.
 	 */
-	private class RemovingConsumer implements Runnable {
-		// TODO remove final Logger LOG =
-		// LoggerFactory.getLogger(EventForwarderQueueImpl.class);
+	private class EventIndexProducer extends AggregatingMessageProducer<Event, List<Event>> {
 
+		public EventIndexProducer(int batchSize, int batchInterval) {
+			super(
+				EventIndexProducer.class.getName(), 
+				new ArrayListAggregationPolicy<Event>(batchSize, batchInterval, e -> { return "event"; })
+			);
+		}
+
+		/**
+		 * Send events to the index processor.
+		 */
 		@Override
-		public void run() {
-
-			// we remove elements from the queue until interrupted and
-			// clientRunning==false.
-			while (clientRunning.get()) {
-				try {
-					Event event = queue.take();
-
-					if (LOG.isDebugEnabled())
-						LOG.debug("Event received from queue by consumer thread :\n event:"
-								+ event.toString());
-
-					// send event to index processor
-					if (eventToIndex != null) {
-						eventToIndex.forwardEvent(event);
-					} else {
-						LOG.error("cannot send event eventToIndex is null");
-					}
-
-				} catch (InterruptedException e) {
-				}
-
+		public void dispatch(List<Event> events) {
+			if (eventToIndex != null) {
+				eventToIndex.forwardEvents(events);
+			} else {
+				LOG.error("cannot send event, eventToIndex is null");
 			}
-
-			LOG.debug("shutting down event consumer thread");
 		}
 	}
-
 }

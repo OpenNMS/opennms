@@ -15,21 +15,21 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology.plugins</groupId>
-  <artifactId>devutils</artifactId>
+  <artifactId>org.opennms.features.topology.plugins.devutils</artifactId>
 
-  <name>${bundle.symbolicName}</name>
+  <name>OpenNMS :: Features :: Topology :: Plugins :: Dev Utils</name>
 
   <packaging>bundle</packaging>
 
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>api</artifactId>
+      <artifactId>org.opennms.features.topology.api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>vaadin</artifactId>
       <type>pom</type>
       <scope>provided</scope>
@@ -46,13 +46,6 @@
 	   <artifactId>org.osgi.core</artifactId>
 	   <scope>provided</scope>
 	</dependency>
-	
-    <dependency>
-      <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>simple</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
 
     <dependency>
       <groupId>junit</groupId>

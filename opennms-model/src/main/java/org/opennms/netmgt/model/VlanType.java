@@ -1,6 +1,5 @@
 package org.opennms.netmgt.model;
 
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;

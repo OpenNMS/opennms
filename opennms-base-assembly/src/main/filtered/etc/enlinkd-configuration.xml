@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<enlinkd-configuration xmlns="http://xmlns.opennms.org/xsd/config/enlinkd"
-    threads="5"
-    initial_sleep_time="60000"
-    rescan_interval="86400000"
-    use-cdp-discovery="true"
-    use-bridge-discovery="true"
-    use-lldp-discovery="true"
-    use-ospf-discovery="true"
-    use-isis-discovery="true"/>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<enlinkd-configuration threads="5" 
+                     initial_sleep_time="60000"
+                     rescan_interval="86400000" 
+                     use-cdp-discovery="true"
+                     use-bridge-discovery="true"
+                     use-lldp-discovery="true"
+                     use-ospf-discovery="true"
+                     use-isis-discovery="true"
+                     />
+    

@@ -9,32 +9,28 @@
     acknowledge-id-sql="SELECT notifyid FROM notifications WHERE eventuei=? AND nodeid=? AND interfaceid=? AND serviceid=?"
     acknowledge-update-sql="UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?"
     match-all="true" email-address-command="javaEmail">
-    <auto-acknowledge-alarm resolution-prefix="Cleared: ">
-        <uei>uei.opennms.org/threshold/highThresholdRearmed</uei>
-        <uei>uei.opennms.org/threshold/lowThresholdRearmed</uei>
-    </auto-acknowledge-alarm>
-    <auto-acknowledge resolution-prefix="Cleared: "
+    <auto-acknowledge resolution-prefix="RESOLVED: "
         uei="uei.opennms.org/nodes/serviceResponsive" acknowledge="uei.opennms.org/nodes/serviceUnresponsive">
         <match>nodeid</match>
         <match>interfaceid</match>
         <match>serviceid</match>
     </auto-acknowledge>
-    <auto-acknowledge resolution-prefix="Cleared: "
+    <auto-acknowledge resolution-prefix="RESOLVED: "
         uei="uei.opennms.org/nodes/nodeRegainedService" acknowledge="uei.opennms.org/nodes/nodeLostService">
         <match>nodeid</match>
         <match>interfaceid</match>
         <match>serviceid</match>
     </auto-acknowledge>
-    <auto-acknowledge resolution-prefix="Cleared: "
+    <auto-acknowledge resolution-prefix="RESOLVED: "
         uei="uei.opennms.org/nodes/interfaceUp" acknowledge="uei.opennms.org/nodes/interfaceDown">
         <match>nodeid</match>
         <match>interfaceid</match>
     </auto-acknowledge>
-    <auto-acknowledge resolution-prefix="Cleared: "
+    <auto-acknowledge resolution-prefix="RESOLVED: "
         uei="uei.opennms.org/nodes/nodeUp" acknowledge="uei.opennms.org/nodes/nodeDown">
         <match>nodeid</match>
     </auto-acknowledge>
-    <auto-acknowledge resolution-prefix="Cleared: "
+    <auto-acknowledge resolution-prefix="RESOLVED: "
         uei="uei.opennms.org/correlation/remote/wideSpreadOutageResolved" acknowledge="uei.opennms.org/correlation/remote/wideSpreadOutage">
         <match>nodeid</match>
         <match>interfaceid</match>

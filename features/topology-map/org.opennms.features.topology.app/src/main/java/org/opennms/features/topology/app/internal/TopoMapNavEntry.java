@@ -30,13 +30,14 @@ package org.opennms.features.topology.app.internal;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.features.topology.link.TopologyLinkBuilder;
+import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.navigate.ConditionalPageNavEntry;
 import org.opennms.web.navigate.DisplayStatus;
 
 public class TopoMapNavEntry implements ConditionalPageNavEntry {
     private String m_name;
-    private String m_url;
 
     @Override
     public String getName() {
@@ -49,11 +50,10 @@ public class TopoMapNavEntry implements ConditionalPageNavEntry {
 
     @Override
     public String getUrl() {
-        return m_url;
-    }
-
-    public void setUrl(final String url) {
-        m_url = url;
+        return new TopologyLinkBuilder()
+                .provider(TopologyProvider.ENLINKD)
+                .focus("%nodeid%")
+                .szl(1).getLink();
     }
 
     @Override
@@ -67,7 +67,8 @@ public class TopoMapNavEntry implements ConditionalPageNavEntry {
         return DisplayStatus.NO_DISPLAY;
     }
 
-    @Override public String toString() {
-        return "TopoMapNavEntry[url=" + m_url + ",name=" + m_name +"]";
+    @Override
+    public String toString() {
+        return "TopoMapNavEntry[url=" + getUrl() + ",name=" + m_name +"]";
     }
 }

@@ -87,6 +87,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <outputFileNameMapping>opennms_bootstrap.jar</outputFileNameMapping>
       <outputDirectory>lib</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <include>org.opennms:opennms-bootstrap:jar:${project.version}</include>
       </includes>
@@ -95,6 +96,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <outputFileNameMapping>opennms_install.jar</outputFileNameMapping>
       <outputDirectory>lib</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <include>org.opennms:opennms-install:jar:${project.version}</include>
       </includes>
@@ -103,6 +105,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <outputFileNameMapping>opennms_system_report.jar</outputFileNameMapping>
       <outputDirectory>lib</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <include>org.opennms.features:org.opennms.features.system-report:jar:${project.version}</include>
       </includes>
@@ -110,15 +113,18 @@
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib/endorsed</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <includes>
-        <include>org.opennms.dependencies:jaxb-dependencies:pom</include>
+        <!-- <include>org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2</include> -->
+        <include>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl</include>
       </includes>
     </dependencySet>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <excludes>
-        <exclude>org.opennms.dependencies:jaxb-dependencies:pom</exclude>
+        <exclude>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl</exclude>
         <exclude>org.opennms:opennms-bootstrap</exclude>
         <exclude>org.opennms:opennms-install</exclude>
         <exclude>org.opennms.features:org.opennms.features.system-report</exclude>
@@ -132,7 +138,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
       <includes>
-        <!-- adds httpasyncclient-osgi to /lib class path - only used by Elastic Search OSGi plugin -->
+        <!-- adds httpasyncclient-osgi to /lib class path - only used by Elasticsearch OSGi plugin -->
         <include>org.apache.httpcomponents:httpasyncclient-osgi:jar:${httpasyncclientVersion}</include>
       </includes>
     </dependencySet>

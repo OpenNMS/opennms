@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.spring</artifactId>
-  <name>OpenNMS Core Spring Library</name>
+  <name>OpenNMS :: Core :: Spring</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -44,11 +44,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

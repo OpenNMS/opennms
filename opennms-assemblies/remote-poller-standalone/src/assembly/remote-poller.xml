@@ -30,6 +30,7 @@
     <dependencySet>
       <outputFileNameMapping>remote-poller.jar</outputFileNameMapping>
       <outputDirectory>remote-poller/lib</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <include>org.opennms.assemblies:org.opennms.assemblies.remote-poller-onejar:jar:signed-jar-with-dependencies:${project.version}</include>
       </includes>

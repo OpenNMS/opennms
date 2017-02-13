@@ -28,6 +28,26 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import org.opennms.netmgt.vaadin.core.UIHelper;
+import org.opennms.features.vaadin.jmxconfiggenerator.Config;
+import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.UiModel;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.UiModel.OutputDataKey;
+
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DownloadStream;
@@ -44,23 +64,6 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
-import org.opennms.features.vaadin.jmxconfiggenerator.Config;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.UiModel;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.UiModel.OutputDataKey;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Represents the result view. It shows all generated configurations (including
@@ -142,7 +145,7 @@ public class ResultView extends VerticalLayout implements Button.ClickListener, 
 	@Override
 	public void buttonClick(ClickEvent event) {
 		if (event.getSource().equals(buttonPanel.getPrevious())) {
-			UIHelper.updateView(UiState.MbeansView);
+			UIHelper.getCurrent(JmxConfigGeneratorUI.class).updateView(UiState.MbeansView);
 		}
 	}
 
@@ -162,7 +165,7 @@ public class ResultView extends VerticalLayout implements Button.ClickListener, 
 
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
-		UiModel newValue = UIHelper.getCurrent().getUiModel();
+		UiModel newValue = UIHelper.getCurrent(JmxConfigGeneratorUI.class).getUiModel();
 		if (newValue == null) return;
 		for (Entry<UiModel.OutputDataKey, String> eachEntry : newValue.getOutputMap().entrySet()) {
 			if (tabContentMap.get(eachEntry.getKey()) != null) {

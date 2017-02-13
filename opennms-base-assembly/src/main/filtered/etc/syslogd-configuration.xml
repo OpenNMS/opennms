@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<syslogd-configuration xmlns="http://xmlns.opennms.org/xsd/config/syslogd">
+<?xml version="1.0"?>
+<syslogd-configuration>
     <configuration
             syslog-port="10514"
             new-suspect-on-message="false"
@@ -37,7 +37,9 @@
 
     <import-file>syslog/ApacheHTTPD.syslog.xml</import-file>
     <import-file>syslog/LinuxKernel.syslog.xml</import-file>
+    <import-file>syslog/NetgearProsafeSmartSwitch.syslog.xml</import-file>
     <import-file>syslog/OpenSSH.syslog.xml</import-file>
+    <import-file>syslog/OpenWrt.syslog.xml</import-file>
     <import-file>syslog/Procmail.syslog.xml</import-file>
     <import-file>syslog/Postfix.syslog.xml</import-file>
     <import-file>syslog/Sudo.syslog.xml</import-file>

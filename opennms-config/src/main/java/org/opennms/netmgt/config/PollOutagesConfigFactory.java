@@ -108,9 +108,9 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
             return;
         }
 
-        m_singleton = new PollOutagesConfigFactory(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME)));
-        m_singleton.afterPropertiesSet();
-        m_loaded = true;
+        PollOutagesConfigFactory factory = new PollOutagesConfigFactory(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME)));
+        factory.afterPropertiesSet();
+        setInstance(factory);
     }
 
     /**
@@ -143,8 +143,9 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
      *             Thrown if the factory has not yet been initialized.
      */
     public static PollOutagesConfigFactory getInstance() {
-        if (!m_loaded)
+        if (!m_loaded) {
             throw new IllegalStateException("The factory has not been initialized");
+        }
 
         return m_singleton;
     }
@@ -164,72 +165,4 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
 
     }
 
-    /**
-     * Saves the current in-memory configuration to disk and reloads
-     * 
-     * @throws org.exolab.castor.xml.MarshalException
-     *             if any.
-     * @throws java.io.IOException
-     *             if any.
-     * @throws org.exolab.castor.xml.ValidationException
-     *             if any.
-     */
-    public void saveCurrent() throws MarshalException, IOException, ValidationException {
-        getWriteLock().lock();
-
-        try {
-            // Marshal to a string first, then write the string to the file.
-            // This way the original configuration isn't lost if the XML from the
-            // marshal is hosed.
-            final StringWriter stringWriter = new StringWriter();
-            JaxbUtils.marshal(getConfig(), stringWriter);
-
-            final String xmlString = stringWriter.toString();
-            if (xmlString != null) {
-                saveXML(xmlString);
-            }
-        } finally {
-            getWriteLock().unlock();
-        }
-
-        update();
-    }
-
-    /** {@inheritDoc} */
-    protected void saveXML(final String xmlString) throws IOException, MarshalException, ValidationException {
-        getWriteLock().lock();
-
-        try {
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME);
-
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
-            fileWriter.write(xmlString);
-            fileWriter.flush();
-            fileWriter.close();
-        } finally {
-            getWriteLock().unlock();
-        }
-    }
-
-    /**
-     * <p>
-     * update
-     * </p>
-     * 
-     * @throws java.io.IOException
-     *             if any.
-     * @throws org.exolab.castor.xml.MarshalException
-     *             if any.
-     * @throws org.exolab.castor.xml.ValidationException
-     *             if any.
-     */
-    @Override
-    public void update() throws IOException, MarshalException, ValidationException {
-        getReadLock().lock();
-        try {
-            getContainer().reload();
-        } finally {
-            getReadLock().unlock();
-        }
-    }
 }

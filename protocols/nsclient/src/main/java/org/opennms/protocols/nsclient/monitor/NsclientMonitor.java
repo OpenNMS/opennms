@@ -36,10 +36,8 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.protocols.nsclient.NSClientAgentConfig;
 import org.opennms.protocols.nsclient.NsclientCheckParams;
 import org.opennms.protocols.nsclient.NsclientException;
@@ -56,7 +54,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
  */
-
 @Distributable
 public class NsclientMonitor extends AbstractServiceMonitor {
 	
@@ -97,14 +94,6 @@ public class NsclientMonitor extends AbstractServiceMonitor {
         // Used to track how long the request took.
         Double responseTime = null;
 
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
-        // Validate the interface type.
-        if (iface.getType() != NetworkInterface.TYPE_INET) {
-            throw new NetworkInterfaceNotSupportedException(
-                                                            "Unsupported interface type, only TYPE_INET currently supported");
-        }
-
         // NSClient related parameters.
         String command = ParameterMap.getKeyedString(
                                                      parameters,
@@ -125,7 +114,7 @@ public class NsclientMonitor extends AbstractServiceMonitor {
 
 
         // Get the address we're going to poll.
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
         for (tracker.reset(); tracker.shouldRetry() && serviceStatus != PollStatus.SERVICE_AVAILABLE; tracker.nextAttempt()) {
             try {
@@ -133,7 +122,7 @@ public class NsclientMonitor extends AbstractServiceMonitor {
                 tracker.startAttempt();
 
                 // Create a client, set up details and connect.
-                NsclientManager client = new NsclientManager(InetAddressUtils.str(ipv4Addr),
+                NsclientManager client = new NsclientManager(InetAddressUtils.str(ipAddr),
                                                              port, password);
                 client.setTimeout(tracker.getSoTimeout());
                 client.setPassword(password);

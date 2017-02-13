@@ -34,6 +34,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * TODO: This class should override {@link #equals(Object)} and {@link #hashCode()}
+ * so that comparisons work properly.
+ */
 public class TrapIdentity {
 	
 	private static final transient Logger LOG = LoggerFactory.getLogger(TrapIdentity.class);

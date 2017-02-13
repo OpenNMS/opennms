@@ -365,10 +365,16 @@ public abstract class EventUtils {
     }
 
 
-    public static Event createNodeCategoryMembershipChangedEvent(final String source, final Integer nodeId, final String nodeLabel) {
+    public static Event createNodeCategoryMembershipChangedEvent(final String source, final Integer nodeId, final String nodeLabel, String[] categoriesAdded, String[] categoriesDeleted) {
         EventBuilder bldr = new EventBuilder(NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, source);
         bldr.setNodeid(nodeId);
         bldr.addParam(PARM_NODE_LABEL, nodeLabel);
+        if (categoriesAdded != null && categoriesAdded.length > 0) {
+            bldr.addParam(EventConstants.PARM_CATEGORIES_ADDED, String.join(",", categoriesAdded));
+        }
+        if (categoriesDeleted != null && categoriesDeleted.length > 0) {
+            bldr.addParam(EventConstants.PARM_CATEGORIES_DELETED, String.join(",", categoriesDeleted));
+        }
         return bldr.getEvent();
     }
 

@@ -10,13 +10,11 @@
       <queries>
          <query name="opennmsQuery" recheckInterval="0" ifType="ignore">
             <statement>
-               <queryString>
-                   SELECT COUNT(eventid) as EventCount
-                   FROM events
-                   WHERE eventtime
-                   BETWEEN (CURRENT_TIMESTAMP - INTERVAL '1 day')
-                   AND CURRENT_TIMESTAMP;
-                </queryString>
+               <queryString>SELECT COUNT(eventid) as EventCount
+FROM events
+WHERE eventtime
+BETWEEN (CURRENT_TIMESTAMP - INTERVAL '1 day')
+AND CURRENT_TIMESTAMP;</queryString>
             </statement>
             <columns>
                <column name="eventCount" data-source-name="EventCount" type="GAUGE" alias="OnmsEventCount"/>
@@ -297,7 +295,7 @@
                <queryString>
                     SELECT spcname, pg_tablespace_size(pg_tablespace.spcname) AS ts_size
                     FROM pg_tablespace
-               </queryString>
+                    </queryString>
             </statement>
             <columns>
                <column name="spcname" data-source-name="spcname" type="string" alias="spcname"/>
@@ -311,7 +309,7 @@
                            pg_database_size(pg_stat_database.datname) AS db_size
                     FROM pg_stat_database
                     WHERE datname NOT IN ('template0', 'template1')
-               </queryString>
+                    </queryString>
             </statement>
             <columns>
                <column name="datname" data-source-name="datname" type="string" alias="datname"/>

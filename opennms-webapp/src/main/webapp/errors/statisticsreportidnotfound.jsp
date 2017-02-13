@@ -33,20 +33,11 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
-	import="org.opennms.web.controller.statisticsReports.*"
+	import="org.opennms.web.controller.statisticsReports.*, org.opennms.web.utils.ExceptionUtils"
 %>
 
 <%
-    StatisticsReportIdNotFoundException e = null;
-    
-    if( exception instanceof StatisticsReportIdNotFoundException ) {
-        e = (StatisticsReportIdNotFoundException)exception;
-    }
-    else if( exception instanceof ServletException ) {
-        e = (StatisticsReportIdNotFoundException)((ServletException)exception).getRootCause();
-    } else {
-        throw new ServletException( "This error page does not handle this exception type.", exception );
-    }
+    StatisticsReportIdNotFoundException e = ExceptionUtils.getRootCause(exception, StatisticsReportIdNotFoundException.class);
 %>
 
 

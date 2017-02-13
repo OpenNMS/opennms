@@ -10,6 +10,10 @@
     <feature>opennms-core</feature>
     <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-alarms/${pom.version}</bundle>
   </feature>
+  <feature name="dashlet-bsm" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: BSM">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-bsm/${pom.version}</bundle>
+  </feature>
   <feature name="dashlet-summary" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: Summary">
     <feature>opennms-core</feature>
     <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-summary/${pom.version}</bundle>
@@ -41,6 +45,7 @@
   <feature name="dashlet-topology" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: Topology">
     <feature>opennms-core</feature>
     <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-topology/${pom.version}</bundle>
+    <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.link/${pom.version}</bundle>
   </feature>
   <feature name="dashlet-surveillance" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: Surveillance">
     <feature>opennms-core</feature>

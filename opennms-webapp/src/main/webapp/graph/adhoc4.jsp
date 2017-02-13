@@ -58,7 +58,7 @@
 
     WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
     
-    ResourceService resourceService = (ResourceService)webAppContext.getBean("resourceService", ResourceService.class);
+    ResourceService resourceService = webAppContext.getBean("resourceService", ResourceService.class);
     
     resourceService.promoteGraphAttributesForResource(resourceId);
     

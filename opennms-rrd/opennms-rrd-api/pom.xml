@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rrd-api</artifactId>
-  <name>OpenNMS RRD API</name>
+  <name>OpenNMS :: RRD :: API</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -27,11 +27,11 @@
               Add all optional imports of RRD strategies to the import list as well.
             -->
             <Import-Package>
-              *,
               org.springframework.beans.factory.config;version="[4.0,4.1)",
               org.opennms.netmgt.rrd.jrobin;resolution:=optional,
               org.opennms.netmgt.rrd.rrdtool;resolution:=optional,
-              org.opennms.netmgt.rrd.tcp;resolution:=optional
+              org.opennms.netmgt.rrd.tcp;resolution:=optional,
+              *
             </Import-Package>
             <Export-Package>org.opennms.netmgt.rrd.*;version="${project.version}"</Export-Package>
           </instructions>
@@ -40,11 +40,6 @@
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-util</artifactId>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>

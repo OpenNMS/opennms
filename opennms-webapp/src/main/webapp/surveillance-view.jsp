@@ -35,25 +35,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-
-<%--
-/*******************************************************************************
- * Check org.opennms.dashboard.implementation for selected implementation      *
- *******************************************************************************/
---%>
-
-<%
-    String dashboardImplementation = System.getProperty("org.opennms.dashboard.implementation", "vaadin").trim();
-
-    if (!"gwt".equals(dashboardImplementation)) {
-%>
-
-    <%--
-    /*******************************************************************************
-     * Include VAADIN implementation                                               *
-     *******************************************************************************/
-    --%>
-
     <jsp:include page="/includes/bootstrap.jsp" flush="false" >
         <jsp:param name="title" value="Surveillance View" />
         <jsp:param name="headTitle" value="Surveillance" />
@@ -73,17 +54,3 @@
     <iframe id="surveillance-view-ui" src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="height:100%; width:100%;"></iframe>
 
     <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
-
-<% } else { %>
-
-    <%--
-    /*******************************************************************************
-     * Include GWT implementation                                                  *
-     *******************************************************************************/
-    --%>
-
-    <c:redirect url="surveillanceView.htm"/>
-
-<% } %>
-
-

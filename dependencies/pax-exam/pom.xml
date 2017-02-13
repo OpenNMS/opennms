@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>pax-exam-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Apache Pax Exam</name>
+  <name>OpenNMS :: Dependencies :: Apache Pax Exam</name>
 
   <properties>
     <org.ops4j.base.version>1.5.0</org.ops4j.base.version>
@@ -63,7 +63,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <!-- <version>4.11</version> -->
     </dependency>
 
     <!-- Pax Exam features.xml -->

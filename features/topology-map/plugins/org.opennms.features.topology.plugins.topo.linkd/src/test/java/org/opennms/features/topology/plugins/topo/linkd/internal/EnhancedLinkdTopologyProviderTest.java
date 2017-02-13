@@ -114,14 +114,14 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testGetIcon() {
-        Assert.assertTrue("linkd:system:snmp:1.3.6.1.4.1.5813.1.25".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode1().getSysObjectId())));
-        Assert.assertTrue("linkd:system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode2().getSysObjectId())));
-        Assert.assertTrue("linkd:system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode3().getSysObjectId())));
-        Assert.assertTrue("linkd:system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode4().getSysObjectId())));
-        Assert.assertTrue("linkd:system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode5().getSysObjectId())));
-        Assert.assertTrue("linkd:system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode6().getSysObjectId())));
-        Assert.assertTrue("linkd:system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode7().getSysObjectId())));
-        Assert.assertTrue("linkd:system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode8().getSysObjectId())));
+        Assert.assertTrue("linkd.system.snmp.1.3.6.1.4.1.5813.1.25".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode1().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode2().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode3().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode4().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode5().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode6().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode7().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode8().getSysObjectId())));
 
     }
 

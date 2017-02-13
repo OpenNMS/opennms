@@ -36,6 +36,8 @@ import java.util.Set;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LazySet;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -108,6 +110,9 @@ public final class ResponseTimeResourceType implements OnmsResourceType {
         // Grab the node entity
         final OnmsNode node = ResourceTypeUtils.getNodeFromResource(parent);
 
+        // Determine the location name
+        final String locationName = MonitoringLocationUtils.getLocationNameOrNullIfDefault(node);
+
         // Grab the interface
         final OnmsIpInterface matchingIf = m_ipInterfaceDao.get(node, ipAddress);
         if (matchingIf == null) {
@@ -116,13 +121,13 @@ public final class ResponseTimeResourceType implements OnmsResourceType {
         }
 
         // Verify the path
-        final ResourcePath path = getInterfacePath(ipAddress);
+        final ResourcePath path = getInterfacePath(locationName, ipAddress);
         if (!m_resourceStorageDao.exists(path, 0)) {
             throw new ObjectRetrievalFailureException(OnmsResource.class, "No metrics found in parent path '" + parent.getPath() + "'");
         }
 
         // Create the resource
-        final OnmsResource resource = createResource(matchingIf, ipAddress, path);
+        final OnmsResource resource = createResource(locationName, matchingIf, ipAddress, path);
         resource.setParent(parent);
         return resource;
     }
@@ -135,14 +140,17 @@ public final class ResponseTimeResourceType implements OnmsResourceType {
         // Grab the node entity
         final OnmsNode node = ResourceTypeUtils.getNodeFromResource(parent);
 
+        // Determine the location name
+        final String locationName = MonitoringLocationUtils.getLocationNameOrNullIfDefault(node);
+
         // Verify the existence of the individual interfaces
         final LinkedList<OnmsResource> resources = new LinkedList<OnmsResource>();
         for (final OnmsIpInterface i : node.getIpInterfaces()) {
             String ipAddr = InetAddressUtils.str(i.getIpAddress());
 
-            final ResourcePath path = getInterfacePath(ipAddr);
+            final ResourcePath path = getInterfacePath(locationName, ipAddr);
             if (m_resourceStorageDao.exists(path, 0)) {
-                resources.add(createResource(i, ipAddr, path));
+                resources.add(createResource(locationName, i, ipAddr, path));
                 if (stopAfterFirst) {
                     break;
                 }
@@ -151,15 +159,21 @@ public final class ResponseTimeResourceType implements OnmsResourceType {
         return resources;
     }
 
-    private OnmsResource createResource(final OnmsIpInterface ipInterface, final String ipAddr, final ResourcePath path) {
+    private OnmsResource createResource(final String location, final OnmsIpInterface ipInterface, final String ipAddr, final ResourcePath path) {
     	final LazyResourceAttributeLoader loader = new LazyResourceAttributeLoader(m_resourceStorageDao, path);
     	final Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(loader);
-    	final OnmsResource resource = new OnmsResource(ipAddr, ipAddr, this, set, path);
+        final OnmsResource resource = new OnmsResource(ipAddr, ipAddr, this, set, path);
     	resource.setEntity(ipInterface);
         return resource;
     }
 
-    private static ResourcePath getInterfacePath(String ipAddr) {
-        return new ResourcePath(ResourceTypeUtils.RESPONSE_DIRECTORY, ipAddr);
+    private static ResourcePath getInterfacePath(final String location, final String ipAddr) {
+        if (location == null) {
+            return new ResourcePath(ResourceTypeUtils.RESPONSE_DIRECTORY, ipAddr);
+        } else {
+            return new ResourcePath(ResourceTypeUtils.RESPONSE_DIRECTORY, ResourcePath.sanitize(location), ipAddr);
+        }
     }
+
+
 }

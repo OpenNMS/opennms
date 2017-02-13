@@ -1,0 +1,37 @@
+<h3>Scan Report: {{report.timestamp | date:'MMM d, yyyy h:mm:ss a'}}</h3>
+
+<ul>
+<li><b>Report ID:</b> {{report.id}}</li>
+<li><b>Location:</b> {{report.location}}</li>
+<li><b>Application:</b> {{report.properties.applications}}</li>
+<li ng-repeat="(key,value) in report.properties">
+  <b>{{key | prettyProperty }}:</b> {{value}}
+</li>
+</ul>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Scan Results</div>
+  <!--
+  <div class="panel-body">
+  </div>
+  -->
+  <table class="table table-striped table-bordered">
+    <tr>
+      <th>Node</th>
+      <th>Interface</th>
+      <th>Service</th>
+      <th>Result</th>
+      <th>Reason</th>
+      <th>Latency</th>
+    </tr>
+    <tr ng-repeat="result in report['poll-results'] | orderBy: [ 'node-label', 'ip-address', 'service-name' ]">
+      <td class="text-nowrap">{{result['node-label']}}</td>
+      <td class="text-nowrap">{{result['ip-address']}}</td>
+      <td class="text-nowrap">{{result['service-name']}}</td>
+      <td class="text-nowrap">{{result['poll-status'].name}}</td>
+      <td>{{result['poll-status'].reason}}</td>
+      <td ng-if="result['poll-status']['response-time']" class="text-nowrap">{{result['poll-status']['response-time'] | number:2}} ms</td>
+      <td ng-if="!result['poll-status']['response-time']"></td>
+    </tr>
+  </table>
+</div>

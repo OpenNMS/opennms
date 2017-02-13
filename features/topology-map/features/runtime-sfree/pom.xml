@@ -11,7 +11,7 @@
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>opennms-topology-runtime-sfree</artifactId>
 
-  <name>OpenNMS :: Features :: Topology :: Runtime (Scale Free)</name>
+  <name>OpenNMS :: Features :: Topology :: Features :: Scale Free</name>
 
   <description>Simple Scale Free and plugins for the OpenNMS topology web app.</description>
 
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>org.opennms.features.topology.plugins.topo</groupId>
       <version>${project.version}</version>
-      <artifactId>sfree</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.topo.sfree</artifactId>
     </dependency>
     
   </dependencies>

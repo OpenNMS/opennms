@@ -1,10 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" 
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" 
        xmlns:tx="http://www.springframework.org/schema/tx" 
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"
        default-lazy-init="true">
 
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+    <!-- 
+      We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+      preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+      the issue documented here:
+
+      https://jira.springsource.org/browse/SPR-6428
+
+      TODO: Fix this behavior after upgrading to Spring 3.1.
+    -->
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
+  </bean>
 
   <bean id="configTester" class="org.opennms.netmgt.config.tester.ConfigTester">
     <property name="configs">
@@ -34,11 +51,9 @@
         <entry key="javamail-configuration.xml" value="javamailConfigurationDao"/>
         <entry key="jdbc-datacollection-config.xml" value="jdbcDataCollectionConfigDao"/>
         <entry key="jmx-config.xml" value="jmxConfigDao"/>
-        <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigFactory"/>
+        <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigDao"/>
         <entry key="ksc-performance-reports.xml" value="kscReportFactory"/>
-        <entry key="magic-users.properties" value="userDao"/>
         <entry key="microblog-configuration.xml" value="microblogConfigurationDao"/>
-        <entry key="model-importer.properties" value="modelImporterProperties"/>
         <!--  <entry key="modemConfig.properties" value="unknown"/> -->
         <entry key="notifd-configuration.xml" value="notifdConfigFactory"/>
         <entry key="notificationCommands.xml" value="notificationCommandFactory"/>
@@ -50,7 +65,6 @@
         <!-- <entry key="opennms.properties" value="unknown"/> -->
         <!-- <entry key="otrs.properties" value="otrsConfigDaoCheck"/> --> <!-- Not part of standard build -->
         <entry key="poll-outages.xml" value="pollOutagesConfigFactory"/>
-        <entry key="poller-config.properties" value="pollerConfigProperties"/>
         <entry key="poller-configuration.xml" value="pollerConfigFactory"/>
         <entry key="provisiond-configuration.xml" value="provisiondConfigurationDao"/>
         <!-- <entry key="rancid-configuration.xml" value="rancidAdapterConfigFactory"/> --><!-- Not part of standard build -->
@@ -213,13 +227,9 @@
   <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.JmxConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/jmx-config.xml"/>
   </bean>
-  
-  <bean id="jmxDataCollectionConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.JMXDataCollectionConfigFactory.init</value></property>
-  </bean>
 
-  <bean id="jmxDataCollectionConfigFactory" class="org.opennms.netmgt.config.JMXDataCollectionConfigFactory" depends-on="jmxDataCollectionConfigFactory-init" factory-method="getInstance"/>
-    
+  <bean id="jmxDataCollectionConfigDao" class="org.opennms.netmgt.config.JMXDataCollectionConfigDao" />
+
   <bean id="kscReportFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.init</value></property>
   </bean>
@@ -239,37 +249,13 @@
   <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
 
   <bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
-    <property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties" />
     <property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
-    <property name="groupsConfigurationFile" value="${opennms.home}/etc/groups.xml" />
-    <property name="useGroups" value="false" />
     <property name="userManager" ref="userManager" />
-    <property name="groupManager" ref="groupManager" />
   </bean>
   
   <bean id="microblogConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/microblog-configuration.xml"/>
   </bean>
-
-  <bean id="modelImporterProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="location">
-      <value>file:${opennms.home}/etc/model-importer.properties</value>
-    </property>
-  </bean>
-
-<!-- 
-  <bean id="specFile-constructor" class="org.opennms.netmgt.importer.specification.SpecFile"/>
-    
-  <bean id="specFile" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	<property name="targetObject" ref="specFile-constructor" />
-    <property name="targetMethod"><value>loadResource</value></property>
-    <property name="arguments">
-      <list>
-        <value>file:${opennms.home}/etc/model-importer.properties</value>
-      </list>
-    </property>
-  </bean>
-  -->
 
   <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
@@ -337,20 +323,6 @@
     <constructor-arg><value>false</value></constructor-arg>
   </bean>
    -->    
-  
-  <bean id="pollerConfigProperties-constructor" class="java.util.Properties"/>
-  
-  <bean id="pollerConfigProperties" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	<property name="targetObject" ref="pollerConfigProperties-constructor" />
-    <property name="targetMethod"><value>load</value></property>
-    <property name="arguments">
-      <list>
-        <bean class="java.io.FileInputStream">
-          <constructor-arg><value>${opennms.home}/etc/poller-config.properties</value></constructor-arg>
-        </bean>
-      </list>
-    </property>
-  </bean>
 
   <bean id="pollerConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.init</value></property>
@@ -477,11 +449,7 @@
     <property name="configResource" value="file:${opennms.home}/etc/surveillance-views.xml"/>
   </bean>
   
-  <bean id="syslogdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.SyslogdConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="syslogdConfigFactory" class="org.opennms.netmgt.config.SyslogdConfigFactory" depends-on="syslogdConfigFactory-init" factory-method="getInstance"/>
+  <bean id="syslogdConfigFactory" class="org.opennms.netmgt.config.SyslogdConfigFactory"/>
   
   <bean name="syslogNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/syslog-northbounder-configuration.xml" />

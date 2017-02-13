@@ -11,7 +11,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.topology</groupId>
-    <artifactId>app</artifactId>
+    <artifactId>org.opennms.features.topology.app</artifactId>
 
     <name>${bundle.symbolicName}</name>
 
@@ -43,29 +43,36 @@
             </plugin>
         </plugins>
     </build>
-
-
     <dependencies>
         <dependency>
-            <groupId>org.opennms.osgi.features.topology</groupId>
+            <groupId>org.opennms.features</groupId>
             <artifactId>vaadin</artifactId>
             <type>pom</type>
         </dependency>
-        <dependency> <!-- Required by pax/vaadin -->
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>servlet-dependencies</artifactId>
-            <type>pom</type>
-            <scope>provided</scope>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>graph</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.topology</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>org.opennms.features.topology.link</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.topology</groupId>
+            <artifactId>org.opennms.features.topology.api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.osgi</groupId>
-            <artifactId>opennms-osgi-core</artifactId>
+            <groupId>org.opennms.features.topology</groupId>
+            <artifactId>org.opennms.features.topology.persistence.api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -112,8 +119,19 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.geolocation</groupId>
+            <artifactId>org.opennms.features.geolocation.api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -132,13 +150,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.topology.plugins.topo</groupId>
-            <artifactId>simple</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
@@ -148,14 +159,18 @@
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-web-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.hubspot.jinjava</groupId>
+            <artifactId>jinjava</artifactId>
+            <version>2.1.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
-
     <repositories>
         <repository>
             <snapshots><enabled>false</enabled></snapshots>
@@ -165,5 +180,4 @@
             <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
         </repository>
     </repositories>
-
 </project>

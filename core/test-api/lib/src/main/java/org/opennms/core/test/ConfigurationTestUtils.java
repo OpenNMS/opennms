@@ -46,6 +46,7 @@ import java.util.regex.Matcher;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -192,7 +193,22 @@ public abstract class ConfigurationTestUtils extends Assert {
                                                                 replacements);
         return new ByteArrayInputStream(newConfig.getBytes());
     }
+
     
+    /**
+     * <p>getInputStreamForResourceWithReplacements</p>
+     *
+     * @param obj a {@link java.lang.Object} object.
+     * @param resource a {@link java.lang.String} object.
+     * @param replacements an array of {@link java.lang.String} objects.
+     * @return a {@link java.io.InputStream} object.
+     * @throws java.io.IOException if any.
+     */
+    public static Resource getResourceForConfigWithReplacements(String config,
+            String[] ... replacements) throws IOException {
+        String newConfig = performReplacements(config, replacements);
+        return new ByteArrayResource(newConfig.getBytes());
+    }
     
     /**
      * <p>getConfigForResourceWithReplacements</p>
@@ -217,7 +233,10 @@ public abstract class ConfigurationTestUtils extends Assert {
             buffer.append("\n");
         }
     
-        String newConfig = buffer.toString();
+        return performReplacements(buffer.toString(), replacements);
+    }
+
+    public static String performReplacements(String newConfig, String[] ... replacements) {
         for (String[] replacement : replacements) {
             // The quoting around the replacement is necessary for file paths to work
             // correctly on Windows.

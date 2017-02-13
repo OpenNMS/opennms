@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.db.install</artifactId>
-  <name>OpenNMS Core Database Installer</name>
+  <name>OpenNMS :: Core :: Database Installer</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -35,6 +35,10 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>

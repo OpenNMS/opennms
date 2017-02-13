@@ -42,9 +42,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
@@ -86,10 +86,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
      */
     protected static final DecimalFormat s_noDigitsAfterDecimal = new DecimalFormat("0");
 
-    /**
-     * Do not use directly. Call {@link #getNodeStatusString(org.opennms.netmgt.model.OnmsNode.NodeType)}
-     * getInterfaceStatusMap} instead.
-     */
     protected static final EnumMap<OnmsNode.NodeType, String> m_nodeStatusMap;
 
     static {
@@ -184,7 +180,13 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
     }
 
     public static String getIconName(String nodeSysObjectId) {
-        return nodeSysObjectId == null ? "linkd:system" : "linkd:system:snmp:"+nodeSysObjectId;
+        if (nodeSysObjectId == null) {
+            return "linkd.system";
+        }
+        if (nodeSysObjectId.startsWith(".")) {
+            return "linkd.system.snmp" + nodeSysObjectId;
+        }
+        return "linkd.system.snmp." + nodeSysObjectId;
     }
 
     protected static String getNodeTooltipDefaultText(String ip, String label, boolean isManaged, String location,NodeType nodeType) {
@@ -393,19 +395,22 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
     public abstract void load(String filename) throws MalformedURLException, JAXBException;
 
     @Override
-    public VertexHopGraphProvider.VertexHopCriteria getDefaultCriteria() {
-        final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
+    public Defaults getDefaults() {
+        return new Defaults()
+                .withSemanticZoomLevel(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL)
+                .withPreferredLayout("D3 Layout") // D3 Layout
+                .withCriteria(() -> {
+                    final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
 
-        VertexHopGraphProvider.VertexHopCriteria criterion = null;
+                    if (node != null) {
+                        final Vertex defaultVertex = createVertexFor(node, getAddress(node.getId()));
+                        if (defaultVertex != null) {
+                            return Lists.newArrayList(new LinkdHopCriteria(node.getNodeId(), node.getLabel(), m_nodeDao));
+                        }
+                    }
 
-        if (node != null) {
-            final Vertex defaultVertex = createVertexFor(node, getAddress(node.getId()));
-            if (defaultVertex != null) {
-                criterion = new LinkdHopCriteria(node.getNodeId(), node.getLabel(), m_nodeDao);
-            }
-        }
-
-        return criterion;
+                    return Lists.newArrayList();
+                });
     }
 
     protected Vertex createVertexFor(OnmsNode node, OnmsIpInterface ipInterface) {

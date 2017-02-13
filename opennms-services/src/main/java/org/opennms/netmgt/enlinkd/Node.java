@@ -52,6 +52,12 @@ public class Node {
 
     private final String m_sysname;
 
+    private final String m_location;
+
+    public String getLocation() {
+        return m_location;
+    }
+
     /**
      * <p>
      * Constructor for LinkableSnmpNode.
@@ -65,11 +71,12 @@ public class Node {
      *            a {@link java.lang.String} object.
      */
     public Node(final int nodeId,
-            final InetAddress snmpPrimaryAddr, final String sysoid, final String sysname) {
+            final InetAddress snmpPrimaryAddr, final String sysoid, final String sysname, final String location) {
         m_nodeId = nodeId;
         m_snmpprimaryaddr = snmpPrimaryAddr;
         m_sysoid = sysoid;
         m_sysname = sysname;
+        m_location = location;
     }
 
     /**

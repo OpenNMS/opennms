@@ -62,7 +62,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoHibernate.class);
     Class<T> m_entityClass;
     private String m_lockName;
-    private final HibernateCriteriaConverter m_criteriaConverter = new HibernateCriteriaConverter();
+    protected final HibernateCriteriaConverter m_criteriaConverter = new HibernateCriteriaConverter();
     
     public AbstractDaoHibernate(final Class<T> entityClass) {
         super();
@@ -97,6 +97,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     /** {@inheritDoc} */
     @Override
     public void clear() {
+        getHibernateTemplate().flush(); // always flush before clearing, otherwise pending updates/saves are not executed
         getHibernateTemplate().clear();
     }
 

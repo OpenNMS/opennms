@@ -109,7 +109,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         FileUtils.writeStringToFile(outagesConfig, "<?xml version=\"1.0\"?>"
                 + "<outages>"
                 + "<outage name='my-junit-test' type='weekly'>"
-                + "<time day='monday' begins='13:30:00' ends='14:45:00'/>"
+                + "<time day='monday' begins='13:30:00' ends='13:30:01'/>"
                 + "<interface address='match-any'/>"
                 + "<node id='18'/><node id='40'/>"
                 + "</outage>"

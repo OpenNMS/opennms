@@ -172,6 +172,35 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, url, 404);
     }
 
+    
+    @Test
+    @JUnitTemporaryDatabase
+    public void canGetNodesWithFilterRule() throws Exception {
+        // Create a node which doesn't have any categories assigned
+        createNode();
+        // The FilterDao requires requires the node to have at least one IP interface
+        createIpInterface();
+        String url = "/nodes";
+
+        // Retrieve all nodes with the 'Routers' category, there should be none
+        String xml = sendRequest(GET, url, parseParamData("filterRule=catincRouters"), 200);
+        OnmsNodeList list = JaxbUtils.unmarshal(OnmsNodeList.class, xml);
+        assertEquals(0, list.size());
+        assertEquals(Integer.valueOf(0), list.getTotalCount());
+
+        // Assign the category to the node
+        sendRequest(POST, "/nodes/1/categories/Routers", 201);
+        xml = sendRequest(GET, "/nodes/1/categories", 200);
+        assertTrue(xml.contains("name=\"Routers\""));
+
+        // Now apply try searching with the filter again, we should get a match
+        xml = sendRequest(GET, url, parseParamData("filterRule=catincRouters"), 200);
+        list = JaxbUtils.unmarshal(OnmsNodeList.class, xml);
+        assertEquals(xml, 1, list.size());
+        assertEquals(xml, Integer.valueOf(1), list.getTotalCount());
+        assertEquals(xml, "TestMachine0", list.get(0).getLabel());
+    }
+
     @Test
     @JUnitTemporaryDatabase
     public void testPutCoordinates() throws Exception {
@@ -558,7 +587,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(DELETE, url, 204);
         sendRequest(GET, url, 404);
     }
-    
+
     @Override
     protected void createNode() throws Exception {
         String node = "<node type=\"A\" label=\"TestMachine" + m_nodeCounter + "\">" +

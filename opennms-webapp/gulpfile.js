@@ -1,32 +1,29 @@
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var gutil = require('gulp-util');
+var rename = require('gulp-rename');
 var bower = require('bower');
+var bowerFiles = require('main-bower-files');
+var CONFIG = require('./gulp.config');
 
-var paths = {
-	'sass': 'src/main/scss/**/*.scss',
-	'jsp': 'src/main/webapp/**/*.jsp'
-};
-
-var opennmsHome = process.env.OPENNMS_HOME || '../target/opennms-2017.1.0-SNAPSHOT';
-gutil.log('gulp', 'OpenNMS Home: ' + opennmsHome);
+gutil.log('gulp', 'OpenNMS Home: ' + CONFIG.OPENNMS_HOME);
 
 gulp.task('default', ['sass', 'jsp']);
 
 gulp.task('sass', function(done) {
-	gulp.src([paths.sass])
+	gulp.src([CONFIG.SASS_SOURCE])
 		.pipe(sass())
-		.pipe(gulp.dest(opennmsHome + '/jetty-webapps/opennms/css/'))
+		.pipe(gulp.dest(CONFIG.OPENNMS_HOME + CONFIG.JETTY_WEBAPP + '/css/'))
 		.on('end', done);
 });
 
 gulp.task('jsp', function() {
-	gulp.src([paths.jsp], { 'base':'src/main/webapp' })
-		.pipe(gulp.dest(opennmsHome + '/jetty-webapps/opennms/'));
+	gulp.src([CONFIG.JSP_SOURCE], { 'base': CONFIG.WEBAPP_SOURCE_BASE })
+		.pipe(gulp.dest(CONFIG.OPENNMS_HOME + CONFIG.JETTY_WEBAPP));
 });
 
 gulp.task('watch', function() {
-	gulp.watch([paths.sass, paths.jsp], ['sass', 'jsp']);
+	gulp.watch([CONFIG.SASS_SOURCE, CONFIG.JSP_SOURCE], ['sass', 'jsp']);
 });
 
 gulp.task('install', function() {
@@ -34,4 +31,14 @@ gulp.task('install', function() {
 		.on('log', function(data) {
 			gutil.log('bower', gutil.colors.cyan(data.id), data.message);
 		});
+});
+
+gulp.task('vendor', ['install'], function() {
+  gulp.src(bowerFiles(), { base: CONFIG.WEBAPP_SOURCE_BASE + '/lib' })
+    .pipe(rename(function(path) {
+      var bower_components = 'bower_components';
+      path.dirname = '.' + path.dirname.slice(path.dirname.indexOf(bower_components) + bower_components.length);
+      return path;
+    }))
+    .pipe(gulp.dest(CONFIG.WEBAPP_SOURCE_BASE + CONFIG.LIB_DEST));
 });

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<provisiond-configuration
-    xmlns="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
-
-    importThreads="8" scanThreads="10" rescanThreads="10"  writeThreads="8"
-
-    requistion-dir="${install.dir}/etc/imports"
-    foreign-source-dir="${install.dir}/etc/foreign-sources">
- 
+<provisiond-configuration 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
+   
+  foreign-source-dir="${install.dir}/etc/foreign-sources" 
+  requistion-dir="${install.dir}/etc/imports"
+   
+  importThreads="8" scanThreads="10" rescanThreads="10" writeThreads="8" >
+  
   <!--  
     http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger
         Field Name     Allowed Values      Allowed Special Characters

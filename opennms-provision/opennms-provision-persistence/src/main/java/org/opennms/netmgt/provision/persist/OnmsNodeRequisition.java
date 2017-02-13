@@ -171,6 +171,7 @@ public class OnmsNodeRequisition {
             nodeBldr.setType(NodeType.ACTIVE);
             nodeBldr.setForeignSource(nodeReq.getForeignSource());
             nodeBldr.setForeignId(nodeReq.getForeignId());
+            nodeBldr.setLocation(nodeReq.getLocation());
             nodeBldr.getAssetRecord().setBuilding(nodeReq.getBuilding());
             nodeBldr.getAssetRecord().getGeolocation().setCity(nodeReq.getCity());
         }
@@ -273,6 +274,10 @@ public class OnmsNodeRequisition {
      */
     public String getParentNodeLabel() {
         return m_node.getParentNodeLabel();
+    }
+
+    public String getLocation() {
+        return m_node.getLocation();
     }
 
     /* (non-Javadoc)

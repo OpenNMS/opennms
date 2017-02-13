@@ -14,18 +14,27 @@ public abstract class TimeSeries {
     private static final String EVALUETE_TIME_SERIES_STRATEGY_NAME = "evaluate";
 
     public static enum Strategy {
-        RRD(RRD_TIME_SERIES_STRATEGY_NAME),
-        NEWTS(NEWTS_TIME_SERIES_STRATEGY_NAME),
-        EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME);
+        RRD(RRD_TIME_SERIES_STRATEGY_NAME, "RRDTool or JRobin"),
+        NEWTS(NEWTS_TIME_SERIES_STRATEGY_NAME, "Newts"),
+        EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME, "Evaluate (Sizing mode, all data discarded)");
 
         private final String m_name;
+        private final String m_descr;
 
+        Strategy(String name, String descr) {
+        	m_name = name;
+        	m_descr = descr;
+        }
         Strategy(String name) {
-            m_name = name;
+            this(name, name);
         }
 
         public String getName() {
             return m_name;
+        }
+
+        public String getDescr() {
+        	return m_descr;
         }
     }
 

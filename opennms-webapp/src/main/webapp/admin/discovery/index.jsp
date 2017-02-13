@@ -51,7 +51,8 @@
       </div>
       <div class="panel-body">
         <ul class="list-unstyled">
-          <li><a href="admin/discovery/modifyDiscoveryConfig">Modify Configuration</a></li>
+          <li><a href="admin/discovery/edit-config.jsp">Configure Discovery</a></li>
+          <li><a href="admin/discovery/edit-scan.jsp">Run Single Discovery Scan</a></li>
         </ul>
       </div> <!-- panel-body -->
     </div> <!-- panel -->

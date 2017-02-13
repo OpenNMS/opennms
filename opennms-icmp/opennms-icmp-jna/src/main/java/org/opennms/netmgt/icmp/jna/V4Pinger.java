@@ -35,8 +35,8 @@ import java.nio.ByteBuffer;
 import org.opennms.core.logging.Logging;
 import org.opennms.jicmp.ip.ICMPEchoPacket;
 import org.opennms.jicmp.ip.ICMPPacket;
-import org.opennms.jicmp.ip.IPPacket;
 import org.opennms.jicmp.ip.ICMPPacket.Type;
+import org.opennms.jicmp.ip.IPPacket;
 import org.opennms.jicmp.jna.NativeDatagramPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
     
 
     public V4Pinger(final int pingerId) throws Exception {
-        super(pingerId, NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, Platform.isMac() ? NativeDatagramSocket.SOCK_DGRAM : NativeDatagramSocket.SOCK_RAW, NativeDatagramSocket.IPPROTO_ICMP));
+        super(pingerId, NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, NativeDatagramSocket.IPPROTO_ICMP, pingerId));
         
         // Windows requires at least one packet sent before a receive call can be made without error
         // so we send a packet here to make sure...  This one should not match the normal ping requests
@@ -86,9 +86,9 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
                     notifyPingListeners(datagram.getAddress(), echoReply);
                 }
             }
-        } catch(final Throwable t) {
-            setThrowable(t);
-            LOG.debug("Error caught while processing ping packets: {}", t.getMessage(), t);
+        } catch(final Throwable e) {
+            setThrowable(e);
+            LOG.debug("Error caught while processing ping packets: {}", e.getMessage(), e);
         }
     }
 

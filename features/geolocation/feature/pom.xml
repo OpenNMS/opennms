@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.geolocation</artifactId>
+        <version>2017.1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.features.geolocation</groupId>
+    <artifactId>geolocation</artifactId>
+    <name>OpenNMS :: Features :: Geolocation :: Feature</name>
+    <packaging>pom</packaging>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.opennms.maven.plugins</groupId>
+                <artifactId>features-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.opennms.features.geolocation</groupId>
+            <artifactId>org.opennms.features.geolocation.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.geolocation</groupId>
+            <artifactId>org.opennms.features.geolocation.services</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.geocoder</groupId>
+            <artifactId>org.opennms.features.geocoder.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.geocoder</groupId>
+            <artifactId>org.opennms.features.geocoder.google</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.geocoder</groupId>
+            <artifactId>org.opennms.features.geocoder.nominatim</artifactId>
+        </dependency>
+    </dependencies>
+</project>

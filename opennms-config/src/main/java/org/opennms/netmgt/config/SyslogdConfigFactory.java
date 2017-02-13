@@ -35,8 +35,6 @@ import java.io.InputStream;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -44,35 +42,26 @@ import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
 import org.opennms.netmgt.config.syslogd.SyslogdConfigurationGroup;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 
 /**
- * This is the singleton class used to load the configuration for the OpenNMS
- * Syslogd from syslogd-configuration.xml. <strong>Note: </strong>Users of
- * this class should make sure the <em>init()</em> is called before calling
- * any other method to ensure the config is loaded before accessing other
- * convenience methods.
+ * This is the class used to load the configuration for the OpenNMS
+ * Syslogd from syslogd-configuration.xml.
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class SyslogdConfigFactory implements SyslogdConfig {
+
     private static final Logger LOG = LoggerFactory.getLogger(SyslogdConfigFactory.class);
-    /**
-     * The singleton instance of this factory
-     */
-    private static SyslogdConfig m_singleton = null;
 
     /**
      * The config class loaded from the config file
      */
     private SyslogdConfiguration m_config;
-
-    /**
-     * This member is set to true if the configuration file has been loaded.
-     */
-    private static boolean m_loaded = false;
 
     /**
      * Private constructor
@@ -83,7 +72,8 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * @throws org.exolab.castor.xml.ValidationException
      *                             Thrown if the contents do not match the required schema.
      */
-    private SyslogdConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
+    public SyslogdConfigFactory() throws IOException, MarshalException, ValidationException {
+        File configFile = ConfigFileConstants.getFile(ConfigFileConstants.SYSLOGD_CONFIG_FILE_NAME);
         m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, new FileSystemResource(configFile));
         parseIncludedFiles();
     }
@@ -101,30 +91,6 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
     }
 
     /**
-     * Load the config from the default config file and create the singleton
-     * instance of this factory.
-     *
-     * @throws java.io.IOException Thrown if the specified config file cannot be read
-     * @throws org.exolab.castor.xml.MarshalException
-     *                             Thrown if the file does not conform to the schema.
-     * @throws org.exolab.castor.xml.ValidationException
-     *                             Thrown if the contents do not match the required schema.
-     */
-    public static synchronized void init() throws IOException,
-            MarshalException, ValidationException {
-        if (m_loaded) {
-            // init already called - return
-            // to reload, reload() will need to be called
-            return;
-        }
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SYSLOGD_CONFIG_FILE_NAME);
-
-        m_singleton = new SyslogdConfigFactory(cfgFile.getPath());
-
-        m_loaded = true;
-    }
-
-    /**
      * Reload the config from the default config file
      *
      * @throws java.io.IOException Thrown if the specified config file cannot be
@@ -134,37 +100,10 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * @throws org.exolab.castor.xml.ValidationException
      *                             Thrown if the contents do not match the required schema.
      */
-    public static synchronized void reload() throws IOException,
-            MarshalException, ValidationException {
-        m_singleton = null;
-        m_loaded = false;
-
-        init();
-    }
-
-    /**
-     * Return the singleton instance of this factory.
-     *
-     * @return The current factory instance.
-     * @throws java.lang.IllegalStateException
-     *          Thrown if the factory has not yet been initialized.
-     */
-    public static synchronized SyslogdConfig getInstance() {
-        if (!m_loaded)
-            throw new IllegalStateException(
-                    "The factory has not been initialized");
-
-        return m_singleton;
-    }
-
-    /**
-     * <p>setInstance</p>
-     *
-     * @param config a {@link org.opennms.netmgt.config.SyslogdConfig} object.
-     */
-    public static synchronized void setInstance(SyslogdConfig config) {
-        m_singleton = config;
-        m_loaded = true;
+    public synchronized void reload() throws IOException, MarshalException, ValidationException {
+        File configFile = ConfigFileConstants.getFile(ConfigFileConstants.SYSLOGD_CONFIG_FILE_NAME);
+        m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, new FileSystemResource(configFile));
+        parseIncludedFiles();
     }
 
     /**
@@ -269,6 +208,30 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
     @Override
     public synchronized String getDiscardUei() {
         return m_config.getConfiguration().getDiscardUei();
+    }
+
+    @Override
+    public int getNumThreads() {
+        if (m_config.getConfiguration().hasThreads()) {
+            return m_config.getConfiguration().getThreads();
+        } else {
+            return Runtime.getRuntime().availableProcessors() * 2;
+        }
+    }
+
+    @Override
+    public int getQueueSize() {
+        return m_config.getConfiguration().getQueueSize();
+    }
+
+    @Override
+    public int getBatchSize() {
+        return m_config.getConfiguration().getBatchSize();
+    }
+
+    @Override
+    public int getBatchIntervalMs() {
+        return m_config.getConfiguration().getBatchInterval();
     }
 
     /**

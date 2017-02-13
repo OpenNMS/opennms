@@ -30,6 +30,9 @@
     <!-- Allow users to POST to the Measurements API, which is read-only -->
     <intercept-url pattern="/rest/measurements" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
 
+    <!-- Allow Minions to access the configuration endpoints -->
+    <intercept-url pattern="/rest/config/**" method="GET" access="ROLE_MINION,ROLE_REST,ROLE_ADMIN"/>
+
     <!-- read-only calls should be allowed for any user -->
     <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
     <intercept-url pattern="/rest/**" method="HEAD" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
@@ -59,6 +62,10 @@
 
   <!-- Only use BASIC auth for the RESTful API v2 -->
   <http pattern="/api/v2/**" realm="OpenNMS Realm">
+
+    <!-- Allow users to POST to the Geolocation API, which is read-only -->
+    <intercept-url pattern="/api/v2/geolocation" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/api/v2/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
 
@@ -96,10 +103,11 @@
     <intercept-url pattern="/login.jsp*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/accessDenied.jsp*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/css/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/svg/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/js/global.js" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/lib/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/images/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/admin/ng-requisitions/app/**" access="ROLE_PROVISION,ROLE_ADMIN" />
+    <intercept-url pattern="/admin/ng-requisitions/**" access="ROLE_PROVISION,ROLE_ADMIN" />
     <intercept-url pattern="/rest/snmpConfig/**" access="ROLE_PROVISION,ROLE_ADMIN" />
     <intercept-url pattern="/admin/**" access="ROLE_ADMIN" />
     <intercept-url pattern="/**/mib-compiler" access="ROLE_ADMIN" />
@@ -148,6 +156,7 @@
         <beans:property name="authenticationManager" ref="authenticationManager"/>
         <beans:property name="authenticationFailureHandler" ref="failureHandler"/>
         <beans:property name="authenticationSuccessHandler" ref="successHandler"/>
+        <beans:property name="postOnly" value="false"/>
   </beans:bean>
 
     <beans:bean id="successHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
@@ -175,12 +184,8 @@
 
   <!-- ===================== USER DAO AUTHENTICATION ==================== -->
   <beans:bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
-    <beans:property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties" />
     <beans:property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
-    <beans:property name="groupsConfigurationFile" value="${opennms.home}/etc/groups.xml" />
-    <beans:property name="useGroups" value="false" />
     <beans:property name="userManager" ref="userManager" />
-    <beans:property name="groupManager" ref="groupManager" />
   </beans:bean>
   <onmsgi:service id="springSecurityUserDaoService" ref="userDao" interface="org.opennms.web.springframework.security.SpringSecurityUserDao" />
 

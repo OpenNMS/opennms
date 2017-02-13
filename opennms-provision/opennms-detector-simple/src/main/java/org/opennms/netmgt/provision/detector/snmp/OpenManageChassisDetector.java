@@ -93,14 +93,13 @@ public class OpenManageChassisDetector extends SnmpDetector {
      * added to service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address) {
+    public boolean isServiceDetected(final InetAddress address, final SnmpAgentConfig agentConfig) {
         try {
-            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
             configureAgentPTR(agentConfig);
             configureAgentVersion(agentConfig);
 
             // Get the OpenManage chassis status
-            String chassisStatus = getValue(agentConfig, CHASSIS_STATUS_OID);
+            String chassisStatus = getValue(agentConfig, CHASSIS_STATUS_OID, isHex());
 
             // If no chassis status received, do not detect the protocol and quit
             if (chassisStatus == null) {

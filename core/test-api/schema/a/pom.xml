@@ -8,6 +8,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.test-api.schema</groupId>
   <artifactId>org.opennms.core.test-api.schema.a</artifactId>
-  <name>OpenNMS Core Test API (Test Schema A)</name>
+  <name>OpenNMS :: Core :: Test API :: Test Schema A</name>
   <packaging>jar</packaging>
 </project>

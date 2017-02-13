@@ -35,7 +35,6 @@ import java.util.Properties;
 
 import junit.framework.AssertionFailedError;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -184,44 +183,44 @@ public class MockLogAppender {
         resetLogLevel();
         resetEvents();
 
-        if (s_instance == null) {
-            s_instance = new MockLogAppender();
-        }
-
-        LoggerFactory.getILoggerFactory();
-        final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-
-        setProperty(logger, MockLogger.DEFAULT_LOG_LEVEL_KEY, level);
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange", "INFO");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange.v2", "WARN");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "httpclient", "INFO");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.apache.bsf", "INFO");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.apache.commons.httpclient.HttpMethodBase", "ERROR");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.exolab.castor", "INFO");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.gwtwidgets", "INFO");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.hibernate", "INFO");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.hibernate.SQL", "INFO");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.hibernate.cfg.AnnotationBinder", "ERROR");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.quartz", "INFO");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.snmp4j", "ERROR");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.snmp4j.agent", "ERROR");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework", "INFO");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework.beans.factory.support", "WARN");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework.context.support", "WARN");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework.jdbc.datasource", "WARN");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework.test.context.support", "WARN");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework.security", "INFO");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange.v2", "WARN");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "snaq.db", "INFO");
+        setProperty(MockLogger.DEFAULT_LOG_LEVEL_KEY, level);
+        setProperty(MockLogger.LOG_KEY_PREFIX + "com.jcraft.jsch", "WARN");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "com.mchange", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "com.mchange.v2", "WARN");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "httpclient", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.aries.blueprint.container", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.bsf", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.commons.httpclient.HttpMethodBase", "ERROR");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.exolab.castor", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.gwtwidgets", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.hibernate", "INFO");
+        // One of these is probably unused...
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.hibernate.sql", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.hibernate.SQL", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.hibernate.cfg.AnnotationBinder", "ERROR");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.hibernate.cfg.annotations.EntityBinder", "ERROR");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.quartz", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.snmp4j", "ERROR");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.snmp4j.agent", "ERROR");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.snmp4j.transport", "WARN");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework.beans.factory.support", "WARN");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework.context.support", "WARN");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework.jdbc.datasource", "WARN");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework.test.context.support", "WARN");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework.security", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "com.mchange.v2", "WARN");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "snaq.db", "INFO");
 
         for (final Object oKey : config.keySet()) {
             final String key = ((String)oKey).replaceAll("^log4j.logger.", MockLogger.LOG_KEY_PREFIX);
-            setProperty(logger, key, config.getProperty((String)oKey));
+            setProperty(key, config.getProperty((String)oKey));
         }
     }
 
-    private static void setProperty(final Logger logger, final String key, final String value) {
+    private static void setProperty(final String key, final String value) {
         System.setProperty(key, System.getProperty(key, value));
     }
 
@@ -350,12 +349,17 @@ public class MockLogAppender {
 
     public static MockLogAppender getInstance() {
         setupLogging();
+
+        if (s_instance == null) {
+            s_instance = new MockLogAppender();
+        }
+
         return s_instance;
     }
 
     public static void assertNoLogging() throws AssertionFailedError {
         if (s_events.size() > 0) {
-            throw new AssertionFailedError("Unhancled logging occurred.");
+            throw new AssertionFailedError("Unhandled logging occurred.");
         }
     }
 

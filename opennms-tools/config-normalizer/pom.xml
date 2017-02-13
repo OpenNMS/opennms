@@ -88,7 +88,7 @@
     <!-- OpenNMS Karaf container so that we can crank it up with the pax-exam-karaf unit test framework -->
     <dependency>
       <groupId>org.opennms.container</groupId>
-      <artifactId>karaf</artifactId>
+      <artifactId>org.opennms.container.karaf</artifactId>
       <type>tar.gz</type>
       <version>${project.version}</version>
     </dependency>
@@ -99,7 +99,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>api</artifactId>
+      <artifactId>org.opennms.features.topology.api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

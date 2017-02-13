@@ -61,8 +61,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class WebDetectorTest implements InitializingBean {
 
     @Autowired
-    private WebDetector m_detector;
+    private WebDetectorFactory m_detectorFactory;
 
+    private WebDetector m_detector;
+    
     private SimpleServer m_server;
 
     private String headers = "HTTP/1.1 200 OK\r\n"
@@ -110,6 +112,7 @@ public class WebDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setPort(80);
         m_detector.setPath("/");
         m_detector.setResponseRange("100-399");

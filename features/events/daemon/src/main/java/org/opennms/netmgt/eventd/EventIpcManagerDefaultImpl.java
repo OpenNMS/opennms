@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -58,6 +59,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 
 /**
  * An implementation of the EventIpcManager interface that can be used to
@@ -119,6 +123,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     private Integer m_handlerPoolSize;
     
     private Integer m_handlerQueueLength;
+
+    private final MetricRegistry m_registry;
 
     /**
      * A thread dedicated to each listener. The events meant for each listener
@@ -195,7 +201,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * <p>Constructor for EventIpcManagerDefaultImpl.</p>
      */
-    public EventIpcManagerDefaultImpl() {
+    public EventIpcManagerDefaultImpl(MetricRegistry registry) {
+        m_registry = Objects.requireNonNull(registry);
     }
 
     /** {@inheritDoc} */
@@ -254,15 +261,39 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
     }
 
+    @Override
+    public void sendNowSync(Event event) {
+        Objects.requireNonNull(event);
+
+        Events events = new Events();
+        events.addEvent(event);
+
+        Log eventLog = new Log();
+        eventLog.setEvents(events);
+
+        sendNowSync(eventLog);
+    }
+
+    @Override
+    public void sendNowSync(Log eventLog) {
+        Objects.requireNonNull(eventLog);
+        // Create the runnable and invoke it using the current thread
+        // Also set the logging prefix to ensure that the log messages are
+        // properly routed to eventd's log file
+        Logging.withPrefix(Eventd.LOG4J_CATEGORY, m_eventHandler.createRunnable(eventLog));
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventIpcBroadcaster#broadcastNow(org.opennms.netmgt.xml.event.Event)
      */
     /** {@inheritDoc} */
     @Override
     public void broadcastNow(Event event) {
-        LOG.debug("Event ID {} to be broadcasted: {}", event.getDbid(), event.getUei());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Event ID {} to be broadcasted: {}", event.getDbid(), event.getUei());
+        }
 
-        if (m_listeners.isEmpty()) {
+        if (LOG.isDebugEnabled() && m_listeners.isEmpty()) {
             LOG.debug("No listeners interested in all events");
         }
 
@@ -272,7 +303,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
 
         if (event.getUei() == null) {
-            LOG.debug("Event ID {} does not have a UEI, so skipping UEI matching", event.getDbid());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Event ID {} does not have a UEI, so skipping UEI matching", event.getDbid());
+            }
             return;
         }
 
@@ -303,7 +336,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
         
         if (sentToListeners.isEmpty()) {
-            LOG.debug("No listener interested in event ID {}: {}", event.getDbid(), event.getUei());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("No listener interested in event ID {}: {}", event.getDbid(), event.getUei());
+            }
         }
     }
 
@@ -346,7 +381,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             return;
         }
 
-        LOG.debug("Adding event listener {} for UEIs: {}", listener.getName(), StringUtils.collectionToCommaDelimitedString(ueis));
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Adding event listener {} for UEIs: {}", listener.getName(), StringUtils.collectionToCommaDelimitedString(ueis));
+        }
 
         createListenerThread(listener);
 
@@ -497,7 +534,16 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
         Assert.state(m_eventHandler != null, "eventHandler not set");
         Assert.state(m_handlerPoolSize != null, "handlerPoolSize not set");
-        
+
+        final LinkedBlockingQueue<Runnable> workQueue = m_handlerQueueLength == null ? new LinkedBlockingQueue<>() : new LinkedBlockingQueue<>(m_handlerQueueLength);
+        m_registry.remove("eventlogs.queued");
+        m_registry.register("eventlogs.queued", new Gauge<Integer>() {
+            @Override
+            public Integer getValue() {
+                return workQueue.size();
+            }
+        });
+
         Logging.withPrefix(Eventd.LOG4J_CATEGORY, new Runnable() {
 
             @Override
@@ -512,7 +558,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                     m_handlerPoolSize,
                     0L,
                     TimeUnit.MILLISECONDS,
-                    m_handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(m_handlerQueueLength),
+                    workQueue,
                     new LogPreservingThreadFactory(EventIpcManagerDefaultImpl.class.getSimpleName(), m_handlerPoolSize)
                 );
             }
@@ -575,5 +621,14 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     public void setHandlerQueueLength(int size) {
         Assert.state(m_eventHandlerPool == null, "handlerQueueLength property cannot be set after afterPropertiesSet() is called");
         m_handlerQueueLength = size;
+    }
+
+    @Override
+    public boolean hasEventListener(final String uei) {
+        if (this.m_ueiListeners.containsKey(uei)) {
+            return this.m_ueiListeners.get(uei).size() > 0;
+        } else {
+            return false;
+        }
     }
 }

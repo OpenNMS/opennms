@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies</name>
+  <name>OpenNMS :: Dependencies</name>
   <modules>
     <module>activemq</module>
     <module>activemq-web</module>
@@ -46,7 +46,6 @@
     <module>pax-exam</module>
     <module>quartz</module>
     <module>rancid</module>
-    <module>rxtx</module>
     <module>servlet</module>
     <module>smack</module>
     <module>smslib</module>

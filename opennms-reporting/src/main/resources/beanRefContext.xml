@@ -3,8 +3,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
         
-   <bean id="availbilityReportContext"
-         class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
+   <bean id="reportingContext" class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-reporting.xml</value>

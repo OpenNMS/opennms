@@ -28,26 +28,32 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.net.InetAddress;
-import java.sql.SQLException;
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.eventd.processor.expandable.EventTemplate;
+import org.opennms.netmgt.eventd.processor.expandable.ExpandableParameterResolver;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Snmp;
-import org.opennms.netmgt.xml.event.Tticket;
 import org.opennms.netmgt.xml.event.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.support.TransactionOperations;
+
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * EventUtil is used primarily for the event parm expansion - has methods used
@@ -111,6 +117,11 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 * The event nodelabel xml tag
 	 */
 	protected static final String TAG_NODELABEL = "nodelabel";
+
+	/**
+	 * The event nodelocation xml tag
+	 */
+	protected static final String TAG_NODELOCATION = "nodelocation";
 
 	/**
 	 * The event host xml tag
@@ -207,7 +218,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 */
 	protected static final String TAG_MOUSEOVERTEXT = "mouseovertext";
 
-	protected static final Object TAG_TTICKET_ID = "tticketid";
+	protected static final String TAG_TTICKET_ID = "tticketid";
 
 	/**
 	 * The string that starts the expansion for an asset field - used to lookup values
@@ -219,11 +230,6 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 * The string that ends the expansion of a parm
 	 */
 	protected static final String ASSET_END_SUFFIX = "]";
-
-	/**
-	 * The '%' sign used to indicate parms to be expanded
-	 */
-	protected static final char PERCENT = '%';
 
 	/**
 	 * The string that should be expanded to a list of all parm names
@@ -245,6 +251,11 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 * of parameters by their names
 	 */
 	protected static final String PARM_BEGIN = "parm[";
+
+	/**
+	 * Pattern used to match and parse 'parm' tokens.
+	 */
+	protected static final Pattern PARM_REGEX = Pattern.compile("^parm\\[(.*)\\]$");
 
 	/**
 	 * The length of PARM_BEGIN
@@ -316,7 +327,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 
 	private static EventUtil m_instance = null; 
 
-	public static EventUtil getInstance() {
+	public static synchronized EventUtil getInstance() {
 		if (m_instance == null) {
 			return BeanUtils.getBean("eventDaemonContext", "eventUtil", EventUtil.class);
 		} else {
@@ -371,239 +382,65 @@ public abstract class AbstractEventUtil implements EventUtil {
 		return outBuffer.toString();
 	}
 
-	/**
-	 * Get the value of the parm for the event
-	 *
-	 * @param parm
-	 *            the parm for which value is needed from the event
-	 * @param event
-	 *            the event whose parm value is required
-	 * @return value of the event parm/element
-	 */
-	@Override
-	public String getValueOfParm(String parm, Event event) {
+	@Autowired
+	private TransactionOperations transactionOperations;
 
-		String retParmVal = null;
-		final String ifString = event.getInterface();
-		
-		if (parm.equals(TAG_UEI)) {
-			retParmVal = event.getUei();
-		}
-		if (parm.equals(TAG_EVENT_DB_ID)) {
-			if (event.hasDbid()) {
-				retParmVal = Integer.toString(event.getDbid());
-			} else {
-				retParmVal = "eventid-unknown";
-			}
-		} else if (parm.equals(TAG_SOURCE)) {
-			retParmVal = event.getSource();
-		} else if (parm.equals(TAG_DPNAME)) {
-			retParmVal = event.getDistPoller();
-		} else if (parm.equals(TAG_DESCR)) {
-			retParmVal = event.getDescr();
-				} else if (parm.equals(TAG_LOGMSG)) {
-					retParmVal = event.getLogmsg().getContent();
-		} else if (parm.equals(TAG_NODEID)) {
-			retParmVal = Long.toString(event.getNodeid());
-		} else if (parm.equals(TAG_NODELABEL)) {
-			retParmVal = Long.toString(event.getNodeid());
-			String nodeLabel = null;
-			if (event.getNodeid() > 0) {
-				try {
-					nodeLabel = getNodeLabel(event.getNodeid());
-				} catch (SQLException e) {
-					// do nothing
-				}
-			}
-			if (nodeLabel != null)
-				retParmVal = WebSecurityUtils.sanitizeString(nodeLabel);
-			else
-				retParmVal = "Unknown";
-		} else if (parm.equals(TAG_FOREIGNSOURCE)) {
-			retParmVal = "";
-			if (event.getNodeid() > 0) {
-				try {
-					String foreignSource = getForeignSource(event.getNodeid());
-					if (foreignSource != null) {
-						retParmVal = WebSecurityUtils.sanitizeString(foreignSource);
-					}
-				} catch (SQLException e) {
-					// do nothing
-				}
-			}
-		} else if (parm.equals(TAG_FOREIGNID)) {
-			retParmVal = "";
-			if (event.getNodeid() > 0) {
-				try {
-					String foreignId = getForeignId(event.getNodeid());
-					if (foreignId != null) {
-						retParmVal = WebSecurityUtils.sanitizeString(foreignId);
-					}
-				} catch (SQLException ex) {
-					// do nothing
-				}
-			}
-		} else if (parm.equals(TAG_TIME)) {
-			Date eventTime = event.getTime(); //This will be in GMT
-			if (eventTime == null) {
-				retParmVal = null;
-			} else {
-				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
-				retParmVal = df.format(eventTime);
-			} 
-		} else if (parm.equals(TAG_SHORT_TIME)) {
-			Date eventTime = event.getTime(); //This will be in GMT
-			if (eventTime == null) {
-				retParmVal = null;
-			} else {
-				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-				retParmVal = df.format(eventTime);
-			}
-		} else if (parm.equals(TAG_HOST)) {
-			retParmVal = event.getHost();
-		} else if (parm.equals(TAG_INTERFACE)) {
-			retParmVal = ifString;
-		} else if (parm.equals(TAG_IFINDEX)) {
-			if (event.hasIfIndex()) {
-				retParmVal = Integer.toString(event.getIfIndex());
-				} else {
-					retParmVal = "N/A";
-				}
-		} else if (parm.equals(TAG_INTERFACE_RESOLVE)) {
-			InetAddress addr = event.getInterfaceAddress();
-			if (addr != null) retParmVal = addr.getHostName();
-		} else if (parm.equals(TAG_IFALIAS)) {
-			String ifAlias = null;
-			if (event.getNodeid() > 0 && event.getInterface() != null) {
-				try {
-					ifAlias = getIfAlias(event.getNodeid(), ifString);
-				} catch (SQLException e) {
-					// do nothing
-					LOG.info("ifAlias Unavailable for {}:{}", event.getNodeid(), event.getInterface(), e);
-				}
-			}
-			if (ifAlias != null)
-				retParmVal = ifAlias;
-			else
-				retParmVal = ifString;
-		} else if (parm.equals(TAG_PERCENT_SIGN)) {
-			String pctSign = "%";
-			retParmVal = pctSign;
-		} else if (parm.equals(TAG_SNMPHOST)) {
-			retParmVal = event.getSnmphost();
-		} else if (parm.equals(TAG_SERVICE)) {
-			retParmVal = event.getService();
-		} else if (parm.equals(TAG_SNMP)) {
-			Snmp info = event.getSnmp();
-			if (info == null)
-				retParmVal = null;
-			else {
-				StringBuffer snmpStr = new StringBuffer(info.getId());
-				if (info.getIdtext() != null)
-					snmpStr.append(ATTRIB_DELIM
-						+ escape(info.getIdtext().trim(), ATTRIB_DELIM));
-				else
-					snmpStr.append(ATTRIB_DELIM + "undefined");
+	private final LoadingCache<String, EventTemplate> eventTemplateCache;
 
-				snmpStr.append(ATTRIB_DELIM + info.getVersion());
+	private final ExpandableParameterResolverRegistry resolverRegistry = new ExpandableParameterResolverRegistry();
 
-				if (info.hasSpecific())
-					snmpStr.append(ATTRIB_DELIM
-						+ Integer.toString(info.getSpecific()));
-				else
-					snmpStr.append(ATTRIB_DELIM + "undefined");
+	public AbstractEventUtil() {
+	    this(null);
+	}
 
-				if (info.hasGeneric())
-					snmpStr.append(ATTRIB_DELIM
-						+ Integer.toString(info.getGeneric()));
-				else
-					snmpStr.append(ATTRIB_DELIM + "undefined");
+	public AbstractEventUtil(MetricRegistry registry) {
+	    // Build the cache, and enable statistics collection if we've been given a metric registry
+	    final long maximumCacheSize = Long.parseLong(System.getProperty("org.opennms.eventd.eventTemplateCacheSize", "1000"));
+	    final CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+                .maximumSize(maximumCacheSize);
+	    if (registry != null) {
+	        cacheBuilder.recordStats();
+	    }
+	    eventTemplateCache = cacheBuilder.build(new CacheLoader<String, EventTemplate>() {
+                public EventTemplate load(String key) throws Exception {
+                   return new EventTemplate(key, AbstractEventUtil.this);
+	        }
+	    });
 
-				if (info.getCommunity() != null) {
-					snmpStr.append(ATTRIB_DELIM + info.getCommunity().trim());
-				} else
-					snmpStr.append(ATTRIB_DELIM + "undefined");
+	    if (registry != null) {
+	        // Expose the cache statistics via a series of gauges
+	        registry.register(MetricRegistry.name("eventutil.cache.capacity"),
+	                new Gauge<Long>() {
+	                    @Override
+	                    public Long getValue() {
+	                        return maximumCacheSize;
+	                    }
+	                });
 
-				retParmVal = snmpStr.toString();
-			}
-		} else if (parm.equals(TAG_SNMP_ID)) {
-			Snmp info = event.getSnmp();
-			if (info != null) {
-				retParmVal = info.getId();
-			}
-		} else if (parm.equals(TAG_SNMP_IDTEXT)) {
-			Snmp info = event.getSnmp();
-			if (info != null && info.getIdtext() != null) {
-				retParmVal = info.getIdtext();
-			}
-		} else if (parm.equals(TAG_SNMP_VERSION)) {
-			Snmp info = event.getSnmp();
-			if (info != null) {
-				retParmVal = info.getVersion();
-			}
-		} else if (parm.equals(TAG_SNMP_SPECIFIC)) {
-			Snmp info = event.getSnmp();
-			if (info != null && info.hasSpecific()) {
-				retParmVal = Integer.toString(info.getSpecific());
-			}
-		} else if (parm.equals(TAG_SNMP_GENERIC)) {
-			Snmp info = event.getSnmp();
-			if (info != null && info.hasGeneric()) {
-				retParmVal = Integer.toString(info.getGeneric());
-			}
-		} else if (parm.equals(TAG_SNMP_COMMUNITY)) {
-			Snmp info = event.getSnmp();
-			if (info != null && info.getCommunity() != null) {
-				retParmVal = info.getCommunity();
-			}
-		} else if (parm.equals(TAG_SEVERITY)) {
-			retParmVal = event.getSeverity();
-		} else if (parm.equals(TAG_OPERINSTR)) {
-			retParmVal = event.getOperinstruct();
-		} else if (parm.equals(TAG_MOUSEOVERTEXT)) {
-			retParmVal = event.getMouseovertext();
-				} else if (parm.equals(TAG_TTICKET_ID)) {
-					Tticket ticket = event.getTticket();
-					retParmVal = ticket == null ? "" : ticket.getContent();
-		} else if (parm.equals(PARMS_VALUES)) {
-			retParmVal = getAllParmValues(event);
-		} else if (parm.equals(PARMS_NAMES)) {
-			retParmVal = getAllParmNames(event);
-		} else if (parm.equals(PARMS_ALL)) {
-			retParmVal = getAllParamValues(event);
-		} else if (parm.equals(NUM_PARMS_STR)) {
-			retParmVal = String.valueOf(event.getParmCollection().size());
-		} else if (parm.startsWith(PARM_NUM_PREFIX)) {
-			retParmVal = getNumParmValue(parm, event);
-		} else if (parm.startsWith(PARM_NAME_NUMBERED_PREFIX)) {
-			retParmVal = getNumParmName(parm, event);
-		} else if (parm.startsWith(PARM_BEGIN)) {
-		    if (parm.length() > PARM_BEGIN_LENGTH) {
-			retParmVal = getNamedParmValue(parm, event);
-		    }
-		} else if (parm.startsWith(ASSET_BEGIN)) {
-		    retParmVal = null;
-		    String assetFieldValue = null;
-		    if (event.getNodeid() > 0) {
-			assetFieldValue = getAssetFieldValue(parm, event.getNodeid());
-		    }
-		    if (assetFieldValue != null)
-			retParmVal = assetFieldValue;
-		    else
-			retParmVal = "Unknown";
-		} else if (parm.startsWith(HARDWARE_BEGIN)) {
-		    retParmVal = null;
-		    String hwFieldValue = null;
-		    if (event.getNodeid() > 0) {
-			hwFieldValue = getHardwareFieldValue(parm, event.getNodeid());
-		    }
-		    if (hwFieldValue != null)
-			retParmVal = hwFieldValue;
-		    else
-			retParmVal = "Unknown";
-		}
+	        registry.register(MetricRegistry.name("eventutil.cache.size"),
+	                new Gauge<Long>() {
+	                    @Override
+	                    public Long getValue() {
+	                        return eventTemplateCache.size();
+	                    }
+	                });
 
-		return (retParmVal == null ? null : retParmVal.trim());
+	        registry.register(MetricRegistry.name("eventutil.cache.evictioncount"),
+	                new Gauge<Long>() {
+	                    @Override
+	                    public Long getValue() {
+	                        return eventTemplateCache.stats().evictionCount();
+	                    }
+	                });
+
+	        registry.register(MetricRegistry.name("eventutil.cache.avgloadpenalty"),
+	                new Gauge<Double>() {
+	                    @Override
+	                    public Double getValue() {
+	                        return eventTemplateCache.stats().averageLoadPenalty();
+	                    }
+	                });
+	    }
 	}
 
 	/**
@@ -621,12 +458,10 @@ public abstract class AbstractEventUtil implements EventUtil {
 
 			for (Parm evParm : event.getParmCollection()) {
 				Value parmValue = evParm.getValue();
-				if (parmValue == null)
-					continue;
+				if (parmValue == null) continue;
 
 				String parmValueStr = EventConstants.getValueAsString(parmValue);
-				if (parmValueStr == null)
-					continue;
+				if (parmValueStr == null) continue;
 
 				if (ret.length() == 0) {
 					ret.append(parmValueStr);
@@ -845,26 +680,20 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 * @return A parameter's value as a String using the parameter's name..
 	 */
 	public String getNamedParmValue(String parm, Event event) {
-		String retParmVal = null;
-		int end = parm.indexOf(PARM_END_SUFFIX, PARM_BEGIN_LENGTH);
-		if (end != -1) {
-			// Get the value between the '[' and ']'
-			String eparmname = parm.substring(PARM_BEGIN_LENGTH, end);
+	    final Matcher matcher = PARM_REGEX.matcher(parm);
+	    if (!matcher.matches()) {
+	        return null;
+	    }
 
-			for (Parm evParm : event.getParmCollection()) {
-				String parmName = evParm.getParmName();
-				if (parmName != null
-					&& parmName.trim().equals(eparmname)) {
-					// get parm value
-					Value eparmval = evParm.getValue();
-					if (eparmval != null) {
-					retParmVal = EventConstants.getValueAsString(eparmval);
-					break;
-					}
-				}
-			}
-		}
-		return retParmVal;
+	    final String eparmname = matcher.group(1);
+	    final Parm evParm = event.getParmTrim(eparmname);
+	    if (evParm != null) {
+	        final Value eparmval = evParm.getValue();
+            if (eparmval != null) {
+                return EventConstants.getValueAsString(eparmval);
+            }
+	    }
+	    return null;
 	}
 
 	/**
@@ -923,7 +752,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 * value of the parameter number 'num', if present - %parm[##]% is replaced
 	 * by the number of parameters
 	 *
-	 * @param inp
+	 * @param input
 	 *            the input string in which parm values are to be expanded
 	 * @param decode
 	 *            the varbind decode for this
@@ -931,75 +760,21 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 *         otherwise
 	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
 	 */
-	public String expandParms(String inp, Event event, Map<String, Map<String, String>> decode) {
-		int index1 = -1;
-		int index2 = -1;
-
-		if (inp == null) {
+	public String expandParms(String input, Event event, Map<String, Map<String, String>> decode) {
+		if (input == null) {
 			return null;
 		}
-
-		StringBuffer ret = new StringBuffer();
-
-		String tempInp = inp;
-		int inpLen = inp.length();
-
-		// check input string to see if it has any %xxx% substring
-		while ((tempInp != null) && ((index1 = tempInp.indexOf(PERCENT)) != -1)) {
-		        LOG.debug("checking input {}", tempInp);
-			// copy till first %
-			ret.append(tempInp.substring(0, index1));
-			tempInp = tempInp.substring(index1);
-
-			index2 = tempInp.indexOf(PERCENT, 1);
-			if (index2 != -1) {
-				// Get the value between the %s
-				String parm = tempInp.substring(1, index2);
-				LOG.debug("parm: {} found in value", parm);
-
-				// If there's any whitespace in between the % signs, then do not try to 
-				// expand it with a parameter value
-				if (parm.matches(".*\\s(?s).*")) {
-					ret.append(PERCENT);
-					tempInp = tempInp.substring(1);
-		                        LOG.debug("skipping parm: {} because whitespace found in value", parm);
-					continue;
-				}
-
-				String parmVal = getValueOfParm(parm, event);
-				LOG.debug("value of parm: {}", parmVal);
-
-				if (parmVal != null) {
-					if (decode != null && decode.containsKey(parm) && decode.get(parm).containsKey(parmVal)) {
-					ret.append(decode.get(parm).get(parmVal));
-					ret.append("(");
-					ret.append(parmVal);
-					ret.append(")");
-					} else {
-					ret.append(parmVal);
-					}
-				}
-
-				if (index2 < (inpLen - 1)) {
-					tempInp = tempInp.substring(index2 + 1);
-				} else {
-					tempInp = null;
-				}
+		try {
+			final EventTemplate eventTemplate = eventTemplateCache.get(input);
+			Supplier<String> expander = () -> eventTemplate.expand(event, decode);
+			if (eventTemplate.requiresTransaction()) {
+				Objects.requireNonNull(transactionOperations);
+				return transactionOperations.execute(session -> expander.get());
+			} else {
+				return expander.get();
 			}
-			else {
-				break;
-			}
-		}
-
-		if ((index1 == -1 || index2 == -1) && (tempInp != null)) {
-			ret.append(tempInp);
-		}
-
-		String retStr = ret.toString();
-		if (retStr != null && !retStr.equals(inp)) {
-			return retStr;
-		} else {
-			return null;
+		} catch (ExecutionException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -1007,7 +782,6 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 * <p>getEventHost</p>
 	 *
 	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-	 * @param connection a {@link java.sql.Connection} object.
 	 * @return a {@link java.lang.String} object.
 	 */
 	@Override
@@ -1029,65 +803,8 @@ public abstract class AbstractEventUtil implements EventUtil {
 		}
 	}
 
-	/**
-	 * Retrieve nodeLabel from the node table of the database given a particular
-	 * nodeId.
-	 * 
-	 * @param nodeId
-	 *            Node identifier
-	 * 
-	 * @return nodeLabel Retreived nodeLabel
-	 * 
-	 * @throws SQLException
-	 *             if database error encountered
-	 */
-	protected abstract String getNodeLabel(long nodeId) throws SQLException;
-
-	/**
-	 * Retrieve foreign source from the node table of the database given a particular
-	 * nodeId.
-	 *
-	 * @param nodeId
-	 *            Node identifier
-	 *
-	 * @return foreignSource Retrieved foreign source
-	 *
-	 * @throws SQLException
-	 *             if database error encountered
-	 */
-	protected abstract String getForeignSource(long nodeId) throws SQLException;
-
-	/**
-	 * Retrieve foreign id from the node table of the database given a particular nodeId.
-	 *
-	 * @param nodeId Node identifier
-	 * @return foreignId Retrieved foreign id
-	 * @throws SQLException if database error encountered
-	 */
-	protected abstract String getForeignId(long nodeId) throws SQLException;
-
-	/**
-	 * Retrieve ifAlias from the snmpinterface table of the database given a particular
-	 * nodeId and ipAddr.
-	 *
-	 * @param nodeId
-	 *            Node identifier
-	 * @param ipAddr
-	 *            Interface IP address
-	 *
-	 * @return ifAlias Retreived ifAlias
-	 *
-	 * @throws SQLException
-	 *             if database error encountered
-	 */
-	protected abstract String getIfAlias(long nodeId, String ipaddr) throws SQLException;
-
-	/**
-	 * Helper method.
-	 * 
-	 * @param parm
-	 * @param event
-	 * @return The value of an asset field based on the nodeid of the event 
-	 */
-	protected abstract String getAssetFieldValue(String parm, long nodeId);
+	@Override
+	public ExpandableParameterResolver getResolver(String token) {
+		return resolverRegistry.getResolver(token);
+	}
 }

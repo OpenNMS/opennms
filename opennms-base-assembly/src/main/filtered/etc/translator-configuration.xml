@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<event-translator-configuration xmlns="http://xmlns.opennms.org/xsd/translator-configuration">
+<event-translator-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.opennms.org/xsd/translator-configuration http://www.opennms.org/xsd/config/translator-configuration.xsd ">
   
   <!-- Improved LinkDown/LinkUp events.  Uses translator to add DB information to link status traps events -->
   <translation>

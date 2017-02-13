@@ -7,7 +7,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.opennms.features.ticketing</groupId>
 	<artifactId>opennms-integration-otrs-common</artifactId>
-	<name>OpenNMS OTRS Integration Common</name>
+	<name>OpenNMS :: Features :: Ticketing :: OTRS :: Common</name>
 	<packaging>bundle</packaging>
 	<build>
 		<plugins>
@@ -17,7 +17,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-						<Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+						<Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
 						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 					</instructions>

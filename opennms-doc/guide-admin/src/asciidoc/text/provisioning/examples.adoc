@@ -221,7 +221,7 @@ Continuing with this example Provisioning Group, we are going to define a few po
 a. Prevent discovered 10 network addresses from being persisted
 b. Force 192.168 network addresses to be unmanaged
 
-From the foreign source definition screen, click the Add Policy button and you the definition of a new policy will begin with a field for naming the policy and a drop down list of the currently installed policies.
+From the foreign source definition screen, click the Add Policy button and the definition of a new policy will begin with a field for naming the policy and a drop down list of the currently installed policies.
 Name the policy _no10s_, make sure that the _Match IP Interface policy_ is specified in the class list and click the Save button.
 This action will automatically add all the parameters required for the policy.
 

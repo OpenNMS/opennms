@@ -15,9 +15,9 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology.plugins.topo</groupId>
-  <artifactId>sfree</artifactId>
+  <artifactId>org.opennms.features.topology.plugins.topo.sfree</artifactId>
 
-  <name>${bundle.symbolicName}</name>
+  <name>OpenNMS :: Features :: Topology :: Plugins :: SFree</name>
 
   <packaging>bundle</packaging>
 
@@ -33,12 +33,12 @@
     -->
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>api</artifactId>
+      <artifactId>org.opennms.features.topology.api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>vaadin</artifactId>
       <type>pom</type>
       <scope>provided</scope>
@@ -60,7 +60,11 @@
 	   <artifactId>org.osgi.core</artifactId>
 	   <scope>provided</scope>
 	</dependency>
-	
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.lib</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -70,6 +74,10 @@
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.criteria</artifactId>
     </dependency>
   </dependencies>
 

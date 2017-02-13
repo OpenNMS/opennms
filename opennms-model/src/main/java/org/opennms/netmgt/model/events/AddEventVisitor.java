@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.model.events;
 
+import java.util.stream.Collectors;
+
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -59,7 +61,9 @@ public class AddEventVisitor extends AbstractEntityVisitor {
         LOG.info("Sending nodeAdded Event for {}\n", node);
         m_eventForwarder.sendNow(createNodeAddedEvent(node));
         if (node.getCategories().size() > 0) {
-            m_eventForwarder.sendNow(createNodeCategoryMembershipChangedEvent(node));
+            // Collect the category names into an array
+            String[] categoriesAdded = node.getCategories().stream().map(cat -> cat.getName()).toArray(String[]::new);
+            m_eventForwarder.sendNow(createNodeCategoryMembershipChangedEvent(node, categoriesAdded, new String[0]));
         }
     }
 
@@ -87,8 +91,8 @@ public class AddEventVisitor extends AbstractEntityVisitor {
         return EventUtils.createNodeAddedEvent(m_eventSource, node.getId(), node.getLabel(), node.getLabelSource());
     }
 
-    private Event createNodeCategoryMembershipChangedEvent(final OnmsNode node) {
-        return EventUtils.createNodeCategoryMembershipChangedEvent(m_eventSource, node.getId(), node.getLabel());
+    private Event createNodeCategoryMembershipChangedEvent(final OnmsNode node, String[] categoriesAdded, String[] categoriesDeleted) {
+        return EventUtils.createNodeCategoryMembershipChangedEvent(m_eventSource, node.getId(), node.getLabel(), categoriesAdded, categoriesDeleted);
     }
 
     /**

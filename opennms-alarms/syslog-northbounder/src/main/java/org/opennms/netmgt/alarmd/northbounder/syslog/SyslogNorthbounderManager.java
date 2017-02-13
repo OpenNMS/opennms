@@ -172,5 +172,4 @@ public class SyslogNorthbounderManager implements InitializingBean, Northbounder
             LOG.error("Can't reload the syslog northbound configuration", e);
         }
     }
-
 }

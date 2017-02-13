@@ -12,7 +12,7 @@
     <groupId>org.opennms.osgi.features.topology</groupId>
     <artifactId>opennms-topology-api</artifactId>
 
-    <name>OpenNMS :: Features :: Topology :: API</name>
+    <name>OpenNMS :: Features :: Topology :: Features :: API</name>
 
     <description>APIs for creating topology OSGi plugins.</description>
 
@@ -26,7 +26,6 @@
                 <configuration>
                     <features>
                         <feature>vaadin</feature>
-                        <feature>opennms-osgi-core</feature>
                     </features>
                 </configuration>
             </plugin>
@@ -36,7 +35,7 @@
     <dependencies>
         <dependency>
             <groupId>org.opennms.features.topology</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>org.opennms.features.topology.api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

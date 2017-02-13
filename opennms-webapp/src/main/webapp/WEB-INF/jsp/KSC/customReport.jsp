@@ -48,7 +48,7 @@
   <jsp:param name="headTitle" value="KSC" />
   <jsp:param name="location" value="KSC Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="<a href='KSC/index.htm'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='KSC/index.jsp'>KSC Reports</a>" />
   <jsp:param name="breadcrumb" value="Custom Report" />
   <jsp:param name="renderGraphs" value="true" />
 </jsp:include>
@@ -84,7 +84,7 @@
   function cancelReport()
   {
     if (confirm("Do you really want to cancel configuration changes?")) {
-        setLocation("KSC/index.htm");
+        setLocation("KSC/index.jsp");
     }
   }
 </script>

@@ -11,11 +11,12 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>vaadin-components</artifactId>
 
-  <name>OpenNMS Features :: Vaadin :: Components</name>
+  <name>OpenNMS :: Features :: Vaadin :: Components</name>
 
   <packaging>pom</packaging>
-
   <modules>
+    <module>core</module>
     <module>graph</module>
+    <module>extender-service</module>
   </modules>
 </project>

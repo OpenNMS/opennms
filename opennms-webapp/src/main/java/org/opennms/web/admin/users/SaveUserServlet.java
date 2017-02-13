@@ -61,14 +61,14 @@ public class SaveUserServlet extends HttpServlet {
         HttpSession user = request.getSession(false);
 
         if (user != null) {
+            UserManager userFactory = UserFactory.getInstance();
             User newUser = (User) user.getAttribute("user.modifyUser.jsp");
-            if (newUser.isReadOnly() && !request.isUserInRole(Authentication.ROLE_ADMIN)) {
+            if (newUser.getRoleCollection().contains(Authentication.ROLE_READONLY) && !request.isUserInRole(Authentication.ROLE_ADMIN)) {
                 throw new ServletException("Error: user " + newUser.getUserId() + " is read-only!");
             }
 
             // now save to the XML file
             try {
-                UserManager userFactory = UserFactory.getInstance();
                 userFactory.saveUser(newUser.getUserId(), newUser);
             } catch (Throwable e) {
                 throw new ServletException("Error saving user " + newUser.getUserId(), e);

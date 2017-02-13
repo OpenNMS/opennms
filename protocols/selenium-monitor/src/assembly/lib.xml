@@ -12,9 +12,9 @@
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <include>com.google.guava:guava</include>
-        <include>org.json:json</include>
         <include>org.seleniumhq.selenium:selenium*</include>
         <include>org.codehaus.groovy:groovy-all</include>
         <include>com.codeborne:phantomjsdriver</include>

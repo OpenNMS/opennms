@@ -6,7 +6,7 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>opennms-integration-otrs</artifactId>
-	<name>OpenNMS Features OTRS Integration</name>
+	<name>OpenNMS :: Features :: Ticketing :: OTRS</name>
 	<packaging>bundle</packaging>
 	<build>
 		<plugins>

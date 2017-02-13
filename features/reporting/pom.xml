@@ -9,12 +9,13 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.reporting</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Features Reporting</name>
+  <name>OpenNMS :: Features :: Reporting</name>
   <modules>
     <module>api</module>
     <module>core</module>
     <module>availability</module>
     <module>jasper-reports</module>
+    <module>jasper-reports-compiler</module>
     <module>jasper-reports-filter</module>
     <module>repository</module>
     <module>model</module>

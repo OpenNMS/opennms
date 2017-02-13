@@ -32,33 +32,54 @@ import java.util.List;
 
 import org.opennms.netmgt.snmp.SnmpV3User;
 
-/**
- * <p>TrapdConfig interface.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public interface TrapdConfig {
-	public abstract String getSnmpTrapAddress();
+	String getSnmpTrapAddress();
 	
-    /**
-     * <p>getSnmpTrapPort</p>
-     *
-     * @return a int.
-     */
-    public abstract int getSnmpTrapPort();
+    int getSnmpTrapPort();
 
     /**
-     * <p>getNewSuspectOnTrap</p>
-     *
-     * @return a boolean.
+     * Whether or not a newSuspect event should be generated with a trap from an
+     * unknown IP address
      */
-    public abstract boolean getNewSuspectOnTrap();
+    boolean getNewSuspectOnTrap();
+
+    List<SnmpV3User> getSnmpV3Users();
+
+    boolean isIncludeRawMessage();
 
     /**
-     * <p>getSnmpV3Users</p>
+     * Number of threads used for consuming/dispatching messages.
      *
-     * @return a java.util.List.
+     * @return number of threads
      */
-    public abstract List<SnmpV3User> getSnmpV3Users();
+    int getNumThreads();
+
+    /**
+     * Maximum number of messages to keep in memory while waiting
+     * to be dispatched.
+     *
+     * @return queue size
+     */
+    int getQueueSize();
+
+    /**
+     * Messages are aggregated in batches before being dispatched.
+     *
+     * When the batch reaches this size, it will be dispatched.
+     *
+     * @return batch size
+     */
+    int getBatchSize();
+
+    /**
+     * Messages are aggregated in batches before being dispatched.
+     *
+     * When the batch has been created for longer than this interval
+     * it will be dispatched, regardless of the size.
+     *
+     * @return interval in ms
+     */
+    int getBatchIntervalMs();
+
+    void update(TrapdConfig config);
 }

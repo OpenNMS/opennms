@@ -10,6 +10,9 @@ import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.RMISocketFactory;
 
 public class HostRMIServerSocketFactory extends RMISocketFactory implements RMIServerSocketFactory, RMIClientSocketFactory, Serializable {
+
+    private static final long serialVersionUID = 2980115395787642955L;
+
     private String m_host;
 
     public HostRMIServerSocketFactory() {

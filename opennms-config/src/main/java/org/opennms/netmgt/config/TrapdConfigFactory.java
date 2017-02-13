@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -208,4 +209,55 @@ public final class TrapdConfigFactory implements TrapdConfig {
         return snmpUsers;
     }
 
+    @Override
+    public boolean isIncludeRawMessage() {
+        return m_config.isIncludeRawMessage();
+    }
+
+    @Override
+    public int getNumThreads() {
+        if (m_config.getThreads() <= 0) {
+            return Runtime.getRuntime().availableProcessors() * 2;
+        }
+        return m_config.getThreads();
+    }
+
+    @Override
+    public int getQueueSize() {
+        return m_config.getQueueSize();
+    }
+
+    @Override
+    public int getBatchSize() {
+        return m_config.getBatchSize();
+    }
+
+    @Override
+    public int getBatchIntervalMs() {
+        return m_config.getBatchInterval();
+    }
+
+    @Override
+    public void update(TrapdConfig config) {
+        m_config.setSnmpTrapAddress(config.getSnmpTrapAddress());
+        m_config.setSnmpTrapPort(config.getSnmpTrapPort());
+        m_config.setNewSuspectOnTrap(config.getNewSuspectOnTrap());
+        m_config.setQueueSize(config.getQueueSize());
+        m_config.setBatchSize(config.getBatchSize());
+        m_config.setBatchInterval(config.getBatchIntervalMs());
+        m_config.setThreads(config.getNumThreads());
+        m_config.setIncludeRawMessage(config.isIncludeRawMessage());
+
+        final List<Snmpv3User> snmpv3Users = config.getSnmpV3Users().stream().map(u -> {
+            Snmpv3User newUser = new Snmpv3User();
+            newUser.setEngineId(u.getEngineId());
+            newUser.setSecurityName(u.getSecurityName());
+            newUser.setAuthProtocol(u.getAuthProtocol());
+            newUser.setAuthPassphrase(u.getAuthPassPhrase());
+            newUser.setPrivacyProtocol(u.getPrivProtocol());
+            newUser.setPrivacyPassphrase(u.getPrivPassPhrase());
+            return newUser;
+        }).collect(Collectors.toList());
+        m_config.setSnmpv3User(snmpv3Users);
+    }
 }

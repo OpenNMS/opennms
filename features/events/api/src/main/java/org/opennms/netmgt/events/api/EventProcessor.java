@@ -28,8 +28,7 @@
 
 package org.opennms.netmgt.events.api;
 
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 
 
 /**
@@ -41,12 +40,6 @@ import org.opennms.netmgt.xml.event.Header;
  * @version $Id: $
  */
 public interface EventProcessor {
-    /**
-     * <p>process</p>
-     *
-     * @param eventHeader a {@link org.opennms.netmgt.xml.event.Header} object.
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @throws {@link EventProcessorException} if any.
-     */
-    void process(Header eventHeader, Event event) throws EventProcessorException;
+
+    void process(final Log eventLog) throws EventProcessorException;
 }

@@ -13,9 +13,18 @@
 
     <context:annotation-config />
 
-    <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
-        <property name="location" value="file:${opennms.home}/etc/model-importer.properties" />
+        <!-- 
+          We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+          preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+          the issue documented here:
+
+          https://jira.springsource.org/browse/SPR-6428
+
+          TODO: Fix this behavior after upgrading to Spring 3.1.
+        -->
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
     <bean id="dataSource" class="org.opennms.netmgt.dao.mock.MockDataSource" />
@@ -93,6 +102,9 @@
     <bean id="monitoringLocationDao" class="org.opennms.netmgt.dao.mock.MockMonitoringLocationDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoringLocationDao" ref="monitoringLocationDao" />
 
+    <bean id="monitoringSystemDao" class="org.opennms.netmgt.dao.mock.MockMonitoringSystemDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoringSystemDao" ref="monitoringSystemDao" />
+
     <bean id="memoDao" class="org.opennms.netmgt.dao.mock.MockMemoDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.MemoDao" ref="memoDao" />
 
@@ -117,6 +129,9 @@
     <bean id="rrdDao" class="org.opennms.netmgt.dao.mock.MockRrdDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.RrdDao" ref="rrdDao"/>
     
+    <bean id="scanReportDao" class="org.opennms.netmgt.dao.mock.MockScanReportDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.ScanReportDao" ref="scanReportDao" />
+
     <bean id="serviceTypeDao" class="org.opennms.netmgt.dao.mock.MockServiceTypeDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.ServiceTypeDao" ref="serviceTypeDao" />
 

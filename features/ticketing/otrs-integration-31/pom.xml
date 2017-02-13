@@ -7,7 +7,7 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>opennms-integration-otrs-31</artifactId>
-	<name>OpenNMS OTRS 3.1 Integration</name>
+	<name>OpenNMS :: Features :: Ticketing :: OTRS 3.1</name>
 	<packaging>bundle</packaging>
 	<build>
 		<plugins>
@@ -44,7 +44,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-						<Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+						<Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
 						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 					</instructions>
@@ -143,3 +143,4 @@
 		</dependency>
 	</dependencies>
 </project>
+

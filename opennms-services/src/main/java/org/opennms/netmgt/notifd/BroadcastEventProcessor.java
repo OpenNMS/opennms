@@ -672,7 +672,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
         if (getGroupManager().hasGroup(targetName)) {
             count = getGroupManager().getGroup(targetName).getUserCount();
-        } else if (getUserManager().hasRole(targetName)) {
+        } else if (getUserManager().hasOnCallRole(targetName)) {
             count = getUserManager().countUsersWithRole(targetName);
         } else if (getUserManager().hasUser(targetName)) {
             count = 1;
@@ -804,7 +804,7 @@ public final class BroadcastEventProcessor implements EventListener {
             
             if (getGroupManager().hasGroup((targetName))) {
                 tasks = makeGroupTasks(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify, TimeConverter.convertToMillis(interval));
-            } else if (getUserManager().hasRole(targetName)) {
+            } else if (getUserManager().hasOnCallRole(targetName)) {
                 tasks = makeRoleTasks(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify, TimeConverter.convertToMillis(interval));
             } else if (getUserManager().hasUser(targetName)) {
                 NotificationTask[] userTasks = { makeUserTask(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify) };

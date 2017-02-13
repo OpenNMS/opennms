@@ -205,7 +205,7 @@ session="true"
   <div class="panel-body">
     <ul class="list-unstyled">
       <li><a href="support/about.jsp">About the OpenNMS Web Console</a></li>
-      <li><a href="http://meridian.opennms.com/releasenotes/2015/latest/index.html">Release Notes</a></li>
+      <li><a href="http://meridian.opennms.com/releasenotes/2017/latest/index.html">Release Notes</a></li>
     </ul>
   </div>
   </div>
@@ -217,10 +217,10 @@ session="true"
   <div class="panel-body">
     <span id="online-documentation" style="display:none;">
     <ul class="list-unstyled">
-      <li><a href="http://meridian.opennms.com/docs/2016/latest/guide-install/index.html">Installation Guide</a></li>
-      <li><a href="http://meridian.opennms.com/docs/2016/latest/guide-user/index.html">Users Guide</a></li>
-      <li><a href="http://meridian.opennms.com/docs/2016/latest/guide-admin/guide-admin.html">Administrators Guide</a></li>
-      <li><a href="http://meridian.opennms.com/docs/2016/latest/guide-development/guide-development.html">Developers Guide</a></li>
+      <li><a href="http://meridian.opennms.com/docs/2017/latest/guide-install/index.html">Installation Guide</a></li>
+      <li><a href="http://meridian.opennms.com/docs/2017/latest/guide-user/index.html">Users Guide</a></li>
+      <li><a href="http://meridian.opennms.com/docs/2017/latest/guide-admin/guide-admin.html">Administrators Guide</a></li>
+      <li><a href="http://meridian.opennms.com/docs/2017/latest/guide-development/guide-development.html">Developers Guide</a></li>
       <li><a href="http://www.opennms.org/wiki/">Online Wiki Documentation</a></li>
     </ul>
     </span>

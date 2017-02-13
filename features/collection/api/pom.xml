@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.collection</groupId>
   <artifactId>org.opennms.features.collection.api</artifactId>
-  <name>OpenNMS Features Collection API</name>
+  <name>OpenNMS :: Features :: Collection :: API</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -29,7 +29,11 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-config-model</artifactId>
+      <artifactId>opennms-config-jaxb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
