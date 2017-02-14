@@ -28,69 +28,49 @@
 
 package org.opennms.netmgt.icmp.jni;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import junit.framework.TestCase;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.utils.CollectionMath;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.Pinger;
+import org.springframework.test.annotation.IfProfileValue;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * 
- * @author <a href="mailto:ranger@opennms.org>Ben Reed</a>
+ * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  */
-public class JniPingTest extends TestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({}) 
+public class JniPingTest {
 
     static private JniPinger s_jniPinger = new JniPinger();
 
     private InetAddress m_goodHost = null;
     private InetAddress m_badHost = null;
 
-    /**
-     * Don't run this test unless the runPingTests property
-     * is set to "true".
-     */
-    @Override
-    protected void runTest() throws Throwable {
-        if (!isRunTest()) {
-            System.err.println("Skipping test '" + getName() + "' because system property '" + getRunTestProperty() + "' is not set to 'true'");
-            return;
-        }
-            
-        try {
-            System.err.println("------------------- begin "+getName()+" ---------------------");
-            super.runTest();
-        } finally {
-            System.err.println("------------------- end "+getName()+" -----------------------");
-        }
-    }
-
-    private boolean isRunTest() {
-        return Boolean.parseBoolean(System.getProperty(getRunTestProperty()));
-    }
-
-    private String getRunTestProperty() {
-        return "runPingTests";
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        if (!isRunTest()) {
-            return;
-        }
-
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         m_goodHost = InetAddress.getLocalHost();
         // 192.0.2.0/24 is reserved for documentation purposes
         m_badHost  = InetAddress.getByName("192.0.2.123");
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testSinglePingJni() throws Exception {
         singlePing(s_jniPinger);
     }
@@ -185,10 +165,14 @@ public class JniPingTest extends TestCase {
         
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testPingCallbackTimeoutJni() throws Exception {
         pingCallbackTimeout(s_jniPinger);
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testSinglePingFailureJni() throws Exception {
         try {
             singlePingFailure(s_jniPinger);
@@ -201,6 +185,8 @@ public class JniPingTest extends TestCase {
         assertNull(pinger.ping(m_badHost));
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testParallelPingJni() throws Exception {
         parallelPing(s_jniPinger);
     }
@@ -216,6 +202,8 @@ public class JniPingTest extends TestCase {
         }
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testParallelPingFailureJni() throws Exception {
         parallelPingFailure(s_jniPinger);
     }
