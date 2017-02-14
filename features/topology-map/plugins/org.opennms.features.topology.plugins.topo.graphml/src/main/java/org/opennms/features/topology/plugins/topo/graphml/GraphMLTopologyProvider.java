@@ -117,8 +117,6 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
                 } else {
                     LOG.warn("No node found for the given foreignSource ({}) and foreignId ({}).", foreignSource, foreignId);
                 }
-            } else {
-                LOG.warn("The given nodeId is null. In order to resolve the nodeId a foreignSource ({}) and foreignId ({}) must be set.", foreignSource, foreignId);
             }
         }
     }
