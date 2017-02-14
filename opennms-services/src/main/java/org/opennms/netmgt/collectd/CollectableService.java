@@ -319,14 +319,21 @@ final class CollectableService implements ReadyRunnable {
     }
 
     private void doRun() {
+	boolean strictInterval = Boolean.getBoolean("org.opennms.netmgt.collectd.strictInterval");
+
         // Process any outstanding updates.
         if (processUpdates() == ABORT_COLLECTION) {
             LOG.debug("run: Aborting because processUpdates returned ABORT_COLLECTION (probably marked for deletion) for {}", this);
             return;
         }
 
-        // Update last scheduled poll time
-        m_lastScheduledCollectionTime = System.currentTimeMillis();
+        // Update last scheduled poll time; if we are not doing strict interval,
+        // it is the current time; if we are, it is the previous time plus the
+        // interval
+	if (m_lastScheduledCollectionTime == 0 || !strictInterval)
+            m_lastScheduledCollectionTime = System.currentTimeMillis();
+	else
+	    m_lastScheduledCollectionTime += m_spec.getInterval();
 
         /*
          * Check scheduled outages to see if any apply indicating
@@ -334,7 +341,7 @@ final class CollectableService implements ReadyRunnable {
          */
         if (!m_spec.scheduledOutage(m_agent)) {
             try {
-                doCollection();
+                doCollection(m_lastScheduledCollectionTime);
                 updateStatus(ServiceCollector.COLLECTION_SUCCEEDED, null);
             } catch (CollectionTimedOut e) {
                 LOG.info(e.getMessage());
@@ -354,8 +361,13 @@ final class CollectableService implements ReadyRunnable {
             }
         }
         
+	// If we are doing strict interval, determine how long the collection
+        // has taken, so we can cut that off of the service interval
+	long diff = 0;
+        if (strictInterval)
+            diff = System.currentTimeMillis() - m_lastScheduledCollectionTime;
     	// Reschedule the service
-        m_scheduler.schedule(m_spec.getInterval(), getReadyRunnable());
+        m_scheduler.schedule(m_spec.getInterval() - diff, getReadyRunnable());
     }
 
     private void updateStatus(int status, CollectionException e) {
@@ -391,7 +403,7 @@ final class CollectableService implements ReadyRunnable {
     /**
      * Perform data collection.
      */
-	private void doCollection() throws CollectionException {
+	private void doCollection(long time) throws CollectionException {
 		LOG.info("run: starting new collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
 		CollectionSet result = null;
 		try {
@@ -399,7 +411,7 @@ final class CollectableService implements ReadyRunnable {
 		    if (result != null) {
                         Collectd.instrumentation().beginPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                         try {
-                            CollectionSetVisitor persister = m_persisterFactory.createPersister(m_params, m_repository, result.ignorePersist(), false, false);
+                            CollectionSetVisitor persister = m_persisterFactory.createPersister(m_params, m_repository, time, result.ignorePersist(), false, false);
                             result.visit(persister);
                         } finally {
                             Collectd.instrumentation().endPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());

@@ -57,6 +57,7 @@ public class BasePersister extends AbstractPersister {
     private final RrdStrategy<?, ?> m_rrdStrategy;
     private final ResourceStorageDao m_resourceStorageDao;
     private boolean m_dontReorderAttributes = false;
+    private long m_collectionTime;
 
     /**
      * <p>Constructor for BasePersister.</p>
@@ -79,6 +80,7 @@ public class BasePersister extends AbstractPersister {
      */
     protected RrdPersistOperationBuilder createBuilder(CollectionResource resource, String name, Set<CollectionAttributeType> attributeTypes) {
         RrdPersistOperationBuilder builder  = new RrdPersistOperationBuilder(getRrdStrategy(), getRepository(), resource, name, m_dontReorderAttributes);
+        builder.setCollectionTime(m_collectionTime);
         if (resource.getTimeKeeper() != null) {
             builder.setTimeKeeper(resource.getTimeKeeper());
         }
@@ -114,5 +116,9 @@ public class BasePersister extends AbstractPersister {
 
     public boolean getDontReorderAttributes() {
         return m_dontReorderAttributes;
+    }
+
+    public void setCollectionTime(long collectionTime) {
+        m_collectionTime = collectionTime;
     }
 }

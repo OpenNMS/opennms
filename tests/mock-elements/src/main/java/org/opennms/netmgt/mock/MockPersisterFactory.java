@@ -46,4 +46,10 @@ public class MockPersisterFactory implements PersisterFactory {
         return new MockPersister();
     }
 
+    @Override
+    public Persister createPersister(ServiceParameters params, RrdRepository repository, long collectTime,
+            boolean dontPersistCounters, boolean forceStoreByGroup, boolean dontReorderAttributes) {
+        return new MockPersister();
+    }
+
 }

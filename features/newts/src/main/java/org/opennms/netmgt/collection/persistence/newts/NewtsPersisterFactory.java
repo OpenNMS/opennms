@@ -51,12 +51,19 @@ public class NewtsPersisterFactory implements PersisterFactory {
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository) {
-        return createPersister(params, repository, false, false, false);
+        return createPersister(params, repository, 0, false, false, false);
     }
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository, boolean dontPersistCounters,
             boolean forceStoreByGroup, boolean dontReorderAttributes) {
+        return createPersister(params, repository, 0, dontPersistCounters,
+            forceStoreByGroup, dontReorderAttributes);
+    }
+
+    @Override
+    public Persister createPersister(ServiceParameters params, RrdRepository repository, long collectionTime,
+            boolean dontPersistCounters, boolean forceStoreByGroup, boolean dontReorderAttributes) {
         // We ignore the forceStoreByGroup flag since we always store by group, and we ignore
         // the dontReorderAttributes flag since attribute order does not matter
         NewtsPersister persister =  new NewtsPersister(params, repository, m_newtsWriter, m_context);

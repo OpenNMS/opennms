@@ -60,7 +60,7 @@ public class EvaluatePersisterFactory implements PersisterFactory {
      */
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository) {
-        return createPersister(params, repository, false, false, false);
+        return createPersister(params, repository, 0, false, false, false);
     }
 
     /* (non-Javadoc)
@@ -70,6 +70,18 @@ public class EvaluatePersisterFactory implements PersisterFactory {
     public Persister createPersister(ServiceParameters params,
             RrdRepository repository, boolean dontPersistCounters,
             boolean forceStoreByGroup, boolean dontReorderAttributes) {
+        return createPersister(params, repository, 0, dontPersistCounters,
+            forceStoreByGroup, dontReorderAttributes);
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collection.api.PersisterFactory#createPersister(org.opennms.netmgt.collection.api.ServiceParameters, org.opennms.netmgt.rrd.RrdRepository, long, boolean, boolean, boolean)
+     */
+    @Override
+    public Persister createPersister(ServiceParameters params,
+            RrdRepository repository, long collectionTime,
+            boolean dontPersistCounters, boolean forceStoreByGroup,
+            boolean dontReorderAttributes) {
         if (ResourceTypeUtils.isStoreByGroup() || forceStoreByGroup) {
             return createGroupPersister(params, repository, dontPersistCounters);
         } else {
