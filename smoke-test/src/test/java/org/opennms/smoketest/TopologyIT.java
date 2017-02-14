@@ -310,11 +310,11 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             Actions actions = new Actions(testCase.m_driver);
             for (String label : labels) {
                 try {
+                    // we should wait, otherwise the menu has not yet updated
+                    Thread.sleep(2000);
                     WebElement menuElement = getMenubarElement(label);
                     actions.moveToElement(menuElement);
                     menuElement.click();
-                    // we should wait, otherwise the menu has not yet updated
-                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     throw Throwables.propagate(e);
                 } catch (Throwable e) {
