@@ -110,9 +110,10 @@ public class DefaultTopologyService implements TopologyService {
                     @Override
                     public GraphProvider load(GraphProviderKey key) throws Exception {
                         final MetaTopologyProvider metaTopologyProvider = getMetaTopologyProvider(key.getMetaTopologyId());
-                        metaTopologyProvider.reload(key.getNamespace());
-                        return Optional.ofNullable(metaTopologyProvider.getGraphProviderBy(key.getNamespace()))
-                                .orElseThrow(() -> new NoSuchElementException("No GraphProvider with namespace '" + key.getNamespace() + "' found."));
+                        final GraphProvider graphProvider = Optional.ofNullable(metaTopologyProvider.getGraphProviderBy(key.getNamespace()))
+                                                                .orElseThrow(() -> new NoSuchElementException("No GraphProvider with namespace '" + key.getNamespace() + "' found."));
+                        graphProvider.refresh();
+                        return graphProvider;
                     }
                 });
     }

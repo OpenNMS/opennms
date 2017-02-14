@@ -99,8 +99,6 @@ public class BreadcrumbPathCalculatorTest {
                 return getGraphProviders().stream().map(g -> g.getNamespace()).collect(Collectors.joining(":"));
             }
         };
-        metaTopologyProvider.reload(null);
-
         DefaultTopologyService topologyService = new DefaultTopologyService();
         topologyService.onBind(metaTopologyProvider, Maps.newHashMap());
         DefaultTopologyServiceClient client = new DefaultTopologyServiceClient(topologyService);
